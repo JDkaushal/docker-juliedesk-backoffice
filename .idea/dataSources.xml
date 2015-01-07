@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1319916955">
+    <data-source source="LOCAL" name="Rails juliedesk-backoffice: test" product="" version="" jdbc-version="" driver-name="" driver-version="" uuid="1c15b823-fc25-47da-9861-c8f0ce675272">
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql:juliedesk-backoffice_test</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-driver-license.txt</url>
+        </library>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-9.1-901.jdbc3.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="Rails juliedesk-backoffice: development" product="" version="" jdbc-version="" driver-name="" driver-version="" uuid="8d65b2d2-6662-4996-9228-072874e825fa">
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql:juliedesk-backoffice_development</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-driver-license.txt</url>
+        </library>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-9.1-901.jdbc3.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="Rails juliedesk-backoffice: production" product="" version="" jdbc-version="" driver-name="" driver-version="" uuid="f5341cef-083f-4e97-8c25-449d2cd27336">
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql:juliedesk-backoffice_production</jdbc-url>
+      <user-name>juliedesk-backoffice</user-name>
+      <user-password>df96df8fdf97df8adfefdfe4dffcdff1df8ddfe0dfffdfe6dfe3dfefdfeedfefdff9dfe1df87dfe8dfebdfe9dfe1dfe5dfecdfecdfe3dfe9dfefdff5dfeedfebdffedfebdfe8dfebdff9dfefdff5dffadfebdff9dff9dffddfe5dff8dfeedf8ddff7df8adf8fdf94</user-password>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-driver-license.txt</url>
+        </library>
+        <library>
+          <url>file://$USER_HOME$/Library/Preferences/RubyMine40/jdbc-drivers/postgresql-9.1-901.jdbc3.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
+
