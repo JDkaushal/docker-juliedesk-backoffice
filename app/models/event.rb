@@ -22,9 +22,9 @@ class Event < ActiveRecord::Base
     print "Done.\n"
 
     emails.each do |email|
-      print "Fetching #{email} upcomping events...\n"
+      print "Fetching #{email} upcoming events...\n"
       events = self.get_upcoming_events_for_email(email)
-      p "#{events.length} events imported."
+      print "  #{events.length} events imported.\n"
       events.each do |event|
         if Event.where(email: email, event_id: event['event_id']).empty?
           Event.create email: email, event_id: event['event_id'], calendar_nature: event['calendar_nature'], calendar_id: event['calendar_id']
@@ -34,6 +34,7 @@ class Event < ActiveRecord::Base
   end
 
   def self.get_upcoming_events_for_email email
+    t = Time.now
     url = URI.parse("https://#{HOST}/api/v1/upcoming_events?email=#{email}&access_key=gho67FBDJKdbhfj890oPm56VUdfhq8")
     req = Net::HTTP::Get.new(url.to_s)
     res = Net::HTTP.start(url.host, url.port, use_ssl: true) {|http|
@@ -42,9 +43,16 @@ class Event < ActiveRecord::Base
 
     if res.code == "200"
       data = JSON.parse(res.body)
-      data['data']
+      if data['status'] == "success"
+        print "Done (#{((Time.now - t)*100).floor/100.0}s)"
+        data['data']
+      else
+        print "Retrying...(#{((Time.now - t)*100).floor/100.0}s)\n"
+        self.get_upcoming_events_for_email email
+      end
     else
-      self.get_upcoming_events_for_email email
+      print "Server error (#{((Time.now - t)*100).floor/100.0}s)"
+      []
     end
   end
 

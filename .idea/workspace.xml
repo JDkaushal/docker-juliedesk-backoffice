@@ -12,20 +12,20 @@
     <file path="/a.dummy" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420653367377" ignored="false" />
     <file path="/events_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420717939651" ignored="false" />
     <file path="/emails_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420653987297" ignored="false" />
-    <file path="/event.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729554882" ignored="false" />
+    <file path="/event.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420730365714" ignored="false" />
     <file path="/production.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654279116" ignored="false" />
     <file path="/20150107181036_create_events_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654399555" ignored="false" />
     <file path="/index.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654663321" ignored="false" />
     <file path="/show.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716849578" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/config/routes.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420721095762" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
-    <file path="/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420728892375" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
-    <file path="/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729143042" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733598693" ignored="false" />
+    <file path="/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733450626" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420735283209" ignored="false" />
+    <file path="/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420735012368" ignored="false" />
     <file path="/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420714522819" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/app/models/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420721095762" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/.env" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420675459585" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420721095762" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733598693" ignored="false" />
     <file path="$PROJECT_DIR$/../evlearn/app/assets/stylesheets/event.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420715607981" ignored="false" />
     <file path="/event.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420715505795" ignored="false" />
     <file path="/application.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716288162" ignored="false" />
@@ -38,6 +38,7 @@
     <file path="/icloud_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420727169698" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/lib/iclouddav/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
     <file path="/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420728947315" ignored="false" />
+    <file path="/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733232207" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,10 +58,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="event.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="event.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/models/event.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="42" selection-start="823" selection-end="823" vertical-scroll-proportion="0.6993464">
+            <state line="41" column="5" selection-start="1182" selection-end="1434" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -79,6 +80,24 @@
         <entry file="file://$PROJECT_DIR$/app/controllers/api_controller.rb">
           <provider selected="true" editor-type-id="text-editor">
             <state line="6" column="60" selection-start="182" selection-end="207" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="newrelic.yml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/newrelic.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Gemfile" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Gemfile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="19" column="18" selection-start="361" selection-end="361" vertical-scroll-proportion="0.456">
               <folding />
             </state>
           </provider>
@@ -120,24 +139,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="show.html.erb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/views/events/show.html.erb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="11" selection-start="17" selection-end="17" vertical-scroll-proportion="24.958334">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="application.html.erb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="44" selection-start="518" selection-end="518" vertical-scroll-proportion="-12.5">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="dashboard.html.erb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/views/dashboard/dashboard.html.erb">
           <provider selected="true" editor-type-id="text-editor">
@@ -157,7 +158,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/app/controllers/emails_controller.rb" />
         <option value="$PROJECT_DIR$/config/environments/production.rb" />
         <option value="$PROJECT_DIR$/db/migrate/20150107181036_create_events_table.rb" />
         <option value="$PROJECT_DIR$/app/views/events/index.html.erb" />
@@ -173,6 +173,7 @@
         <option value="$PROJECT_DIR$/config/routes.rb" />
         <option value="$PROJECT_DIR$/app/controllers/application_controller.rb" />
         <option value="$PROJECT_DIR$/app/models/event.rb" />
+        <option value="$PROJECT_DIR$/Gemfile" />
       </list>
     </option>
   </component>
@@ -282,6 +283,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -357,11 +372,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/config" />
       <recent name="$PROJECT_DIR$/app/views" />
       <recent name="$PROJECT_DIR$/app/views/events" />
       <recent name="$PROJECT_DIR$/app/controllers" />
       <recent name="$PROJECT_DIR$/app/assets/stylesheets" />
-      <recent name="$PROJECT_DIR$/config" />
     </key>
   </component>
   <component name="RunManager" selected="Rails.Development: juliedesk-backoffice">
@@ -706,20 +721,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/views/events/index.html.erb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="42" selection-start="108" selection-end="108" vertical-scroll-proportion="-3.75">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/emails/index.html.erb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config/environment.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -797,13 +798,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/api_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="60" selection-start="182" selection-end="207" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/application_controller.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="11" column="5" selection-start="399" selection-end="399" vertical-scroll-proportion="0.0">
@@ -813,7 +807,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/models/event.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="42" selection-start="823" selection-end="823" vertical-scroll-proportion="0.6993464">
+        <state line="41" column="5" selection-start="1182" selection-end="1434" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/controllers/api_controller.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="60" selection-start="182" selection-end="207" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/newrelic.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Gemfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="18" selection-start="361" selection-end="361" vertical-scroll-proportion="0.456">
           <folding />
         </state>
       </provider>
