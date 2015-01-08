@@ -24,7 +24,7 @@ class Event < ActiveRecord::Base
     emails.each do |email|
       print "Fetching #{email} upcomping events...\n"
       events = self.get_upcoming_events_for_email(email)
-      p events
+      p "#{events.length} events imported."
       events.each do |event|
         if Event.where(email: email, event_id: event['event_id']).empty?
           Event.create email: email, event_id: event['event_id'], calendar_nature: event['calendar_nature'], calendar_id: event['calendar_id']
@@ -40,8 +40,12 @@ class Event < ActiveRecord::Base
       http.request(req)
     }
 
-    data = JSON.parse(res.body)
-    data['data']
+    if res.code == "200"
+      data = JSON.parse(res.body)
+      data['data']
+    else
+      self.get_upcoming_events_for_email email
+    end
   end
 
   def fetch
