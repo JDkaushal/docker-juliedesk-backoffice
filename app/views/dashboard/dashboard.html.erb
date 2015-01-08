@@ -6,11 +6,11 @@
   <div class="col-md-5">
     <h3>Emails</h3>
     <br><br>
-    <%= link_to "Emails", :emails_url, class:"btn btn-success" %>
+    <%= link_to "Emails", :emails, class:"btn btn-success" %>
   </div>
   <div class="col-md-5">
     <h3>Events</h3>
     <br><br>
-    <%= link_to "Events", :events_url, class:"btn btn-success" %>
+    <%= link_to "#{Event.where(classification: nil).count} events to classify", :events, class:"btn btn-warning" %>
   </div>
 </div>
