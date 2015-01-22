@@ -1,0 +1,33 @@
+.calendar-container {
+  .calendar-header-settings {
+    position: absolute;
+    right: 10px;
+    height: 30px;
+    line-height: 30px;
+    top: 10px;
+    width: 400px;
+    text-align: right;
+
+    .meeting-duration-label {
+      font-size: 13px;
+      padding: 0 10px 0 0px;
+    }
+
+    select {
+      font-size: 16px;
+      background-color: transparent;
+      border: 1px solid transparent;
+      outline: none;
+
+      &:hover {
+        border-color: #ddd;
+        background-color: #fafafa;
+      }
+    }
+
+    .calendar-timezone-label {
+      font-size: 13px;
+      padding: 0 10px 0 20px;
+    }
+  }
+}

@@ -1,0 +1,56 @@
+<script>
+    window.threadDataIsEditable = true;
+    $(function(e) {
+        $("#validate-suggest-dates-form").click(function() {
+            var data = {
+                classification: "<%= @classification %>",
+                appointment_nature: $("#appointment_nature").val(),
+                summary: $("#summary").val(),
+                duration: $("#duration").val(),
+                location: $("#location").val(),
+                notes: $("#notes").val(),
+                attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
+                constraints: $("#constraints").val(),
+                date_times: getSuggestedDateTimes()
+            };
+            $.ajax({
+                url: "/messages/<%= @message.id %>/classify",
+                type: "POST",
+                data: data,
+                success: function(e) {
+                    window.location = e.redirect_url;
+                },
+                error: function(e) {
+                    console.log("Error: ", e);
+                }
+            });
+
+        });
+    });
+
+    function getSuggestedDateTimes() {
+        return ["2015-01-22T11:00:00", "2015-01-22T15:00:00"];
+    }
+</script>
+<h5>Specify dates & fill in form at right:</h5>
+<br>
+<% suggested_date_times = @message.messages_thread.suggested_date_times %>
+<% if suggested_date_times.length > 0 %>
+    <p>Already suggested date times:</p>
+
+    <%  suggested_date_times.each do |dt| %>
+      <p>
+        <%= check_box_tag :already_suggested_date %>
+        <%= I18n.l(dt, format: "%A %d %B %Y à %H:%M") %>
+      </p>
+    <% end %>
+    <button class="btn btn-warning">None of these</button>
+    <button class="btn btn-primary">Submit</button>
+
+<% end %>
+<h5>Dates: </h5>
+<ul>
+
+</ul>
+
+<%= submit_tag "Validate", id: "validate-suggest-dates-form", class: "btn btn-success" %>

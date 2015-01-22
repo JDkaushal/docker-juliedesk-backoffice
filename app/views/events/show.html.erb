@@ -17,7 +17,7 @@
       <%= image_tag "event_time.png" %>
       <div  class="text">
 
-        <%== Event.format_dates @event_data['start'], @event_data['end'] %>
+        <%== ApplicationHelper.format_dates @event_data['start'], @event_data['end'] %>
       </div>
     </div>
     <div class="event-location">

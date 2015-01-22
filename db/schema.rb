@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150107181036) do
+ActiveRecord::Schema.define(version: 20150115110446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,49 @@ ActiveRecord::Schema.define(version: 20150107181036) do
     t.text     "event_id"
     t.text     "calendar_id"
     t.string   "classification"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "julie_actions", force: true do |t|
+    t.integer  "message_id"
+    t.string   "action_nature"
+    t.text     "date_times"
+    t.text     "text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "message_classifications", force: true do |t|
+    t.string   "classification"
+    t.integer  "message_id"
+    t.string   "operator"
+    t.boolean  "validated",          default: false
+    t.string   "appointment_nature"
+    t.string   "summary"
+    t.integer  "duration"
+    t.text     "location"
+    t.text     "attendees",          default: "[]"
+    t.text     "notes"
+    t.text     "constraints"
+    t.text     "date_times",         default: "[]"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "messages", force: true do |t|
+    t.string   "google_message_id"
+    t.integer  "messages_thread_id"
+    t.datetime "received_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "messages_threads", force: true do |t|
+    t.string   "google_thread_id"
+    t.string   "account_email"
+    t.boolean  "in_inbox",         default: false
+    t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

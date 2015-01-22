@@ -4,41 +4,134 @@
     <list default="true" id="48ba1a21-caf4-409f-815e-f067a4f94a30" name="Default" comment="" />
     <ignored path="juliedesk-backoffice.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Gemfile" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420652681867" ignored="false" />
-    <file path="/dashboard_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420652798821" ignored="false" />
-    <file path="/dashboard.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420717080669" ignored="false" />
-    <file path="/routes.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420717963035" ignored="false" />
-    <file path="/application.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716447081" ignored="false" />
-    <file path="/a.dummy" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420653367377" ignored="false" />
+    <file path="/Gemfile" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421254945643" ignored="false" />
+    <file path="/dashboard_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421314037541" ignored="false" />
+    <file path="/dashboard.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421314340373" ignored="false" />
+    <file path="/routes.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421761482963" ignored="false" />
+    <file path="/application.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421879852715" ignored="false" />
+    <file path="/a.dummy" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421853878627" ignored="false" />
     <file path="/events_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420717939651" ignored="false" />
-    <file path="/emails_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420653987297" ignored="false" />
-    <file path="/event.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420730365714" ignored="false" />
+    <file path="/emails_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421255172922" ignored="false" />
+    <file path="/event.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421315123248" ignored="false" />
     <file path="/production.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654279116" ignored="false" />
     <file path="/20150107181036_create_events_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654399555" ignored="false" />
-    <file path="/index.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420654663321" ignored="false" />
-    <file path="/show.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716849578" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/config/routes.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420721095762" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733598693" ignored="false" />
-    <file path="/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733450626" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420735283209" ignored="false" />
-    <file path="/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420735012368" ignored="false" />
-    <file path="/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420714522819" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420721095762" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/.env" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420675459585" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733598693" ignored="false" />
+    <file path="/index.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421683355146" ignored="false" />
+    <file path="/show.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421424837257" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/config/routes.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249371174" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/users_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421153848743" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/user.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156329923" ignored="false" />
+    <file path="/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156322275" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/google_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/.env" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421772404948" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
     <file path="$PROJECT_DIR$/../evlearn/app/assets/stylesheets/event.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420715607981" ignored="false" />
     <file path="/event.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420715505795" ignored="false" />
-    <file path="/application.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716288162" ignored="false" />
+    <file path="/application.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421843851342" ignored="false" />
     <file path="/events.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716189739" ignored="false" />
-    <file path="/common.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420716418631" ignored="false" />
-    <file path="/api_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420717632819" ignored="false" />
+    <file path="/common.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421879920674" ignored="false" />
+    <file path="/api_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421774113684" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/lib/iclouddav/calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
-    <file path="/calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420728230979" ignored="false" />
-    <file path="$PROJECT_DIR$/../juliedesk/app/models/icloud_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
-    <file path="/icloud_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420727169698" ignored="false" />
+    <file path="/calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421236082347" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/models/icloud_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/icloud_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156508964" ignored="false" />
     <file path="$PROJECT_DIR$/../juliedesk/lib/iclouddav/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420729380344" ignored="false" />
-    <file path="/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420728947315" ignored="false" />
-    <file path="/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1420733232207" ignored="false" />
+    <file path="/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421235205600" ignored="false" />
+    <file path="/exchange_login.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421248901816" ignored="false" />
+    <file path="/.env" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421772400604" ignored="false" />
+    <file path="/common.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421255080945" ignored="false" />
+    <file path="/Dummy.txt" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421772294860" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/config/environments/development.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421060240339" ignored="false" />
+    <file path="/emails.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421858353432" ignored="false" />
+    <file path="/en.yml" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421751863554" ignored="false" />
+    <file path="/chat.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421068611833" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/assets/stylesheets/onboarding/chat.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421068611833" ignored="false" />
+    <file path="$PROJECT_DIR$/../gmail-ruby-api/lib/gmail/message.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421070160982" ignored="false" />
+    <file path="/message.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421683436885" ignored="false" />
+    <file path="/20150112140541_create_emails_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421313198272" ignored="false" />
+    <file path="/email.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421313833778" ignored="false" />
+    <file path="/multi_calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421158668088" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421158729326" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/multi_calendar.gemspec" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421243886152" ignored="false" />
+    <file path="/multi_calendar.gemspec" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421243886152" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/gmail.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421143005057" ignored="false" />
+    <file path="/gmail.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421146618167" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/gmail_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421143561390" ignored="false" />
+    <file path="/gmail_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421147578965" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/gmail_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421147567052" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/icloud_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421243693366" ignored="false" />
+    <file path="/icloud_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421167385307" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/iclouddav/client.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421235725064" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/office_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421243698642" ignored="false" />
+    <file path="/office_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421242495114" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/google_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421243687274" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/Gemfile" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421774268696" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/Gemfile.lock" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421155481376" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/google_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/icloud_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/icloud_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156206650" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api/v1/exchange_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/exchange_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421245486560" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/test/models/google_login_test.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421249325490" ignored="false" />
+    <file path="/google_login_test.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156338434" ignored="false" />
+    <file path="/google_logins_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421156343624" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/Rakefile" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421159321803" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/test/test_multi_calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421159137108" ignored="false" />
+    <file path="/test_multi_calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421166703073" ignored="false" />
+    <file path="/temp.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421159321803" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/spec/spec_helper.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421235670680" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/spec/google_account_test.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421159767803" ignored="false" />
+    <file path="/spec_helper.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421159850791" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/spec/google_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421166707764" ignored="false" />
+    <file path="/google_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421166676439" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/spec/icloud_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421236939849" ignored="false" />
+    <file path="/icloud_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421236830755" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/spec/office_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421242681391" ignored="false" />
+    <file path="/office_account_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421242681391" ignored="false" />
+    <file path="/google_account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421239318963" ignored="false" />
+    <file path="$PROJECT_DIR$/../gmail-ruby-api/spec/gmail_spec.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421163097008" ignored="false" />
+    <file path="$PROJECT_DIR$/../multi_calendar/lib/multi_calendar/iclouddav/calendar.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421236094786" ignored="false" />
+    <file path="/20150115090847_create_threads_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421313220577" ignored="false" />
+    <file path="/thread.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421314400443" ignored="false" />
+    <file path="/20150115090847_create_messages_threads_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421313866898" ignored="false" />
+    <file path="/20150112140541_create_messages_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421313875297" ignored="false" />
+    <file path="/messages_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421763301037" ignored="false" />
+    <file path="/messages_thread.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421857560467" ignored="false" />
+    <file path="/application_helper.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421859580165" ignored="false" />
+    <file path="/account.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421417592606" ignored="false" />
+    <file path="/messages_threads_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421320306042" ignored="false" />
+    <file path="/message_classification.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421855767163" ignored="false" />
+    <file path="/20150115101341_create_message_classifications_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421855717049" ignored="false" />
+    <file path="/julie_action.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421763548795" ignored="false" />
+    <file path="/20150115110446_create_julie_actions_table.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421761616717" ignored="false" />
+    <file path="/classifying.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421425492117" ignored="false" />
+    <file path="/ask_dates_suggestions.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421414272217" ignored="false" />
+    <file path="/ask_date_suggestions.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421673046970" ignored="false" />
+    <file path="/process_actions.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421859741227" ignored="false" />
+    <file path="/messages_thread_header.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421858375472" ignored="false" />
+    <file path="/schema.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421678150857" ignored="false" />
+    <file path="/email.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421751847626" ignored="false" />
+    <file path="/ask_availabilities.html.erb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421855458759" ignored="false" />
+    <file path="/julie_actions_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421761963799" ignored="false" />
+    <file path="/calendar.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421764494055" ignored="false" />
+    <file path="/assets.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421764295033" ignored="false" />
+    <file path="/calendar.css" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421764464560" ignored="false" />
+    <file path="/calendar.html" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421856435136" ignored="false" />
+    <file path="/main.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421844674494" ignored="false" />
+    <file path="/main.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421858671210" ignored="false" />
+    <file path="/common_helpers.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421859226783" ignored="false" />
+    <file path="/data.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421769736347" ignored="false" />
+    <file path="/full_calendar_functions.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421854746648" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/app/controllers/api_controller.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421774113684" ignored="false" />
+    <file path="$PROJECT_DIR$/../juliedesk/config/application.rb" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421774419569" ignored="false" />
+    <file path="/event_details.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421834812063" ignored="false" />
+    <file path="/fullcalendar.css" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421838251719" ignored="false" />
+    <file path="/header_settings.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421844652239" ignored="false" />
+    <file path="/fullcalendar.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421854871141" ignored="false" />
+    <file path="/fullcalendar_override.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421845700746" ignored="false" />
+    <file path="/calendars_list_popup.css.scss" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421849572688" ignored="false" />
+    <file path="/event_details.js" changelist="48ba1a21-caf4-409f-815e-f067a4f94a30" time="1421851123371" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,91 +151,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="event.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/models/event.rb">
+      <file leaf-file-name="messages_thread.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models/messages_thread.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="5" selection-start="1182" selection-end="1434" vertical-scroll-proportion="0.0">
+            <state line="46" column="15" selection-start="1462" selection-end="1469" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="events_controller.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/events_controller.rb">
+      <file leaf-file-name="account.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models/account.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="11" selection-start="59" selection-end="59" vertical-scroll-proportion="0.0">
+            <state line="7" column="17" selection-start="185" selection-end="198" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="api_controller.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/api_controller.rb">
+      <file leaf-file-name="messages_thread_header.html.erb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/messages/messages_thread_header.html.erb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="60" selection-start="182" selection-end="207" vertical-scroll-proportion="0.0">
+            <state line="110" column="12" selection-start="4535" selection-end="4535" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="newrelic.yml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/newrelic.yml">
+      <file leaf-file-name="main.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="398" column="111" selection-start="13997" selection-end="13997" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Gemfile" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Gemfile">
+      <file leaf-file-name="full_calendar_functions.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/full_calendar_functions.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="18" selection-start="361" selection-end="361" vertical-scroll-proportion="0.456">
+            <state line="28" column="34" selection-start="745" selection-end="745" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="application_controller.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/application_controller.rb">
+      <file leaf-file-name="process_actions.html.erb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/messages/process_actions.html.erb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="5" selection-start="399" selection-end="399" vertical-scroll-proportion="0.0">
+            <state line="132" column="63" selection-start="6779" selection-end="6779" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="events_controller.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/api/events_controller.rb">
+      <file leaf-file-name="application.html.erb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="9" selection-start="9" selection-end="9" vertical-scroll-proportion="0.0">
+            <state line="23" column="44" selection-start="516" selection-end="516" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="routes.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/routes.rb">
+      <file leaf-file-name="common.css.scss" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/common.css.scss">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="13" selection-start="384" selection-end="384" vertical-scroll-proportion="0.0">
+            <state line="36" column="14" selection-start="559" selection-end="559" vertical-scroll-proportion="0.416">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="emails_controller.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/emails_controller.rb">
+      <file leaf-file-name="application_helper.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/helpers/application_helper.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="5" selection-start="138" selection-end="138" vertical-scroll-proportion="0.0">
+            <state line="9" column="46" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dashboard.html.erb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/views/dashboard/dashboard.html.erb">
+      <file leaf-file-name="common_helpers.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/common_helpers.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="111" selection-start="342" selection-end="342" vertical-scroll-proportion="-8.125">
+            <state line="116" column="39" selection-start="4382" selection-end="4397" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -158,22 +251,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/config/environments/production.rb" />
-        <option value="$PROJECT_DIR$/db/migrate/20150107181036_create_events_table.rb" />
-        <option value="$PROJECT_DIR$/app/views/events/index.html.erb" />
-        <option value="$PROJECT_DIR$/app/assets/stylesheets/application.css.scss" />
-        <option value="$PROJECT_DIR$/app/assets/stylesheets/events.css.scss" />
-        <option value="$PROJECT_DIR$/app/assets/stylesheets/common.css.scss" />
+        <option value="$PROJECT_DIR$/app/assets/javascripts/calendar/event_details.js" />
+        <option value="$PROJECT_DIR$/app/assets/javascripts/calendar/full_calendar_functions.js" />
+        <option value="$PROJECT_DIR$/app/assets/javascripts/calendar/fullcalendar.js" />
+        <option value="$PROJECT_DIR$/app/views/messages/classifications_form/ask_availabilities.html.erb" />
+        <option value="$PROJECT_DIR$/db/migrate/20150115101341_create_message_classifications_table.rb" />
+        <option value="$PROJECT_DIR$/app/models/message_classification.rb" />
+        <option value="$PROJECT_DIR$/app/views/calendar/calendar.html" />
+        <option value="$PROJECT_DIR$/app/models/messages_thread.rb" />
+        <option value="$PROJECT_DIR$/app/views/messages/messages_thread_header.html.erb" />
+        <option value="$PROJECT_DIR$/app/assets/stylesheets/emails.css.scss" />
+        <option value="$PROJECT_DIR$/app/assets/javascripts/calendar/main.js" />
+        <option value="$PROJECT_DIR$/app/helpers/application_helper.rb" />
+        <option value="$PROJECT_DIR$/app/assets/javascripts/calendar/common_helpers.js" />
+        <option value="$PROJECT_DIR$/app/views/messages/process_actions.html.erb" />
         <option value="$PROJECT_DIR$/app/views/layouts/application.html.erb" />
-        <option value="$PROJECT_DIR$/app/views/events/show.html.erb" />
-        <option value="$PROJECT_DIR$/app/views/dashboard/dashboard.html.erb" />
-        <option value="$PROJECT_DIR$/app/controllers/events_controller.rb" />
-        <option value="$PROJECT_DIR$/app/controllers/api_controller.rb" />
-        <option value="$PROJECT_DIR$/app/controllers/api/events_controller.rb" />
-        <option value="$PROJECT_DIR$/config/routes.rb" />
-        <option value="$PROJECT_DIR$/app/controllers/application_controller.rb" />
-        <option value="$PROJECT_DIR$/app/models/event.rb" />
-        <option value="$PROJECT_DIR$/Gemfile" />
+        <option value="$PROJECT_DIR$/app/assets/stylesheets/common.css.scss" />
       </list>
     </option>
   </component>
@@ -181,6 +274,40 @@
     <option name="y" value="23" />
     <option name="width" value="1280" />
     <option name="height" value="773" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>CSS</id>
+          </State>
+          <State>
+            <id>Code style issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Control flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>Portability issues</id>
+          </State>
+          <State>
+            <id>Ruby</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>InconsistentLineSeparators</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -208,6 +335,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="RailsProjectView" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -224,20 +352,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="juliedesk-backoffice" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="juliedesk-backoffice" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="juliedesk-backoffice" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -283,7 +397,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="messages_threads" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -298,6 +420,152 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="messages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="messages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classifications_form" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layouts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="calendar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="juliedesk-backoffice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="helpers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -316,28 +584,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="juliedesk-backoffice" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="juliedesk-backoffice" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -361,22 +607,28 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="RailsProjectView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="options.lastSelected" value="editor" />
     <property name="recentsLimit" value="5" />
-    <property name="GoToClass.includeJavaFiles" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+    <property name="GoToClass.includeJavaFiles" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/config" />
-      <recent name="$PROJECT_DIR$/app/views" />
-      <recent name="$PROJECT_DIR$/app/views/events" />
-      <recent name="$PROJECT_DIR$/app/controllers" />
-      <recent name="$PROJECT_DIR$/app/assets/stylesheets" />
+      <recent name="$PROJECT_DIR$/app/assets/images/calendar" />
+      <recent name="$PROJECT_DIR$/app/assets/javascripts/calendar" />
+      <recent name="$PROJECT_DIR$/app/assets/stylesheets/calendar" />
+      <recent name="$PROJECT_DIR$/app/assets/javascripts" />
+      <recent name="$PROJECT_DIR$/app/views/calendar" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/views/messages" />
     </key>
   </component>
   <component name="RunManager" selected="Rails.Development: juliedesk-backoffice">
@@ -508,7 +760,7 @@
     </configuration>
     <configuration default="true" type="JavascriptDebugSession" factoryName="Remote" singleton="true">
       <JSRemoteDebuggerConfigurationSettings>
-        <option name="engineId" />
+        <option name="engineId" value="embedded" />
         <option name="fileUrl" />
       </JSRemoteDebuggerConfigurationSettings>
       <method />
@@ -641,23 +893,23 @@
     <frame x="0" y="23" width="1280" height="773" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988167" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.67011833" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2617504" sideWeight="0.67011833" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988167" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -721,114 +973,102 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/config/environment.rb">
+    <entry file="file://$PROJECT_DIR$/db/migrate/20150115101341_create_message_classifications_table.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="13" column="38" selection-start="399" selection-end="399" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/message_classification.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="55" selection-start="966" selection-end="966" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/calendar/header_settings.css.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/calendar/calendar.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="23" selection-start="52" selection-end="52" vertical-scroll-proportion="-1.25" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/emails.css.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="140" column="7" selection-start="2265" selection-end="2265" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/messages_thread.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="15" selection-start="1462" selection-end="1469" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/application.css.scss">
+    <entry file="file://$PROJECT_DIR$/app/models/account.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="15" selection-start="41" selection-end="41" vertical-scroll-proportion="0.0">
+        <state line="7" column="17" selection-start="185" selection-end="198" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/events.css.scss">
+    <entry file="file://$PROJECT_DIR$/app/views/messages/messages_thread_header.html.erb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="110" column="12" selection-start="4535" selection-end="4535" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/common.css.scss">
+    <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="20" selection-start="481" selection-end="481" vertical-scroll-proportion="0.0">
+        <state line="398" column="111" selection-start="13997" selection-end="13997" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/messages/process_actions.html.erb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="132" column="63" selection-start="6779" selection-end="6779" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/full_calendar_functions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="34" selection-start="745" selection-end="745" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="44" selection-start="518" selection-end="518" vertical-scroll-proportion="-12.5">
+        <state line="23" column="44" selection-start="516" selection-end="516" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/events/show.html.erb">
+    <entry file="file://$PROJECT_DIR$/app/helpers/application_helper.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="11" selection-start="17" selection-end="17" vertical-scroll-proportion="24.958334">
+        <state line="9" column="46" selection-start="296" selection-end="296" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/dashboard/dashboard.html.erb">
+    <entry file="file://$PROJECT_DIR$/app/assets/javascripts/calendar/common_helpers.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="111" selection-start="342" selection-end="342" vertical-scroll-proportion="-8.125">
+        <state line="116" column="39" selection-start="4382" selection-end="4397" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/emails_controller.rb">
+    <entry file="file://$PROJECT_DIR$/app/assets/stylesheets/common.css.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="5" selection-start="138" selection-end="138" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/events_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="11" selection-start="59" selection-end="59" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/api/events_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="9" selection-start="9" selection-end="9" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config/routes.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="384" selection-end="384" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/application_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="5" selection-start="399" selection-end="399" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/event.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="5" selection-start="1182" selection-end="1434" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/api_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="60" selection-start="182" selection-end="207" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config/newrelic.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Gemfile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="18" selection-start="361" selection-end="361" vertical-scroll-proportion="0.456">
+        <state line="36" column="14" selection-start="559" selection-end="559" vertical-scroll-proportion="0.416">
           <folding />
         </state>
       </provider>

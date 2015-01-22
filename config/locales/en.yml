@@ -21,3 +21,34 @@
 
 en:
   hello: "Hello world"
+  emails_to_handle:
+    zero: "No email to handle"
+    one: "1 email to handle"
+    other: "%{count} emails to handle"
+  events_to_classify:
+    zero: "No event to classify"
+    one: "1 event to classify"
+    other: "%{count} events to classify"
+  classifications:
+      ask_date_suggestions:
+        action: "I am asked to suggest availabilities"
+      ask_availabilities:
+        action: "I am being suggested time(s) for a meeting"
+      ask_cancel_appointment:
+        action: "I am asked to cancel a meeting"
+      ask_postpone_appointment:
+        action: "I am asked to postpone a meeting"
+      ask_info:
+        action: "I am asked an info"
+      give_info:
+        action: "I am given an info"
+      ask_create_event:
+        action: "I am asked to create an event in calendar"
+      ask_and_give_nothing:
+        action: "I am asked and given nothing"
+      other:
+        action: "Something else"
+      unknown:
+        action: "It is uncertain"
+  back: "Back"
+  time_ago: "%{time} ago"

@@ -18,3 +18,5 @@ gem 'unicorn'
 gem 'uglifier', '>= 1.3.0'
 
 gem 'newrelic_rpm'
+
+gem "gmail-api-ruby"

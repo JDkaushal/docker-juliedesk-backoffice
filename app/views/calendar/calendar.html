@@ -1,0 +1,97 @@
+<script>
+    $(function () {
+        window.currentCalendar = new Calendar($(".calendar-container"), window.calendarParams);
+    });
+</script>
+<div class="calendar-container">
+
+    <div class="global-loading">
+        <div class="global-loading-positioner">
+            <img src="/assets/ajax-loader.gif" class="global-spinner"/>
+
+            <div class="global-loading-message"></div>
+        </div>
+    </div>
+    <div class="local-loading">
+        <image src="/assets/ajax-loader.gif" class="local-spinner"/>
+        <div class="local-loading-message"></div>
+    </div>
+    <div id="content">
+
+
+
+        <div class="calendar-header-settings">
+            <span class="calendar-timezone-label">Calendar TZ</span>
+            <select id="calendar-timezone">
+                <option value="Europe/Paris" selected>Paris</option>
+            </select>
+        </div>
+
+        <div id='calendar'></div>
+    </div>
+
+    <div id="event-details-container">
+        <div class="event-details-positionner">
+            <div class="event-details">
+                <div class="first-panel">
+                    <input class="title"/>
+                    <br>
+
+                    <div class="start"></div>
+                    <div class="event-date-edit-container">
+                        <input class="start-date event-dates" type="date"/>
+                        <input class="start-hours event-dates" type="text"/>h<input class="start-minutes event-dates"
+                                                                                    type="text"/>
+                    </div>
+
+                    <div class="end"></div>
+                    <div class="event-date-edit-container">
+                        <input class="end-date event-dates" type="date"/>
+                        <input class="end-hours event-dates" type="text"/>h<input class="end-minutes event-dates"
+                                                                                  type="text"/>
+                    </div>
+
+                    <div class="location-container">
+                        <input class="location"/>
+                        <img src="/assets/calendar/location_icon.png" class="location-icon"/>
+                    </div>
+
+                    <textarea class="notes"></textarea>
+
+                    <div class="attendees"></div>
+                </div>
+                <div class="second-panel">
+                    <div class="attendees-title">Attendees</div>
+                    <div class="attendees-list"></div>
+                    <div class="new-attendee-container">
+                        <input id="new-attendee"/>
+
+                        <div class="add-new-attendee">add</div>
+                    </div>
+                    <div class="notify-container">
+                        <input type="checkbox" id="should-notify"/>
+                        Notify attendees of any change
+                    </div>
+                </div>
+
+                <img src="/assets/calendar/close_window.png" class="event-close-button"/>
+
+                <img src="/assets/ajax-loader.gif" class="event-spinner"/>
+
+                <div id="event-edit-button">Edit</div>
+                <div id="event-delete-button">Delete</div>
+                <div id="event-cancel-button">Cancel</div>
+                <div id="event-save-button">Save</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendars-list-popup" align="center">
+        <img id="close-calendars-list-popup" src="/assets/calendar/close_window.png"/>
+        <input type='checkbox' id='weekends-checkbox'/>
+        <span>Display weekends</span>
+
+        <div class="calendars"></div>
+    </div>
+
+</div>

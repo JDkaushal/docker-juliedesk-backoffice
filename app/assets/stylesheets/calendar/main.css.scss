@@ -1,0 +1,66 @@
+.calendar-container {
+  font-size: 16px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+  color: #8c8c8c;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #ccc;
+  @include border-radius(4px);
+  background-color: #fff;
+
+  /* Let's get this party started */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(160, 160, 160, 0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  }
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(160, 160, 160, 0.4);
+  }
+
+
+
+  #content {
+    width: 100%;
+    margin-top: 10px;
+    .loading-spinner {
+      position: absolute;
+      top: 51px;
+      right: 243px;
+      display: none;
+    }
+  }
+
+  #calendar {
+    width: 100%;
+    padding: 10px auto;
+  }
+
+  #calendars-list-popup-toggle-button {
+    height: 26px;
+    width: 26px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    content: url("/assets/calendar/settings_icon.png");
+
+    &:hover {
+      content: url("/assets/calendar/settings_icon_hover.png");
+    }
+  }
+
+
+}

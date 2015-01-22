@@ -1,0 +1,33 @@
+<script>
+  window.threadDataIsEditable = true;
+  $(function(e) {
+      $("#validate-suggest-dates-form").click(function() {
+          var data = {
+              classification: "<%= @classification %>",
+              appointment_nature: $("#appointment_nature").val(),
+              summary: $("#summary").val(),
+              duration: $("#duration").val(),
+              location: $("#location").val(),
+              notes: $("#notes").val(),
+              attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
+              constraints: $("#constraints").val()
+          };
+          $.ajax({
+              url: "/messages/<%= @message.id %>/classify",
+              type: "POST",
+              data: data,
+              success: function(e) {
+                  window.location = e.redirect_url;
+              },
+              error: function(e) {
+                  console.log("Error: ", e);
+              }
+          });
+
+      });
+  });
+</script>
+
+<h5>Please fill in form at right</h5>
+
+<%= submit_tag "Validate", id: "validate-suggest-dates-form", class: "btn btn-success" %>

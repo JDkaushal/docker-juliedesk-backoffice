@@ -6,11 +6,11 @@
   <div class="col-md-5">
     <h3>Emails</h3>
     <br><br>
-    <%= link_to "Emails", :emails, class:"btn btn-success" %>
+    <%= link_to I18n.t("emails_to_handle", count: @messages_threads_count), :messages_threads, class:"btn #{(@messages_threads_count==0)?"btn-success":"btn-warning"}" %>
   </div>
   <div class="col-md-5">
     <h3>Events</h3>
     <br><br>
-    <%= link_to "#{Event.where(classification: nil).count} events to classify", :events, class:"btn btn-warning" %>
+    <%= link_to I18n.t("events_to_classify", count: @events_count), :events, class:"btn #{(@events_count==0)?"btn-success":"btn-warning"}" %>
   </div>
 </div>

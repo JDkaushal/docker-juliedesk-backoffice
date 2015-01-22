@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="email-column col-md-9">
+
+
+    <div class="classification-form">
+      <h4><%= I18n.t("classifications.#{@classification}.action") %></h4>
+      <br>
+      <%= render template: "messages/classifications_form/#{@classification}" %>
+    </div>
+
+    <%= render template: "messages/email" %>
+  </div>
+  <%= render template: "messages/messages_thread_header" %>
+</div>
+

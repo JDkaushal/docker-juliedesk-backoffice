@@ -1,0 +1,119 @@
+<script>
+    $(function() {
+        if(window.threadDataIsEditable) {
+            if($("input#duration").val() == "" && $("input#summary").val() == "" && $("input#location").val() == "" && $("textarea#notes").val() == "") {
+                setAppointmentValues();
+            }
+        }
+        else {
+            $(".data input, .data textarea, .data select").prop('disabled', true);
+        }
+
+        $("#appointment_nature").change(function() {
+            setAppointmentValues();
+        });
+
+        $(".suggested-date-times .suggested-date-time").click(function(e) {
+            var dateTime = $(this).data("date-time");
+            window.currentCalendar.selectSuggestedEvent(dateTime);
+        });
+    });
+
+    var defaultAppointments = <%== @message.messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
+    function setAppointmentValues() {
+        $("input#duration").val(defaultAppointments[$("#appointment_nature").val()].duration);
+        $("input#summary").val(defaultAppointments[$("#appointment_nature").val()].name  + " " + "<%= ((@message.messages_thread.try(:contacts) || []).map{|c| c[:name] } + [@message.messages_thread.account.try(:usage_name)].compact).join(" / ") %>");
+        $("input#location").val(defaultAppointments[$("#appointment_nature").val()].location);
+        $("textarea#notes").val(defaultAppointments[$("#appointment_nature").val()].notes);
+    }
+
+</script>
+
+<div class="messages-thread-header col-md-3">
+
+<div class="account">
+<%  account = @message.messages_thread.account %>
+    <% if account %>
+        <%= account.usage_name %> (<%= @message.messages_thread.account.email %>)
+        <div class="account-details">
+            <%== account.default_appointments.map{|k, v| v['notes']}.join("<br>") %>
+        </div>
+    <% else %>
+        No account found
+    <% end %>
+  </div>
+
+
+
+
+  <div class="data">
+    <div class="data-entry">
+      <div class="data-entry-name">Ticket notes</div>
+      <%= text_area_tag :constraints, @message.messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Appointment type</div>
+      <%= select_tag :appointment_nature, options_for_select((@message.messages_thread.account.try(:default_appointments) || {}).map{|k, da| [da['name'], k]}), class: "data-entry form-control" %>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Summary</div>
+      <%= text_field_tag :summary, @message.messages_thread.computed_data[:summary], class: "data-entry form-control" %>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Duration</div>
+      <%= text_field_tag :duration, @message.messages_thread.computed_data[:duration], class: "data-entry form-control" %>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Location</div>
+      <%= text_field_tag :location, @message.messages_thread.computed_data[:location], class: "data-entry form-control" %>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Attendees</div>
+      <div class="data-entry-value">
+          <% @message.messages_thread.contacts(with_client: true).each do |contact| %>
+              <div>
+                <% attendee = "#{contact[:name]} (#{(contact[:email])})" %>
+                <% attendees = @message.messages_thread.computed_data[:attendees] || [] %>
+                <% checked = attendees == [] || attendees.include?(attendee) %>
+                <%= check_box_tag :attendee, attendee, checked %>
+                <%= attendee %>
+              </div>
+          <% end %>
+
+      </div>
+    </div>
+
+    <div class="data-entry">
+      <div class="data-entry-name">Notes</div>
+      <%= text_area_tag :notes, @message.messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+    </div>
+
+    <% if @message.messages_thread.computed_data[:date_times].length > 0 %>
+        <div class="data-entry">
+          <div class="data-entry-name">DateTimes to check</div>
+          <div class="data-entry-value">
+            <div class="suggested-date-times">
+            <% @message.messages_thread.computed_data[:date_times].each do |dt| %>
+                  <div class="suggested-date-time btn btn-sm btn-default btn-block" data-date-time="<%= dt %>">
+                    <%= I18n.l(DateTime.parse(dt), format: "%A %d %B %Y à %H:%M") %>
+                  </div>
+            <% end %>
+
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <button id="create-event-button" class="btn btn-success btn-block" disabled="disabled">Create event</button>
+        <div class="creating-event-message"></div>
+    <% end %>
+
+
+
+  </div>
+</div>

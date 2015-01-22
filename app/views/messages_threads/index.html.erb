@@ -1,0 +1,12 @@
+<% count = MessagesThread.items_to_classify_count %>
+
+<div class="classification-form">
+  <h4><%= count %> items to classify</h4>
+  <br>
+  <br>
+  <% if count == 0 %>
+    <h5>What a lovely day, nothing to do for now!</h5>
+  <% else %>
+    <%= link_to "Start classifying", :next_to_classify_messages, class: "btn btn-success" %>
+  <% end %>
+</div>

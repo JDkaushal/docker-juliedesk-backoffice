@@ -1,0 +1,51 @@
+<script>
+    $(function () {
+
+        $(".go-to-secondary-classification-button").click(function (e) {
+            $(this).closest(".email-classifications").find(".primary-classification-buttons").hide();
+            $(this).closest(".email-classifications").find(".secondary-classification-buttons").show();
+        });
+
+        $(".back-to-primary-classification-button").click(function (e) {
+            $(this).closest(".email-classifications").find(".primary-classification-buttons").show();
+            $(this).closest(".email-classifications").find(".secondary-classification-buttons").hide();
+        });
+    });
+</script>
+
+<div class="row">
+<div class="email-column col-md-9">
+
+<div class="email-classifications">
+  <div class="classification-question">What does this email tell me?</div>
+  <div class="primary-classification-buttons">
+    <% (MessageClassification.primary_classifications).each do |classification| %>
+        <div class="classification-button-block">
+          <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: @message.id, classification: classification}, class: "btn btn-primary btn-block" %>
+        </div>
+    <% end %>
+    <br>
+
+    <div class="classification-button-block">
+      <div class="btn btn-default btn-block go-to-secondary-classification-button"><%= I18n.t("classifications.other.action") %></div>
+    </div>
+  </div>
+  <div class="secondary-classification-buttons">
+    <% (MessageClassification.secondary_classifications).each do |classification| %>
+        <div class="classification-button-block">
+          <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: @message.id, classification: classification}, class: "btn btn-primary btn-block" %>
+        </div>
+    <% end %>
+    <br>
+
+    <div class="classification-button-block">
+      <div class="btn btn-default btn-block back-to-primary-classification-button"><%= I18n.t("back") %></div>
+    </div>
+  </div>
+
+</div>
+
+<%= render template: "messages/email" %>
+</div>
+  <%= render template: "messages/messages_thread_header" %>
+</div>

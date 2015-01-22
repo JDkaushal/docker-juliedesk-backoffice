@@ -12,4 +12,13 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= require jquery.elastic.source
+//= require moment-with-locales.min
+//= require moment-timezone-with-data
+
+//= require calendar/main
+//= require calendar/fullcalendar
+//= require calendar/jquery-ui.custom.min
+//= require calendar/full_calendar_functions
+//= require calendar/data
+//= require calendar/common_helpers

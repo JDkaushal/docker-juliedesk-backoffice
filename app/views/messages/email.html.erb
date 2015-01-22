@@ -1,0 +1,30 @@
+<script>
+    $(function () {
+        $("blockquote").click(function () {
+            $(this).toggleClass("expanded");
+        });
+    });
+</script>
+
+<% email = Gmail::Message.get(@message.google_message_id) %>
+
+
+<div class="email <%= (email.from.include? "julie@juliedesk.com") ? "from-me" : "" %>">
+    <div class="subject"><%= email.subject %></div>
+    <div class="date-and-from">
+      <div class="from"><%= email.from %></div>
+      <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="to">
+      <span class="email-label">To: </span>
+      <%= email.to %>
+    </div>
+    <div class="cc">
+      <span class="email-label">Cc: </span>
+      <%= email.cc %>
+    </div>
+
+    <div class="body"><%== email.html || email.body %></div>
+</div>

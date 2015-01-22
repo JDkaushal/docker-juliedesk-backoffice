@@ -1,0 +1,105 @@
+.calendar-container {
+  #calendar {
+
+    th {
+      font-weight: normal;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    td, th {
+      border-width: 0px;
+      border-bottom-width: 1px;
+    }
+
+    .fc-event-inner {
+
+      .delete-event-button {
+        height: 14px;
+        width: 14px;
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        opacity: 0.6;
+        content: url("/assets/calendar/delete_calendar.png");
+      }
+
+      &.juliedesk-located-event {
+        border-left-width: 8px !important;
+        border-left-color: #444 !important;
+      }
+
+      &:hover {
+        .delete-event-button {
+          opacity: 1.0;
+        }
+      }
+    }
+
+    .fc-widget-content.fc-today {
+      background: #fcf8e3;
+    }
+    .fc-widget-content.fc-past {
+      background: #eee;
+    }
+  .fc-button-today {
+    padding: 3px 10px;
+    font-size: 16px;
+    color: rgb(244, 65, 109);
+    opacity: 0.9;
+
+    &:hover {
+      opacity: 1.0;
+    }
+
+    &.fc-state-disabled {
+      color: #ccc;
+      opacity: 1.0;
+    }
+  }
+
+    .fc-header {
+      margin: 0 0 10px 0;
+
+      .fc-header-title {
+        padding: 11px 0;
+        h2 {
+          font-weight: 200;
+          font-size: 16px;
+        }
+      }
+    }
+
+
+  .events-count-label {
+    position: absolute;
+    top: 3px;
+    left: 8px;
+    height: 22px;
+    width: 22px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 12px;
+    line-height: 22px;
+    font-weight: 400;
+
+    border: 1px solid #aaa;
+    background: #fff;
+    color: #aaa;
+
+    &.ras {
+      background: #0c6;
+      border-color: #0c6;
+      color: #fff;
+    }
+
+    &.best-of-worst {
+      background: #aaa;
+      border-color: #aaa;
+      color: #fff;
+    }
+  }
+  }
+}

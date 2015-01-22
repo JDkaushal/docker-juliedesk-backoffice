@@ -1,0 +1,60 @@
+.calendar-container {
+  .global-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1000;
+
+    .global-loading-positioner {
+      width: 100%;
+      height: 100px;
+      top: 50%;
+      margin-top: -50px;
+      position: absolute;
+      text-align: center;
+
+      .global-loading-message {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 200;
+        color: #444;
+        letter-spacing: 0.5px;
+      }
+
+      .global-spinner {
+        width: 20px;
+        margin: 10px;
+      }
+
+    }
+  }
+
+  .local-loading {
+    display: none;
+    position: absolute;
+    top: -4px;
+    background: #fff;
+    width: 200px;
+    padding: 2px 0 0 0;
+    left: 50%;
+    margin-left: -100px;
+    height: 30px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    text-align: center;
+    z-index: 10;
+
+    .local-spinner {
+      width: 18px;
+      margin: 0 5px 0 0;
+    }
+
+    .local-loading-message {
+      font-size: 12px;
+      display: inline;
+    }
+  }
+}
