@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>JuliedeskBackoffice</title>
+  <%= favicon_link_tag '/favicon.ico' %>
   <%= stylesheet_link_tag 'application', media: 'all' %>
   <%= javascript_include_tag 'application' %>
   <%= csrf_meta_tags %>
@@ -10,6 +11,7 @@
 <div class="header">
   <div class="page col-md-10 col-md-offset-1">
     <%= link_to "JulieDesk Backoffice", "/" %>
+    <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
   </div>
 </div>
 <div class="row minheight">

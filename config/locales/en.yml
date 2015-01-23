@@ -29,6 +29,10 @@ en:
     zero: "No event to classify"
     one: "1 event to classify"
     other: "%{count} events to classify"
+  items_to_classify:
+    zero: "No item to classify"
+    one: "1 item to classify"
+    other: "%{count} items to classify"
   classifications:
       ask_date_suggestions:
         action: "I am asked to suggest availabilities"
@@ -50,5 +54,24 @@ en:
         action: "Something else"
       unknown:
         action: "It is uncertain"
+  actions:
+      create_event:
+        todo: "create event"
+      update_event:
+        todo: "update event"
+      delete_event:
+        todo: "delete event"
+      suggest_dates:
+        todo: "suggest dates"
+      check_availabilities:
+        todo: "check availabilities"
+      question_client:
+        todo: "question client"
+      send_info:
+        todo: "send info"
+      send_confirmation:
+        todo: "send confirmation"
+      send_to_founders:
+        todo: "send to founders"
   back: "Back"
   time_ago: "%{time} ago"

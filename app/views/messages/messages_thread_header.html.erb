@@ -13,16 +13,26 @@
             setAppointmentValues();
         });
 
+        $("input#summary").change(function() {
+            $(this).removeClass("warning");
+        });
+
         $(".suggested-date-times .suggested-date-time").click(function(e) {
             var dateTime = $(this).data("date-time");
-            window.currentCalendar.selectSuggestedEvent(dateTime);
+            if(dateTime) {
+                window.currentCalendar.selectSuggestedEvent(dateTime);
+            }
         });
     });
 
     var defaultAppointments = <%== @message.messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
     function setAppointmentValues() {
         $("input#duration").val(defaultAppointments[$("#appointment_nature").val()].duration);
-        $("input#summary").val(defaultAppointments[$("#appointment_nature").val()].name  + " " + "<%= ((@message.messages_thread.try(:contacts) || []).map{|c| c[:name] } + [@message.messages_thread.account.try(:usage_name)].compact).join(" / ") %>");
+        <% contact_names = ((@message.messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{@message.messages_thread.account.try(:usage_name)}"]) %>
+        $("input#summary").val(defaultAppointments[$("#appointment_nature").val()].name  + " " + "<%= contact_names.join(" / ") %>");
+        <% if contact_names.select{|cn| cn.blank?}.length > 0 %>
+            $("input#summary").addClass("warning");
+        <% end %>
         $("input#location").val(defaultAppointments[$("#appointment_nature").val()].location);
         $("textarea#notes").val(defaultAppointments[$("#appointment_nature").val()].notes);
     }
@@ -93,14 +103,24 @@
       <%= text_area_tag :notes, @message.messages_thread.computed_data[:notes], class: "data-entry form-control" %>
     </div>
 
-    <% if @message.messages_thread.computed_data[:date_times].length > 0 %>
+    <div id="thread-header-other-entries-container">
+
+    </div>
+
+    <% if params[:action] == "process_actions" && @message.messages_thread.computed_data[:date_times].length > 0 %>
         <div class="data-entry">
           <div class="data-entry-name">DateTimes to check</div>
           <div class="data-entry-value">
             <div class="suggested-date-times">
             <% @message.messages_thread.computed_data[:date_times].each do |dt| %>
-                  <div class="suggested-date-time btn btn-sm btn-default btn-block" data-date-time="<%= dt %>">
-                    <%= I18n.l(DateTime.parse(dt), format: "%A %d %B %Y à %H:%M") %>
+                  <%if dt['date']
+                       date = DateTime.parse(dt['date'])
+                       date_text = I18n.l(date, format: "%A %d %B %Y à %H:%M")
+                     else
+                       date_text = dt['text']
+                     end %>
+                  <div class="suggested-date-time btn btn-sm btn-default btn-block" data-date-time="<%= dt['date']%>">
+                    <%= date_text %>
                   </div>
             <% end %>
 

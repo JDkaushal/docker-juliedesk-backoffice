@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root to: "dashboard#dashboard"
+  root to: "messages_threads#index"
 
   resources :events, only: [:show, :index] do
     member do

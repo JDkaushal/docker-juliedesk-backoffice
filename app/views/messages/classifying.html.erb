@@ -1,10 +1,25 @@
+<script>
+  $(function() {
+      $("#back-button").click(function() {
+          if(window.clickBackButton) {
+              window.clickBackButton();
+          }
+          else {
+              clickBackButtonDefault();
+          }
+      });
+  });
+  function clickBackButtonDefault() {
+      window.history.back();
+  }
+</script>
 <div class="row">
   <div class="email-column col-md-9">
 
+    <div id="back-button" class="btn btn-link">< Back</div>
 
     <div class="classification-form">
-      <h4><%= I18n.t("classifications.#{@classification}.action") %></h4>
-      <br>
+      <h5><%= I18n.t("classifications.#{@classification}.action") %></h5>
       <%= render template: "messages/classifications_form/#{@classification}" %>
     </div>
 

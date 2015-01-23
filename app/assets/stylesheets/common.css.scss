@@ -13,7 +13,8 @@ body {
 }
 .header {
   height: 40px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ccc;
+  background: #f5f5f5;
 
   line-height: 40px;
   font-size: 16px;
@@ -23,6 +24,22 @@ body {
     text-decoration: none;
   }
 
+  .global-todo-count {
+    background: #fff;
+    width: 30px;
+    display: inline-block;
+    height: 20px;
+    color: #999;
+    position: relative;
+    margin: 0px 0 0 5px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    top: 0px;
+    border: 1px solid #ccc;
+  }
 }
 
 .row.minheight {
@@ -34,6 +51,15 @@ body {
   clear: left;
 }
 
+.page {
+  position: relative;
+}
+#back-button {
+  position: absolute;
+  left: 15px;
+  top: 20px;
+  padding: 10px;
+}
 .page.bordered{
   border-left: 1px solid #ccc;
   padding-bottom: 20px;
@@ -47,11 +73,15 @@ body {
   height: 40px;
   line-height: 40px;
   width: 100%;
-  border-top: 1px solid #ddd;
 
   .copyright {
     text-align: right;
     color: #666;
     font-size: 14px;
   }
+}
+
+.standard-panel {
+  text-align: center;
+  padding: 20px 0;
 }

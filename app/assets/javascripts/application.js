@@ -22,3 +22,8 @@
 //= require calendar/full_calendar_functions
 //= require calendar/data
 //= require calendar/common_helpers
+//= require calendar/event_details
+
+//= require date_detection_inserted
+//= require jquery.timepicker.min
+//= require jquery-ui.min

@@ -1,28 +1,30 @@
+
 <script>
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
-    <% if @actions.last.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+    window.currentEventId = null;
+    <% if @action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
         window.calendarParams = {
             mode: "suggest_dates",
             date_times: [],
             email: "<%= @message.messages_thread.account_email %>",
             duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
         };
-    <% elsif @actions.last.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+    <% elsif @action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
         window.calendarParams = {
             mode: "create_event",
-            date_times: <%== @message.messages_thread.computed_data[:date_times] %>,
+            date_times: <%== @message.messages_thread.computed_data[:date_times].select{|dt| dt['date']}.map{|dt| dt['date']}.to_json %>,
             email: "<%= @message.messages_thread.account_email %>",
             duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
         };
     <% end %>
+
 
     $(function () {
         redrawReplyText();
 
         $("#create-event-button").click(function() {
             $("#create-event-button").attr('disabled', true);
-            console.log("DISBALING");
             $(".creating-event-message").html("Creating...");
             var start = moment(window.timeSlotToCreate);
             var end = start.clone();
@@ -37,10 +39,20 @@
                 calendar_nature: "<%= @message.messages_thread.account.calendar_nature %>",
                 start: start.format(),
                 end: end.format()
-            }, function() {
-                $(".creating-event-message").html("Created.");
-                window.currentCalendar.refreshEvents();
-                redrawReplyText();
+            }, function(e) {
+                window.currentEventId = e.data.event_id;
+                $.ajax({
+                    type: "post",
+                    url: "/julie_actions/<%= @action.id %>/update",
+                    data: {
+                        event_ids: [window.currentEventId]
+                    },
+                    success: function(e) {
+                        $(".creating-event-message").html("Created.");
+                        window.currentCalendar.refreshEvents();
+                        redrawReplyText();
+                    }
+                });
             }, function() {
                 $(".creating-event-message").html("Problem while creating.");
                 window.currentCalendar.refreshEvents();
@@ -53,21 +65,26 @@
             $(".reply-box #callback-message").html("Sending...");
             $("#reply-button").prop('disabled', true);
 
-            <% if @actions.last.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+            <% if @action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
                 $.ajax({
-                   url: "/julie_actions/<%= @actions.first.id %>/update",
+                   url: "/julie_actions/<%= @action.id %>/update",
                    method: "post",
                    data: {
                        text: $("textarea#reply-text").val(),
-                       date_times: window.timeSlotsToSuggest
-                   },
-                   success: function(e) {
-
-                   },
-                   error: function(e) {
-
+                       date_times: window.timeSlotsToSuggest,
+                       done: true
                    }
                 });
+            <% elsif @action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+            $.ajax({
+                url: "/julie_actions/<%= @action.id %>/update",
+                method: "post",
+                data: {
+                    text: $("textarea#reply-text").val(),
+                    event_ids: [window.currentEventId],
+                    done: true
+                }
+            });
             <% end %>
             $.ajax({
                 url: "/messages/<%= @message.id %>/reply",
@@ -106,13 +123,12 @@
                     $(".suggested-date-times").append($("<div>").addClass("suggested-date-time other btn btn-sm btn-block btn-success").html(moment(event.data.eventStart).format("dddd DD MMMM YYYY à HH:mm")));
                 }
                 $("#create-event-button").removeAttr('disabled');
-                console.log("ENABLING");
             }
         }, false);
 
         function redrawReplyText() {
             var message = "";
-            <% if @actions.last.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+            <% if @action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
                 if (window.timeSlotsToSuggest.length > 0) {
                     message = "<%= @message.messages_thread.account.usage_name %> est disponible pour un <%= @message.messages_thread.computed_data[:appointment_nature_nature] %> (<%= @message.messages_thread.computed_data[:location] %>) :";
                     for(var i in window.timeSlotsToSuggest) {
@@ -121,13 +137,13 @@
                     }
                     message += "\n\nQuel horaire vous convient le mieux ?"
                 }
-            <% elsif @actions.last.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+            <% elsif @action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
                 if(window.timeSlotToCreate) {
                     message = "Invitations envoyées pour un <%= @message.messages_thread.computed_data[:appointment_nature_nature] %> (<%= @message.messages_thread.computed_data[:location] %>), le " + capitalize(moment(window.timeSlotToCreate).locale("fr").format("dddd DD MMMM YYYY à HH:mm")) + ".";
                 }
-            <% elsif @actions.last.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
+            <% elsif @action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
 
-            <% elsif @actions.last.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
+            <% elsif @action.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
                 message = "J'ai bien noté que : ";
             <% end %>
             $("textarea#reply-text").val("Bonjour,\n\n" + message + "\n\nCordialement,\n\nJulie\nIntelligence artificielle")
@@ -144,13 +160,11 @@
 
 
     <div class="classification-form">
-      <h4>Should process actions:</h4>
-      <ul>
-        <% @actions.each do |action| %>
-            <li><%= action.action_nature %></li>
-        <% end %>
-      </ul>
+      <h4>To do: <%= I18n.t("actions.#{@action.action_nature}.todo") %></h4>
+      <br>
+      <br>
 
+      <h5>When done:</h5>
       <%= link_to "Go to next item to classify", :next_to_classify_messages, class: "btn btn-success" %>
     </div>
 
@@ -158,9 +172,9 @@
     <br>
     <br>
 
-    <% if @actions.last.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+    <% if @action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
         <%= render template: "calendar/calendar" %>
-    <% elsif @actions.last.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+    <% elsif @action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
         <%= render template: "calendar/calendar" %>
   <% else %>
 

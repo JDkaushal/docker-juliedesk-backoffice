@@ -1,17 +1,19 @@
 .calendar-container {
   #calendar {
 
+    a.fc-event {
+      color: #fff;
+      &:hover, &:focus, &:visited {
+        color: #fff;
+      }
+    }
+
     th {
       font-weight: normal;
     }
 
     table {
       border-collapse: collapse;
-    }
-
-    td, th {
-      border-width: 0px;
-      border-bottom-width: 1px;
     }
 
     .fc-event-inner {

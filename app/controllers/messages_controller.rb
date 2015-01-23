@@ -12,8 +12,6 @@ class MessagesController < ApplicationController
     message = Message.find(params[:id])
     message.validate_message_classifications
 
-    message.google_message.archive
-
     render json: {
         status: "success",
         message: "",
@@ -24,7 +22,7 @@ class MessagesController < ApplicationController
 
   def process_actions
     @message = Message.find(params[:id])
-    @actions = @message.julie_actions
+    @action = @message.julie_actions.last
   end
 
   def next_to_classify

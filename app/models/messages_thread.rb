@@ -52,7 +52,9 @@ class MessagesThread < ActiveRecord::Base
 
         constraints: message_classifications.map(&:constraints).compact.last,
 
-        date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.uniq.sort,
+        date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
+          dt['date'] || "ZZZ"
+        },
 
         event_id: ""
     }

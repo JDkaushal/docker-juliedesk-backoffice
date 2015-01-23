@@ -23,7 +23,7 @@ class MessageClassification < ActiveRecord::Base
         notes: params[:notes],
         constraints: params[:constraints],
 
-        date_times: (params[:date_times] || []).to_json
+        date_times: (params[:date_times].try(:values) || []).to_json
     )
     result.save!
     result

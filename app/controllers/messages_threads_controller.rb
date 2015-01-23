@@ -2,7 +2,6 @@ class MessagesThreadsController < ApplicationController
 
   def index
     Message.import_emails
-    @messages_threads = MessagesThread.where(in_inbox: true)
   end
 
   def show

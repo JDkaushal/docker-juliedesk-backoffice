@@ -35,7 +35,7 @@ function Calendar($selector, params) {
             end: end
         });
         eventData.editable = false;
-        eventData.color = "#999";
+        eventData.color = "#ccc";
         this.eventsToCheck.push(eventData);
     }
 
@@ -161,53 +161,37 @@ Calendar.prototype.hideLoadingSpinner = function () {
     this.$selector.find(".local-loading").fadeOut(200);
 };
 
+Calendar.prototype.addEventsToCheckIfNeeded = function() {
+    var calendar = this;
+    if(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+        return ev.beingAdded
+            && !ev.editable;
+    }).length == 0) {
+        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventsToCheck);
+    }
+};
+
 Calendar.prototype.fetchEvents = function (start, end) {
     var calendar = this;
     calendar.showLoadingSpinner("Loading events...");
 
     calendar.waitingCals = 0;
-    if (calendar.accountPreferences.calendar_nature == "icloud" || calendar.accountPreferences.calendar_nature == "exchange") {
-        calendar.waitingCals++;
 
-        CommonHelpers.externalRequest({
-            action: "events",
-            email: calendar.accountPreferences.email,
-            start: start,
-            end: end,
-            calendar_nature: calendar.accountPreferences.calendar_nature
-        }, function (response) {
-            calendar.addCal(calendar.getNonAvailableEvents(start, end), calendar.calendars.length - 1);
-            calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventsToCheck);
-            console.log(calendar.eventsToCheck);
-            calendar.addAllCals(response.items);
-            calendar.hideLoadingSpinner();
-        });
-    }
-    else {
-        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventsToCheck);
-        $(calendar.calendars).each(function (k, calendarItem) {
-            if (calendar.shouldDisplayCalId(calendarItem.id, "")) {
-                calendar.waitingCals++;
-                if (calendarItem.id == "juliedesk-unavailable") {
-                    calendar.addCal(calendar.getNonAvailableEvents(start, end), k);
-                }
-                else {
-                    CommonHelpers.externalRequest({
-                        action: "events",
-                        email: calendar.accountPreferences.email,
-                        cal: calendarItem.id,
-                        start: start,
-                        end: end,
-                        access_token: calendar.initialData.access_token,
-                        key: k,
-                        calendar_nature: calendar.accountPreferences.calendar_nature
-                    }, function (response) {
-                        calendar.addCal(response.items, response.key);
-                    });
-                }
-            }
-        });
-    }
+    calendar.waitingCals++;
+
+    CommonHelpers.externalRequest({
+        action: "events",
+        email: calendar.accountPreferences.email,
+        start: start,
+        end: end,
+        calendar_nature: calendar.accountPreferences.calendar_nature
+    }, function (response) {
+        calendar.addCal(calendar.getNonAvailableEvents(start, end), calendar.calendars.length - 1);
+        calendar.addEventsToCheckIfNeeded();
+
+        calendar.addAllCals(response.items);
+        calendar.hideLoadingSpinner();
+    });
 };
 
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
@@ -390,6 +374,7 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
     });
     if(matchingEvents.length == 1) {
         calendar.addEvent(matchingEvents[0]);
+        calendar.$selector.find("#calendar").fullCalendar('gotoDate', matchingEvents[0].start);
     }
 };
 

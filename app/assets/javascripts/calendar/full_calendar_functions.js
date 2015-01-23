@@ -100,30 +100,25 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
 };
 Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     var calendar = this;
-    if (event.url) {
-        calendar.showEventDetails(event);
-        return false;
-    }
-    else {
+    if (event.beingAdded) {
         if(calendar.getMode() == "suggest_dates") {
-            if(event.beingAdded) {
-                for(var k=0; k<calendar.events.length; k++){
-                    if(calendar.events[k].start.isSame(event.start)){
-                        calendar.events.splice(k, 1);
-                    }
+            for(var k=0; k<calendar.events.length; k++){
+                if(calendar.events[k].start.isSame(event.start)){
+                    calendar.events.splice(k, 1);
                 }
-                calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
-                    return toremove.start.isSame(event.start)
-                        && toremove.beingAdded;
-                });
-                calendar.drawEventList();
             }
+            calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
+                return toremove.start.isSame(event.start)
+                    && toremove.beingAdded;
+            });
+            calendar.drawEventList();
         }
         else if(calendar.getMode() == "create_event") {
-            if(event.beingAdded) {
-                calendar.addEvent(event);
-            }
+            calendar.addEvent(event);
         }
+    }
+    else {
+        calendar.showEventDetails(event);
     }
 };
 
@@ -160,7 +155,8 @@ Calendar.prototype.fullCalendarInit = function() {
             calendar.fullCalendarViewRender(view, element);
         },
         eventClick: function(event, jsEvent, view) {
-            return calendar.fullCalendarEventClick(event, jsEvent, view);
+            calendar.fullCalendarEventClick(event, jsEvent, view);
+            return false;
         }
     });
 };
