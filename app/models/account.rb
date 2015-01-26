@@ -75,6 +75,6 @@ class Account
     rescue
       nil
     end
-    
+
   end
 end

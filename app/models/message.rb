@@ -28,8 +28,14 @@ class Message < ActiveRecord::Base
       messages_thread = MessagesThread.find_by_google_thread_id google_thread.id
       if messages_thread
         messages_thread.update_attribute :in_inbox, true
+
+        if messages_thread.account_email == nil
+          email = ApplicationHelper.strip_email google_thread.messages.sort_by(&:date).first.from
+          account_email = Account.find_account_email email
+          messages_thread.update_attribute :account_email, account_email
+        end
       else
-        email = ApplicationHelper.strip_email google_thread.messages.first.from
+        email = ApplicationHelper.strip_email google_thread.messages.sort_by(&:date).first.from
         account_email = Account.find_account_email email
 
         messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email
