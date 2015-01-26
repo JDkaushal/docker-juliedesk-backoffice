@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   end
 
   resources :messages_threads, only: [:show, :index] do
-
+    member do
+      post "archive", action: :archive, as: :archive
+    end
   end
 
   resources :messages, only: [:show] do

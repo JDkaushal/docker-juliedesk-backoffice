@@ -9,6 +9,7 @@ class Account
     return nil unless account_email
 
     data = get_account_details account_email
+    return nil unless data
     account = self.new
     account.email = data['email']
     account.calendar_nature = data['calendar_nature']
@@ -62,6 +63,7 @@ class Account
   private
 
   def self.get_account_details account_email
+    begin
     url = URI.parse("https://#{ApplicationHelper::JD_APP_HOST}/api/v1/accounts/show/?email=#{account_email}&access_key=gho67FBDJKdbhfj890oPm56VUdfhq8")
     req = Net::HTTP::Get.new(url.to_s)
     res = Net::HTTP.start(url.host, url.port, use_ssl: true) {|http|
@@ -70,5 +72,9 @@ class Account
 
     data = JSON.parse(res.body)
     data['data']
+    rescue
+      nil
+    end
+    
   end
 end

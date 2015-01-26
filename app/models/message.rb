@@ -4,13 +4,16 @@ class Message < ActiveRecord::Base
   has_many :message_classifications
   has_many :julie_actions
 
+  attr_writer :google_message
+
   def validate_message_classifications
     JulieAction.create_from_message self
 
   end
 
+
   def google_message
-    Gmail::Message.get self.google_message_id
+    @google_message ||= Gmail::Message.get self.google_message_id
   end
 
   def from_me?

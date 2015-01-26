@@ -6,7 +6,8 @@
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
       </div>
-      <% @messages_thread.messages.each do |message| %>
+      <%= button_to "", archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+      <% @messages_thread.messages_with_google_cache.each do |message| %>
           <%= render partial: "email", locals: {message: message} %>
       <% end %>
     </div>

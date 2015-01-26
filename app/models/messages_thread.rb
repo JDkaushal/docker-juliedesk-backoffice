@@ -10,6 +10,12 @@ class MessagesThread < ActiveRecord::Base
     @account ||= Account.create_from_email account_email
   end
 
+  def messages_with_google_cache
+    self.messages.each do |message|
+      message.google_message = self.google_thread.messages.select{|m| m.id == message.google_message_id}.first
+    end
+  end
+
   def contacts params = {}
     raw_contacts = google_thread.messages.map{|m| [m.to, m.from] + (m.cc.try(:split, ", ") || [])}.flatten
 
