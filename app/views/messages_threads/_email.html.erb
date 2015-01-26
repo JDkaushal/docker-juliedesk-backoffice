@@ -1,0 +1,75 @@
+<script>
+    $(function () {
+        var $email = $(".email-<%= message.google_message_id %>");
+        $email.find(".retracted, .extended .retractable").click(function(e) {
+            $(this).closest(".email").toggleClass("extended");
+        });
+
+        $email.find(".actions-menu-button").click(function(e) {
+            $email.find(".actions-menu").toggleClass("visible");
+            e.stopPropagation();
+        });
+
+        $email.find(".actions-menu").click(function(e) {
+            e.stopPropagation();
+        });
+        $email.find("blockquote").click(function (e) {
+            $(this).toggleClass("expanded");
+        });
+
+        $email.click(function() {
+            if($(this).closest(".actions-menu").length == 0) {
+                $email.find(".actions-menu").removeClass("visible");
+            }
+        });
+    });
+</script>
+
+<% email = message.google_message %>
+
+
+<div class="email <%= (message.message_classifications.empty? && !message.from_me?)?"extended":"" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+  <div class="retracted">
+    <div class="date-and-from">
+      <div class="from"><%= email.from %></div>
+      <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+      <div class="clear"></div>
+    </div>
+    <div class="snippet">
+      <%== email.snippet %>...
+    </div>
+  </div>
+  <div class="extended">
+    <div class="retractable">
+    <div class="date-and-from">
+      <div class="from"><%= email.from %></div>
+      <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+      <div class="clear"></div>
+    </div>
+
+      <div class="actions-menu-button"></div>
+      <div class="actions-menu">
+        <% (MessageClassification.primary_classifications).each do |classification| %>
+            <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+        <% end %>
+        <div class="actions-separator"></div>
+        <div class="secondary-actions">
+          <% (MessageClassification.secondary_classifications).each do |classification| %>
+              <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+          <% end %>
+        </div>
+      </div>
+
+    <div class="to">
+      <span class="email-label">To: </span>
+      <%= email.to %>
+    </div>
+    <div class="cc">
+      <span class="email-label">Cc: </span>
+      <%= email.cc %>
+    </div>
+    </div>
+
+    <div class="body"><%== email.html || email.body %></div>
+  </div>
+</div>

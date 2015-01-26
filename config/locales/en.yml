@@ -35,19 +35,19 @@ en:
     other: "%{count} items to classify"
   classifications:
       ask_date_suggestions:
-        action: "I am asked to suggest availabilities"
+        action: "Suggest availabilities"
       ask_availabilities:
-        action: "I am being suggested time(s) for a meeting"
+        action: "Check availability(ies)"
       ask_cancel_appointment:
-        action: "I am asked to cancel a meeting"
+        action: "Cancel a meeting"
       ask_postpone_appointment:
-        action: "I am asked to postpone a meeting"
+        action: "Postpone a meeting"
       ask_info:
-        action: "I am asked an info"
+        action: "Give an info"
       give_info:
-        action: "I am given an info"
+        action: "Note an info"
       ask_create_event:
-        action: "I am asked to create an event in calendar"
+        action: "Create an event in calendar"
       ask_and_give_nothing:
         action: "I am asked and given nothing"
       other:

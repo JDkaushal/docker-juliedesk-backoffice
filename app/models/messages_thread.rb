@@ -61,11 +61,12 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.items_to_classify_count
-    result = 0
-    MessagesThread.where(in_inbox: true).includes(:messages).each do |messages_thread|
-      result += messages_thread.messages_to_classify.length
-    end
-    result
+    #result = 0
+    MessagesThread.where(in_inbox: true).count
+    #.includes(:messages).each do |messages_thread|
+    #  result += messages_thread.messages_to_classify.length
+    #end
+    #result
   end
 
   def suggested_date_times

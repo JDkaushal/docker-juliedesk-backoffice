@@ -51,7 +51,7 @@ class MessageClassification < ActiveRecord::Base
   def self.classifications
     {
         primary: [ASK_DATE_SUGGESTIONS, ASK_AVAILABILITIES, ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT],
-        secondary: [ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT, ASK_AND_GIVE_NOTHING, UNKNOWN]
+        secondary: [ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT, UNKNOWN]
     }
   end
 end

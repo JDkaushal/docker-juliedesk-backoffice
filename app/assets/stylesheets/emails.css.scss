@@ -1,12 +1,41 @@
 .email {
-  margin: 50px 0 20px 0px;
   position: relative;
   z-index: 1;
   background-color: #fff;
+  border-bottom: 1px solid #ccc;
 
-  &.from-me {
+  .retracted {
+    display: block;
+    background: #fafafa;
+    cursor: pointer;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    .subject {
+      display: none;
+    }
+    .snippet {
+      padding: 5px 10px 5px 10px;
+    }
+  }
+
+  .extended {
     display: none;
-    opacity: 0.5;
+
+    .retractable {
+      cursor: pointer;
+    }
+  }
+
+  &.extended {
+    .extended {
+      display: block;
+    }
+    .retracted {
+      display: none;
+    }
   }
 
   .date-and-from {
@@ -44,6 +73,64 @@
     }
   }
 
+  .actions-menu-button {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    line-height: 80px;
+    background: red;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fafafa;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+  .actions-menu {
+    position: absolute;
+    display: none;
+    top: 69px;
+    right: 20px;
+    width: 200px;
+    height: 271px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: default;
+
+    .secondary-actions {
+
+    }
+
+    .actions-separator {
+      height: 10px;
+      border-top: 1px solid #ddd;
+      margin-top: 10px;
+    }
+    
+    .action {
+      height: 30px;
+      line-height: 30px;
+      cursor: pointer;
+      padding: 0 10px;
+      display: block;
+      color: #000;
+      text-decoration: none;
+      font-size: 13px;
+      cursor: pointer;
+      
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+
+    &.visible {
+      display: block;
+    }
+  }
+
   .body {
     //border-bottom: 1px solid #ccc;
     line-height: 20px;
@@ -58,13 +145,14 @@
       }
     }
 
-    blockquote {
+    blockquote, .gmail_quote {
       //height: 20px;
       //overflow: hidden;
       //cursor: pointer;
       //opacity: 0.5;
       font-size: 14px !important;
 
+      display: none;
       //&:hover {
       //  opacity: 1.0;
       //}
@@ -75,262 +163,4 @@
       //}
     }
   }
-}
-
-.email-classifications {
-  text-align: center;
-  border-bottom: 1px solid #ccc;
-  padding: 20px 0 20px 0;
-
-  .primary-classification-buttons {
-
-  }
-
-  .secondary-classification-buttons {
-    display: none;
-  }
-
-  .classification-button-block {
-    display: inline-block;
-    width: 45%;
-    margin: 5px 2%;
-  }
-}
-
-.messages-thread-header {
-  border: 1px solid #ccc;
-  padding: 10px 10px 10px 10px;
-  margin: 20px 0 0 0;
-  position: relative;
-  z-index: 2;
-  background-color: #f5f5f5;
-
-  .account {
-    font-size: 16px;
-  }
-  .account-details {
-    font-size: 12px;
-  }
-
-  .contacts {
-    ul {
-      list-style-type: none;
-    }
-    text-align: right;
-    font-size: 12px;
-  }
-
-  .data {
-    padding: 50px 0 0 0;
-    .data-entry {
-      .data-entry-name {
-        font-size: 11px;
-        opacity: 0.8;
-        margin: 10px 0 0 0;
-      }
-      .data-entry-value {
-        //font-size: 14px;
-
-
-      }
-      input#summary {
-        &.warning {
-          border-color: #d00;
-        }
-      }
-    }
-
-    .creating-event-message {
-      padding: 5px 0;
-      line-height: 30px;
-      text-align: center;
-    }
-
-  }
-
-}
-
-.emails-list {
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  margin: 50px 0 0 0;
-
-  .email-item {
-    display: block;
-    height: 40px;
-    width: 100%;
-    border-bottom: 1px solid #ddd;
-    line-height: 40px;
-    padding: 0 10px;
-    overflow: hidden;
-    text-decoration: none;
-    cursor: pointer;
-    color: #444;
-
-    &:hover {
-      background-color: #fafafa;
-    }
-
-    .from {
-      display: inline-block;
-      width: 250px;
-      font-weight: 600;
-    }
-
-    .subject {
-      font-weight: 600;
-      padding: 0 10px 0 0;
-    }
-  }
-}
-
-.reply-box {
-  border: 1px solid #ddd;
-  position: relative;
-  margin: 20px 0 80px 0;
-  padding: 0 0 30px 0;
-
-  .from, .to, .cc {
-    border-bottom: 1px solid #ddd;
-    line-height: 20px;
-    padding: 5px 10px;
-    font-size: 14px;
-    font-weight: 200;
-  }
-
-  textarea {
-    width: 100%;
-    border: none;
-    min-height: 200px;
-    resize: none;
-    padding: 20px;
-    outline: none;
-  }
-
-  #callback-message {
-    position: absolute;
-    bottom: -25px;
-    right: 0;
-    font-weight: 600;
-  }
-
-  #reply-button {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-  }
-}
-
-.classification-form {
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin: 20px 0;
-  text-align: center;
-
-  textarea {
-    height: 100px;
-    resize: none;
-  }
-
-  .already-suggested-dates-container {
-    .already-suggested-dates {
-      text-align: left;
-      width: 300px;
-      margin: 30px auto 10px auto;
-      border-top: 1px solid #ccc;
-      font-size: 14px;
-
-      .already-suggested-date {
-        border-bottom: 1px solid #ccc;
-        line-height: 25px;
-        padding: 5px;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #fffff5;
-        }
-      }
-    }
-  }
-  .detected-dates-container {
-    .detected-dates {
-      border-top: 1px solid #ccc;
-      width: 500px;
-      margin: 30px auto 10px auto;
-      .detected-date {
-        border-bottom: 1px solid #ccc;
-        line-height: 25px;
-        padding: 5px;
-        text-align: left;
-        position: relative;
-
-        .detected-date-text {
-          display: inline-block;
-          width: 170px;
-          margin: 0 10px 0 0;
-        }
-
-        .detected-date-radios {
-          display: inline-block;
-          width: 170px;
-          margin: 0 10px 0 0;
-
-          input[type=radio] {
-            margin: 0 5px 0 10px;
-          }
-        }
-        .detected-date-freetext-container {
-          position: absolute;
-          top: 0;
-          left: 180px;
-          width: 320px;
-          height: 40px;
-          padding: 5px;
-          background: #fff;
-
-          input.detected-date-freetext {
-            width: 310px;
-          }
-        }
-        .detected-date-date {
-          display: inline-block;
-          width: 100px;
-          width: 200px;
-          margin: 0 10px 0 0;
-          text-align: center;
-        }
-        .detected-date-real-date {
-          display: none;
-        }
-
-        .detected-date-time {
-          display: inline-block;
-          width: 100px;
-          text-align: center;
-        }
-        .detected-date-remove-button {
-          position: absolute;
-          right: -35px;
-          line-height: 35px;
-          width: 35px;
-          text-align: center;
-          cursor: pointer;
-          top: 0;
-        }
-      }
-    }
-    .add-detected-date-button-container {
-      width: 500px;
-      margin: 10px auto;
-      text-align: right;
-    }
-  }
-}
-
-iframe {
-  margin: 0 0 0 -218px;
-  border: 1px solid #aaa;
-  width: 1180px;
-  height: 600px;
 }

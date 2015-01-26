@@ -13,6 +13,9 @@ class Message < ActiveRecord::Base
     Gmail::Message.get self.google_message_id
   end
 
+  def from_me?
+    google_message.from.include? "julie@juliedesk.com"
+  end
 
   def self.import_emails
     google_threads = Gmail::Label.inbox.threads
@@ -30,12 +33,10 @@ class Message < ActiveRecord::Base
       end
 
       google_thread.messages.each do |google_message|
-        unless google_message.from.include? "julie@juliedesk.com"
-          message = Message.find_by_google_message_id google_message.id
+        message = Message.find_by_google_message_id google_message.id
 
-          unless message
-            messages_thread.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date)
-          end
+        unless message
+          messages_thread.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date)
         end
       end
     end

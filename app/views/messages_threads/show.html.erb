@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="email-column col-md-9">
+
+
+    <div class="messages-thread-emails">
+      <div class="messages-thread-subject">
+        <%= @messages_thread.subject %>
+      </div>
+      <% @messages_thread.messages.each do |message| %>
+          <%= render partial: "email", locals: {message: message} %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render partial: "infos_panel", locals: {messages_thread: @messages_thread} %>
+
+</div>
