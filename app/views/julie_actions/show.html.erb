@@ -160,7 +160,7 @@
                 message = "Invitations envoyées pour un <%= @messages_thread.computed_data[:appointment_nature_nature] %> (<%= @messages_thread.computed_data[:location] %>), le " + capitalize(moment(window.timeSlotToCreate).locale("fr").format("dddd DD MMMM YYYY à HH:mm")) + ".";
             }
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
-
+            message = "Voici l'information demandée : ";
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
             message = "J'ai bien noté que : ";
             <% end %>
