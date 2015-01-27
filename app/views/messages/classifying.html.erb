@@ -1,23 +1,28 @@
 <script>
-  $(function() {
-      $("#back-button").click(function() {
-          if(window.clickBackButton) {
-              window.clickBackButton();
-          }
-          else {
-              clickBackButtonDefault();
-          }
-      });
-  });
-  function clickBackButtonDefault() {
-      window.history.back();
-  }
+    $(function () {
+        $("#back-button").click(function () {
+            if (window.clickBackButton) {
+                window.clickBackButton();
+            }
+            else {
+                clickBackButtonDefault();
+            }
+        });
+    });
+    function clickBackButtonDefault() {
+        window.history.back();
+    }
 </script>
 <%= render template: "messages/classifications_form/#{@classification}" %>
 
-<div class="row">
-  <div class="email-column col-md-9">
+<div class="fixed-columns">
 
+
+  <div class="left-column">
+
+    <%= render partial: "common/header" %>
+
+    <div class="julie-action-fantom"></div>
     <div class="messages-thread-emails">
 
       <div id="back-button" class="btn btn-link">< Back</div>
@@ -27,7 +32,7 @@
       </div>
 
       <% @messages_thread.messages.each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classifications.#{@classification}.action")} %>
       <% end %>
     </div>
   </div>

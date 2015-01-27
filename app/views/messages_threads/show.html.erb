@@ -1,40 +1,44 @@
 <script>
-  $(function() {
-     $(".split-thread-button").click(function() {
-         $(".messages-thread-emails").addClass("splitting");
-     });
+    $(function () {
+        $(".split-thread-button").click(function () {
+            $(".messages-thread-emails").addClass("splitting");
+        });
 
-      $(".cancel-split-button").click(function() {
-          $(".messages-thread-emails").removeClass("splitting");
-      });
+        $(".cancel-split-button").click(function () {
+            $(".messages-thread-emails").removeClass("splitting");
+        });
 
-      $(".actually-split-button").click(function() {
-          var messageIdsToSplit = $(".email .checkbox-container input[type=checkbox]:checked").map(function() {
-              return $(this).val();
-          }).toArray();
-          var $button = $(this);
-          $button.attr('disabled', true);
-          $.ajax({
-              url: "<%= split_messages_thread_path(@messages_thread) %>",
-              type: "post",
-              data: {
-                  message_ids: messageIdsToSplit
-              },
-              error: function(e) {
-                  $button.removeAttr('disabled');
-              },
-              success: function(e) {
-                  $button.removeAttr('disabled');
-                  window.location = window.location;
-              }
-          });
-      });
-  });
+        $(".actually-split-button").click(function () {
+            var messageIdsToSplit = $(".email .checkbox-container input[type=checkbox]:checked").map(function () {
+                return $(this).val();
+            }).toArray();
+            var $button = $(this);
+            $button.attr('disabled', true);
+            $.ajax({
+                url: "<%= split_messages_thread_path(@messages_thread) %>",
+                type: "post",
+                data: {
+                    message_ids: messageIdsToSplit
+                },
+                error: function (e) {
+                    $button.removeAttr('disabled');
+                },
+                success: function (e) {
+                    $button.removeAttr('disabled');
+                    window.location = window.location;
+                }
+            });
+        });
+    });
 </script>
-<div class="row">
-  <div class="email-column col-md-9">
+<div class="fixed-columns">
 
 
+  <div class="left-column">
+
+    <%= render partial: "common/header" %>
+
+    <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
 
@@ -54,7 +58,6 @@
       <% end %>
     </div>
   </div>
-
 
 
 </div>

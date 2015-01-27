@@ -8,18 +8,8 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<div class="header">
-  <div class="page col-md-10 col-md-offset-1">
-    <%= link_to "JulieDesk Backoffice", "/" %>
-    <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
-  </div>
-</div>
-<div class="row minheight">
 
-  <div class="page col-md-10 col-md-offset-1">
-    <%= yield %>
-  </div>
-</div>
+<%= yield %>
 
 <div class="footer">
 

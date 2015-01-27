@@ -70,6 +70,10 @@ class MessageClassification < ActiveRecord::Base
   end
 
 
+  def self.is_disabled(classification)
+    [ASK_AVAILABILITIES, ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT, ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT].include? classification
+  end
+
   private
 
   def self.classifications

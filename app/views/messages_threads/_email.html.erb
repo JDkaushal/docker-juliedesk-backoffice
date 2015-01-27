@@ -25,6 +25,14 @@
                 $email.find(".actions-menu").removeClass("visible");
             }
         });
+
+        $email.find("a.action").click(function(e) {
+            e.preventDefault();
+            if(!$(this).attr('disabled')) {
+                $email.find(".actions-menu .spinner").show();
+                window.location = $(this).attr('href');
+            }
+        });
     });
 </script>
 
@@ -58,14 +66,15 @@
           <div class="actions-menu-button"></div>
           <div class="actions-menu">
             <% (MessageClassification.primary_classifications).each do |classification| %>
-                <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+                <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(classification) %>
             <% end %>
             <div class="actions-separator"></div>
             <div class="secondary-actions">
               <% (MessageClassification.secondary_classifications).each do |classification| %>
-                  <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+                  <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(classification) %>
               <% end %>
             </div>
+            <%= image_tag "ajax-loader.gif", class: "spinner" %>
           </div>
       <% end %>
 
@@ -78,6 +87,10 @@
         <%= email.cc %>
       </div>
     </div>
+
+    <% if local_assigns[:highlight] && local_assigns[:highlight_message] %>
+        <div class="current-action-message"><%= local_assigns[:highlight_message] %></div>
+    <% end %>
 
     <div class="body"><%== email.html || email.body %></div>
   </div>

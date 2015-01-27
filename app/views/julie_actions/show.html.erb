@@ -22,6 +22,15 @@
     $(function () {
         redrawReplyText();
 
+        $(".left-column").scroll(function() {
+           if($(this).scrollTop() < 40) {
+               $(".julie-action-title").css({top: 40});
+           }
+           else {
+               $(".julie-action-title").css({top: $(this).scrollTop()});
+           }
+        });
+
         $("#create-event-button").click(function () {
             $("#create-event-button").attr('disabled', true);
             $(".creating-event-message").html("Creating...");
@@ -164,11 +173,13 @@
         };
     });
 </script>
-<div class="row">
-  <div class="email-column col-md-9">
+<div class="fixed-columns">
+<div class="left-column">
 
+  <%= render partial: "common/header" %>
 
     <div class="julie-action-title">To do: <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %></div>
+    <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
 
@@ -176,34 +187,34 @@
         <%= @messages_thread.subject %>
       </div>
       <% @messages_thread.messages.each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classifications.#{@julie_action.message_classification.classification}.action")} %>
 
           <% if message.id == @message.id %>
+              <div class="highlighted-below-email">
 
-              <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
-                  <%= render template: "calendar/calendar" %>
-              <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
-                  <%= render template: "calendar/calendar" %>
-              <% else %>
+                <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+                    <%= render template: "calendar/calendar" %>
+                <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+                    <%= render template: "calendar/calendar" %>
+                <% else %>
 
-              <% end %>
+                <% end %>
 
 
 
-              <div class="reply-box">
-                <div class="from">From: julie@juliedesk.com</div>
-                <div class="from">To: <%= @messages_thread.contacts(with_client: true).map { |c| "#{c[:name]} <#{c[:email]}>" }.join(", ") %></div>
-                <textarea id="reply-text"></textarea>
-                <button class="btn btn-success" id="reply-button">Reply</button>
-                <div id="callback-message"></div>
+                <div class="reply-box">
+                  <div class="from">From: julie@juliedesk.com</div>
+                  <div class="from">To: <%= @messages_thread.contacts(with_client: true).map { |c| "#{c[:name]} <#{c[:email]}>" }.join(", ") %></div>
+                  <textarea id="reply-text"></textarea>
+                  <button class="btn btn-success" id="reply-button">Reply</button>
+                  <div id="callback-message"></div>
+                </div>
               </div>
-
           <% end %>
       <% end %>
     </div>
 
 
   </div>
-
 </div>
 <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
