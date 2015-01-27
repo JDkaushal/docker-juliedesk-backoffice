@@ -4,6 +4,16 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_filter :authenticate
+
+  def omniauth_callback
+
+    auth = request.env['omniauth.auth']
+    render json: {
+        message: "hello",
+        data: auth["credentials"]
+    }
+  end
+
   protected
   def authenticate
     authenticate_or_request_with_http_basic do |username, password|

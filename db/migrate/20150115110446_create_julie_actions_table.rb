@@ -1,7 +1,7 @@
 class CreateJulieActionsTable < ActiveRecord::Migration
   def up
     create_table :julie_actions do |t|
-      t.integer :message_id
+      t.integer :message_classification_id
       t.string :action_nature
       t.text :date_times, default: "[]"
       t.text :event_ids, default: "[]"

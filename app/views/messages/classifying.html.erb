@@ -13,18 +13,24 @@
       window.history.back();
   }
 </script>
+<%= render template: "messages/classifications_form/#{@classification}" %>
+
 <div class="row">
   <div class="email-column col-md-9">
 
-    <div id="back-button" class="btn btn-link">< Back</div>
+    <div class="messages-thread-emails">
 
-    <div class="classification-form">
-      <h5><%= I18n.t("classifications.#{@classification}.action") %></h5>
-      <%= render template: "messages/classifications_form/#{@classification}" %>
+      <div id="back-button" class="btn btn-link">< Back</div>
+
+      <div class="messages-thread-subject">
+        <%= @messages_thread.subject %>
+      </div>
+
+      <% @messages_thread.messages.each do |message| %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id} %>
+      <% end %>
     </div>
-
-    <%= render template: "messages/email" %>
   </div>
-  <%= render template: "messages/messages_thread_header" %>
 </div>
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @message.messages_thread} %>
 

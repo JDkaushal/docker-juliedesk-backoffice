@@ -82,8 +82,26 @@ GEM
     mime-types (2.4.3)
     minitest (5.5.1)
     multi_json (1.10.1)
+    multi_xml (0.5.5)
     multipart-post (2.0.0)
     newrelic_rpm (3.9.5.251)
+    oauth2 (1.0.0)
+      faraday (>= 0.8, < 0.10)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      multi_xml (~> 0.5)
+      rack (~> 1.2)
+    omniauth (1.2.2)
+      hashie (>= 1.2, < 4)
+      rack (~> 1.0)
+    omniauth-google-oauth2 (0.2.6)
+      omniauth (> 1.0)
+      omniauth-oauth2 (~> 1.1)
+    omniauth-oauth2 (1.2.0)
+      faraday (>= 0.8, < 0.10)
+      multi_json (~> 1.3)
+      oauth2 (~> 1.0)
+      omniauth (~> 1.2)
     pg (0.18.1)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -149,6 +167,7 @@ DEPENDENCIES
   gmail-api-ruby
   jquery-rails
   newrelic_rpm
+  omniauth-google-oauth2
   pg
   rails (= 4.1.6)
   sass-rails (~> 4.0.3)

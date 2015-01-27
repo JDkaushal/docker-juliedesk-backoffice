@@ -1,18 +1,62 @@
+<script>
+  $(function() {
+     $(".split-thread-button").click(function() {
+         $(".messages-thread-emails").addClass("splitting");
+     });
+
+      $(".cancel-split-button").click(function() {
+          $(".messages-thread-emails").removeClass("splitting");
+      });
+
+      $(".actually-split-button").click(function() {
+          var messageIdsToSplit = $(".email .checkbox-container input[type=checkbox]:checked").map(function() {
+              return $(this).val();
+          }).toArray();
+          var $button = $(this);
+          $button.attr('disabled', true);
+          $.ajax({
+              url: "<%= split_messages_thread_path(@messages_thread) %>",
+              type: "post",
+              data: {
+                  message_ids: messageIdsToSplit
+              },
+              error: function(e) {
+                  $button.removeAttr('disabled');
+              },
+              success: function(e) {
+                  $button.removeAttr('disabled');
+                  window.location = window.location;
+              }
+          });
+      });
+  });
+</script>
 <div class="row">
   <div class="email-column col-md-9">
 
 
+
     <div class="messages-thread-emails">
+
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
       </div>
+
+      <div class="split-buttons-container">
+        <div class="btn btn-default cancel-split-button">Cancel</div>
+        <div class="btn btn-warning actually-split-button">Split</div>
+      </div>
+
+      <div class="split-thread-button"></div>
       <%= button_to "", archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
-      <% @messages_thread.messages_with_google_cache.each do |message| %>
-          <%= render partial: "email", locals: {message: message} %>
+      <% @messages_thread.messages.each do |message| %>
+          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true} %>
       <% end %>
     </div>
   </div>
 
-  <%= render partial: "infos_panel", locals: {messages_thread: @messages_thread} %>
+
 
 </div>
+
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>

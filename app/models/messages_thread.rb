@@ -10,12 +10,6 @@ class MessagesThread < ActiveRecord::Base
     @account ||= Account.create_from_email account_email
   end
 
-  def messages_with_google_cache
-    self.messages.each do |message|
-      message.google_message = self.google_thread.messages.select{|m| m.id == message.google_message_id}.first
-    end
-  end
-
   def contacts params = {}
     raw_contacts = google_thread.messages.map{|m| [m.to, m.from] + (m.cc.try(:split, ", ") || [])}.flatten
 
@@ -51,7 +45,7 @@ class MessagesThread < ActiveRecord::Base
         appointment_nature: message_classifications.map(&:appointment_nature).compact.last,
         appointment_nature_nature: (account.try(:default_appointments) || {})[message_classifications.map(&:appointment_nature).compact.last || "0"].try(:[], 'name'),
         summary: message_classifications.map(&:summary).compact.last,
-        duration: message_classifications.map(&:duration).compact.last,
+        duration: message_classifications.map(&:duration).compact.last || 60,
         location: message_classifications.map(&:location).compact.last,
         attendees: JSON.parse(message_classifications.map(&:attendees).compact.last || "[]"),
         notes: message_classifications.map(&:notes).compact.last,
@@ -82,5 +76,35 @@ class MessagesThread < ActiveRecord::Base
 
   def messages_to_classify
     messages.select{|m| m.message_classifications.empty?}
+  end
+
+  def re_import
+    existing_messages = []
+    self.google_thread.messages.each do |google_message|
+      message = self.messages.select{|m| m.google_message_id == google_message.id}.first
+      unless message
+        message = self.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date)
+      end
+      message.google_message = google_message
+      existing_messages << message
+    end
+
+    (self.messages - existing_messages).each do |message|
+      message.delete
+    end
+    self.messages = self.messages && existing_messages
+  end
+
+  def split message_ids
+    google_message_ids = self.messages.select{|m| message_ids.include? m.id}.map(&:google_message_id)
+    google_messages = self.google_thread.messages.select{|gm| google_message_ids.include? gm.id}
+    updated_thread_id = nil
+    google_messages.each do |google_message|
+      google_message.threadId = updated_thread_id
+      google_message.labelIds = ['INBOX']
+      updated_google_message = google_message.insert
+      google_message.delete
+      updated_thread_id = updated_google_message.thread_id
+    end
   end
 end

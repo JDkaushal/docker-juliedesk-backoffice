@@ -52,5 +52,6 @@
 
 <%= render template: "messages/email" %>
 </div>
-  <%= render template: "messages/messages_thread_header" %>
 </div>
+
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @message.messages_thread} %>

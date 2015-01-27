@@ -186,6 +186,7 @@ Calendar.prototype.fetchEvents = function (start, end) {
         end: end,
         calendar_nature: calendar.accountPreferences.calendar_nature
     }, function (response) {
+        console.log(response);
         calendar.addCal(calendar.getNonAvailableEvents(start, end), calendar.calendars.length - 1);
         calendar.addEventsToCheckIfNeeded();
 

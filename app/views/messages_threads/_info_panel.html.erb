@@ -1,9 +1,13 @@
 <script>
     $(function() {
+        if(window.leftColumnMessage) {
+            $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
+        }
         if(window.threadDataIsEditable) {
             if($("input#duration").val() == "" && $("input#summary").val() == "" && $("input#location").val() == "" && $("textarea#notes").val() == "") {
                 setAppointmentValues();
             }
+            $(".save-info-container").show();
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
@@ -23,12 +27,18 @@
                 window.currentCalendar.selectSuggestedEvent(dateTime);
             }
         });
+
+        $(".submit-classification").click(function() {
+            if(window.submitClassification) {
+                window.submitClassification();
+            }
+        })
     });
 
-    var defaultAppointments = <%== @message.messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
+    var defaultAppointments = <%== messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
     function setAppointmentValues() {
         $("input#duration").val(defaultAppointments[$("#appointment_nature").val()].duration);
-        <% contact_names = ((@message.messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{@message.messages_thread.account.try(:usage_name)}"]) %>
+        <% contact_names = ((messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{messages_thread.account.try(:usage_name)}"]) %>
         $("input#summary").val(defaultAppointments[$("#appointment_nature").val()].name  + " " + "<%= contact_names.join(" / ") %>");
         <% if contact_names.select{|cn| cn.blank?}.length > 0 %>
             $("input#summary").addClass("warning");
@@ -39,14 +49,16 @@
 
 </script>
 
-<div class="messages-thread-header col-md-3">
+<div class="messages-thread-info-panel">
 
+  <div class="message-container"></div>
 <div class="account">
-<%  account = @message.messages_thread.account %>
+<%  account = messages_thread.account %>
     <% if account %>
-        <%= account.usage_name %> (<%= @message.messages_thread.account.email %>)
+        <%= account.usage_name %> (<%= messages_thread.account.email %>)
         <div class="account-details">
-            <%== account.default_appointments.map{|k, v| v['notes']}.join("<br>") %>
+            <%= simple_format account.raw_preferences %>
+            <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
         </div>
     <% else %>
         No account found
@@ -59,36 +71,36 @@
   <div class="data">
     <div class="data-entry">
       <div class="data-entry-name">Ticket notes</div>
-      <%= text_area_tag :constraints, @message.messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
+      <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
     </div>
 
     <div class="data-entry">
       <div class="data-entry-name">Appointment type</div>
-      <%= select_tag :appointment_nature, options_for_select((@message.messages_thread.account.try(:default_appointments) || {}).map{|k, da| [da['name'], k]}), class: "data-entry form-control" %>
+      <%= select_tag :appointment_nature, options_for_select((messages_thread.account.try(:default_appointments) || {}).map{|k, da| [da['name'], k]}), class: "data-entry form-control" %>
     </div>
 
     <div class="data-entry">
       <div class="data-entry-name">Summary</div>
-      <%= text_field_tag :summary, @message.messages_thread.computed_data[:summary], class: "data-entry form-control" %>
+      <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
     </div>
 
     <div class="data-entry">
       <div class="data-entry-name">Duration</div>
-      <%= text_field_tag :duration, @message.messages_thread.computed_data[:duration], class: "data-entry form-control" %>
+      <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
     </div>
 
     <div class="data-entry">
       <div class="data-entry-name">Location</div>
-      <%= text_field_tag :location, @message.messages_thread.computed_data[:location], class: "data-entry form-control" %>
+      <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
     </div>
 
     <div class="data-entry">
       <div class="data-entry-name">Attendees</div>
       <div class="data-entry-value">
-          <% @message.messages_thread.contacts(with_client: true).each do |contact| %>
+          <% messages_thread.contacts(with_client: true).each do |contact| %>
               <div>
                 <% attendee = "#{contact[:name]} (#{(contact[:email])})" %>
-                <% attendees = @message.messages_thread.computed_data[:attendees] || [] %>
+                <% attendees = messages_thread.computed_data[:attendees] || [] %>
                 <% checked = attendees == [] || attendees.include?(attendee) %>
                 <%= check_box_tag :attendee, attendee, checked %>
                 <%= attendee %>
@@ -100,19 +112,25 @@
 
     <div class="data-entry">
       <div class="data-entry-name">Notes</div>
-      <%= text_area_tag :notes, @message.messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+      <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
     </div>
 
     <div id="thread-header-other-entries-container">
 
     </div>
 
-    <% if params[:action] == "process_actions" && @message.messages_thread.computed_data[:date_times].length > 0 %>
+    <div class="save-info-container">
+      <br>
+      <br>
+      <div class="btn btn-block btn-success submit-classification">Save</div>
+    </div>
+
+    <% if params[:action] == "process_actions" && messages_thread.computed_data[:date_times].length > 0 %>
         <div class="data-entry">
           <div class="data-entry-name">DateTimes to check</div>
           <div class="data-entry-value">
             <div class="suggested-date-times">
-            <% @message.messages_thread.computed_data[:date_times].each do |dt| %>
+            <% messages_thread.computed_data[:date_times].each do |dt| %>
                   <%if dt['date']
                        date = DateTime.parse(dt['date'])
                        date_text = I18n.l(date, format: "%A %d %B %Y à %H:%M")

@@ -73,5 +73,7 @@ en:
         todo: "send confirmation"
       send_to_founders:
         todo: "send to founders"
+      free_action:
+        todo: "write an email"
   back: "Back"
   time_ago: "%{time} ago"

@@ -2,7 +2,7 @@ class Account
 
   require 'net/http'
 
-  attr_accessor :email, :calendar_nature, :default_appointments, :usage_name, :email_aliases, :access_token
+  attr_accessor :email, :calendar_nature, :default_appointments, :usage_name, :email_aliases, :access_token, :raw_preferences, :current_notes
 
   def self.create_from_email email
     account_email = self.find_account_email email
@@ -17,6 +17,8 @@ class Account
     account.usage_name = data['usage_name']
     account.email_aliases = data['email_aliases']
     account.access_token = data['access_token']
+    account.raw_preferences = data['raw_preferences']
+    account.current_notes = data['current_notes']
     account
   end
 

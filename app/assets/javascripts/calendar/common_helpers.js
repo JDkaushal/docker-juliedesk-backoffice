@@ -67,6 +67,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 email: request.email
             },
             success: function(data) {
+                console.log(data);
                 callback({
                     items: CommonHelpers.filterEvents(data.items),
                     key: request.key

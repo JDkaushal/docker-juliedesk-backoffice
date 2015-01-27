@@ -1,5 +1,11 @@
 class JulieActionsController < ApplicationController
 
+  def show
+    @julie_action = JulieAction.find params[:id]
+    @message = @julie_action.message_classification.message
+    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(@julie_action.message_classification.message.messages_thread_id)
+  end
+
   def update
     julie_action = JulieAction.find params[:id]
     julie_action.update_attributes({

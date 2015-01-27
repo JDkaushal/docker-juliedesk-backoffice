@@ -2,13 +2,11 @@ class Message < ActiveRecord::Base
 
   belongs_to :messages_thread
   has_many :message_classifications
-  has_many :julie_actions
 
   attr_writer :google_message
 
   def validate_message_classifications
     JulieAction.create_from_message self
-
   end
 
 

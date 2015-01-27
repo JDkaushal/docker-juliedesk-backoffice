@@ -20,58 +20,6 @@
   }
 }
 
-.messages-thread-header {
-  border: 1px solid #ccc;
-  padding: 10px 10px 10px 10px;
-  margin: 20px 0 0 0;
-  position: relative;
-  z-index: 2;
-  background-color: #f5f5f5;
-
-  .account {
-    font-size: 16px;
-  }
-  .account-details {
-    font-size: 12px;
-  }
-
-  .contacts {
-    ul {
-      list-style-type: none;
-    }
-    text-align: right;
-    font-size: 12px;
-  }
-
-  .data {
-    padding: 50px 0 0 0;
-    .data-entry {
-      .data-entry-name {
-        font-size: 11px;
-        opacity: 0.8;
-        margin: 10px 0 0 0;
-      }
-      .data-entry-value {
-        //font-size: 14px;
-
-
-      }
-      input#summary {
-        &.warning {
-          border-color: #d00;
-        }
-      }
-    }
-
-    .creating-event-message {
-      padding: 5px 0;
-      line-height: 30px;
-      text-align: center;
-    }
-
-  }
-
-}
 
 .emails-list {
   border-top: 1px solid #ddd;

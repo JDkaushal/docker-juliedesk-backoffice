@@ -27,13 +27,13 @@ ActiveRecord::Schema.define(version: 20150115110446) do
   end
 
   create_table "julie_actions", force: true do |t|
-    t.integer  "message_id"
+    t.integer  "message_classification_id"
     t.string   "action_nature"
-    t.text     "date_times",    default: "[]"
-    t.text     "event_ids",     default: "[]"
+    t.text     "date_times",                default: "[]"
+    t.text     "event_ids",                 default: "[]"
     t.text     "text"
-    t.boolean  "done",          default: false
-    t.boolean  "pending",       default: false
+    t.boolean  "done",                      default: false
+    t.boolean  "pending",                   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

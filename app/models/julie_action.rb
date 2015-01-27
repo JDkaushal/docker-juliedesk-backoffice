@@ -1,6 +1,6 @@
 class JulieAction < ActiveRecord::Base
 
-  belongs_to :message
+  belongs_to :message_classification
 
   JD_ACTION_CREATE_EVENT            = "create_event"
   JD_ACTION_UPDATE_EVENT            = "update_event"
@@ -11,6 +11,7 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_SEND_INFO               = "send_info"
   JD_ACTION_SEND_CONFIRMATION       = "send_confirmation"
   JD_ACTION_SEND_TO_FOUNDERS        = "send_to_founders"
+  JD_ACTION_FREE_ACTION             = "free_action"
 
 
 
@@ -24,8 +25,8 @@ class JulieAction < ActiveRecord::Base
       message.julie_actions.create action_nature: JD_ACTION_SEND_INFO
     elsif classification == MessageClassification::GIVE_INFO
       message.julie_actions.create action_nature: JD_ACTION_SEND_CONFIRMATION
-    else
-      message.julie_actions.create action_nature: "Unknown"
+    else classification == MessageClassification::UNKNOWN
+      message.julie_actions.create action_nature: JD_ACTION_FREE_ACTION
     end
 
   end

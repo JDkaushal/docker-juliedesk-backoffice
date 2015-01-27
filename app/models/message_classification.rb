@@ -2,6 +2,8 @@ class MessageClassification < ActiveRecord::Base
 
   belongs_to :message
 
+  has_one :julie_action
+
   ASK_DATE_SUGGESTIONS     = "ask_date_suggestions"
   ASK_AVAILABILITIES       = "ask_availabilities"
   ASK_CANCEL_APPOINTMENT   = "ask_cancel_appointment"
@@ -26,7 +28,29 @@ class MessageClassification < ActiveRecord::Base
         date_times: (params[:date_times].try(:values) || []).to_json
     )
     result.save!
+
+    result.append_julie_action
+
     result
+  end
+
+  def append_julie_action
+    if    self.classification == MessageClassification::ASK_DATE_SUGGESTIONS
+      create_julie_action action_nature: JulieAction::JD_ACTION_SUGGEST_DATES
+
+    elsif self.classification == MessageClassification::ASK_AVAILABILITIES
+      create_julie_action action_nature: JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+
+    elsif self.classification == MessageClassification::ASK_INFO
+      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_INFO
+
+    elsif self.classification == MessageClassification::GIVE_INFO
+      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
+
+    else  self.classification == MessageClassification::UNKNOWN
+      create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
+
+    end
   end
 
   def self.all_classifications

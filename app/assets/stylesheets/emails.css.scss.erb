@@ -4,10 +4,50 @@
   background-color: #fff;
   border-bottom: 1px solid #ccc;
 
+  &.highlighted {
+      background-color: #eaffea;
+  }
+
+  * {
+      background: transparent !important;
+  }
+
   .retracted {
     display: block;
     background: #f5f5f5;
     cursor: pointer;
+    height: 60px;
+      
+    .retracted-container {
+
+    }
+    .checkbox-container {
+        height: 62px;
+        width: 60px;
+        text-align: center;
+        position: relative;
+        display: none;
+        position: absolute;
+        left: -60px;
+        top: -1px;
+        background: #f5f5f5;
+        border-bottom: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+
+        input {
+            margin: 20px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    }
 
     .subject {
       display: none;
@@ -80,7 +120,7 @@
     cursor: pointer;
     border: 1px solid #ccc;
     background: #fafafa;
-    content: url("/assets/answer-all.png");
+    content: url(<%= asset_path "answer-all.png" %>);
 
     &:hover {
       background: #f5f5f5;
@@ -92,10 +132,11 @@
     top: 69px;
     right: 20px;
     width: 200px;
-    height: 271px;
+    height: 312px;
     border: 1px solid #ccc;
     background: #fff;
     cursor: default;
+    z-index: 5;
 
     .secondary-actions {
 
@@ -117,6 +158,11 @@
       text-decoration: none;
       font-size: 13px;
       cursor: pointer;
+      display: block;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
       
       &:hover {
         background: #f5f5f5;

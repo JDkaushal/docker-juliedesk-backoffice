@@ -8,7 +8,7 @@
       <%= link_to message_thread, class: "messages-thread-item" do %>
         <div class="account-email">
           <%= message_thread.account.try(:usage_name) %>
-          (<%= message_thread.messages.length %>)
+          <%= (message_thread.messages.length>1)?"(#{message_thread.messages.length})":""%>
         </div>
         <div class="subject-and-snippet">
           <div class="subject">
