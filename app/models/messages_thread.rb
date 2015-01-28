@@ -32,10 +32,6 @@ class MessagesThread < ActiveRecord::Base
     result
   end
 
-  def subject
-    self.google_thread.messages.first.subject.gsub(/\ARe: /, "")
-  end
-
   def computed_data
     message_classifications = messages.sort_by(&:received_at).map{|m|
       m.message_classifications.first

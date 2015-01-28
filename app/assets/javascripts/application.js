@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.elastic.source
+//= require jquery.tokeninput
 //= require moment-with-locales.min
 //= require moment-timezone-with-data
 

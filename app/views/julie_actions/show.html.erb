@@ -2,6 +2,8 @@
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
     window.currentEventId = null;
+
+
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
     window.calendarParams = {
         mode: "suggest_dates",
@@ -18,8 +20,36 @@
     };
     <% end %>
 
+    function initialRecipients() {
+
+        return <%== @messages_thread.contacts(with_client: true).map { |c| {name: c[:email]} }.to_json %>;
+    }
+
+    function possibleRecipients() {
+        return <%== @messages_thread.contacts(with_client: true).map { |c| {name: c[:email]} }.to_json %>;
+    }
+
+    function currentRecipients() {
+        return $.map($("#recipients-input").tokenInput("get"), function(elt) {
+            return elt.name;
+        });
+    }
+
 
     $(function () {
+        $("#recipients-input").tokenInput(
+                possibleRecipients(),
+                {
+                    searchDelay: 0,
+                    enableFreeInput: true,
+                    hintText: '',
+                    noResultsText: '',
+                    searchingText: '',
+                    animateDropdown: false,
+                    prePopulate: initialRecipients(),
+                    preventDuplicates: true,
+                    theme: 'facebook'
+                });
         redrawReplyText();
 
         $(".left-column").scroll(function() {
@@ -79,6 +109,7 @@
                 method: "post",
                 data: {
                     text: $("textarea#reply-text").val(),
+                    to: currentRecipients(),
                     date_times: window.timeSlotsToSuggest,
                     done: true
                 }
@@ -204,7 +235,11 @@
 
                 <div class="reply-box">
                   <div class="from">From: julie@juliedesk.com</div>
-                  <div class="from">To: <%= @messages_thread.contacts(with_client: true).map { |c| "#{c[:name]} <#{c[:email]}>" }.join(", ") %></div>
+                  <div class="to">
+
+                    <span>To:</span>
+                    <input id="recipients-input"/>
+                  </div>
                   <textarea id="reply-text"></textarea>
                   <button class="btn btn-success" id="reply-button">Reply</button>
                   <div id="callback-message"></div>

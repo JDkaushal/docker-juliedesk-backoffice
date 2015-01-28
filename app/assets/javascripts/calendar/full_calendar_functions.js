@@ -135,6 +135,7 @@ Calendar.prototype.fullCalendarInit = function() {
         lang: CommonHelpers.getLocale(),
         editable: true,
         scrollTime:'09:00:00',
+        height: 1300,
         selectable: true,
         selectHelper: true,
         defaultView:'agendaWeek',

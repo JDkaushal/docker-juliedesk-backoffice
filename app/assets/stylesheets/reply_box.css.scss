@@ -12,6 +12,20 @@
     font-size: 14px;
     font-weight: 200;
   }
+  .to {
+    > span {
+      line-height: 32px;
+    }
+
+    ul {
+      width: 90%;
+      display: inline-block;
+      vertical-align: bottom;
+      border: none;
+      margin: 0 0 0 5px;
+      padding: 0;
+    }
+  }
 
   textarea {
     width: 100%;

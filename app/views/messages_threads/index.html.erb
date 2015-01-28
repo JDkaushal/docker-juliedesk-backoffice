@@ -6,22 +6,22 @@
     <%= render partial: "common/header" %>
 
     <div class="messages-threads-container">
-      <% @messages_thread.each do |message_thread| %>
-          <%= link_to message_thread, class: "messages-thread-item" do %>
+      <% @messages_thread.each do |messages_thread| %>
+          <%= link_to messages_thread, class: "messages-thread-item" do %>
               <div class="account-email">
-                <%= message_thread.account.try(:usage_name) %>
-                <%= (message_thread.messages.length>1) ? "(#{message_thread.messages.length})" : "" %>
+                <%= messages_thread.account.try(:usage_name) %>
+                <%= (messages_thread.messages.length>1) ? "(#{messages_thread.messages.length})" : "" %>
               </div>
               <div class="subject-and-snippet">
                 <div class="subject">
-                  <%= message_thread.subject %>
+                  <%= messages_thread.subject %>
                 </div>
                 <div class="snippet">
-                  - <%== message_thread.google_thread.messages.sort_by(&:date).last.snippet %>
+                  - <%== messages_thread.snippet %>
                 </div>
               </div>
               <div class="received-at">
-                <%= I18n.l(DateTime.parse(message_thread.google_thread.messages.sort_by(&:date).last.date), format: "%d %B %Y, %H:%M") %>
+                <%= I18n.l(messages_thread.messages.map(&:received_at).max, format: "%d %B %Y, %H:%M") %>
               </div>
           <% end %>
       <% end %>

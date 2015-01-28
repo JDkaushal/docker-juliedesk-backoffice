@@ -3967,19 +3967,13 @@ function AgendaView(element, calendar, viewName) {
 
 		for (col=0; col<colCnt; col++) {
 			date = cellToDate(0, col);
-
-			if (date.isSame(today, 'day')) {
-				html +=
-				"<th class='fc-" + dayIDs[date.day()] + " fc-col" + col + ' ' + headerClass + "' style='color:#f4416d; font-weight:bold;'>" +
-				htmlEscape(formatDate(date, colFormat)) +
-				"</th>";
-			}
-			else{
-			html +=
-				"<th class='fc-" + dayIDs[date.day()] + " fc-col" + col + ' ' + headerClass + "'>" +
-				htmlEscape(formatDate(date, colFormat)) +
-				"</th>";
-			}
+            var otherClasses = "";
+            if (date.isSame(today, 'day')) {
+                otherClasses += " today";
+            }
+            html += "<th class='fc-" + dayIDs[date.day()] + " fc-col" + col + " " + headerClass + otherClasses + "'>" +
+                    htmlEscape(formatDate(date, colFormat)) +
+                    "</th>";
 		}
 
 		html +=

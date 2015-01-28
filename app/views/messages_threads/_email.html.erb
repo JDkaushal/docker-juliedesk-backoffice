@@ -37,7 +37,7 @@
 </script>
 
 <% email = message.google_message %>
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || (message.message_classifications.empty? && !message.from_me?)) ? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || (!message.archived && !message.from_me?))? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
   <div class="retracted">
     <div class="checkbox-container">
       <%= check_box_tag "checkbox-message-#{message.id}", message.id %>
