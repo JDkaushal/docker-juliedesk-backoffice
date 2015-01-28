@@ -16,6 +16,8 @@ class MessageClassification < ActiveRecord::Base
 
   def self.create_from_params params
     result = self.new(
+        locale: params[:locale],
+        timezone: params[:timezone],
         classification: params[:classification],
         appointment_nature: params[:appointment_nature],
         summary: params[:summary],
@@ -71,7 +73,7 @@ class MessageClassification < ActiveRecord::Base
 
 
   def self.is_disabled(classification)
-    [ASK_AVAILABILITIES, ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT, GIVE_INFO, ASK_CREATE_EVENT].include? classification
+    [ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT, GIVE_INFO, ASK_CREATE_EVENT].include? classification
   end
 
   private

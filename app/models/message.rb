@@ -47,8 +47,10 @@ class Message < ActiveRecord::Base
           messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email
         end
 
-        snippet = google_thread.messages.sort_by(&:date).last.snippet
-        messages_thread.update_attributes({subject: google_thread.subject, snippet: snippet})
+        sorted_messages = google_thread.messages.sort_by(&:date)
+
+        snippet = sorted_messages.last.snippet
+        messages_thread.update_attributes({subject: sorted_messages.first.subject, snippet: snippet})
 
         google_thread.messages.each do |google_message|
           message = Message.find_by_google_message_id google_message.id

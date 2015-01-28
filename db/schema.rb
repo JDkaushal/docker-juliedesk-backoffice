@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150128083858) do
+ActiveRecord::Schema.define(version: 20150128175806) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,8 @@ ActiveRecord::Schema.define(version: 20150128083858) do
     t.text     "date_times",         default: "[]"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "locale"
+    t.string   "timezone"
   end
 
   create_table "messages", force: true do |t|

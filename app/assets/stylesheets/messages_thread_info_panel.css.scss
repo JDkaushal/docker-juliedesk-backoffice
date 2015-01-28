@@ -12,6 +12,10 @@
   overflow: scroll;
   z-index: 10;
 
+  .classic-info-panel {
+
+  }
+
   .message-container {
     position: fixed;
     top: 0px;
@@ -80,5 +84,15 @@
   }
   .save-info-container {
     display: none;
+  }
+
+  .dates-identification-panel {
+    display: none;
+  }
+  .create-event-panel {
+    display: none;
+    padding: 0 0 30px 0;
+    margin: 0 0 20px 0;
+    border-bottom: 1px solid #ccc;
   }
 }

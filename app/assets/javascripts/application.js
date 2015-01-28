@@ -10,6 +10,10 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require localize
+//= require locales/en.js
+//= require locales/fr.js
+//
 //= require jquery
 //= require jquery_ujs
 //= require jquery.elastic.source
@@ -28,3 +32,5 @@
 //= require date_detection_inserted
 //= require jquery.timepicker.min
 //= require jquery-ui.min
+
+

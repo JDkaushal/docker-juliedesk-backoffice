@@ -34,10 +34,12 @@ class MessagesThread < ActiveRecord::Base
 
   def computed_data
     message_classifications = messages.sort_by(&:received_at).map{|m|
-      m.message_classifications.first
-    }.compact
+      m.message_classifications
+    }.flatten.compact
 
     {
+        locale: message_classifications.map(&:locale).compact.last || "fr",
+        timezone: message_classifications.map(&:timezone).compact.last || "Europe/Paris",
         appointment_nature: message_classifications.map(&:appointment_nature).compact.last,
         appointment_nature_nature: (account.try(:default_appointments) || {})[message_classifications.map(&:appointment_nature).compact.last || "0"].try(:[], 'name'),
         summary: message_classifications.map(&:summary).compact.last,
@@ -66,7 +68,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def suggested_date_times
-    date_times_strings = messages.map{|m| m.julie_actions.select{|ja| ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES}.map{|ja| JSON.parse(ja.date_times || "[]")}}.flatten
+    date_times_strings = messages.map{|m| m.message_classifications.map(&:julie_action).compact.select{|ja| ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES}.map{|ja| JSON.parse(ja.date_times || "[]")}}.flatten
     date_times_strings.map{|dts| DateTime.parse dts}
   end
 

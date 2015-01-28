@@ -3,6 +3,8 @@
     window.timeSlotToCreate = null;
     window.currentEventId = null;
 
+    window.threadLocale = "<% @messages_thread.computed_data[:locale] %>";
+
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
     window.calendarParams = {
@@ -12,12 +14,16 @@
         duration: <%= @messages_thread.computed_data[:duration] || 60 %>
     };
     <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+    window.leftColumnMessage = "Create event";
     window.calendarParams = {
         mode: "create_event",
         date_times: <%== @message.messages_thread.computed_data[:date_times].select{|dt| dt['date']}.map{|dt| dt['date']}.to_json %>,
         email: "<%= @message.messages_thread.account_email %>",
         duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
     };
+    $(function() {
+       $(".messages-thread-info-panel .create-event-panel").show();
+    });
     <% end %>
 
     function initialRecipients() {
@@ -53,12 +59,21 @@
         redrawReplyText();
 
         $(".left-column").scroll(function() {
-           if($(this).scrollTop() < 40) {
-               $(".julie-action-title").css({top: 40});
-           }
-           else {
-               $(".julie-action-title").css({top: $(this).scrollTop()});
-           }
+            if ($(this).scrollTop() < 40) {
+                $(".julie-action-title").css({top: 40});
+            }
+            else {
+                $(".julie-action-title").css({top: $(this).scrollTop()});
+            }
+//            if ($("#calendar").offset().top < 40 && $("#calendar").offset().top + $("#calendar").height() > 0) {
+//                $("#calendar .fc-header").css({top: 40 - $("#calendar").offset().top});
+//                $("#calendar .fc-header").addClass("as-header");
+//            }
+//            else {
+//                $("#calendar .fc-header").css({top: 0});
+//                $("#calendar .fc-header").removeClass("as-header");
+//            }
+
         });
 
         $("#create-event-button").click(function () {
@@ -161,41 +176,48 @@
             }
             else if (event.data.message == "drawExternalEventCreation") {
                 window.timeSlotToCreate = event.data.eventStart;
-                $(".suggested-date-times .suggested-date-time").removeClass("btn-success");
+                $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
                 $(".suggested-date-times .suggested-date-time.other").remove();
                 $(".suggested-date-times .suggested-date-time").each(function () {
                     if (moment($(this).data("date-time")).isSame(moment(event.data.eventStart))) {
-                        $(this).addClass("btn-success");
+                        $(this).addClass("btn-primary");
                     }
                 });
-                if ($(".suggested-date-times .suggested-date-time.btn-success").length == 0) {
-                    $(".suggested-date-times").append($("<div>").addClass("suggested-date-time other btn btn-sm btn-block btn-success").html(moment(event.data.eventStart).format("dddd DD MMMM YYYY à HH:mm")));
+                if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
+                    $(".suggested-date-times").append($("<div>").addClass("suggested-date-time other btn btn-sm btn-block btn-primary").html(moment(event.data.eventStart).format("dddd DD MMMM YYYY à HH:mm")));
                 }
                 $("#create-event-button").removeAttr('disabled');
             }
         }, false);
 
         function redrawReplyText() {
+            setCurrentLocale(window.threadLocale);
             var message = "";
             <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
             if (window.timeSlotsToSuggest.length > 0) {
-                message = "<%= @messages_thread.account.usage_name %> est disponible pour un <%= @messages_thread.computed_data[:appointment_nature_nature] %> (<%= @messages_thread.computed_data[:location] %>) :";
+                message = localize("email_templates.suggest_dates.before_dates", {
+                    client: "<%= @messages_thread.account.usage_name %>",
+                    appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
+                    location: "<%= @messages_thread.computed_data[:location] %>"
+                });
                 for (var i in window.timeSlotsToSuggest) {
                     var timeSlot = timeSlotsToSuggest[i];
-                    message += "\n  - " + capitalize(moment(timeSlot).locale("fr").format("dddd DD MMMM YYYY à HH:mm"));
+                    message += "\n  - " + capitalize(moment(timeSlot).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
                 }
-                message += "\n\nQuel horaire vous convient le mieux ?"
+                message += localize("email_templates.suggest_dates.after_dates");
             }
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
             if (window.timeSlotToCreate) {
-                message = "Invitations envoyées pour un <%= @messages_thread.computed_data[:appointment_nature_nature] %> (<%= @messages_thread.computed_data[:location] %>), le " + capitalize(moment(window.timeSlotToCreate).locale("fr").format("dddd DD MMMM YYYY à HH:mm")) + ".";
+                message = localize("email_templates.invites_sent", {
+                    appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
+                    location: "<%= @messages_thread.computed_data[:location] %>",
+                    date: capitalize(moment(window.timeSlotToCreate).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")))
+                });
             }
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
-            message = "Voici l'information demandée : ";
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
-            message = "J'ai bien noté que : ";
+                message = localize("emails_templates.info-asked");
             <% end %>
-            $("textarea#reply-text").val("Bonjour,\n\n" + message + "\n\nCordialement,\n\nJulie\nIntelligence artificielle")
+            $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.after"));
             $("textarea#reply-text").elastic();
         }
 
@@ -209,7 +231,13 @@
 
   <%= render partial: "common/header" %>
 
-    <div class="julie-action-title">To do: <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %></div>
+
+    <% unless @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+      <div class="julie-action-title">
+        To do: <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %>
+      </div>
+    <% end %>
+
     <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">

@@ -14,8 +14,13 @@ body {
   padding: 0 0 40px 0;
   position: relative;
 }
-.btn-success {
+.btn-success, .btn-success:hover {
   background-color: #2EC094 !important;
+  border-color: #2EC094 !important;
+}
+.btn-primary, .btn-primary:hover {
+  background-color: $darkBlue;
+  border-color: $darkBlue;
 }
 .header {
   position: absolute;

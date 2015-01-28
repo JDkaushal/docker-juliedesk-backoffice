@@ -3,6 +3,8 @@
   $(function(e) {
       $("#validate-suggest-dates-form").click(function() {
           var data = {
+              locale: $("input[name='locale']:checked").val(),
+              timezone: $("#timezone").val(),
               classification: "<%= @classification %>",
               appointment_nature: $("#appointment_nature").val(),
               summary: $("#summary").val(),

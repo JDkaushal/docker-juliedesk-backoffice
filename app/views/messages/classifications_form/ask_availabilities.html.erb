@@ -1,6 +1,35 @@
 <script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>
 <script>
     window.threadDataIsEditable = true;
+    window.leftColumnMessage = "Identification des dates";
+    window.submitClassification = function() {
+        var data = {
+            locale: $("input[name='locale']:checked").val(),
+            timezone: $("#timezone").val(),
+            classification: "<%= @classification %>",
+            appointment_nature: $("#appointment_nature").val(),
+            summary: $("#summary").val(),
+            duration: $("#duration").val(),
+            location: $("#location").val(),
+            notes: $("#notes").val(),
+            attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
+            constraints: $("#constraints").val(),
+            date_times: getSuggestedDateTimes()
+        };
+        $.ajax({
+            url: "/messages/<%= @message.id %>/classify",
+            type: "POST",
+            data: data,
+            success: function(e) {
+                window.location = e.redirect_url;
+            },
+            error: function(e) {
+                console.log("Error: ", e);
+            }
+        });
+    }
+
+    var alreadySuggestedDates = <%== @message.messages_thread.suggested_date_times.map{|dt| dt.to_s}.to_json %>
     var suggestedDates = [];
     var detectedDateId = 1;
 
@@ -15,61 +44,37 @@
       }
     };
     $(function(e) {
-        $("body").on("click", "#validate-ask-availabilities-form, #validate-ask-availabilities-form-bis", function() {
-            var data = {
-                classification: "<%= @classification %>",
-                appointment_nature: $("#appointment_nature").val(),
-                summary: $("#summary").val(),
-                duration: $("#duration").val(),
-                location: $("#location").val(),
-                notes: $("#notes").val(),
-                attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
-                constraints: $("#constraints").val(),
-                date_times: getSuggestedDateTimes()
-            };
-            $.ajax({
-                url: "/messages/<%= @message.id %>/classify",
-                type: "POST",
-                data: data,
-                success: function(e) {
-                    window.location = e.redirect_url;
-                },
-                error: function(e) {
-                    console.log("Error: ", e);
-                }
-            });
+        $(".messages-thread-info-panel .classic-info-panel").hide();
+        $(".messages-thread-info-panel .dates-identification-panel").show();
+        if(alreadySuggestedDates.length > 0) {
+            $(".messages-thread-info-panel .dates-identification-panel .already-suggested-dates-container").show();
+            $(".messages-thread-info-panel .dates-identification-panel .detected-dates-container").hide();
+        }
+        else {
+            $(".messages-thread-info-panel .dates-identification-panel .already-suggested-dates-container").hide();
+            $(".messages-thread-info-panel .dates-identification-panel .detected-dates-container").show();
+        }
+        processDateDetection();
 
+        $("body").on("click", ".detected-date .detected-date-remove-button", function(e) {
+            $(this).closest(".detected-date").remove();
         });
-
-        changeAlreadySuggestedDateCheckbox();
-        $(".already-suggested-dates-container .already-suggested-date").click(function(e) {
-            if($(e.target).is("input[type=checkbox")) return;
-
-            var $checkbox = $(this).find("input[type=checkbox]");
-            var newValue = !$checkbox.prop("checked");
-            $checkbox.prop("checked", newValue);
-            changeAlreadySuggestedDateCheckbox();
-
-        });
-        $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]").change(changeAlreadySuggestedDateCheckbox);
-
-        $("#submit-these-already-suggested-dates").click(function() {
-            suggestedDates = $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]:checked").map(function() {
-                return {
-                    date: $(this).val()
-                };
-            }).toArray();
-            $(".already-suggested-dates-container").hide();
-            $(".please-fill-in-form").show();
-
-            addSuggestedDatesToHeader();
-
-            window.clickBackButtonFunctions.push(function() {
-                $(".already-suggested-dates-container").show();
-                $(".please-fill-in-form").hide();
-                removeSuggestedDatesToHeader();
+        $("#add-detected-date-button").click(function(e) {
+            appendDetectedDateRow({
+                startDate: moment()
             });
         });
+
+        $("body").on("change", ".detected-date .detected-date-radios input[type=radio]", function(e) {
+            var val = $(this).closest(".detected-date").find("input[type=radio]:checked").val();
+            if(val =="freetext") {
+                $(this).closest(".detected-date").find(".detected-date-freetext-container").show();
+            }
+            else {
+                $(this).closest(".detected-date").find(".detected-date-freetext-container").hide();
+            }
+        });
+
         $("#submit-detected-date-button").click(function() {
             suggestedDates = $(".detected-dates-container .detected-dates .detected-date").map(function() {
                 var $radio = $(this).find(".detected-date-radios input[type=radio]:checked");
@@ -84,8 +89,8 @@
                     };
                 }
             }).toArray();
-            $(".detected-dates-container").hide();
-            $(".please-fill-in-form").show();
+            $(".messages-thread-info-panel .dates-identification-panel").hide();
+            $(".messages-thread-info-panel .classic-info-panel").show();
 
             addSuggestedDatesToHeader();
 
@@ -96,43 +101,52 @@
             });
         });
 
+        changeAlreadySuggestedDateCheckbox();
+        $(".already-suggested-dates-container .already-suggested-date").click(function(e) {
+            if($(e.target).is("input[type=checkbox")) return;
+
+            var $checkbox = $(this).find("input[type=checkbox]");
+            var newValue = !$checkbox.prop("checked");
+            $checkbox.prop("checked", newValue);
+            changeAlreadySuggestedDateCheckbox();
+
+        });
+        $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]").change(changeAlreadySuggestedDateCheckbox);
+
+
+        $("#submit-these-already-suggested-dates").click(function() {
+            suggestedDates = $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]:checked").map(function() {
+                return {
+                    date: $(this).val()
+                };
+            }).toArray();
+            $(".messages-thread-info-panel .dates-identification-panel").hide();
+            $(".messages-thread-info-panel .classic-info-panel").show();
+
+            addSuggestedDatesToHeader();
+
+            window.clickBackButtonFunctions.push(function() {
+                $(".already-suggested-dates-container").show();
+                $(".please-fill-in-form").hide();
+                removeSuggestedDatesToHeader();
+            });
+        });
+
+
         $("#none-of-already-suggested-dates").click(function() {
             $(".already-suggested-dates-container").hide();
             $(".detected-dates-container").show();
-
-            processDateDetection();
 
             window.clickBackButtonFunctions.push(function() {
                 $(".already-suggested-dates-container").show();
                 $(".detected-dates-container").hide();
             });
-
-
         });
-        $("body").on("click", ".detected-date .detected-date-remove-button", function(e) {
-            $(this).closest(".detected-date").remove();
-        });
-        $("#add-detected-date-button").click(function(e) {
-           appendDetectedDateRow({
-               startDate: moment()
-           });
-        });
-
-        $("body").on("change", ".detected-date .detected-date-radios input[type=radio]", function(e) {
-            var val = $(this).closest(".detected-date").find("input[type=radio]:checked").val();
-            if(val =="freetext") {
-                $(this).closest(".detected-date").find(".detected-date-freetext-container").show();
-            }
-            else {
-                $(this).closest(".detected-date").find(".detected-date-freetext-container").hide();
-            }
-        });
-
     });
 
     function processDateDetection () {
         if(detectedDates.length == 0) {
-            runDateDetection($(".email .body")[0]);
+            runDateDetection($(".email.highlighted .body")[0]);
         }
 
         $(".detected-dates").html("");
@@ -183,10 +197,7 @@
         $dataEntry.append($dataEntryValue);
         $("#thread-header-other-entries-container").append($dataEntry);
 
-        var $submitButton = $("<button>").addClass("btn btn-success btn-block").html("Validate").attr('id', 'validate-ask-availabilities-form-bis');
         $("#thread-header-other-entries-container").append("<br/><br/>");
-        $("#thread-header-other-entries-container").append($submitButton);
-
     }
 
     function appendDetectedDateRow(params) {
@@ -266,48 +277,4 @@
     }
 
 </script>
-<% suggested_date_times = @message.messages_thread.suggested_date_times %>
-
-<% if suggested_date_times.length > 0 %>
-    <div class="already-suggested-dates-container">
-    <h4>Does contact answer to (an) already suggested date(s)?</h4>
-
-    <div class="already-suggested-dates">
-    <%  suggested_date_times.each do |dt| %>
-      <div class="already-suggested-date">
-        <%= check_box_tag :already_suggested_date, dt.strftime("%Y-%m-%dT%H:%M") %>
-        <%= I18n.l(dt, format: "%A %d %B %Y à %H:%M") %>
-      </div>
-    <% end %>
-    </div>
-
-    <button id="none-of-already-suggested-dates" class="btn btn-warning">None of these</button>
-    <button id="submit-these-already-suggested-dates" class="btn btn-primary">Submit</button>
-
-      </div>
-    <% else %>
-    <script>
-        $(function() {
-            processDateDetection();
-        });
-    </script>
-    <% end %>
-<div class="detected-dates-container" style="display: <%= (suggested_date_times.length > 0)?"none":"block"%>">
-  <h4>Verify detected dates</h4>
-  <div class="detected-dates">
-
-  </div>
-  <div class="add-detected-date-button-container">
-    <button class="btn btn-sm btn-default" id="add-detected-date-button">Add a date</button>
-  </div>
-  <br>
-  <button class="btn btn btn-primary" id="submit-detected-date-button">Submit</button>
-</div>
-
-<div class="please-fill-in-form" style="display: none">
-  <h4>Please fill in form at right</h4>
-
-  <%= submit_tag "Validate", id: "validate-ask-availabilities-form", class: "btn btn-success" %>
-</div>
-
 

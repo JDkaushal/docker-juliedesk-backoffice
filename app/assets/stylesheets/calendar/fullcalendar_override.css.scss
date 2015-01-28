@@ -64,6 +64,13 @@
 
     .fc-header {
       margin: 0 0 10px 0;
+      position: relative;
+      background: #fff;
+      z-index: 9;
+
+      &.as-header {
+        border-bottom: 1px solid #ccc;
+      }
 
       .fc-header-title {
         padding: 11px 0;
