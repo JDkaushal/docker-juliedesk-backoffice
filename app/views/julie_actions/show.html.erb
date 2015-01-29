@@ -3,7 +3,8 @@
     window.timeSlotToCreate = null;
     window.currentEventId = null;
 
-    window.threadLocale = "<% @messages_thread.computed_data[:locale] %>";
+    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
+    window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
 
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
@@ -200,9 +201,13 @@
                     appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
                     location: "<%= @messages_thread.computed_data[:location] %>"
                 });
+                if(window.threadTimezoneId != "Europe/Paris") {
+                    message += localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+                }
+
                 for (var i in window.timeSlotsToSuggest) {
                     var timeSlot = timeSlotsToSuggest[i];
-                    message += "\n  - " + capitalize(moment(timeSlot).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+                    message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
                 }
                 message += localize("email_templates.suggest_dates.after_dates");
             }

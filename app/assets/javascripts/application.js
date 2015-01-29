@@ -20,6 +20,7 @@
 //= require jquery.tokeninput
 //= require moment-with-locales.min
 //= require moment-timezone-with-data
+//= require timezone_picker
 
 //= require calendar/main
 //= require calendar/fullcalendar

@@ -11,7 +11,8 @@ window.wordings['fr'] = {
         common: {
             before: "Bonjour,\n\n",
             after: "\n\nCordialement,\n\nJulie\nIntelligence artificielle",
-            full_date_format: "dddd DD MMMM YYYY à HH:mm"
+            full_date_format: "dddd DD MMMM YYYY à HH:mm",
+            timezone_precision: " (Fuseau horaire : %{timezone})"
         }
     }
 };

@@ -11,7 +11,8 @@ window.wordings['en'] = {
         common: {
             before: "Hi,\n\n",
             after: "\n\nBest,\n\nJulie\nArtificial intelligence",
-            full_date_format: "dddd DD MMMM YYYY, hh:mm a"
+            full_date_format: "dddd DD MMMM YYYY, hh:mm a",
+            timezone_precision: " (Timezone: %{timezone})"
         }
     }
 };
