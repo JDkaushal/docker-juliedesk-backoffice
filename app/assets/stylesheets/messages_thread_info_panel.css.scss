@@ -58,6 +58,11 @@
   .data {
     padding: 50px 0 0 0;
     .data-entry {
+
+      .semi-data-entry {
+        display: inline-block;
+        width: 40%;
+      }
       .data-entry-name {
         font-size: 11px;
         opacity: 0.8;

@@ -239,7 +239,7 @@
 
     <% unless @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
       <div class="julie-action-title">
-        To do: <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %>
+        <%= I18n.t("common.to_do") %> <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %>
       </div>
     <% end %>
 
@@ -267,14 +267,14 @@
 
 
                 <div class="reply-box">
-                  <div class="from">From: julie@juliedesk.com</div>
+                  <div class="from"><%= I18n.t("common.from")%> julie@juliedesk.com</div>
                   <div class="to">
 
-                    <span>To:</span>
+                    <span><%= I18n.t("common.to")%></span>
                     <input id="recipients-input"/>
                   </div>
                   <textarea id="reply-text"></textarea>
-                  <button class="btn btn-success" id="reply-button">Reply</button>
+                  <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply")%></button>
                   <div id="callback-message"></div>
                 </div>
               </div>

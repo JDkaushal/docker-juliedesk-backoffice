@@ -20,7 +20,6 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
   emails_to_handle:
     zero: "No email to handle"
     one: "1 email to handle"
@@ -78,13 +77,36 @@ en:
   back: "Back"
   time_ago: "%{time} ago"
 
-  email_templates:
-    suggest_dates:
-      before_dates: "%{client} is available for an %{appointment_nature} (%{location}):"
-      after_dates: "\n\nWhich date is the best for you?"
-    invites_sent: "Perfect, invites sent for a %{appointment_nature} at #{location}:\n#{date}."
-    info_asked: "Here is the info you asked:"
-    common:
-      before: "Hi,\n\n"
-      after: "\n\nBest,\n\nJulie\nArtificial intelligence"
-      full_date_format: "dddd DD MMMM YYYY at HH:mm"
+  common:
+    save: "Save"
+    yes: "Yes"
+    no: "No"
+    submit: "Submit"
+    to_do: "To do:"
+    from: "From:"
+    to: "To:"
+    reply: "Reply"
+
+  index:
+    nothing_to_do: "What a lovely day, nothing to do :)"
+  info_box:
+    no_account_found: "No account found"
+    locale: "Locale"
+    french: "French"
+    english: "English"
+    timezone: "Timezone"
+    ticket_notes: "Ticket notes"
+    appointment_type: "Appointment type"
+    summary: "Summary"
+    duration: "Duration"
+    location: "Location"
+    attendees: "Attendees"
+    notes: "Notes"
+    create_event: "Create event"
+    dates_to_check: "Dates to check"
+
+  dates_identifications:
+    add_a_date: "Add a date"
+    verify_detected_dates: "Verify detected dates"
+    does_contact_already_date: "Does contact answer to (an) already suggested date(s)?"
+

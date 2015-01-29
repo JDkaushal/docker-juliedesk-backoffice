@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  before_filter :authenticate
+  before_filter :authenticate, :set_locale
 
   def omniauth_callback
 
@@ -15,6 +15,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def set_locale
+    I18n.locale = :fr
+  end
   def authenticate
     authenticate_or_request_with_http_basic do |username, password|
       username == "WePopp" && password == "popp2012jmm"
