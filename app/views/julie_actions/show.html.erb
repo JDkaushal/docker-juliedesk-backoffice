@@ -44,6 +44,14 @@
 
 
     $(function () {
+        $("#show-calendar-button").click(function() {
+           $(".calendar-container").removeClass("minimized");
+        });
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function(e) {
+            var dateTime = $(this).data("date-time");
+            $(".calendar-container").removeClass("minimized");
+            window.currentCalendar.goToDateTime(dateTime);
+        });
         $("#recipients-input").tokenInput(
                 possibleRecipients(),
                 {
@@ -174,6 +182,7 @@
             if (event.data.message == "drawExternalEventsList") {
                 window.timeSlotsToSuggest = event.data.date_times;
                 redrawReplyText();
+                redrawTimeSlotsToSuggestContainer();
             }
             else if (event.data.message == "drawExternalEventCreation") {
                 window.timeSlotToCreate = event.data.eventStart;
@@ -190,6 +199,29 @@
                 $("#create-event-button").removeAttr('disabled');
             }
         }, false);
+
+        function redrawTimeSlotsToSuggestContainer() {
+            var $container = $("#thread-header-other-entries-container");
+            $container.html("");
+            var $timeSlotsToSuggestDiv = $("<div>").addClass("time-slots-to-suggest-list-container");
+            var $timeSlotsToSuggestListDiv = $("<div>").addClass("time-slots-to-suggest-list");
+            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-title").html("Dates sélectionnées"));
+            for (var i in window.timeSlotsToSuggest) {
+                var timeSlot = timeSlotsToSuggest[i];
+                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block btn-primary time-slot-to-suggest").data("date-time", timeSlot).html(capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format"))));
+                $timeSlotsToSuggestListDiv.append($timeSlotDiv);
+            }
+            $timeSlotsToSuggestDiv.append($timeSlotsToSuggestListDiv);
+            $container.append($timeSlotsToSuggestDiv);
+            var height = $(".time-slots-to-suggest-list").outerHeight();
+
+            $(".time-slots-to-suggest-list-container").css({height: height});
+            var $fakeDiv = $("<div>").css({
+                height: height,
+                width: '100%'
+            });
+            $container.append($fakeDiv);
+        }
 
         function redrawReplyText() {
             setCurrentLocale(window.threadLocale);
@@ -240,8 +272,14 @@
     <% unless @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
       <div class="julie-action-title">
         <%= I18n.t("common.to_do") %> <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %>
+        <div id="show-calendar-button" class="btn btn-sm btn-default"><%= I18n.t("actions.show_calendar")%></div>
       </div>
     <% end %>
+
+    <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES || @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+      <%= render template: "calendar/calendar" %>
+    <% end %>
+
 
     <div class="julie-action-fantom"></div>
 
@@ -255,17 +293,6 @@
 
           <% if message.id == @message.id %>
               <div class="highlighted-below-email">
-
-                <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
-                    <%= render template: "calendar/calendar" %>
-                <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
-                    <%= render template: "calendar/calendar" %>
-                <% else %>
-
-                <% end %>
-
-
-
                 <div class="reply-box">
                   <div class="from"><%= I18n.t("common.from")%> julie@juliedesk.com</div>
                   <div class="to">

@@ -7,7 +7,7 @@ Calendar.prototype.generateEventData = function(params) {
         title: title,
         start: params.start,
         end: params.end,
-        color:"#f4416d",
+        color:"rgb(40, 166, 203)",
         durationEditable: false,
         editable: true,
         beingAdded: true
@@ -135,7 +135,7 @@ Calendar.prototype.fullCalendarInit = function() {
         lang: CommonHelpers.getLocale(),
         editable: true,
         scrollTime:'09:00:00',
-        height: 1300,
+        height: calendar.initialData.height,
         selectable: true,
         selectHelper: true,
         defaultView:'agendaWeek',

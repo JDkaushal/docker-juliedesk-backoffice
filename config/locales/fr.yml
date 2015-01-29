@@ -240,6 +240,7 @@ fr:
         todo: "envoyer aux founders"
       free_action:
         todo: "envoyer un email"
+      show_calendar: "Afficher le calendrier"
   back: "Retour"
   time_ago: "il y a %{time}"
 

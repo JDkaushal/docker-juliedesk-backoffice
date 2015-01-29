@@ -52,6 +52,9 @@ function Calendar($selector, params) {
     calendar.$selector.find("#weekends-checkbox").change(function (e) {
         calendar.changeWeekendsCheckbox(e);
     });
+    calendar.$selector.find("#minimize-button").click(function(e) {
+        calendar.clickMinimizeButton(e);
+    });
 
 
     // Init fetching
@@ -367,6 +370,11 @@ Calendar.prototype.changeWeekendsCheckbox = function () {
     $('#calendar').fullCalendar('addEventSource', currentEvents);
 };
 
+    Calendar.prototype.goToDateTime = function(dateTime) {
+    var calendar = this;
+    calendar.$selector.find("#calendar").fullCalendar('gotoDate', moment(dateTime));
+};
+
 Calendar.prototype.selectSuggestedEvent = function(dateTime) {
     var calendar = this;
     var matchingEvents = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
@@ -405,7 +413,7 @@ Calendar.prototype.addEvent = function (event) {
             return ev.beingAdded
                 && ev.start.isSame(event.start);
         })[0];
-        calendar.eventBeingAdded.color = "#f4416d";
+        calendar.eventBeingAdded.color = "rgb(40, 166, 203)";
         calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
         calendar.updateEventCreation();
     }
@@ -523,4 +531,9 @@ Calendar.prototype.fetchAccountPreferences = function (callback) {
 
         if (callback) callback();
     });
+};
+Calendar.prototype.clickMinimizeButton = function(e) {
+    var calendar = this;
+    console.log("click", calendar, calendar.$selector);
+    calendar.$selector.addClass("minimized");
 };

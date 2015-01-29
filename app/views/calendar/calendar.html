@@ -1,5 +1,6 @@
 <script>
     $(function () {
+        window.calendarParams.height = $(".calendar-container").height();
         window.currentCalendar = new Calendar($(".calendar-container"), window.calendarParams);
     });
 </script>
@@ -29,6 +30,8 @@
 
         <div id='calendar'></div>
     </div>
+
+    <div id="minimize-button" class="btn btn-default">Minimize</div>
 
     <div id="event-details-container">
         <div class="event-details-positionner">
