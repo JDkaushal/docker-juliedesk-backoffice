@@ -124,13 +124,19 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
 
 Calendar.prototype.fullCalendarInit = function() {
     var calendar = this;
+    var defaultDate = moment();
+    if(calendar.eventsToCheck.length > 0 && calendar.getMode() == "create_event") {
+        defaultDate = $.map(calendar.eventsToCheck, function(v, k) {
+           return v.start;
+        }).sort()[0];
+    }
     $('#calendar').fullCalendar({
         header: {
             left: 'today prev,next title',
             center: '',
             right: ''
         },
-        defaultDate: Date().toString("yyyy-mm-dd"),
+        defaultDate: defaultDate,
         weekends: calendar.shouldDisplayWeekends,
         lang: CommonHelpers.getLocale(),
         editable: true,

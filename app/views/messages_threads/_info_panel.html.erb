@@ -54,9 +54,34 @@
 
   <div class="message-container"></div>
 
+  <div class="created-event-panel">
+    <div class="event-summary">
+    </div>
+    <div class="event-date event-row">
+      <%= image_tag "event/date_icon.png" %>
+      <div></div>
+    </div>
+    <div class="event-location event-row">
+      <%= image_tag "event/place_icon.png" %>
+      <div></div>
+    </div>
+    <div class="event-notes event-row">
+      <%= image_tag "event/notes_icon.png" %>
+      <div></div>
+    </div>
+    <div class="event-attendees event-row">
+      <%= image_tag "event/participant_icon.png" %>
+      <div></div>
+    </div>
+
+    <div class="fetching-spinner-container">
+      <%= image_tag "ajax-loader.gif" %>
+      <div>Fetching event...</div>
+    </div>
+  </div>
   <div class="create-event-panel">
     <div class="data-entry">
-      <div class="data-entry-name"><%= I18n.t("info_box.dates_to_check")%>></div>
+      <div class="data-entry-name"><%= I18n.t("info_box.dates_to_check")%></div>
       <div class="data-entry-value">
         <div class="suggested-date-times">
           <% messages_thread.computed_data[:date_times].each do |dt| %>
@@ -182,8 +207,8 @@
         <% end %>
       </div>
 
-      <button id="none-of-already-suggested-dates" class="btn btn-default"><%= I18n.t("common.no")%></button>
-      <button id="submit-these-already-suggested-dates" class="btn btn-success"><%= I18n.t("common.yes")%></button>
+      <button id="none-of-already-suggested-dates" class="btn btn-default"><%= I18n.t("common.sno")%></button>
+      <button id="submit-these-already-suggested-dates" class="btn btn-success"><%= I18n.t("common.syes")%></button>
 
     </div>
 

@@ -109,4 +109,39 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
+    else if(request.action == "get_event") {
+        $.ajax({
+            url: host + "/api/v1/calendar_proxy/event_get",
+            type: "GET",
+            contentType: "application/json",
+            data: {
+                email: request.email,
+                access_key: access_key,
+                event_id: request.event_id,
+                calendar_id: request.calendar_id
+            },
+            success: function(e) {
+                callback(e);
+            },
+            error: function(e) {
+                console.log(e);
+                error_callback(e);
+            }
+        });
+    }
+};
+
+
+CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale) {
+    if(!locale) locale = "en";
+    var mStartDate = moment(startDate).locale(locale);
+    var mEndDate = moment(endDate).locale(locale);
+
+    if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
+        return mStartDate.format("dddd D MMMM YYYY") + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm");
+    }
+    else {
+        return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm");
+    }
+
 };

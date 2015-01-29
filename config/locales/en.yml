@@ -68,8 +68,8 @@ en:
         todo: "question client"
       send_info:
         todo: "send info"
-      send_confirmation:
-        todo: "send confirmation"
+      send_confirmation_email:
+        todo: "send confirmation email"
       send_to_founders:
         todo: "send to founders"
       free_action:
@@ -80,8 +80,8 @@ en:
 
   common:
     save: "Save"
-    yes: "Yes"
-    no: "No"
+    syes: "Yes"
+    sno: "No"
     submit: "Submit"
     to_do: "To do:"
     from: "From:"

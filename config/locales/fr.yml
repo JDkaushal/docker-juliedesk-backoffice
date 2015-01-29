@@ -234,8 +234,8 @@ fr:
         todo: "questionner le client"
       send_info:
         todo: "envoyer l'info"
-      send_confirmation:
-        todo: "envoyer la confirmation"
+      send_confirmation_email:
+        todo: "envoyer la confirmation par email"
       send_to_founders:
         todo: "envoyer aux founders"
       free_action:
@@ -246,8 +246,8 @@ fr:
 
   common:
     save: "Enregistrer"
-    yes: "Oui"
-    no: "Non"
+    syes: "Oui"
+    sno: "Non"
     submit: "Envoyer"
     to_do: "A faire :"
     from: "De :"

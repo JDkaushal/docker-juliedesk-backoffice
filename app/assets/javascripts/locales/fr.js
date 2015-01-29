@@ -6,7 +6,7 @@ window.wordings['fr'] = {
             before_dates: "%{client} serait disponible pour un %{appointment_nature} avec vous au %{location} :",
             after_dates: "\n\nQuel horaire vous conviendrait le mieux ?"
         },
-        invites_sent: "Parfait, invitations envoyées pour un %{appointment_nature} au #{location}:\n#{date}.",
+        invites_sent: "Parfait, invitations envoyées pour un %{appointment_nature} au %{location}:\n%{date}.",
         info_asked: "Voici l'information demandée :",
         common: {
             before: "Bonjour,\n\n",
