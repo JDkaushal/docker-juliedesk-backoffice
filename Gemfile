@@ -22,3 +22,5 @@ gem 'newrelic_rpm'
 gem "gmail-api-ruby", require: "gmail"
 
 gem "omniauth-google-oauth2"
+
+gem "pusher"

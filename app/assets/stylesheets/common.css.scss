@@ -56,6 +56,12 @@ body {
     top: 0px;
     border: 1px solid #ccc;
   }
+  .logged-as {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 12px;
+  }
 }
 
 .fixed-columns {

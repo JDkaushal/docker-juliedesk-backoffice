@@ -1,0 +1,70 @@
+<script>
+    var connectedMembers = [];
+    $(function () {
+        var pusher = new Pusher('<%= Pusher.key %>');
+
+        var presenceChannel = pusher.subscribe('presence-global');
+        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
+            connectedMembers = members.members;
+            redrawConnectedMembers();
+        });
+        presenceChannel.bind('pusher:member_removed', function (member) {
+            delete connectedMembers[member.id];
+            redrawConnectedMembers()
+        });
+        presenceChannel.bind('pusher:member_added', function (member) {
+            connectedMembers[member.id] = member.info;
+            redrawConnectedMembers();
+        });
+
+
+        var channel = pusher.subscribe('private-global-chat');
+        channel.bind('client-chat-message', function (data) {
+            appendMessage(data.message);
+        });
+
+
+        $("#chat_input").keyup(function (e) {
+            if (e.which == 13) {
+                var message = $("#chat_input").val();
+                channel.trigger('client-chat-message', {message: "<%= session[:user_name]%>: " + message});
+                appendMessage("me: " + message);
+                $("#chat_input").val("");
+            }
+        });
+
+
+        $("#chat-container .connected-members").click(function(e) {
+            if($("#chat-container").hasClass("minimized")) {
+                $("#chat-container").removeClass("minimized");
+                $("#chat-container #chat_input").focus();
+            }
+            else {
+                $("#chat-container").addClass("minimized");
+            }
+        });
+    });
+
+    function appendMessage(message) {
+        $("#chat-container .messages").append($("<div>").addClass("message").html(message));
+        $("#chat-container .messages").scrollTop($("#chat-container .messages")[0].scrollHeight);
+        $("#chat-container").removeClass("minimized");
+    }
+
+    function redrawConnectedMembers() {
+        $connectedMembersDiv = $("#chat-container .connected-members");
+        var connectedMemberNames = []
+        for(var memberId in connectedMembers) {
+            connectedMemberNames.push(connectedMembers[memberId].name);
+        }
+        $connectedMembersDiv.html(connectedMemberNames.join(", "));
+    }
+
+</script>
+<div id="chat-container" class="minimized">
+  <div class="connected-members"></div>
+  <div class="messages"></div>
+
+  <%= text_field_tag :chat_input, "" %>
+
+</div>

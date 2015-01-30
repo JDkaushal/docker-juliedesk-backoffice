@@ -20,8 +20,34 @@ class ApplicationController < ActionController::Base
     I18n.locale = :fr
   end
   def authenticate
+    authorized_users = [
+        {
+            username: "nicolas@juliedesk.com",
+            name: "Nico",
+            password: "popp2012jmm"
+        },
+        {
+            username: "julien@juliedesk.com",
+            name: "Julien",
+            password: "popp2012jmm"
+        },
+        {
+            username: "guillaume@juliedesk.com",
+            name: "Guillaume",
+            password: "popp2012jmm"
+        },
+    ]
+
     authenticate_or_request_with_http_basic do |username, password|
-      username == "WePopp" && password == "popp2012jmm"
+      authenticated = false
+      authorized_users.each do |user|
+        if user[:username] == username && user[:password] == password
+          session[:user_username] = user[:username]
+          session[:user_name] = user[:name]
+          authenticated = true
+        end
+      end
+      authenticated
     end
   end
 end

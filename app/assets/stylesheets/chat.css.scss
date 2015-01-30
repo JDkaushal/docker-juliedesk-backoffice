@@ -1,0 +1,40 @@
+#chat-container {
+  position: fixed;
+  bottom: -1px;
+  left: 20px;
+  width: 230px;
+  height: 200px;
+  border: 1px solid #ccc;
+  z-index: 20;
+  background: #fff;
+
+  &.minimized {
+    height: 30px;
+  }
+
+  .connected-members {
+    height: 31px;
+    background: $darkBlue;
+    color: white;
+    line-height: 30px;
+    padding: 0 5px;
+    margin: -1px -1px 0 -1px;
+    cursor: pointer;
+  }
+
+  .messages {
+    padding: 10px 5px;
+    height: 125px;
+    overflow: scroll;
+  }
+  #chat_input {
+    height: 30px;
+    line-height: 30px;
+    padding: 5px 5px 10px 5px;
+    border: none;
+    border-top: 1px solid #ccc;
+    outline: none;
+    margin: 0;
+    width: 100%;
+  }
+}

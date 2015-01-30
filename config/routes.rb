@@ -34,4 +34,6 @@ Rails.application.routes.draw do
   end
 
   get "/auth/:provider/callback" => "application#omniauth_callback"
+
+  post "pusher/auth/", to: "pusher#auth"
 end
