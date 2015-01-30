@@ -12,7 +12,8 @@ class JulieActionsController < ApplicationController
         text: params[:text],
         date_times: (params[:date_times] || []).to_json,
         event_ids: (params[:event_ids] || []).to_json,
-        done: params[:done].present?
+        done: params[:done].present?,
+        processed_in: params[:processed_in]
                                    })
     if julie_action.done
       julie_action.message.google_message.archive

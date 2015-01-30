@@ -1,4 +1,5 @@
 <script>
+    window.startedAt = <%= params[:started_at] || (DateTime.now.to_i * 1000) %>;
     $(function () {
         $("#back-button").click(function () {
             if (window.clickBackButton) {

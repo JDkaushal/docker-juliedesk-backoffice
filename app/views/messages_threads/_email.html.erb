@@ -30,12 +30,16 @@
             e.preventDefault();
             if(!$(this).attr('disabled')) {
                 $email.find(".actions-menu .spinner").show();
-                window.location = $(this).attr('href');
+                window.location = $(this).attr('href') + "?started_at=" + window.startedAt;
             }
         });
         $email.find("blockquote, .gmail_quote").click(function(e) {
             $(this).addClass("expanded");
-        })
+        });
+
+        <% if local_assigns[:expend] %>
+            $email.find("blockquote, .gmail_quote").addClass("expanded");
+        <% end %>
     });
 </script>
 

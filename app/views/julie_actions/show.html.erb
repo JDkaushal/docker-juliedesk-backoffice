@@ -6,6 +6,8 @@
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
     window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
 
+    window.startedAt = Date.now();
+
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
     window.calendarParams = {
@@ -206,7 +208,8 @@
                     to: currentRecipients().to,
                     cc: currentRecipients().cc,
                     date_times: window.timeSlotsToSuggest,
-                    done: true
+                    done: true,
+                    processed_in: Date.now() - window.startedAt
                 }
             });
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
@@ -218,7 +221,8 @@
                     to: currentRecipients().to,
                     cc: currentRecipients().cc,
                     event_ids: [window.currentEventId],
-                    done: true
+                    done: true,
+                    processed_in: Date.now() - window.startedAt
                 }
             });
             <% else %>
@@ -229,7 +233,8 @@
                     text: $("textarea#reply-text").val(),
                     to: currentRecipients().to,
                     cc: currentRecipients().cc,
-                    done: true
+                    done: true,
+                    processed_in: Date.now() - window.startedAt
                 }
             });
             <% end %>

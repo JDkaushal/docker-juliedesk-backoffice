@@ -10,13 +10,14 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO
-      message_classification = @message.message_classifications.create_from_params classification: @classification
+      message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
       redirect_to message_classification.julie_action
     end
   end
 
   def classify
     message = Message.find(params[:id])
+    params[:operator] = session[:user_username]
     message_classification = message.message_classifications.create_from_params params
 
     render json: {

@@ -12,7 +12,8 @@
           location: $("#location").val(),
           notes: $("#notes").val(),
           attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
-          constraints: $("#constraints").val()
+          constraints: $("#constraints").val(),
+          processed_in: Date.now() - window.startedAt
       };
       $.ajax({
           url: "/messages/<%= @message.id %>/classify",

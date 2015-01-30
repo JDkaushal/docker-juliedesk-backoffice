@@ -26,6 +26,8 @@ class MessageClassification < ActiveRecord::Base
         attendees: (params[:attendees] || []).to_json,
         notes: params[:notes],
         constraints: params[:constraints],
+        operator: params[:operator],
+        processed_in: params[:processed_in],
 
         date_times: (params[:date_times].try(:values) || []).to_json
     )

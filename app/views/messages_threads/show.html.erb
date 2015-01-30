@@ -1,5 +1,8 @@
 <script>
+
     $(function () {
+        window.startedAt = Date.now();
+
         $(".split-thread-button").click(function () {
             $(".messages-thread-emails").addClass("splitting");
         });
@@ -54,7 +57,7 @@
       <div class="split-thread-button"></div>
       <%= button_to "", archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
       <% @messages_thread.messages.each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true, expend: message.received_at == @messages_thread.messages.map(&:received_at).min} %>
       <% end %>
     </div>
   </div>
