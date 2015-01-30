@@ -33,6 +33,9 @@
                 window.location = $(this).attr('href');
             }
         });
+        $email.find("blockquote, .gmail_quote").click(function(e) {
+            $(this).addClass("expanded");
+        })
     });
 </script>
 

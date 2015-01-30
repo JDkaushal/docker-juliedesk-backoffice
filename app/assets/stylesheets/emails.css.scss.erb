@@ -203,7 +203,7 @@
         padding: 30px 10px 5px 10px;
 
         * {
-            background: transparent !important;
+            /*background: transparent !important;*/
         }
 
         .wetime-date-link {
@@ -216,21 +216,21 @@
         }
 
         blockquote, .gmail_quote {
-            //height: 20px;
-            //overflow: hidden;
-            //cursor: pointer;
-            //opacity: 0.5;
+            height: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.5;
             font-size: 14px !important;
 
-            display: none;
-            //&:hover {
-            //  opacity: 1.0;
-            //}
+            &:hover {
+              opacity: 1.0;
+            }
 
-            //&.expanded {
-            //  opacity: 1.0;
-            //  height: auto;
-            //}
+            &.expanded {
+              opacity: 1.0;
+              height: auto;
+                cursor: auto;
+            }
         }
     }
 }
