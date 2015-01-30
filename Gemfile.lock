@@ -47,7 +47,7 @@ GEM
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     fssm (0.2.10)
-    gmail-api-ruby (0.0.7)
+    gmail-api-ruby (0.0.8)
       google-api-client
       hashie (>= 3.3.2)
       hooks (>= 0.4.0)
@@ -73,7 +73,7 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.8.2)
-    jwt (1.2.0)
+    jwt (1.2.1)
     kgio (2.9.2)
     launchy (2.4.3)
       addressable (~> 2.3)
