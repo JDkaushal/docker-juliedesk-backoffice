@@ -36,18 +36,18 @@ class Message < ActiveRecord::Base
 
         if messages_thread
           if messages_thread.account_email == nil
-            email = ApplicationHelper.strip_email google_thread.messages.sort_by(&:date).first.from
+            email = ApplicationHelper.strip_email google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first.from
             account_email = Account.find_account_email email
             messages_thread.update_attribute :account_email, account_email
           end
         else
-          email = ApplicationHelper.strip_email google_thread.messages.sort_by(&:date).first.from
+          email = ApplicationHelper.strip_email google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first.from
           account_email = Account.find_account_email email
 
           messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email
         end
 
-        sorted_messages = google_thread.messages.sort_by(&:date)
+        sorted_messages = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}
 
         snippet = sorted_messages.last.snippet
         messages_thread.update_attributes({subject: sorted_messages.first.subject, snippet: snippet})

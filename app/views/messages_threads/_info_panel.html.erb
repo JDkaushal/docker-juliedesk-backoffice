@@ -143,7 +143,7 @@
 
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type")%></div>
-        <%= select_tag :appointment_nature, options_for_select((messages_thread.account.try(:default_appointments) || {}).map { |k, da| [da['name'], k] }), class: "data-entry form-control" %>
+        <%= select_tag :appointment_nature, options_for_select((messages_thread.account.try(:default_appointments) || {}).map { |k, da| [da['name'], k] }, :selected => messages_thread.computed_data[:appointment_nature]), class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">

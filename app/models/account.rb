@@ -14,6 +14,7 @@ class Account
     account.email = data['email']
     account.calendar_nature = data['calendar_nature']
     account.default_appointments = data['default_appointments']
+    account.default_appointments = {} if account.default_appointments == []
     account.usage_name = data['usage_name']
     account.email_aliases = data['email_aliases']
     account.access_token = data['access_token']

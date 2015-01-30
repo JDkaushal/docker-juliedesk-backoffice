@@ -12,6 +12,7 @@ class MessagesThreadsController < ApplicationController
 
   def archive
     messages_thread = MessagesThread.find(params[:id])
+    messages_thread.google_thread.mark_as_read
     messages_thread.google_thread.archive
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
     redirect_to action: :index
