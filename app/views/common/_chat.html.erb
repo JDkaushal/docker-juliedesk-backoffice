@@ -22,6 +22,9 @@
         channel.bind('client-chat-message', function (data) {
             appendMessage(data.message);
         });
+        channel.bind('new-email', function (data) {
+            appendMessage("Julie: " + "New email in inbox");
+        });
 
 
         $("#chat_input").keyup(function (e) {
