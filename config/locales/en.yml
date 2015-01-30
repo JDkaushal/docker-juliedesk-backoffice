@@ -52,7 +52,7 @@ en:
       other:
         action: "Something else"
       unknown:
-        action: "It is uncertain"
+        action: "Free reply"
   actions:
       create_event:
         todo: "create event"
@@ -87,6 +87,7 @@ en:
     from: "From:"
     to: "To:"
     reply: "Reply"
+    cc: "Cc:"
 
   index:
     nothing_to_do: "What a lovely day, nothing to do :)"

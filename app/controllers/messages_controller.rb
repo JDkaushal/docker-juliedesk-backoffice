@@ -32,6 +32,8 @@ class MessagesController < ApplicationController
 
     response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: params[:text], html: h(simple_format(params[:text]))}))
 
+    response_message.to = (params[:to] || []).join(", ")
+    response_message.cc = (params[:cc] || []).join(", ")
     response_message.deliver
 
     render json: {

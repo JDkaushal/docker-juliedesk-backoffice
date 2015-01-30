@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150128175806) do
+ActiveRecord::Schema.define(version: 20150129182438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,7 +63,8 @@ ActiveRecord::Schema.define(version: 20150128175806) do
     t.datetime "received_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "archived",           default: false
+    t.boolean  "archived",             default: false
+    t.text     "reply_all_recipients"
   end
 
   create_table "messages_threads", force: true do |t|

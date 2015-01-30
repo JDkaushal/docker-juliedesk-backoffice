@@ -10,6 +10,6 @@ class CreateMessagesThreadsTable < ActiveRecord::Migration
   end
 
   def down
-    drop_table :threads
+    drop_table :messages_threads
   end
 end

@@ -27,19 +27,32 @@
     });
     <% end %>
 
-    function initialRecipients() {
+    function initialToRecipients() {
 
-        return <%== @messages_thread.contacts(with_client: true).map { |c| {name: c[:email]} }.to_json %>;
+        return <%== (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| {name: c['email']}}.to_json %>;
+    }
+    function initialCcRecipients() {
+
+        return <%== (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| {name: c['email']}}.to_json %>;
     }
 
     function possibleRecipients() {
-        return <%== @messages_thread.contacts(with_client: true).map { |c| {name: c[:email]} }.to_json %>;
+
+        <% recipients = JSON.parse(@message.reply_all_recipients || "{}") || [] %>
+        <% recipients_array = ((recipients['to'] || []) + (recipients['cc'] || [])).map{|c| c['email']} %>
+
+        return <%== (@messages_thread.contacts(with_client: true).map { |c| c[:email] } + recipients_array).uniq.map{|e| {name: e}}.to_json %>;
     }
 
     function currentRecipients() {
-        return $.map($("#recipients-input").tokenInput("get"), function(elt) {
-            return elt.name;
-        });
+        return {
+            to: $.map($("#recipients-to-input").tokenInput("get"), function(elt) {
+                return elt.name;
+            }),
+            cc: $.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
+                return elt.name;
+            })
+        };
     }
 
 
@@ -52,7 +65,7 @@
             $(".calendar-container").removeClass("minimized");
             window.currentCalendar.goToDateTime(dateTime);
         });
-        $("#recipients-input").tokenInput(
+        $("#recipients-to-input").tokenInput(
                 possibleRecipients(),
                 {
                     searchDelay: 0,
@@ -61,7 +74,20 @@
                     noResultsText: '',
                     searchingText: '',
                     animateDropdown: false,
-                    prePopulate: initialRecipients(),
+                    prePopulate: initialToRecipients(),
+                    preventDuplicates: true,
+                    theme: 'facebook'
+                });
+        $("#recipients-cc-input").tokenInput(
+                possibleRecipients(),
+                {
+                    searchDelay: 0,
+                    enableFreeInput: true,
+                    hintText: '',
+                    noResultsText: '',
+                    searchingText: '',
+                    animateDropdown: false,
+                    prePopulate: initialCcRecipients(),
                     preventDuplicates: true,
                     theme: 'facebook'
                 });
@@ -177,7 +203,8 @@
                 method: "post",
                 data: {
                     text: $("textarea#reply-text").val(),
-                    to: currentRecipients(),
+                    to: currentRecipients().to,
+                    cc: currentRecipients().cc,
                     date_times: window.timeSlotsToSuggest,
                     done: true
                 }
@@ -188,6 +215,8 @@
                 method: "post",
                 data: {
                     text: $("textarea#reply-text").val(),
+                    to: currentRecipients().to,
+                    cc: currentRecipients().cc,
                     event_ids: [window.currentEventId],
                     done: true
                 }
@@ -198,6 +227,8 @@
                 method: "post",
                 data: {
                     text: $("textarea#reply-text").val(),
+                    to: currentRecipients().to,
+                    cc: currentRecipients().cc,
                     done: true
                 }
             });
@@ -206,7 +237,9 @@
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
                 method: "post",
                 data: {
-                    text: $("textarea#reply-text").val()
+                    text: $("textarea#reply-text").val(),
+                    to: currentRecipients().to,
+                    cc: currentRecipients().cc
                 },
                 success: function (e) {
                     $(".reply-box #callback-message").html("Sent.");
@@ -339,9 +372,12 @@
                 <div class="reply-box">
                   <div class="from"><%= I18n.t("common.from")%> julie@juliedesk.com</div>
                   <div class="to">
-
                     <span><%= I18n.t("common.to")%></span>
-                    <input id="recipients-input"/>
+                    <input id="recipients-to-input"/>
+                  </div>
+                  <div class="cc">
+                    <span><%= I18n.t("common.cc")%></span>
+                    <input id="recipients-cc-input"/>
                   </div>
                   <textarea id="reply-text"></textarea>
                   <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply")%></button>

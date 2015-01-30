@@ -56,7 +56,7 @@ class Message < ActiveRecord::Base
           message = Message.find_by_google_message_id google_message.id
 
           unless message
-            messages_thread.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date)
+            messages_thread.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date), reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
           end
         end
       end
@@ -65,6 +65,25 @@ class Message < ActiveRecord::Base
     nil
   end
 
+
+  def self.generate_reply_all_recipients(google_message)
+    gm = google_message.reply_all_with(Gmail::Message.new(text: ""))
+    email_regexp = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i
+    {
+        to: (gm.to || "").split(",").map{|dest|
+          {
+              email: email_regexp.match(dest)[0],
+              name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
+          }
+        },
+        cc: (gm.cc || "").split(",").map{|dest|
+          {
+              email: email_regexp.match(dest)[0],
+              name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
+          }
+        }
+    }
+  end
 
 
 end

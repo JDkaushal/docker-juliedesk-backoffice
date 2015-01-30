@@ -273,7 +273,7 @@ $.TokenList = function (input, url_or_data, settings) {
                     hidden_input.change();
                     return false;
                   }
-                  else if(settings.enableFreeInput) {
+                  else if(settings.enableFreeInput && input_box.val().length > 0) {
                       add_token({name: input_box.val()});
                       hidden_input.change();
                       return false;
