@@ -148,8 +148,6 @@
                     event_id: window.currentEventId,
                     calendar_id: window.currentCalendarId
                 }, function(e) {
-                    console.log(e.data);
-
                     $(".created-event-panel .event-summary").html(e.data.summary);
                     $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>"));
                     $(".created-event-panel .event-location div").html(e.data.location);
