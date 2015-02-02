@@ -56,7 +56,7 @@
 
       <div class="split-thread-button"></div>
       <%= button_to "", archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
-      <% @messages_thread.messages.each do |message| %>
+      <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
           <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true, expend: message.received_at == @messages_thread.messages.map(&:received_at).min} %>
       <% end %>
     </div>

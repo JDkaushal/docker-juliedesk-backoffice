@@ -67,13 +67,13 @@ class Message < ActiveRecord::Base
     gm = google_message.reply_all_with(Gmail::Message.new(text: ""))
     email_regexp = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i
     {
-        to: (gm.to || "").split(",").map{|dest|
+        to: (gm.to || "").split(",").select{|dest| email_regexp.match(dest)}.map{|dest|
           {
               email: email_regexp.match(dest)[0],
               name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
           }
         },
-        cc: (gm.cc || "").split(",").map{|dest|
+        cc: (gm.cc || "").split(",").select{|dest| email_regexp.match(dest)}.map{|dest|
           {
               email: email_regexp.match(dest)[0],
               name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
