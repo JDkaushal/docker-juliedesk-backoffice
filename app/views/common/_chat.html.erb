@@ -1,6 +1,7 @@
 <script>
     var connectedMembers = [];
     var newMessageInChat = false;
+    var flashingTitle = false;
     $(function () {
         var pusher = new Pusher('<%= Pusher.key %>');
 
@@ -83,12 +84,19 @@
     }
 
     function flashTitle() {
+        if(flashingTitle) {
+            return;
+        }
+        flashingTitle = true;
         var windowTitle = document.title;
         document.title = "(1) - " + windowTitle;
         setTimeout(function() {
             document.title = windowTitle;
             if(newMessageInChat) {
                 setTimeout(flashTitle, 1000);
+            }
+            else {
+                flashingTitle = false;
             }
         }, 500);
     }
