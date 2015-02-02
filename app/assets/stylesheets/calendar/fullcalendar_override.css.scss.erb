@@ -1,6 +1,28 @@
 .calendar-container {
   #calendar {
 
+      .fc-icon-left-single-arrow:after {
+          /*content: "\02039";*/
+          content: url("<%= asset_path "calendar/calendar_past_icon.png" %>");
+          font-weight: bold;
+          color: #a0a0a0;
+          zoom:0.5;
+          opacity: 0.6;
+          padding: 0px;
+          margin: 0px;
+      }
+
+      .fc-icon-right-single-arrow:after {
+          /*content: "\0203A";*/
+          content: url("<%= asset_path "calendar/calendar_future_icon.png" %>");
+          font-weight: bold;
+          color: #a0a0a0;
+          zoom:0.5;
+          opacity: 0.6;
+          padding: 0px;
+          margin: 0px;
+      }
+
     a.fc-event {
       color: #fff;
       &:hover, &:focus, &:visited {
@@ -25,7 +47,7 @@
         right: 4px;
         top: 4px;
         opacity: 0.6;
-        content: url("/assets/calendar/delete_calendar.png");
+        content: url("<%= asset_path "calendar/delete_calendar.png" %>");
       }
 
       &.juliedesk-located-event {
@@ -113,5 +135,16 @@
       color: #fff;
     }
   }
+      #calendars-list-popup-toggle-button {
+          height: 26px;
+          width: 26px;
+          margin-bottom: 5px;
+          cursor: pointer;
+          content: url("<%= asset_path "calendar/settings_icon.png" %>");
+
+          &:hover {
+              content: url("<%= asset_path "calendar/settings_icon_hover.png" %>");
+          }
+      }
   }
 }

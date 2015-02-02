@@ -63,17 +63,5 @@
     padding: 10px auto;
   }
 
-  #calendars-list-popup-toggle-button {
-    height: 26px;
-    width: 26px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    content: url("/assets/calendar/settings_icon.png");
-
-    &:hover {
-      content: url("/assets/calendar/settings_icon_hover.png");
-    }
-  }
-
 
 }

@@ -8,13 +8,13 @@
 
     <div class="global-loading">
         <div class="global-loading-positioner">
-            <img src="/assets/ajax-loader.gif" class="global-spinner"/>
+            <%= image_tag "ajax-loader.gif", class: "global-spinner" %>
 
             <div class="global-loading-message"></div>
         </div>
     </div>
     <div class="local-loading">
-        <image src="/assets/ajax-loader.gif" class="local-spinner"/>
+        <%= image_tag "ajax-loader.gif", class: "local-spinner" %>
         <div class="local-loading-message"></div>
     </div>
     <div id="content">
@@ -22,7 +22,7 @@
 
 
         <div class="calendar-header-settings">
-            <span class="calendar-timezone-label">Calendar TZ</span>
+            <span class="calendar-timezone-label"><%= I18n.t("calendar.calendar_tz") %></span>
             <select id="calendar-timezone">
                 <option value="Europe/Paris" selected>Paris</option>
             </select>
@@ -31,7 +31,7 @@
         <div id='calendar'></div>
     </div>
 
-    <div id="minimize-button" class="btn btn-default">Minimize</div>
+    <div id="minimize-button" class="btn btn-default"><%= I18n.t("calendar.minimize")%></div>
 
     <div id="event-details-container">
         <div class="event-details-positionner">
@@ -92,7 +92,7 @@
     <div id="calendars-list-popup" align="center">
         <img id="close-calendars-list-popup" src="/assets/calendar/close_window.png"/>
         <input type='checkbox' id='weekends-checkbox'/>
-        <span>Display weekends</span>
+        <span><%= I18n.t("calendar.display_weekends") %></span>
 
         <div class="calendars"></div>
     </div>

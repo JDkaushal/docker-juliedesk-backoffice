@@ -113,3 +113,8 @@ en:
     verify_detected_dates: "Verify detected dates"
     does_contact_already_date: "Does contact answer to (an) already suggested date(s)?"
 
+  calendar:
+    minimize: "Minimize"
+    calendar_tz: "Calendar TZ"
+    display_weekends: "Display weekends"
+

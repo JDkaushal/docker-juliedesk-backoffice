@@ -194,27 +194,7 @@ html .fc,
 	vertical-align: baseline; /* for IE7 */
 	}
 
-.fc-icon-left-single-arrow:after {
-	/*content: "\02039";*/
-	content: url("/assets/calendar/calendar_past_icon.png");
-	font-weight: bold;
-	color: #a0a0a0;
-	zoom:0.5;
-	opacity: 0.6;
-	padding: 0px;
-	margin: 0px;
-	}
 
-.fc-icon-right-single-arrow:after {
-	/*content: "\0203A";*/
-	content: url("/assets/calendar/calendar_future_icon.png");
-	font-weight: bold;
-	color: #a0a0a0;
-	zoom:0.5;
-	opacity: 0.6;
-	padding: 0px;
-	margin: 0px;
-	}
 
 
 

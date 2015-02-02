@@ -279,3 +279,8 @@ fr:
     verify_detected_dates: "Vérifier les dates détectées"
     does_contact_already_date: "Le contact répond-il à une date déjà proposée ?"
 
+  calendar:
+      minimize: "Minimiser"
+      calendar_tz: "TZ du calendrier"
+      display_weekends: "Afficher les weekends"
+

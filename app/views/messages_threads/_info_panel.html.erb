@@ -1,4 +1,7 @@
 <script>
+    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
+    window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
+
     $(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
@@ -27,6 +30,17 @@
             if (dateTime) {
                 window.currentCalendar.selectSuggestedEvent(dateTime);
             }
+        });
+
+        if(window.threadTimezoneId != "Europe/Paris") {
+            $(".already-suggested-dates-container .already-suggested-dates").before(
+                    localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")})
+            );
+        }
+        $(".already-suggested-dates-container .already-suggested-date").each(function() {
+           var date = $(this).find("input[type=checkbox]").val();
+           var mDate = moment(date);
+           $(this).find("span").html(mDate.tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
         });
 
         $(".submit-classification").click(function () {
@@ -202,7 +216,8 @@
         <%  messages_thread.suggested_date_times.each do |dt| %>
             <div class="already-suggested-date">
               <%= check_box_tag :already_suggested_date, dt.strftime("%Y-%m-%dT%H:%M") %>
-              <%= I18n.l(dt, format: "%A %d %B %Y à %H:%M") %>
+              <span></span>
+              <% I18n.l(dt, format: "%A %d %B %Y à %H:%M %Z") %>
             </div>
         <% end %>
       </div>
