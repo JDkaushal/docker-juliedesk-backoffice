@@ -15,9 +15,6 @@ class JulieActionsController < ApplicationController
         done: params[:done].present?,
         processed_in: params[:processed_in]
                                    })
-    if julie_action.done
-      julie_action.message.google_message.archive
-    end
     render json: {
         status: "success",
         message: "",

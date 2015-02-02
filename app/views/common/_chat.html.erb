@@ -1,5 +1,6 @@
 <script>
     var connectedMembers = [];
+    var newMessageInChat = false;
     $(function () {
         var pusher = new Pusher('<%= Pusher.key %>');
 
@@ -20,9 +21,11 @@
 
         var channel = pusher.subscribe('private-global-chat');
         channel.bind('client-chat-message', function (data) {
+            newMessage();
             appendMessage(data.message);
         });
         channel.bind('new-email', function (data) {
+            newMessage();
             appendMessage("Julie: " + "New email in inbox");
         });
 
@@ -34,6 +37,11 @@
                 appendMessage("me: " + message);
                 $("#chat_input").val("");
             }
+        });
+
+        $("#chat_input").focus(function(e) {
+            newMessageInChat = false;
+            redrawConnectedMembers();
         });
 
 
@@ -56,11 +64,33 @@
 
     function redrawConnectedMembers() {
         $connectedMembersDiv = $("#chat-container .connected-members");
-        var connectedMemberNames = []
+
+        $connectedMembersDiv.removeClass("new-message");
+        if(newMessageInChat) {
+            $connectedMembersDiv.addClass("new-message");
+        }
+        var connectedMemberNames = [];
         for(var memberId in connectedMembers) {
             connectedMemberNames.push(connectedMembers[memberId].name);
         }
         $connectedMembersDiv.html(connectedMemberNames.join(", "));
+    }
+
+    function newMessage() {
+        newMessageInChat = true;
+        redrawConnectedMembers();
+        flashTitle();
+    }
+
+    function flashTitle() {
+        var windowTitle = document.title;
+        document.title = "(1) - " + windowTitle;
+        setTimeout(function() {
+            document.title = windowTitle;
+            if(newMessageInChat) {
+                setTimeout(flashTitle, 1000);
+            }
+        }, 500);
     }
 
 </script>

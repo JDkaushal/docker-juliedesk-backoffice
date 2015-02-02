@@ -14,12 +14,16 @@
 
   .connected-members {
     height: 31px;
-    background: $darkBlue;
+    background: #444;
     color: white;
     line-height: 30px;
     padding: 0 5px;
     margin: -1px -1px 0 -1px;
     cursor: pointer;
+
+    &.new-message {
+      background: $darkBlue;
+    }
   }
 
   .messages {

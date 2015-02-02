@@ -11,7 +11,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def contacts params = {}
-    raw_contacts = google_thread.messages.map{|m| [m.to, m.from] + (m.cc.try(:split, ", ") || [])}.flatten
+    raw_contacts = google_thread.messages.map{|m| (m.to.try(:split, ",") || []) + [m.from] + (m.cc.try(:split, ", ") || [])}.flatten
 
     contact_emails = raw_contacts.map{|email| ApplicationHelper.strip_email email}.uniq - ["julie@juliedesk.com"]
     unless params[:with_client]
@@ -104,5 +104,22 @@ class MessagesThread < ActiveRecord::Base
       google_message.delete
       updated_thread_id = updated_google_message.thread_id
     end
+  end
+
+  def self.find_account_email google_thread
+    first_email = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first
+    email = ApplicationHelper.strip_email(first_email.from)
+    account_email = Account.find_account_email email
+
+    # Account is not the sender
+    unless account_email
+      other_emails = ((first_email.to.try(:split, ",") || []) + (first_email.cc.try(:split, ",") || [])).map{|email| ApplicationHelper.strip_email(email)}
+      account_emails = other_emails.map{|co| Account.find_account_email(co)}.uniq - ["julie@juliedesk.com"]
+      if account_emails.length == 1
+        account_email = account_emails[0]
+      end
+    end
+
+    account_email
   end
 end
