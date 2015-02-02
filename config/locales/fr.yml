@@ -254,6 +254,7 @@ fr:
     to: "A :"
     reply: "Répondre"
     cc: "Cc:"
+    refresh: "Rafraichir"
 
   index:
     nothing_to_do: "Quelle belle journée, rien à traiter :)"

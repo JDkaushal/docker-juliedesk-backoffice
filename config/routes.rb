@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   end
 
   resources :messages_threads, only: [:show, :index] do
+    collection do
+      get "index_with_import", action: :index_with_import, as: :index_with_import
+    end
     member do
       post "archive", action: :archive, as: :archive
       post "split", action: :split, as: :split

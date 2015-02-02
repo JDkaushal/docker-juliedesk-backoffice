@@ -1,8 +1,13 @@
 class MessagesThreadsController < ApplicationController
 
   def index
-    Message.import_emails
+
     @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
+  end
+
+  def index_with_import
+    Message.import_emails
+    redirect_to action: :index
   end
 
   def show

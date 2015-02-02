@@ -5,6 +5,9 @@
 
     <%= render partial: "common/header" %>
 
+
+    <%= link_to I18n.t("common.refresh"), :index_with_import_messages_threads, class: "btn btn-success refresh-inbox-button" %>
+
     <div class="messages-threads-container">
       <% @messages_thread.each do |messages_thread| %>
           <%= link_to messages_thread, class: "messages-thread-item" do %>
