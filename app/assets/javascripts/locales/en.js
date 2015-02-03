@@ -10,7 +10,7 @@ window.wordings['en'] = {
         info_asked: "Here is the info you asked:",
         common: {
             before: "Hi,\n\n",
-            after: "\n\nBest,\n\nJulie\nArtificial intelligence",
+            after: "\n\nBest,\n\nJulie",//\nArtificial intelligence",
             full_date_format: "dddd DD MMMM YYYY, hh:mm a",
             timezone_precision: "\n(Timezone: %{timezone})"
         }

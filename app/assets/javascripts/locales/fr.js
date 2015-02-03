@@ -10,7 +10,7 @@ window.wordings['fr'] = {
         info_asked: "Voici l'information demandée :",
         common: {
             before: "Bonjour,\n\n",
-            after: "\n\nCordialement,\n\nJulie\nIntelligence artificielle",
+            after: "\n\nCordialement,\n\nJulie",//\nIntelligence artificielle",
             full_date_format: "dddd DD MMMM YYYY à HH:mm",
             timezone_precision: "\n(Fuseau horaire : %{timezone})"
         }
