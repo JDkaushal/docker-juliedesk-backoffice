@@ -1,5 +1,8 @@
 class Message < ActiveRecord::Base
 
+  include ActionView::Helpers::TextHelper
+  include ERB::Util
+
   belongs_to :messages_thread
   has_many :message_classifications
 
@@ -9,9 +12,20 @@ class Message < ActiveRecord::Base
     JulieAction.create_from_message self
   end
 
+  def correct_google_message
+    @google_message.text ||= @google_message.body
+    @google_message.html ||= h(simple_format(@google_message.text))
+    @google_message.body = nil
+  end
 
   def google_message
-    @google_message ||= Gmail::Message.get self.google_message_id
+    unless @google_message
+      @google_message = Gmail::Message.get self.google_message_id
+
+      correct_google_message
+    end
+
+    @google_message
   end
 
   def from_me?
