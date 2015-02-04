@@ -172,6 +172,7 @@ DEPENDENCIES
   compass-rails (~> 1.1.2)
   gmail-api-ruby
   jquery-rails
+  mail (= 2.6.3)
   newrelic_rpm
   omniauth-google-oauth2
   pg
