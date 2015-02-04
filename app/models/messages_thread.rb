@@ -11,25 +11,28 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def contacts params = {}
-    raw_contacts = google_thread.messages.map{|m| (m.to.try(:split, ",") || []) + [m.from] + (m.cc.try(:split, ", ") || [])}.flatten
 
-    contact_emails = raw_contacts.map{|email| ApplicationHelper.strip_email email}.uniq - ["julie@juliedesk.com"]
+    google_messages_to_look = google_thread.messages
+    if params[:google_messages_to_look]
+      google_messages_to_look = params[:google_messages_to_look]
+    end
+    to_addresses = google_messages_to_look.map{|m| Mail::AddressList.new((m.to || "").to_ascii).addresses}.flatten
+    from_addresses = google_messages_to_look.map{|m| Mail::AddressList.new((m.from || "").to_ascii).addresses}.flatten
+    cc_addresses = google_messages_to_look.map{|m| Mail::AddressList.new((m.cc || "").to_ascii).addresses}.flatten
+
+    forbidden_emails = ["julie@juliedesk.com"]
     unless params[:with_client]
-      contact_emails -= account.try(:all_emails) || []
+      forbidden_emails += account.try(:all_emails) || []
     end
 
-    contacts_email_and_names = raw_contacts.map{|email| [ApplicationHelper.strip_contact_name(email), ApplicationHelper.strip_email(email)]}
-
-    result = []
-    contact_emails.each do |email|
-      name = contacts_email_and_names.select{|c| c[1] == email && c[0]}.first.try(:[], 0)
-      result << {
-          email: email,
-          name: name
+    (to_addresses + from_addresses + cc_addresses).select{ |contact|
+      !forbidden_emails.include?(contact.address)
+    }.map{ |contact|
+      {
+          email: contact.address,
+          name: contact.name
       }
-    end
-
-    result
+    }.uniq
   end
 
   def computed_data
@@ -136,7 +139,8 @@ class MessagesThread < ActiveRecord::Base
 
     # Account is not the sender
     unless account_email
-      other_emails = ((first_email.to.try(:split, ",") || []) + (first_email.cc.try(:split, ",") || [])).map{|email| ApplicationHelper.strip_email(email)}
+      contacts = self.contacts(with_client: true, google_messages_to_look: [first_email])
+      other_emails = contacts.map{|contact| contact[:email]}
       account_emails = other_emails.map{|co| Account.find_account_email(co)}.uniq - ["julie@juliedesk.com"]
       if account_emails.length == 1
         account_email = account_emails[0]

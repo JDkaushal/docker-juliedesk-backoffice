@@ -26,3 +26,5 @@ gem "omniauth-google-oauth2"
 gem "pusher"
 
 gem "mail", '2.6.3'
+
+gem "stringex"
