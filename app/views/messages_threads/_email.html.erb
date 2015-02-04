@@ -86,11 +86,11 @@
       <% end %>
 
       <div class="to">
-        <span class="email-label">To: </span>
+        <span class="email-label"><%= I18n.t("common.to")%></span>
         <%= email.to %>
       </div>
       <div class="cc">
-        <span class="email-label">Cc: </span>
+        <span class="email-label"><%= I18n.t("common.cc")%></span>
         <%= email.cc %>
       </div>
     </div>

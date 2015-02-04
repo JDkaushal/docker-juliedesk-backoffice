@@ -12,7 +12,7 @@ window.wordings['en'] = {
             before: "Hi,\n\n",
             after: "\n\nBest,\n\nJulie",//\nArtificial intelligence",
             full_date_format: "dddd DD MMMM YYYY, hh:mm a",
-            timezone_precision: "\n(Timezone: %{timezone})"
+            timezone_precision: "(Timezone: %{timezone})"
         }
     }
 };

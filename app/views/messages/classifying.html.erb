@@ -1,5 +1,8 @@
 <script>
     window.startedAt = <%= params[:started_at] || (DateTime.now.to_i * 1000) %>;
+    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
+    setCurrentLocale(window.threadLocale);
+
     $(function () {
         $("#back-button").click(function () {
             if (window.clickBackButton) {
@@ -26,13 +29,13 @@
     <div class="julie-action-fantom"></div>
     <div class="messages-thread-emails">
 
-      <div id="back-button" class="btn btn-link">< Back</div>
+      <div id="back-button" class="btn btn-link">< <%= I18n.t("common.back")%></div>
 
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
       </div>
 
-      <% @messages_thread.messages.each do |message| %>
+      <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
           <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classifications.#{@classification}.action")} %>
       <% end %>
     </div>

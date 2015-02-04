@@ -22,6 +22,14 @@
         &:hover {
           background-color: #fffff5;
         }
+
+        .date {
+
+        }
+        .timezone {
+          color: #aaa;
+          text-align: right;
+        }
       }
     }
     #none-of-already-suggested-dates, #submit-these-already-suggested-dates {
@@ -61,7 +69,7 @@
           top: 40px;
           left: 0;
           width: 100%;
-          height: 75px;
+          height: 115px;
           padding: 5px;
           background: #fff;
 
@@ -83,7 +91,15 @@
           display: inline-block;
           width: 50%;
           text-align: center;
+          margin: 0 0 10px 0;
         }
+
+        .detected-date-timezone {
+          display: inline-block;
+          width: 100%;
+          text-align: center;
+        }
+
         .detected-date-remove-button {
           position: absolute;
           right: 0px;

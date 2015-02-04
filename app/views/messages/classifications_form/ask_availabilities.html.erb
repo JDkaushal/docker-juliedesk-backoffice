@@ -1,7 +1,7 @@
 <script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>
 <script>
     window.threadDataIsEditable = true;
-    window.leftColumnMessage = "Identification des dates";
+    window.leftColumnMessage = "<%= I18n.t("classification.dates_identification") %>";
     window.submitClassification = function() {
         var data = {
             locale: $("input[name='locale']:checked").val(),
@@ -28,13 +28,13 @@
                 console.log("Error: ", e);
             }
         });
-    }
+    };
 
-    var alreadySuggestedDates = <%== @message.messages_thread.suggested_date_times.map{|dt| dt.to_s}.to_json %>
+    var alreadySuggestedDates = <%== @message.messages_thread.suggested_date_times.map{|dt| dt.to_s}.to_json %>;
     var suggestedDates = [];
     var detectedDateId = 1;
 
-    window.clickBackButtonFunctions = []
+    window.clickBackButtonFunctions = [];
     window.clickBackButton = function() {
       if(window.clickBackButtonFunctions.length == 0) {
           window.clickBackButtonDefault();
@@ -44,7 +44,8 @@
           backFunction();
       }
     };
-    $(function(e) {
+
+    function initAskAvailabilities() {
         $(".messages-thread-info-panel .classic-info-panel").hide();
         $(".messages-thread-info-panel .dates-identification-panel").show();
         if(alreadySuggestedDates.length > 0) {
@@ -85,8 +86,9 @@
                     };
                 }
                 else {
+                    var mDate = moment.tz($(this).find(".detected-date-real-date").val() + "T" + $(this).find(".detected-date-time").val(), $(this).find(".detected-date-timezone").val());
                     return {
-                        date: $(this).find(".detected-date-real-date").val() + "T" + $(this).find(".detected-date-time").val()
+                        date: mDate
                     };
                 }
             }).toArray();
@@ -96,9 +98,8 @@
             addSuggestedDatesToHeader();
 
             window.clickBackButtonFunctions.push(function() {
-                $(".detected-dates-container").show();
-                $(".please-fill-in-form").hide();
-                removeSuggestedDatesToHeader();
+                $(".messages-thread-info-panel .dates-identification-panel").show();
+                $(".messages-thread-info-panel .classic-info-panel").hide();
             });
         });
 
@@ -117,8 +118,10 @@
 
         $("#submit-these-already-suggested-dates").click(function() {
             suggestedDates = $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]:checked").map(function() {
+                var date = $(this).closest(".already-suggested-date").data("date");
+                var timezone = $(this).closest(".already-suggested-date").data("timezone");
                 return {
-                    date: $(this).val()
+                    date: moment(date).tz(timezone)
                 };
             }).toArray();
             $(".messages-thread-info-panel .dates-identification-panel").hide();
@@ -127,9 +130,8 @@
             addSuggestedDatesToHeader();
 
             window.clickBackButtonFunctions.push(function() {
-                $(".already-suggested-dates-container").show();
-                $(".please-fill-in-form").hide();
-                removeSuggestedDatesToHeader();
+                $(".messages-thread-info-panel .dates-identification-panel").show();
+                $(".messages-thread-info-panel .classic-info-panel").hide();
             });
         });
 
@@ -143,7 +145,8 @@
                 $(".detected-dates-container").hide();
             });
         });
-    });
+    }
+
 
     function processDateDetection () {
         if(detectedDates.length == 0) {
@@ -177,20 +180,19 @@
     function addSuggestedDatesToHeader() {
         removeSuggestedDatesToHeader();
         var $dataEntry = $("<div>").addClass("data-entry");
-        var $dataEntryName = $("<div>").addClass("data-entry-name").html("Suggested dates");
+        var $dataEntryName = $("<div>").addClass("data-entry-name").html("<%= I18n.t("info_box.suggested_dates") %>");
         var $dataEntryValue = $("<div>").addClass("data-entry");
 
         $.each(suggestedDates, function(k, v) {
             var formattedDate = "";
             if(v.date) {
-                var date = moment(v.date);
-                formattedDate = date.format("dddd D MMMM YYYY à HH:mm");
+                formattedDate = v.date.format(localize("email_templates.common.full_date_format"));
+                formattedDate = formattedDate + "<br>";
+                formattedDate = formattedDate + v.date.tz();
             }
             else {
                 formattedDate = v.text;
             }
-
-
 
             $dataEntryValue.append($("<div>").html(formattedDate));
         });
@@ -241,6 +243,13 @@
         var $detectedDateTime = $("<input>").addClass("detected-date-time").val(mStartDate.format("HH:mm"));
         $detectedDate.append($detectedDateTime);
 
+        var timezone = mStartDate.tz();
+        if(!timezone) {
+            timezone = window.threadTimezoneId;
+        }
+        var $detectedDateTimezone = $("<input>").addClass("detected-date-timezone").val(timezone);
+        $detectedDate.append($detectedDateTimezone);
+
         var $detectedDateRemoveButton = $("<div>").addClass("detected-date-remove-button").html("x");
         $detectedDate.append($detectedDateRemoveButton);
 
@@ -257,6 +266,7 @@
                 altFormat : 'yy-mm-dd'
             });
         });
+        $(".detected-dates .detected-date:last .detected-date-timezone").timezonePicker();
 
         detectedDateId += 1;
     }
@@ -274,8 +284,24 @@
     }
 
     function getSuggestedDateTimes() {
-        return window.suggestedDates;
+        return $.map(window.suggestedDates, function(d) {
+            if(d.date) {
+                return {
+                    date: d.date.clone().tz("utc").format(),
+                    timezone: d.date.tz()
+                }
+            }
+            else {
+                return {
+                    text: d.text
+                }
+            }
+        });
     }
+
+    $(function(e) {
+        initAskAvailabilities();
+    });
 
 </script>
 

@@ -27,7 +27,8 @@ function Calendar($selector, params) {
     var calendar = this;
 
     for(var i=0; i < this.initialData.date_times.length; i++) {
-        var start = moment(this.initialData.date_times[i]);
+
+        var start = moment(this.initialData.date_times[i]).tz(calendar.getCalendarTimezone());
         var end = start.clone();
         end.add('m', calendar.getCurrentDuration());
         var eventData = calendar.generateEventData({
@@ -381,7 +382,7 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
         return ev.beingAdded
             && ev.start.isSame(moment(dateTime));
     });
-    if(matchingEvents.length == 1) {
+    if(matchingEvents.length > 0) {
         calendar.addEvent(matchingEvents[0]);
         calendar.$selector.find("#calendar").fullCalendar('gotoDate', matchingEvents[0].start);
     }
@@ -497,8 +498,9 @@ Calendar.prototype.drawExternalEventsList = function () {
         if (a.start.isAfter(b.start))return 1; else return -1;
     });
     dateTimes = $.map(dateTimes, function (v) {
-        return v.start.format();
+        return moment.tz(v.start.format(), calendar.getCalendarTimezone()).format();
     });
+    //console.log(dateTimes);
     window.postMessage({
         message: "drawExternalEventsList",
         date_times: dateTimes

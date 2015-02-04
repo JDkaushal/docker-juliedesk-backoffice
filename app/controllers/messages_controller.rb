@@ -7,6 +7,7 @@ class MessagesController < ApplicationController
     @message = Message.find params[:id]
     @classification = params[:classification]
     @messages_thread = MessagesThread.includes(messages: :message_classifications).find(@message.messages_thread_id)
+    @messages_thread.re_import
 
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO

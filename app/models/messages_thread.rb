@@ -68,8 +68,29 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def suggested_date_times
-    date_times_strings = messages.map{|m| m.message_classifications.map(&:julie_action).compact.select{|ja| ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES}.map{|ja| JSON.parse(ja.date_times || "[]")}}.flatten
-    date_times_strings.map{|dts| DateTime.parse dts}
+    messages.map{ |m|
+      m.message_classifications.map(&:julie_action).compact.select{ |ja|
+        ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+      }.map{ |ja|
+        JSON.parse(ja.date_times)
+      }
+    }.flatten
+  end
+
+  def all_timezones
+    (messages.map{ |m|
+      m.message_classifications.map(&:julie_action).compact.select{ |ja|
+        ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+      }.map{ |ja|
+        JSON.parse(ja.date_times).map{|dt| dt['timezone']}
+      }
+    }.flatten + messages.map{ |m|
+      m.message_classifications.select{ |mc|
+        mc.classification == MessageClassification::ASK_AVAILABILITIES
+      }.map{ |mc|
+        JSON.parse(mc.date_times).map{|dt| dt['timezone']}.select{|tz| tz.present?}
+      }
+    }.flatten).uniq
   end
 
   def messages_to_classify
@@ -81,7 +102,7 @@ class MessagesThread < ActiveRecord::Base
     self.google_thread.messages.each do |google_message|
       message = self.messages.select{|m| m.google_message_id == google_message.id}.first
       unless message
-        message = self.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date)
+        message = self.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date), reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
       end
       message.google_message = google_message
       message.correct_google_message
@@ -91,6 +112,7 @@ class MessagesThread < ActiveRecord::Base
     (self.messages - existing_messages).each do |message|
       message.delete
     end
+
     self.messages = self.messages && existing_messages
   end
 

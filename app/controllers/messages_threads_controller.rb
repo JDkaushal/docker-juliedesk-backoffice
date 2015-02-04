@@ -1,7 +1,6 @@
 class MessagesThreadsController < ApplicationController
 
   def index
-
     @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
   end
 

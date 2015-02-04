@@ -12,7 +12,7 @@
       <% @messages_thread.each do |messages_thread| %>
           <%= link_to messages_thread, class: "messages-thread-item" do %>
               <div class="account-email">
-                <%= messages_thread.account.try(:usage_name) %>
+                <%= messages_thread.account_name || I18n.t("info_box.no_account_found") %>
                 <%= (messages_thread.messages.length>1) ? "(#{messages_thread.messages.length})" : "" %>
               </div>
               <div class="subject-and-snippet">
@@ -34,5 +34,6 @@
     <% end %>
   </div>
 </div>
+
 
 <div class="messages-thread-info-panel"></div>

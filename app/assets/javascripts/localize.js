@@ -13,10 +13,9 @@ function localize(key, params) {
         var currentKey = keys.shift();
         rawResult = rawResult[currentKey];
     }
-    console.log(rawResult);
     var regexp = /%{([a-zA-Z_]*)}/;
     var lastMatch = rawResult.match(regexp);
-    console.log(lastMatch);
+
     while(lastMatch) {
         rawResult = rawResult.replace(regexp, params[lastMatch[1]]);
         lastMatch = rawResult.match(regexp);

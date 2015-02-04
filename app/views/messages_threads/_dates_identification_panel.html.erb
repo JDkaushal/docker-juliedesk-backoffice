@@ -1,0 +1,44 @@
+<script>
+  $(function() {
+      $(".already-suggested-dates-container .already-suggested-date").each(function() {
+          var date = $(this).data("date");
+          var timezone = $(this).data("timezone");
+          var mDate = moment(date).tz(timezone);
+          var dateString = mDate.locale(window.threadLocale).format(localize("email_templates.common.full_date_format"));
+          $(this).find(".date").html(dateString);
+          $(this).find(".timezone").html("(" + timezone + ")");
+      });
+  });
+</script>
+<div class="dates-identification-panel">
+  <div class="already-suggested-dates-container">
+    <div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>
+
+    <div class="already-suggested-dates">
+      <%  messages_thread.suggested_date_times.each do |dt| %>
+          <div class="already-suggested-date" data-date="<%= dt['date'].to_s %>" data-timezone="<%= dt['timezone'] %>">
+            <%= check_box_tag :already_suggested_date, "" %>
+            <span class="date"></span>
+            <div class="timezone"></div>
+          </div>
+      <% end %>
+    </div>
+
+    <button id="none-of-already-suggested-dates" class="btn btn-default"><%= I18n.t("common.sno")%></button>
+    <button id="submit-these-already-suggested-dates" class="btn btn-success"><%= I18n.t("common.syes")%></button>
+
+  </div>
+
+  <div class="detected-dates-container">
+    <div class="date-identification-question"><%= I18n.t("dates_identifications.verify_detected_dates")%></div>
+    <div class="detected-dates">
+
+    </div>
+    <div class="add-detected-date-button-container">
+      <button class="btn btn-sm btn-default" id="add-detected-date-button"><%= I18n.t("dates_identifications.add_a_date")%></button>
+    </div>
+    <br>
+    <button class="btn btn btn-success btn-block" id="submit-detected-date-button"><%= I18n.t("common.validate")%></button>
+  </div>
+
+</div>

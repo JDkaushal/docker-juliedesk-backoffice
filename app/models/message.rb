@@ -51,11 +51,14 @@ class Message < ActiveRecord::Base
         if messages_thread
           if messages_thread.account_email == nil
             account_email = MessagesThread.find_account_email(google_thread)
-            messages_thread.update_attribute :account_email, account_email
+            messages_thread.update_attributes({
+                                                  account_email: account_email,
+                                                  account_name: Account.create_from_email(account_email).try(:usage_name)
+                                              })
           end
         else
           account_email = MessagesThread.find_account_email(google_thread)
-          messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email
+          messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: Account.create_from_email(account_email).try(:usage_name)
         end
 
         sorted_messages = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}

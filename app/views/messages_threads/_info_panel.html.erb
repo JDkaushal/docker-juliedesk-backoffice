@@ -1,13 +1,14 @@
 <script>
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
     window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
+    var defaultAppointments = <%== messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
 
     $(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
         }
         if (window.threadDataIsEditable) {
-            if ($("input#duration").val() == "" && $("input#summary").val() == "" && $("input#location").val() == "" && $("textarea#notes").val() == "") {
+            if ($("input#summary").val() == "" && $("input#location").val() == "" && $("textarea#notes").val() == "") {
                 setAppointmentValues();
             }
             $("#timezone").timezonePicker();
@@ -25,32 +26,13 @@
             $(this).removeClass("warning");
         });
 
-        $(".suggested-date-times .suggested-date-time").click(function (e) {
-            var dateTime = $(this).data("date-time");
-            if (dateTime) {
-                window.currentCalendar.selectSuggestedEvent(dateTime);
-            }
-        });
-
-        if(window.threadTimezoneId != "Europe/Paris") {
-            $(".already-suggested-dates-container .already-suggested-dates").before(
-                    localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")})
-            );
-        }
-        $(".already-suggested-dates-container .already-suggested-date").each(function() {
-           var date = $(this).find("input[type=checkbox]").val();
-           var mDate = moment(date);
-           $(this).find("span").html(mDate.tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-        });
-
         $(".submit-classification").click(function () {
             if (window.submitClassification) {
                 window.submitClassification();
             }
-        })
+        });
     });
 
-    var defaultAppointments = <%== messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
     function setAppointmentValues() {
         $("input#duration").val(defaultAppointments[$("#appointment_nature").val()].duration);
         <% contact_names = ((messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{messages_thread.account.try(:usage_name)}"]) %>
@@ -61,63 +43,16 @@
         $("input#location").val(defaultAppointments[$("#appointment_nature").val()].location);
         $("textarea#notes").val(defaultAppointments[$("#appointment_nature").val()].notes);
     }
-
 </script>
 
 <div class="messages-thread-info-panel">
 
   <div class="message-container"></div>
 
-  <div class="created-event-panel">
-    <div class="event-summary">
-    </div>
-    <div class="event-date event-row">
-      <%= image_tag "event/date_icon.png" %>
-      <div></div>
-    </div>
-    <div class="event-location event-row">
-      <%= image_tag "event/place_icon.png" %>
-      <div></div>
-    </div>
-    <div class="event-notes event-row">
-      <%= image_tag "event/notes_icon.png" %>
-      <div></div>
-    </div>
-    <div class="event-attendees event-row">
-      <%= image_tag "event/participant_icon.png" %>
-      <div></div>
-    </div>
+  <%= render partial: "messages_threads/created_event_panel" %>
 
-    <div class="fetching-spinner-container">
-      <%= image_tag "ajax-loader.gif" %>
-      <div>Fetching event...</div>
-    </div>
-  </div>
-  <div class="create-event-panel">
-    <div class="data-entry">
-      <div class="data-entry-name"><%= I18n.t("info_box.dates_to_check")%></div>
-      <div class="data-entry-value">
-        <div class="suggested-date-times">
-          <% messages_thread.computed_data[:date_times].each do |dt| %>
-              <% if dt['date']
-                   date = DateTime.parse(dt['date'])
-                   date_text = I18n.l(date, format: "%A %d %B %Y à %H:%M")
-                 else
-                   date_text = dt['text']
-                 end %>
-              <div class="suggested-date-time btn btn-sm btn-default btn-block" data-date-time="<%= dt['date'] %>">
-                <%= date_text %>
-              </div>
-          <% end %>
+  <%= render partial: "messages_threads/create_event_panel", locals: {messages_thread: messages_thread} %>
 
-        </div>
-      </div>
-    </div>
-    <br>
-    <br>
-    <button id="create-event-button" class="btn btn-success btn-block" disabled="disabled"><%= I18n.t("info_box.create_event")%></button>
-    <div class="creating-event-message"></div>
-  </div>
 
   <div class="classic-info-panel">
     <div id="thread-header-other-entries-container"></div>
@@ -146,10 +81,12 @@
             <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en")%> <%= I18n.t("info_box.english")%>
         </div>
       </div>
+
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.timezone")%></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
       </div>
+
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes")%></div>
         <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
@@ -187,7 +124,6 @@
                 <%= attendee %>
               </div>
           <% end %>
-
         </div>
       </div>
 
@@ -199,45 +135,10 @@
       <div class="save-info-container">
         <br>
         <br>
-
         <div class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save")%></div>
       </div>
-
-
     </div>
-
-
   </div>
-  <div class="dates-identification-panel">
-    <div class="already-suggested-dates-container">
-      <div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>
 
-      <div class="already-suggested-dates">
-        <%  messages_thread.suggested_date_times.each do |dt| %>
-            <div class="already-suggested-date">
-              <%= check_box_tag :already_suggested_date, dt.strftime("%Y-%m-%dT%H:%M") %>
-              <span></span>
-              <% I18n.l(dt, format: "%A %d %B %Y à %H:%M %Z") %>
-            </div>
-        <% end %>
-      </div>
-
-      <button id="none-of-already-suggested-dates" class="btn btn-default"><%= I18n.t("common.sno")%></button>
-      <button id="submit-these-already-suggested-dates" class="btn btn-success"><%= I18n.t("common.syes")%></button>
-
-    </div>
-
-    <div class="detected-dates-container">
-      <div class="date-identification-question"><%= I18n.t("dates_identifications.verify_detected_dates")%></div>
-      <div class="detected-dates">
-
-      </div>
-      <div class="add-detected-date-button-container">
-        <button class="btn btn-sm btn-default" id="add-detected-date-button"><%= I18n.t("dates_identifications.add_a_date")%></button>
-      </div>
-      <br>
-      <button class="btn btn btn-success btn-block" id="submit-detected-date-button"><%= I18n.t("common.submit")%></button>
-    </div>
-
-  </div>
+  <%= render partial: "messages_threads/dates_identification_panel", locals: {messages_thread: messages_thread} %>
 </div>

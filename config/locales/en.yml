@@ -89,11 +89,20 @@ en:
     reply: "Reply"
     cc: "Cc:"
     refresh: "Refresh"
+    cancel: "Cancel"
+    split: "Split"
+    logged_as: "Logged as %{name}"
+    back: "Back"
+    validate: "Validate"
+
+  classification:
+    please_fill_info_in: "Please fill info in"
+    dates_identification: "Dates identification"
 
   index:
     nothing_to_do: "What a lovely day, nothing to do :)"
   info_box:
-    no_account_found: "No account found"
+    no_account_found: "No account identified"
     locale: "Locale"
     french: "French"
     english: "English"
@@ -107,6 +116,9 @@ en:
     notes: "Notes"
     create_event: "Create event"
     dates_to_check: "Dates to check"
+    suggested_dates: "Suggested dates"
+    fetching_event: "Fetching event..."
+
 
   dates_identifications:
     add_a_date: "Add a date"

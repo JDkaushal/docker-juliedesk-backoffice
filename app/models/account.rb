@@ -5,10 +5,10 @@ class Account
   attr_accessor :email, :calendar_nature, :default_appointments, :usage_name, :email_aliases, :access_token, :raw_preferences, :current_notes
 
   def self.create_from_email email
-    account_email = self.find_account_email email
-    return nil unless account_email
+    #account_email = self.find_account_email email
+    #return nil unless account_email
 
-    data = get_account_details account_email
+    data = get_account_details email
     return nil unless data
     account = self.new
     account.email = data['email']

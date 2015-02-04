@@ -12,7 +12,7 @@ window.wordings['fr'] = {
             before: "Bonjour,\n\n",
             after: "\n\nCordialement,\n\nJulie",//\nIntelligence artificielle",
             full_date_format: "dddd DD MMMM YYYY à HH:mm",
-            timezone_precision: "\n(Fuseau horaire : %{timezone})"
+            timezone_precision: "(Fuseau horaire : %{timezone})"
         }
     }
 };

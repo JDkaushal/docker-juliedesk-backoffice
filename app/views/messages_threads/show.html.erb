@@ -50,8 +50,8 @@
       </div>
 
       <div class="split-buttons-container">
-        <div class="btn btn-default cancel-split-button">Cancel</div>
-        <div class="btn btn-warning actually-split-button">Split</div>
+        <div class="btn btn-default cancel-split-button"><%= I18n.t("common.cancel") %></div>
+        <div class="btn btn-warning actually-split-button"><%= I18n.t("common.split") %></div>
       </div>
 
       <div class="split-thread-button"></div>
@@ -64,5 +64,7 @@
 
 
 </div>
+
+
 
 <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
