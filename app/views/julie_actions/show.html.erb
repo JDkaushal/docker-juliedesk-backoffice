@@ -6,6 +6,7 @@
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
     window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
 
+    window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.startedAt = Date.now();
 
 
@@ -111,12 +112,11 @@
             $(".calendar-container").addClass("minimized");
             CommonHelpers.externalRequest({
                 action: "create_event",
-                email: "<%= @messages_thread.account.email %>",
-                summary: "<%= @messages_thread.computed_data[:summary] %>",
-                description: "<%== simple_format(@messages_thread.computed_data[:notes]).gsub("\n", "").gsub("\t", "") %>",
+                email: "<%= @messages_thread.account_email %>",
+                summary: window.threadComputedData.summary,
+                description: window.threadComputedData.notes,
                 attendees: <%== @messages_thread.computed_data[:attendees].map{|contact| ApplicationHelper.hash_from_parenthesized_contact contact}.to_json %>,
-                location: "<%= @messages_thread.computed_data[:location] %>",
-                calendar_nature: "<%= @messages_thread.account.calendar_nature %>",
+                location: window.threadComputedData.location,
                 start: start.format(),
                 end: end.format()
             }, function (e) {
@@ -136,6 +136,7 @@
                             $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
                         }, 1000);
                     }
+
                 });
 
                 $.ajax({
@@ -287,7 +288,7 @@
             message = localize("email_templates.suggest_dates.before_dates", {
                 client: "<%= @messages_thread.account.usage_name %>",
                 appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
-                location: "<%= @messages_thread.computed_data[:location] %>"
+                location: window.threadComputedData.location
             });
             if(window.threadTimezoneId != "Europe/Paris") {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
@@ -320,7 +321,7 @@
 
             message = localize("email_templates.invites_sent", {
                 appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
-                location: "<%= @messages_thread.computed_data[:location] %>",
+                location: window.threadComputedData.location,
                 date: dateString
             });
         }
