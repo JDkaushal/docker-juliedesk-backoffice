@@ -140,6 +140,7 @@ Calendar.prototype.fullCalendarInit = function() {
         weekends: calendar.shouldDisplayWeekends,
         lang: CommonHelpers.getLocale(),
         editable: true,
+        snapDuration: {minutes: 15},
         scrollTime:'09:00:00',
         height: calendar.initialData.height,
         selectable: true,
