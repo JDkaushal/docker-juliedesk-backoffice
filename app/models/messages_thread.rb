@@ -13,6 +13,10 @@ class MessagesThread < ActiveRecord::Base
     @account ||= Account.create_from_email account_email
   end
 
+  def julie_alias
+    messages.map(&:julie_alias).uniq.first
+  end
+
   def contacts params = {}
     params[:google_messages_to_look] = google_thread.messages
     params[:forbidden_emails] = []
@@ -27,7 +31,7 @@ class MessagesThread < ActiveRecord::Base
     from_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.from || "").to_ascii).addresses}.flatten
     cc_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.cc || "").to_ascii).addresses}.flatten
 
-    forbidden_emails = ["julie@juliedesk.com"] + (params[:forbidden_emails] || [])
+    forbidden_emails = JULIE_ALIASES + (params[:forbidden_emails] || [])
 
     (to_addresses + from_addresses + cc_addresses).select{ |contact|
       !forbidden_emails.include?(contact.address)
@@ -149,7 +153,7 @@ class MessagesThread < ActiveRecord::Base
     unless account_email
       contacts = self.contacts(google_messages_to_look: [first_email])
       other_emails = contacts.map{|contact| contact[:email]}
-      account_emails = other_emails.map{|co| Account.find_account_email(co)}.uniq - ["julie@juliedesk.com"]
+      account_emails = other_emails.map{|co| Account.find_account_email(co)}.uniq - JULIE_ALIASES
       if account_emails.length == 1
         account_email = account_emails[0]
       end

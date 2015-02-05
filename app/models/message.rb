@@ -29,7 +29,15 @@ class Message < ActiveRecord::Base
   end
 
   def from_me?
-    google_message.from.include? "julie@juliedesk.com"
+    JULIE_ALIASES.select{|julie_alias|
+      google_message.from.include? julie_alias
+    }.length > 0
+  end
+
+  def julie_alias
+    JULIE_ALIASES.select{|julie_alias|
+       "#{google_message.to} #{google_message.cc}".include? julie_alias
+    }.first
   end
 
   def self.import_emails
@@ -82,18 +90,18 @@ class Message < ActiveRecord::Base
 
   def self.generate_reply_all_recipients(google_message)
     gm = google_message.reply_all_with(Gmail::Message.new(text: ""))
-    email_regexp = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i
     {
-        to: (gm.to || "").split(",").select{|dest| email_regexp.match(dest)}.map{|dest|
+
+        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JULIE_ALIASES.include?(dest.address)}.map{|dest|
           {
-              email: email_regexp.match(dest)[0],
-              name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
+              email: dest.address,
+              name: dest.name
           }
         },
-        cc: (gm.cc || "").split(",").select{|dest| email_regexp.match(dest)}.map{|dest|
+        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JULIE_ALIASES.include?(dest.address)}.map{|dest|
           {
-              email: email_regexp.match(dest)[0],
-              name: dest.gsub(email_regexp, "").gsub("<>", "").gsub(/\A\s+/, "").gsub(/\s+\z/, "")
+              email: dest.address,
+              name: dest.name
           }
         }
     }

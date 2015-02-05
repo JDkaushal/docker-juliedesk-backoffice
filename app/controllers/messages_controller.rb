@@ -36,6 +36,7 @@ class MessagesController < ApplicationController
 
     response_message.to = (params[:to] || []).join(", ")
     response_message.cc = (params[:cc] || []).join(", ")
+    response_message.from = "Julie <#{@message.messages_thread.julie_alias}>"
     response_message.deliver
 
     render json: {

@@ -364,7 +364,7 @@
           <% if message.id == @message.id %>
               <div class="highlighted-below-email">
                 <div class="reply-box">
-                  <div class="from"><%= I18n.t("common.from")%> julie@juliedesk.com</div>
+                  <div class="from"><%= I18n.t("common.from")%> <%= "Julie <#{@messages_thread.julie_alias}>" %></div>
                   <div class="to">
                     <span><%= I18n.t("common.to")%></span>
                     <input id="recipients-to-input"/>
