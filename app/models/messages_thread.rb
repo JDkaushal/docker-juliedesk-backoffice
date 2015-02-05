@@ -153,7 +153,7 @@ class MessagesThread < ActiveRecord::Base
     unless account_email
       contacts = self.contacts(google_messages_to_look: [first_email])
       other_emails = contacts.map{|contact| contact[:email]}
-      account_emails = other_emails.map{|co| Account.find_account_email(co)}.uniq - JULIE_ALIASES
+      account_emails = (other_emails.map{|co| Account.find_account_email(co)}.uniq - JULIE_ALIASES).compact
       if account_emails.length == 1
         account_email = account_emails[0]
       end
