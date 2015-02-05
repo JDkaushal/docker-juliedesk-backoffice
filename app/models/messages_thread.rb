@@ -36,9 +36,9 @@ class MessagesThread < ActiveRecord::Base
           email: contact.address,
           name: contact.name
       }
-    }.group_by{|contact|
+    }.group_by{ |contact|
       contact[:email]
-    }.map{|email, contacts|
+    }.map{ |email, contacts|
       contacts.max{|contact| "#{contact[:name]}".length}
     }
   end
@@ -101,7 +101,7 @@ class MessagesThread < ActiveRecord::Base
       }.map{ |mc|
         JSON.parse(mc.date_times).map{|dt| dt['timezone']}.select{|tz| tz.present?}
       }
-    }.flatten).uniq
+    }.flatten).compact.uniq
   end
 
   def messages_to_classify
