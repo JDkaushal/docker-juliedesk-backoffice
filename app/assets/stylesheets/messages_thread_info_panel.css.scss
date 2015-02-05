@@ -193,6 +193,12 @@
       padding: 10px 0 10px 30px;
       font-size: 14px;
       color: #000;
+
+      textarea {
+        border: none;
+        resize: none;
+        width: 100%;
+      }
     }
     .event-attendees {
       padding: 10px 0 10px 30px;

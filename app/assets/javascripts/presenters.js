@@ -9,10 +9,11 @@ window.presenters.redrawEvent = function(params) {
         event_id: params.eventId,
         calendar_id: params.calendarId
     }, function(e) {
-        $(".created-event-panel .event-summary").html(e.data.summary);
+        $(".created-event-panel .event-summary").text(e.data.summary);
         $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>"));
-        $(".created-event-panel .event-location div").html(e.data.location);
-        $(".created-event-panel .event-notes div").html(e.data.description);
+        $(".created-event-panel .event-location div").text(e.data.location);
+        $(".created-event-panel .event-notes textarea").val(e.data.description);
+        $(".created-event-panel .event-notes textarea").elastic();
         var $attendeesDiv = $(".created-event-panel .event-attendees div");
         $attendeesDiv.html("");
         $(e.data.attendees).each(function(k, attendee) {
