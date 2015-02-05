@@ -47,4 +47,17 @@ class MessagesController < ApplicationController
     }
   end
 
+  def mark_as_read
+    message = Message.find params[:id]
+    message.google_message.mark_as_read
+
+    render json: {
+        status: "success",
+        message: "",
+        data: {
+
+        }
+    }
+  end
+
 end

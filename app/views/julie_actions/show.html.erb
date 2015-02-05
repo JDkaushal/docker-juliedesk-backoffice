@@ -127,45 +127,23 @@
                 $(".messages-thread-info-panel .message-container").hide();
                 $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
 
-                $(".messages-thread-info-panel .created-event-panel .fetching-spinner-container").show();
-                $(".messages-thread-info-panel .created-event-panel").show();
-
-                CommonHelpers.externalRequest({
-                    action: "get_event",
-                    email: "<%= @messages_thread.account.email %>",
-                    event_id: window.currentEventId,
-                    calendar_id: window.currentCalendarId
-                }, function(e) {
-                    $(".created-event-panel .event-summary").html(e.data.summary);
-                    $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>"));
-                    $(".created-event-panel .event-location div").html(e.data.location);
-                    $(".created-event-panel .event-notes div").html(e.data.description);
-                    var $attendeesDiv = $(".created-event-panel .event-attendees div");
-                    $attendeesDiv.html("");
-                    $(e.data.attendees).each(function(k, attendee) {
-                        var $attendee = $("<div>").html(attendee.displayName + " - " + attendee.email + " (" + attendee.responseStatus + ")");
-                        $attendee.addClass("attendee-text");
-                        if(attendee.organizer) {
-                            $attendee.addClass("organizer");
-                        }
-                        $attendeesDiv.append($attendee);
-                    });
-
-                    $(".messages-thread-info-panel .created-event-panel .fetching-spinner-container").hide();
-
-                    setTimeout(function() {
-                        $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
-                    }, 1000);
+                window.presenters.redrawEvent({
+                    accountEmail: "<%= @messages_thread.account.email %>",
+                    eventId: window.currentEventId,
+                    calendarId: window.currentCalendarId,
+                    callback: function() {
+                        setTimeout(function() {
+                            $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
+                        }, 1000);
+                    }
                 });
 
                 $.ajax({
                     type: "post",
                     url: "/julie_actions/<%= @julie_action.id %>/update",
                     data: {
-                        event_ids: [{
-                            event_id: window.currentEventId,
-                            calendar_id: window.currentCalendarId
-                        }]
+                        event_id: window.currentEventId,
+                        calendar_id: window.currentCalendarId
                     },
                     success: function (e) {
                         $(".creating-event-message").html("Created.");
@@ -205,7 +183,8 @@
                     text: $("textarea#reply-text").val(),
                     to: currentRecipients().to,
                     cc: currentRecipients().cc,
-                    event_ids: [window.currentEventId],
+                    event_id: window.currentEventId,
+                    calendar_id: window.currentCalendarId,
                     done: true,
                     processed_in: Date.now() - window.startedAt
                 }

@@ -2,8 +2,11 @@ class MessagesThread < ActiveRecord::Base
 
   has_many :messages
 
-  def google_thread
-    @google_thread ||= Gmail::Thread.get(self.google_thread_id)
+  def google_thread params={}
+    if @google_thread.nil? || params[:force_refresh]
+      @google_thread = Gmail::Thread.get(self.google_thread_id)
+    end
+    @google_thread
   end
 
   def account
@@ -33,7 +36,11 @@ class MessagesThread < ActiveRecord::Base
           email: contact.address,
           name: contact.name
       }
-    }.uniq
+    }.group_by{|contact|
+      contact[:email]
+    }.map{|email, contacts|
+      contacts.max{|contact| "#{contact[:name]}".length}
+    }
   end
 
   def computed_data
@@ -149,5 +156,16 @@ class MessagesThread < ActiveRecord::Base
     end
 
     account_email
+  end
+
+  def event_data
+    event_creation_action = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+      ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+    }.last
+
+    {
+        event_id: event_creation_action.try(&:event_id),
+        calendar_id: event_creation_action.try(&:calendar_id)
+    }
   end
 end

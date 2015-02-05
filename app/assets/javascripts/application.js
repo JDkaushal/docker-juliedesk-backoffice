@@ -34,4 +34,6 @@
 //= require jquery.timepicker.min
 //= require jquery-ui.min
 
+//= require presenters
+
 

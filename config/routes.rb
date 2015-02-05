@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     member do
       get "classifying/:classification", action: :classifying, as: :classifying
       post "classify", action: :classify, as: :classify
+      post "mark_as_read", action: :mark_as_read, as: :mark_as_read
 
       post "reply", action: :reply, as: :reply
     end

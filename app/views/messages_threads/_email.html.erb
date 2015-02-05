@@ -1,3 +1,5 @@
+<% email = message.google_message %>
+
 <script>
     $(function () {
         var $email = $(".email-<%= message.google_message_id %>");
@@ -34,8 +36,12 @@
             }
         });
         $email.find("blockquote, .gmail_quote").click(function(e) {
-            $(this).addClass("expanded");
+            $email.find("blockquote, .gmail_quote").addClass("expanded");
         });
+
+        <% if email.unread? %>
+            $.post("<%= mark_as_read_message_path(message) %>");
+        <% end %>
 
         <% if local_assigns[:expend] %>
             $email.find("blockquote, .gmail_quote").addClass("expanded");
@@ -43,8 +49,8 @@
     });
 </script>
 
-<% email = message.google_message %>
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || (!message.archived && !message.from_me?))? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || email.unread? || local_assigns[:last])? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
   <div class="retracted">
     <div class="checkbox-container">
       <%= check_box_tag "checkbox-message-#{message.id}", message.id %>

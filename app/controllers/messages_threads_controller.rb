@@ -16,9 +16,15 @@ class MessagesThreadsController < ApplicationController
 
   def archive
     messages_thread = MessagesThread.find(params[:id])
-    messages_thread.google_thread.mark_as_read
     messages_thread.google_thread.archive
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
+
+    if messages_thread.google_thread(force_refresh: true).messages.map(&:unread?).select(&:present?).length > 0
+      messages_thread.google_thread.unarchive
+    else
+      messages_thread.update_attribute(:in_inbox, false)
+    end
+
     redirect_to action: :index
   end
 

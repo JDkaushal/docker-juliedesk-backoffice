@@ -1,6 +1,6 @@
 <script>
-    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
-    window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
+    window.threadLocale = "<%= messages_thread.computed_data[:locale] %>";
+    window.threadTimezoneId = "<%= messages_thread.computed_data[:timezone] %>";
     var defaultAppointments = <%== messages_thread.account.try(:default_appointments).try(:to_json) || {} %>;
 
     $(function () {
@@ -27,10 +27,19 @@
         });
 
         $(".submit-classification").click(function () {
+            $(this).attr('disabled', true);
             if (window.submitClassification) {
                 window.submitClassification();
             }
         });
+
+        <% if messages_thread.event_data[:event_id] %>
+            window.presenters.redrawEvent({
+                accountEmail: "<%= messages_thread.account_email %>",
+                eventId: "<%= messages_thread.event_data[:event_id] %>",
+                calendarId: "<%= messages_thread.event_data[:calendar_id] %>"
+            });
+        <% end %>
     });
 
     function setAppointmentValues() {
@@ -135,7 +144,7 @@
       <div class="save-info-container">
         <br>
         <br>
-        <div class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save")%></div>
+        <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save")%></button>
       </div>
     </div>
   </div>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204114824) do
+ActiveRecord::Schema.define(version: 20150204230140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,13 +30,14 @@ ActiveRecord::Schema.define(version: 20150204114824) do
     t.integer  "message_classification_id"
     t.string   "action_nature"
     t.text     "date_times",                default: "[]"
-    t.text     "event_ids",                 default: "[]"
     t.text     "text"
     t.boolean  "done",                      default: false
     t.boolean  "pending",                   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "processed_in"
+    t.text     "calendar_id"
+    t.text     "event_id"
   end
 
   create_table "message_classifications", force: true do |t|

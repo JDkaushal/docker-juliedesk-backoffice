@@ -22,7 +22,8 @@ class JulieActionsController < ApplicationController
     julie_action.update_attributes({
         text: params[:text],
         date_times: date_times.to_json,
-        event_ids: (params[:event_ids] || []).to_json,
+        event_id: params[:event_id],
+        calendar_id: params[:calendar_id],
         done: params[:done].present?,
         processed_in: params[:processed_in]
                                    })
