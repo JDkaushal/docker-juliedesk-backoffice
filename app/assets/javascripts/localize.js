@@ -10,6 +10,9 @@ function localize(key, params) {
     var keys = key.split(".");
     var rawResult = window.wordings[getCurrentLocale()];
     while(keys.length > 0) {
+        if(!rawResult) {
+            return "Missing wording: " + getCurrentLocale() + "." + key;
+        }
         var currentKey = keys.shift();
         rawResult = rawResult[currentKey];
     }

@@ -326,7 +326,7 @@
             });
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
-        message = localize("emails_templates.info-asked");
+        message = localize("email_templates.info_asked");
         <% end %>
         $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.after"));
         $("textarea#reply-text").elastic();

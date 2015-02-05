@@ -1,6 +1,7 @@
 <script>
-  window.threadDataIsEditable = true;
-  $(function(e) {
+    window.leftColumnMessage = "<%= I18n.t("classification.please_fill_info_in") %>";
+    window.threadDataIsEditable = true;
+    window.submitClassification = function(e) {
       $("#validate-suggest-dates-form").click(function() {
           var data = {
               locale: $("input[name='locale']:checked").val(),
@@ -28,9 +29,8 @@
           });
 
       });
+  };
+  $(function() {
+
   });
 </script>
-
-<h4>Please fill in form at right</h4>
-
-<%= submit_tag "Validate", id: "validate-suggest-dates-form", class: "btn btn-success" %>
