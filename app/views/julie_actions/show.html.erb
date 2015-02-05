@@ -2,6 +2,7 @@
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
     window.currentEventId = null;
+    window.julieAliasId = "<%= JULIE_ALIASES_DATA[@messages_thread.julie_alias][:id] %>"
 
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
     window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
@@ -328,7 +329,7 @@
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
         message = localize("email_templates.info_asked");
         <% end %>
-        $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.after"));
+        $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.signature." + window.julieAliasId));
         $("textarea#reply-text").elastic();
     }
 
@@ -364,7 +365,7 @@
           <% if message.id == @message.id %>
               <div class="highlighted-below-email">
                 <div class="reply-box">
-                  <div class="from"><%= I18n.t("common.from")%> <%= "Julie <#{@messages_thread.julie_alias}>" %></div>
+                  <div class="from"><%= I18n.t("common.from")%> <%= "#{JULIE_ALIASES_DATA[@messages_thread.julie_alias][:name]} <#{@messages_thread.julie_alias}>" %></div>
                   <div class="to">
                     <span><%= I18n.t("common.to")%></span>
                     <input id="recipients-to-input"/>

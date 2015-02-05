@@ -12,7 +12,11 @@ window.wordings['fr'] = {
             before: "Bonjour,\n\n",
             after: "\n\nCordialement,\n\nJulie",//\nIntelligence artificielle",
             full_date_format: "dddd DD MMMM YYYY à HH:mm",
-            timezone_precision: "(Fuseau horaire : %{timezone})"
+            timezone_precision: "(Fuseau horaire : %{timezone})",
+            signature: {
+                "juliedesk": "\n\nCordialement,\n\nJulie",//\nIntelligence artificielle",
+                "breega": "\n\nSincères salutations,\n\nJulie Filhol\nExecutive Assistant\n\n42 avenue Montaigne\n\n75008 Paris - France\n\nTel: +33 1 72 74 10 01\nFax: +33 1 72 74 10 02\n\nEmail: julie.filhol@breega.com\nWeb: www.breega.com"
+            }
         }
     }
 };
