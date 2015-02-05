@@ -27,6 +27,17 @@
         });
         channel.bind('new-email', function (data) {
             newMessage();
+            $(".header .global-todo-count").animate({
+                opacity: 0,
+                top: 20
+            }, 300, function() {
+                $(".header .global-todo-count").html(data.messages_threads_count).css({
+                    top: -20
+                }).animate({
+                            opacity: 1,
+                            top: 0
+                        }, 300);
+            });
             appendMessage("Julie: " + "New email in inbox");
         });
 
