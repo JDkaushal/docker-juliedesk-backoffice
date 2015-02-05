@@ -56,7 +56,7 @@
 
                     <div class="location-container">
                         <input class="location"/>
-                        <img src="/assets/calendar/location_icon.png" class="location-icon"/>
+                        <%= image_tag "calendar/location_icon.png",  class:"location-icon"%>
                     </div>
 
                     <textarea class="notes"></textarea>
@@ -77,9 +77,10 @@
                     </div>
                 </div>
 
-                <img src="/assets/calendar/close_window.png" class="event-close-button"/>
+                <%= image_tag "calendar/close_window.png",  class:"event-close-button"%>
 
-                <img src="/assets/ajax-loader.gif" class="event-spinner"/>
+                <%= image_tag "ajax-loader.gif",  class:"event-spinner"%>
+
 
                 <div id="event-edit-button">Edit</div>
                 <div id="event-delete-button">Delete</div>
@@ -90,7 +91,7 @@
     </div>
 
     <div id="calendars-list-popup" align="center">
-        <img id="close-calendars-list-popup" src="/assets/calendar/close_window.png"/>
+        <%= image_tag "calendar/close_window.png",  id: "close-calendars-list-popup" %>
         <input type='checkbox' id='weekends-checkbox'/>
         <span><%= I18n.t("calendar.display_weekends") %></span>
 

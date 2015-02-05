@@ -7,7 +7,7 @@ class Account
   def self.create_from_email email
     #account_email = self.find_account_email email
     #return nil unless account_email
-
+    return nil unless email
     data = get_account_details email
     return nil unless data
     account = self.new

@@ -12,7 +12,7 @@ module ApplicationHelper
   end
   def self.strip_email contact
     email_regexp = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i
-    email_regexp.match(contact)[0]
+    email_regexp.match(contact).try(:[], 0)
   end
 
   def self.strip_contact_name contact
