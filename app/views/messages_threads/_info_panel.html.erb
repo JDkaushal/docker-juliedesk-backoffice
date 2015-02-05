@@ -44,7 +44,7 @@
 
     function setAppointmentValues() {
         $("input#duration").val(defaultAppointments[$("#appointment_nature").val()].duration);
-        <% contact_names = ((messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{messages_thread.account.try(:usage_name)}"]) %>
+        <% contact_names = ((messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{messages_thread.account.try(:full_name)}"]) %>
         $("input#summary").val(defaultAppointments[$("#appointment_nature").val()].name + " " + "<%= contact_names.join(" / ") %>");
         <% if contact_names.select{|cn| cn.blank?}.length > 0 %>
         $("input#summary").addClass("warning");
