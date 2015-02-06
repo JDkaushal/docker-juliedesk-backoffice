@@ -27,13 +27,18 @@
     }
   }
 
-  textarea {
+  textarea#reply-text {
     width: 100%;
     border: none;
     min-height: 200px;
     resize: none;
-    padding: 20px;
+    padding: 20px 20px 0 20px;
     outline: none;
+  }
+
+  #reply-text-signature {
+    width: 100%;
+    padding: 0px 20px 20px 20px;
   }
 
   #callback-message {

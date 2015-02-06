@@ -57,6 +57,7 @@
     }
 
 
+
     $(function () {
         $("#show-calendar-button").click(function() {
            $(".calendar-container").removeClass("minimized");
@@ -209,6 +210,7 @@
                 method: "post",
                 data: {
                     text: $("textarea#reply-text").val(),
+                    html_signature: $("#reply-text-signature").html(),
                     to: currentRecipients().to,
                     cc: currentRecipients().cc
                 },
@@ -329,7 +331,8 @@
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
         message = localize("email_templates.info_asked");
         <% end %>
-        $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.signature." + window.julieAliasId));
+        $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));
+        $("div#reply-text-signature").html(localize("email_templates.common.signature." + window.julieAliasId));
         $("textarea#reply-text").elastic();
     }
 
@@ -375,6 +378,7 @@
                     <input id="recipients-cc-input"/>
                   </div>
                   <textarea id="reply-text"></textarea>
+                  <div id="reply-text-signature"></div>
                   <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply")%></button>
                   <div id="callback-message"></div>
                 </div>

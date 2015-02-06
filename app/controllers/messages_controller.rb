@@ -32,7 +32,8 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-    response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: params[:text], html: h(simple_format(params[:text]))}))
+    html_message = "#{h(simple_format(params[:text]))} #{params[:html_signature]}"
+    response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: params[:text], html: html_message}))
 
     response_message.to = (params[:to] || []).join(", ")
     response_message.cc = (params[:cc] || []).join(", ")
