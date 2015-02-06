@@ -50,7 +50,7 @@ class MessagesThread < ActiveRecord::Base
   def computed_data
     message_classifications = messages.sort_by(&:received_at).map{|m|
       m.message_classifications
-    }.flatten.compact
+    }.flatten.select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
 
     {
         locale: message_classifications.map(&:locale).compact.last || "fr",
