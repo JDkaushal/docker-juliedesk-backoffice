@@ -32,8 +32,10 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-    html_message = "#{h(simple_format(params[:text]))} #{params[:html_signature]}"
-    response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: params[:text], html: html_message}))
+
+
+    html_message = "#{text_to_html(params[:text])} #{params[:html_signature]}"
+    response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: "#{params[:text]}#{strip_tags(params[:html_signature])}", html: html_message}))
 
     response_message.to = (params[:to] || []).join(", ")
     response_message.cc = (params[:cc] || []).join(", ")
@@ -61,6 +63,12 @@ class MessagesController < ApplicationController
 
         }
     }
+  end
+
+  private
+
+  def text_to_html text
+      text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
   end
 
 end

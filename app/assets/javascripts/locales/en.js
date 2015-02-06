@@ -15,7 +15,7 @@ window.wordings['en'] = {
             timezone_precision: "(Timezone: %{timezone})",
             footer: {
                 "juliedesk": "\n\nBest regards,\n\nJulie",//\nIntelligence artificielle",
-                "breega": "\n\nBest regards,\n\nJulie Filhol"
+                "breega": "\n\nBest regards,\n\n\nJulie Filhol"
             },
             signature: {
                 "juliedesk": "",
