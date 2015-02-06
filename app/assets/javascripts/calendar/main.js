@@ -203,6 +203,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
     var calendar = this;
     var result = [];
 
+    var calIndex;
+
     for (var day in calendar.accountPreferences.unbooking_hours) {
         var slots = calendar.accountPreferences.unbooking_hours[day];
         var mCurrentTime = moment(startTime);
@@ -217,6 +219,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
 
+                    calIndex = k;
 
                     var event = {
                         summary: "Not available",
@@ -239,6 +242,27 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
             }
             mCurrentTime.add(1, 'days');
         }
+    }
+
+    for(var i=0; i<calendar.accountPreferences.temporary_unavailabilities.length; i++) {
+        var unavailability = calendar.accountPreferences.temporary_unavailabilities[i];
+        var event = {
+            summary: "Temporary not available",
+            start: {
+                dateTime: moment(unavailability.start).format("YYYY-MM-DDTHH:mm:ssZ")
+            },
+            end: {
+                dateTime: moment(unavailability.end).format("YYYY-MM-DDTHH:mm:ssZ")
+            },
+            url: "NOTAVAILABLE-" + moment(unavailability.start).format("YYYY-MM-DDTHH:mm:ssZ"),
+            startEditable: false,
+            durationEditable: false,
+            color: "#444",
+            textColor: "#aaa",
+            calIndex: calIndex,
+            isNotAvailableEvent: true
+        };
+        result.push(event);
     }
     return result;
 };
