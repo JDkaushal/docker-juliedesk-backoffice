@@ -3,12 +3,13 @@ if(!window.wordings) window.wordings = {};
 window.wordings['fr'] = {
     email_templates: {
         suggest_dates: {
-            before_dates: "%{client} serait disponible pour un %{appointment_nature} avec vous au %{location} :",
+            before_dates: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
             after_dates: "\n\nQuel horaire vous conviendrait le mieux ?"
         },
-        invites_sent: "Parfait, invitations envoyées pour un %{appointment_nature} au %{location}:\n%{date}.",
+        invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Voici l'information demandée :",
         common: {
+            custom_address_at: "au %{location}",
             before: "Bonjour,\n\n",
             full_date_format: "dddd DD MMMM YYYY à HH:mm",
             timezone_precision: "(Fuseau horaire : %{timezone})",

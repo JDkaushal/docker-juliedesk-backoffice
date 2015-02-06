@@ -7,7 +7,6 @@
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
     window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
 
-    window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.startedAt = Date.now();
 
 
@@ -93,7 +92,7 @@
                     preventDuplicates: true,
                     theme: 'facebook'
                 });
-        redrawReplyText();
+        window.afterFormLoadedCallback = redrawReplyText;
 
         $(".left-column").scroll(function() {
             if ($(this).scrollTop() < 40) {
@@ -285,13 +284,29 @@
 
     function redrawReplyText() {
         setCurrentLocale(window.threadLocale);
+
+        var appointment = $.grep(window.appointments,function(v) {
+            return v.label == $("select#appointment_nature").val();
+        })[0];
+
+        var addressArray = $.grep(appointment.addresses_with_description, function(v) {
+            return v.label == $("select#location_nature").val();
+        });
+        var locationInTemplate = "";
+        if(addressArray.length > 0) {
+            locationInTemplate = " " + addressArray[0].address_in_template[window.threadLocale];
+        }
+        else if($("#location").val().length > 0) {
+            locationInTemplate = " " + localize("email_templates.common.custom_address_at", {location: $("#location").val()});
+        }
+
         var message = "";
         <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
         if (window.timeSlotsToSuggest.length > 0) {
             message = localize("email_templates.suggest_dates.before_dates", {
                 client: "<%= @messages_thread.account.usage_name %>",
-                appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
-                location: window.threadComputedData.location
+                appointment_nature: appointment.title_in_email[window.threadLocale],
+                location: locationInTemplate
             });
             if(window.threadTimezoneId != "Europe/Paris") {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
@@ -323,8 +338,8 @@
             }
 
             message = localize("email_templates.invites_sent", {
-                appointment_nature: "<%= @messages_thread.computed_data[:appointment_nature_nature] %>",
-                location: window.threadComputedData.location,
+                appointment_nature: appointment.title_in_email[window.threadLocale],
+                location: locationInTemplate,
                 date: dateString
             });
         }

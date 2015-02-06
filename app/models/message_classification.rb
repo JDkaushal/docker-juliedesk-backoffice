@@ -22,6 +22,7 @@ class MessageClassification < ActiveRecord::Base
         appointment_nature: params[:appointment_nature],
         summary: params[:summary],
         duration: params[:duration],
+        location_nature: params[:location_nature],
         location: params[:location],
         attendees: (params[:attendees] || []).to_json,
         notes: params[:notes],
