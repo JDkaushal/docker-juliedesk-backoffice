@@ -85,7 +85,8 @@ class MessagesThread < ActiveRecord::Base
   def suggested_date_times
     messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
-        ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+        ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
+            ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
       }.map{ |ja|
         JSON.parse(ja.date_times)
       }
@@ -166,7 +167,8 @@ class MessagesThread < ActiveRecord::Base
     julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).sort_by(&:updated_at)
 
     last_cancellation = julie_actions.select{|ja|
-      ja.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT &&
+      (ja.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT ||
+          ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT) &&
           ja.done
     }.last
 

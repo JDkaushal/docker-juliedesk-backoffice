@@ -165,6 +165,30 @@ Calendar.prototype.hideLoadingSpinner = function () {
     this.$selector.find(".local-loading").fadeOut(200);
 };
 
+Calendar.prototype.addForbiddenEvents = function(events) {
+    console.log("ADD FORBIDDEN EVENTS");
+    console.log(events);
+    var calendar = this;
+    var result = [];
+    for(var i in events) {
+        var event = {
+            title: events[i].title,
+            start: events[i].start,
+            end: events[i].end,
+            url: "NOTAVAILABLE-" + events[i].start,
+            startEditable: false,
+            durationEditable: false,
+            color: "#444",
+            textColor: "#aaa",
+            calIndex: calendar.calendars.length -1,
+            isNotAvailableEvent: true
+        };
+        result.push(event);
+    }
+    console.log(result);
+    calendar.$selector.find('#calendar').fullCalendar('addEventSource', result);
+};
+
 Calendar.prototype.addEventsToCheckIfNeeded = function() {
     var calendar = this;
     if(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {

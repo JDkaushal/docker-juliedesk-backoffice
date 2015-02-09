@@ -140,13 +140,15 @@
 
   <div class="message-container"></div>
 
+  <div id="thread-header-other-entries-container"></div>
+
   <%= render partial: "messages_threads/created_event_panel" %>
 
-  <%= render partial: "messages_threads/create_event_panel", locals: {messages_thread: messages_thread} %>
+  <%= render partial: "messages_threads/create_event_panel", locals: {messages_thread: messages_thread, julie_action: local_assigns[:julie_action]} %>
 
 
   <div class="classic-info-panel">
-    <div id="thread-header-other-entries-container"></div>
+
 
     <div class="account">
       <% account = messages_thread.account %>

@@ -21,7 +21,7 @@
     window.leftColumnMessage = "Create event";
     window.calendarParams = {
         mode: "create_event",
-        date_times: <%== @message.messages_thread.computed_data[:date_times].select{|dt| dt['date']}.map{|dt| dt['date']}.to_json %>,
+        date_times: <%== JSON.parse(@julie_action.message_classification.date_times || "[]").select{|dt| dt['date']}.map{|dt| dt['date']}.to_json %>,
         email: "<%= @message.messages_thread.account_email %>",
         duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
     };
@@ -31,6 +31,23 @@
     <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
     window.afterEventFetched = function() {
         redrawReplyText();
+    };
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
+    window.afterEventFetched = function() {
+        window.currentCalendar.addForbiddenEvents([
+            {
+                title: "TO POSTPONE",
+                start: window.currentEventData.start.dateTime,
+                end: window.currentEventData.end.dateTime
+            }
+        ]);
+        redrawReplyText();
+    };
+    window.calendarParams = {
+        mode: "suggest_dates",
+        date_times: [],
+        email: "<%= @messages_thread.account_email %>",
+        duration: <%= @messages_thread.computed_data[:duration] || 60 %>
     };
     <% end %>
 
@@ -199,7 +216,8 @@
                 }
             });
             sendReply();
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
+            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT ||
+             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Deleting event...");
@@ -219,6 +237,7 @@
                         to: currentRecipients().to,
                         cc: currentRecipients().cc,
                         done: true,
+                        date_times: window.timeSlotsToSuggest,
                         processed_in: Date.now() - window.startedAt
                     }
                 });
@@ -327,6 +346,7 @@
     });
 
     function redrawReplyText() {
+        console.log("REDRAW REPLY TEXT");
         setCurrentLocale(window.threadLocale);
 
         var appointment = $.grep(window.appointments,function(v) {
@@ -352,6 +372,29 @@
                 appointment_nature: appointment.title_in_email[window.threadLocale],
                 location: locationInTemplate
             });
+            if(window.threadTimezoneId != "Europe/Paris") {
+                message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+            }
+
+            for (var i in window.timeSlotsToSuggest) {
+                var timeSlot = timeSlotsToSuggest[i];
+                message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+            }
+            message += localize("email_templates.suggest_dates.after_dates");
+        }
+        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
+        if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {
+            var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+            if(window.threadTimezoneId != "Europe/Paris") {
+                dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+            }
+            message = localize("email_templates.cancel", {
+                client: "<%= @messages_thread.account.usage_name %>",
+                date: dateString
+            }) + "\n";
+
+            message = message + localize("email_templates.postpone.before_dates");
+
             if(window.threadTimezoneId != "Europe/Paris") {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
@@ -423,7 +466,10 @@
         <div id="show-calendar-button" class="btn btn-sm btn-default"><%= I18n.t("actions.show_calendar")%></div>
     </div>
 
-    <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES || @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
+    <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
+    %>
       <%= render template: "calendar/calendar" %>
     <% end %>
 
@@ -463,4 +509,4 @@
 
   </div>
 </div>
-<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>

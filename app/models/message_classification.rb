@@ -59,6 +59,9 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::ASK_CANCEL_APPOINTMENT
       create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_EVENT
 
+    elsif self.classification == MessageClassification::ASK_POSTPONE_APPOINTMENT
+      create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_EVENT
+
     else  self.classification == MessageClassification::UNKNOWN
       create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
 
@@ -83,9 +86,9 @@ class MessageClassification < ActiveRecord::Base
 
 
   def self.is_disabled(message, classification)
-    forbidden_classifications = [ASK_POSTPONE_APPOINTMENT, ASK_CREATE_EVENT]
+    forbidden_classifications = [ASK_CREATE_EVENT]
     unless message.messages_thread.event_data[:event_id]
-      forbidden_classifications += [ASK_CANCEL_APPOINTMENT]
+      forbidden_classifications += [ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT]
     end
     forbidden_classifications.include? classification
   end

@@ -4,7 +4,10 @@ window.wordings['en'] = {
     email_templates: {
         suggest_dates: {
             before_dates: "%{client} would be available for %{appointment_nature}%{location}:",
-            after_dates: "\n\nWhich time would work best for you?"
+            after_dates: "\n\nWhich time would work best for you?",
+        },
+        postpone: {
+            before_dates: "Here are new availabilities to postpone the event:"
         },
         invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Here is the info you asked:",

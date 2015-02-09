@@ -232,6 +232,8 @@ fr:
         todo: "vérifier des disponibilités"
       cancel_event:
         todo: "envoyer l'annulation"
+      postpone_event:
+        todo: "suggérer de nouvelles dates"
       question_client:
         todo: "questionner le client"
       send_info:

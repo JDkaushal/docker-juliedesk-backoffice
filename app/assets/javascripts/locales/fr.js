@@ -4,12 +4,15 @@ window.wordings['fr'] = {
     email_templates: {
         suggest_dates: {
             before_dates: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
-            after_dates: "\n\nQuel horaire vous conviendrait le mieux ?"
+            after_dates: "\n\nQuel horaire vous conviendrait le mieux ?",
+        },
+        postpone: {
+            before_dates: "Ci-dessous de nouvelles disponibilités afin de décaler l'événement :"
         },
         invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",
-        cancel: "Suite à un contretemps, %{client} ne pourra malheureusement pas assurer son rendez-vous avec vous %{date}.\nMerci de nous excuser.",
+        cancel: "Suite à un contretemps, %{client} ne pourra malheureusement pas assurer son rendez-vous avec vous %{date}.",
         common: {
             custom_address_at: "au %{location}",
             before: "Bonjour,\n\n",

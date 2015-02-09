@@ -60,6 +60,8 @@ en:
         todo: "update event"
       cancel_event:
         todo: "send cancellation"
+      postpone_event:
+        todo: "suggest new dates"
       delete_event:
         todo: "delete event"
       suggest_dates:

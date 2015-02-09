@@ -1,0 +1,37 @@
+<script>
+  window.leftColumnMessage = "<%= I18n.t("classification.please_fill_info_in") %>";
+  window.threadDataIsEditable = true;
+  window.submitClassification = function() {
+      var data = {
+          locale: $("input[name='locale']:checked").val(),
+          timezone: $("#timezone").val(),
+          classification: "<%= @classification %>",
+          appointment_nature: $("#appointment_nature").val(),
+          summary: $("#summary").val(),
+          duration: $("#duration").val(),
+          location_nature: $("#location_nature").val(),
+          location: $("#location").val(),
+          notes: $("#notes").val(),
+          attendees: $("input[type=checkbox]#attendee:checked").map(function() {
+              var $div = $(this).closest("div");
+              return {
+                  email: $div.data("email"),
+                  name: $div.data("name")
+              };
+          }).get(),
+          constraints: $("#constraints").val(),
+          processed_in: Date.now() - window.startedAt
+      };
+      $.ajax({
+          url: "/messages/<%= @message.id %>/classify",
+          type: "POST",
+          data: data,
+          success: function(e) {
+              window.location = e.redirect_url;
+          },
+          error: function(e) {
+              console.log("Error: ", e);
+          }
+      });
+  }
+</script>

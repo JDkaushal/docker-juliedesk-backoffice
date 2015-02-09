@@ -30,15 +30,17 @@
     <div class="data-entry-name"><%= I18n.t("info_box.dates_to_check")%></div>
     <div class="data-entry-value">
       <div class="suggested-date-times">
-        <% messages_thread.computed_data[:date_times].each do |dt| %>
-            <div class="suggested-date-time btn btn-sm btn-default btn-block"
-                 data-date="<%= dt['date'] %>"
-                 data-timezone="<%= dt['timezone'] %>"
-                 data-text="<%= dt['text'] %>">
-              <div class="date"></div>
-              <div class="timezone"></div>
-              <div class="text"></div>
-            </div>
+        <% if local_assigns[:julie_action] %>
+            <% JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").each do |dt| %>
+                <div class="suggested-date-time btn btn-sm btn-default btn-block"
+                     data-date="<%= dt['date'] %>"
+                     data-timezone="<%= dt['timezone'] %>"
+                     data-text="<%= dt['text'] %>">
+                  <div class="date"></div>
+                  <div class="timezone"></div>
+                  <div class="text"></div>
+                </div>
+            <% end %>
         <% end %>
       </div>
     </div>
