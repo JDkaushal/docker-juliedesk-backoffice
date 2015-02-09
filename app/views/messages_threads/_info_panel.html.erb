@@ -49,7 +49,8 @@
             window.presenters.redrawEvent({
                 accountEmail: "<%= messages_thread.account_email %>",
                 eventId: "<%= messages_thread.event_data[:event_id] %>",
-                calendarId: "<%= messages_thread.event_data[:calendar_id] %>"
+                calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
+                threadComputedData: window.threadComputedData
             });
         <% end %>
     });
@@ -203,14 +204,13 @@
 
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.attendees")%></div>
-        <div class="data-entry-value">
+        <div class="data-entry-value" id="contacts-data-list">
           <% messages_thread.contacts(with_client: true).each do |contact| %>
-              <div>
-                <% attendee = "#{contact[:name]} (#{(contact[:email])})" %>
-                <% attendees = messages_thread.computed_data[:attendees] || [] %>
-                <% checked = attendees == [] || attendees.include?(attendee) %>
-                <%= check_box_tag :attendee, attendee, checked %>
-                <%= attendee %>
+              <% attendees = messages_thread.computed_data[:attendees] || [] %>
+              <% checked = attendees == [] || attendees.select{|att| att['email'] == contact[:email]}.length > 0 %>
+              <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
+                <%= check_box_tag :attendee, contact[:email], checked %>
+                <%= "#{contact[:name]} (#{(contact[:email])})" %>
               </div>
           <% end %>
         </div>

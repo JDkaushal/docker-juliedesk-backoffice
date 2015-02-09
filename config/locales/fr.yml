@@ -234,8 +234,8 @@ fr:
         todo: "questionner le client"
       send_info:
         todo: "envoyer l'info"
-      send_confirmation_email:
-        todo: "envoyer la confirmation par email"
+      send_confirmation:
+        todo: "envoyer la confirmation"
       send_to_founders:
         todo: "envoyer aux founders"
       free_action:
@@ -260,6 +260,8 @@ fr:
     logged_as: "Connecté en tant que %{name}"
     back: "Retour"
     validate: "Valider"
+    modify: "Modifier"
+    cancel_modifications: "Annuler les modifications"
 
   classification:
       please_fill_info_in: "Remplissez les infos"

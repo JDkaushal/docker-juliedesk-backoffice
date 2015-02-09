@@ -8,6 +8,7 @@ window.wordings['en'] = {
         },
         invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Here is the info you asked:",
+        confirmation: "Very well, it's noted.",
         common: {
             custom_address_at: "at %{location}",
             before: "Hi,\n\n",

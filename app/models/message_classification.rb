@@ -15,6 +15,10 @@ class MessageClassification < ActiveRecord::Base
   UNKNOWN                  = "unknown"
 
   def self.create_from_params params
+    attendees = []
+    (params[:attendees] || {}).each do |k, att|
+      attendees << att
+    end
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
@@ -24,7 +28,7 @@ class MessageClassification < ActiveRecord::Base
         duration: params[:duration],
         location_nature: params[:location_nature],
         location: params[:location],
-        attendees: (params[:attendees] || []).to_json,
+        attendees: attendees.to_json,
         notes: params[:notes],
         constraints: params[:constraints],
         operator: params[:operator],
@@ -76,7 +80,7 @@ class MessageClassification < ActiveRecord::Base
 
 
   def self.is_disabled(classification)
-    [ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT, GIVE_INFO, ASK_CREATE_EVENT].include? classification
+    [ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT, ASK_CREATE_EVENT].include? classification
   end
 
   private

@@ -13,7 +13,13 @@
             location_nature: $("#location_nature").val(),
             location: $("#location").val(),
             notes: $("#notes").val(),
-            attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
+            attendees: $("input[type=checkbox]#attendee:checked").map(function() {
+                var $div = $(this).closest("div");
+                return {
+                    email: $div.data("email"),
+                    name: $div.data("name")
+                };
+            }).get(),
             constraints: $("#constraints").val(),
             date_times: getSuggestedDateTimes(),
             processed_in: Date.now() - window.startedAt

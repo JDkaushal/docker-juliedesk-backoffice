@@ -109,6 +109,31 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
+    else if(request.action == "update_event") {
+        $.ajax({
+            url: host + "/api/v1/calendar_proxy/event_update",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                email: request.email,
+                access_key: access_key,
+                event_id: request.event_id,
+                calendar_id: request.calendar_id,
+                summary: request.summary,
+                description: request.description,
+                attendees: request.attendees,
+                location: request.location,
+                start: request.start,
+                end: request.end
+            }),
+            success: function(e) {
+                callback(e);
+            },
+            error: function(e) {
+                error_callback(e);
+            }
+        });
+    }
     else if(request.action == "get_event") {
         $.ajax({
             url: host + "/api/v1/calendar_proxy/event_get",

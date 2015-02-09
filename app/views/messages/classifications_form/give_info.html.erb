@@ -1,37 +1,140 @@
 <script>
     window.leftColumnMessage = "<%= I18n.t("classification.please_fill_info_in") %>";
     window.threadDataIsEditable = true;
-    window.submitClassification = function(e) {
-      $("#validate-suggest-dates-form").click(function() {
-          var data = {
-              locale: $("input[name='locale']:checked").val(),
-              timezone: $("#timezone").val(),
-              classification: "<%= @classification %>",
-              appointment_nature: $("#appointment_nature").val(),
-              summary: $("#summary").val(),
-              duration: $("#duration").val(),
-              location_nature: $("#location_nature").val(),
-              location: $("#location").val(),
-              notes: $("#notes").val(),
-              attendees: $("input[type=checkbox]#attendee:checked").map(function() { return $(this).val()}).get(),
-              constraints: $("#constraints").val(),
-              processed_in: Date.now() - window.startedAt
-          };
-          $.ajax({
-              url: "/messages/<%= @message.id %>/classify",
-              type: "POST",
-              data: data,
-              success: function(e) {
-                  window.location = e.redirect_url;
-              },
-              error: function(e) {
-                  console.log("Error: ", e);
-              }
-          });
+    <% if @messages_thread.event_data[:event_id] %>
+    window.submitClassification = function (e) {
+        var goToNextStepWithEvent = function () {
+            var data = {
+                locale: $("input[name='locale']:checked").val(),
+                timezone: $("#timezone").val(),
+                classification: "<%= @classification %>",
+                appointment_nature: $("#appointment_nature").val(),
+                summary: $(".created-event-panel .event-summary input").val(),
+                duration: $("#duration").val(),
+                location_nature: $("#location_nature").val(),
+                location: $(".created-event-panel .event-location input").val(),
+                notes: $(".created-event-panel .event-notes textarea").val(),
+                attendees: getAttendees(),
+                constraints: $("#constraints").val(),
+                processed_in: Date.now() - window.startedAt
+            };
+            $.ajax({
+                url: "/messages/<%= @message.id %>/classify",
+                type: "POST",
+                data: data,
+                success: function (e) {
+                    window.location = e.redirect_url;
+                },
+                error: function (e) {
+                    console.log("Error: ", e);
+                }
+            });
 
-      });
-  };
-  $(function() {
+        };
 
-  });
+        var getAttendees = function () {
+            return attendees = $(".created-event-panel .event-attendees .event-attendees-edit-div .attendee input[type=checkbox]:checked").map(function () {
+                return {
+                    email: $(this).closest(".attendee").data("email"),
+                    name: $(this).closest(".attendee").data("name")
+                }
+            }).get();
+        };
+
+
+
+        if ($(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").is(":visible")) {
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Updating event...");
+
+            var start = moment($(".created-event-panel .event-date").data("start"));
+            var end = moment($(".created-event-panel .event-date").data("end"));
+
+
+            $(".calendar-container").addClass("minimized");
+            CommonHelpers.externalRequest({
+                action: "update_event",
+                email: "<%= @messages_thread.account_email %>",
+                event_id: "<%= @messages_thread.event_data[:event_id] %>",
+                calendar_id: "<%= @messages_thread.event_data[:calendar_id] %>",
+                summary: $(".created-event-panel .event-summary input").val(),
+                description: $(".created-event-panel .event-notes textarea").val(),
+                attendees: getAttendees(),
+                location: $(".created-event-panel .event-location input").val(),
+                start: start.format(),
+                end: end.format()
+            }, function (e) {
+                $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Updated.");
+                goToNextStepWithEvent();
+            }, function (e) {
+                $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Problem while updating.");
+            });
+        }
+        else {
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
+            goToNextStepWithEvent();
+        }
+
+
+    };
+    $(function () {
+        $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
+        $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container").show();
+        $(".messages-thread-info-panel .data .data-entry").hide();
+
+        $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").click(function () {
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").show();
+
+            window.presenters.redrawEvent({
+                accountEmail: "<%= @messages_thread.account_email %>",
+                eventId: "<%= @messages_thread.event_data[:event_id] %>",
+                calendarId: "<%= @messages_thread.event_data[:calendar_id] %>",
+                threadComputedData: window.threadComputedData
+            });
+        });
+        $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").click(function () {
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").show();
+
+            $(".messages-thread-info-panel .created-event-panel").find("input, textarea").removeAttr('disabled');
+            $(".created-event-panel .event-attendees .event-attendees-edit-div").show();
+            $(".created-event-panel .event-attendees .event-attendees-div").hide();
+        });
+    });
+  <% else %>
+    window.submitClassification = function() {
+        var data = {
+            locale: $("input[name='locale']:checked").val(),
+            timezone: $("#timezone").val(),
+            classification: "<%= @classification %>",
+            appointment_nature: $("#appointment_nature").val(),
+            summary: $("#summary").val(),
+            duration: $("#duration").val(),
+            location_nature: $("#location_nature").val(),
+            location: $("#location").val(),
+            notes: $("#notes").val(),
+            attendees: $("input[type=checkbox]#attendee:checked").map(function() {
+                var $div = $(this).closest("div");
+                return {
+                    email: $div.data("email"),
+                    name: $div.data("name")
+                };
+            }).get(),
+            constraints: $("#constraints").val(),
+            processed_in: Date.now() - window.startedAt
+        };
+        $.ajax({
+            url: "/messages/<%= @message.id %>/classify",
+            type: "POST",
+            data: data,
+            success: function(e) {
+                window.location = e.redirect_url;
+            },
+            error: function(e) {
+                console.log("Error: ", e);
+            }
+        });
+    };
+  <% end %>
 </script>
