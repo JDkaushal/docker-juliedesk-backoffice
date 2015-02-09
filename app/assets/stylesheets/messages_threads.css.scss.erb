@@ -1,12 +1,25 @@
-.refresh-inbox-button {
-    margin: 60px auto -60px auto;
-    display: block;
-    width: 200px;
-}
+.messages-threads-page {
+    
+    .refresh-container {
+        margin: 60px auto 10px auto;
+        height: 80px;
+        .refresh-inbox-button {
+            margin: 10px auto 10px auto;
+            display: block;
+            width: 200px;
+        }
+        .spinner {
+            margin: 20px auto 10px auto;
+            display: block;
+            width: 20px;
+            display: none;
+        }
+    }
+
 
 .messages-threads-container {
   border-top: 1px solid #ccc;
-  margin: 100px 0 20px 0;
+  margin: 20px 0 20px 0;
   .messages-thread-item {
     text-align: left;
     height: 40px;
@@ -54,38 +67,50 @@
 
 
 
+
+
+.nothing-to-do {
+    img {
+        margin: 20px 0;
+    }
+    text-align: center;
+    font-size: 20px;
+    font-weight: 200;
+}
+}
+
 .messages-thread-emails {
-  margin: 30px 0;
-  position: relative;
+    margin: 30px 0;
+    position: relative;
 
-  .messages-thread-subject {
-    border-bottom: 1px solid #ccc;
-    line-height: 20px;
-    padding: 5px 10px;
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .split-thread-button {
-    position: absolute;
-    top: -30px;
-    right: 42px;
-    width: 32px;
-    height: 32px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    background: url(<%= asset_path "split.png" %>);
-  }
+    .messages-thread-subject {
+        border-bottom: 1px solid #ccc;
+        line-height: 20px;
+        padding: 5px 10px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .split-thread-button {
+        position: absolute;
+        top: -30px;
+        right: 42px;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        background: url(<%= asset_path "split.png" %>);
+    }
 
-  .archive-button {
-    position: absolute;
-    top: -30px;
-    right: 0px;
-    width: 32px;
-    height: 32px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    background: url(<%= asset_path "archive.png" %>);
-  }
+    .archive-button {
+        position: absolute;
+        top: -30px;
+        right: 0px;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        background: url(<%= asset_path "archive.png" %>);
+    }
 
     .split-buttons-container {
         position: absolute;
@@ -108,13 +133,4 @@
             display: block;
         }
     }
-}
-
-.nothing-to-do {
-    img {
-        margin: 20px 0;
-    }
-    text-align: center;
-    font-size: 20px;
-    font-weight: 200;
 }

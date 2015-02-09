@@ -1,3 +1,92 @@
+<script>
+    $(function () {
+        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at]).to_json %>);
+    });
+    function redrawThreadList(threadsData) {
+        $(".messages-threads-container").html("");
+        $(".nothing-to-do").hide();
+        $(".messages-threads-container").show();
+        if(threadsData.length == 0) {
+            $(".nothing-to-do").show();
+            $(".messages-threads-container").hide();
+        }
+        $(".header .global-todo-count").html(threadsData.length);
+        for (var i in threadsData) {
+            var threadData = threadsData[i];
+            var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item");
+
+            var $accountEmail = $("<div>").addClass("account-email");
+            var accountName = threadData.account_name;
+            if (!accountName) accountName = "<%= I18n.t("info_box.no_account_found") %>";
+            var messagesCount = threadData.messages.length;
+            var accountEmailString = accountName;
+            if (messagesCount > 1) accountEmailString = accountEmailString + " (" + messagesCount + ")";
+            $accountEmail.html(accountEmailString);
+            $messageThreadContainer.append($accountEmail);
+
+            var $subjectAndSnippet = $("<div>").addClass("subject-and-snippet");
+            $subjectAndSnippet.append($("<div>").addClass("subject").html(threadData.subject));
+            $subjectAndSnippet.append($("<div>").addClass("snippet").html(" - " + threadData.snippet));
+            $messageThreadContainer.append($subjectAndSnippet);
+
+            var $receivedAt = $("<div>").addClass("received-at").data("date", moment(threadData.received_at).format());
+            $messageThreadContainer.append($receivedAt);
+
+
+            $(".messages-threads-container").append($messageThreadContainer);
+        }
+        redrawDates();
+    }
+
+    function redrawDates() {
+        $(".received-at").each(function () {
+            var date = $(this).data("date");
+            $(this).html(moment(date).locale("<%= I18n.locale %>").fromNow());
+        });
+    }
+
+    function refreshInbox(forceRefresh) {
+        $(".spinner").css({display: "block"});
+        $(".refresh-inbox-button").attr("disabled", true);
+
+        var url ="<%= messages_threads_path %>";
+        if (forceRefresh) {
+            url = "<%= index_with_import_messages_threads_path %>";
+        }
+        $.ajax({
+            url: url,
+            type: "get",
+            dataType: "json",
+            success: function (e) {
+                redrawThreadList(e.data);
+                $(".spinner").hide();
+                $(".refresh-inbox-button").removeAttr("disabled");
+            },
+            error: function(e) {
+                $(".spinner").hide();
+                console.log(e);
+                $(".refresh-inbox-button").removeAttr("disabled");
+                alert("There was an error.");
+            }
+        });
+    }
+
+    window.newEmailCallback = function() {
+        refreshInbox(false);
+    };
+
+
+    $(function () {
+        setInterval(function () {
+            redrawDates();
+        }, 3000);
+
+        $(".refresh-inbox-button").click(function () {
+            refreshInbox(true);
+        });
+    });
+</script>
+
 <% count = MessagesThread.items_to_classify_count %>
 
 <div class="fixed-columns">
@@ -6,35 +95,20 @@
     <%= render partial: "common/header" %>
 
 
-    <%= link_to I18n.t("common.refresh"), :index_with_import_messages_threads, class: "btn btn-success refresh-inbox-button" %>
 
-    <div class="messages-threads-container">
-      <% @messages_thread.each do |messages_thread| %>
-          <%= link_to messages_thread, class: "messages-thread-item" do %>
-              <div class="account-email">
-                <%= messages_thread.account_name || I18n.t("info_box.no_account_found") %>
-                <%= (messages_thread.messages.length>1) ? "(#{messages_thread.messages.length})" : "" %>
-              </div>
-              <div class="subject-and-snippet">
-                <div class="subject">
-                  <%= messages_thread.subject %>
-                </div>
-                <div class="snippet">
-                  - <%== messages_thread.snippet %>
-                </div>
-              </div>
-              <div class="received-at">
-                <%= I18n.l(messages_thread.messages.map(&:received_at).max, format: "%d %B %Y, %H:%M") %>
-              </div>
-          <% end %>
-      <% end %>
+    <div class="messages-threads-page">
+      <div class="refresh-container">
+        <button class="btn btn-success refresh-inbox-button"><%= I18n.t("common.refresh") %></button>
+        <%= image_tag "ajax-loader.gif", class: "spinner" %>
+      </div>
+
+      <div class="messages-threads-container"></div>
+
+      <div class="nothing-to-do">
+        <%= image_tag "smiley.png" %>
+        <div><%= I18n.t("index.nothing_to_do") %></div>
+      </div>
     </div>
-    <% if count == 0 %>
-        <div class="nothing-to-do">
-            <%= image_tag "smiley.png" %>
-            <div><%= I18n.t("index.nothing_to_do")%></div>
-        </div>
-    <% end %>
   </div>
 </div>
 

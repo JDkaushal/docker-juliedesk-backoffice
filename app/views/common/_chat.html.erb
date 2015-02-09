@@ -39,6 +39,10 @@
                         }, 300);
             });
             appendMessage("Julie: " + "New email in inbox");
+
+            if(window.newEmailCallback) {
+                window.newEmailCallback();
+            }
         });
 
 

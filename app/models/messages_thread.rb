@@ -113,6 +113,10 @@ class MessagesThread < ActiveRecord::Base
     messages.select{|m| m.message_classifications.empty?}
   end
 
+  def received_at
+    messages.map(&:received_at).max
+  end
+
   def re_import
     existing_messages = []
     self.google_thread.messages.each do |google_message|
