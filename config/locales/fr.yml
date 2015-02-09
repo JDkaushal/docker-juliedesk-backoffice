@@ -268,7 +268,7 @@ fr:
       dates_identification: "Identification des dates"
 
   index:
-    nothing_to_do: "Quelle belle journée, rien à traiter :)"
+    nothing_to_do: "Tout est traité pour le moment !"
   info_box:
     no_account_found: "Compte non-identifié"
     locale: "Langue"

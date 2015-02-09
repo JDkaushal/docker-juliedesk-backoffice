@@ -102,7 +102,7 @@ en:
     dates_identification: "Dates identification"
 
   index:
-    nothing_to_do: "What a lovely day, nothing to do :)"
+    nothing_to_do: "Everything is processed for now!"
   info_box:
     no_account_found: "No account identified"
     locale: "Locale"
