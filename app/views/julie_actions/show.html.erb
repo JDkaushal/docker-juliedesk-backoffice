@@ -28,6 +28,10 @@
     $(function() {
        $(".messages-thread-info-panel .create-event-panel").show();
     });
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
+    window.afterEventFetched = function() {
+        redrawReplyText();
+    };
     <% end %>
 
     function initialToRecipients() {
@@ -162,10 +166,11 @@
         });
 
         $("#reply-button").click(function () {
-            $(".reply-box #callback-message").html("Sending...");
+
             $("#reply-button").prop('disabled', true);
 
             <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
+            $(".reply-box #callback-message").html("Sending...");
             $.ajax({
                 url: "/julie_actions/<%= @julie_action.id %>/update",
                 method: "post",
@@ -178,6 +183,7 @@
                     processed_in: Date.now() - window.startedAt
                 }
             });
+            sendReply();
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
             $.ajax({
                 url: "/julie_actions/<%= @julie_action.id %>/update",
@@ -192,6 +198,37 @@
                     processed_in: Date.now() - window.startedAt
                 }
             });
+            sendReply();
+            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Deleting event...");
+            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container").show();
+            CommonHelpers.externalRequest({
+                action: "delete_event",
+                email: "<%= @messages_thread.account_email %>",
+                event_id: "<%= @messages_thread.event_data[:event_id] %>",
+                calendar_id: "<%= @messages_thread.event_data[:calendar_id] %>"
+            }, function (e) {
+                $(".messages-thread-info-panel .created-event-panel").hide();
+                $.ajax({
+                    url: "/julie_actions/<%= @julie_action.id %>/update",
+                    method: "post",
+                    data: {
+                        text: $("textarea#reply-text").val(),
+                        to: currentRecipients().to,
+                        cc: currentRecipients().cc,
+                        done: true,
+                        processed_in: Date.now() - window.startedAt
+                    }
+                });
+                sendReply();
+            }, function (e) {
+                $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Problem while deleting event.");
+            });
+
+
+
             <% else %>
             $.ajax({
                 url: "/julie_actions/<%= @julie_action.id %>/update",
@@ -204,7 +241,13 @@
                     processed_in: Date.now() - window.startedAt
                 }
             });
+            sendReply();
             <% end %>
+
+        });
+
+        var sendReply = function() {
+            $(".reply-box #callback-message").html("<%= I18n.t("common.sending")%>");
             $.ajax({
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
                 method: "post",
@@ -215,7 +258,7 @@
                     cc: currentRecipients().cc
                 },
                 success: function (e) {
-                    $(".reply-box #callback-message").html("Sent.");
+                    $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
                     $("#reply-button").removeProp('disabled');
                     window.location = "<%= messages_thread_path(@messages_thread) %>"
                 },
@@ -225,7 +268,7 @@
                     $(".reply-box #callback-message").html("Error: " + e);
                 }
             });
-        });
+        };
 
 
         window.addEventListener("message", function (event) {
@@ -348,6 +391,17 @@
         message = localize("email_templates.info_asked");
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
         message = localize("email_templates.confirmation");
+        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
+        if(window.currentEventData) {
+            var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+            if(window.threadTimezoneId != "Europe/Paris") {
+                dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+            }
+            message = localize("email_templates.cancel", {
+                client: "<%= @messages_thread.account.usage_name %>",
+                date: dateString
+            });
+        }
         <% end %>
 
         $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));

@@ -163,13 +163,28 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def event_data
-    event_creation_action = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+    julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).sort_by(&:updated_at)
+
+    last_cancellation = julie_actions.select{|ja|
+      ja.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT &&
+          ja.done
+    }.last
+
+    last_creation = julie_actions.select{|ja|
       ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
     }.last
 
-    {
-        event_id: event_creation_action.try(&:event_id),
-        calendar_id: event_creation_action.try(&:calendar_id)
-    }
+    if last_creation && (last_cancellation.nil? || julie_actions.index(last_creation) > julie_actions.index(last_cancellation))
+      {
+          event_id: last_creation.event_id,
+          calendar_id: last_creation.calendar_id
+      }
+    else
+      {
+          event_id: nil,
+          calendar_id: nil
+      }
+    end
+
   end
 end

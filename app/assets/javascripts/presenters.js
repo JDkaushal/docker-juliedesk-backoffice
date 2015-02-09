@@ -11,6 +11,7 @@ window.presenters.redrawEvent = function(params) {
         calendar_id: params.calendarId
     }, function(e) {
 
+        window.currentEventData = e.data;
         $(".created-event-panel .event-summary input").val(e.data.summary);
         $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>"));
         $(".created-event-panel .event-date").data("start", e.data.start.dateTime);

@@ -9,6 +9,7 @@ window.wordings['en'] = {
         invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",
+        cancel: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure the meeting with you %{date}.",
         common: {
             custom_address_at: "at %{location}",
             before: "Hi,\n\n",

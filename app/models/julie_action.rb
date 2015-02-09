@@ -4,6 +4,7 @@ class JulieAction < ActiveRecord::Base
 
   JD_ACTION_CREATE_EVENT            = "create_event"
   JD_ACTION_UPDATE_EVENT            = "update_event"
+  JD_ACTION_CANCEL_EVENT            = "cancel_event"
   JD_ACTION_DELETE_EVENT            = "delete_event"
   JD_ACTION_SUGGEST_DATES           = "suggest_dates"
   JD_ACTION_CHECK_AVAILABILITIES    = "check_availabilities"

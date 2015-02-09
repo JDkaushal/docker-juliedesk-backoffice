@@ -38,9 +38,9 @@ en:
       ask_availabilities:
         action: "Check availability(ies)"
       ask_cancel_appointment:
-        action: "Cancel a meeting"
+        action: "Cancel this thread's meeting"
       ask_postpone_appointment:
-        action: "Postpone a meeting"
+        action: "Postpone this thread's meeting"
       ask_info:
         action: "Give an info"
       give_info:
@@ -58,6 +58,8 @@ en:
         todo: "create event"
       update_event:
         todo: "update event"
+      cancel_event:
+        todo: "send cancellation"
       delete_event:
         todo: "delete event"
       suggest_dates:
@@ -96,6 +98,8 @@ en:
     validate: "Validate"
     modify: "Modify"
     cancel_modifications: "Cancel modifications"
+    sending: "Sending..."
+    sent: "Sent."
 
   classification:
     please_fill_info_in: "Please fill info in"

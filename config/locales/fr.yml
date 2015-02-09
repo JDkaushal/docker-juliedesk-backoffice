@@ -210,9 +210,9 @@ fr:
       ask_availabilities:
         action: "Vérifier une (des) disponibilité(s)"
       ask_cancel_appointment:
-        action: "Annuler un rendez-vous"
+        action: "Annuler l'évènement de ce thread"
       ask_postpone_appointment:
-        action: "Report un rendez-vous"
+        action: "Reporter l'évènement de ce thread"
       ask_info:
         action: "Donner une info"
       give_info:
@@ -230,6 +230,8 @@ fr:
         todo: "suggérer des dates"
       check_availabilities:
         todo: "vérifier des disponibilités"
+      cancel_event:
+        todo: "envoyer l'annulation"
       question_client:
         todo: "questionner le client"
       send_info:
@@ -262,6 +264,8 @@ fr:
     validate: "Valider"
     modify: "Modifier"
     cancel_modifications: "Annuler les modifications"
+    sending: "Envoi en cours..."
+    sent: "Envoyé."
 
   classification:
       please_fill_info_in: "Remplissez les infos"

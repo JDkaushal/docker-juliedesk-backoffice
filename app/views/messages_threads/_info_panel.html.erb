@@ -46,11 +46,13 @@
         });
 
         <% if messages_thread.event_data[:event_id] %>
+
             window.presenters.redrawEvent({
                 accountEmail: "<%= messages_thread.account_email %>",
                 eventId: "<%= messages_thread.event_data[:event_id] %>",
                 calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
-                threadComputedData: window.threadComputedData
+                threadComputedData: window.threadComputedData,
+                callback: window.afterEventFetched,
             });
         <% end %>
     });
