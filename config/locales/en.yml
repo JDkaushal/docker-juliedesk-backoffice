@@ -127,6 +127,7 @@ en:
     dates_to_check: "Dates to check"
     suggested_dates: "Suggested dates"
     fetching_event: "Fetching event..."
+    no_date_fits: "No date fits"
 
 
   dates_identifications:

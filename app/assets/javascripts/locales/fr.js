@@ -2,6 +2,18 @@ if(!window.wordings) window.wordings = {};
 
 window.wordings['fr'] = {
     email_templates: {
+        no_date_fits: {
+            before_dates: {
+                suggested: {
+                    singular: "Désolé, %{client} n'est plus disponible à cet horaire, mais en revanche :",
+                    plural: "Désolé, %{client} n'est plus disponible à ces horaires, mais en revanche :"
+                },
+                not_suggested: {
+                    singular: "Désolé, cet horaire ne convient pas, mais %{client} serait disponible :",
+                    plural: "Désolé, aucun de ces horaires ne convient, mais %{client} serait disponible :"
+                }
+            }
+        },
         suggest_dates: {
             before_dates: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
             after_dates: "\n\nQuel horaire vous conviendrait le mieux ?",

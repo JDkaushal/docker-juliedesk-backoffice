@@ -270,6 +270,8 @@ fr:
     sent: "Envoyé."
     add: "Ajouter"
 
+
+
   classification:
       please_fill_info_in: "Remplissez les infos"
       dates_identification: "Identification des dates"
@@ -293,6 +295,7 @@ fr:
     dates_to_check: "Dates à vérifier"
     suggested_dates: "Dates suggérées"
     fetching_event: "Importation de l'évènement..."
+    no_date_fits: "Aucune date ne convient"
 
   dates_identifications:
     add_a_date: "Ajouter une date"

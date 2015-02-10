@@ -131,6 +131,14 @@
             }
         });
 
+        $("#no-date-fits").click(function() {
+            window.timeSlotToCreate = null;
+            $(".messages-thread-info-panel .create-event-panel").hide();
+            window.currentCalendar.initialData.mode = "suggest_dates";
+
+            $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
+        });
+
         $("#create-event-button").click(function () {
             $("#create-event-button").attr('disabled', true);
             $(".creating-event-message").html("Creating...");
@@ -216,6 +224,7 @@
                     text: $("textarea#reply-text").val(),
                     to: currentRecipients().to,
                     cc: currentRecipients().cc,
+                    date_times: window.timeSlotsToSuggest,
                     event_id: window.currentEventId,
                     calendar_id: window.currentCalendarId,
                     done: true,
@@ -353,7 +362,6 @@
     });
 
     function redrawReplyText() {
-        console.log("REDRAW REPLY TEXT");
         setCurrentLocale(window.threadLocale);
 
         var appointment = $.grep(window.appointments,function(v) {
@@ -436,6 +444,39 @@
                 location: locationInTemplate,
                 date: dateString
             });
+        }
+        else if (window.timeSlotsToSuggest.length > 0) {
+            <%
+            date_times_to_check = JSON.parse(@julie_action.message_classification.date_times)
+            suggested_date_times = @messages_thread.suggested_date_times
+            %>
+            var templateName;
+            <% if date_times_to_check.length > 1
+            if (date_times_to_check & suggested_date_times).empty? %>
+                templateName = "email_templates.no_date_fits.before_dates.not_suggested.plural"
+            <% else %>
+                templateName = "email_templates.no_date_fits.before_dates.suggested.plural"
+            <% end
+            else
+            if (date_times_to_check & suggested_date_times).empty? %>
+                templateName = "email_templates.no_date_fits.before_dates.not_suggested.singular"
+            <%else %>
+                templateName = "email_templates.no_date_fits.before_dates.suggested.singular"
+            <% end
+            end %>
+
+            message = localize(templateName, {
+                client: "<%= @messages_thread.account.usage_name %>"
+            });
+            if(window.threadTimezoneId != "Europe/Paris") {
+                message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+            }
+
+            for (var i in window.timeSlotsToSuggest) {
+                var timeSlot = timeSlotsToSuggest[i];
+                message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+            }
+            message += localize("email_templates.suggest_dates.after_dates");
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
         message = localize("email_templates.info_asked");
