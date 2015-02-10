@@ -143,7 +143,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 email: request.email,
                 access_key: access_key,
                 event_id: request.event_id,
-                calendar_id: request.calendar_id,
+                calendar_id: request.calendar_id
             }),
             success: function(e) {
                 callback(e);

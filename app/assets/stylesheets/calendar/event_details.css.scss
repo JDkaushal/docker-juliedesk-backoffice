@@ -234,8 +234,10 @@
   .event-spinner {
     display: none;
     position: absolute;
-    bottom: 32px;
-    left: 222px;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    width: 20px;
   }
   input:disabled, textarea:disabled {
     border-color: transparent !important;

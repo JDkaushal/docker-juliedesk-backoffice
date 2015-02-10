@@ -5,7 +5,7 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
     // Positioning
     if($currentTarget) {
         var $edc = calendar.$selector.find("#event-details-container");
-        if($currentTarget.offset().left < calendar.$selector.width / 2) {
+        if($currentTarget.offset().left < calendar.$selector.width() / 2) {
             $edc.find(".event-details").css({
                 top: (calendar.$selector.height() - $edc.find(".event-details").outerHeight()) / 2,
                 left: $currentTarget.offset().left + $currentTarget.width() + 10
@@ -20,27 +20,6 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
 
     }
     calendar.redrawEventDetailsFromEvent(event);
-
-    return;
-    if(calendar.accountPreferences.calendar_nature == "google") {
-        CommonHelpers.externalRequest({
-            action: "get_event",
-            calendar_id: calendar.calendars[event.calIndex].id,
-            event_id: event.id,
-            email: calendar.accountPreferences.email
-        }, function(response) {
-            var eventData = response.data;
-
-            calendar.currentEvent.sequence = eventData.sequence;
-            calendar.currentEvent.attendees = eventData.attendees;
-            calendar.currentEvent.reminders = eventData.reminders;
-            calendar.$selector.find("#calendar").fullCalendar('updateEvent', calendar.currentEvent);
-
-            calendar.redrawEventDetailsFromEvent(event);
-        }, function(response) {
-            console.log("error", response)
-        });
-    }
 };
 
 Calendar.prototype.resetEventDetailsContainer = function() {
@@ -78,10 +57,6 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     });
 
     $edc.find("input, textarea").attr("disabled", "disabled");
-    //$edc.find(".start").html(event.start.format("LLL"));
-    //$edc.find(".end").html(event.end.format("LLL"));
-
-
 
 //    $edc.find(".start-date").val(event.start.format("YYYY-MM-DD"));
 //    $edc.find(".start-hours").val(event.start.format("HH"));
@@ -92,12 +67,13 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
 
     //$edc.find(".attendees-list").html("");
 
+    $edc.find("#event-delete-button").show();
 
     $edc.fadeIn(200);
     return;
     $edc.find(".event-date-edit-container").hide();
 
-    $edc.find("#event-delete-button").hide();
+
     $edc.find("#event-edit-button").hide();
     $edc.find("#event-save-button").hide();
     $edc.find("#event-cancel-button").hide();
@@ -117,6 +93,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {
+    console.log("CLICK EVENT DETAILS");
     var calendar = this;
     var $container = calendar.$selector.find("#event-details-container");
     var $target = $(e.target);
@@ -173,25 +150,27 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
 //        });
     }
     else if($target.attr("id") == "event-delete-button") {
-//        if (confirm("Are you sure you want to delete this event?")) {
-//            chrome.runtime.sendMessage({
-//                greeting: "event_delete",
-//                email: accountPreferences.email,
-//                eventId: currentEvent.id,
-//                calendarId: calendars[currentEvent.calIndex].id,
-//                calendar_nature: accountPreferences.calendar_nature,
-//                access_token: calendar.accountPreferences.access_token,
-//            }, function(response) {
-//                console.log(response);
-//                if(response.status == "success") {
-//                    var calendarEvent = $("#calendar").fullCalendar('removeEvents', currentEvent.id);
-//                    $("#event-details-container").fadeOut(200);
-//                }
-//                else {
-//                    alert("Error deleting event");
-//                }
-//            });
-//        }
+        if (confirm("Are you sure you want to delete this event?")) {
+            $container.find(".event-spinner").show();
+            CommonHelpers.externalRequest({
+                action: "delete_event",
+                email: calendar.accountPreferences.email,
+                event_id: calendar.currentEvent.id,
+                calendar_id: calendar.calendars[calendar.currentEvent.calIndex].id
+            }, function(response) {
+                if(response.status == "success") {
+                    $("#event-details-container").fadeOut(200);
+                    calendar.refreshEvents();
+                }
+                else {
+                    alert("Error deleting event");
+                    console.log("error", response);
+                }
+            }, function(e) {
+                alert("Error deleting event");
+                console.log("error", e);
+            });
+        }
     }
     else if($target.hasClass("add-new-attendee")) {
         var email = $container.find("#new-attendee").val();
