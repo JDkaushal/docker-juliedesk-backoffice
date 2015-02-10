@@ -52,6 +52,16 @@
             }
         });
 
+        $(".data #add-attendee-button").click(function(e) {
+            var email = $(".data #add_attendee").val();
+            $(".data #add_attendee").val("");
+            var $contact = $("<div>").addClass("contact").data("email", email).data("name", "");
+            $contact.append($("<input type='checkbox' checked>").val(email).attr('id', "attendee"));
+            $contact.append(" (" + email + ")");
+            $(".data #contacts-data-list").append($contact);
+
+        });
+
         <% if messages_thread.event_data[:event_id] %>
 
             window.presenters.redrawEvent({
@@ -239,14 +249,18 @@
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.attendees")%></div>
         <div class="data-entry-value" id="contacts-data-list">
-          <% messages_thread.contacts().each do |contact| %>
-              <% attendees = messages_thread.computed_data[:attendees] || [] %>
+          <% attendees = messages_thread.computed_data[:attendees] || [] %>
+          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq{|co| co[:email]}.each do |contact| %>
               <% checked = attendees == [] || attendees.select{|att| att['email'] == contact[:email]}.length > 0 %>
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <%= "#{contact[:name]} (#{(contact[:email])})" %>
               </div>
           <% end %>
+        </div>
+        <div class="add-attendee-container">
+          <%=text_field_tag :add_attendee, "", class: "data-entry form-control" %>
+          <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
       </div>
 

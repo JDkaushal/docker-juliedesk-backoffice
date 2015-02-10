@@ -102,6 +102,7 @@ en:
     cancel_modifications: "Cancel modifications"
     sending: "Sending..."
     sent: "Sent."
+    add: "Add"
 
   classification:
     please_fill_info_in: "Please fill info in"
