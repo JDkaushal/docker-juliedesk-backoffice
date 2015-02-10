@@ -36,7 +36,7 @@
       </div>
 
       <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classifications.#{@classification}.action")} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classifications.#{@classification}.action")} %>
       <% end %>
     </div>
   </div>

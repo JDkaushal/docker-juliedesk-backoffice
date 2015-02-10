@@ -51,11 +51,18 @@
     };
     <% end %>
 
+    <% initial_to_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| c['email']} %>
+    <% initial_cc_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| c['email']} %>
+
+    // Add client as CC if not present
+    <% if ((initial_cc_recipients + initial_to_recipients) & @messages_thread.account.all_emails).empty?
+            initial_cc_recipients += [(@messages_thread.account.all_emails & @messages_thread.contacts(with_client: true).map{|c| c[:email]}).first]
+       end %>
     function initialToRecipients() {
-        return <%== (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| {name: c['email']}}.to_json %>;
+        return <%== initial_to_recipients.map{|c| {name: c}}.to_json %>;
     }
     function initialCcRecipients() {
-        return <%== (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| {name: c['email']}}.to_json %>;
+        return <%== initial_cc_recipients.map{|c| {name: c}}.to_json %>;
     }
 
     function possibleRecipients() {
