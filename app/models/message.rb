@@ -37,7 +37,7 @@ class Message < ActiveRecord::Base
   def julie_alias
     JULIE_ALIASES.select{|julie_alias|
        "#{google_message.to} #{google_message.cc}".include? julie_alias
-    }.first
+    }.first || JULIE_ALIASES.first
   end
 
   def self.import_emails
