@@ -1,6 +1,9 @@
+
+
 <script>
     $(function () {
         window.calendarParams.height = $(".calendar-container").height();
+        window.calendarParams.other_emails = window.otherAccountEmails;
         window.currentCalendar = new Calendar($(".calendar-container"), window.calendarParams);
     });
 </script>

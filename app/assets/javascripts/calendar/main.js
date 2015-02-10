@@ -6,7 +6,8 @@ function Calendar($selector, params) {
         email: null,
         mode: "suggest_dates",
         duration: 60,
-        date_times: []
+        date_times: [],
+        other_emails: []
     };
     for (var paramName in params) {
         this.initialData[paramName] = params[paramName];
@@ -22,7 +23,6 @@ function Calendar($selector, params) {
     this.start = null;
     this.end = null;
     this.eventBeingAdded = null;
-    this.waitingCals = 0;
 
     var calendar = this;
 
@@ -74,9 +74,11 @@ Calendar.prototype.getMode = function () {
     return calendar.initialData.mode;
 };
 
-Calendar.prototype.shouldDisplayCalId = function (calId, calKey) {
+Calendar.prototype.shouldDisplayCalId = function (calId, email) {
     var calendar = this;
-    return calendar.accountPreferences.calendars_to_show.indexOf(calId) > -1
+
+    return (calendar.accountPreferences[email] &&
+        calendar.accountPreferences[email].calendars_to_show.indexOf(calId) > -1)
         || calId == "juliedesk-unavailable";
 
 };
@@ -112,46 +114,73 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         calendar.$selector.find("#weekends-checkbox").prop("checked", true);
     }
 
-    $(calendar.calendars).each(function (k, calendarItem) {
-        calsId.push(calendarItem.id);
-        calsSum.push(calendarItem.summary);
-        colorIds.push(calendarItem.colorId);
+    var groupedCalendars = _.groupBy(calendar.calendars, 'email');
+    for(var email in groupedCalendars) {
+        var categoryName = email;
+        if(categoryName == "undefined") categoryName = "Other";
+        $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
+        $(groupedCalendars[email]).each(function (k, calendarItem) {
 
-        var $div = $("<div>").addClass("calendar-item");
-        var $checkbox = $("<input type='checkbox'>").prop("disabled", "disabled");
 
-        if (calendar.shouldDisplayCalId(calendarItem.id, "")) {
-            $checkbox.prop("checked", "checked");
-        }
-        $div.append($checkbox);
-        $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarsColors()[parseInt(calendarItem.colorId)].background}));
-        $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
-        $calendarsListPopup.find(".calendars").append($div);
-    });
+            calsId.push(calendarItem.id);
+            calsSum.push(calendarItem.summary);
+            colorIds.push(calendarItem.colorId);
+
+            var $div = $("<div>").addClass("calendar-item");
+            var $checkbox = $("<input type='checkbox'>").prop("disabled", "disabled");
+
+            if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+                $checkbox.prop("checked", "checked");
+            }
+            $div.append($checkbox);
+            $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarsColors()[parseInt(calendarItem.colorId)].background}));
+            $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
+
+            if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+                $calendarsListPopup.find(".calendars").append($div);
+            }
+        });
+    }
+
 };
 
 Calendar.prototype.fetchCalendars = function (callback) {
     var calendar = this;
     calendar.showLoadingSpinner();
 
-    CommonHelpers.externalRequest({
-        action: "get_calendars_list_jd",
-        access_token: calendar.initialData.access_token,
-        calendar_nature: calendar.accountPreferences.calendar_nature,
-        email: calendar.accountPreferences.email
-    }, function (response) {
-        calendar.hideLoadingSpinner();
-        calendar.calendars = response.items;
+    var allEmails = calendar.initialData.other_emails.slice();
+    allEmails.unshift(calendar.initialData.email);
+    var accountsToWait = 0;
+    calendar.calendars = [];
 
-        calendar.calendars.push({
-            id: "juliedesk-unavailable",
-            summary: "Non-working hours",
-            colorId: "0"
+    for(var i = 0; i < allEmails.length; i++) {
+        var email = allEmails[i];
+        accountsToWait ++;
+        CommonHelpers.externalRequest({
+            action: "calendars",
+            email: email
+        }, function (response) {
+            for(var j=0; j <response.items.length; j++) {
+                var calendarItem = response.items[j];
+                calendarItem.email = response.email;
+                calendar.calendars.push(calendarItem);
+            }
+
+            accountsToWait --;
+            if(accountsToWait == 0) {
+                calendar.hideLoadingSpinner();
+
+                calendar.calendars.push({
+                    id: "juliedesk-unavailable",
+                    summary: "Non-working hours",
+                    colorId: "0"
+                });
+                calendar.redrawTimeZoneSelector();
+                calendar.redrawCalendarsListPopup();
+                if (callback) callback();
+            }
         });
-        calendar.redrawTimeZoneSelector();
-        calendar.redrawCalendarsListPopup();
-        if (callback) callback();
-    });
+    }
 };
 
 
@@ -166,8 +195,6 @@ Calendar.prototype.hideLoadingSpinner = function () {
 };
 
 Calendar.prototype.addForbiddenEvents = function(events) {
-    console.log("ADD FORBIDDEN EVENTS");
-    console.log(events);
     var calendar = this;
     var result = [];
     for(var i in events) {
@@ -185,7 +212,6 @@ Calendar.prototype.addForbiddenEvents = function(events) {
         };
         result.push(event);
     }
-    console.log(result);
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', result);
 };
 
@@ -199,23 +225,30 @@ Calendar.prototype.addEventsToCheckIfNeeded = function() {
     }
 };
 
-Calendar.prototype.fetchEvents = function (start, end) {
+Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
+    var calendar = this;
+
+    for(var email in calendar.accountPreferences) {
+        calendar.fetchEvents(start, end, calendar.accountPreferences[email]);
+    }
+};
+Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash) {
     var calendar = this;
     calendar.showLoadingSpinner("Loading events...");
 
-    calendar.waitingCals = 0;
+    if(!accountPreferencesHash) {
+        accountPreferencesHash = calendar.accountPreferences;
+    }
 
-    calendar.waitingCals++;
+
 
     CommonHelpers.externalRequest({
         action: "events",
-        email: calendar.accountPreferences.email,
+        email: accountPreferencesHash.email,
         start: start,
-        end: end,
-        calendar_nature: calendar.accountPreferences.calendar_nature
+        end: end
     }, function (response) {
-        console.log(response);
-        calendar.addCal(calendar.getNonAvailableEvents(start, end), calendar.calendars.length - 1);
+        calendar.addCal(calendar.getNonAvailableEvents(start, end, accountPreferencesHash), calendar.calendars.length - 1);
         calendar.addEventsToCheckIfNeeded();
 
         calendar.addAllCals(response.items);
@@ -223,14 +256,14 @@ Calendar.prototype.fetchEvents = function (start, end) {
     });
 };
 
-Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
+Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
     var result = [];
 
     var calIndex;
 
-    for (var day in calendar.accountPreferences.unbooking_hours) {
-        var slots = calendar.accountPreferences.unbooking_hours[day];
+    for (var day in accountPreferencesHash.unbooking_hours) {
+        var slots = accountPreferencesHash.unbooking_hours[day];
         var mCurrentTime = moment(startTime);
         while (mCurrentTime < moment(endTime)) {
             if (mCurrentTime.locale("en").format("ddd").toLowerCase() == day) {
@@ -268,8 +301,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime) {
         }
     }
 
-    for(var i=0; i<calendar.accountPreferences.temporary_unavailabilities.length; i++) {
-        var unavailability = calendar.accountPreferences.temporary_unavailabilities[i];
+    for(var i=0; i<accountPreferencesHash.temporary_unavailabilities.length; i++) {
+        var unavailability = accountPreferencesHash.temporary_unavailabilities[i];
         var event = {
             summary: "Temporary not available",
             start: {
@@ -383,13 +416,9 @@ Calendar.prototype.addCal = function (calEvents, x) {
         calendar.eventDataX.push(eventData);
     }
 
-
-    calendar.waitingCals--;
-    if (calendar.waitingCals == 0) {
-        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
-        calendar.eventDataX = [];
-        calendar.hideLoadingSpinner();
-    }
+    calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
+    calendar.eventDataX = [];
+    calendar.hideLoadingSpinner();
 };
 
 
@@ -439,7 +468,7 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
 Calendar.prototype.refreshEvents = function() {
     var calendar = this;
     calendar.$selector.find('#calendar').fullCalendar('removeEvents');
-    calendar.fetchEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
+    calendar.fetchAllAccountsEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
 };
 
 Calendar.prototype.addEvent = function (event) {
@@ -503,14 +532,14 @@ Calendar.prototype.addEventsCountLabels = function () {
 
         var count = events.length;
         var className = "warning";
-        if (count < calendar.accountPreferences.max_number_of_appointments) {
-            className = "ras";
-        }
-        else {
-            if (calendar.$selector.find(".fc-widget-header.fc-" + day).length > 0) {
-                minCount = Math.min(minCount, count);
-            }
-        }
+//        if (count < calendar.accountPreferences.max_number_of_appointments) {
+//            className = "ras";
+//        }
+//        else {
+//            if (calendar.$selector.find(".fc-widget-header.fc-" + day).length > 0) {
+//                minCount = Math.min(minCount, count);
+//            }
+//        }
 
 
         calendar.$selector.find(".fc-widget-header.fc-" + day).append($("<div>").addClass("events-count-label").addClass("count-" + count).addClass(className).html("" + count));
@@ -529,7 +558,7 @@ Calendar.prototype.changeCalendarTimezone = function (e) {
     calendar.$selector.find("#custom-timezone").data("value", timeZoneId);
     calendar.$selector.find("#custom-timezone").data("description", timeZoneId.replace("_", " "));
 
-    calendar.fetchEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
+    calendar.fetchAllAccountsEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
 
     calendar.timeZoneHasBeenChanged = true;
 };
@@ -548,7 +577,7 @@ Calendar.prototype.drawExternalEventsList = function () {
     dateTimes = $.map(dateTimes, function (v) {
         return moment.tz(v.start.format(), calendar.getCalendarTimezone()).format();
     });
-    //console.log(dateTimes);
+
     window.postMessage({
         message: "drawExternalEventsList",
         date_times: dateTimes
@@ -561,7 +590,7 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
 
     var allTimeZones = [];
     $(calendar.calendars).each(function (k, calendarItem) {
-        if (calendar.shouldDisplayCalId(calendarItem.id, "")) {
+        if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
             if (calendarItem.timeZone && allTimeZones.indexOf(calendarItem.timeZone) == -1) {
                 allTimeZones.push(calendarItem.timeZone);
                 calendar.$selector.find("#calendar-timezone").append(
@@ -573,17 +602,25 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
 };
 Calendar.prototype.fetchAccountPreferences = function (callback) {
     var calendar = this;
-    CommonHelpers.externalRequest({
-        action: "getJulieDeskPreferences",
-        email: calendar.initialData.email
-    }, function (response) {
-        calendar.accountPreferences = response;
 
-        if (callback) callback();
-    });
+    var accountsToWait = 0;
+    var allEmails = calendar.initialData.other_emails.slice();
+    allEmails.unshift(calendar.initialData.email);
+    for(var i = 0; i<allEmails.length; i++) {
+        accountsToWait ++;
+        var email = allEmails[i];
+        CommonHelpers.externalRequest({
+            action: "getJulieDeskPreferences",
+            email: email
+        }, function (response) {
+            calendar.accountPreferences[response.email] = response;
+
+            accountsToWait --;
+            if(accountsToWait == 0 && callback) callback();
+        });
+    }
 };
 Calendar.prototype.clickMinimizeButton = function(e) {
     var calendar = this;
-    console.log("click", calendar, calendar.$selector);
     calendar.$selector.addClass("minimized");
 };

@@ -26,9 +26,9 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     var realEnd = start.clone();
     realEnd.add('m', calendar.getCurrentDuration());
 
-    var delayB = calendar.accountPreferences.delay_between_appointments;
+    //var delayB = calendar.accountPreferences.delay_between_appointments;
     var eventData = calendar.generateEventData({
-        title: (delayB > 0)?("Delay: " + delayB + "'"):null,
+        title: null,//(delayB > 0)?("Delay: " + delayB + "'"):null,
         start: start,
         end: realEnd
     });
@@ -76,7 +76,8 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
         var start = calendar.dispStart.format() + "T00:00:00Z";
         var end = calendar.dispEnd.format() + "T00:00:00Z";
 
-        calendar.fetchEvents(start, end);
+        calendar.fetchAllAccountsEvents(start, end);
+
     }
     else {
         if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {
@@ -94,7 +95,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
                 end = calendar.dispEnd.format() + "T00:00:00Z";
             }
 
-            calendar.fetchEvents(start, end);
+            calendar.fetchAllAccountsEvents(start, end);
         }
     }
 };

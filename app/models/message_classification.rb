@@ -19,6 +19,7 @@ class MessageClassification < ActiveRecord::Base
     (params[:attendees] || {}).each do |k, att|
       attendees << att
     end
+    attendees = MessageClassification.categorize_clients attendees
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
@@ -41,6 +42,20 @@ class MessageClassification < ActiveRecord::Base
     result.append_julie_action
 
     result
+  end
+
+  def self.categorize_clients attendees
+    accounts = Account.get_active_account_emails(detailed: true)
+    attendees.each do |attendee|
+      accounts.select do |account|
+        all_emails = [account['email']] + account['email_aliases']
+        if all_emails.include? attendee['email']
+          attendee['account_email'] = account['email']
+        end
+      end
+    end
+
+    attendees
   end
 
   def append_julie_action

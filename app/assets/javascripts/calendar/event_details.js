@@ -154,7 +154,7 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
             $container.find(".event-spinner").show();
             CommonHelpers.externalRequest({
                 action: "delete_event",
-                email: calendar.accountPreferences.email,
+                email: calendar.initialData.email,
                 event_id: calendar.currentEvent.id,
                 calendar_id: calendar.calendars[calendar.currentEvent.calIndex].id
             }, function(response) {

@@ -43,7 +43,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
-    else if(request.action == "get_calendars_list_jd"){
+    else if(request.action == "calendars"){
         $.ajax({
             url: host + "/api/v1/calendar_proxy/calendars_list?access_key=gho67FBDJKdbhfj890oPm56VUdfhq8",
             data: {
@@ -51,7 +51,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             success: function(data) {
                 callback({
-                    items: data.items
+                    items: data.items,
+                    email: request.email
                 });
             }
         });
@@ -163,6 +164,41 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 access_key: access_key,
                 event_id: request.event_id,
                 calendar_id: request.calendar_id
+            },
+            success: function(e) {
+                callback(e);
+            },
+            error: function(e) {
+                console.log(e);
+                error_callback(e);
+            }
+        });
+    }
+    else if(request.action == "all_accounts") {
+        $.ajax({
+            url: host + "/api/v1/accounts/",
+            type: "GET",
+            contentType: "application/json",
+            data: {
+                access_key: access_key
+            },
+            success: function(e) {
+                callback(e);
+            },
+            error: function(e) {
+                console.log(e);
+                error_callback(e);
+            }
+        });
+    }
+    else if(request.action == "show_account") {
+        $.ajax({
+            url: host + "/api/v1/accounts/show/",
+            type: "GET",
+            contentType: "application/json",
+            data: {
+                access_key: access_key,
+                email: request.email
             },
             success: function(e) {
                 callback(e);

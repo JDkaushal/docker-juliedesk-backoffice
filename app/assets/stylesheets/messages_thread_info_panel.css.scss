@@ -64,17 +64,51 @@
   .account {
     font-size: 16px;
     word-break: break-word;
-  }
-  .account-details {
-    font-size: 12px;
-
-    textarea#current_notes {
-      resize: none;
-      width: 100%;
-      font-weight: 600;
+    .account-details {
       font-size: 12px;
+
+      textarea#current_notes {
+        resize: none;
+        width: 100%;
+        font-weight: 600;
+        font-size: 12px;
+      }
+    }
+
+    .other-accounts {
+      display: none;
+      margin: 10px 0;
+
+      .other-accounts-title {
+        font-size: 14px;
+        color: #aaa;
+      }
+
+      .other-accounts-list {
+        border-top: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+
+        .other-account {
+          border-bottom: 1px solid #ccc;
+          padding: 10px;
+
+          .other-account-name {
+            font-size: 14px;
+          }
+          .other-account-email {
+            font-size: 12px;
+            color: #aaa;
+          }
+          .other-account-preferences, .other-account-current-notes {
+            font-size: 12px;
+            margin: 5px 0;
+          }
+        }
+      }
     }
   }
+
 
   .contacts {
     ul {

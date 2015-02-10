@@ -6,6 +6,13 @@
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
 
+    window.otherAccountEmails = _.map(window.threadComputedData.attendees, function(attendee) {
+        return attendee.account_email;
+    });
+    window.otherAccountEmails = _.filter(window.otherAccountEmails, function(email) {
+        return email && email != "<%= @messages_thread.account_email %>";
+    });
+
     $(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
@@ -52,10 +59,34 @@
                 eventId: "<%= messages_thread.event_data[:event_id] %>",
                 calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
                 threadComputedData: window.threadComputedData,
-                callback: window.afterEventFetched,
+                callback: window.afterEventFetched
             });
         <% end %>
+
+        fetchOtherAccounts();
     });
+
+    function fetchOtherAccounts() {
+        $(".other-accounts").hide();
+        $(".other-accounts-list").html("");
+        for(var i in window.otherAccountEmails) {
+            var otherAccountEmail = window.otherAccountEmails[i];
+            CommonHelpers.externalRequest({
+                action: "show_account",
+                email: otherAccountEmail
+            }, function(sae) {
+                $(".other-accounts").show();
+                var $otherAccount = $("<div>").addClass("other-account");
+                $otherAccount.append($("<div>").addClass("other-account-name").html(sae.data.full_name));
+                $otherAccount.append($("<div>").addClass("other-account-email").html(sae.data.email));
+                $otherAccount.append($("<div>").addClass("other-account-preferences").html(sae.data.raw_preferences));
+                $otherAccount.append($("<div>").addClass("other-account-current-notes").html(sae.data.current_notes));
+                $(".other-accounts-list").append($otherAccount);
+            }, function(sae) {
+
+            });
+        }
+    }
 
     function initAppointments() {
         $("select#appointment_nature").html("");
@@ -152,6 +183,10 @@
           <div class="account-details">
             <%= simple_format account.raw_preferences %>
             <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
+          </div>
+          <div class="other-accounts">
+            <div class="other-accounts-title">Other accounts</div>
+            <div class="other-accounts-list"></div>
           </div>
       <% else %>
           <%= I18n.t("info_box.no_account_found") %>
