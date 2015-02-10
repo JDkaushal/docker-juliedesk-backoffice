@@ -239,7 +239,7 @@
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.attendees")%></div>
         <div class="data-entry-value" id="contacts-data-list">
-          <% messages_thread.contacts(with_client: true).each do |contact| %>
+          <% messages_thread.contacts().each do |contact| %>
               <% attendees = messages_thread.computed_data[:attendees] || [] %>
               <% checked = attendees == [] || attendees.select{|att| att['email'] == contact[:email]}.length > 0 %>
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
