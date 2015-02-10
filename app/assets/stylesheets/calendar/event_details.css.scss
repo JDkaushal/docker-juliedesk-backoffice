@@ -1,30 +1,29 @@
+#event-details-template-container {
+  display: none;
+}
+
 #event-details-container {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
   display: none;
   z-index: 200;
 
-  .event-details-positionner {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-  }
   .event-details {
     background: white;
-    width: 350px;
+    width: 330px;
     height: 450px;
-    position: relative;
-    top: -225px;
-    margin: 0 auto;
+    position: absolute;
     text-align: left;
-    padding: 30px;
     transition: width 0.3s;
     overflow: hidden;
+    border: 1px solid #ccc;
+    box-shadow: 5Px 5px 10px rgba(0,0,0,0.1);
+    font-size: 14px;
+    color: #666;
 
     &.editing {
       width: 700px;
@@ -32,50 +31,53 @@
 
     .first-panel {
       position: absolute;
-      width: 350px;
-      height: 450px;
-      top: 30px;
-      left: 30px;
+      width: 250px;
+      height: 430px;
+      top: 10px;
+      left: 50px;
     }
     .second-panel {
       position: absolute;
-      width: 350px;
-      height: 450px;
-      top: 30px;
-      left: 420px;
+      width: 250px;
+      height: 350px;
+      top: 10px;
+      left: 330px;
       opacity: 1.0;
-      padding: 0 30px;
+      padding: 0 10px;
       border-left: 1px solid #eee;
     }
 
     .title {
-      font-size: 20px;
-      color: #000;
-      margin: 20px 0 20px 0;
+      margin: 0px 0 5px 0;
       padding: 5px;
       width: 100%;
       border: 1px solid #ddd;
       outline: none;
+      font-size: 17px;
     }
-    .start {
+    .date {
+      padding: 5px;
+      font-size: 15px;
+      border: 1px solid transparent;
 
     }
-    .end {
+    .border {
+      border-top: 1px solid #ddd;
+      margin: 10px -50px 10px -50px;
     }
     .location-container {
-      margin: 20px 0 20px 0;
       position: relative;
     }
     .location-container img.location-icon {
       position: absolute;
       top: 1px;
-      left: -28px;
+      left: -37px;
       width: 30px;
       opacity: 0.3;
     }
 
     .location {
-      font-size: 16px;
+      font-size: 15px;
       padding: 5px;
       width: 100%;
       border: 1px solid #ddd;
@@ -83,13 +85,12 @@
     }
 
     .notes {
-      margin: 0 0 20px 0;
-      font-size: 14px;
+      font-size: 12px;
       width: 100%;
       resize: none;
       border: 1px solid #ddd;
       outline: none;
-      height: 120px;
+      height: 90px;
       padding: 5px;
     }
 
@@ -97,15 +98,34 @@
       display: none;
     }
     .attendees {
-      font-size: 14px;
       word-wrap: break-word;
       overflow-x: hidden;
       overflow-y: auto;
-      height: 100px;
+      height: 90px;
+      border: 1px solid transparent;
     }
     .attendee-text {
       font-size: 12px;
-      padding: 2px 0;
+      padding: 2px 0 10px 0;
+      position: relative;
+
+      .attendee-name {
+        font-size: 14px;
+        line-height: 16px;
+        min-height: 16px;
+      }
+      .attendee-email {
+        color: #999;
+      }
+
+      .attendee-status {
+        position: absolute;
+        top: 1px;
+        right: 10px;
+        line-height: 16px;
+        font-size: 11px;
+        color: #aaa;
+      }
     }
     .attendee-text.organizer {
       font-weight: bold;
@@ -160,45 +180,59 @@
     left: 30px;
   }
 
-  #event-edit-button, #event-delete-button, #event-save-button, #event-cancel-button {
-    text-align: center;
-    width: 150px;
-    padding: 5px;
-    line-height: 30px;
-    color: white;
-    bottom: 20px;
+  .event-edit-buttons {
+    //display: none;
+    background: #f0f0f0;
     position: absolute;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  #event-edit-button {
-    background: #2891D2;
-    left: 20px;
+    bottom: 0;
+    left: 0;
+    right:0;
+    height: 55px;
+    border-top: 1px solid #ddd;
+
+    #event-edit-button, #event-delete-button, #event-save-button, #event-cancel-button {
+      text-align: center;
+      width: 135px;
+      padding: 5px;
+      line-height: 30px;
+      color: white;
+      bottom: 8px;
+      position: absolute;
+      cursor: pointer;
+      border-radius: 3px;
+      display: none;
+    }
+    #event-edit-button {
+      background: #2891D2;
+      left: 20px;
+    }
+
+    #event-delete-button {
+      background: #c00;
+      right: 20px;
+    }
+
+    #event-save-button {
+      background: #35A143;
+      right: 20px;
+    }
+
+    #event-cancel-button {
+      background: #2891D2;
+      left: 20px;
+    }
   }
 
-  #event-delete-button {
-    background: #c00;
-    right: 20px;
-  }
-
-  #event-save-button {
-    background: #35A143;
-    right: 20px;
-  }
-
-  #event-cancel-button {
-    background: #2891D2;
-    left: 20px;
-  }
   .event-close-button {
     position: absolute;
     top: 5px;
     right: 5px;
-    width: 35px;
+    width: 20px;
     cursor: pointer;
   }
 
   .event-spinner {
+    display: none;
     position: absolute;
     bottom: 32px;
     left: 222px;
@@ -208,7 +242,7 @@
   }
 
   .event-date-edit-container {
-    display: block;
+    display: none;
     margin: 5px 0 20px 20px;
     font-size: 11px;
     input[type=date] {
@@ -231,304 +265,4 @@
     }
   }
 
-}
-
-#create-event-panel {
-  .second-panel {
-    position: relative;
-  }
-
-  .event-created-mask {
-    position: absolute;
-    top: 43px;
-    left: 0px;
-    height: 100%;
-    width: 181px;
-    background: white;
-    z-index: 3;
-    padding: 10px;
-    .event-created-title {
-      text-align: center;
-      padding: 20px 0;
-      font-weight: 200;
-      font-size: 20px;
-      color: #0c0;
-    }
-    .event-created-start {
-      text-align: center;
-      padding: 40px 0;
-      font-size: 14px;
-    }
-    .copied-to-clipboard {
-      text-align: center;
-      padding: 20px 0;
-      font-size: 13px;
-      font-style: italic;
-      color: #aaa;
-    }
-    .done-button {
-      position: absolute;
-      bottom: 100px;
-      left: 20px;
-      width: 160px;
-      height: 40px;
-      line-height: 40px;
-      color: white;
-      text-align: center;
-      cursor: pointer;
-      background: #f4416d;
-      border-radius: 3px;
-    }
-  }
-
-  .create-event-title {
-    font-size: 20px;
-    color: #666;
-    line-height: 30px;
-    height: 30px;
-    font-weight: 200;
-  }
-
-  .attendees-title {
-    margin: 4px 0 2px 4px;
-    color: #999;
-    font-size: 12px;
-    letter-spacing: 2px;
-  }
-  .attendees-list {
-    height: 70px;
-    border: 1px solid #eee;
-    margin-bottom: -1px;
-    overflow-y: auto;
-    padding: 5px 0;
-
-    .attendee {
-      padding: 5px 5px 5px 5px;
-      font-size: 12px;
-      height: 10px;
-      line-height: 10px;
-      position: relative;
-      .remove-attendee-button {
-        position: absolute;
-        top: 0px;
-        right: 5px;
-        width: 20px;
-        height: 20px;
-        border-radius: 10px;
-        background: #ddd;
-        line-height: 20px;
-        text-align: center;
-        color: white;
-        cursor: pointer;
-      }
-      .remove-attendee-button:hover {
-        background-color: #ccc;
-      }
-    }
-  }
-
-  .new-attendee-container {
-    padding: 20px 0;
-    position: relative;
-  }
-
-  input#new-attendee {
-    outline: none;
-    padding: 2px 5px;
-    height: 28px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 142px;
-    z-index: 2;
-  }
-
-  .add-new-attendee {
-    color: white;
-    background: #2891D2;
-    position: absolute;
-    top: 0;
-    left: 140px;
-    width: 40px;
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-
-  input, textarea {
-    border: 1px solid #ddd;
-    outline: none;
-    height: 30px;
-    font-size: 13px;
-    padding: 5px;
-    width: 100%;
-    font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-  }
-
-  .event-details {
-
-    .title {
-      margin: 5px 0 20px 0;
-      font-size: 15px;
-    }
-    .start {
-      margin: 5px 0 5px 0;
-      font-size: 13px;
-    }
-
-    .location-container {
-      margin: 20px 0 10px 0;
-      position: relative;
-      img.location-icon {
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        width: 20px;
-        opacity: 0.3;
-      }
-    }
-
-    .location {
-      padding: 5px 5px 5px 30px;
-
-    }
-
-    .notes {
-      margin: 0 0 10px 0;
-      resize: none;
-      height: 80px;
-    }
-
-    &.editing .attendees {
-      display: none;
-    }
-    .attendees {
-      font-size: 14px;
-    }
-  }
-
-  .appointment-types {
-    padding: 0 0 10px 0;
-    .appointment-types-title {
-      font-size: 12px;
-      color: #aaa;
-      display: inline-block;
-    }
-    select#default-appointments {
-      width: 130px;
-      margin-left: 15px;
-    }
-    .duration-container {
-      position: relative;
-    }
-    .duration-container select {
-      margin: 5px 0;
-      width: 100%;
-    }
-    .duration-container img.duration-icon {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 20px;
-      opacity: 0.3;
-    }
-  }
-
-  input.duration {
-    padding: 5px 5px 5px 30px;
-  }
-
-  #event-save-button {
-    text-align: center;
-    width: 150px;
-    padding: 5px;
-    line-height: 30px;
-    color: white;
-    left: 20px;
-    position: absolute;
-    cursor: pointer;
-    border-radius: 3px;
-    background: #35A143;
-    bottom: 30px;
-  }
-
-  .event-minimize-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    line-height: 30px;
-    text-align: center;
-    font-size: 27px;
-    opacity: 0.2;
-    transition: transform 0.6s ease;
-    &.minimized {
-      transform: rotate(180deg);
-    }
-    &:hover {
-      opacity: 0.4;
-    }
-  }
-
-  .event-spinner {
-    position: absolute;
-    bottom: 32px;
-    left: 222px;
-  }
-
-  input:disabled, textarea:disabled {
-    border-color: transparent !important;
-  }
-
-  .event-time-container {
-    margin: 10px 0 10px 0;
-    span {
-      margin: 0 5px;
-      font-size: 11px;
-    }
-    input {
-      width: 40px;
-    }
-  }
-
-}
-
-.checkers-container {
-  height: 40px;
-  top: -30px;
-  position: absolute;
-  left: 50px;
-
-  .checker {
-    float: left;
-    width: 30px;
-    position: relative;
-    margin: 0 5px;
-  }
-  .checker .signal {
-    background: #d00;
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
-  }
-  .checker.on .signal {
-    background: #0c6;
-
-  }
-  .checker .checker-name {
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: white;
-    opacity: 0.8;
-    line-height: 30px;
-    text-align: center;
-    width: 30px;
-    font-size: 12px;
-  }
 }

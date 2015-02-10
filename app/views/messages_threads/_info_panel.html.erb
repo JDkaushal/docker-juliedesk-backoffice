@@ -112,15 +112,12 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-
-
         var addressArray = $.grep(appointment.addresses_with_description, function(v) {
            return v.label == $("select#location_nature").val();
         });
 
         if(addressArray.length > 0) {
             var addressObject = addressArray[0];
-            console.log(addressArray[0]);
             var notes = [addressObject.address_complement, appointment.note[window.threadLocale]].join("\n");
             var location = addressObject.address;
             $("textarea#notes").val(notes);
@@ -132,8 +129,6 @@
             $("input#location").val("").removeAttr('disabled');
         }
     }
-
-
 </script>
 
 <div class="messages-thread-info-panel">

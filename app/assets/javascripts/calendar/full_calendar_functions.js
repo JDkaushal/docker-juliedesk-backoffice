@@ -118,7 +118,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
         }
     }
     else {
-        calendar.showEventDetails(event);
+        calendar.showEventDetails(event, $(jsEvent.currentTarget));
     }
 };
 

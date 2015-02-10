@@ -1,26 +1,100 @@
-Calendar.prototype.showEventDetails = function(event) {
+Calendar.prototype.showEventDetails = function(event, $currentTarget) {
+    var calendar = this;
+    calendar.resetEventDetailsContainer();
+
+    // Positioning
+    if($currentTarget) {
+        var $edc = calendar.$selector.find("#event-details-container");
+        if($currentTarget.offset().left < calendar.$selector.width / 2) {
+            $edc.find(".event-details").css({
+                top: (calendar.$selector.height() - $edc.find(".event-details").outerHeight()) / 2,
+                left: $currentTarget.offset().left + $currentTarget.width() + 10
+            });
+        }
+        else {
+            $edc.find(".event-details").css({
+                top: (calendar.$selector.height() - $edc.find(".event-details").outerHeight()) / 2,
+                left: $currentTarget.offset().left - $edc.find(".event-details").outerWidth() - 10
+            });
+        }
+
+    }
+    calendar.redrawEventDetailsFromEvent(event);
+
+    return;
+    if(calendar.accountPreferences.calendar_nature == "google") {
+        CommonHelpers.externalRequest({
+            action: "get_event",
+            calendar_id: calendar.calendars[event.calIndex].id,
+            event_id: event.id,
+            email: calendar.accountPreferences.email
+        }, function(response) {
+            var eventData = response.data;
+
+            calendar.currentEvent.sequence = eventData.sequence;
+            calendar.currentEvent.attendees = eventData.attendees;
+            calendar.currentEvent.reminders = eventData.reminders;
+            calendar.$selector.find("#calendar").fullCalendar('updateEvent', calendar.currentEvent);
+
+            calendar.redrawEventDetailsFromEvent(event);
+        }, function(response) {
+            console.log("error", response)
+        });
+    }
+};
+
+Calendar.prototype.resetEventDetailsContainer = function() {
+    var calendar = this;
+    calendar.$selector.find("#event-details-container").html(calendar.$selector.find("#event-details-template-container").html());
+};
+
+Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     var calendar = this;
     calendar.currentEvent = event;
     var $edc = calendar.$selector.find("#event-details-container");
 
     $edc.find("input.title").val(event.title);
-    $edc.find(".start").html(event.start.format("LLL"));
-    $edc.find(".end").html(event.end.format("LLL"));
+    $edc.find(".date").html(CommonHelpers.formatDateTimeRange(event.start, event.end, "fr"));
+    $edc.find("input.location").val(event.location);
+    $edc.find("textarea.notes").val(event.description);
 
-
-    $edc.find(".start-date").val(event.start.format("YYYY-MM-DD"));
-    $edc.find(".start-hours").val(event.start.format("HH"));
-    $edc.find(".start-minutes").val(event.start.format("mm"));
-    $edc.find(".end-date").val(event.end.format("YYYY-MM-DD"));
-    $edc.find(".end-hours").val(event.end.format("HH"));
-    $edc.find(".end-minutes").val(event.end.format("mm"));
-
-    $edc.find("input.location").val("");
-    $edc.find("textarea.notes").val("");
     $edc.find(".attendees").html("");
-    $edc.find(".attendees-list").html("");
+    var attendees = [];
+    if(event.attendees) attendees = event.attendees;
+    var attendeeEmails = [];
+    $(attendees).each(function(k, attendee) {
+        var $attendee = $("<div>").addClass("attendee-text");
+        $attendee.append($("<div>").addClass("attendee-name").html(attendee.displayName));
+        $attendee.append($("<div>").addClass("attendee-email").html(attendee.email));
+        $attendee.append($("<div>").addClass("attendee-status").html(attendee.responseStatus));
+
+        if(attendee.organizer) {
+            $attendee.addClass("organizer");
+        }
+        attendeeEmails.push(attendee.email);
+        $edc.find(".attendees").append($attendee);
+
+        $edc.find(".attendees-list").append($("<div>").addClass("attendee").data("email", attendee.email).html(attendee.email));
+    });
 
     $edc.find("input, textarea").attr("disabled", "disabled");
+    //$edc.find(".start").html(event.start.format("LLL"));
+    //$edc.find(".end").html(event.end.format("LLL"));
+
+
+
+//    $edc.find(".start-date").val(event.start.format("YYYY-MM-DD"));
+//    $edc.find(".start-hours").val(event.start.format("HH"));
+//    $edc.find(".start-minutes").val(event.start.format("mm"));
+//    $edc.find(".end-date").val(event.end.format("YYYY-MM-DD"));
+//    $edc.find(".end-hours").val(event.end.format("HH"));
+//    $edc.find(".end-minutes").val(event.end.format("mm"));
+
+    //$edc.find(".attendees-list").html("");
+
+
+    $edc.fadeIn(200);
+    return;
     $edc.find(".event-date-edit-container").hide();
 
     $edc.find("#event-delete-button").hide();
@@ -33,95 +107,13 @@ Calendar.prototype.showEventDetails = function(event) {
 
     $edc.find("#should-notify").attr("checked", false);
 
-    $edc.fadeIn(200);
-    if(calendar.accountPreferences.calendar_nature == "icloud" || calendar.accountPreferences.calendar_nature == "exchange") {
-
-        $edc.find(".event-spinner").fadeOut(200);
-        $edc.find("input.location").val(event.location);
-        $edc.find("textarea.notes").val(event.description);
-        $edc.find(".attendees").html("");
-
-        var attendees = [];
-        if(event.attendees) attendees = event.attendees;
-        var attendeeEmails = [];
-        $(attendees).each(function(k, attendee) {
-            var $attendee = $("<div>").html(attendee.displayName + " - " + attendee.email + " (" + attendee.responseStatus + ")");
-            $attendee.addClass("attendee-text");
-            if(attendee.organizer) {
-                $attendee.addClass("organizer");
-            }
-            attendeeEmails.push(attendee.email);
-            $edc.find(".attendees").append($attendee);
-
-            $edc.find(".attendees-list").append($("<div>").addClass("attendee").data("email", attendee.email).html(attendee.email));
-        });
 
 
-        $edc.find("#event-delete-button").show();
-        $edc.find("#event-edit-button").show();
-    }
-
-    return;
-    CommonHelpers.externalRequest({
-        action: "event_details",
-        calendarId: calendar.calendars[event.calIndex].id,
-        eventId: event.id,
-        access_token: calendar.accountPreferences.access_token
-    }, function(response) {
-        var location = response.location;
-        if(!location) location = "";
-
-        var notes = response.notes;
-        if(!notes) notes = "";
-
-        var attendees = response.attendees;
-
-        $edc.find("input.title").val(response.summary);
-        $edc.find(".start").html(moment(response.start.dateTime).format("LLL"));
-        $edc.find(".end").html(moment(response.end.dateTime).format("LLL"));
-
-        $edc.find("input.location").val(location);
-        $edc.find("textarea.notes").val(notes);
-        $edc.find(".attendees").html("");
-        var attendeeEmails = [];
-        $(attendees).each(function(k, attendee) {
-            var $attendee = $("<div>").html(attendee.displayName + " - " + attendee.email + " (" + attendee.responseStatus + ")");
-            $attendee.addClass("attendee-text");
-            if(attendee.organizer) {
-                $attendee.addClass("organizer");
-            }
-            attendeeEmails.push(attendee.email);
-            $edc.find(".attendees").append($attendee);
-
-            $edc.find(".attendees-list").append($("<div>").addClass("attendee").data("email", attendee.email).html(attendee.email));
-        });
-
-        if(response.organizer && attendeeEmails.indexOf(response.organizer.email)== -1) {
-            var $attendee = $("<div>").html(response.organizer.displayName + " - " + response.organizer.email + " (Organizer)");
-            $attendee.addClass("attendee-text");
-            $attendee.addClass("organizer");
-            $edc.find(".attendees").prepend($attendee);
-        }
 
 
-        $edc.find(".event-spinner").fadeOut(200);
 
-        if(response.start.dateTime !== undefined) {
-            $edc.find("#event-delete-button").show();
-            $edc.find("#event-edit-button").show();
-
-            calendar.currentEvent.title = response.summary;
-            calendar.currentEvent.start = moment(response.start.dateTime).tz($("#calendar-timezone").val()).format();
-            calendar.currentEvent.end = moment(response.end.dateTime).tz($("#calendar-timezone").val()).format();
-            calendar.currentEvent.sequence = response.sequence;
-
-            calendar.currentEvent.attendees = response.attendees;
-            calendar.currentEvent.reminders = response.reminders;
-            calendar.$selector.find("#calendar").fullCalendar('updateEvent', calendar.currentEvent);
-        }
-    });
-
-
+    //$edc.find("#event-delete-button").show();
+    //$edc.find("#event-edit-button").show();
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {
