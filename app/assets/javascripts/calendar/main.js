@@ -215,13 +215,34 @@ Calendar.prototype.addForbiddenEvents = function(events) {
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', result);
 };
 
+Calendar.prototype.getEventsToCheck = function() {
+    var calendar = this;
+    var result = [];
+    $.each(calendar.eventsToCheck, function(k, event) {
+        var start = event.start.clone().tz(calendar.getCalendarTimezone()).format();
+        var end = event.end.clone().tz(calendar.getCalendarTimezone()).format();
+
+        result.push({
+            title: event.title,
+            start: start,
+            end: end,
+            color: event.color,
+            durationEditable: event.durationEditable,
+            editable: event.editable,
+            beingAdded: event.beingAdded
+        });
+    });
+    return result;
+
+}
+
 Calendar.prototype.addEventsToCheckIfNeeded = function() {
     var calendar = this;
     if(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
         return ev.beingAdded
             && !ev.editable;
     }).length == 0) {
-        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventsToCheck);
+        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.getEventsToCheck());
     }
 };
 
@@ -553,14 +574,7 @@ Calendar.prototype.changeCalendarTimezone = function (e) {
     calendar.events = [];
     calendar.drawEventList();
 
-    var timeZoneId = $(this).val();
-    calendar.$selector.find("#custom-timezone").find("input").val(timeZoneId.replace("_", " "));
-    calendar.$selector.find("#custom-timezone").data("value", timeZoneId);
-    calendar.$selector.find("#custom-timezone").data("description", timeZoneId.replace("_", " "));
-
     calendar.fetchAllAccountsEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
-
-    calendar.timeZoneHasBeenChanged = true;
 };
 
 Calendar.prototype.drawEventList = function () {
@@ -588,13 +602,14 @@ Calendar.prototype.drawExternalEventsList = function () {
 Calendar.prototype.redrawTimeZoneSelector = function () {
     var calendar = this;
 
+    console.log(calendar.calendars);
     var allTimeZones = [];
     $(calendar.calendars).each(function (k, calendarItem) {
         if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
-            if (calendarItem.timeZone && allTimeZones.indexOf(calendarItem.timeZone) == -1) {
-                allTimeZones.push(calendarItem.timeZone);
+            if (calendarItem.timezone && allTimeZones.indexOf(calendarItem.timezone) == -1) {
+                allTimeZones.push(calendarItem.timezone);
                 calendar.$selector.find("#calendar-timezone").append(
-                    $("<option>").val(calendarItem.timeZone).html(calendarItem.timeZone + " (" + calendarItem.id + ")")
+                    $("<option>").val(calendarItem.timezone).html(calendarItem.timezone + " (" + calendarItem.id + ")")
                 );
             }
         }
