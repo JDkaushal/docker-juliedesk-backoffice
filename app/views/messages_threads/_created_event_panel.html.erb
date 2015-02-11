@@ -20,6 +20,11 @@
     <div class="event-attendees-edit-div"></div>
   </div>
 
+  <div class="event-private event-row">
+    <%= check_box_tag :created_event_private %>
+    <%= I18n.t("info_box.private_event") %>
+  </div>
+
   <div class="fetching-spinner-container">
     <%= image_tag "ajax-loader.gif" %>
     <div><%= I18n.t("info_box.fetching_event") %></div>

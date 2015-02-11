@@ -128,6 +128,7 @@ en:
     suggested_dates: "Suggested dates"
     fetching_event: "Fetching event..."
     no_date_fits: "No date fits"
+    private_event: "Private event"
 
 
   dates_identifications:

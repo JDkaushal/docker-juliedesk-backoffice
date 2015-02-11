@@ -63,6 +63,8 @@ class MessagesThread < ActiveRecord::Base
         attendees: JSON.parse(message_classifications.map(&:attendees).compact.last || "[]"),
         notes: message_classifications.map(&:notes).compact.last,
 
+        private: message_classifications.map(&:private).compact.last,
+
         constraints: message_classifications.map(&:constraints).compact.last,
 
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|

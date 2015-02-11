@@ -32,6 +32,13 @@ window.presenters.redrawEvent = function(params) {
         });
         $attendeesDiv.show();
 
+        if(e.data.private) {
+            $(".created-event-panel .event-private input").prop("checked", true);
+        }
+        else {
+            $(".created-event-panel .event-private input").removeAttr("checked");
+        }
+
 
         // Edit attendees code
 

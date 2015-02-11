@@ -25,9 +25,13 @@
             }
             $("#timezone").timezonePicker();
             $(".save-info-container").show();
+            <% if messages_thread.account.calendar_nature != "google" %>
+                $(".data input#private").prop('disabled', true);
+            <% end %>
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
+            $(".add-attendee-container").hide();
         }
         if(window.afterFormLoadedCallback) {
             window.afterFormLoadedCallback();
@@ -261,6 +265,14 @@
         <div class="add-attendee-container">
           <%=text_field_tag :add_attendee, "", class: "data-entry form-control" %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
+        </div>
+      </div>
+
+      <div class="data-entry">
+        <div class="data-entry-name"><%= I18n.t("info_box.private_event")%></div>
+        <div class="data-entry-value">
+          <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
+          <%= I18n.t("info_box.private_event") %>
         </div>
       </div>
 

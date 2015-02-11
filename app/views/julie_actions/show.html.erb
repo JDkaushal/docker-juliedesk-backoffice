@@ -154,6 +154,7 @@
                 description: window.threadComputedData.notes,
                 attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
                 location: window.threadComputedData.location,
+                private: window.threadComputedData.private,
                 start: start.format(),
                 end: end.format()
             }, function (e) {

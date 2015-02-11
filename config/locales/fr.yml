@@ -296,6 +296,7 @@ fr:
     suggested_dates: "Dates suggérées"
     fetching_event: "Importation de l'évènement..."
     no_date_fits: "Aucune date ne convient"
+    private_event: "Evènement privé"
 
   dates_identifications:
     add_a_date: "Ajouter une date"

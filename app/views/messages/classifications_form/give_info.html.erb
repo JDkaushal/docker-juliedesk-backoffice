@@ -14,6 +14,7 @@
                 location_nature: $("#location_nature").val(),
                 location: $(".created-event-panel .event-location input").val(),
                 notes: $(".created-event-panel .event-notes textarea").val(),
+                private: $(".created-event-panel #created-event-private:checked").length > 0,
                 attendees: getAttendees(),
                 constraints: $("#constraints").val(),
                 processed_in: Date.now() - window.startedAt
@@ -61,6 +62,7 @@
                 description: $(".created-event-panel .event-notes textarea").val(),
                 attendees: getAttendees(),
                 location: $(".created-event-panel .event-location input").val(),
+                private: $(".created-event-panel #created_event_private:checked").length > 0,
                 start: start.format(),
                 end: end.format()
             }, function (e) {
@@ -114,6 +116,7 @@
             location_nature: $("#location_nature").val(),
             location: $("#location").val(),
             notes: $("#notes").val(),
+            private: $("#private:checked").length > 0,
             attendees: $("input[type=checkbox]#attendee:checked").map(function() {
                 var $div = $(this).closest("div");
                 return {

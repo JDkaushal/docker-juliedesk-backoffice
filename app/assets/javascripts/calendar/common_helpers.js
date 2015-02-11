@@ -99,6 +99,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 description: request.description,
                 attendees: request.attendees,
                 location: request.location,
+                private: request.private,
                 start: request.start,
                 end: request.end
             }),
@@ -124,6 +125,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 description: request.description,
                 attendees: request.attendees,
                 location: request.location,
+                private: request.private,
                 start: request.start,
                 end: request.end
             }),
