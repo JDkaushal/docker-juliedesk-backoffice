@@ -26,19 +26,7 @@ function Calendar($selector, params) {
 
     var calendar = this;
 
-    for(var i=0; i < this.initialData.date_times.length; i++) {
 
-        var start = moment(this.initialData.date_times[i]).tz(calendar.getCalendarTimezone());
-        var end = start.clone();
-        end.add('m', calendar.getCurrentDuration());
-        var eventData = calendar.generateEventData({
-            start: start,
-            end: end
-        });
-        eventData.editable = false;
-        eventData.color = "#ccc";
-        this.eventsToCheck.push(eventData);
-    }
 
     // Event handlers
     calendar.$selector.find("#event-details-container").click(function (e) {
@@ -63,6 +51,20 @@ function Calendar($selector, params) {
     this.fetchAccountPreferences(function () {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         calendar.fetchCalendars(function () {
+            for(var i=0; i < this.initialData.date_times.length; i++) {
+
+                var start = moment(this.initialData.date_times[i]).tz(calendar.getCalendarTimezone());
+                var end = start.clone();
+                end.add('m', calendar.getCurrentDuration());
+                var eventData = calendar.generateEventData({
+                    start: start,
+                    end: end
+                });
+                eventData.editable = false;
+                eventData.color = "#ccc";
+                this.eventsToCheck.push(eventData);
+            }
+
             calendar.fullCalendarInit();
             calendar.$selector.find(".global-loading").fadeOut();
         });
