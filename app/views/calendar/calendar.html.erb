@@ -4,6 +4,7 @@
     $(function () {
         window.calendarParams.height = $(".calendar-container").height();
         window.calendarParams.other_emails = window.otherAccountEmails;
+        window.calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
         window.currentCalendar = new Calendar($(".calendar-container"), window.calendarParams);
     });
 </script>
@@ -25,9 +26,7 @@
 
     <div class="calendar-header-settings">
       <span class="calendar-timezone-label"><%= I18n.t("calendar.calendar_tz") %></span>
-      <select id="calendar-timezone">
-        <option value="Europe/Paris" selected>Paris</option>
-      </select>
+      <select id="calendar-timezone"></select>
     </div>
 
     <div id='calendar'></div>

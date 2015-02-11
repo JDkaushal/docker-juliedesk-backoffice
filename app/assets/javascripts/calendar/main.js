@@ -614,6 +614,12 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
             }
         }
     });
+
+    if(allTimeZones.indexOf(calendar.initialData.default_timezone_id) == -1) {
+        calendar.$selector.find("#calendar-timezone").append(
+            $("<option>").val(calendar.initialData.default_timezone_id).html(calendar.initialData.default_timezone_id)
+        );
+    }
 };
 Calendar.prototype.fetchAccountPreferences = function (callback) {
     var calendar = this;

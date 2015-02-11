@@ -54,7 +54,7 @@ class MessagesThread < ActiveRecord::Base
 
     {
         locale: message_classifications.map(&:locale).compact.last || "fr",
-        timezone: message_classifications.map(&:timezone).compact.last || "Europe/Paris",
+        timezone: message_classifications.map(&:timezone).compact.last || self.account.default_timezone_id,
         appointment_nature: message_classifications.map(&:appointment_nature).compact.last,
         summary: message_classifications.map(&:summary).compact.last,
         duration: message_classifications.map(&:duration).compact.last || 60,
