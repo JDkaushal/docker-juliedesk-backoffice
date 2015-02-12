@@ -13,9 +13,16 @@ class Message < ActiveRecord::Base
   end
 
   def correct_google_message
-    @google_message.text ||= @google_message.body
-    @google_message.html ||= h(simple_format(@google_message.text))
-    @google_message.body = nil
+    Message.correct_google_message @google_message
+  end
+
+  def self.correct_google_message google_message
+    m = Message.new
+
+    google_message.text ||= google_message.body || m.strip_tags(google_message.html)
+    google_message.html ||= h(simple_format(google_message.text))
+    google_message.body = nil
+    google_message
   end
 
   def google_message
@@ -75,6 +82,7 @@ class Message < ActiveRecord::Base
         messages_thread.update_attributes({subject: sorted_messages.first.subject, snippet: snippet})
 
         google_thread.messages.each do |google_message|
+          google_message = Message.correct_google_message google_message
           message = Message.find_by_google_message_id google_message.id
 
           unless message
@@ -89,7 +97,7 @@ class Message < ActiveRecord::Base
 
 
   def self.generate_reply_all_recipients(google_message)
-    gm = google_message.reply_all_with(Gmail::Message.new(text: ""))
+    gm = google_message.reply_all_with(Gmail::Message.new(text: "", html: ""))
     {
 
         to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JULIE_ALIASES.include?(dest.address)}.map{|dest|

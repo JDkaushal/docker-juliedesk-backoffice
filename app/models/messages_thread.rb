@@ -122,6 +122,7 @@ class MessagesThread < ActiveRecord::Base
   def re_import
     existing_messages = []
     self.google_thread.messages.each do |google_message|
+      google_message = Message.correct_google_message google_message
       message = self.messages.select{|m| m.google_message_id == google_message.id}.first
       unless message
         message = self.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date), reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
