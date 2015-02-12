@@ -52,11 +52,17 @@ function Calendar($selector, params) {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         calendar.fetchCalendars(function () {
             for(var i=0; i < calendar.initialData.date_times.length; i++) {
-
-                var start = moment(calendar.initialData.date_times[i]).tz(calendar.getCalendarTimezone());
+                var dateObject = calendar.initialData.date_times[i];
+                var start = moment(dateObject.date).tz(calendar.getCalendarTimezone());
                 var end = start.clone();
                 end.add('m', calendar.getCurrentDuration());
+
+                var title = "Suggested";
+                if(dateObject.mode == "to_check") {
+                    title = "";
+                }
                 var eventData = calendar.generateEventData({
+                    title: title,
                     start: start,
                     end: end
                 });
@@ -480,7 +486,8 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
     var calendar = this;
     var matchingEvents = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
         return ev.beingAdded
-            && ev.start.isSame(moment(dateTime));
+            && ev.start.isSame(moment(dateTime))
+            && ev.title == "";
     });
     if(matchingEvents.length > 0) {
         calendar.addEvent(matchingEvents[0]);

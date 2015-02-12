@@ -13,7 +13,12 @@
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
     window.calendarParams = {
         mode: "suggest_dates",
-        date_times: [],
+        date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+            {
+                mode: "already_suggested",
+                date: date
+            }
+        }.to_json %>,
         email: "<%= @messages_thread.account_email %>",
         duration: <%= @messages_thread.computed_data[:duration] || 60 %>
     };
@@ -21,7 +26,18 @@
     window.leftColumnMessage = "Create event";
     window.calendarParams = {
         mode: "create_event",
-        date_times: <%== JSON.parse(@julie_action.message_classification.date_times || "[]").select{|dt| dt['date']}.map{|dt| dt['date']}.to_json %>,
+        date_times: <%== (JSON.parse(@julie_action.message_classification.date_times || "[]").select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+            {
+                mode: "to_check",
+                date: date
+            }
+        } +
+         @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+            {
+                mode: "already_suggested",
+                date: date
+            }
+        }).to_json %>,
         email: "<%= @message.messages_thread.account_email %>",
         duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
     };

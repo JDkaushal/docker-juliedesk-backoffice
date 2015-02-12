@@ -102,7 +102,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
 Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     var calendar = this;
     if (event.beingAdded) {
-        if(calendar.getMode() == "suggest_dates") {
+        if(calendar.getMode() == "suggest_dates" && event.editable) {
             for(var k=0; k<calendar.events.length; k++){
                 if(calendar.events[k].start.isSame(event.start)){
                     calendar.events.splice(k, 1);
@@ -114,7 +114,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
             });
             calendar.drawEventList();
         }
-        else if(calendar.getMode() == "create_event") {
+        else if(calendar.getMode() == "create_event"  && event.title == "") {
             calendar.addEvent(event);
         }
     }
