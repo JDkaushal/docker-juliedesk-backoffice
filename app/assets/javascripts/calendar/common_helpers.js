@@ -214,16 +214,16 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 };
 
 
-CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale) {
+CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone) {
     if(!locale) locale = "en";
-    var mStartDate = moment(startDate).locale(locale);
-    var mEndDate = moment(endDate).locale(locale);
+    var mStartDate = moment(startDate).tz(timezone).locale(locale);
+    var mEndDate = moment(endDate).tz(timezone).locale(locale);
 
     if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
-        return mStartDate.format("dddd D MMMM YYYY") + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm");
+        return mStartDate.format("dddd D MMMM YYYY") + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
     }
     else {
-        return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm");
+        return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
     }
 
 };

@@ -33,7 +33,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     var $edc = calendar.$selector.find("#event-details-container");
 
     $edc.find("input.title").val(event.title);
-    $edc.find(".date").html(CommonHelpers.formatDateTimeRange(event.start, event.end, "fr"));
+    $edc.find(".date").html(CommonHelpers.formatDateTimeRange(event.start, event.end, "fr", calendar.getCalendarTimezone()));
     $edc.find("input.location").val(event.location);
     $edc.find("textarea.notes").val(event.description);
 
