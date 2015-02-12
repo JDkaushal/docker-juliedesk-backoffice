@@ -16,6 +16,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+
 //= require jquery.elastic.source
 //= require jquery.tokeninput
 //= require underscore-min
@@ -33,7 +35,7 @@
 
 //= require date_detection_inserted
 //= require jquery.timepicker.min
-//= require jquery-ui.min
+
 
 //= require presenters
 

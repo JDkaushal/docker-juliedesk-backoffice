@@ -53,7 +53,7 @@ class MessagesThread < ActiveRecord::Base
     }.flatten.select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
 
     {
-        locale: message_classifications.map(&:locale).compact.last || "fr",
+        locale: message_classifications.map(&:locale).compact.last || self.account.locale,
         timezone: message_classifications.map(&:timezone).compact.last || self.account.default_timezone_id,
         appointment_nature: message_classifications.map(&:appointment_nature).compact.last,
         summary: message_classifications.map(&:summary).compact.last,

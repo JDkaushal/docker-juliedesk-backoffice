@@ -12,6 +12,7 @@ gem "compass-rails", "~> 1.1.2"
 
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 
 gem 'unicorn'
 

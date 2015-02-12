@@ -7,10 +7,10 @@
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
-    window.otherAccountEmails = _.map(window.threadComputedData.attendees, function(attendee) {
+    window.otherAccountEmails = _.map(window.threadComputedData.attendees, function (attendee) {
         return attendee.account_email;
     });
-    window.otherAccountEmails = _.filter(window.otherAccountEmails, function(email) {
+    window.otherAccountEmails = _.filter(window.otherAccountEmails, function (email) {
         return email && email != "<%= @messages_thread.account_email %>";
     });
 
@@ -27,14 +27,14 @@
             $("#timezone").timezonePicker();
             $(".save-info-container").show();
             <% if messages_thread.account.calendar_nature != "google" %>
-                $(".data input#private").prop('disabled', true);
+            $(".data input#private").prop('disabled', true);
             <% end %>
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
             $(".add-attendee-container").hide();
         }
-        if(window.afterFormLoadedCallback) {
+        if (window.afterFormLoadedCallback) {
             window.afterFormLoadedCallback();
         }
 
@@ -42,7 +42,11 @@
             setAppointmentValues();
         });
 
-        $("body").on("change", "select#location_nature", function() {
+        $("input[name='locale']").change(function () {
+            setNotes();
+        });
+
+        $("body").on("change", "select#location_nature", function () {
             setAddressValues();
         });
 
@@ -57,7 +61,7 @@
             }
         });
 
-        $(".data #add-attendee-button").click(function(e) {
+        $(".data #add-attendee-button").click(function (e) {
             var email = $(".data #add_attendee").val();
             $(".data #add_attendee").val("");
             var $contact = $("<div>").addClass("contact").data("email", email).data("name", "");
@@ -69,13 +73,13 @@
 
         <% if messages_thread.event_data[:event_id] %>
 
-            window.presenters.redrawEvent({
-                accountEmail: "<%= messages_thread.account_email %>",
-                eventId: "<%= messages_thread.event_data[:event_id] %>",
-                calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
-                threadComputedData: window.threadComputedData,
-                callback: window.afterEventFetched
-            });
+        window.presenters.redrawEvent({
+            accountEmail: "<%= messages_thread.account_email %>",
+            eventId: "<%= messages_thread.event_data[:event_id] %>",
+            calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
+            threadComputedData: window.threadComputedData,
+            callback: window.afterEventFetched
+        });
         <% end %>
 
         fetchOtherAccounts();
@@ -84,12 +88,12 @@
     function fetchOtherAccounts() {
         $(".other-accounts").hide();
         $(".other-accounts-list").html("");
-        for(var i in window.otherAccountEmails) {
+        for (var i in window.otherAccountEmails) {
             var otherAccountEmail = window.otherAccountEmails[i];
             CommonHelpers.externalRequest({
                 action: "show_account",
                 email: otherAccountEmail
-            }, function(sae) {
+            }, function (sae) {
                 $(".other-accounts").show();
                 var $otherAccount = $("<div>").addClass("other-account");
                 $otherAccount.append($("<div>").addClass("other-account-name").html(sae.data.full_name));
@@ -97,7 +101,7 @@
                 $otherAccount.append($("<div>").addClass("other-account-preferences").html(sae.data.raw_preferences));
                 $otherAccount.append($("<div>").addClass("other-account-current-notes").html(sae.data.current_notes));
                 $(".other-accounts-list").append($otherAccount);
-            }, function(sae) {
+            }, function (sae) {
 
             });
         }
@@ -105,18 +109,18 @@
 
     function initAppointments() {
         $("select#appointment_nature").html("");
-        for(var i=0; i < window.appointments.length; i++) {
+        for (var i = 0; i < window.appointments.length; i++) {
             var appointment = window.appointments[i];
             $("select#appointment_nature").append($("<option>").val(appointment.label).html(appointment.label));
         }
 
-        if(window.threadComputedData.appointment_nature) {
+        if (window.threadComputedData.appointment_nature) {
             $("select#appointment_nature").find("option").prop('selected', false)
                     .filter('[value="' + window.threadComputedData.appointment_nature + '"]')
                     .prop('selected', true);
         }
         initAddresses();
-        if(window.threadComputedData.location_nature) {
+        if (window.threadComputedData.location_nature) {
             $("select#location_nature").find("option").prop('selected', false)
                     .filter('[value="' + window.threadComputedData.location_nature + '"]')
                     .prop('selected', true);
@@ -124,12 +128,12 @@
     }
 
     function initAddresses() {
-        var appointment = $.grep(window.appointments,function(v) {
+        var appointment = $.grep(window.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
 
         $("select#location_nature").html("");
-        for(var i=0; i < appointment.addresses_with_description.length; i++) {
+        for (var i = 0; i < appointment.addresses_with_description.length; i++) {
             var addressObject = appointment.addresses_with_description[i];
             $("select#location_nature").append($("<option>").val(addressObject.label).html(addressObject.label));
         }
@@ -137,7 +141,7 @@
     }
 
     function setAppointmentValues() {
-        var appointment = $.grep(window.appointments,function(v) {
+        var appointment = $.grep(window.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
 
@@ -154,25 +158,46 @@
     }
 
     function setAddressValues() {
-        var appointment = $.grep(window.appointments,function(v) {
+        var appointment = $.grep(window.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        var addressArray = $.grep(appointment.addresses_with_description, function(v) {
-           return v.label == $("select#location_nature").val();
+        var addressArray = $.grep(appointment.addresses_with_description, function (v) {
+            return v.label == $("select#location_nature").val();
         });
 
-        if(addressArray.length > 0) {
+        if (addressArray.length > 0) {
             var addressObject = addressArray[0];
-            var notes = [addressObject.address_complement, appointment.note[window.threadLocale]].join("\n");
             var location = addressObject.address;
-            $("textarea#notes").val(notes);
             $("input#location").val(location).attr('disabled', true);
         }
         else {
-            var notes = appointment.note[window.threadLocale];
-            $("textarea#notes").val(notes);
             $("input#location").val("").removeAttr('disabled');
+        }
+
+        setNotes();
+    }
+
+    function setNotes() {
+        var appointment = $.grep(window.appointments, function (v) {
+            return v.label == $("#appointment_nature").val();
+        })[0];
+
+        var addressArray = $.grep(appointment.addresses_with_description, function (v) {
+            return v.label == $("select#location_nature").val();
+        });
+
+        var notes = appointment.note[$("input[name='locale']:checked").val()];
+        if (addressArray.length > 0) {
+            var addressObject = addressArray[0];
+            var addressComplement = addressObject.address_complement;
+            if(addressComplement && addressComplement.length > 0) {
+                notes = addressComplement + "\n" + notes;
+            }
+            $("textarea#notes").val(notes);
+        }
+        else {
+            $("textarea#notes").val(notes);
         }
     }
 </script>
@@ -211,52 +236,52 @@
 
     <div class="data">
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.locale")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
         <div class="semi-data-entry">
-            <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en") %> <%= I18n.t("info_box.french")%>
+          <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en") %> <%= I18n.t("info_box.french") %>
         </div>
         <div class="semi-data-entry">
-            <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en")%> <%= I18n.t("info_box.english")%>
+          <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
         </div>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.timezone")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.timezone") %></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
         <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.appointment_type")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
         <%= select_tag :appointment_nature, "", class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.summary")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
         <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.duration")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
         <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.location")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
         <%= select_tag :location_nature, "", class: "data-entry form-control" %>
         <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.attendees")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
         <div class="data-entry-value" id="contacts-data-list">
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
-          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq{|co| co[:email]}.each do |contact| %>
-              <% checked = attendees == [] || attendees.select{|att| att['email'] == contact[:email]}.length > 0 %>
+          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq { |co| co[:email] }.each do |contact| %>
+              <% checked = attendees == [] || attendees.select { |att| att['email'] == contact[:email] }.length > 0 %>
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <%= "#{contact[:name]} (#{(contact[:email])})" %>
@@ -264,13 +289,13 @@
           <% end %>
         </div>
         <div class="add-attendee-container">
-          <%=text_field_tag :add_attendee, "", class: "data-entry form-control" %>
+          <%= text_field_tag :add_attendee, "", class: "data-entry form-control" %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.private_event")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>
         <div class="data-entry-value">
           <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
           <%= I18n.t("info_box.private_event") %>
@@ -278,14 +303,14 @@
       </div>
 
       <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.notes")%></div>
+        <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
         <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
       </div>
 
       <div class="save-info-container">
         <br>
         <br>
-        <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save")%></button>
+        <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
       </div>
     </div>
   </div>
