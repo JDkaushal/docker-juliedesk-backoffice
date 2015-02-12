@@ -1,150 +1,153 @@
 .calendar-container {
-  #calendar {
+    #calendar {
 
-      .fc-icon-left-single-arrow:after {
-          /*content: "\02039";*/
-          content: url("<%= asset_path "calendar/calendar_past_icon.png" %>");
-          font-weight: bold;
-          color: #a0a0a0;
-          zoom:0.5;
-          opacity: 0.6;
-          padding: 0px;
-          margin: 0px;
-      }
-
-      .fc-icon-right-single-arrow:after {
-          /*content: "\0203A";*/
-          content: url("<%= asset_path "calendar/calendar_future_icon.png" %>");
-          font-weight: bold;
-          color: #a0a0a0;
-          zoom:0.5;
-          opacity: 0.6;
-          padding: 0px;
-          margin: 0px;
-      }
-
-    a.fc-event {
-      color: #fff;
-      &:hover, &:focus, &:visited {
-        color: #fff;
-      }
-    }
-
-    th {
-      font-weight: normal;
-    }
-
-    table {
-      border-collapse: collapse;
-    }
-
-    .fc-event-inner {
-
-      .delete-event-button {
-        height: 14px;
-        width: 14px;
-        position: absolute;
-        right: 4px;
-        top: 4px;
-        opacity: 0.6;
-        content: url("<%= asset_path "calendar/delete_calendar.png" %>");
-      }
-
-      &.juliedesk-located-event {
-        border-left-width: 8px !important;
-        border-left-color: #444 !important;
-      }
-
-      &:hover {
-        .delete-event-button {
-          opacity: 1.0;
+        .fc-icon-left-single-arrow:after {
+            /*content: "\02039";*/
+            content: url("<%= asset_path "calendar/calendar_past_icon.png" %>");
+            font-weight: bold;
+            color: #a0a0a0;
+            zoom: 0.5;
+            opacity: 0.6;
+            padding: 0px;
+            margin: 0px;
         }
-      }
-    }
 
-    .fc-widget-content.fc-today {
-      background: #E7F2F5;
-    }
-    .fc-widget-content.fc-past {
-      background: #eee;
-    }
-  .fc-button-today {
-    padding: 3px 10px;
-    font-size: 16px;
-    color: rgb(244, 65, 109);
-    opacity: 0.9;
-
-    &:hover {
-      opacity: 1.0;
-    }
-
-    &.fc-state-disabled {
-      color: #ccc;
-      opacity: 1.0;
-    }
-  }
-
-    .fc-header {
-      margin: 0 0 10px 0;
-      position: relative;
-      background: #fff;
-      z-index: 9;
-
-      &.as-header {
-        border-bottom: 1px solid #ccc;
-      }
-
-      .fc-header-title {
-        padding: 11px 0;
-        h2 {
-          font-weight: 200;
-          font-size: 16px;
+        .fc-icon-right-single-arrow:after {
+            /*content: "\0203A";*/
+            content: url("<%= asset_path "calendar/calendar_future_icon.png" %>");
+            font-weight: bold;
+            color: #a0a0a0;
+            zoom: 0.5;
+            opacity: 0.6;
+            padding: 0px;
+            margin: 0px;
         }
-      }
+
+        a.fc-event {
+            color: #fff;
+            &:hover, &:focus, &:visited {
+                color: #fff;
+            }
+        }
+
+        th {
+            font-weight: normal;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        .fc-event-inner {
+
+            .delete-event-button {
+                height: 14px;
+                width: 14px;
+                position: absolute;
+                right: 4px;
+                top: 4px;
+                opacity: 0.6;
+                content: url("<%= asset_path "calendar/delete_calendar.png" %>");
+            }
+
+            &.juliedesk-selected-event {
+                background: rgba(40, 166, 203, 0.9) !important;
+            }
+            &.juliedesk-located-event {
+                border-left-width: 8px !important;
+                border-left-color: #444 !important;
+            }
+
+            &:hover {
+                .delete-event-button {
+                    opacity: 1.0;
+                }
+            }
+        }
+
+        .fc-widget-content.fc-today {
+            background: #E7F2F5;
+        }
+        .fc-widget-content.fc-past {
+            background: #eee;
+        }
+        .fc-button-today {
+            padding: 3px 10px;
+            font-size: 16px;
+            color: rgb(244, 65, 109);
+            opacity: 0.9;
+
+            &:hover {
+                opacity: 1.0;
+            }
+
+            &.fc-state-disabled {
+                color: #ccc;
+                opacity: 1.0;
+            }
+        }
+
+        .fc-header {
+            margin: 0 0 10px 0;
+            position: relative;
+            background: #fff;
+            z-index: 9;
+
+            &.as-header {
+                border-bottom: 1px solid #ccc;
+            }
+
+            .fc-header-title {
+                padding: 11px 0;
+                h2 {
+                    font-weight: 200;
+                    font-size: 16px;
+                }
+            }
+        }
+
+        .fc-widget-header.today {
+            font-weight: 600;
+            color: rgba(40, 166, 203, 0.9);
+        }
+        .events-count-label {
+            position: absolute;
+            top: 3px;
+            left: 8px;
+            height: 22px;
+            width: 22px;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 12px;
+            line-height: 20px;
+            font-weight: 400;
+
+            border: 1px solid #aaa;
+            background: #fff;
+            color: #aaa;
+
+            &.ras {
+                background: rgba(40, 166, 203, 0.9);
+                border-color: rgba(40, 166, 203, 0.9);
+                color: #fff;
+            }
+
+            &.best-of-worst {
+                background: #aaa;
+                border-color: #aaa;
+                color: #fff;
+            }
+        }
+        #calendars-list-popup-toggle-button {
+            height: 26px;
+            width: 26px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            content: url("<%= asset_path "calendar/settings_icon.png" %>");
+
+            &:hover {
+                content: url("<%= asset_path "calendar/settings_icon_hover.png" %>");
+            }
+        }
     }
-
-  .fc-widget-header.today {
-    font-weight: 600;
-    color: rgba(40, 166, 203, 0.9);
-  }
-  .events-count-label {
-    position: absolute;
-    top: 3px;
-    left: 8px;
-    height: 22px;
-    width: 22px;
-    font-size: 12px;
-    text-align: center;
-    border-radius: 12px;
-    line-height: 20px;
-    font-weight: 400;
-
-    border: 1px solid #aaa;
-    background: #fff;
-    color: #aaa;
-
-    &.ras {
-      background: rgba(40, 166, 203, 0.9);
-      border-color: rgba(40, 166, 203, 0.9);
-      color: #fff;
-    }
-
-    &.best-of-worst {
-      background: #aaa;
-      border-color: #aaa;
-      color: #fff;
-    }
-  }
-      #calendars-list-popup-toggle-button {
-          height: 26px;
-          width: 26px;
-          margin-bottom: 5px;
-          cursor: pointer;
-          content: url("<%= asset_path "calendar/settings_icon.png" %>");
-
-          &:hover {
-              content: url("<%= asset_path "calendar/settings_icon_hover.png" %>");
-          }
-      }
-  }
 }

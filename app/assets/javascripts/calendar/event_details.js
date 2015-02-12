@@ -67,7 +67,19 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
 
     //$edc.find(".attendees-list").html("");
 
-    $edc.find("#event-delete-button").show();
+    if(calendar.getMode() == "select_events") {
+        if(calendar.selectedEvents.indexOf(calendar.currentEvent) == -1) {
+            $edc.find("#event-select-button").html("Select");
+        }
+        else {
+            $edc.find("#event-select-button").html("Unselect");
+        }
+        $edc.find("#event-select-button").show();
+    }
+    else {
+        $edc.find("#event-delete-button").show();
+    }
+
 
     $edc.fadeIn(200);
     return;
@@ -171,6 +183,10 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
                 console.log("error", e);
             });
         }
+    }
+    else if($target.attr("id") == "event-select-button") {
+        calendar.selectEvent(calendar.currentEvent);
+        calendar.redrawEventDetailsFromEvent(calendar.currentEvent);
     }
     else if($target.hasClass("add-new-attendee")) {
         var email = $container.find("#new-attendee").val();

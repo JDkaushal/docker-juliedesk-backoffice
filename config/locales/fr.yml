@@ -221,6 +221,10 @@ fr:
         action: "Créer un évènement dans le calendrier"
       ask_and_give_nothing:
         action: "On ne demande rien"
+      ask_cancel_events:
+        action: "Annuler des évènements"
+      ask_postpone_events:
+        action: "Reporter des évènements"
       other:
         action: "Autre"
       unknown:
@@ -269,6 +273,7 @@ fr:
     sending: "Envoi en cours..."
     sent: "Envoyé."
     add: "Ajouter"
+    quote_message: "Citer le message précédent"
 
 
 

@@ -1,6 +1,8 @@
 <script>
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
+    window.selectedEvents = [];
+    window.forceCancelEventIds = [];
     window.currentEventId = null;
     window.julieAliasId = "<%= JULIE_ALIASES_DATA[@messages_thread.julie_alias][:id] %>"
 
@@ -44,8 +46,38 @@
     $(function() {
        $(".messages-thread-info-panel .create-event-panel").show();
     });
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+    window.calendarParams = {
+        mode: "select_events",
+        date_times: [],
+        email: "<%= @message.messages_thread.account_email %>",
+        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+    };
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
+    window.calendarParams = {
+        mode: "select_events",
+        date_times: [],
+        email: "<%= @message.messages_thread.account_email %>",
+        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+    };
     <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
     window.afterEventFetched = function() {
+
+        // Add attendees as recipients if not present already
+        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function(elt) {
+            return elt.name;
+        });
+        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
+            return elt.name;
+        });
+
+        _.each(window.currentEventData.attendees, function(attendee) {
+            if(toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
+                $("#recipients-to-input").tokenInput("add", {name: attendee.email});
+            }
+        });
+
+        $("input#quote_message").removeAttr("checked");
         redrawReplyText();
     };
     <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
@@ -251,6 +283,7 @@
             sendReply();
             <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT ||
              @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
+
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
             $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Deleting event...");
@@ -281,6 +314,29 @@
 
 
 
+            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+                $.ajax({
+                    url: "/messages/<%= @message.id %>/generate_threads",
+                    method: "post",
+                    data: {
+                        julie_messages: _.map(getSelectedEventsToCancel(), function(event) {
+                            var dateString = capitalize(moment(event.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+                            var addInviteesString = "";
+                            if(window.forceCancelEventIds.indexOf(event.id) > -1) {
+                                addInviteesString = "<br><br>WARNING: SHOULD ADD INVITEES (See previous email)"
+                            }
+                            return {
+                                subject: "Cancellation: " + event.title,
+                                html: "Please cancel this event :<br>" + event.title + " (" + dateString + ")" + addInviteesString,
+                                event_id: event.id,
+                                calendar_id: window.currentCalendar.getCalendarIdForCalIndex(event.calIndex)
+                            }
+                        })
+                    },
+                    success: function() {
+                        sendReply();
+                    }
+                });
             <% else %>
             $.ajax({
                 url: "/julie_actions/<%= @julie_action.id %>/update",
@@ -307,7 +363,8 @@
                     text: $("textarea#reply-text").val(),
                     html_signature: $("#reply-text-signature").html(),
                     to: currentRecipients().to,
-                    cc: currentRecipients().cc
+                    cc: currentRecipients().cc,
+                    quote_message: $("input#quote_message:checked").length > 0
                 },
                 success: function (e) {
                     $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
@@ -348,7 +405,59 @@
                 }
                 $("#create-event-button").removeAttr('disabled');
             }
+            else if (event.data.message == "drawExternalEventSelection") {
+                window.selectedEvents = event.data.events;
+                redrawReplyText();
+                redrawSelectedEventsContainer();
+            }
         }, false);
+
+        function redrawSelectedEventsContainer() {
+            var $container = $("#thread-header-other-entries-container");
+            $container.html("");
+            var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");
+            var $selectedEventsListDiv = $("<div>").addClass("selected-events-list");
+            $selectedEventsListDiv.append($("<div>").addClass("selected-events-title").html("Selected events"));
+
+            for (var i in window.selectedEvents) {
+                var selectedEvent = window.selectedEvents[i];
+                var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
+                $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
+                $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id)));
+                if(!selectedEvent.attendees || selectedEvent.attendees.length == 0) {
+                    var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
+                    $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));
+
+                    var $forceCancel = $("<div>").addClass("selected-event-force-cancel")   ;
+                    var $forceCancelCheckbox = $("<input type='checkbox'>");
+                    if(window.forceCancelEventIds.indexOf(selectedEvent.id) > -1) {
+                        $forceCancelCheckbox.attr("checked", true);
+                    }
+                    $forceCancel.append($forceCancelCheckbox);
+                    $forceCancel.append("Force");
+                    $selectedEventNoAttendeesContainer.append($forceCancel);
+
+
+                    $selectedEventDiv.append($selectedEventNoAttendeesContainer);
+                }
+                $selectedEventsListDiv.append($selectedEventDiv);
+            }
+            $selectedEventsListContainerDiv.append($selectedEventsListDiv);
+            $container.append($selectedEventsListContainerDiv);
+
+            $(".selected-event-force-cancel input[type=checkbox]").change(function(e) {
+                var eventId = $(this).closest(".selected-event").data("event-id");
+                var indexInArray = window.forceCancelEventIds.indexOf(eventId);
+                if(indexInArray == -1) {
+                    window.forceCancelEventIds.push(eventId);
+                }
+                else {
+                    window.forceCancelEventIds.splice(indexInArray, 1);
+                }
+                redrawReplyText();
+                redrawSelectedEventsContainer();
+            });
+        }
 
         function redrawTimeSlotsToSuggestContainer() {
             var $container = $("#thread-header-other-entries-container");
@@ -377,6 +486,18 @@
 
 
     });
+
+    function getSelectedEventsToCancel() {
+        return _(window.selectedEvents).filter(function(selectedEvent){
+            return(selectedEvent.attendees && selectedEvent.attendees.length > 0) || window.forceCancelEventIds.indexOf(selectedEvent.id) > -1;
+        });
+    }
+
+    function getSelectedEventsNotToCancel() {
+        return _(window.selectedEvents).filter(function(selectedEvent){
+            return(!selectedEvent.attendees || selectedEvent.attendees.length == 0) && window.forceCancelEventIds.indexOf(selectedEvent.id) == -1;
+        });
+    }
 
     function redrawReplyText() {
         setCurrentLocale(window.threadLocale);
@@ -510,6 +631,39 @@
                 date: dateString
             });
         }
+        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+
+        var selectedEventsToCancel = getSelectedEventsToCancel();
+        if(selectedEventsToCancel.length > 0) {
+            var toCancelPlural = (selectedEventsToCancel.length > 1)?"plural":"singular";
+            message += localize("email_templates.cancel_multiple.noted_gonna_cancel." + toCancelPlural);
+
+            _.each(getSelectedEventsToCancel(), function(selectedEvent) {
+                var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+                message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
+            });
+        }
+
+
+        var selectedEventsNotToCancel = getSelectedEventsNotToCancel();
+
+        if(selectedEventsNotToCancel.length > 0) {
+            var notToCancelPlural = (selectedEventsNotToCancel.length > 1)?"plural":"singular";
+            if(selectedEventsToCancel.length > 0) {
+                message += localize("email_templates.cancel_multiple.but_no_attendees." + notToCancelPlural);
+            }
+            else {
+                message += localize("email_templates.cancel_multiple.noted_no_attendees." + notToCancelPlural);
+            }
+
+            _.each(selectedEventsNotToCancel, function(selectedEvent) {
+                var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
+                message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
+            });
+            message += localize("email_templates.cancel_multiple.what_should_i_do." + notToCancelPlural);
+        }
+
+
         <% end %>
 
         $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));
@@ -534,7 +688,9 @@
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
             @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
     %>
       <%= render template: "calendar/calendar" %>
     <% end %>
@@ -564,6 +720,10 @@
                   </div>
                   <textarea id="reply-text"></textarea>
                   <div id="reply-text-signature"></div>
+                  <div class="quote-message-container">
+                    <%= check_box_tag :quote_message, "", true %>
+                    <%= I18n.t "common.quote_message" %>
+                  </div>
                   <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply")%></button>
                   <div id="callback-message"></div>
                 </div>

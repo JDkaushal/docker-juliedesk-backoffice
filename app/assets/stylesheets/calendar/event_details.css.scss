@@ -190,7 +190,7 @@
     height: 55px;
     border-top: 1px solid #ddd;
 
-    #event-edit-button, #event-delete-button, #event-save-button, #event-cancel-button {
+    #event-edit-button, #event-delete-button, #event-select-button, #event-save-button, #event-cancel-button {
       text-align: center;
       width: 135px;
       padding: 5px;
@@ -203,6 +203,11 @@
       display: none;
     }
     #event-edit-button {
+      background: #2891D2;
+      left: 20px;
+    }
+
+    #event-select-button {
       background: #2891D2;
       left: 20px;
     }

@@ -49,6 +49,10 @@ en:
         action: "Create an event in calendar"
       ask_and_give_nothing:
         action: "I am asked and given nothing"
+      ask_cancel_events:
+        action: "Cancel multiple events"
+      ask_postpone_events:
+        action: "Postpone multiple events"
       other:
         action: "Something else"
       unknown:
@@ -103,6 +107,7 @@ en:
     sending: "Sending..."
     sent: "Sent."
     add: "Add"
+    quote_message: "Quote previous message"
 
   classification:
     please_fill_info_in: "Please fill info in"

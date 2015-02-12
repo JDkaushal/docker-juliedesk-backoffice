@@ -24,6 +24,8 @@ function Calendar($selector, params) {
     this.end = null;
     this.eventBeingAdded = null;
 
+    this.selectedEvents = [];
+
     var calendar = this;
 
 
@@ -76,6 +78,20 @@ function Calendar($selector, params) {
         });
     });
 }
+
+Calendar.prototype.selectEvent = function (event) {
+    var calendar = this;
+    if(event.isSelected) {
+        event.isSelected = false;
+        calendar.selectedEvents.splice(calendar.selectedEvents.indexOf(event), 1)
+    }
+    else {
+        event.isSelected = true;
+        calendar.selectedEvents.push(event);
+    }
+    calendar.drawExternalEventSelection();
+    calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
+};
 
 Calendar.prototype.getMode = function () {
     var calendar = this;
@@ -357,6 +373,11 @@ Calendar.prototype.getCalendarTimezone = function () {
     return this.$selector.find("#calendar-timezone").val()
 };
 
+Calendar.prototype.getCalendarIdForCalIndex = function(calIndex) {
+    var calendar = this;
+    return calendar.calendars[calIndex].id;
+};
+
 Calendar.prototype.eventDataFromEvent = function (ev, calIndex) {
     var calendar = this;
     var eventData;
@@ -451,9 +472,27 @@ Calendar.prototype.addCal = function (calEvents, x) {
 };
 
 
+Calendar.prototype.drawExternalEventSelection = function () {
+    var calendar = this;
+    if (calendar.getMode() != "select_events") return;
+    window.postMessage({
+        message: "drawExternalEventSelection",
+        events: _.map(calendar.selectedEvents, function(event) {
+           return {
+               title: event.title,
+               start: moment.tz(event.start.format(), calendar.getCalendarTimezone()).format(),
+               end: moment.tz(event.end.format(), calendar.getCalendarTimezone()).format(),
+               attendees: event.attendees,
+               id: event.id,
+               calIndex: event.calIndex
+           }
+        })
+    }, "*");
+};
+
 Calendar.prototype.drawExternalEventCreation = function () {
     var calendar = this;
-    if (calendar.getMode() == "suggest_dates") return;
+    if (calendar.getMode() != "create_event") return;
     if (calendar.eventBeingAdded) {
         window.postMessage({
             message: "drawExternalEventCreation",
@@ -593,7 +632,7 @@ Calendar.prototype.drawEventList = function () {
 
 Calendar.prototype.drawExternalEventsList = function () {
     var calendar = this;
-    if (calendar.getMode() == "create_event") return;
+    if (calendar.getMode() != "suggest_dates") return;
     var dateTimes = calendar.events.sort(function (a, b) {
         if (a.start.isAfter(b.start))return 1; else return -1;
     });

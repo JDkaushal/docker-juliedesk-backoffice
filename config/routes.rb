@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       post "mark_as_read", action: :mark_as_read, as: :mark_as_read
 
       post "reply", action: :reply, as: :reply
+      post "generate_threads", action: :generate_threads, as: :generate_threads
     end
   end
 

@@ -34,6 +34,61 @@
 
   #thread-header-other-entries-container {
 
+    .selected-events-list-container {
+      border-bottom: 1px solid #ccc;
+      background-color: #fff;
+      margin: -60px -10px 20px -10px;
+
+      .selected-events-list {
+        padding: 10px 10px 10px 10px;
+      }
+      .selected-events-title {
+        color: $darkBlue;
+        margin: 10px 0 20px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 200;
+      }
+      .selected-event {
+        background: $darkBlue;
+        color: white;
+        text-align: left;
+        padding: 10px 10px 10px 30px;
+        margin: 10px 0;
+
+        .selected-event-title {
+          font-size: 15px;
+        }
+        .selected-event-date {
+          font-size: 12px;
+        }
+        .selected-event-no-attendees-container {
+          background: white;
+          margin: 10px 0 0 0;
+          position: relative;
+
+          .selected-event-no-attendees {
+            font-weight: 600;
+            color: #e00;
+            display: inline-block;
+            padding: 3px 10px;
+            font-size: 12px;
+          }
+          .selected-event-force-cancel {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            height: 23px;
+            color: #444;
+            padding: 3px 10px;
+            font-size: 12px;
+            input[type=checkbox] {
+              margin: 0 5px;
+            }
+          }
+        }
+      }
+    }
 
     .time-slots-to-suggest-list-container {
       position: fixed;

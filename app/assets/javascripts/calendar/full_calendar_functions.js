@@ -15,8 +15,11 @@ Calendar.prototype.generateEventData = function(params) {
 };
 
 Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
+
     var calendar = this;
     calendar.$selector.find('#calendar').fullCalendar('unselect');
+
+    if(calendar.getMode() == "select_events") return;
 
     // Forbid suggestion or creation in the past
     if(start.isBefore(moment())) {

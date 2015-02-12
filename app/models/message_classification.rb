@@ -12,6 +12,8 @@ class MessageClassification < ActiveRecord::Base
   GIVE_INFO                = "give_info"
   ASK_CREATE_EVENT         = "ask_create_event"
   ASK_AND_GIVE_NOTHING     = "ask_and_give_nothing"
+  ASK_CANCEL_EVENTS        = "ask_cancel_events"
+  ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
 
   def self.create_from_params params
@@ -78,6 +80,12 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::ASK_POSTPONE_APPOINTMENT
       create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_EVENT
 
+    elsif self.classification == MessageClassification::ASK_CANCEL_EVENTS
+      create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS
+
+    elsif self.classification == MessageClassification::ASK_POSTPONE_EVENTS
+      create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
+
     else  self.classification == MessageClassification::UNKNOWN
       create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
 
@@ -102,8 +110,10 @@ class MessageClassification < ActiveRecord::Base
 
 
   def self.is_disabled(message, classification)
-    forbidden_classifications = [ASK_CREATE_EVENT]
-    unless message.messages_thread.event_data[:event_id]
+    forbidden_classifications = [ASK_CREATE_EVENT, ASK_POSTPONE_EVENTS]
+    if message.messages_thread.event_data[:event_id]
+      forbidden_classifications += [ASK_CANCEL_EVENTS, ASK_POSTPONE_EVENTS]
+    else
       forbidden_classifications += [ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT]
     end
     forbidden_classifications.include? classification
@@ -114,7 +124,7 @@ class MessageClassification < ActiveRecord::Base
   def self.classifications
     {
         primary: [ASK_DATE_SUGGESTIONS, ASK_AVAILABILITIES, ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT],
-        secondary: [ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT, UNKNOWN]
+        secondary: [ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT, ASK_CANCEL_EVENTS, ASK_POSTPONE_EVENTS, UNKNOWN]
     }
   end
 end

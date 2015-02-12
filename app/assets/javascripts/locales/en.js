@@ -21,6 +21,24 @@ window.wordings['en'] = {
         postpone: {
             before_dates: "Here are new availabilities to postpone the event:"
         },
+        cancel_multiple: {
+            noted_gonna_cancel: {
+                singular: "It's noted. I am going to cancel the event:\n",
+                plural: "It's noted. I am going to cancel these events:\n"
+            },
+            noted_no_attendees: {
+                singular: "It's noted. But this event has no invitees list:\n",
+                plural: "It's noted. But these events have no invitees list:\n"
+            },
+            but_no_attendees: {
+                singular: "\nBut this event has no invitees list:\n",
+                plural: "\nBut these events have no invitees list:\n"
+            },
+            what_should_i_do: {
+                singular: "\nWhat should I do for this one?",
+                plural: "\nWhat should I do for these ones?"
+            }
+        },
         invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",

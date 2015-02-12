@@ -8,10 +8,6 @@ class Message < ActiveRecord::Base
 
   attr_writer :google_message
 
-  def validate_message_classifications
-    JulieAction.create_from_message self
-  end
-
   def correct_google_message
     Message.correct_google_message @google_message
   end
@@ -21,6 +17,7 @@ class Message < ActiveRecord::Base
 
     google_message.text ||= google_message.body || m.strip_tags(google_message.html)
     google_message.html ||= m.send(:h, m.simple_format(google_message.text))
+
     google_message.body = nil
     google_message
   end
@@ -115,7 +112,64 @@ class Message < ActiveRecord::Base
     }
   end
 
+  def generate_threads julie_messages
+
+    # Get from field
+    julie_alias = self.messages_thread.julie_alias
+    from = "#{JULIE_ALIASES_DATA[julie_alias][:name]} <#{julie_alias}>"
+
+    # Process each one of the messages we want to create
+    julie_messages.each do |julie_message_hash|
+
+      # Copy the original message with a new subject and get the corresponding threadId
+      self.google_message.threadId = nil
+      self.google_message.subject = julie_message_hash['subject']
+      updated_google_message = self.google_message.insert
+
+      # Create the fake Julie's message
+      julie_google_message = updated_google_message.reply_all_with(Gmail::Message.new({
+                                                                                   text: "#{strip_tags(julie_message_hash['html'])}",
+                                                                                   html: julie_message_hash['html']
+                                                                               }))
+      julie_google_message.to = from
+      julie_google_message.from = from
+      julie_google_message.cc = ""
+      julie_google_message = julie_google_message.insert
 
 
+      # Now creating DB entries to associate the created thread with event data
+      Message.associate_event_data updated_google_message,
+                                   {
+                                       'id' => julie_message_hash['event_id'],
+                                       'calendar_id' => julie_message_hash['calendar_id']
+                                   },
+                                   self.messages_thread
+    end
+  end
 
+  def self.associate_event_data google_message, event, original_messages_thread
+    # Create the message_thread in DB
+    messages_thread = MessagesThread.create google_thread_id: google_message.threadId,
+                                            in_inbox: true,
+                                            account_email: original_messages_thread.account_email,
+                                            account_name: original_messages_thread.account_name,
+                                            subject: google_message.subject,
+                                            snippet: google_message.snippet
+
+    # Create the message in DB
+    message = messages_thread.messages.create google_message_id: google_message.id,
+                                              received_at: DateTime.parse(google_message.date),
+                                              reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
+
+    # Create the message_classification in DB
+    message_classification = message.message_classifications.create_from_params locale: original_messages_thread.computed_data[:locale],
+                                                                                classification: MessageClassification::ASK_AVAILABILITIES,
+                                                                                operator: original_messages_thread.julie_alias,
+                                                                                processed_in: 0
+
+    # Create the julie_action in DB to finally store event data
+    message_classification.julie_action.update_attributes done: true,
+                                                          event_id: event['id'],
+                                                          calendar_id: event['calendar_id']
+  end
 end

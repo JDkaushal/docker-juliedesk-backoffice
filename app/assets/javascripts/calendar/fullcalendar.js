@@ -4951,8 +4951,11 @@ function AgendaEventRenderer() {
 
 			var otherClasses = "";
 			if(event.isLocated) {
-				otherClasses = " juliedesk-located-event";
+				otherClasses += " juliedesk-located-event";
 			}
+            if(event.isSelected) {
+                otherClasses += " juliedesk-selected-event";
+            }
 
 		html +=
 			" class='" + classes.join(' ') + "'" +

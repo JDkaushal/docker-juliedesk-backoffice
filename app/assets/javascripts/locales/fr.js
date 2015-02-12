@@ -21,6 +21,24 @@ window.wordings['fr'] = {
         postpone: {
             before_dates: "Ci-dessous de nouvelles disponibilités afin de décaler l'événement :"
         },
+        cancel_multiple: {
+            noted_gonna_cancel: {
+                singular: "C'est bien noté. Je vais annuler l'évènement :\n",
+                plural: "C'est bien noté. Je vais annuler les évènements :\n"
+            },
+            noted_no_attendees: {
+                singular: "C'est bien noté. En revanche, cet évènement n'a pas de liste d'invités :\n",
+                plural: "C'est bien noté. En revanche, ces évènements n'ont pas de liste d'invités :\n"
+            },
+            but_no_attendees: {
+                singular: "En revanche, cet évènement n'a pas de liste d'invités :\n",
+                plural: "En revanche, ces évènements n'ont pas de liste d'invités :\n"
+            },
+            what_should_i_do: {
+                singular: "\nQue dois-je faire pour celui-ci ?",
+                plural: "\nQue dois-je faire pour ceux-cis ?"
+            }
+        },
         invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",

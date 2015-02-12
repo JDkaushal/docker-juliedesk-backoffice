@@ -225,5 +225,4 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
     else {
         return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
     }
-
 };
