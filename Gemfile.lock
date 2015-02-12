@@ -47,7 +47,7 @@ GEM
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     fssm (0.2.10)
-    gmail-api-ruby (0.0.8)
+    gmail-api-ruby (0.0.9)
       google-api-client
       hashie (>= 3.3.2)
       hooks (>= 0.4.0)
