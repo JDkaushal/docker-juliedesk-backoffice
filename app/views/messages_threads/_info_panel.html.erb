@@ -44,15 +44,20 @@
 
         $("input[name='locale']").change(function () {
             setNotes();
+            reProcessTitle();
+        });
+
+        $("body").on("change", "input#attendee", function() {
+            reProcessTitle();
+        });
+        $("body").on("change", "input#attendee_name", function() {
+            reProcessTitle();
         });
 
         $("body").on("change", "select#location_nature", function () {
             setAddressValues();
         });
 
-        $("input#summary").change(function () {
-            $(this).removeClass("warning");
-        });
 
         $(".submit-classification").click(function () {
             $(this).attr('disabled', true);
@@ -66,9 +71,12 @@
             $(".data #add_attendee").val("");
             var $contact = $("<div>").addClass("contact").data("email", email).data("name", "");
             $contact.append($("<input type='checkbox' checked>").val(email).attr('id', "attendee"));
-            $contact.append(" (" + email + ")");
+            var $nameAndEmail = $("<div>").addClass("attendee-name-and-email");
+            $nameAndEmail.append($("<input type='text'>").attr("id", "attendee_name").val(""));
+            $nameAndEmail.append($("<div>").addClass("attendee-email").html(email));
+            $contact.append($nameAndEmail);
             $(".data #contacts-data-list").append($contact);
-
+            reProcessTitle();
         });
 
         <% if messages_thread.event_data[:event_id] %>
@@ -84,6 +92,19 @@
 
         fetchOtherAccounts();
     });
+
+
+
+    function reProcessTitle() {
+        var appointment = $.grep(window.appointments, function (v) {
+            return v.label == $("#appointment_nature").val();
+        })[0];
+        var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
+            return $(this).closest(".contact").find("input#attendee_name").val();
+        }).get();
+        contactNames.push(window.threadAccount.full_name);
+        $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + contactNames.join(" / "));
+    }
 
     function fetchOtherAccounts() {
         $(".other-accounts").hide();
@@ -146,12 +167,7 @@
         })[0];
 
         $("input#duration").val(appointment.duration);
-        <% contact_names = ((messages_thread.try(:contacts) || []).map{|c| c[:name] } + ["#{messages_thread.account.try(:full_name)}"]) %>
-        $("input#summary").val(appointment.title_in_calendar[window.threadLocale] + " " + "<%= contact_names.join(" / ") %>");
-        <% if contact_names.select{|cn| cn.blank?}.length > 0 %>
-        $("input#summary").addClass("warning");
-        <% end %>
-
+        reProcessTitle();
         initAddresses();
 
         setAddressValues();
@@ -200,6 +216,17 @@
             $("textarea#notes").val(notes);
         }
     }
+
+    window.getInfoPanelAttendees = function() {
+        return $("input#attendee[type='checkbox']:checked").map(function() {
+            var $contact = $(this).closest(".contact");
+
+            return {
+                name: $contact.find("input#attendee_name").val(),
+                email: $contact.find(".attendee-email").html()
+            };
+        }).get();
+    };
 </script>
 
 <div class="messages-thread-info-panel">
@@ -261,6 +288,31 @@
       </div>
 
       <div class="data-entry">
+        <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
+        <div class="data-entry-value" id="contacts-data-list">
+          <% attendees = messages_thread.computed_data[:attendees] || [] %>
+          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq { |co| co[:email] }.each do |contact| %>
+              <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
+              <% checked = attendees == [] || attendee %>
+              <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
+                <%= check_box_tag :attendee, contact[:email], checked %>
+                <div class="attendee-name-and-email">
+                  <%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name] %>
+                  <div class="attendee-email"><%= contact[:email] %></div>
+                </div>
+
+              </div>
+          <% end %>
+        </div>
+        <div class="add-attendee-container">
+          <%= text_field_tag :add_attendee, "", class: "" %>
+          <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
+        </div>
+      </div>
+
+
+
+      <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
         <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
       </div>
@@ -276,23 +328,7 @@
         <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
       </div>
 
-      <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
-        <div class="data-entry-value" id="contacts-data-list">
-          <% attendees = messages_thread.computed_data[:attendees] || [] %>
-          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq { |co| co[:email] }.each do |contact| %>
-              <% checked = attendees == [] || attendees.select { |att| att['email'] == contact[:email] }.length > 0 %>
-              <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
-                <%= check_box_tag :attendee, contact[:email], checked %>
-                <%= "#{contact[:name]} (#{(contact[:email])})" %>
-              </div>
-          <% end %>
-        </div>
-        <div class="add-attendee-container">
-          <%= text_field_tag :add_attendee, "", class: "data-entry form-control" %>
-          <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
-        </div>
-      </div>
+
 
       <div class="data-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>

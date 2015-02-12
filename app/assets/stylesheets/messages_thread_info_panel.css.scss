@@ -137,6 +137,30 @@
         input {
           word-break: normal;
         }
+
+      }
+      #contacts-data-list {
+        .contact {
+          position: relative;
+          height: 55px;
+          padding: 5px 0 0 0;
+        }
+        input[type=checkbox] {
+
+        }
+        .attendee-name-and-email {
+          position: absolute;
+          width: 210px;
+          top: 0;
+          left: 20px;
+          input#attendee_name {
+            width: 100%;
+          }
+          .attendee-email {
+            font-size: 12px;
+            color: #999;
+          }
+        }
       }
       input#summary {
         &.warning {
@@ -150,15 +174,16 @@
 
       .add-attendee-container {
         position: relative;
-        margin: 10px 0 0 0;
+        margin: 10px 0 0 20px;
 
         input {
           padding-right: 65px;
+          width: 100%;
         }
         .btn {
           position: absolute;
-          right: 6px;
-          top: 6px;
+          right: 2px;
+          top: 2px;
           width: 55px;
         }
       }

@@ -14,13 +14,7 @@
             location: $("#location").val(),
             notes: $("#notes").val(),
             private: $("#private:checked").length > 0,
-            attendees: $("input[type=checkbox]#attendee:checked").map(function() {
-                var $div = $(this).closest("div");
-                return {
-                    email: $div.data("email"),
-                    name: $div.data("name")
-                };
-            }).get(),
+            attendees: window.getInfoPanelAttendees(),
             constraints: $("#constraints").val(),
             date_times: getSuggestedDateTimes(),
             processed_in: Date.now() - window.startedAt

@@ -15,7 +15,7 @@
                 location: $(".created-event-panel .event-location input").val(),
                 notes: $(".created-event-panel .event-notes textarea").val(),
                 private: $(".created-event-panel #created-event-private:checked").length > 0,
-                attendees: getAttendees(),
+                attendees: getCreatedEventAttendees(),
                 constraints: $("#constraints").val(),
                 processed_in: Date.now() - window.startedAt
             };
@@ -33,7 +33,7 @@
 
         };
 
-        var getAttendees = function () {
+        var getCreatedEventAttendees = function () {
             return attendees = $(".created-event-panel .event-attendees .event-attendees-edit-div .attendee input[type=checkbox]:checked").map(function () {
                 return {
                     email: $(this).closest(".attendee").data("email"),
@@ -60,7 +60,7 @@
                 calendar_id: "<%= @messages_thread.event_data[:calendar_id] %>",
                 summary: $(".created-event-panel .event-summary input").val(),
                 description: $(".created-event-panel .event-notes textarea").val(),
-                attendees: getAttendees(),
+                attendees: getCreatedEventAttendees(),
                 location: $(".created-event-panel .event-location input").val(),
                 private: $(".created-event-panel #created_event_private:checked").length > 0,
                 start: start.format(),
@@ -117,13 +117,7 @@
             location: $("#location").val(),
             notes: $("#notes").val(),
             private: $("#private:checked").length > 0,
-            attendees: $("input[type=checkbox]#attendee:checked").map(function() {
-                var $div = $(this).closest("div");
-                return {
-                    email: $div.data("email"),
-                    name: $div.data("name")
-                };
-            }).get(),
+            attendees: window.getInfoPanelAttendees(),
             constraints: $("#constraints").val(),
             processed_in: Date.now() - window.startedAt
         };
