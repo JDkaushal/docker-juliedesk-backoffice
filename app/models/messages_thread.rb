@@ -88,9 +88,10 @@ class MessagesThread < ActiveRecord::Base
     messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
         ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
-            ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
+            ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
+            ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
       }.map{ |ja|
-        JSON.parse(ja.date_times)
+        JSON.parse(ja.date_times || "[]")
       }
     }.flatten
   end
