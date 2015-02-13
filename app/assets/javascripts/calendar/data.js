@@ -1,5 +1,6 @@
-Calendar.prototype.getCalendarsColors = function () {
-    return {
+Calendar.prototype.getCalendarColor = function (calendarItem) {
+    var calendar = this;
+    var calendarColors = {
         "0": {
             "background": "#999",
             "foreground": "#bbb"
@@ -101,6 +102,19 @@ Calendar.prototype.getCalendarsColors = function () {
             "foreground": "#1d1d1d"
         }
     };
+    var colorId = "0";
+    if(calendar.initialData.other_emails.length > 0) {
+        if(calendarItem && calendarItem.email) {
+            colorId = "" + (4 + calendar.allEmails().indexOf(calendarItem.email) * 2);
+        }
+    }
+    else {
+        if(calendarItem && calendarItem.colorId) {
+            colorId = calendarItem.colorId;
+        }
+    }
+
+    return calendarColors[colorId].background;
 };
 Calendar.prototype.getTimeZones = function () {
     return [

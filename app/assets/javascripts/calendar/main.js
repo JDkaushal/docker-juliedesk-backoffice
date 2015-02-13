@@ -126,10 +126,6 @@ Calendar.prototype.updateCurrentEventDateFromInput = function ($container) {
 Calendar.prototype.redrawCalendarsListPopup = function () {
     var calendar = this;
 
-    calsId = [];
-    calsSum = [];
-    colorIds = [];
-
     var $calendarsListPopup = $("#calendars-list-popup");
     $calendarsListPopup.find(".calendars").html("");
 
@@ -145,11 +141,6 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
         $(groupedCalendars[email]).each(function (k, calendarItem) {
 
-
-            calsId.push(calendarItem.id);
-            calsSum.push(calendarItem.summary);
-            colorIds.push(calendarItem.colorId);
-
             var $div = $("<div>").addClass("calendar-item");
             var $checkbox = $("<input type='checkbox'>").prop("disabled", "disabled");
 
@@ -157,7 +148,7 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
                 $checkbox.prop("checked", "checked");
             }
             $div.append($checkbox);
-            $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarsColors()[parseInt(calendarItem.colorId)].background}));
+            $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarColor(calendarItem)}));
             $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
 
             if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
@@ -168,12 +159,19 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
 
 };
 
+Calendar.prototype.allEmails = function() {
+    var calendar = this;
+    var allEmails = calendar.initialData.other_emails.slice();
+    allEmails.unshift(calendar.initialData.email);
+    return allEmails;
+};
+
 Calendar.prototype.fetchCalendars = function (callback) {
     var calendar = this;
     calendar.showLoadingSpinner();
 
-    var allEmails = calendar.initialData.other_emails.slice();
-    allEmails.unshift(calendar.initialData.email);
+
+    var allEmails = calendar.allEmails();
     var accountsToWait = 0;
     calendar.calendars = [];
 
@@ -187,7 +185,9 @@ Calendar.prototype.fetchCalendars = function (callback) {
             for(var j=0; j <response.items.length; j++) {
                 var calendarItem = response.items[j];
                 calendarItem.email = response.email;
-                calendar.calendars.push(calendarItem);
+                if(calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+                    calendar.calendars.push(calendarItem);
+                }
             }
 
             accountsToWait --;
@@ -231,7 +231,7 @@ Calendar.prototype.addForbiddenEvents = function(events) {
             durationEditable: false,
             color: "#444",
             textColor: "#aaa",
-            calIndex: calendar.calendars.length -1,
+            calId: "juliedesk-unavailable",
             isNotAvailableEvent: true
         };
         result.push(event);
@@ -293,7 +293,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash) {
         start: start,
         end: end
     }, function (response) {
-        calendar.addCal(calendar.getNonAvailableEvents(start, end, accountPreferencesHash), calendar.calendars.length - 1);
+        calendar.addCal(calendar.getNonAvailableEvents(start, end, accountPreferencesHash));
         calendar.addEventsToCheckIfNeeded();
 
         calendar.addAllCals(response.items);
@@ -304,8 +304,6 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash) {
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
     var result = [];
-
-    var calIndex;
 
     for (var day in accountPreferencesHash.unbooking_hours) {
         var slots = accountPreferencesHash.unbooking_hours[day];
@@ -321,8 +319,6 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
 
-                    calIndex = k;
-
                     var event = {
                         summary: "Not available",
                         start: {
@@ -336,7 +332,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                         durationEditable: false,
                         color: "#444",
                         textColor: "#aaa",
-                        calIndex: k,
+                        calId: "juliedesk-unavailable",
                         isNotAvailableEvent: true
                     };
                     result.push(event);
@@ -361,7 +357,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
             durationEditable: false,
             color: "#444",
             textColor: "#aaa",
-            calIndex: calIndex,
+            calId: "juliedesk-unavailable",
             isNotAvailableEvent: true
         };
         result.push(event);
@@ -373,12 +369,7 @@ Calendar.prototype.getCalendarTimezone = function () {
     return this.$selector.find("#calendar-timezone").val()
 };
 
-Calendar.prototype.getCalendarIdForCalIndex = function(calIndex) {
-    var calendar = this;
-    return calendar.calendars[calIndex].id;
-};
-
-Calendar.prototype.eventDataFromEvent = function (ev, calIndex) {
+Calendar.prototype.eventDataFromEvent = function (ev) {
     var calendar = this;
     var eventData;
 
@@ -398,10 +389,19 @@ Calendar.prototype.eventDataFromEvent = function (ev, calIndex) {
 
 
     // Dont zone non-booking hours
-    if (calIndex == calendar.calendars.length - 1) {
+    if (ev.calId == "juliedesk-unavailable") {
         sstartTime = startTime;
         sendTime = endTime;
     }
+
+    var eventCalendar = _.find(calendar.calendars, function(calendarItem) {
+        return calendarItem.id == ev.calId;
+    });
+    var color = calendar.getCalendarColor(null);
+    if(eventCalendar) {
+        color = calendar.getCalendarColor(eventCalendar);
+    }
+
     eventData = {
         id: ev.id,
         title: ev.summary,
@@ -414,9 +414,9 @@ Calendar.prototype.eventDataFromEvent = function (ev, calIndex) {
         attendees: ev.attendees,
         startEditable: false,
         durationEditable: false,
-        color: calendar.getCalendarsColors()[parseInt(colorIds[calIndex])].background,
-        textColor: "#fff",//colors[parseInt(colorIds[calIndex])].foreground,
-        calIndex: calIndex,
+        color: color,
+        calId: ev.calId,
+        textColor: "#fff",
         sequence: ev.sequence,
         isNotAvailableEvent: ev.isNotAvailableEvent
     };
@@ -450,18 +450,18 @@ Calendar.prototype.addAllCals = function (calEvents) {
                 break;
             }
         }
-        var eventData = calendar.eventDataFromEvent(ev, x);
+        var eventData = calendar.eventDataFromEvent(ev);
 
         calendar.eventDataX.push(eventData);
     }
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
     calendar.eventDataX = [];
 };
-Calendar.prototype.addCal = function (calEvents, x) {
+Calendar.prototype.addCal = function (calEvents) {
     var calendar = this;
     for (var k = 0; k < calEvents.length; k++) {
         var ev = calEvents[k];
-        var eventData = calendar.eventDataFromEvent(ev, x);
+        var eventData = calendar.eventDataFromEvent(ev);
 
         calendar.eventDataX.push(eventData);
     }
@@ -487,7 +487,7 @@ Calendar.prototype.drawExternalEventSelection = function () {
                end: mEnd.format(),
                attendees: event.attendees,
                id: event.id,
-               calIndex: event.calIndex,
+               calId: event.calId,
                duration: parseInt((mEnd - mStart) / 60000, 10),
                location: event.location,
                notes: event.description
@@ -570,7 +570,6 @@ Calendar.prototype.addEvent = function (event) {
         calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
         calendar.updateEventCreation();
     }
-
 };
 
 Calendar.prototype.getLocale = function () {
@@ -600,7 +599,7 @@ Calendar.prototype.addEventsCountLabels = function () {
 
         var events = calendar.$selector.find('#calendar').fullCalendar('clientEvents', function (event) {
             return !event.beingAdded
-                && event.calIndex != calendar.calendars.length - 1
+                && event.calId != "juliedesk-unavailable"
                 && event.start < date.clone().endOf('day')
                 && event.end > date.clone().startOf('day');
         });

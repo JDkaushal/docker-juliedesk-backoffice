@@ -105,7 +105,6 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {
-    console.log("CLICK EVENT DETAILS");
     var calendar = this;
     var $container = calendar.$selector.find("#event-details-container");
     var $target = $(e.target);
@@ -168,7 +167,7 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
                 action: "delete_event",
                 email: calendar.initialData.email,
                 event_id: calendar.currentEvent.id,
-                calendar_id: calendar.calendars[calendar.currentEvent.calIndex].id
+                calendar_id: calendar.currentEvent.calId
             }, function(response) {
                 if(response.status == "success") {
                     $("#event-details-container").fadeOut(200);

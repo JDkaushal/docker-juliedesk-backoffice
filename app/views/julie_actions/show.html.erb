@@ -354,7 +354,7 @@
                                 subject: subjectType + event.title,
                                 html: bodyType + event.title + " (" + dateString + ")" + addInviteesString,
                                 event_id: event.id,
-                                calendar_id: window.currentCalendar.getCalendarIdForCalIndex(event.calIndex),
+                                calendar_id: event.calId,
                                 summary: event.title,
                                 attendees: event.attendees,
                                 duration: event.duration,
