@@ -457,7 +457,7 @@ Calendar.prototype.drawExternalEventCreation = function () {
     if (calendar.eventBeingAdded) {
         window.postMessage({
             message: "drawExternalEventCreation",
-            eventStart: calendar.eventBeingAdded.start.format()
+            eventStart: moment.tz(calendar.eventBeingAdded.start.format(), calendar.getCalendarTimezone()).format()
         }, "*");
     }
 };
