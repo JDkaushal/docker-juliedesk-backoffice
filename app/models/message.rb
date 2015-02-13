@@ -181,7 +181,9 @@ class Message < ActiveRecord::Base
                                               received_at: DateTime.parse(google_message.date),
                                               reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
 
-    attendees = (event['attendees'] || {}).map{|k, attendee|
+    attendees = (event['attendees'] || {}).select{|k, attendee|
+      !original_messages_thread.account.all_emails.include? attendee['email']
+    }.map{|k, attendee|
       {
         k => {
             email: attendee['email'],
