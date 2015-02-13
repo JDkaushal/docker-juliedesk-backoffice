@@ -35,7 +35,7 @@ class MessagesController < ApplicationController
   def generate_threads
     message = Message.find params[:id]
 
-    message.generate_threads (params[:julie_messages] || {}).values
+    message.delay.generate_threads((params[:julie_messages] || {}).values)
 
     render json: {
         status: "success",

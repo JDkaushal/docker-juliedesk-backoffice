@@ -8,6 +8,10 @@ class Message < ActiveRecord::Base
 
   attr_writer :google_message
 
+  def self.bugged
+    [] + nil
+  end
+
   def correct_google_message
     Message.correct_google_message @google_message
   end
@@ -163,7 +167,14 @@ class Message < ActiveRecord::Base
                                          'notes' => julie_message_hash['notes'],
                                      },
                                      self.messages_thread
+
       end
+
+      # Send new email notification
+      Pusher.trigger('private-global-chat', 'new-email', {
+          :message => 'new_email',
+          :messages_threads_count => MessagesThread.items_to_classify_count
+      })
     end
   end
 

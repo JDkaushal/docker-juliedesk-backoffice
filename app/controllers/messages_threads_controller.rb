@@ -14,6 +14,7 @@ class MessagesThreadsController < ApplicationController
         }
       }
     end
+
   end
 
   def index_with_import

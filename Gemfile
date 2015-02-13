@@ -29,3 +29,5 @@ gem "pusher"
 gem "mail", '2.6.3'
 
 gem "stringex"
+
+gem 'delayed_job_active_record'
