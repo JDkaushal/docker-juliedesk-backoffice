@@ -20,7 +20,7 @@ class Message < ActiveRecord::Base
     m = Message.new
 
     google_message.text ||= google_message.body || m.strip_tags(google_message.html)
-    google_message.html ||= h(simple_format(google_message.text))
+    google_message.html ||= m.send(:h, m.simple_format(google_message.text))
     google_message.body = nil
     google_message
   end
