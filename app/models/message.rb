@@ -121,10 +121,19 @@ class Message < ActiveRecord::Base
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
 
-      # Copy the original message with a new subject and get the corresponding threadId
-      self.google_message.threadId = nil
-      self.google_message.subject = julie_message_hash['subject']
-      updated_google_message = self.google_message.insert
+      # Try to find an existing thread which would have resulted in the given event
+      existing_message = JulieAction.where(event_id: julie_message_hash['event_id'], calendar_id: julie_message_hash['calendar_id']).first.try(:message_classification).try(:message)
+
+      if existing_message.try(:messages_thread)
+        # Copy the original message into the existing thread
+        self.google_message.threadId = existing_message.messages_thread.google_thread_id
+        updated_google_message = self.google_message.insert
+      else
+        # Copy the original message with a new subject and get the corresponding threadId
+        self.google_message.threadId = nil
+        self.google_message.subject = julie_message_hash['subject']
+        updated_google_message = self.google_message.insert
+      end
 
       # Create the fake Julie's message
       julie_google_message = updated_google_message.reply_all_with(Gmail::Message.new({
@@ -134,16 +143,27 @@ class Message < ActiveRecord::Base
       julie_google_message.to = from
       julie_google_message.from = from
       julie_google_message.cc = ""
-      julie_google_message = julie_google_message.insert
+      julie_google_message.insert
 
 
-      # Now creating DB entries to associate the created thread with event data
-      Message.associate_event_data updated_google_message,
-                                   {
-                                       'id' => julie_message_hash['event_id'],
-                                       'calendar_id' => julie_message_hash['calendar_id']
-                                   },
-                                   self.messages_thread
+
+      if existing_message.try(:messages_thread)
+        # Just update the message thread to notice it's in the inbox
+        existing_message.messages_thread.update_attribute(:in_inbox, true)
+      else
+        # Now creating DB entries to associate the created thread with event data
+        Message.associate_event_data updated_google_message,
+                                     {
+                                         'id' => julie_message_hash['event_id'],
+                                         'calendar_id' => julie_message_hash['calendar_id'],
+                                         'attendees' => julie_message_hash['attendees'],
+                                         'summary' => julie_message_hash['summary'],
+                                         'location' => julie_message_hash['location'],
+                                         'duration' => julie_message_hash['duration'],
+                                         'notes' => julie_message_hash['notes'],
+                                     },
+                                     self.messages_thread
+      end
     end
   end
 
@@ -161,11 +181,25 @@ class Message < ActiveRecord::Base
                                               received_at: DateTime.parse(google_message.date),
                                               reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
 
+    attendees = (event['attendees'] || {}).map{|k, attendee|
+      {
+        k => {
+            email: attendee['email'],
+            name: "#{attendee['displayName']}"
+        }
+      }
+    }.reduce(:merge)
     # Create the message_classification in DB
     message_classification = message.message_classifications.create_from_params locale: original_messages_thread.computed_data[:locale],
                                                                                 classification: MessageClassification::ASK_AVAILABILITIES,
                                                                                 operator: original_messages_thread.julie_alias,
-                                                                                processed_in: 0
+                                                                                attendees: attendees,
+                                                                                processed_in: 0,
+                                                                                summary: event['summary'],
+                                                                                duration: event['duration'],
+                                                                                location: event['location'],
+                                                                                notes: event['notes']
+
 
     # Create the julie_action in DB to finally store event data
     message_classification.julie_action.update_attributes done: true,

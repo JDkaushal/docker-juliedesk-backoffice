@@ -478,13 +478,19 @@ Calendar.prototype.drawExternalEventSelection = function () {
     window.postMessage({
         message: "drawExternalEventSelection",
         events: _.map(calendar.selectedEvents, function(event) {
+
+           var mStart = moment.tz(event.start.format(), calendar.getCalendarTimezone());
+           var mEnd = moment.tz(event.end.format(), calendar.getCalendarTimezone());
            return {
                title: event.title,
-               start: moment.tz(event.start.format(), calendar.getCalendarTimezone()).format(),
-               end: moment.tz(event.end.format(), calendar.getCalendarTimezone()).format(),
+               start: mStart.format(),
+               end: mEnd.format(),
                attendees: event.attendees,
                id: event.id,
-               calIndex: event.calIndex
+               calIndex: event.calIndex,
+               duration: parseInt((mEnd - mStart) / 60000, 10),
+               location: event.location,
+               notes: event.description
            }
         })
     }, "*");

@@ -110,7 +110,7 @@ class MessageClassification < ActiveRecord::Base
 
 
   def self.is_disabled(message, classification)
-    forbidden_classifications = [ASK_CREATE_EVENT, ASK_POSTPONE_EVENTS]
+    forbidden_classifications = [ASK_CREATE_EVENT]
     if message.messages_thread.event_data[:event_id]
       forbidden_classifications += [ASK_CANCEL_EVENTS, ASK_POSTPONE_EVENTS]
     else

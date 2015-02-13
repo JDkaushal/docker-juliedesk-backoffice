@@ -82,6 +82,21 @@
     };
     <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
     window.afterEventFetched = function() {
+        // Add attendees as recipients if not present already
+        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function(elt) {
+            return elt.name;
+        });
+        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
+            return elt.name;
+        });
+
+        _.each(window.currentEventData.attendees, function(attendee) {
+            if(toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
+                $("#recipients-to-input").tokenInput("add", {name: attendee.email});
+            }
+        });
+
+        $("input#quote_message").removeAttr("checked");
         window.currentCalendar.addForbiddenEvents([
             {
                 title: "TO POSTPONE",
@@ -314,7 +329,17 @@
 
 
 
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
+
+                <% if @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+                var subjectType = "Cancellation: ";
+                var bodyType = "Please cancel this event:<br>";
+                <% else %>
+                var subjectType = "Postpone: ";
+                var bodyType = "Please postpone this event:<br>";
+                <% end %>
+                $(".reply-box #callback-message").html("Creating threads...");
                 $.ajax({
                     url: "/messages/<%= @message.id %>/generate_threads",
                     method: "post",
@@ -326,10 +351,15 @@
                                 addInviteesString = "<br><br>WARNING: SHOULD ADD INVITEES (See previous email)"
                             }
                             return {
-                                subject: "Cancellation: " + event.title,
-                                html: "Please cancel this event :<br>" + event.title + " (" + dateString + ")" + addInviteesString,
+                                subject: subjectType + event.title,
+                                html: bodyType + event.title + " (" + dateString + ")" + addInviteesString,
                                 event_id: event.id,
-                                calendar_id: window.currentCalendar.getCalendarIdForCalIndex(event.calIndex)
+                                calendar_id: window.currentCalendar.getCalendarIdForCalIndex(event.calIndex),
+                                summary: event.title,
+                                attendees: event.attendees,
+                                duration: event.duration,
+                                location: event.location,
+                                notes: event.notes
                             }
                         })
                     },
@@ -631,12 +661,19 @@
                 date: dateString
             });
         }
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
+
+        <% if @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
+        var wordingBase = "cancel_multiple";
+        <% else %>
+        var wordingBase = "postpone_multiple";
+        <% end %>
 
         var selectedEventsToCancel = getSelectedEventsToCancel();
         if(selectedEventsToCancel.length > 0) {
             var toCancelPlural = (selectedEventsToCancel.length > 1)?"plural":"singular";
-            message += localize("email_templates.cancel_multiple.noted_gonna_cancel." + toCancelPlural);
+            message += localize("email_templates." + wordingBase + ".noted_gonna_cancel." + toCancelPlural);
 
             _.each(getSelectedEventsToCancel(), function(selectedEvent) {
                 var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
@@ -644,23 +681,22 @@
             });
         }
 
-
         var selectedEventsNotToCancel = getSelectedEventsNotToCancel();
 
         if(selectedEventsNotToCancel.length > 0) {
             var notToCancelPlural = (selectedEventsNotToCancel.length > 1)?"plural":"singular";
             if(selectedEventsToCancel.length > 0) {
-                message += localize("email_templates.cancel_multiple.but_no_attendees." + notToCancelPlural);
+                message += localize("email_templates." + wordingBase + ".but_no_attendees." + notToCancelPlural);
             }
             else {
-                message += localize("email_templates.cancel_multiple.noted_no_attendees." + notToCancelPlural);
+                message += localize("email_templates." + wordingBase + ".noted_no_attendees." + notToCancelPlural);
             }
 
             _.each(selectedEventsNotToCancel, function(selectedEvent) {
                 var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
                 message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
             });
-            message += localize("email_templates.cancel_multiple.what_should_i_do." + notToCancelPlural);
+            message += localize("email_templates." + wordingBase + ".what_should_i_do." + notToCancelPlural);
         }
 
 
