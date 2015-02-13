@@ -187,12 +187,14 @@ class MessagesThread < ActiveRecord::Base
     if last_creation && (last_cancellation.nil? || julie_actions.index(last_creation) > julie_actions.index(last_cancellation))
       {
           event_id: last_creation.event_id,
-          calendar_id: last_creation.calendar_id
+          calendar_id: last_creation.calendar_id,
+          appointment_nature: last_creation.message_classification.appointment_nature
       }
     else
       {
           event_id: nil,
-          calendar_id: nil
+          calendar_id: nil,
+          appointment_nature: nil
       }
     end
 

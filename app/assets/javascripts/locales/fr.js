@@ -19,7 +19,7 @@ window.wordings['fr'] = {
             after_dates: "\n\nQuel horaire vous conviendrait le mieux ?",
         },
         postpone: {
-            before_dates: "Ci-dessous de nouvelles disponibilités afin de décaler l'événement :"
+            before_dates: "Je vous propose de nouvelles disponibilités pour un %{appointment_nature}%{location} :"
         },
         cancel_multiple: {
             noted_gonna_cancel: {
@@ -60,8 +60,9 @@ window.wordings['fr'] = {
         invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",
-        cancel: "Suite à un contretemps, %{client} ne pourra malheureusement pas assurer son rendez-vous avec vous %{date}.",
+        cancel: "Suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} avec vous %{date}.",
         common: {
+            default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
             before: "Bonjour,\n\n",
             full_date_format: "dddd DD MMMM YYYY à HH:mm",

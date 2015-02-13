@@ -536,6 +536,10 @@
             return v.label == $("select#appointment_nature").val();
         })[0];
 
+        var previousAppointment = $.grep(window.appointments,function(v) {
+            return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
+        })[0];
+
         var addressArray = $.grep(appointment.addresses_with_description, function(v) {
             return v.label == $("select#location_nature").val();
         });
@@ -571,12 +575,22 @@
             if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
                 dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
+
+            var appointmentNature = localize("email_templates.common.default_appointment_designation_in_email");
+            if(previousAppointment) {
+                appointmentNature = previousAppointment.designation_in_email[window.threadLocale];
+            }
+
             message = localize("email_templates.cancel", {
                 client: "<%= @messages_thread.account.usage_name %>",
-                date: dateString
+                date: dateString,
+                appointment_nature: appointmentNature
             }) + "\n";
 
-            message = message + localize("email_templates.postpone.before_dates");
+            message = message + localize("email_templates.postpone.before_dates", {
+                appointment_nature: appointment.title_in_email[window.threadLocale],
+                location: locationInTemplate
+            });
 
             if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
@@ -656,9 +670,14 @@
             if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
                 dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
+            var appointmentNature = localize("email_templates.common.default_appointment_designation_in_email");
+            if(previousAppointment) {
+                appointmentNature = previousAppointment.designation_in_email[window.threadLocale];
+            }
             message = localize("email_templates.cancel", {
                 client: "<%= @messages_thread.account.usage_name %>",
-                date: dateString
+                date: dateString,
+                appointment_nature: appointmentNature
             });
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||

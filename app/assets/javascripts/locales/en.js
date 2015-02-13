@@ -19,7 +19,7 @@ window.wordings['en'] = {
             after_dates: "\n\nWhich time would work best for you?"
         },
         postpone: {
-            before_dates: "Here are new availabilities to postpone the event:"
+            before_dates: "Here are some new availabilities for %{appointment_nature}%{location}:"
         },
         cancel_multiple: {
             noted_gonna_cancel: {
@@ -60,8 +60,9 @@ window.wordings['en'] = {
         invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",
-        cancel: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure the meeting with you %{date}.",
+        cancel: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you on %{date}.",
         common: {
+            default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
             before: "Hi,\n\n",
             full_date_format: "dddd DD MMMM YYYY, hh:mm a",
