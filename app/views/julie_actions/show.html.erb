@@ -3,7 +3,6 @@
     window.timeSlotToCreate = null;
     window.selectedEvents = [];
     window.forceCancelEventIds = [];
-    window.currentEventId = null;
     window.julieAliasId = "<%= JULIE_ALIASES_DATA[@messages_thread.julie_alias][:id] %>"
 
     window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
@@ -648,7 +647,9 @@
             end %>
 
             message = localize(templateName, {
-                client: "<%= @messages_thread.account.usage_name %>"
+                client: "<%= @messages_thread.account.usage_name %>",
+                appointment_nature: appointment.title_in_email[window.threadLocale],
+                location: locationInTemplate
             });
             if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});

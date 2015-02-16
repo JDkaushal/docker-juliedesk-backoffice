@@ -272,14 +272,23 @@ Calendar.prototype.addEventsToCheckIfNeeded = function() {
 
 Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
     var calendar = this;
+    var localWaitingAccounts = 0;
+
+    calendar.showLoadingSpinner("Loading events...");
 
     for(var email in calendar.accountPreferences) {
-        calendar.fetchEvents(start, end, calendar.accountPreferences[email]);
+        localWaitingAccounts += 1;
+        calendar.fetchEvents(start, end, calendar.accountPreferences[email], function() {
+            localWaitingAccounts -= 1;
+            if(localWaitingAccounts == 0) {
+                calendar.hideLoadingSpinner();
+            }
+        });
     }
 };
-Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash) {
+Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
     var calendar = this;
-    calendar.showLoadingSpinner("Loading events...");
+
 
     if(!accountPreferencesHash) {
         accountPreferencesHash = calendar.accountPreferences;
@@ -297,7 +306,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash) {
         calendar.addEventsToCheckIfNeeded();
 
         calendar.addAllCals(response.items);
-        calendar.hideLoadingSpinner();
+        if(callback) callback();
     });
 };
 
@@ -468,7 +477,6 @@ Calendar.prototype.addCal = function (calEvents) {
 
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
     calendar.eventDataX = [];
-    calendar.hideLoadingSpinner();
 };
 
 

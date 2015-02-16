@@ -5,12 +5,12 @@ window.wordings['fr'] = {
         no_date_fits: {
             before_dates: {
                 suggested: {
-                    singular: "Désolé, %{client} n'est plus disponible à cet horaire, mais en revanche :",
-                    plural: "Désolé, %{client} n'est plus disponible à ces horaires, mais en revanche :"
+                    singular: "Désolé, %{client} n'est plus disponible à cet horaire, mais serait disponible pour %{appointment_nature}%{location} :",
+                    plural: "Désolé, %{client} n'est plus disponible à ces horaires, mais serait disponible %{appointment_nature}%{location} :"
                 },
                 not_suggested: {
-                    singular: "Désolé, cet horaire ne convient pas, mais %{client} serait disponible :",
-                    plural: "Désolé, aucun de ces horaires ne convient, mais %{client} serait disponible :"
+                    singular: "Désolé, cet horaire ne convient pas, mais %{client} serait disponible %{appointment_nature}%{location} :",
+                    plural: "Désolé, aucun de ces horaires ne convient, mais %{client} serait disponible %{appointment_nature}%{location} :"
                 }
             }
         },
@@ -19,7 +19,7 @@ window.wordings['fr'] = {
             after_dates: "\n\nQuel horaire vous conviendrait le mieux ?",
         },
         postpone: {
-            before_dates: "Je vous propose de nouvelles disponibilités pour un %{appointment_nature}%{location} :"
+            before_dates: "Je vous propose de nouvelles disponibilités pour %{appointment_nature}%{location} :"
         },
         cancel_multiple: {
             noted_gonna_cancel: {
