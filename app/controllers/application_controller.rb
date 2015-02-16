@@ -36,6 +36,11 @@ class ApplicationController < ActionController::Base
             name: "Guillaume",
             password: "popp2012jmm"
         },
+        {
+            username: "operator@juliedesk.com",
+            name: "Other operator",
+            password: "DareauJulieDesk2015"
+        }
     ]
 
     authenticate_or_request_with_http_basic do |username, password|
