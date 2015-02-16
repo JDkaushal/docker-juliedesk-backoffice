@@ -39,7 +39,7 @@ window.wordings['fr'] = {
                 plural: "\nQue dois-je faire pour ceux-cis ?"
             }
         },
-        cancel_multiple: {
+        postpone_multiple: {
             noted_gonna_cancel: {
                 singular: "C'est bien noté. Je vais reporter l'évènement :\n",
                 plural: "C'est bien noté. Je vais reporter les évènements :\n"
