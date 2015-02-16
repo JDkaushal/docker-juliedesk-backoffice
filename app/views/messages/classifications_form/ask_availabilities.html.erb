@@ -1,4 +1,4 @@
-<!--<script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>-->
+<script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>
 <script>
     window.threadDataIsEditable = true;
     window.leftColumnMessage = "<%= I18n.t("classification.dates_identification") %>";
@@ -152,7 +152,7 @@
 
     function processDateDetection () {
         if(detectedDates.length == 0) {
-            //runDateDetection($(".email.highlighted .body")[0]);
+            runDateDetection($(".email.highlighted .body")[0]);
         }
 
         $(".detected-dates").html("");
