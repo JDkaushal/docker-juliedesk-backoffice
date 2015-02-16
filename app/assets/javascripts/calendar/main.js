@@ -222,10 +222,13 @@ Calendar.prototype.addForbiddenEvents = function(events) {
     var calendar = this;
     var result = [];
     for(var i in events) {
+        var start = moment.tz(events[i].start, "UTC").tz(calendar.getCalendarTimezone()).format();
+        var end = moment.tz(events[i].end, "UTC").tz(calendar.getCalendarTimezone()).format();
+
         var event = {
             title: events[i].title,
-            start: events[i].start,
-            end: events[i].end,
+            start: start,
+            end: end,
             url: "NOTAVAILABLE-" + events[i].start,
             startEditable: false,
             durationEditable: false,
@@ -286,6 +289,12 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
         });
     }
 };
+
+Calendar.prototype.redrawFullCalendar = function() {
+    var calendar = this;
+    calendar.$selector.find("#calendar").fullCalendar("render");
+};
+
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
     var calendar = this;
 
