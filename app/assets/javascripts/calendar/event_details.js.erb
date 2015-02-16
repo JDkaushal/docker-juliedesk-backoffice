@@ -1,0 +1,210 @@
+Calendar.prototype.showEventDetails = function(event, $currentTarget) {
+    var calendar = this;
+    calendar.resetEventDetailsContainer();
+
+    // Positioning
+    if($currentTarget) {
+        calendar.$currentEventTarget = $currentTarget;
+        var $edc = calendar.$selector.find("#event-details-container");
+
+        if($currentTarget.offset().left < calendar.$selector.width() / 2) {
+            $edc.find(".event-details").css({
+                top: (calendar.$selector.height() - $edc.find(".event-details").outerHeight()) / 2,
+                left: $currentTarget.offset().left + $currentTarget.width() + 10,
+                right: "auto"
+            });
+        }
+        else {
+            $edc.find(".event-details").css({
+                top: (calendar.$selector.height() - $edc.find(".event-details").outerHeight()) / 2,
+                right: $(".fixed-columns").width() - $currentTarget.offset().left + 10,
+                left: "auto"
+            });
+        }
+
+    }
+    calendar.redrawEventDetailsFromEvent(event);
+};
+
+Calendar.prototype.resetEventDetailsContainer = function() {
+    var calendar = this;
+    calendar.$selector.find("#event-details-container").html(calendar.$selector.find("#event-details-template-container").html());
+};
+
+Calendar.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
+    var calendar = this;
+    var $edc = calendar.$selector.find("#event-details-container");
+    var $attendee = $("<div>").addClass("attendee-text");
+    $attendee.append($("<div>").addClass("attendee-name").html(attendee.displayName));
+    $attendee.append($("<div>").addClass("attendee-email").html(attendee.email));
+    $attendee.append($("<div>").addClass("attendee-status").html(attendee.responseStatus));
+
+    if(attendee.organizer) {
+        $attendee.addClass("organizer");
+    }
+    $attendee.append($("<div>").addClass("remove-attendee-button").html($("<img>").attr("src" , "<%= asset_path 'calendar/close_window.png' %>")));
+    $edc.find(".attendees .attendees-list").append($attendee);
+
+    $edc.find(".attendees-count-badge").html($edc.find(".attendees .attendees-list .attendee-text").length);
+};
+
+Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
+    var calendar = this;
+    calendar.currentEvent = event;
+    var $edc = calendar.$selector.find("#event-details-container");
+
+    $edc.find("input.title").val(event.title);
+    $edc.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(event.start, event.end, "fr", calendar.getCalendarTimezone()));
+    $edc.find("input.location").val(event.location);
+    $edc.find("textarea.notes").val(event.description);
+
+    $edc.find(".attendees .attendees-list").html("");
+    var attendees = [];
+    if(event.attendees) attendees = event.attendees;
+
+    $(attendees).each(function(k, attendee) {
+        calendar.eventDetailsAddAttendeeDiv(attendee);
+    });
+
+
+
+    $edc.find("input, textarea").attr("disabled", "disabled");
+
+
+    var mStartDate = moment(event.start).tz(calendar.getCalendarTimezone()).locale("fr");
+    var mEndDate = moment(event.end).tz(calendar.getCalendarTimezone()).locale("fr");
+
+    $edc.find(".start-date").val(mStartDate.format("YYYY-MM-DD"));
+    $edc.find(".start-hours").val(mStartDate.format("HH"));
+    $edc.find(".start-minutes").val(mStartDate.format("mm"));
+    $edc.find(".end-date").val(mEndDate.format("YYYY-MM-DD"));
+    $edc.find(".end-hours").val(mEndDate.format("HH"));
+    $edc.find(".end-minutes").val(mEndDate.format("mm"));
+
+    //$edc.find(".attendees-list").html("");
+
+    if(calendar.getMode() == "select_events") {
+        if(calendar.selectedEvents.indexOf(calendar.currentEvent) == -1) {
+            $edc.find("#event-select-button").html("Select");
+        }
+        else {
+            $edc.find("#event-select-button").html("Unselect");
+        }
+        $edc.find("#event-select-button").show();
+    }
+    else {
+        $edc.find("#event-delete-button").show();
+    }
+    if(calendar.getMode() == "free_calendar") {
+        $edc.find("#event-edit-button").show();
+    }
+
+    $edc.fadeIn(200);
+};
+
+Calendar.prototype.clickEventDetailsContainer = function(e) {
+    var calendar = this;
+    var $container = calendar.$selector.find("#event-details-container");
+    var $target = $(e.target);
+
+    if($target.attr("id") == "event-edit-button") {
+        $container.find("input, textarea").removeAttr("disabled");
+        $container.find("#event-delete-button").hide();
+        $container.find("#event-edit-button").hide();
+
+        $container.find("#event-save-button").show();
+        $container.find("#event-cancel-button").show();
+        $container.find(".event-details").addClass("editing");
+    }
+    else if($target.attr("id") == "event-cancel-button") {
+        calendar.showEventDetails(calendar.currentEvent, calendar.$currentEventTarget);
+    }
+    else if($target.attr("id") == "event-save-button") {
+        var title = $container.find("input.title").val();
+        var mStart = moment.tz($container.find("input.start-date").val(), calendar.getCalendarTimezone());
+        mStart.set('h', $container.find("input.start-hours").val());
+        mStart.set('m', $container.find("input.start-minutes").val());
+
+
+        var mEnd = moment.tz($container.find("input.end-date").val(), calendar.getCalendarTimezone());
+        mEnd.set('h', $container.find("input.end-hours").val());
+        mEnd.set('m', $container.find("input.end-minutes").val());
+        mEnd = moment.tz(mEnd.format(), calendar.getCalendarTimezone());
+
+        var attendees = $container.find(".attendee-text").map(function() {
+            var name = $(this).find(".attendee-name").html();
+            var email = $(this).find(".attendee-email").html();
+            return {
+                email: email,
+                name: name
+            };
+        }).get();
+
+        CommonHelpers.externalRequest({
+            action: "update_event",
+            email: calendar.initialData.email,
+
+            event_id: calendar.currentEvent.id,
+            calendar_id: calendar.currentEvent.calId,
+
+            summary: title,
+            description: $container.find("textarea.notes").val(),
+            attendees: attendees,
+            location: $container.find("input.location").val(),
+            private: false,
+            start: mStart.format(),
+            end: mEnd.format()
+        }, function(response) {
+            if(response.status == "success") {
+                $("#event-details-container").fadeOut(200);
+                calendar.refreshEvents();
+            }
+            else {
+                alert("Error updating event");
+                console.log(response);
+            }
+        });
+    }
+    else if($target.hasClass("remove-attendee-button")) {
+        $target.closest(".attendee-text").remove();
+        $container.find(".attendees-count-badge").html($container.find(".attendees .attendees-list .attendee-text").length);
+    }
+    else if($target.attr("id") == "event-delete-button") {
+        if (confirm("Are you sure you want to delete this event?")) {
+            $container.find(".event-spinner").show();
+            CommonHelpers.externalRequest({
+                action: "delete_event",
+                email: calendar.initialData.email,
+                event_id: calendar.currentEvent.id,
+                calendar_id: calendar.currentEvent.calId
+            }, function(response) {
+                if(response.status == "success") {
+                    $("#event-details-container").fadeOut(200);
+                    calendar.refreshEvents();
+                }
+                else {
+                    alert("Error deleting event");
+                    console.log("error", response);
+                }
+            }, function(e) {
+                alert("Error deleting event");
+                console.log("error", e);
+            });
+        }
+    }
+    else if($target.attr("id") == "event-select-button") {
+        calendar.selectEvent(calendar.currentEvent);
+        calendar.redrawEventDetailsFromEvent(calendar.currentEvent);
+    }
+    else if($target.hasClass("add-attendee-button")) {
+        var email = $container.find("#add_attendee_input").val();
+        $container.find("#add_attendee_input").val("");
+        calendar.eventDetailsAddAttendeeDiv({
+            email: email
+        });
+        $container.find(".attendees-list").scrollTop($container.find(".attendees-list")[0].scrollHeight);
+    }
+    else if($target.closest(".event-details").length == 0 || $target.hasClass("event-close-button")) {
+        $("#event-details-container").fadeOut(200);
+    }
+};

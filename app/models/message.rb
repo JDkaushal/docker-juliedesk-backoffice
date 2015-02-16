@@ -98,6 +98,7 @@ class Message < ActiveRecord::Base
 
 
   def self.generate_reply_all_recipients(google_message)
+
     gm = google_message.reply_all_with(Gmail::Message.new(text: "", html: ""))
     {
 

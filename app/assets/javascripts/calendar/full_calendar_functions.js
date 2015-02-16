@@ -15,7 +15,6 @@ Calendar.prototype.generateEventData = function(params) {
 };
 
 Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
-
     var calendar = this;
     calendar.$selector.find('#calendar').fullCalendar('unselect');
 
@@ -42,6 +41,10 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
     calendar.addEvent(eventData);
     calendar.drawEventList();
+
+    if(calendar.getMode() == "free_calendar") {
+        calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
+    }
 };
 
 Calendar.prototype.fullCalendarEventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
@@ -137,6 +140,7 @@ Calendar.prototype.fullCalendarInit = function() {
            return v.start;
         }).sort()[0];
     }
+    defaultDate = moment("2015-03-01");
     $('#calendar').fullCalendar({
         header: {
             left: 'today prev,next title',

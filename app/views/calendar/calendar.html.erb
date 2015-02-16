@@ -1,5 +1,3 @@
-
-
 <script>
     $(function () {
         window.calendarParams.height = $(".calendar-container").height();
@@ -38,67 +36,75 @@
   <div id="event-details-container"></div>
   <div id="event-details-template-container">
 
-      <div class="event-details">
-        <div class="first-panel">
-          <input class="title"/>
-          <br>
+    <div class="event-details">
+      <div class="first-panel">
+        <input class="title"/>
+        <br>
 
-          <div class="date"></div>
-          <div class="event-date-edit-container">
-            <input class="start-date event-dates" type="date"/>
-            <input class="start-hours event-dates" type="text"/>h<input class="start-minutes event-dates"
+        <div class="date-container">
+          <div class="date-icon"></div>
+          <div class="date">
+            <div class="date-text"></div>
+            <div class="event-date-edit-container">
+              <input class="start-date event-dates" type="date"/>
+              <input class="start-hours event-dates" type="text"/>h<input class="start-minutes event-dates"
+                                                                          type="text"/>
+            </div>
+
+            <div class="event-date-edit-container">
+              <input class="end-date event-dates" type="date"/>
+              <input class="end-hours event-dates" type="text"/>h<input class="end-minutes event-dates"
                                                                         type="text"/>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="border"></div>
+
+        <div class="location-container">
+          <div class="location-icon"></div>
+          <input class="location"/>
+        </div>
+
+        <div class="border"></div>
+
+        <div class="attendees-container">
+          <div class="attendees-icon">
+            <div class="attendees-count-badge">0</div>
           </div>
 
-          <div class="event-date-edit-container">
-            <input class="end-date event-dates" type="date"/>
-            <input class="end-hours event-dates" type="text"/>h<input class="end-minutes event-dates"
-                                                                      type="text"/>
+          <div class="attendees">
+            <div class="add-attendee-container">
+              <input type="text" id="add_attendee_input"/>
+              <div class="add-attendee-button">add</div>
+            </div>
+            <div class="attendees-list"></div>
           </div>
+        </div>
 
-          <div class="border"></div>
+        <div class="border"></div>
 
-          <div class="location-container">
-            <input class="location"/>
-            <%= image_tag "calendar/location_icon.png", class: "location-icon" %>
-          </div>
-
-          <div class="border"></div>
-
-          <div class="attendees"></div>
-
-          <div class="border"></div>
-
+        <div class="notes-container">
+          <div class="notes-icon"></div>
           <textarea class="notes"></textarea>
-
-        </div>
-        <div class="second-panel">
-          <div class="attendees-title">Attendees</div>
-          <div class="attendees-list"></div>
-          <div class="new-attendee-container">
-            <input id="new-attendee"/>
-
-            <div class="add-new-attendee">add</div>
-          </div>
-          <div class="notify-container">
-            <input type="checkbox" id="should-notify"/>
-            Notify attendees of any change
-          </div>
         </div>
 
-        <%= image_tag "calendar/close_window.png", class: "event-close-button" %>
-
-        <%= image_tag "ajax-loader.gif", class: "event-spinner" %>
-
-
-        <div class="event-edit-buttons">
-          <div id="event-edit-button">Edit</div>
-          <div id="event-delete-button">Delete</div>
-          <div id="event-select-button">Select</div>
-          <div id="event-cancel-button">Cancel</div>
-          <div id="event-save-button">Save</div>
-        </div>
       </div>
+
+      <%= image_tag "calendar/close_window.png", class: "event-close-button" %>
+
+      <%= image_tag "ajax-loader.gif", class: "event-spinner" %>
+
+
+      <div class="event-edit-buttons">
+        <div id="event-edit-button">Edit</div>
+        <div id="event-delete-button">Delete</div>
+        <div id="event-select-button">Select</div>
+        <div id="event-cancel-button">Cancel</div>
+        <div id="event-save-button">Save</div>
+      </div>
+    </div>
 
   </div>
 

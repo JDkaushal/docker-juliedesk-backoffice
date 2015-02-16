@@ -1,3 +1,6 @@
+@import "event/*.png";
+@import "calendar/*.png";
+
 #event-details-template-container {
   display: none;
 }
@@ -15,19 +18,15 @@
   .event-details {
     background: white;
     width: 330px;
-    height: 450px;
+    height: 465px;
     position: absolute;
     text-align: left;
     transition: width 0.3s;
     overflow: hidden;
     border: 1px solid #ccc;
-    box-shadow: 5Px 5px 10px rgba(0,0,0,0.1);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
     font-size: 14px;
     color: #666;
-
-    &.editing {
-      width: 700px;
-    }
 
     .first-panel {
       position: absolute;
@@ -55,25 +54,67 @@
       outline: none;
       font-size: 17px;
     }
-    .date {
-      padding: 5px;
-      font-size: 15px;
-      border: 1px solid transparent;
+    .date-container {
+      position: relative;
+      height: 75px;
 
+      .date-icon {
+        position: absolute;
+        top: 1px;
+        left: -37px;
+        @include event-sprite(date_icon);
+        width: 30px;
+        height: 30px
+      }
+      .date {
+        padding: 5px 0 0 0;
+        .date-text {
+          padding: 0 5px 5px 5px;
+          font-size: 15px;
+        }
+
+        .event-date-edit-container {
+          display: none;
+          margin: 0px 0px 10px 0px;
+          font-size: 11px;
+
+          input[type=date] {
+            text-align: center;
+            line-height: 20px;
+            padding: 2px 5px;
+            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+            height: 24px;
+            widtth: 145px;
+          }
+          input[type=text] {
+            width: 40px;
+            text-align: center;
+            line-height: 20px;
+            padding: 2px 5px;
+            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+            height: 24px;
+            margin: 0 3px;
+          }
+        }
+      }
     }
+
     .border {
       border-top: 1px solid #ddd;
-      margin: 10px -50px 10px -50px;
+      margin: 10px -30px 10px -50px;
     }
     .location-container {
       position: relative;
     }
-    .location-container img.location-icon {
+    .location-container .location-icon {
       position: absolute;
       top: 1px;
       left: -37px;
+      @include event-sprite(place_icon);
       width: 30px;
-      opacity: 0.3;
+      height: 30px
     }
 
     .location {
@@ -84,25 +125,96 @@
       outline: none;
     }
 
-    .notes {
-      font-size: 12px;
-      width: 100%;
-      resize: none;
-      border: 1px solid #ddd;
-      outline: none;
-      height: 90px;
-      padding: 5px;
+    .notes-container {
+      position: relative;
+      .notes-icon {
+        position: absolute;
+        top: 1px;
+        left: -37px;
+        @include event-sprite(notes_icon);
+        width: 30px;
+        height: 30px
+      }
+      .notes {
+        font-size: 12px;
+        width: 100%;
+        resize: none;
+        border: 1px solid #ddd;
+        outline: none;
+        height: 90px;
+        padding: 5px;
+      }
     }
 
-    &.editing .attendees {
-      display: none;
-    }
-    .attendees {
-      word-wrap: break-word;
-      overflow-x: hidden;
-      overflow-y: auto;
-      height: 90px;
-      border: 1px solid transparent;
+    .attendees-container {
+      position: relative;
+      .attendees-icon {
+        position: absolute;
+        top: 1px;
+        left: -37px;
+        @include event-sprite(participant_icon);
+        width: 30px;
+        height: 30px;
+
+        .attendees-count-badge {
+          position: absolute;
+          bottom: -8px;
+          right: 6px;
+          width: 18px;
+          height: 18px;
+          text-align: center;
+          font-size: 10px;
+          background: #999;
+          line-height: 17px;
+          color: #fff;
+          font-weight: 400;
+          @include border-radius(8px);
+          border: 1px solid #fff;
+        }
+
+      }
+      .add-attendee-container {
+        position: relative;
+        display: none;
+        margin: 0 0 3px 0;
+
+        input#add_attendee_input {
+          border: 1px solid #ccc;
+          line-height: 20px;
+          padding: 2px 5px;
+          width: 100%;
+          outline: none;
+        }
+        .add-attendee-button {
+          position: absolute;
+          top: 3px;
+          right: 3px;
+          height: 20px;
+          width: 50px;
+          background: #2891D2;
+          text-align: center;
+          cursor: pointer;
+          color: white;
+          @include border-radius(4px);
+          line-height: 20px;
+          font-size: 11px;
+        }
+      }
+      .attendees-list {
+
+      }
+      .attendees {
+        word-wrap: break-word;
+
+        height: 90px;
+        border: 1px solid transparent;
+
+        .attendees-list {
+          overflow-x: hidden;
+          overflow-y: auto;
+          height: 90px;
+        }
+      }
     }
     .attendee-text {
       font-size: 12px;
@@ -126,58 +238,63 @@
         font-size: 11px;
         color: #aaa;
       }
+      .remove-attendee-button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(255,255,255,0.6);
+        cursor: pointer;
+        z-index: 2;
+        display: none;
+        padding: 5px;
+        line-height: 20px;
+        font-size: 14px;
+        text-align: right;
+
+        img {
+          width: 30px;
+        }
+      }
     }
     .attendee-text.organizer {
       font-weight: bold;
       color: #000;
     }
-  }
 
-  .attendees-title {
-    margin: 10px 0;
-    font-size: 18px;
-    color: #444;
-  }
-  .attendees-list {
-    padding: 20px 0;
-    .attendee {
-      padding: 5px;
+    &.editing {
+      .date-container {
+        .date {
+          .date-text {
+            display: none;
+          }
+          .event-date-edit-container {
+            display: block;
+          }
+        }
+      }
+
+      .attendees-container {
+        .attendees {
+          .add-attendee-container {
+            display: block;
+          }
+          .attendees-list {
+            height: 67px;
+
+            .attendee-text {
+              &:hover {
+                .remove-attendee-button {
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+
+      }
     }
-  }
-
-  .new-attendee-container {
-    padding: 20px 0;
-    position: relative;
-  }
-  input#new-attendee {
-    outline: none;
-    padding: 2px 5px;
-    height: 28px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
-    z-index: 2;
-  }
-  .add-new-attendee {
-    color: white;
-    background: #2891D2;
-    position: absolute;
-    top: 0;
-    left: 199px;
-    width: 40px;
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  .notify-container {
-    position: absolute;
-    bottom: 45px;
-    font-size: 14px;
-    left: 30px;
   }
 
   .event-edit-buttons {
@@ -186,7 +303,7 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    right:0;
+    right: 0;
     height: 55px;
     border-top: 1px solid #ddd;
 
@@ -246,30 +363,6 @@
   }
   input:disabled, textarea:disabled {
     border-color: transparent !important;
-  }
-
-  .event-date-edit-container {
-    display: none;
-    margin: 5px 0 20px 20px;
-    font-size: 11px;
-    input[type=date] {
-      text-align: center;
-      line-height: 20px;
-      padding: 2px 5px;
-      font-size: 12px;
-      font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-      height: 24px;
-    }
-    input[type=text] {
-      width: 40px;
-      text-align: center;
-      line-height: 20px;
-      padding: 2px 5px;
-      font-size: 12px;
-      font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
-      height: 24px;
-      margin: 0 10px;
-    }
   }
 
 }

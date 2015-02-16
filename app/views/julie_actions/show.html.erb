@@ -111,6 +111,18 @@
         email: "<%= @messages_thread.account_email %>",
         duration: <%= @messages_thread.computed_data[:duration] || 60 %>
     };
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
+    window.calendarParams = {
+        mode: "free_calendar",
+        date_times: [],
+        email: "<%= @message.messages_thread.account_email %>",
+        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+    };
+    $(function() {
+        console.log("FREE CALENDAR");
+        $(".calendar-container").addClass("minimized");
+    });
+
     <% end %>
 
     <% initial_to_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| c['email']} %>
@@ -150,6 +162,7 @@
     $(function () {
         $("#show-calendar-button").click(function() {
            $(".calendar-container").removeClass("minimized");
+           window.currentCalendar.redrawFullCalendar();
         });
         $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function(e) {
             var dateTime = $(this).data("date-time");
@@ -746,7 +759,8 @@
             @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
             @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
+            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION
     %>
       <%= render template: "calendar/calendar" %>
     <% end %>
