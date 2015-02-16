@@ -332,10 +332,10 @@
             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
 
                 <% if @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
-                var subjectType = "Cancellation: ";
+                var subjectType = localize("email_templates.cancel_multiple.cancel");
                 var bodyType = "Please cancel this event:<br>";
                 <% else %>
-                var subjectType = "Postpone: ";
+                var subjectType = localize("email_templates.postpone_multiple.postpone");
                 var bodyType = "Please postpone this event:<br>";
                 <% end %>
                 $(".reply-box #callback-message").html("Creating threads...");

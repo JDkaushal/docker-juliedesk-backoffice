@@ -22,6 +22,7 @@ window.wordings['fr'] = {
             before_dates: "Je vous propose de nouvelles disponibilités pour %{appointment_nature}%{location} :"
         },
         cancel_multiple: {
+            cancel: "Annulation :",
             noted_gonna_cancel: {
                 singular: "C'est bien noté. Je vais annuler l'évènement :\n",
                 plural: "C'est bien noté. Je vais annuler les évènements :\n"
@@ -40,6 +41,7 @@ window.wordings['fr'] = {
             }
         },
         postpone_multiple: {
+            postpone: "Report :",
             noted_gonna_cancel: {
                 singular: "C'est bien noté. Je vais reporter l'évènement :\n",
                 plural: "C'est bien noté. Je vais reporter les évènements :\n"

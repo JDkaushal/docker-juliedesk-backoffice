@@ -22,6 +22,7 @@ window.wordings['en'] = {
             before_dates: "Here are some new availabilities for %{appointment_nature}%{location}:"
         },
         cancel_multiple: {
+            cancel: "Cancellation:",
             noted_gonna_cancel: {
                 singular: "It's noted. I am going to cancel the event:\n",
                 plural: "It's noted. I am going to cancel these events:\n"
@@ -40,6 +41,7 @@ window.wordings['en'] = {
             }
         },
         postpone_multiple: {
+            postpone: "Postpone:",
             noted_gonna_cancel: {
                 singular: "It's noted. I am going to postpone the event:\n",
                 plural: "It's noted. I am going to postpone these events:\n"
