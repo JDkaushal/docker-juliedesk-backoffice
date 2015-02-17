@@ -252,7 +252,9 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
         $container.find(".attendees-list").scrollTop($container.find(".attendees-list")[0].scrollHeight);
     }
     else if($target.closest(".event-details").length == 0 || $target.hasClass("event-close-button")) {
-        calendar.addEvent(null);
+        if(calendar.getMode() == "free_calendar") {
+            calendar.addEvent(null);
+        }
         $("#event-details-container").fadeOut(200);
     }
 };
