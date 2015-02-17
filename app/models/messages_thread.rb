@@ -49,7 +49,7 @@ class MessagesThread < ActiveRecord::Base
 
   def computed_data
     message_classifications = messages.sort_by(&:received_at).map{|m|
-      m.message_classifications
+      m.message_classifications.sort_by(&:updated_at)
     }.flatten.select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
 
     {
