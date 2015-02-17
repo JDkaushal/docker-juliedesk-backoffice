@@ -32,6 +32,11 @@
             var $receivedAt = $("<div>").addClass("received-at").data("date", moment(threadData.received_at).format());
             $messageThreadContainer.append($receivedAt);
 
+            if(threadData.delegated_to_founders) {
+                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("founders"));
+            }
+
+
 
             $(".messages-threads-container").append($messageThreadContainer);
         }

@@ -1,7 +1,12 @@
 class MessagesThreadsController < ApplicationController
 
   def index
-    @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
+    @messages_thread = MessagesThread.where(in_inbox: true)
+    if session[:user_username] == "operator@juliedesk.com"
+      @messages_thread = @messages_thread.where(delegated_to_founders: false)
+    end
+    @messages_thread = @messages_thread.includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
+
     respond_to do |format|
       format.html {
 

@@ -92,6 +92,9 @@
                   <% (MessageClassification.secondary_classifications).each do |classification| %>
                       <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
                   <% end %>
+                  <% if session[:user_username] == "operator@juliedesk.com" %>
+                      <%= link_to I18n.t("classifications.#{MessageClassification::TO_FOUNDERS}.action"), {controller: :messages, action: :classifying, id: message.id, classification: MessageClassification::TO_FOUNDERS}, class: "action", disabled: MessageClassification.is_disabled(message, MessageClassification::TO_FOUNDERS) %>
+                  <% end %>
                 </div>
                 <%= image_tag "ajax-loader.gif", class: "spinner" %>
             <% end %>

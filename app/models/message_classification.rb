@@ -15,6 +15,7 @@ class MessageClassification < ActiveRecord::Base
   ASK_CANCEL_EVENTS        = "ask_cancel_events"
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
+  TO_FOUNDERS              = "to_founders"
 
   def self.create_from_params params
     attendees = []
@@ -111,7 +112,6 @@ class MessageClassification < ActiveRecord::Base
   def self.compare message_classifications
     message_classifications.map(&:classification).uniq.length == 1
   end
-
 
   def self.is_disabled(message, classification)
     forbidden_classifications = [ASK_CREATE_EVENT]

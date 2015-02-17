@@ -229,6 +229,8 @@ fr:
         action: "Autre"
       unknown:
         action: "Réponse libre"
+      to_founders:
+        action: "Je ne peux pas décider"
   actions:
       suggest_dates:
         todo: "suggérer des dates"

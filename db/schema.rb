@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150213172313) do
+ActiveRecord::Schema.define(version: 20150217162257) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,7 +91,7 @@ ActiveRecord::Schema.define(version: 20150213172313) do
   create_table "messages_threads", force: true do |t|
     t.string   "google_thread_id"
     t.string   "account_email"
-    t.boolean  "in_inbox",          default: false
+    t.boolean  "in_inbox",              default: false
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(version: 20150213172313) do
     t.string   "subject"
     t.text     "snippet"
     t.string   "account_name"
+    t.boolean  "delegated_to_founders", default: false
   end
 
 end

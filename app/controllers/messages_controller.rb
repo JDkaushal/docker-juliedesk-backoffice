@@ -17,6 +17,12 @@ class MessagesController < ApplicationController
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
       redirect_to message_classification.julie_action
     end
+
+    if @classification == MessageClassification::TO_FOUNDERS
+      @messages_thread.update_attribute :delegated_to_founders, true
+      @messages_thread.google_thread.modify(["Label_12"], [])
+      redirect_to messages_threads_path
+    end
   end
 
   def classify

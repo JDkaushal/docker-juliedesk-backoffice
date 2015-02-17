@@ -57,6 +57,8 @@ en:
         action: "Something else"
       unknown:
         action: "Free reply"
+      to_founders:
+        action: "I can't decide"
   actions:
       create_event:
         todo: "create event"
