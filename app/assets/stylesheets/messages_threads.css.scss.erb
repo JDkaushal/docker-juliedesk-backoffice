@@ -1,5 +1,5 @@
 .messages-threads-page {
-    
+
     .refresh-container {
         margin: 60px auto 10px auto;
         height: 80px;
@@ -16,67 +16,68 @@
         }
     }
 
+    .messages-threads-container {
+        border-top: 1px solid #ccc;
+        margin: 20px 0 20px 0;
+        .messages-thread-item {
+            text-align: left;
+            height: 40px;
+            line-height: 40px;
+            border-bottom: 1px solid #ccc;
+            background: #f5f5f5;
+            padding: 0 20px;
+            display: block;
+            overflow: hidden;
+            color: black;
+            text-decoration: none;
+            font-size: 13px;
+            position: relative;
 
-.messages-threads-container {
-  border-top: 1px solid #ccc;
-  margin: 20px 0 20px 0;
-  .messages-thread-item {
-    text-align: left;
-    height: 40px;
-    line-height: 40px;
-    border-bottom: 1px solid #ccc;
-    background: #f5f5f5;
-    padding: 0 20px;
-    display: block;
-    overflow: hidden;
-    color: black;
-    text-decoration: none;
-    font-size: 13px;
+            .account-email {
+                display: inline-block;
+                width: 200px;
+                overflow: hidden;
+                height: 40px;
+            }
 
-    .account-email {
-      display: inline-block;
-      width: 200px;
-      overflow: hidden;
-      height: 40px;
+            .subject-and-snippet {
+                position: absolute;
+                overflow: hidden;
+                height: 40px;
+                top: 0;
+                left: 200px;
+                right: 190px;
+
+                .subject {
+                    display: inline;
+                }
+
+                .snippet {
+                    display: inline;
+                    color: #999;
+                }
+            }
+
+            .received-at {
+                text-align: right;
+                width: 150px;
+                height: 40px;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                right: 20px;
+            }
+        }
     }
 
-    .subject-and-snippet {
-      display: inline-block;
-      width: 500px;
-      overflow: hidden;
-      height: 40px;
-      .subject {
-        display: inline;
-      }
-
-      .snippet {
-        display: inline;
-        color: #999;
-      }
+    .nothing-to-do {
+        img {
+            margin: 20px 0;
+        }
+        text-align: center;
+        font-size: 20px;
+        font-weight: 200;
     }
-
-    .received-at {
-      display: inline-block;
-      text-align: right;
-      width: 150px;
-      height: 40px;
-      overflow: hidden;
-    }
-  }
-}
-
-
-
-
-
-.nothing-to-do {
-    img {
-        margin: 20px 0;
-    }
-    text-align: center;
-    font-size: 20px;
-    font-weight: 200;
-}
 }
 
 .messages-thread-emails {

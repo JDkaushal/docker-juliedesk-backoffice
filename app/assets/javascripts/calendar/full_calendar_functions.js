@@ -31,9 +31,19 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     var delayB = _.max(calendar.accountPreferences, function(accountPreference) {
         return accountPreference.delay_between_appointments;
     }).delay_between_appointments;
+    var title = (delayB > 0)?("Delay: " + delayB + "'"):null;
+
+    if(calendar.getMode() == "free_calendar") {
+        title = localize("events.new_event");
+        realEnd = end;
+        if((realEnd - start) / 1000 / 60 < 60) {
+            realEnd = start.clone();
+            realEnd.add('m', 60);
+        }
+    }
     
     var eventData = calendar.generateEventData({
-        title: (delayB > 0)?("Delay: " + delayB + "'"):null,
+        title: title,
         start: start,
         end: realEnd
     });

@@ -49,6 +49,7 @@ Calendar.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
 };
 
 Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
+
     var calendar = this;
     calendar.currentEvent = event;
     var $edc = calendar.$selector.find("#event-details-container");
@@ -66,13 +67,16 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         calendar.eventDetailsAddAttendeeDiv(attendee);
     });
 
-
-
     $edc.find("input, textarea").attr("disabled", "disabled");
 
 
     var mStartDate = moment(event.start).tz(calendar.getCalendarTimezone()).locale("fr");
     var mEndDate = moment(event.end).tz(calendar.getCalendarTimezone()).locale("fr");
+
+    if(event.beingAdded) {
+        mStartDate = moment(event.start).locale("fr");
+        mEndDate = moment(event.end).locale("fr");
+    }
 
     $edc.find(".start-date").val(mStartDate.format("YYYY-MM-DD"));
     $edc.find(".start-hours").val(mStartDate.format("HH"));
@@ -92,11 +96,23 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         }
         $edc.find("#event-select-button").show();
     }
-    else {
-        $edc.find("#event-delete-button").show();
-    }
+
     if(calendar.getMode() == "free_calendar") {
-        $edc.find("#event-edit-button").show();
+        if(calendar.currentEvent.allDay) {
+
+        }
+        else {
+            if(calendar.currentEvent.beingAdded) {
+                $edc.find(".event-details").addClass("editing");
+                $edc.find("input, textarea").removeAttr("disabled");
+                $edc.find("#event-edit-button").hide();
+                $edc.find("#event-save-button").show();
+            }
+            else if(calendar.currentEvent.owned) {
+                $edc.find("#event-edit-button").show();
+                $edc.find("#event-delete-button").show();
+            }
+        }
     }
 
     $edc.fadeIn(200);
@@ -140,30 +156,61 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
             };
         }).get();
 
-        CommonHelpers.externalRequest({
-            action: "update_event",
-            email: calendar.initialData.email,
+        if(calendar.currentEvent.beingAdded) {
+            $("#event-details-container").find(".spinner-container").fadeIn(200);
+            CommonHelpers.externalRequest({
+                action: "create_event",
+                email: calendar.initialData.email,
 
-            event_id: calendar.currentEvent.id,
-            calendar_id: calendar.currentEvent.calId,
+                summary: title,
+                description: $container.find("textarea.notes").val(),
+                attendees: attendees,
+                location: $container.find("input.location").val(),
+                private: false,
+                start: mStart.format(),
+                end: mEnd.format()
+            }, function(response) {
+                if(response.status == "success") {
+                    $("#event-details-container").fadeOut(200);
+                    calendar.refreshEvents();
+                }
+                else {
+                    $("#event-details-container").find(".spinner-continer").fadeOut(200);
+                    alert("Error updating event");
+                    console.log(response);
+                }
+            });
+        }
+        else {
+            $("#event-details-container").find(".spinner-container").fadeIn(200);
+            CommonHelpers.externalRequest({
+                action: "update_event",
+                email: calendar.initialData.email,
 
-            summary: title,
-            description: $container.find("textarea.notes").val(),
-            attendees: attendees,
-            location: $container.find("input.location").val(),
-            private: false,
-            start: mStart.format(),
-            end: mEnd.format()
-        }, function(response) {
-            if(response.status == "success") {
-                $("#event-details-container").fadeOut(200);
-                calendar.refreshEvents();
-            }
-            else {
-                alert("Error updating event");
-                console.log(response);
-            }
-        });
+                event_id: calendar.currentEvent.id,
+                calendar_id: calendar.currentEvent.calId,
+
+                summary: title,
+                description: $container.find("textarea.notes").val(),
+                attendees: attendees,
+                location: $container.find("input.location").val(),
+                private: false,
+                start: mStart.format(),
+                end: mEnd.format()
+            }, function(response) {
+                if(response.status == "success") {
+                    $("#event-details-container").fadeOut(200);
+                    calendar.refreshEvents();
+                }
+                else {
+                    $("#event-details-container").find(".spinner-continer").fadeOut(200);
+                    alert("Error updating event");
+                    console.log(response);
+                }
+            });
+        }
+
+
     }
     else if($target.hasClass("remove-attendee-button")) {
         $target.closest(".attendee-text").remove();
@@ -205,6 +252,7 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
         $container.find(".attendees-list").scrollTop($container.find(".attendees-list")[0].scrollHeight);
     }
     else if($target.closest(".event-details").length == 0 || $target.hasClass("event-close-button")) {
+        calendar.addEvent(null);
         $("#event-details-container").fadeOut(200);
     }
 };

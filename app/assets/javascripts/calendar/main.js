@@ -436,6 +436,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         calId: ev.calId,
         textColor: "#fff",
         sequence: ev.sequence,
+        private: ev.private,
+        owned: ev.owned,
         isNotAvailableEvent: ev.isNotAvailableEvent
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
@@ -569,23 +571,34 @@ Calendar.prototype.addEvent = function (event) {
         calendar.events.push(event);
     }
     else {
-        calendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
-            return ev.beingAdded
-                && ev.editable
-                && !ev.start.isSame(event.start);
-        });
-        $.each(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
-            return ev.beingAdded;
-        }), function() {
-            this.color = "#ccc";
-        });
-        calendar.eventBeingAdded = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
-            return ev.beingAdded
-                && ev.start.isSame(event.start);
-        })[0];
-        calendar.eventBeingAdded.color = "rgb(40, 166, 203)";
+        if(event) {
+            calendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
+                return ev.beingAdded
+                    && ev.editable
+                    && !ev.start.isSame(event.start);
+            });
+            $.each(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                return ev.beingAdded;
+            }), function() {
+                this.color = "#ccc";
+            });
+            calendar.eventBeingAdded = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                return ev.beingAdded
+                    && ev.start.isSame(event.start);
+            })[0];
+            calendar.eventBeingAdded.color = "rgb(40, 166, 203)";
+
+        }
+        else {
+            calendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
+                return ev.beingAdded
+                    && ev.editable
+            });
+            calendar.eventBeingAdded = undefined;
+        }
         calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
         calendar.updateEventCreation();
+
     }
 };
 
