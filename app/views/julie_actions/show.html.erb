@@ -119,7 +119,6 @@
         duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
     };
     $(function() {
-        console.log("FREE CALENDAR");
         $(".calendar-container").addClass("minimized");
     });
 
@@ -129,7 +128,7 @@
     <% initial_cc_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| c['email']} %>
 
     // Add client as CC if not present
-    <% if ((initial_cc_recipients + initial_to_recipients) & @messages_thread.account.all_emails).empty?
+    <% if @messages_thread.account_email && ((initial_cc_recipients + initial_to_recipients) & @messages_thread.account.all_emails).empty?
             initial_cc_recipients += [(@messages_thread.account.all_emails & @messages_thread.contacts(with_client: true).map{|c| c[:email]}).first]
        end %>
     function initialToRecipients() {
@@ -241,7 +240,7 @@
                 $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
 
                 window.presenters.redrawEvent({
-                    accountEmail: "<%= @messages_thread.account.email %>",
+                    accountEmail: "<%= @messages_thread.account_email %>",
                     eventId: window.currentEventId,
                     calendarId: window.currentCalendarId,
                     threadComputedData: window.threadComputedData,
@@ -762,7 +761,9 @@
             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS ||
             @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION
     %>
-      <%= render template: "calendar/calendar" %>
+      <% if @messages_thread.account_email %>
+        <%= render template: "calendar/calendar" %>
+      <% end %>
     <% end %>
 
 
@@ -805,4 +806,10 @@
 
   </div>
 </div>
-<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
+<% if @messages_thread.account_email %>
+    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
+<% else %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+<% end %>
+
+

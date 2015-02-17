@@ -77,18 +77,26 @@
 
       <% if local_assigns[:actions_available] %>
           <div class="actions-menu-button"></div>
+
           <div class="actions-menu">
-            <% (MessageClassification.primary_classifications).each do |classification| %>
-                <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
+            <% if local_assigns[:no_account] %>
+                <% (MessageClassification.no_account_classifications).each do |classification| %>
+                    <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
+                <% end %>
+            <% else %>
+                <% (MessageClassification.primary_classifications).each do |classification| %>
+                    <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
+                <% end %>
+                <div class="actions-separator"></div>
+                <div class="secondary-actions">
+                  <% (MessageClassification.secondary_classifications).each do |classification| %>
+                      <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
+                  <% end %>
+                </div>
+                <%= image_tag "ajax-loader.gif", class: "spinner" %>
             <% end %>
-            <div class="actions-separator"></div>
-            <div class="secondary-actions">
-              <% (MessageClassification.secondary_classifications).each do |classification| %>
-                  <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
-              <% end %>
-            </div>
-            <%= image_tag "ajax-loader.gif", class: "spinner" %>
           </div>
+
       <% end %>
 
       <div class="to">

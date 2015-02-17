@@ -1,0 +1,23 @@
+<script>
+
+</script>
+
+<div class="messages-thread-info-panel">
+
+  <div class="message-container"></div>
+
+  <div id="thread-header-other-entries-container"></div>
+
+
+  <div class="classic-info-panel">
+
+
+    <div class="account">
+      <div class="no-account-detected">
+        <%= I18n.t("info_box.no_account_found") %>
+        <div class="no-account-email"><%= messages_thread.messages.sort_by(&:received_at).first.google_message.from %></div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -119,6 +119,7 @@
   .account {
     font-size: 16px;
     word-break: break-word;
+
     .account-details {
       font-size: 12px;
 
@@ -127,6 +128,20 @@
         width: 100%;
         font-weight: 600;
         font-size: 12px;
+      }
+    }
+
+    .no-account-detected {
+      background: #f60;
+      color: white;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 200;
+      padding: 10px;
+
+      .no-account-email {
+        font-size: 12px;
+        padding: 20px 0 0 0;
       }
     }
 

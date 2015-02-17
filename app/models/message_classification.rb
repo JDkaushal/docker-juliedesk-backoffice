@@ -104,6 +104,10 @@ class MessageClassification < ActiveRecord::Base
     self.classifications[:secondary]
   end
 
+  def self.no_account_classifications
+    return [UNKNOWN]
+  end
+
   def self.compare message_classifications
     message_classifications.map(&:classification).uniq.length == 1
   end
