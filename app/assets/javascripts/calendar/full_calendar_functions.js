@@ -150,7 +150,7 @@ Calendar.prototype.fullCalendarInit = function() {
            return v.start;
         }).sort()[0];
     }
-    defaultDate = moment("2015-03-01");
+    //defaultDate = moment("2015-03-01");
     $('#calendar').fullCalendar({
         header: {
             left: 'today prev,next title',
