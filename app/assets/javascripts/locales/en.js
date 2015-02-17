@@ -5,8 +5,8 @@ window.wordings['en'] = {
         no_date_fits: {
             before_dates: {
                 suggested: {
-                    singular: "Sorry, %{client} is not available anymore at this time, but will be available for %{appointment_nature}%{location}:",
-                    plural: "Sorry, %{client} is not available anymore at these times, but will be available for %{appointment_nature}%{location}:"
+                    singular: "Sorry, %{client} is not available anymore at this time, but would be available for %{appointment_nature}%{location}:",
+                    plural: "Sorry, %{client} is not available anymore at these times, but would be available for %{appointment_nature}%{location}:"
                 },
                 not_suggested: {
                     singular: "Sorry this time does not fit, but %{client} would be available for %{appointment_nature}%{location}:",
