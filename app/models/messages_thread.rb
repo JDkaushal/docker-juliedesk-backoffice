@@ -14,7 +14,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def julie_alias
-    messages.map(&:julie_alias).compact.uniq.first
+    messages.map(&:julie_alias).compact.uniq.first || JULIE_ALIASES.first
   end
 
   def contacts params = {}

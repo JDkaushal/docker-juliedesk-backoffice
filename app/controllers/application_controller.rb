@@ -17,8 +17,13 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_locale
-    I18n.locale = :fr
+    if params[:locale] == "en"
+      I18n.locale = :en
+    else
+      I18n.locale = :fr
+    end
   end
+
   def authenticate
     authorized_users = [
         {
