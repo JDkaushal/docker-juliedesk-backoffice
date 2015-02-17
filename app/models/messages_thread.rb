@@ -48,9 +48,9 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def computed_data
-    message_classifications = messages.sort_by(&:received_at).map{|m|
-      m.message_classifications.sort_by(&:updated_at)
-    }.flatten.select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
+    message_classifications = messages.map{|m|
+      m.message_classifications
+    }.flatten.sort_by(&:updated_at).select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
 
     {
         locale: message_classifications.map(&:locale).compact.last || self.account.try(:locale),
