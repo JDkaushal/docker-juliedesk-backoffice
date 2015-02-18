@@ -128,7 +128,7 @@ Calendar.prototype.generateDelayTitle = function() {
     var delayB = _.max(calendar.accountPreferences, function(accountPreference) {
         return accountPreference.delay_between_appointments;
     }).delay_between_appointments;
-    
+
     return "Delay: " + delayB + "'";
 }
 Calendar.prototype.redrawCalendarsListPopup = function () {
@@ -559,7 +559,7 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
     var matchingEvents = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
         return ev.beingAdded
             && ev.start.isSame(moment(dateTime))
-            && ev.title == "";
+            && ev.title != "Suggested";
     });
     if(matchingEvents.length > 0) {
         calendar.addEvent(matchingEvents[0]);
