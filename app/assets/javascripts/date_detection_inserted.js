@@ -2,6 +2,9 @@ var detectedDates = [];
 
 
 function parseChildByChild(textAsElement){
+    if(textAsElement.is("script")) {
+        return;
+    }
     if(textAsElement.attr("class") != "gmail_quote"){
         var bool;
         try{
@@ -18,7 +21,7 @@ function parseChildByChild(textAsElement){
                     return this.nodeType === 3;
                 })
                 .each(function(i){
-                  
+
                     var results = chrono.parse($(this).text());
                     var textNode = $(this);
                     if( results.length >0){
