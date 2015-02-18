@@ -13,6 +13,12 @@ JULIE_ALIASES_DATA = {
     }
 }
 
+ALLOWED_ACCOUNTS_FOR_OPERATOR = [
+    "julien@wepopp.com",
+    "nmarlier@gmail.com",
+    "nicolas.marlier@wanadoo.fr"
+]
+
 Gmail.client_id = ENV['GOOGLE_CLIENT_ID']
 Gmail.client_secret = ENV['GOOGLE_CLIENT_SECRET']
 Gmail.refresh_token = ENV['GOOGLE_REFRESH_TOKEN']

@@ -3,7 +3,7 @@ class MessagesThreadsController < ApplicationController
   def index
     @messages_thread = MessagesThread.where(in_inbox: true)
     if session[:user_username] == "operator@juliedesk.com"
-      @messages_thread = @messages_thread.where(delegated_to_founders: false)
+      @messages_thread = @messages_thread.where(delegated_to_founders: false).where(account_email: ALLOWED_ACCOUNTS_FOR_OPERATOR)
     end
     @messages_thread = @messages_thread.includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
 
@@ -24,19 +24,7 @@ class MessagesThreadsController < ApplicationController
 
   def index_with_import
     Message.import_emails
-    respond_to do |format|
-      format.html {
-        redirect_to action: :index
-      }
-      format.json {
-        render json: {
-          status: "success",
-          message: "",
-          data: MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse.as_json(include: [:messages], methods: [:received_at])
-        }
-      }
-    end
-
+    redirect_to action: :index
   end
 
   def show
