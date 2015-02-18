@@ -28,10 +28,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     var realEnd = start.clone();
     realEnd.add('m', calendar.getCurrentDuration());
 
-    var delayB = _.max(calendar.accountPreferences, function(accountPreference) {
-        return accountPreference.delay_between_appointments;
-    }).delay_between_appointments;
-    var title = (delayB > 0)?("Delay: " + delayB + "'"):null;
+    var title = calendar.generateDelayTitle();
 
     if(calendar.getMode() == "free_calendar") {
         title = localize("events.new_event");

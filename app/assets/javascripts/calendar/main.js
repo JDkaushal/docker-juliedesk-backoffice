@@ -61,7 +61,7 @@ function Calendar($selector, params) {
 
                 var title = "Suggested";
                 if(dateObject.mode == "to_check") {
-                    title = "";
+                    title = calendar.generateDelayTitle();
                 }
                 var eventData = calendar.generateEventData({
                     title: title,
@@ -123,6 +123,14 @@ Calendar.prototype.updateCurrentEventDateFromInput = function ($container) {
 
     calendar.currentEvent.end = moment.tz(mEndDate.format(), $("#calendar-timezone").val());
 };
+Calendar.prototype.generateDelayTitle = function() {
+    var calendar = this;
+    var delayB = _.max(calendar.accountPreferences, function(accountPreference) {
+        return accountPreference.delay_between_appointments;
+    }).delay_between_appointments;
+    
+    return "Delay: " + delayB + "'";
+}
 Calendar.prototype.redrawCalendarsListPopup = function () {
     var calendar = this;
 

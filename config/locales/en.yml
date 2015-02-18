@@ -136,6 +136,8 @@ en:
     fetching_event: "Fetching event..."
     no_date_fits: "No date fits"
     private_event: "Private event"
+    full_name_placeholder: "Full name..."
+    email_placeholder: "Email address..."
 
 
   dates_identifications:

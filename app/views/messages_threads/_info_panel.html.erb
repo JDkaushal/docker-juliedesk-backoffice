@@ -72,7 +72,7 @@
             var $contact = $("<div>").addClass("contact").data("email", email).data("name", "");
             $contact.append($("<input type='checkbox' checked>").val(email).attr('id', "attendee"));
             var $nameAndEmail = $("<div>").addClass("attendee-name-and-email");
-            $nameAndEmail.append($("<input type='text'>").attr("id", "attendee_name").val(""));
+            $nameAndEmail.append($("<input type='text'>").attr("id", "attendee_name").val("").attr("placeholder", "<%= I18n.t("info_box.full_name_placeholder") %>"));
             $nameAndEmail.append($("<div>").addClass("attendee-email").html(email));
             $contact.append($nameAndEmail);
             $(".data #contacts-data-list").append($contact);
@@ -297,7 +297,7 @@
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <div class="attendee-name-and-email">
-                  <%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name] %>
+                  <%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name], placeholder: I18n.t("info_box.full_name_placeholder") %>
                   <div class="attendee-email"><%= contact[:email] %></div>
                 </div>
 
@@ -305,7 +305,7 @@
           <% end %>
         </div>
         <div class="add-attendee-container">
-          <%= text_field_tag :add_attendee, "", class: "" %>
+          <%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
       </div>
