@@ -30,6 +30,16 @@
     padding: 10px 5px;
     height: 125px;
     overflow: scroll;
+    .message {
+      font-size: 14px;
+      .sender {
+        font-weight: 600;
+      }
+      .tab {
+        display: inline-block;
+        width: 10px;
+      }
+    }
   }
   #chat_input {
     height: 30px;

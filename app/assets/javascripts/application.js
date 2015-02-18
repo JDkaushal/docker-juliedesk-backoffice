@@ -36,6 +36,7 @@
 //= require date_detection_inserted
 //= require jquery.timepicker.min
 
+//= require jquery.cookie
 
 //= require presenters
 

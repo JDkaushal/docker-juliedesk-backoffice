@@ -2,6 +2,9 @@
     var connectedMembers = [];
     var newMessageInChat = false;
     var flashingTitle = false;
+    var currentSender;
+
+    var myName = "<%= session[:user_name] %>";
     $(function () {
         var pusher = new Pusher('<%= Pusher.key %>');
 
@@ -23,7 +26,10 @@
         var channel = pusher.subscribe('private-global-chat');
         channel.bind('client-chat-message', function (data) {
             newMessage();
-            appendMessage(data.message);
+            appendMessage({
+                message: data.message,
+                sender: data.sender
+            });
         });
         channel.bind('new-email', function (data) {
             newMessage();
@@ -38,7 +44,10 @@
                             top: 0
                         }, 300);
             });
-            appendMessage("Julie: " + "New email in inbox");
+            appendMessage({
+                message: "New email in inbox",
+                sender: "Julie"
+            });
 
             if(window.newEmailCallback) {
                 window.newEmailCallback();
@@ -49,8 +58,14 @@
         $("#chat_input").keyup(function (e) {
             if (e.which == 13) {
                 var message = $("#chat_input").val();
-                channel.trigger('client-chat-message', {message: "<%= session[:user_name]%>: " + message});
-                appendMessage("me: " + message);
+                channel.trigger('client-chat-message', {
+                    message: message,
+                    sender: myName
+                });
+                appendMessage({
+                    message: message,
+                    sender: myName
+                });
                 $("#chat_input").val("");
             }
         });
@@ -70,10 +85,63 @@
                 $("#chat-container").addClass("minimized");
             }
         });
+
+        _.each(getCookieMessages(), function(messageData) {
+           appendMessage({
+               message: messageData.message,
+               sender: messageData.sender,
+               only_append: true
+           })
+        });
     });
 
-    function appendMessage(message) {
-        $("#chat-container .messages").append($("<div>").addClass("message").html(message));
+    function registerInCookie() {
+    }
+
+    function getCookieMessages() {
+        var messagesJson = $.cookie("chat-messages");
+        if(messagesJson) {
+            var messages = JSON.parse(messagesJson);
+            messages = _.filter(messages, function(messageData) {
+                var oneMinuteAgo = moment();
+                oneMinuteAgo.add("m", -5);
+                return messageData.date && moment(messageData.date) > oneMinuteAgo;
+            });
+            $.cookie("chat-messages", JSON.stringify(messages));
+            return messages;
+        }
+        else {
+            return [];
+        }
+    }
+
+    function appendMessage(params) {
+        if(!params.only_append) {
+            var cookieMessages = getCookieMessages();
+            cookieMessages.push({
+                message: params.message,
+                sender: params.sender,
+                date: moment().tz("UTC").format()
+            });
+            $.cookie("chat-messages", JSON.stringify(cookieMessages));
+        }
+
+
+        var sender = params.sender;
+        if(params.sender == myName) {
+            sender = "Me";
+        }
+        var $message = $("<div>").addClass("message");
+        if(currentSender != params.sender) {
+            $message.append($("<span>").addClass("sender").html(sender + ": "));
+            currentSender = params.sender;
+        }
+        else {
+            $message.append($("<span>").addClass("tab"));
+        }
+
+        $message.append($("<span>").html(params.message));
+        $("#chat-container .messages").append($message);
         $("#chat-container .messages").scrollTop($("#chat-container .messages")[0].scrollHeight);
         $("#chat-container").removeClass("minimized");
     }
