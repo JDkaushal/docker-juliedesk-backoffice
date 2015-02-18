@@ -50,9 +50,9 @@ en:
       ask_and_give_nothing:
         action: "I am asked and given nothing"
       ask_cancel_events:
-        action: "Cancel multiple events"
+        action: "Cancel other event(s)"
       ask_postpone_events:
-        action: "Postpone multiple events"
+        action: "Postpone other event(s)"
       other:
         action: "Something else"
       unknown:

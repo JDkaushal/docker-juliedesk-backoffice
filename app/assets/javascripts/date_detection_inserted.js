@@ -7,10 +7,10 @@ function parseChildByChild(textAsElement){
     }
     if(textAsElement.attr("class") != "gmail_quote"){
         var bool;
-        try{
+        try {
           bool =  !textAsElement.attr("class").match("wetime-date-link");
         }
-        catch(err){
+        catch(err) {
           bool = true;
         }
 

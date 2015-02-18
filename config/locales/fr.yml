@@ -222,9 +222,9 @@ fr:
       ask_and_give_nothing:
         action: "On ne demande rien"
       ask_cancel_events:
-        action: "Annuler des évènements"
+        action: "Annuler autre(s) évènement(s)"
       ask_postpone_events:
-        action: "Reporter des évènements"
+        action: "Reporter autre(s) évènement(s)"
       other:
         action: "Autre"
       unknown:
