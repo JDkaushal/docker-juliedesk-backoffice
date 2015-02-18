@@ -123,6 +123,31 @@ class MessageClassification < ActiveRecord::Base
     forbidden_classifications.include? classification
   end
 
+  def self.test_language_detection
+    message_classifications = MessageClassification.where("locale is NOT NULL").includes(:message)
+
+    raw_data = message_classifications.map { |mc|
+      text = "#{mc.message.google_message.subject}\n\n#{mc.message.google_message.text}"
+      {
+          text: text,
+          locale: mc.locale,
+          detected_locale: DetectLanguage.simple_detect(text)
+      }
+    }
+
+    conflicts = raw_data.select{|d|
+      d[:locale] != d[:detected_locale]
+    }
+
+    data = {
+        data_count: raw_data.length,
+        conflicts_count: conflicts.length,
+
+        raw_data: raw_data,
+        conflicts: conflicts
+    }
+  end
+
   private
 
   def self.classifications

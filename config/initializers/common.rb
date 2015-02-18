@@ -20,3 +20,7 @@ Gmail.refresh_token = ENV['GOOGLE_REFRESH_TOKEN']
 Pusher.app_id = ENV['PUSHER_APP_ID']
 Pusher.key = ENV['PUSHER_KEY']
 Pusher.secret = ENV['PUSHER_SECRET']
+
+DetectLanguage.configure do |config|
+  config.api_key = ENV['DETECT_LANGUAGE_KEY']
+end

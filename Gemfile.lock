@@ -46,6 +46,7 @@ GEM
     delayed_job_active_record (4.0.3)
       activerecord (>= 3.0, < 5.0)
       delayed_job (>= 3.0, < 4.1)
+    detect_language (1.0.7)
     erubis (2.7.0)
     execjs (2.2.2)
     extlib (0.9.16)
@@ -180,6 +181,7 @@ PLATFORMS
 DEPENDENCIES
   compass-rails (~> 1.1.2)
   delayed_job_active_record
+  detect_language
   gmail-api-ruby
   jquery-rails
   jquery-ui-rails
