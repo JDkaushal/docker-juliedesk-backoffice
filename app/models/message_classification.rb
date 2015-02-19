@@ -87,6 +87,9 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::ASK_POSTPONE_EVENTS
       create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
 
+    elsif self.classification == MessageClassification::ASK_CREATE_EVENT
+      create_julie_action action_nature: JulieAction::JD_ACTION_CREATE_EVENT
+
     else  self.classification == MessageClassification::UNKNOWN
       create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
 
@@ -114,7 +117,7 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def self.is_disabled(message, classification)
-    forbidden_classifications = [ASK_CREATE_EVENT]
+    forbidden_classifications = []
     if message.messages_thread.event_data[:event_id]
       forbidden_classifications += [ASK_CANCEL_EVENTS, ASK_POSTPONE_EVENTS]
     else

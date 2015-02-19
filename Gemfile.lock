@@ -70,6 +70,11 @@ GEM
       multi_json (~> 1.10)
       retriable (~> 1.4)
       signet (~> 0.6)
+    handlebars_assets (0.19)
+      execjs (>= 1.2.9)
+      multi_json
+      sprockets (>= 2.0.3)
+      tilt
     hashie (3.4.0)
     hike (1.2.3)
     hooks (0.4.0)
@@ -183,6 +188,7 @@ DEPENDENCIES
   delayed_job_active_record
   detect_language
   gmail-api-ruby
+  handlebars_assets
   jquery-rails
   jquery-ui-rails
   mail (= 2.6.3)

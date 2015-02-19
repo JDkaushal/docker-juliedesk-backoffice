@@ -1,5 +1,5 @@
 Delayed::Worker.destroy_failed_jobs = false
-Delayed::Worker.sleep_delay = 1
+Delayed::Worker.sleep_delay = (Rails.env=="development")?30:1
 Delayed::Worker.max_attempts = 0
 Delayed::Worker.max_run_time = 5.minutes
 

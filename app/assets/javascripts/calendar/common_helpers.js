@@ -227,3 +227,17 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
     }
 
 };
+
+CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, timezone) {
+    if(!locale) locale = "en";
+    var mStartDate = moment(startDate).tz(timezone).locale(locale);
+    var mEndDate = moment(endDate).tz(timezone).locale(locale);
+
+    if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
+        return mStartDate.format("dddd D MMMM YYYY") + ", " + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + " (" + timezone.replace(/_/g, " ") + ")";
+    }
+    else {
+        return mStartDate.format("dddd D MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd D MMMM YYYY HH:mm") + " (" + timezone.replace(/_/g, " ") + ")";
+    }
+
+};

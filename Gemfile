@@ -33,3 +33,5 @@ gem "stringex"
 gem 'delayed_job_active_record'
 
 gem "detect_language"
+
+gem 'handlebars_assets'

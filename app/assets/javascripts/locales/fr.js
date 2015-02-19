@@ -2,7 +2,9 @@ if(!window.wordings) window.wordings = {};
 
 window.wordings['fr'] = {
     email_templates: {
-        no_date_fits: {
+        create_events: {
+            before_dates: "J'ai ajouté à votre calendrier :\n"
+        },no_date_fits: {
             before_dates: {
                 suggested: {
                     singular: "Désolée, %{client} n'est plus disponible à cet horaire, mais serait disponible pour %{appointment_nature}%{location} :",

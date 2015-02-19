@@ -18,12 +18,18 @@
 //= require jquery_ujs
 //= require jquery-ui
 
+//= require handlebars.runtime
+
+//= require_tree ./templates
+
 //= require jquery.elastic.source
 //= require jquery.tokeninput
 //= require underscore-min
 //= require moment-with-locales.min
 //= require moment-timezone-with-data
 //= require timezone_picker
+
+//= require event_tile/main
 
 //= require calendar/main
 //= require calendar/fullcalendar

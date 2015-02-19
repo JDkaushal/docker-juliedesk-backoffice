@@ -1,0 +1,74 @@
+<div class="event-tile-container">
+
+    <div class="event-tile-panel">
+        <input class="title"/>
+
+        <div class="date-container">
+            <div class="date-icon"></div>
+            <div class="date">
+                <div class="date-text"></div>
+                <div class="event-date-edit-container">
+                    <input class="start-date event-dates" type="date"/>
+                    <input class="start-hours event-dates" type="text"/>h<input class="start-minutes event-dates"
+                                                                                type="text"/>
+                </div>
+
+                <div class="event-date-edit-container">
+                    <input class="end-date event-dates" type="date"/>
+                    <input class="end-hours event-dates" type="text"/>h<input class="end-minutes event-dates"                                                        type="text"/>
+                </div>
+                <div class="event-date-edit-container">
+                    <input type="text" class="event-timezone-picker"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="border"></div>
+
+        <div class="location-container">
+            <div class="location-icon"></div>
+            <input class="location"/>
+        </div>
+
+        <div class="border"></div>
+
+        <div class="attendees-container">
+            <div class="attendees-icon">
+                <div class="attendees-count-badge">0</div>
+            </div>
+
+            <div class="attendees">
+                <div class="add-attendee-container">
+                    <input type="text" id="add_attendee_input"/>
+
+                    <div class="add-attendee-button">add</div>
+                </div>
+                <div class="attendees-list"></div>
+            </div>
+        </div>
+
+        <div class="border"></div>
+
+        <div class="notes-container">
+            <div class="notes-icon"></div>
+            <textarea class="notes"></textarea>
+        </div>
+    </div>
+
+
+    <div class="event-edit-buttons">
+        <div id="event-edit-button">Edit</div>
+        <div id="event-delete-button">Delete</div>
+        <div id="event-select-button">Select</div>
+        <div id="event-cancel-button">Cancel</div>
+        <div id="event-save-button">Save</div>
+
+
+    </div>
+
+    <div class="spinner-container">
+        <img class="event-spinner"/>
+    </div>
+
+    <div class="minimize-button">Expand / Minimize</div>
+</div>

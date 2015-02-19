@@ -1,0 +1,425 @@
+@import "event/*.png";
+@import "calendar/*.png";
+
+
+#event-details-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
+  display: none;
+  z-index: 200;
+}
+
+.event-tile-container {
+    background: white;
+    width: 330px;
+    height: 465px;
+    position: absolute;
+    text-align: left;
+    transition: width 0.3s;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    color: #666;
+
+    .event-tile-panel {
+        position: absolute;
+        width: 328px;
+        height: 398px;
+        top: 0px;
+        left: 0px;
+        padding: 10px 28px 0 50px;
+        z-index: 2;
+        background: #fff;
+    }
+
+    .title {
+        margin: 0px 0 5px 0;
+        padding: 5px;
+        width: 100%;
+        border: 1px solid #ddd;
+        outline: none;
+        font-size: 17px;
+    }
+    .date-container {
+        position: relative;
+        height: 75px;
+
+        .date-icon {
+            position: absolute;
+            top: 1px;
+            left: -37px;
+            @include event-sprite(date_icon);
+            width: 30px;
+            height: 30px
+        }
+        .date {
+            padding: 5px 0 0 0;
+            .date-text {
+                padding: 0 5px 5px 5px;
+                font-size: 15px;
+            }
+
+            .event-date-edit-container {
+                display: none;
+                margin: 0px 0px 2px 0px;
+                font-size: 11px;
+
+                input[type=date] {
+                    text-align: center;
+                    line-height: 20px;
+                    padding: 2px 5px;
+                    font-size: 12px;
+                    font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                    height: 24px;
+                    width: 145px;
+                }
+                input[type=text] {
+                    width: 40px;
+                    text-align: center;
+                    line-height: 20px;
+                    padding: 2px 5px;
+                    font-size: 12px;
+                    font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+                    height: 24px;
+                    margin: 0 3px;
+                }
+
+                input.event-timezone-picker{
+                    width: 100%;
+                    margin: 2px 0px 0px 0px;
+                }
+            }
+        }
+    }
+
+    .border {
+        border-top: 1px solid #ddd;
+        margin: 10px -30px 10px -50px;
+        z-index: 2;
+        position: relative;
+    }
+    .location-container {
+        position: relative;
+    }
+    .location-container .location-icon {
+        position: absolute;
+        top: 1px;
+        left: -37px;
+        @include event-sprite(place_icon);
+        width: 30px;
+        height: 30px
+    }
+
+    .location {
+        font-size: 15px;
+        padding: 5px;
+        width: 100%;
+        border: 1px solid #ddd;
+        outline: none;
+    }
+
+    .notes-container {
+        position: relative;
+        .notes-icon {
+            position: absolute;
+            top: 1px;
+            left: -37px;
+            @include event-sprite(notes_icon);
+            width: 30px;
+            height: 30px
+        }
+        .notes {
+            font-size: 12px;
+            width: 100%;
+            resize: none;
+            border: 1px solid #ddd;
+            outline: none;
+            height: 90px;
+            padding: 5px;
+        }
+    }
+
+    .attendees-container {
+        position: relative;
+        .attendees-icon {
+            position: absolute;
+            top: 1px;
+            left: -37px;
+            @include event-sprite(participant_icon);
+            width: 30px;
+            height: 30px;
+
+            .attendees-count-badge {
+                position: absolute;
+                bottom: -8px;
+                right: 6px;
+                width: 18px;
+                height: 18px;
+                text-align: center;
+                font-size: 10px;
+                background: #999;
+                line-height: 17px;
+                color: #fff;
+                font-weight: 400;
+                @include border-radius(8px);
+                border: 1px solid #fff;
+            }
+
+        }
+        .add-attendee-container {
+            position: relative;
+            display: none;
+            margin: 0 0 3px 0;
+
+            input#add_attendee_input {
+                border: 1px solid #ccc;
+                line-height: 20px;
+                padding: 2px 5px;
+                width: 100%;
+                outline: none;
+            }
+            .add-attendee-button {
+                position: absolute;
+                top: 3px;
+                right: 3px;
+                height: 20px;
+                width: 50px;
+                background: #2891D2;
+                text-align: center;
+                cursor: pointer;
+                color: white;
+                @include border-radius(4px);
+                line-height: 20px;
+                font-size: 11px;
+            }
+        }
+        .attendees-list {
+
+        }
+        .attendees {
+            word-wrap: break-word;
+
+            height: 90px;
+            border: 1px solid transparent;
+
+            .attendees-list {
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 90px;
+            }
+        }
+    }
+    .attendee-text {
+        font-size: 12px;
+        padding: 2px 0 10px 0;
+        position: relative;
+
+        .attendee-name {
+            font-size: 14px;
+            line-height: 16px;
+            min-height: 16px;
+        }
+        .attendee-email {
+            color: #999;
+        }
+
+        .attendee-status {
+            position: absolute;
+            top: 1px;
+            right: 10px;
+            line-height: 16px;
+            font-size: 11px;
+            color: #aaa;
+        }
+        .remove-attendee-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(255,255,255,0.6);
+            cursor: pointer;
+            z-index: 2;
+            display: none;
+            padding: 5px;
+            line-height: 20px;
+            font-size: 14px;
+            text-align: right;
+
+            img {
+                width: 30px;
+                content: url(<%= asset_path 'calendar/close_window.png' %>);
+            }
+        }
+    }
+    .attendee-text.organizer {
+        font-weight: bold;
+        color: #000;
+    }
+
+    &.editing {
+        .date-container {
+            .date {
+                .date-text {
+                    display: none;
+                }
+                .event-date-edit-container {
+                    display: block;
+                }
+            }
+        }
+
+        .attendees-container {
+            .attendees {
+                .add-attendee-container {
+                    display: block;
+                }
+                .attendees-list {
+                    height: 67px;
+
+                    .attendee-text {
+                        &:hover {
+                            .remove-attendee-button {
+                                display: block;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    .event-edit-buttons {
+        //display: none;
+        background: #f0f0f0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 55px;
+        border-top: 1px solid #ddd;
+        z-index: 1;
+
+        #event-edit-button, #event-delete-button, #event-select-button, #event-save-button, #event-cancel-button {
+            text-align: center;
+            width: 135px;
+            padding: 5px;
+            line-height: 30px;
+            color: white;
+            bottom: 8px;
+            position: absolute;
+            cursor: pointer;
+            border-radius: 3px;
+            display: none;
+        }
+        #event-edit-button {
+            background: #2891D2;
+            left: 20px;
+        }
+
+        #event-select-button {
+            background: #2891D2;
+            left: 20px;
+        }
+
+        #event-delete-button {
+            background: #c00;
+            right: 20px;
+        }
+
+        #event-save-button {
+            background: #35A143;
+            right: 20px;
+        }
+
+        #event-cancel-button {
+            background: #2891D2;
+            left: 20px;
+        }
+    }
+
+    .event-close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        cursor: pointer;
+    }
+
+    .spinner-container {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 3;
+
+        .event-spinner {
+            position: absolute;
+            margin-top: -9px;
+            top: 50%;
+            left: 156px;
+            width: 16px;
+            content: url(<%= asset_path("ajax-loader.gif")%>);
+        }
+    }
+
+    input:disabled, textarea:disabled {
+        border-color: transparent !important;
+    }
+
+    .minimize-button {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 30px;
+        cursor: pointer;
+        text-align: center;
+        line-height: 30px;
+        color: #666;
+        display: none;
+        background: #f0f0f0;
+        z-index: 2;
+    }
+
+
+
+    &.minimizable {
+        height: 495px;
+        @include transition-property(height);
+        @include transition-duration(0.2s);
+        .minimize-button {
+            display: block;
+        }
+        .event-edit-buttons {
+            bottom: 30px;
+        }
+
+        &.minimized {
+            height: 169px;
+        }
+
+        &.editing {
+            height: 465px;
+            .minimize-button {
+                display: none;
+            }
+            .event-edit-buttons {
+                bottom: 0px;
+            }
+        }
+    }
+    &.static {
+        position: relative;
+    }
+}
+

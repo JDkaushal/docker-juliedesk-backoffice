@@ -25,6 +25,7 @@ class JulieActionsController < ApplicationController
         event_id: params[:event_id],
         calendar_id: params[:calendar_id],
         done: params[:done].present?,
+        events: (params[:events].try(:values) || []).to_json,
         processed_in: params[:processed_in]
                                    })
     render json: {

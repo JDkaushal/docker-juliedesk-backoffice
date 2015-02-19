@@ -2,6 +2,9 @@ if(!window.wordings) window.wordings = {};
 
 window.wordings['en'] = {
     email_templates: {
+        create_events: {
+            before_dates: "I added to your calendar:\n"
+        },
         no_date_fits: {
             before_dates: {
                 suggested: {

@@ -122,6 +122,149 @@
         $(".calendar-container").addClass("minimized");
     });
 
+    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
+    window.leftColumnMessage = "Create event";
+    window.calendarParams = {
+        mode: "free_calendar",
+        date_times: [],
+        email: "<%= @message.messages_thread.account_email %>",
+        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+    };
+
+    $(function() {
+        $(".calendar-container").addClass("minimized");
+        var $container = $("#thread-header-other-entries-container");
+        $container.html($("<div>").addClass("new-events-container"));
+        $container.find(".new-events-container").append($("<div>").addClass("btn btn-success create-new-event-tile-button").html("Create new event"));
+        $container.find(".new-events-container").append($("<div>").addClass("new-event-tiles-container"));
+        window.newEventEventTiles = [];
+
+        var alreadyCreatedEvents = <%== @julie_action.events %>;
+
+        _.each(alreadyCreatedEvents, function(eventData) {
+            $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
+            window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container").last(), {
+                eventId: eventData.id,
+                calendarId: eventData.calendar_id,
+                minimized: true
+            }));
+        });
+
+        $container.find(".create-new-event-tile-button").click(function() {
+            $container.find(".new-event-tiles-container").prepend($("<div>").addClass("new-event-tile-container"));
+            window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container:eq(0)")));
+            redrawNewEventEventTiles();
+        });
+    });
+
+    function generateNewEventEventTile($selector, params) {
+        if(!params) params = {};
+        var event = {
+            title: localize("events.new_event"),
+            beingAdded: true
+        };
+        if(params.eventId) {
+            event = {};
+        }
+
+        var eventTile = new EventTile($selector, {
+            mode: "free_calendar",
+            event: event,
+            eventId: params.eventId,
+            calendarId: params.calendarId,
+            timezoneId: window.threadTimezoneId,
+            accountEmail: window.threadAccount.email,
+            minimizable: true,
+            minimized: params.minimized,
+            static: true,
+            doneEditingCallback: function(response) {
+                if(response.action != "cancel_event_creation" && !$(".calendar-container").hasClass("minimized")) {
+                    window.currentCalendar.refreshEvents();
+                }
+                if(response.action == "cancel_event_creation" || response.action == "delete_event") {
+                    var eventTile = this;
+                    window.newEventEventTiles.splice(window.newEventEventTiles.indexOf(eventTile), 1);
+                    $(eventTile.$selector).remove();
+                    redrawNewEventEventTiles();
+                }
+                if(response.action == "delete_event" || response.action == "create_event") {
+                    $.ajax({
+                        url: "/julie_actions/<%= @julie_action.id %>/update",
+                        method: "post",
+                        data: {
+                            events: _.map(_.filter(window.newEventEventTiles, function(eventTile) {
+                                return eventTile.eventId;
+                            }), function(eventTile) {
+                                return {
+                                    id: eventTile.eventId,
+                                    calendar_id: eventTile.calendarId,
+                                    timezone_id: eventTile.timezoneId
+                                };
+                            }),
+                            done: true,
+                            processed_in: Date.now() - window.startedAt
+                        }
+                    });
+                    redrawReplyText();
+                }
+                showEditedEventInCalendar();
+            },
+            afterRedrawCallback: function() {
+                redrawNewEventEventTiles();
+
+                showEditedEventInCalendar();
+
+            },
+            afterEventFetchedCallback: function() {
+                redrawReplyText();
+            },
+            afterNewEventEdited: function() {
+                showEditedEventInCalendar();
+            }
+        });
+        eventTile.redraw();
+        if(params.eventId) {
+            eventTile.fetchEvent(function() {
+                eventTile.redraw();
+            });
+        }
+
+        return eventTile;
+    }
+
+    function showEditedEventInCalendar() {
+        if($(".calendar-container").hasClass("minimized")) {
+            return;
+        }
+        var beingAddedEventTile =_.find(window.newEventEventTiles, function(eventTile) {
+            return eventTile.isEditing();
+        });
+        if(beingAddedEventTile) {
+            var editedEvent = beingAddedEventTile.getEditedEvent();
+            var eventData = window.currentCalendar.generateEventData(editedEvent);
+            eventData.start = moment(eventData.start).tz(window.currentCalendar.getCalendarTimezone()).format();
+            eventData.end = moment(eventData.end).tz(window.currentCalendar.getCalendarTimezone()).format();
+            window.currentCalendar.goToDateTime(moment(editedEvent.start));
+            window.currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+            window.currentCalendar.addEvent(eventData);
+        }
+        else {
+            window.currentCalendar.addEvent(null);
+        }
+    }
+
+    function redrawNewEventEventTiles() {
+        var $container = $("#thread-header-other-entries-container");
+
+        if(_.filter(window.newEventEventTiles, function(eventTile){
+            return eventTile.isEditing();
+        }).length > 0) {
+            $container.find(".new-events-container").find(".create-new-event-tile-button").hide();
+        }
+        else {
+            $container.find(".new-events-container").find(".create-new-event-tile-button").show();
+        }
+    }
     <% end %>
 
     <% initial_to_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| c['email']} %>
@@ -162,6 +305,9 @@
         $("#show-calendar-button").click(function() {
            $(".calendar-container").removeClass("minimized");
            window.currentCalendar.redrawFullCalendar();
+           if(window.newEventEventTiles) {
+               showEditedEventInCalendar();
+           }
         });
         $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function(e) {
             var dateTime = $(this).data("date-time");
@@ -731,7 +877,13 @@
             message += localize("email_templates." + wordingBase + ".what_should_i_do." + notToCancelPlural);
         }
 
-
+        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
+            message = localize("email_templates.create_events.before_dates");
+            _.each(_.filter(window.newEventEventTiles, function(eventTile) {
+                return eventTile.eventId && eventTile.event.title && eventTile.event.start;
+            }), function(eventTile) {
+                message += "- " + eventTile.event.title + " : " + CommonHelpers.formatDateTimeRangeInText(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId()) + "\n";
+            });
         <% end %>
 
         $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));
@@ -759,7 +911,8 @@
             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
             @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION
+            @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION ||
+            @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT
     %>
       <% if @messages_thread.account_email %>
         <%= render template: "calendar/calendar" %>

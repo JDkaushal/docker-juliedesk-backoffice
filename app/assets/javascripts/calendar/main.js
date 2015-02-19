@@ -583,7 +583,7 @@ Calendar.prototype.addEvent = function (event) {
             calendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
                 return ev.beingAdded
                     && ev.editable
-                    && !ev.start.isSame(event.start);
+                    && (!ev.start.isSame(event.start) || !ev.end.isSame(event.end));
             });
             $.each(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
                 return ev.beingAdded;

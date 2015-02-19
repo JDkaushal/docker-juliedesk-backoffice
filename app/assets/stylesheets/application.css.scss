@@ -17,11 +17,12 @@
 @import "dates_forms";
 @import "chat";
 
+@import "event_tile/main";
+
 @import "calendar/fullcalendar";
 @import "calendar/common";
 @import "calendar/main";
 @import "calendar/fullcalendar_override";
-@import "calendar/event_details";
 @import "calendar/header_settings";
 @import "calendar/calendars_list_popup";
 
