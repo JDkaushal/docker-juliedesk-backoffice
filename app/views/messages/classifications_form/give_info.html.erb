@@ -60,6 +60,7 @@
                 summary: $(".created-event-panel .event-summary input").val(),
                 description: $(".created-event-panel .event-notes textarea").val(),
                 attendees: getCreatedEventAttendees(),
+                all_day: false,
                 location: $(".created-event-panel .event-location input").val(),
                 private: $(".created-event-panel #created_event_private:checked").length > 0,
                 start: start.format(),

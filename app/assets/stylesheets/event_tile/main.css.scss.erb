@@ -16,7 +16,7 @@
 .event-tile-container {
     background: white;
     width: 330px;
-    height: 465px;
+    height: 495px;
     position: absolute;
     text-align: left;
     transition: width 0.3s;
@@ -29,7 +29,7 @@
     .event-tile-panel {
         position: absolute;
         width: 328px;
-        height: 398px;
+        height: 428px;
         top: 0px;
         left: 0px;
         padding: 10px 28px 0 50px;
@@ -47,7 +47,7 @@
     }
     .date-container {
         position: relative;
-        height: 75px;
+        height: 105px;
 
         .date-icon {
             position: absolute;
@@ -394,7 +394,7 @@
 
 
     &.minimizable {
-        height: 495px;
+        height: 525px;
         @include transition-property(height);
         @include transition-duration(0.2s);
         .minimize-button {
@@ -405,11 +405,11 @@
         }
 
         &.minimized {
-            height: 169px;
+            height: 199px;
         }
 
         &.editing {
-            height: 465px;
+            height: 495px;
             .minimize-button {
                 display: none;
             }

@@ -85,6 +85,10 @@ EventTile.prototype.redraw = function() {
     eventTile.$selector.find(".end-hours").val(mEndDate.format("HH"));
     eventTile.$selector.find(".end-minutes").val(mEndDate.format("mm"));
 
+    eventTile.$selector.find(".event-date-all-day").removeAttr("checked");
+    if(eventTile.event.allDay) {
+        eventTile.$selector.find(".event-date-all-day").attr("checked", true);
+    }
     eventTile.$selector.find(".event-timezone-picker").timezonePicker();
     eventTile.$selector.find(".event-timezone-picker").val(eventTile.getTimezoneId());
 
@@ -122,23 +126,19 @@ EventTile.prototype.redraw = function() {
     }
 
     if(eventTile.getMode() == "free_calendar") {
-        if(eventTile.event.allDay) {
-
+        if(eventTile.event.beingAdded) {
+            eventTile.$selector.find(".event-tile-container").addClass("editing");
+            eventTile.$selector.find("input, textarea").removeAttr("disabled");
+            eventTile.$selector.find("#event-edit-button").hide();
+            eventTile.$selector.find("#event-save-button").show();
+            eventTile.$selector.find("#event-cancel-button").show();
         }
-        else {
-            if(eventTile.event.beingAdded) {
-                eventTile.$selector.find(".event-tile-container").addClass("editing");
-                eventTile.$selector.find("input, textarea").removeAttr("disabled");
-                eventTile.$selector.find("#event-edit-button").hide();
-                eventTile.$selector.find("#event-save-button").show();
-                eventTile.$selector.find("#event-cancel-button").show();
-            }
-            else if(eventTile.event.owned) {
-                eventTile.$selector.find("#event-edit-button").show();
-                eventTile.$selector.find("#event-delete-button").show();
-            }
+        else if(eventTile.event.owned) {
+            eventTile.$selector.find("#event-edit-button").show();
+            eventTile.$selector.find("#event-delete-button").show();
         }
     }
+    eventTile.redrawDatePicker();
 
     if(eventTile.afterRedrawCallback) eventTile.afterRedrawCallback();
 };
@@ -183,6 +183,7 @@ EventTile.prototype.getEditedEvent = function() {
         description: eventTile.$selector.find("textarea.notes").val(),
         location: eventTile.$selector.find("input.location").val(),
         private: false,
+        all_day: eventTile.$selector.find("input.event-date-all-day:checked").length > 0,
         start: mStart.tz("UTC").format(),
         end: mEnd.tz("UTC").format(),
         attendees: attendees
@@ -254,7 +255,13 @@ EventTile.prototype.hideSpinner = function() {
     var eventTile = this;
     eventTile.$selector.find(".spinner-container").fadeOut(200);
 };
-
+EventTile.prototype.redrawDatePicker = function() {
+    var eventTile = this;
+    eventTile.$selector.find(".hours-and-minutes").show();
+    if(eventTile.$selector.find("input.event-date-all-day:checked").length > 0) {
+        eventTile.$selector.find(".hours-and-minutes").hide();
+    }
+};
 EventTile.prototype.initActions = function() {
     var eventTile = this;
     eventTile.$selector.find("#event-edit-button").click(function() {
@@ -265,6 +272,8 @@ EventTile.prototype.initActions = function() {
         eventTile.$selector.find("#event-save-button").show();
         eventTile.$selector.find("#event-cancel-button").show();
         eventTile.$selector.find(".event-tile-container").addClass("editing");
+
+        eventTile.redrawDatePicker();
 
         if(eventTile.afterRedrawCallback) eventTile.afterRedrawCallback();
     });
@@ -293,6 +302,7 @@ EventTile.prototype.initActions = function() {
                 description: editedEvent.description,
                 attendees: editedEvent.attendees,
                 location: editedEvent.location,
+                all_day: editedEvent.all_day,
                 private: editedEvent.private,
                 start: editedEvent.start,
                 end: editedEvent.end
@@ -331,6 +341,7 @@ EventTile.prototype.initActions = function() {
                 description: editedEvent.description,
                 attendees: editedEvent.attendees,
                 location: editedEvent.location,
+                all_day: editedEvent.all_day,
                 private: editedEvent.private,
                 start: editedEvent.start,
                 end: editedEvent.end
@@ -412,8 +423,11 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("input.event-timezone-picker").on("autocompletechange", function(e) {
-        console.log("YO, TZ CHANGED");
         if(eventTile.afterNewEventEdited) eventTile.afterNewEventEdited();
+    });
+
+    eventTile.$selector.find("input.event-date-all-day").change(function(e) {
+        eventTile.redrawDatePicker();
     });
 
     var addAttendee = function() {

@@ -374,6 +374,7 @@
                 description: window.threadComputedData.notes,
                 attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
                 location: window.threadComputedData.location,
+                all_day: false,
                 private: window.threadComputedData.private,
                 start: start.format(),
                 end: end.format()
@@ -888,7 +889,7 @@
             _.each(_.filter(window.newEventEventTiles, function(eventTile) {
                 return eventTile.eventId && eventTile.event.title && eventTile.event.start;
             }), function(eventTile) {
-                message += "- " + eventTile.event.title + " : " + CommonHelpers.formatDateTimeRangeInText(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId()) + "\n";
+                message += "- " + eventTile.event.title + " : " + CommonHelpers.formatDateTimeRangeInText(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay) + "\n";
             });
         <% end %>
 
