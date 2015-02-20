@@ -143,7 +143,9 @@
         $message.append($("<span>").html(params.message));
         $("#chat-container .messages").append($message);
         $("#chat-container .messages").scrollTop($("#chat-container .messages")[0].scrollHeight);
-        $("#chat-container").removeClass("minimized");
+        if(!params.only_append) {
+            $("#chat-container").removeClass("minimized");
+        }
     }
 
     function redrawConnectedMembers() {

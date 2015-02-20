@@ -724,7 +724,9 @@
                 var timeSlot = timeSlotsToSuggest[i];
                 message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
             }
-            message += localize("email_templates.suggest_dates.after_dates");
+            var timeSlotsPlural = "plural";
+            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
+            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
         if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {
@@ -757,7 +759,9 @@
                 var timeSlot = timeSlotsToSuggest[i];
                 message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
             }
-            message += localize("email_templates.suggest_dates.after_dates");
+            var timeSlotsPlural = "plural";
+            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
+            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
         if (window.timeSlotToCreate) {
@@ -817,7 +821,9 @@
                 var timeSlot = timeSlotsToSuggest[i];
                 message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
             }
-            message += localize("email_templates.suggest_dates.after_dates");
+            var timeSlotsPlural = "plural";
+            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
+            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
         message = localize("email_templates.info_asked");

@@ -19,7 +19,10 @@ window.wordings['en'] = {
         },
         suggest_dates: {
             before_dates: "%{client} would be available for %{appointment_nature}%{location}:",
-            after_dates: "\n\nWhich time would work best for you?"
+            after_dates: {
+                singular: "\n\nWould that work for you?",
+                plural: "\n\nWhich time would work best for you?"
+            }
         },
         postpone: {
             before_dates: "Here are some new availabilities for %{appointment_nature}%{location}:"
