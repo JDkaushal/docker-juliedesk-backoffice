@@ -177,6 +177,7 @@
             minimizable: true,
             minimized: params.minimized,
             static: true,
+            locale: window.threadLocale,
             doneEditingCallback: function(response) {
                 if(response.action != "cancel_event_creation" && !$(".calendar-container").hasClass("minimized")) {
                     window.currentCalendar.refreshEvents();
@@ -242,8 +243,8 @@
         if(beingAddedEventTile) {
             var editedEvent = beingAddedEventTile.getEditedEvent();
             var eventData = window.currentCalendar.generateEventData(editedEvent);
-            eventData.start = moment(eventData.start).tz(window.currentCalendar.getCalendarTimezone()).format();
-            eventData.end = moment(eventData.end).tz(window.currentCalendar.getCalendarTimezone()).format();
+            eventData.start = eventData.start.tz(window.currentCalendar.getCalendarTimezone()).format();
+            eventData.end = eventData.end.tz(window.currentCalendar.getCalendarTimezone()).format();
             window.currentCalendar.goToDateTime(moment(editedEvent.start));
             window.currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
             window.currentCalendar.addEvent(eventData);
@@ -611,7 +612,7 @@
                 var selectedEvent = window.selectedEvents[i];
                 var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
                 $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
-                $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id)));
+                $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id, selectedEvent.allDay)));
                 if(!selectedEvent.attendees || selectedEvent.attendees.length == 0) {
                     var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
                     $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));

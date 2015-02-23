@@ -38,6 +38,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         eventId: event.id,
         calendarId: event.calId,
         accountEmail: calendar.initialData.email,
+        locale: window.threadLocale,
         selectEventCallback: function() {
             calendar.selectEvent(calendar.currentEvent);
             calendar.redrawEventDetailsFromEvent(calendar.currentEvent);

@@ -1,32 +1,12 @@
 class MessagesThreadsController < ApplicationController
 
   def index
-
-    allowed_accounts_for_operaror = "#{ENV['ALLOWED_ACCOUNTS_FOR_OPERATOR']}".split(",")
-    @messages_thread = MessagesThread.where(in_inbox: true)
-    if session[:user_username] == "operator@juliedesk.com"
-      @messages_thread = @messages_thread.where(delegated_to_founders: false).where(account_email: allowed_accounts_for_operaror)
-    end
-    @messages_thread = @messages_thread.includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
-
-    respond_to do |format|
-      format.html {
-
-      }
-      format.json {
-        render json: {
-            status: "success",
-            message: "",
-            data: @messages_thread.as_json(include: [:messages], methods: [:received_at])
-        }
-      }
-    end
-
+    render_emails_threads
   end
 
   def index_with_import
     Message.import_emails
-    redirect_to action: :index
+    render_emails_threads
   end
 
   def show
@@ -58,6 +38,30 @@ class MessagesThreadsController < ApplicationController
 
         }
     }
+  end
+
+  private
+
+  def render_emails_threads
+    allowed_accounts_for_operaror = "#{ENV['ALLOWED_ACCOUNTS_FOR_OPERATOR']}".split(",")
+    @messages_thread = MessagesThread.where(in_inbox: true)
+    if session[:user_username] == "operator@juliedesk.com"
+      @messages_thread = @messages_thread.where(delegated_to_founders: false).where(account_email: allowed_accounts_for_operaror)
+    end
+    @messages_thread = @messages_thread.includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
+
+    respond_to do |format|
+      format.html {
+
+      }
+      format.json {
+        render json: {
+            status: "success",
+            message: "",
+            data: @messages_thread.as_json(include: [:messages], methods: [:received_at])
+        }
+      }
+    end
   end
 
 end

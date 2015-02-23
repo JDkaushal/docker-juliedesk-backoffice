@@ -216,18 +216,30 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 };
 
 
-CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone) {
+CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone, allDay) {
     if(!locale) locale = "en";
     var mStartDate = moment(startDate).tz(timezone).locale(locale);
     var mEndDate = moment(endDate).tz(timezone).locale(locale);
 
-    if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
-        return mStartDate.format("dddd D MMMM YYYY") + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
+    if(allDay) {
+        mStartDate = moment(startDate).locale(locale);
+        mEndDate = moment(endDate).locale(locale);
+        mEndDate.add('d', -1);
+        if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
+            return mStartDate.format("dddd D MMMM YYYY");
+        }
+        else {
+            return mStartDate.format("dddd D MMMM YYYY") + " -<br>" + mEndDate.format("dddd D MMMM YYYY");
+        }
     }
     else {
-        return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
+        if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
+            return mStartDate.format("dddd D MMMM YYYY") + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
+        }
+        else {
+            return mStartDate.format("dddd D MMMM YYYY HH:mm") + " -<br>" + mEndDate.format("dddd D MMMM YYYY HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
+        }
     }
-
 };
 
 CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, timezone, allDay) {
@@ -236,6 +248,9 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
     var mEndDate = moment(endDate).tz(timezone).locale(locale);
 
     if(allDay) {
+        mStartDate = moment(startDate).locale(locale);
+        mEndDate = moment(endDate).locale(locale);
+        mEndDate.add('d', -1);
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return mStartDate.format("dddd D MMMM YYYY");
         }

@@ -4,7 +4,7 @@ function EventTile($selector, params) {
     this.timezoneId = params.timezoneId;
     this.accountEmail = params.accountEmail;
     this.$selector = $selector;
-    this.locale = "fr";
+    this.locale = params.locale || "en";
     this.mode = params.mode;
     this.event = params.event;
     this.selectEventCallback = params.selectEventCallback;
@@ -51,7 +51,7 @@ EventTile.prototype.redraw = function() {
     var eventTile = this;
 
     eventTile.$selector.find("input.title").val(eventTile.event.title);
-    eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId()));
+    eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
     eventTile.$selector.find("textarea.notes").val(eventTile.event.description);
 
@@ -78,12 +78,18 @@ EventTile.prototype.redraw = function() {
         }
     }
 
+    if(eventTile.event.allDay) {
+        mEndDate.add('d', -1);
+    }
+
     eventTile.$selector.find(".start-date").val(mStartDate.format("YYYY-MM-DD"));
     eventTile.$selector.find(".start-hours").val(mStartDate.format("HH"));
     eventTile.$selector.find(".start-minutes").val(mStartDate.format("mm"));
     eventTile.$selector.find(".end-date").val(mEndDate.format("YYYY-MM-DD"));
     eventTile.$selector.find(".end-hours").val(mEndDate.format("HH"));
     eventTile.$selector.find(".end-minutes").val(mEndDate.format("mm"));
+
+
 
     eventTile.$selector.find(".event-date-all-day").removeAttr("checked");
     if(eventTile.event.allDay) {
@@ -160,14 +166,25 @@ EventTile.prototype.redrawAttendeesCountBadge = function() {
 
 EventTile.prototype.getEditedEvent = function() {
     var eventTile = this;
-    var mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneId());
-    mStart.set('h', eventTile.$selector.find("input.start-hours").val());
-    mStart.set('m', eventTile.$selector.find("input.start-minutes").val());
+
+    var allDay = eventTile.$selector.find("input.event-date-all-day:checked").length > 0;
+    var mStart, mEnd;
+    if(allDay) {
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), "UTC");
+        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), "UTC");
+        mEnd.add("d", 1);
+    }
+    else {
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneId());
+        mStart.set('h', eventTile.$selector.find("input.start-hours").val());
+        mStart.set('m', eventTile.$selector.find("input.start-minutes").val());
 
 
-    var mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), eventTile.getTimezoneId());
-    mEnd.set('h', eventTile.$selector.find("input.end-hours").val());
-    mEnd.set('m', eventTile.$selector.find("input.end-minutes").val());
+        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), eventTile.getTimezoneId());
+        mEnd.set('h', eventTile.$selector.find("input.end-hours").val());
+        mEnd.set('m', eventTile.$selector.find("input.end-minutes").val());
+    }
+
 
     var attendees = eventTile.$selector.find(".attendee-text").map(function() {
         var name = $(this).find(".attendee-name").html();
@@ -183,9 +200,9 @@ EventTile.prototype.getEditedEvent = function() {
         description: eventTile.$selector.find("textarea.notes").val(),
         location: eventTile.$selector.find("input.location").val(),
         private: false,
-        all_day: eventTile.$selector.find("input.event-date-all-day:checked").length > 0,
-        start: mStart.tz("UTC").format(),
-        end: mEnd.tz("UTC").format(),
+        all_day: allDay,
+        start: mStart.tz("UTC"),
+        end: mEnd.tz("UTC"),
         attendees: attendees
     }
 };
@@ -304,8 +321,8 @@ EventTile.prototype.initActions = function() {
                 location: editedEvent.location,
                 all_day: editedEvent.all_day,
                 private: editedEvent.private,
-                start: editedEvent.start,
-                end: editedEvent.end
+                start: editedEvent.start.format(),
+                end: editedEvent.end.format()
             }, function(response) {
                 if(response.status == "success") {
                     eventTile.eventId = response.data.event_id;
@@ -343,8 +360,8 @@ EventTile.prototype.initActions = function() {
                 location: editedEvent.location,
                 all_day: editedEvent.all_day,
                 private: editedEvent.private,
-                start: editedEvent.start,
-                end: editedEvent.end
+                start: editedEvent.start.format(),
+                end: editedEvent.end.format()
             }, function(response) {
                 if(response.status == "success") {
                     eventTile.fetchEvent(function() {
@@ -414,7 +431,7 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find("input.start-date, input.start-hours, input.start-minutes, input.end-date, input.end-hours, input.end-minutes").change(function(e) {
         var editedEvent = eventTile.getEditedEvent();
-        if(moment(editedEvent.end) <= moment(editedEvent.start)) {
+        if(editedEvent.end <= editedEvent.start) {
             eventTile.$selector.find("input.end-date").val(eventTile.$selector.find("input.start-date").val());
             eventTile.$selector.find("input.end-hours").val(parseInt(eventTile.$selector.find("input.start-hours").val(), 10) + 1);
             eventTile.$selector.find("input.end-minutes").val(eventTile.$selector.find("input.start-minutes").val());

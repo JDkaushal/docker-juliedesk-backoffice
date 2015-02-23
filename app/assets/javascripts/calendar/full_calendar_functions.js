@@ -3,11 +3,17 @@ Calendar.prototype.generateEventData = function(params) {
     if(params.title) {
         title = params["title"]
     }
+
+    var allDay = false;
+    if(params.start instanceof Object && params.start._isAMomentObject) {
+        allDay = params.start._ambigTime;
+    }
     return {
         title: title,
         start: params.start,
         end: params.end,
         color:"rgb(40, 166, 203)",
+        allDay: allDay,
         durationEditable: false,
         editable: true,
         beingAdded: true

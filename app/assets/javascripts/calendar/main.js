@@ -401,12 +401,10 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
 
     var startTime = ev.start.dateTime;
     var endTime = ev.end.dateTime;
-    var allDay = false;
 
     if (ev.start.dateTime === undefined) {
         startTime = ev.start.date;
         endTime = ev.end.date;
-        allDay = true;
     }
 
 
@@ -414,8 +412,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     var sendTime = moment(endTime).tz(calendar.getCalendarTimezone()).format();
 
 
-    // Dont zone non-booking hours
-    if (ev.calId == "juliedesk-unavailable") {
+    // Dont zone non-booking hours and all day events
+    if (ev.calId == "juliedesk-unavailable" || ev.all_day) {
         sstartTime = startTime;
         sendTime = endTime;
     }
@@ -431,7 +429,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     eventData = {
         id: ev.id,
         title: ev.summary,
-        allDay: allDay,
+        allDay: ev.all_day,
         start: sstartTime,
         end: sendTime,
         url: ev.htmlLink,

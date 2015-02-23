@@ -13,7 +13,7 @@ window.presenters.redrawEvent = function(params) {
 
         window.currentEventData = e.data;
         $(".created-event-panel .event-summary input").val(e.data.summary);
-        $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>", window.threadAccount.default_timezone_id));
+        $(".created-event-panel .event-date div").html(CommonHelpers.formatDateTimeRange(e.data.start.dateTime, e.data.end.dateTime, "<%= I18n.locale %>", window.threadAccount.default_timezone_id, e.data.allDay));
         $(".created-event-panel .event-date").data("start", e.data.start.dateTime);
         $(".created-event-panel .event-date").data("end", e.data.end.dateTime);
 
