@@ -63,6 +63,7 @@ class MessagesThread < ActiveRecord::Base
         location: message_classifications.map(&:location).compact.last,
         attendees: JSON.parse(message_classifications.map(&:attendees).compact.last || "[]"),
         notes: message_classifications.map(&:notes).compact.last,
+        other_notes: message_classifications.map(&:other_notes).compact.last,
 
         is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
 

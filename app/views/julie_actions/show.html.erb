@@ -372,7 +372,7 @@
                 action: "create_event",
                 email: "<%= @messages_thread.account_email %>",
                 summary: window.threadComputedData.summary,
-                description: window.threadComputedData.notes,
+                description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes,
                 attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
                 location: window.threadComputedData.location,
                 all_day: false,

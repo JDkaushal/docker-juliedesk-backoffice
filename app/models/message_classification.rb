@@ -34,6 +34,7 @@ class MessageClassification < ActiveRecord::Base
         location: params[:location],
         attendees: attendees.to_json,
         notes: params[:notes],
+        other_notes: params[:other_notes],
         private: params[:private],
         constraints: params[:constraints],
         operator: params[:operator],

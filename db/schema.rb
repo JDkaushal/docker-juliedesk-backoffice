@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150219144257) do
+ActiveRecord::Schema.define(version: 20150223174907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 20150219144257) do
     t.integer  "processed_in"
     t.string   "location_nature"
     t.boolean  "private",            default: false
+    t.text     "other_notes"
   end
 
   create_table "messages", force: true do |t|

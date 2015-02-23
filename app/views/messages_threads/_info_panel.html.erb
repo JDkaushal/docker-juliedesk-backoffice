@@ -32,6 +32,7 @@
             <% if messages_thread.account.calendar_nature != "google" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
+            $(".data textarea#notes").prop('disabled', true);
             $(".send-to-founders-container").show();
         }
         else {
@@ -400,6 +401,7 @@
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
         <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+        <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
