@@ -165,12 +165,14 @@
                         startDate: moment(result.startDate)
                     });
                 }
+                /*
                 else {
                     appendDetectedDateRow({
                         freeText: result.text,
                         startDate: moment(result.startDate)
                     });
                 }
+                */
 
             });
         });
@@ -215,6 +217,7 @@
             var $detectedDateRadios = $("<div>").addClass("detected-date-radios");
 
             var freeText = "freeText" in params;
+            freeText = false;
             var dateChecked = " checked";
             var freeTextChecked = "";
             var freeTextDisplay = "none";
@@ -225,8 +228,8 @@
             }
             $detectedDateRadios.append($("<input type=radio value='date' name='detected-date-kind-" + detectedDateId + "'" + dateChecked + ">"));
             $detectedDateRadios.append($("<span>").html("Date"));
-            $detectedDateRadios.append($("<input type=radio value='freetext' name='detected-date-kind-" + detectedDateId + "'" + freeTextChecked + ">"));
-            $detectedDateRadios.append($("<span>").html("Freetext"));
+            //$detectedDateRadios.append($("<input type=radio value='freetext' name='detected-date-kind-" + detectedDateId + "'" + freeTextChecked + ">"));
+            //$detectedDateRadios.append($("<span>").html("Freetext"));
             $detectedDate.append($detectedDateRadios);
 
             var $detectedDateFreeTextContainer = $("<div>").addClass("detected-date-freetext-container").css({display: freeTextDisplay});
