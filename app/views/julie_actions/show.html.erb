@@ -695,26 +695,29 @@
             return v.label == $("select#appointment_nature").val();
         })[0];
 
-        if(!appointment) {
-            return;
-        }
+        var previousAppointment;
+        var addressArray;
+        var locationInTemplate
+        if(appointment) {
 
-        var previousAppointment = $.grep(window.appointments,function(v) {
+
+        previousAppointment = $.grep(window.appointments,function(v) {
             return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
         })[0];
 
-        var addressArray = $.grep(appointment.addresses_with_description, function(v) {
+        addressArray = $.grep(appointment.addresses_with_description, function(v) {
             return v.label == $("select#location_nature").val();
         });
-        var locationInTemplate = "";
+        locationInTemplate = "";
         if(addressArray.length > 0) {
             locationInTemplate = " " + addressArray[0].address_in_template[window.threadLocale];
         }
         else if($("#location").val().length > 0) {
             locationInTemplate = " " + localize("email_templates.common.custom_address_at", {location: $("#location").val()});
         }
-
+        }
         var message = "";
+
         <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
         if (window.timeSlotsToSuggest.length > 0) {
             message = localize("email_templates.suggest_dates.before_dates", {

@@ -348,7 +348,7 @@
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
           <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq { |co| co[:email] }.each do |contact| %>
               <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
-              <% checked = attendees == [] || attendee %>
+              <% checked = messages_thread.computed_data[:appointment_nature].nil? || attendee %>
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <div class="attendee-name-and-email">
