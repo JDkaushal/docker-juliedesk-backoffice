@@ -123,7 +123,9 @@ en:
     french: "French"
     english: "English"
     timezone: "Timezone"
-    ticket_notes: "Ticket notes"
+    timezone_for_virtual: "Timezone to communicate"
+    timezone_for_physical: "Appointment timezone"
+    ticket_notes: "Time constraints / free notes"
     appointment_type: "Appointment type"
     summary: "Summary"
     duration: "Duration"
@@ -138,6 +140,8 @@ en:
     private_event: "Private event"
     full_name_placeholder: "Full name..."
     email_placeholder: "Email address..."
+    send_to_founders: "Send to support team"
+    an_hesitation: "Hesitating?"
 
 
   dates_identifications:

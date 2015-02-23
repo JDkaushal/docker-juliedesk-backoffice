@@ -695,6 +695,10 @@
             return v.label == $("select#appointment_nature").val();
         })[0];
 
+        if(!appointment) {
+            return;
+        }
+
         var previousAppointment = $.grep(window.appointments,function(v) {
             return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
         })[0];

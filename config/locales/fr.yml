@@ -291,7 +291,9 @@ fr:
     french: "Français"
     english: "Anglais"
     timezone: "Fuseau horaire"
-    ticket_notes: "Notes du ticket"
+    timezone_for_virtual: "Fuseau horaire dans lequel communiquer"
+    timezone_for_physical: "Fuseau horaire du rendez-vous"
+    ticket_notes: "Contraintes temporelles / notes libres"
     appointment_type: "Type de rendez-vous"
     summary: "Titre"
     duration: "Durée"
@@ -306,6 +308,8 @@ fr:
     private_event: "Evènement privé"
     full_name_placeholder: "Nom complet..."
     email_placeholder: "Adresse email..."
+    send_to_founders: "Envoyer à l'équipe support"
+    an_hesitation: "Un doute ?"
 
   dates_identifications:
     add_a_date: "Ajouter une date"

@@ -310,4 +310,20 @@
       font-weight: 200;
     }
   }
+
+  .linear-form-entry {
+    .validate-linear-form-entry-button {
+      width: 100px;
+      margin: 10px 0 10px 230px;
+    }
+  }
+
+  .send-to-founders-container {
+    background: #f0f0f0;
+    margin: 10px -10px 0 -10px;
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
 }

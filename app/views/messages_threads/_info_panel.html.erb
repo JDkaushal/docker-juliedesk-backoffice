@@ -14,25 +14,31 @@
         return email && email != "<%= @messages_thread.account_email %>";
     });
 
+    window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
+
     $(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
         }
         initAppointments();
 
+        $(".validate-linear-form-entry-button").click(function() {
+            askNextLinearFormEntry();
+        });
+
+        redrawLinearForm();
         if (window.threadDataIsEditable) {
-            if (!window.threadComputedData.appointment_nature) {
-                setAppointmentValues();
-            }
             $("#timezone").timezonePicker();
-            $(".save-info-container").show();
             <% if messages_thread.account.calendar_nature != "google" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
+            $(".send-to-founders-container").show();
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
             $(".data-entry .add-attendee-container").hide();
+            $(".linear-form-entry .validate-linear-form-entry-button").hide();
+            $(".send-to-founders-container").hide();
         }
         if (window.afterFormLoadedCallback) {
             window.afterFormLoadedCallback();
@@ -40,6 +46,9 @@
 
         $("#appointment_nature").change(function () {
             setAppointmentValues();
+            if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $("#appointment_nature").val()) {
+                    askNextLinearFormEntry();
+            }
         });
 
         $("input[name='locale']").change(function () {
@@ -135,17 +144,45 @@
             $("select#appointment_nature").append($("<option>").val(appointment.label).html(appointment.label));
         }
 
+        $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
         if (window.threadComputedData.appointment_nature) {
-            $("select#appointment_nature").find("option").prop('selected', false)
-                    .filter('[value="' + window.threadComputedData.appointment_nature + '"]')
-                    .prop('selected', true);
+//            $("select#appointment_nature").find("option").prop('selected', false)
+//                    .filter('[value="' + window.threadComputedData.appointment_nature + '"]')
+//                    .prop('selected', true);
+            initAddresses();
+            if (window.threadComputedData.location_nature) {
+                $("select#location_nature").find("option").prop('selected', false)
+                        .filter('[value="' + window.threadComputedData.location_nature + '"]')
+                        .prop('selected', true);
+            }
         }
-        initAddresses();
-        if (window.threadComputedData.location_nature) {
-            $("select#location_nature").find("option").prop('selected', false)
-                    .filter('[value="' + window.threadComputedData.location_nature + '"]')
-                    .prop('selected', true);
+
+    }
+
+    function redrawLinearForm() {
+        if(!window.threadComputedData.appointment_nature) {
+            $(".linear-form-entry").hide();
         }
+        if(window.threadDataIsEditable) {
+            if(window.threadComputedData.appointment_nature) {
+                $(".save-info-container").show();
+            }
+            else {
+                $(".linear-form-entry:hidden:eq(0)").show();
+            }
+        }
+
+    }
+
+    function askNextLinearFormEntry() {
+        $(".linear-form-entry:visible .validate-linear-form-entry-button").hide();
+        if($(".linear-form-entry:hidden").length ==0) {
+            $(".save-info-container").show();
+        }
+        else {
+            $(".linear-form-entry:hidden:eq(0)").show();
+        }
+        $(".messages-thread-info-panel").scrollTop($(".messages-thread-info-panel")[0].scrollHeight);
     }
 
     function initAddresses() {
@@ -165,6 +202,14 @@
         var appointment = $.grep(window.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
+
+        var $timezoneEntryName = $(".linear-form-entry[data-entry-name='timezone']").find(".data-entry-name");
+        if(window.virtualAppointmentNatures.indexOf(appointment.label) > -1) {
+            $timezoneEntryName.html("<%= I18n.t("info_box.timezone_for_virtual") %>");
+        }
+        else {
+            $timezoneEntryName.html("<%= I18n.t("info_box.timezone_for_physical") %>");
+        }
 
         $("input#duration").val(appointment.duration);
         reProcessTitle();
@@ -262,7 +307,7 @@
 
 
     <div class="data">
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
         <div class="semi-data-entry">
           <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en") %> <%= I18n.t("info_box.french") %>
@@ -270,24 +315,30 @@
         <div class="semi-data-entry">
           <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
         </div>
+
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.timezone") %></div>
-        <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
-      </div>
 
-      <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
-        <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
-      </div>
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
         <%= select_tag :appointment_nature, "", class: "data-entry form-control" %>
       </div>
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry" data-entry-name="timezone">
+        <div class="data-entry-name"><%= I18n.t("info_box.timezone") %></div>
+        <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+      </div>
+
+      <div class="data-entry linear-form-entry">
+        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
+        <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+      </div>
+
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
         <div class="data-entry-value" id="contacts-data-list">
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
@@ -308,39 +359,45 @@
           <%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
 
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
         <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
         <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
         <%= select_tag :location_nature, "", class: "data-entry form-control" %>
         <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
 
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>
         <div class="data-entry-value">
           <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
           <%= I18n.t("info_box.private_event") %>
         </div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry">
+      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
         <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="save-info-container">
@@ -348,6 +405,14 @@
         <br>
         <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
       </div>
+
+      <% if local_assigns[:message] %>
+          <div class="send-to-founders-container">
+            <%= I18n.t("info_box.an_hesitation") %>
+            <br>
+            <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action", disabled: MessageClassification.is_disabled(message, MessageClassification::TO_FOUNDERS) %>
+          </div>
+      <% end %>
     </div>
   </div>
 
