@@ -52,16 +52,19 @@ class MessagesThread < ActiveRecord::Base
       m.message_classifications
     }.flatten.sort_by(&:updated_at).select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
 
+    appointment_nature = message_classifications.map(&:appointment_nature).compact.last
     {
         locale: message_classifications.map(&:locale).compact.last || self.account.try(:locale),
         timezone: message_classifications.map(&:timezone).compact.last || self.account.try(:default_timezone_id),
-        appointment_nature: message_classifications.map(&:appointment_nature).compact.last,
+        appointment_nature: appointment_nature,
         summary: message_classifications.map(&:summary).compact.last,
         duration: message_classifications.map(&:duration).compact.last || 60,
         location_nature: message_classifications.map(&:location_nature).compact.last,
         location: message_classifications.map(&:location).compact.last,
         attendees: JSON.parse(message_classifications.map(&:attendees).compact.last || "[]"),
         notes: message_classifications.map(&:notes).compact.last,
+
+        is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
 
         private: message_classifications.map(&:private).compact.last,
 
@@ -73,6 +76,10 @@ class MessagesThread < ActiveRecord::Base
 
         event_id: ""
     }
+  end
+
+  def self.virtual_appointment_natures
+    ["skype", "call", "webex"]
   end
 
   def self.items_to_classify_count

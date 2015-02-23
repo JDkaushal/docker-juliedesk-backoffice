@@ -718,7 +718,7 @@
                 appointment_nature: appointment.title_in_email[window.threadLocale],
                 location: locationInTemplate
             });
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
+            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
 
@@ -733,7 +733,7 @@
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
         if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {
             var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
+            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
                 dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
 
@@ -772,7 +772,7 @@
             if(timezoneIds.length == 0) {
                 timezoneIds = [window.threadAccount.default_timezone_id];
             }
-            if(timezoneIds.length == 1 && timezoneIds[0] == window.threadAccount.default_timezone_id) {
+            if(timezoneIds.length == 1 && timezoneIds[0] == window.threadAccount.default_timezone_id && !window.threadComputedData.is_virtual_appointment) {
                 dateString = capitalize(moment(window.timeSlotToCreate).tz(timezoneIds[0]).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
             }
             else {
@@ -815,7 +815,7 @@
                 appointment_nature: appointment.title_in_email[window.threadLocale],
                 location: locationInTemplate
             });
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
+            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
                 message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
 
