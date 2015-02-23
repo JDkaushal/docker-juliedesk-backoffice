@@ -163,6 +163,9 @@
         if(!window.threadComputedData.appointment_nature) {
             $(".linear-form-entry").hide();
         }
+        else {
+            $(".linear-form-entry .validate-linear-form-entry-button").hide();
+        }
         if(window.threadDataIsEditable) {
             if(window.threadComputedData.appointment_nature) {
                 $(".save-info-container").show();
