@@ -733,6 +733,12 @@
             var timeSlotsPlural = "plural";
             if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
             message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
+            if(appointment.label == "call") {
+                message += localize("email_templates.suggest_dates.ask_number.call");
+            }
+            else if(appointment.label == "skype") {
+                message += localize("email_templates.suggest_dates.ask_number.skype");
+            }
         }
         <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
         if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {

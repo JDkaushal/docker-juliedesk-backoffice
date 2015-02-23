@@ -22,6 +22,10 @@ window.wordings['en'] = {
             after_dates: {
                 singular: "\n\nWould that work for you?",
                 plural: "\n\nWhich time would work best for you?"
+            },
+            ask_number: {
+                call: "\nPlease let me know where you can be reached.",
+                skype: "\nPlease let me know where you can be reached."
             }
         },
         postpone: {

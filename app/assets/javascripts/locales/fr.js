@@ -21,6 +21,10 @@ window.wordings['fr'] = {
             after_dates: {
                 singular: "\n\nCela vous conviendrait-il ?",
                 plural: "\n\nQuel horaire vous conviendrait le mieux ?"
+            },
+            ask_number: {
+                call: "\nMerci de me préciser à quel numéro vous joindre.",
+                skype: "\nMerci de me préciser à quel identifiant vous joindre."
             }
         },
         postpone: {
