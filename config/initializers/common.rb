@@ -1,15 +1,17 @@
-JULIE_ALIASES = ["julie@juliedesk.com", "julie.filhol@breega.com"]
+JULIE_ALIASES = ["julie@juliedesk.com", "julie.filhol@breega.com", "julie@hourlynerd.com"]
 
 JULIE_ALIASES_DATA = {
     "julie@juliedesk.com" => {
         id: "juliedesk",
-        name: "Julie Desk",
-        signature: "Cordialement, \n\nJulie\nIntelligence artificielle"
+        name: "Julie Desk"
     },
     "julie.filhol@breega.com" => {
         id: "breega",
-        name: "Julie FILHOL",
-        signature: "Julie Filhol\nExecutive Assistant\n\n42 avenue Montaigne\n\n75008 Paris - France\n\nTel: +33 1 72 74 10 01\nFax: +33 1 72 74 10 02\n\nEmail: julie.filhol@breega.com\nWeb: www.breega.com"
+        name: "Julie FILHOL"
+    },
+    "julie@hourlynerd.com" => {
+        id: "hourlynerd",
+        name: "Julie Desk"
     }
 }
 
