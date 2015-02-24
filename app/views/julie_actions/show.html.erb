@@ -747,7 +747,7 @@
         if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {
             var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
             if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
-                dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
+                dateString = dateString + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
             }
 
             var appointmentNature = localize("email_templates.common.default_appointment_designation_in_email");
