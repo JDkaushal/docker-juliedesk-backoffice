@@ -30,6 +30,7 @@
 //= require timezone_picker
 
 //= require event_tile/main
+//= require constraint_tile/main
 
 //= require calendar/main
 //= require calendar/fullcalendar

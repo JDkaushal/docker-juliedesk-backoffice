@@ -100,10 +100,18 @@ Calendar.prototype.getCalendarColor = function (calendarItem) {
         "24": {
             "background": "#a47ae2",
             "foreground": "#1d1d1d"
+        },
+        "30": {
+            "background": "#666",
+            "foreground": "#fff"
+        },
+        "31": {
+            "background": "#ccc",
+            "foreground": "#fff"
         }
     };
     var colorId = "0";
-    if(calendar.initialData.other_emails.length > 0) {
+    if(calendar.initialData.other_emails.length > 0 && calendarItem && calendarItem.email) {
         if(calendarItem && calendarItem.email) {
             colorId = "" + (4 + calendar.allEmails().indexOf(calendarItem.email) * 2);
         }

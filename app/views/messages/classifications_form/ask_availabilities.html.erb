@@ -17,6 +17,7 @@
             private: $("#private:checked").length > 0,
             attendees: window.getInfoPanelAttendees(),
             constraints: $("#constraints").val(),
+            constraints_data: $(".constraint-tile-container").map(function() {return $(this).data("constraint")}).get(),
             date_times: getSuggestedDateTimes(),
             processed_in: Date.now() - window.startedAt
         };

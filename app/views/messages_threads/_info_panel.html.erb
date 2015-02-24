@@ -26,6 +26,27 @@
             askNextLinearFormEntry();
         });
 
+        var possibleAttendees = window.getInfoPanelAttendees();
+        possibleAttendees.push({
+            email: window.threadAccount.email,
+            name: window.threadAccount.full_name
+        });
+
+        _.each(window.threadComputedData.constraints_data, function(constraintData) {
+            $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
+            new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
+                possibleAttendees: possibleAttendees,
+                data: constraintData
+            });
+        });
+
+        $(".add-constraint-button").click(function() {
+            $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
+            new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
+                possibleAttendees: possibleAttendees
+            });
+        });
+
         redrawLinearForm();
         if (window.threadDataIsEditable) {
             $("#timezone").timezonePicker();
@@ -34,12 +55,14 @@
             <% end %>
             $(".data textarea#notes").prop('disabled', true);
             $(".send-to-founders-container").show();
+            $(".add-constraint-button").show();
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
             $(".data-entry .add-attendee-container").hide();
             $(".linear-form-entry .validate-linear-form-entry-button").hide();
             $(".send-to-founders-container").hide();
+            $(".add-constraint-button").hide();
         }
         if (window.afterFormLoadedCallback) {
             window.afterFormLoadedCallback();
@@ -67,6 +90,9 @@
         $("body").on("change", "select#location_nature", function () {
             setAddressValues();
         });
+
+
+
 
 
         $(".submit-classification").click(function () {
@@ -337,12 +363,6 @@
       </div>
 
       <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
-        <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
-      </div>
-
-      <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
         <div class="data-entry-value" id="contacts-data-list">
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
@@ -363,6 +383,20 @@
           <%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+      </div>
+
+
+
+      <div class="data-entry linear-form-entry">
+        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
+        <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
+
+        <div class="constraint-tiles-container">
+
+        </div>
+        <div class="add-constraint-button btn btn-primary btn-sm btn-block">Add constraint</div>
+
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 

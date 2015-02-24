@@ -13,6 +13,9 @@ function Calendar($selector, params) {
         this.initialData[paramName] = params[paramName];
     }
 
+
+    this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints"]
+
     // Init variables
     this.accountPreferences = {};
     this.calendars = [];
@@ -27,8 +30,6 @@ function Calendar($selector, params) {
     this.selectedEvents = [];
 
     var calendar = this;
-
-
 
     // Event handlers
     calendar.$selector.find("#event-details-container").click(function (e) {
@@ -103,9 +104,14 @@ Calendar.prototype.shouldDisplayCalId = function (calId, email) {
 
     return (calendar.accountPreferences[email] &&
         calendar.accountPreferences[email].calendars_to_show.indexOf(calId) > -1)
-        || calId == "juliedesk-unavailable";
+        || calendar.isFakeCalendarId(calId);
 
 };
+
+Calendar.prototype.isFakeCalendarId = function(calendarId) {
+    var calendar = this;
+    return calendar.fakeCalendarIds.indexOf(calendarId) > -1;
+}
 
 Calendar.prototype.updateCurrentEventDateFromInput = function ($container) {
     var calendar = this;
@@ -207,6 +213,17 @@ Calendar.prototype.fetchCalendars = function (callback) {
                     summary: "Non-working hours",
                     colorId: "0"
                 });
+                calendar.calendars.push({
+                    id: "juliedesk-strong-constraints",
+                    summary: "Contacts strong constraints",
+                    colorId: "30"
+                });
+                calendar.calendars.push({
+                    id: "juliedesk-light-constraints",
+                    summary: "Contacts light constraints",
+                    colorId: "31"
+                });
+
                 calendar.redrawTimeZoneSelector();
                 calendar.redrawCalendarsListPopup();
                 if (callback) callback();
@@ -287,6 +304,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
 
     calendar.showLoadingSpinner("Loading events...");
 
+    calendar.addCal(calendar.getConstraintsDataEvents(start, end));
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
         calendar.fetchEvents(start, end, calendar.accountPreferences[email], function() {
@@ -326,7 +344,49 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         if(callback) callback();
     });
 };
+Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
+    var result = [];
+    var calendar = this;
+    _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+        var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
+        _.each(eventsFromData.cant, function(ev) {
+            var event = {
+                summary: attendeeEmail + " not available",
+                start: {
+                    dateTime: ev.start.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                end: {
+                    dateTime: ev.end.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                startEditable: false,
+                durationEditable: false,
+                calId: "juliedesk-strong-constraints",
+                isNotAvailableEvent: true
+            };
+            result.push(event);
+        });
 
+        _.each(eventsFromData.dontPrefer, function(ev) {
+            var event = {
+                summary: attendeeEmail + " prefers not",
+                start: {
+                    dateTime: ev.start.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                end: {
+                    dateTime: ev.end.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                startEditable: false,
+                durationEditable: false,
+                calId: "juliedesk-light-constraints",
+                isNotAvailableEvent: true
+            };
+            result.push(event);
+        });
+    });
+
+
+    return result;
+};
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
     var result = [];
@@ -388,6 +448,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
         };
         result.push(event);
     }
+
     return result;
 };
 
@@ -413,7 +474,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
 
 
     // Dont zone non-booking hours and all day events
-    if (ev.calId == "juliedesk-unavailable" || ev.all_day) {
+    if (calendar.isFakeCalendarId(ev.calId) || ev.all_day) {
         sstartTime = startTime;
         sendTime = endTime;
     }
@@ -635,7 +696,7 @@ Calendar.prototype.addEventsCountLabels = function () {
 
         var events = calendar.$selector.find('#calendar').fullCalendar('clientEvents', function (event) {
             return !event.beingAdded
-                && event.calId != "juliedesk-unavailable"
+                && !calendar.isFakeCalendarId(event.calId)
                 && event.start < date.clone().endOf('day')
                 && event.end > date.clone().startOf('day');
         });

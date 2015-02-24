@@ -70,6 +70,7 @@ class MessagesThread < ActiveRecord::Base
         private: message_classifications.map(&:private).compact.last,
 
         constraints: message_classifications.map(&:constraints).compact.last,
+        constraints_data: JSON.parse(message_classifications.map(&:constraints_data).compact.last || "[]"),
 
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"

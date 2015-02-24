@@ -37,6 +37,7 @@ class MessageClassification < ActiveRecord::Base
         other_notes: params[:other_notes],
         private: params[:private],
         constraints: params[:constraints],
+        constraints_data: (params[:constraints_data].try(:values) || []).to_json,
         operator: params[:operator],
         processed_in: params[:processed_in],
 

@@ -1,14 +1,340 @@
 <script>
     var tests = [
         {
-            name: "",
-            should: "return go",
-            test_function: function () {
+            name: "Deploy constraints",
+            should: "returns empty when given empty",
+            test_result: function () {
+                return ConstraintTile.deployConstraints([], moment("2015-01-01"), moment("2015-01-05"));
+            },
+            expected_result: []
+        },
+        {
+            name: "Deploy constraints",
+            should: "returns only dataEntry when no repeat",
+            test_result: function () {
+                return ConstraintTile.deployConstraints([
+                    {
+                        start_date: moment("2015-01-02").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "can"
+                    },
+                    {
+                        start_date: moment("2015-01-05T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-05T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "cant"
+                    },
+                    {
+                        start_date: moment("2015-01-07T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-15T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "prefers"
+                    }
+                ], moment("2015-01-01"), moment("2015-01-05"));
+            },
+            expected_result: [
+                {
+                    start_date: moment("2015-01-02").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-04").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-05T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-05T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "cant"
+                },
+                {
+                    start_date: moment("2015-01-07T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-15T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "prefers"
+                }
+            ]
+        },
+        {
+            name: "Deploy constraints",
+            should: "returns deployed when dayly repeat",
+            test_result: function () {
+                return ConstraintTile.deployConstraints([
+                    {
+                        start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "dayly",
+                        constraint_nature: "can"
+                    }
+                ], moment("2015-01-02"), moment("2015-01-03T23:59:00"));
+            },
+            expected_result: [
 
+                {
+                    start_date: moment("2015-01-01T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-01T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-02T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-03T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-03T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                }
+            ]
+        },
+        {
+            name: "Deploy constraints",
+            should: "returns deployed when weekly repeat",
+            test_result: function () {
+                return ConstraintTile.deployConstraints([
+                    {
+                        start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "weekly",
+                        days_of_weeks: ["0", "3"],
+                        constraint_nature: "can"
+                    }
+                ], moment("2015-01-02"), moment("2015-01-15T23:59:00"));
+            },
+            expected_result: [
+                {
+                    start_date: moment("2015-01-01T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-01T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-05T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-05T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-08T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-08T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-12T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-12T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                },
+                {
+                    start_date: moment("2015-01-15T12:00").format("YYYY-MM-DDTHH:mm"),
+                    end_date: moment("2015-01-15T14:00").format("YYYY-MM-DDTHH:mm"),
+                    constraint_nature: "can"
+                }
+            ]
+        },
+
+        {
+            name: "GetEventsFromData",
+            should: "returns events when no constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                ], moment("2015-01-02"), moment("2015-01-15T23:59:00"));
+            },
+            expected_result: {
+                cant: [],
+                dontPrefer: []
             }
-        }
-    ];
+        },
+        {
+            name: "GetEventsFromData",
+            should: "returns events when cant constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                    {
+                        start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "dayly",
+                        constraint_nature: "cant"
+                    }
+                ], moment("2015-01-01"), moment("2015-01-04"));
+            },
+            expected_result: {
+                cant: [
+                    {
+                        start: moment("2015-01-01T12:00"),
+                        end: moment("2015-01-01T14:00")
+                    },
+                    {
+                        start: moment("2015-01-02T12:00"),
+                        end: moment("2015-01-02T14:00")
+                    },
+                    {
+                        start: moment("2015-01-03T12:00"),
+                        end: moment("2015-01-03T14:00")
+                    }
+                ],
+                dontPrefer: []
+            }
+        },
+        {
+            name: "GetEventsFromData",
+            should: "returns events when can constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                    {
+                        start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "dayly",
+                        constraint_nature: "can"
+                    },
+                    {
+                        start_date: moment("2015-01-01").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-05").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "cant"
+                    }
+                ], moment("2015-01-01"), moment("2015-01-04"));
+            },
+            expected_result: {
+                cant: [
+                    {
+                        start: moment("2015-01-01T00:00"),
+                        end: moment("2015-01-01T12:00")
+                    },
+                    {
+                        start: moment("2015-01-01T14:00"),
+                        end: moment("2015-01-02T12:00")
+                    },
+                    {
+                        start: moment("2015-01-02T14:00"),
+                        end: moment("2015-01-03T12:00")
+                    },
+                    {
+                        start: moment("2015-01-03T14:00"),
+                        end: moment("2015-01-04T00:00")
+                    }
+                ],
+                dontPrefer: []
+            }
+        },
+        {
+            name: "GetEventsFromData",
+            should: "returns events when prefers constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                    {
+                        start_date: moment("2015-01-02T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-04T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "dayly",
+                        constraint_nature: "prefers"
+                    },
+                    {
+                        start_date: moment("2015-01-01").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-05").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "cant"
+                    }
+                ], moment("2015-01-01"), moment("2015-01-04"));
+            },
+            expected_result: {
+                cant: [
+                    {
+                        start: moment("2015-01-01T00:00"),
+                        end: moment("2015-01-04T00:00")
+                    }
+                ],
+                dontPrefer: [
+                    {
+                        start: moment("2015-01-01T00:00"),
+                        end: moment("2015-01-01T12:00")
+                    },
+                    {
+                        start: moment("2015-01-01T14:00"),
+                        end: moment("2015-01-02T12:00")
+                    },
+                    {
+                        start: moment("2015-01-02T14:00"),
+                        end: moment("2015-01-03T12:00")
+                    },
+                    {
+                        start: moment("2015-01-03T14:00"),
+                        end: moment("2015-01-04T00:00")
+                    }]
+            }
+        },
 
+        {
+            name: "GetEventsFromData",
+            should: "returns event when complex can constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                    {
+                        start_date: moment("2015-01-03T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-03T18:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "can"
+                    },
+                    {
+                        start_date: moment("2015-01-02T16:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-03T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "can"
+                    },
+                    {
+                        start_date: moment("2015-01-01T00:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-02T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "can"
+                    }
+                ], moment("2015-01-01T12:00"), moment("2015-01-04"));
+            },
+            expected_result: {
+                cant: [
+                    {
+                        start: moment("2015-01-02T14:00"),
+                        end: moment("2015-01-02T16:00")
+                    },
+                    {
+                        start: moment("2015-01-03T18:00"),
+                        end: moment("2015-01-04")
+                    }],
+                dontPrefer: []
+            }
+        },
+
+        {
+            name: "GetEventsFromData",
+            should: "returns event when complex can constraints",
+            test_result: function () {
+                return ConstraintTile.getEventsFromData([
+                    {
+                        start_date: moment("2015-01-03T12:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-03T18:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "prefers"
+                    },
+                    {
+                        start_date: moment("2015-01-02T16:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-03T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "prefers"
+                    },
+                    {
+                        start_date: moment("2015-01-01T00:00").format("YYYY-MM-DDTHH:mm"),
+                        end_date: moment("2015-01-02T14:00").format("YYYY-MM-DDTHH:mm"),
+                        repeat: "never",
+                        constraint_nature: "prefers"
+                    }
+                ], moment("2015-01-01T12:00"), moment("2015-01-04"));
+            },
+            expected_result: {
+                cant: [],
+                dontPrefer: [
+                    {
+                        start: moment("2015-01-02T14:00"),
+                        end: moment("2015-01-02T16:00")
+                    },
+                    {
+                        start: moment("2015-01-03T18:00"),
+                        end: moment("2015-01-04")
+                    }
+                ]
+            }
+        },
+    ];
 
     $(function () {
         var $container = $("#test-js");
@@ -18,20 +344,38 @@
             var $test = $("<div>").addClass("test");
             $test.append($("<div>").addClass("test-name").html("Testing: " + test.name))
             $test.append($("<div>").addClass("test-should").html("Should: " + test.should));
-            var testResult = test.test_function();
-            if (testResult) {
+            var testResult;
+            var expectedResult;
+            if(test.expected_result instanceof Array || test.expected_result instanceof Object) {
+                testResult = JSON.stringify(test.test_result());
+                expectedResult = JSON.stringify(test.expected_result);
+            }
+            else {
+                testResult = test.test_result();
+                expectedResult = test.expected_result;
+            }
+            if (testResult == expectedResult) {
                 $test.append($("<div>").addClass("test-result").html("Passed"));
             }
             else {
                 $test.append($("<div>").addClass("test-result").html("Failed"));
+                console.log("* * * * * ");
+                console.log("Test " + test.name + " should " + test.should + "failed");
+                console.log("Test result:", testResult);
+                console.log("Expected result:", expectedResult);
+                window.testResult = testResult;
+                window.expectedResult = expectedResult;
+                window.expectedResult = expectedResult;
+                $test.append($("<div>").addClass("test-details").html(testResult + "<br>Different from expected: <br>" + expectedResult));
+                $test.append($("<div>").html("<br><br>DIFF: " + diffBetweenString(testResult, expectedResult)));
                 $test.addClass("incorrect");
             }
-            globalTestResult = globalTestResult && testResult;
+            globalTestResult = globalTestResult && (testResult == expectedResult);
             $container.append($test);
         });
 
         var $test = $("<div>").addClass("test global");
-        $test.append($("<div>").addClass("test-name").html("Testing: " + "All tests"))
+        $test.append($("<div>").addClass("test-name").html("Testing: " + tests.length + " tests"))
         $test.append($("<div>").addClass("test-should").html("Should: " + "all pass"));
         if (globalTestResult) {
             $test.append($("<div>").addClass("test-result").html("Passed"));
@@ -46,6 +390,20 @@
 
 
     });
+
+
+    function diffBetweenString(stringA, stringB) {
+        var i = 0;
+        while(stringA.substr(0, i) == stringB.substr(0, i) && (i < stringA.length || i < stringB.length)) {
+            i += 1;
+        }
+        if(i == stringA.length && i == stringB.length) {
+            return "";
+        }
+        else {
+            return "'" + stringA.substr(i - 1, stringA.length) + "' || '" + stringB.substr(i - 1, stringB.length) + "'";
+        }
+    }
     window.a = function() {
         return "go";
     }

@@ -1,0 +1,75 @@
+<div class="constraint-tile">
+    <div class="constraint-attendee-container constraint-entry-container">
+        <div class="constraint-label">Who</div>
+        <select class="constraint-attendee-email"></select>
+    </div>
+    <div class="constraint-nature-container constraint-entry-container">
+        <div class="constraint-label">Nature</div>
+        <select class="constraint-nature">
+            <option value="cant">Can't</option>
+            <option value="can">Can only</option>
+            <option value="prefers">Prefers</option>
+        </select>
+    </div>
+    <div class="constraint-repeat-container constraint-entry-container">
+        <div class="constraint-label">Repeat</div>
+        <select class="constraint-repeat-every">
+            <option value="never">Don't repeat</option>
+            <option value="dayly">Dayly</option>
+            <option value="weekly">Weekly</option>
+        </select>
+    </div>
+    <div class="constraint-dates-container constraint-entry-container">
+        <div class="constraint-label">When</div>
+        <div class="constraint-dates-days-of-week-container">
+            <input type="checkbox" value="0"/> Mon
+            <input type="checkbox" value="1"/> Tue
+            <input type="checkbox" value="2"/> Wed
+            <input type="checkbox" value="3"/> Thu
+            <input type="checkbox" value="4"/> Fri
+            <input type="checkbox" value="5"/> Sat
+            <input type="checkbox" value="6"/> Sun
+        </div>
+
+        <div class="constraint-dates-start-container constraint-entry-container">
+            <div class="from-to-label">From</div>
+            <input class="constraint-start-date"/>
+            <input class="constraint-start-hours"/> h <input class="constraint-start-minutes"/>
+        </div>
+
+        <div class="constraint-dates-end-container constraint-entry-container">
+            <div class="from-to-label">To</div>
+            <input class="constraint-end-date"/>
+            <input class="constraint-end-hours"/> h <input class="constraint-end-minutes"/>
+        </div>
+
+
+    </div>
+
+    <div class="start-recurring-container constraint-entry-container">
+        <div class="constraint-label">Start recurring</div>
+        <input class="constraint-start-recurring"/>
+    </div>
+
+    <div class="end-recurring-container constraint-entry-container">
+        <div class="constraint-label">End recurring</div>
+        <div class="end-recurring-radios-container">
+        <div class="end-recurring-never-container">
+            <input type="radio" class="end-recurring" name="end-recurring" value="never" checked> Never
+        </div>
+        <div class="end-recurring-at-date-container">
+            <input type="radio" class="end-recurring" name="end-recurring" value="on"> on
+            <input class="constraint-end-recurring"/>
+        </div>
+        </div>
+    </div>
+
+    <div class="constraint-sentence"></div>
+
+
+    <div class="remove-constraint-button-container">
+        <div class="remove-constraint-button btn btn-danger btn-xs">Remove</div>
+    </div>
+
+    <div class="constraint-data"></div>
+</div>

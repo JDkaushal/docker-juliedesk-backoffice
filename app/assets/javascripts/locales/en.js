@@ -93,5 +93,10 @@ window.wordings['en'] = {
     },
     events: {
         new_event: "New event"
+    },
+    constraints: {
+        cant: "can't",
+        can: "can only",
+        prefers: "prefers"
     }
 };
