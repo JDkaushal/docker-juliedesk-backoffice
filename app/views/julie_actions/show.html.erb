@@ -526,6 +526,28 @@
                         sendReply();
                     }
                 });
+            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
+            $.ajax({
+                url: "/julie_actions/<%= @julie_action.id %>/update",
+                method: "post",
+                data: {
+                    events: _.map(_.filter(window.newEventEventTiles, function(eventTile) {
+                        return eventTile.eventId;
+                    }), function(eventTile) {
+                        return {
+                            id: eventTile.eventId,
+                            calendar_id: eventTile.calendarId,
+                            timezone_id: eventTile.timezoneId
+                        };
+                    }),
+                    text: $("textarea#reply-text").val(),
+                    to: currentRecipients().to,
+                    cc: currentRecipients().cc,
+                    done: true,
+                    processed_in: Date.now() - window.startedAt
+                }
+            });
+            sendReply();
             <% else %>
             $.ajax({
                 url: "/julie_actions/<%= @julie_action.id %>/update",
