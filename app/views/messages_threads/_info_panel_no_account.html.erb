@@ -1,5 +1,22 @@
 <script>
-
+$(function() {
+    $(".associate-to-account-button").click(function() {
+        $.ajax({
+            url: "/messages_threads/<%= messages_thread.id %>/associate_to_account",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                account_email: $("#account-email-selector").val()
+            }),
+            success: function() {
+                window.location = window.location;
+            },
+            error: function () {
+                window.location = window.location;
+            }
+        })
+    });
+})
 </script>
 
 <div class="messages-thread-info-panel">
@@ -18,6 +35,18 @@
         <div class="no-account-email"><%= messages_thread.messages.sort_by(&:received_at).first.google_message.from %></div>
       </div>
 
+      <div class="associate-to-account-container">
+        <select id="account-email-selector">
+
+          <% contacts = MessagesThread.find_account_emails(messages_thread.google_thread) + ["julien@wepopp.com"] %>
+
+          <% contacts.each do |contact| %>
+              <option value="<%= contact %>"><%= contact %></option>
+          <% end %>
+        </select>
+
+        <div class="associate-to-account-button btn btn-block btn-success">Associate to account</div>
+      </div>
     </div>
   </div>
 </div>

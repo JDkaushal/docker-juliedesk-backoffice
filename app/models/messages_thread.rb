@@ -162,22 +162,32 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def client_email
+    (account.all_emails & contacts(with_client: true).map{|c| c[:email]}).first || account_email
+  end
+
   def self.find_account_email google_thread
+    account_emails = self.find_account_emails(google_thread)
+    if account_emails.length == 1
+      account_emails[0]
+    else
+      nil
+    end
+  end
+
+  def self.find_account_emails google_thread
     first_email = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first
     email = ApplicationHelper.strip_email(first_email.from)
-    account_email = Account.find_account_email email
+    account_emails = [Account.find_account_email(email)].compact
 
     # Account is not the sender
-    unless account_email
+    if account_emails.empty?
       contacts = self.contacts(google_messages_to_look: [first_email])
       other_emails = contacts.map{|contact| contact[:email]}
       account_emails = (other_emails.map{|co| Account.find_account_email(co)}.uniq - JULIE_ALIASES).compact
-      if account_emails.length == 1
-        account_email = account_emails[0]
-      end
     end
 
-    account_email
+    account_emails
   end
 
   def event_data

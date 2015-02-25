@@ -273,7 +273,7 @@
 
     // Add client as CC if not present
     <% if @messages_thread.account_email && ((initial_cc_recipients + initial_to_recipients) & @messages_thread.account.all_emails).empty?
-            initial_cc_recipients += [(@messages_thread.account.all_emails & @messages_thread.contacts(with_client: true).map{|c| c[:email]}).first]
+            initial_cc_recipients += [@messages_thread.client_email]
        end %>
     function initialToRecipients() {
         return <%== initial_to_recipients.map{|c| {name: c}}.to_json %>;

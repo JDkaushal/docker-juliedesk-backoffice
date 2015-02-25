@@ -40,6 +40,26 @@ class MessagesThreadsController < ApplicationController
     }
   end
 
+  def associate_to_account
+    messages_thread = MessagesThread.find(params[:id])
+    account = Account.create_from_email(params[:account_email])
+    if account
+      messages_thread.update_attributes({
+       account_email: account.email,
+       account_name: account.usage_name})
+
+      render json: {
+          status: "success",
+          data: {}
+      }
+    else
+      render json: {
+          status: "error",
+          message: "No such account"
+      }
+    end
+  end
+
   private
 
   def render_emails_threads

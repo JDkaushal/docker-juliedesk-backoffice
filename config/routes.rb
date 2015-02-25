@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     member do
       post "archive", action: :archive, as: :archive
       post "split", action: :split, as: :split
+      post "associate_to_account", action: :associate_to_account
     end
   end
 
