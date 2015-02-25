@@ -8,21 +8,32 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
         calendar.$currentEventTarget = $currentTarget;
         var $edc = calendar.$selector.find("#event-details-container");
 
-        if($currentTarget.offset().left < calendar.$selector.width() / 2) {
+        if(calendar.currentEvent.allDay) {
             $edc.find(".event-tile-container").css({
-                top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
-                left: $currentTarget.offset().left + $currentTarget.width() + 10,
-                right: "auto"
+                top: "auto",
+                left: (calendar.$selector.width() - $edc.find(".event-tile-container").width()) / 2,
+                right: "auto",
+                bottom: 20
             });
         }
         else {
-            $edc.find(".event-tile-container").css({
-                top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
-                right: $(".fixed-columns").width() - $currentTarget.offset().left + 10,
-                left: "auto"
-            });
+            if($currentTarget.offset().left < calendar.$selector.width() / 2) {
+                $edc.find(".event-tile-container").css({
+                    top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
+                    left: $currentTarget.offset().left + $currentTarget.width() + 10,
+                    right: "auto",
+                    bottom: "auto"
+                });
+            }
+            else {
+                $edc.find(".event-tile-container").css({
+                    top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
+                    right: $(".fixed-columns").width() - $currentTarget.offset().left + 10,
+                    left: "auto",
+                    bottom: "auto"
+                });
+            }
         }
-
     }
 
 };
