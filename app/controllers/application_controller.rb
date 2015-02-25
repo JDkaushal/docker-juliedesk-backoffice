@@ -14,6 +14,10 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def test_js
+    render "test/js"
+  end
+
   protected
 
   def set_locale

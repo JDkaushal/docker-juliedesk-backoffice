@@ -38,6 +38,8 @@ Rails.application.routes.draw do
     get "classified_events", controller: :events, action: :classified_events
   end
 
+  get "test/js" => "application#test_js"
+
   get "/auth/:provider/callback" => "application#omniauth_callback"
 
   post "pusher/auth/", to: "pusher#auth"

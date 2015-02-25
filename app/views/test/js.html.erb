@@ -1,0 +1,86 @@
+<script>
+    var tests = [
+        {
+            name: "",
+            should: "return go",
+            test_function: function () {
+
+            }
+        }
+    ];
+
+
+    $(function () {
+        var $container = $("#test-js");
+
+        var globalTestResult = true;
+        _.each(tests, function (test) {
+            var $test = $("<div>").addClass("test");
+            $test.append($("<div>").addClass("test-name").html("Testing: " + test.name))
+            $test.append($("<div>").addClass("test-should").html("Should: " + test.should));
+            var testResult = test.test_function();
+            if (testResult) {
+                $test.append($("<div>").addClass("test-result").html("Passed"));
+            }
+            else {
+                $test.append($("<div>").addClass("test-result").html("Failed"));
+                $test.addClass("incorrect");
+            }
+            globalTestResult = globalTestResult && testResult;
+            $container.append($test);
+        });
+
+        var $test = $("<div>").addClass("test global");
+        $test.append($("<div>").addClass("test-name").html("Testing: " + "All tests"))
+        $test.append($("<div>").addClass("test-should").html("Should: " + "all pass"));
+        if (globalTestResult) {
+            $test.append($("<div>").addClass("test-result").html("Passed"));
+        }
+        else {
+            $test.append($("<div>").addClass("test-result").html("Failed"));
+            $test.addClass("incorrect");
+        }
+        $container.prepend($test);
+
+
+
+
+    });
+    window.a = function() {
+        return "go";
+    }
+</script>
+
+<style>
+    #test-js {
+        margin: 20px auto;
+        width: 800px;
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+    }
+    .test {
+        border-bottom: 1px solid #ccc;
+        padding: 5px 20px;
+    }
+    .test.global {
+        border-top: 1px solid #ccc;
+        background: #0c0;
+        color: white;
+    }
+    .test.incorrect {
+        background: #e00;
+        color: white;
+    }
+    .test .test-result {
+
+        text-align: right;
+        font-size: 18px;
+    }
+</style>
+
+<h1>Test js</h1>
+
+
+<div id="test-js">
+
+</div>
