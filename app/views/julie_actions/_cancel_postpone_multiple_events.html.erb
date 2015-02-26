@@ -1,0 +1,120 @@
+<script>
+    $(function () {
+        window.activateCalendarWithParams({
+            mode: "select_events",
+            date_times: [],
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration
+        });
+    });
+
+    window.clickReplyButton = function() {
+        $(".reply-box #callback-message").html("Creating threads...");
+        $.ajax({
+            url: "/messages/<%= @julie_action.message_classification.message_id %>/generate_threads",
+            method: "post",
+            data: {
+                julie_messages: _.map(getSelectedEventsToCancel(), function (event) {
+                    var dateString = window.helpers.capitalize(moment(event.start).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")));
+                    var addInviteesString = "";
+                    if (window.forceCancelEventIds.indexOf(event.id) > -1) {
+                        addInviteesString = "<br><br>WARNING: SHOULD ADD INVITEES (See previous email)"
+                    }
+                    return {
+                        subject: window.cancelPostponeMultipleEmailSubjectType + event.title,
+                        html: window.cancelPostponeMultipleEmailBodyType + event.title + " (" + dateString + ")" + addInviteesString,
+                        event_id: event.id,
+                        calendar_id: event.calId,
+                        summary: event.title,
+                        attendees: event.attendees,
+                        duration: event.duration,
+                        location: event.location,
+                        notes: event.notes
+                    }
+                })
+            },
+            success: function () {
+                window.sendReply();
+            }
+        });
+    };
+
+    function getSelectedEventsToCancel() {
+        return _(window.selectedEvents).filter(function (selectedEvent) {
+            return(selectedEvent.attendees && selectedEvent.attendees.length > 0) || window.forceCancelEventIds.indexOf(selectedEvent.id) > -1;
+        });
+    }
+
+    function getSelectedEventsNotToCancel() {
+        return _(window.selectedEvents).filter(function (selectedEvent) {
+            return(!selectedEvent.attendees || selectedEvent.attendees.length == 0) && window.forceCancelEventIds.indexOf(selectedEvent.id) == -1;
+        });
+    }
+
+    function setCancelPostponeMultipleReplyText() {
+        window.setReplyMessage(window.generateEmailTemplate({
+            action: "cancel_postpone_multiple_events",
+            kind: window.actionKind,
+            defaultTimezoneId: window.threadAccount.default_timezone_id,
+            timezoneId: window.threadComputedData.timezone,
+            selectedEventsToCancel: getSelectedEventsToCancel(),
+            selectedEventsNotToCancel: getSelectedEventsNotToCancel(),
+            locale: window.threadComputedData.locale
+        }), "client");
+    }
+
+    function redrawSelectedEventsContainer() {
+        var $container = $("#thread-header-other-entries-container");
+        $container.html("");
+        var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");
+        var $selectedEventsListDiv = $("<div>").addClass("selected-events-list");
+        $selectedEventsListDiv.append($("<div>").addClass("selected-events-title").html("Selected events"));
+
+        for (var i in window.selectedEvents) {
+            var selectedEvent = window.selectedEvents[i];
+            var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
+            $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
+            $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id, selectedEvent.allDay)));
+            if (!selectedEvent.attendees || selectedEvent.attendees.length == 0) {
+                var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
+                $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));
+
+                var $forceCancel = $("<div>").addClass("selected-event-force-cancel");
+                var $forceCancelCheckbox = $("<input type='checkbox'>");
+                if (window.forceCancelEventIds.indexOf(selectedEvent.id) > -1) {
+                    $forceCancelCheckbox.attr("checked", true);
+                }
+                $forceCancel.append($forceCancelCheckbox);
+                $forceCancel.append("Force");
+                $selectedEventNoAttendeesContainer.append($forceCancel);
+
+
+                $selectedEventDiv.append($selectedEventNoAttendeesContainer);
+            }
+            $selectedEventsListDiv.append($selectedEventDiv);
+        }
+        $selectedEventsListContainerDiv.append($selectedEventsListDiv);
+        $container.append($selectedEventsListContainerDiv);
+
+        $(".selected-event-force-cancel input[type=checkbox]").change(function (e) {
+            var eventId = $(this).closest(".selected-event").data("event-id");
+            var indexInArray = window.forceCancelEventIds.indexOf(eventId);
+            if (indexInArray == -1) {
+                window.forceCancelEventIds.push(eventId);
+            }
+            else {
+                window.forceCancelEventIds.splice(indexInArray, 1);
+            }
+            setCancelPostponeMultipleReplyText();
+            redrawSelectedEventsContainer();
+        });
+    }
+
+    window.addEventListener("message", function (event) {
+        if (event.data.message == "drawExternalEventSelection") {
+            window.selectedEvents = event.data.events;
+            setCancelPostponeMultipleReplyText();
+            redrawSelectedEventsContainer();
+        }
+    }, false);
+</script>

@@ -1,0 +1,21 @@
+.attendees-are-noticed-panel {
+  display: none;
+  margin: 0 -10px 30px -10px;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+
+  .attendees-are-noticed-panel-title {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .yes-no-buttons-container {
+    margin: 20px auto;
+    width: 250px;
+
+    .yes-button, .no-button {
+      width: 100px;
+      margin: 0 10px;
+    }
+  }
+}

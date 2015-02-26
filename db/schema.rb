@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150224122117) do
+ActiveRecord::Schema.define(version: 20150303145950) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,30 +55,34 @@ ActiveRecord::Schema.define(version: 20150224122117) do
     t.text     "calendar_id"
     t.text     "event_id"
     t.text     "events",                    default: "[]"
+    t.boolean  "deleted_event",             default: false
   end
 
   create_table "message_classifications", force: true do |t|
     t.string   "classification"
     t.integer  "message_id"
     t.string   "operator"
-    t.boolean  "validated",          default: false
+    t.boolean  "validated",             default: false
     t.string   "appointment_nature"
     t.string   "summary"
     t.integer  "duration"
     t.text     "location"
-    t.text     "attendees",          default: "[]"
+    t.text     "attendees",             default: "[]"
     t.text     "notes"
     t.text     "constraints"
-    t.text     "date_times",         default: "[]"
+    t.text     "date_times",            default: "[]"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "locale"
     t.string   "timezone"
     t.integer  "processed_in"
     t.string   "location_nature"
-    t.boolean  "private",            default: false
+    t.boolean  "private",               default: false
     t.text     "other_notes"
-    t.text     "constraints_data",   default: "[]"
+    t.text     "constraints_data",      default: "[]"
+    t.string   "cancellation_kind"
+    t.boolean  "client_agreement",      default: false
+    t.boolean  "attendees_are_noticed", default: false
   end
 
   create_table "messages", force: true do |t|

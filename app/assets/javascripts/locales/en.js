@@ -8,17 +8,31 @@ window.wordings['en'] = {
         no_date_fits: {
             before_dates: {
                 suggested: {
-                    singular: "Sorry, %{client} is not available anymore at this time, but would be available for %{appointment_nature}%{location}:",
-                    plural: "Sorry, %{client} is not available anymore at these times, but would be available for %{appointment_nature}%{location}:"
+                    singular: "Sorry, %{client} is not available anymore at this time, ",
+                    plural: "Sorry, %{client} is not available anymore at these times, "
                 },
                 not_suggested: {
-                    singular: "Sorry this time does not fit, but %{client} would be available for %{appointment_nature}%{location}:",
-                    plural: "Sorry none of these times fit, but %{client} would be available for %{appointment_nature}%{location}:"
+                    singular: "Sorry this time does not fit, ",
+                    plural: "Sorry none of these times fit, "
+                }
+            },
+            before_dates_suffix: {
+                postpone: "but here are some new availabilities for %{appointment_nature}%{location}:",
+                new_appointment: {
+                    suggested: "but would be available for %{appointment_nature}%{location}:",
+                    not_suggested: "but %{client} would be available for %{appointment_nature}%{location}:"
                 }
             }
         },
         suggest_dates: {
-            before_dates: "%{client} would be available for %{appointment_nature}%{location}:",
+            ask_agreement: {
+                postpone: "Do you want me to new suggest availabilities?",
+                new_appointment: "Do you want me to suggest availabilities?"
+            },
+            before_dates: {
+                new_appointment: "%{client} would be available for %{appointment_nature}%{location}:",
+                postpone: "Here are some new availabilities for %{appointment_nature}%{location}:"
+            },
             after_dates: {
                 singular: "\n\nWould that work for you?",
                 plural: "\n\nWhich time would work best for you?"
@@ -28,9 +42,6 @@ window.wordings['en'] = {
                 skype: "\nPlease let me know where you can be reached."
             }
         },
-        postpone: {
-            before_dates: "Here are some new availabilities for %{appointment_nature}%{location}:"
-        },
         cancel_multiple: {
             cancel: "Cancellation:",
             noted_gonna_cancel: {
@@ -38,16 +49,16 @@ window.wordings['en'] = {
                 plural: "It's noted. I am going to cancel these events:\n"
             },
             noted_no_attendees: {
-                singular: "It's noted. But this event has no invitees list:\n",
-                plural: "It's noted. But these events have no invitees list:\n"
+                singular: "It's noted. But I don't have any email address for this event:\n",
+                plural: "It's noted. But I don't have any email address for these events:\n"
             },
             but_no_attendees: {
-                singular: "\nBut this event has no invitees list:\n",
-                plural: "\nBut these events have no invitees list:\n"
+                singular: "\nBut I don't have any email address for this event:\n",
+                plural: "\nBut I don't have any email address for these events:\n"
             },
             what_should_i_do: {
-                singular: "\nWhat should I do for this one?",
-                plural: "\nWhat should I do for these ones?"
+                singular: "\nPlease provide attendees emails if you want me to take care of it.",
+                plural: "\nPlease provide attendees emails if you want me to take care of them."
             }
         },
         postpone_multiple: {
@@ -57,22 +68,51 @@ window.wordings['en'] = {
                 plural: "It's noted. I am going to postpone these events:\n"
             },
             noted_no_attendees: {
-                singular: "It's noted. But this event has no invitees list:\n",
-                plural: "It's noted. But these events have no invitees list:\n"
+                singular: "It's noted. But I don't have any email address for this event:\n",
+                plural: "It's noted. But I don't have any email address for these events:\n"
             },
             but_no_attendees: {
-                singular: "\nBut this event has no invitees list:\n",
-                plural: "\nBut these events have no invitees list:\n"
+                singular: "\nBut I don't have any email address for this event:\n",
+                plural: "\nBut I don't have any email address for these events:\n"
             },
             what_should_i_do: {
-                singular: "\nWhat should I do for this one?",
-                plural: "\nWhat should I do for these ones?"
+                singular: "\nPlease provide attendees emails if you want me to take care of it.",
+                plural: "\nPlease provide attendees emails if you want me to take care of them."
             }
         },
-        invites_sent: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
+        invites_sent: {
+            new_appointment: "Perfect, invites sent for %{appointment_nature}%{location}:\n%{date}.",
+            postpone: "Perfect, the event has been updated for %{appointment_nature}%{location}:\n%{date}."
+        },
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",
-        cancel: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you on %{date}.",
+        cancel: {
+            attendees_noticed: "I canceled %{appointment_nature} scheduled on %{date}.",
+            attendees_not_noticed: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you on %{date}.",
+        },
+        cancel_client_agreement: "Do I have your agreement to cancel %{appointment_nature} scheduled on %{date}?",
+        client_agreement: {
+            prefix: {
+                available: {
+                    singular: "You are available for %{appointment_nature} at this date:\n",
+                    plural: "You are available for %{appointment_nature} at these dates:\n"
+                },
+                not_available: {
+                    singular: "You are not available for %{appointment_nature} at this date:\n",
+                    plural: "You are not available for %{appointment_nature} at any of those dates:\n"
+                }
+            },
+            suffix: {
+                available: {
+                    new_appointment: "\nDo you want me to create an event and send an invitation?",
+                    postpone: "\nDo you want me to postpone the appointment?"
+                },
+                not_available: {
+                    new_appointment: "\nDo you want me to suggest other availabilities?",
+                    postpone: "\nDo you want me to suggest new availabilities to postpone the appointment?"
+                }
+            }
+        },
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
@@ -98,5 +138,26 @@ window.wordings['en'] = {
         cant: "can't",
         can: "can only",
         prefers: "prefers"
+    },
+    actions: {
+        to_do: {
+            ask_agreement: "To do: ask agreement",
+            suggest_dates: {
+                new_appointment: "To do: suggest dates",
+                postpone: "To do: suggest new dates"
+            }
+        }
+    },
+    classification_forms: {
+        common: {
+            fill_info_in: "Please fill info in"
+        },
+        ask_date_suggestions: {
+
+        },
+        ask_availabilities: {
+            dates_identification: "Dates identification",
+            suggested_dates: "Suggested dates"
+        }
     }
 };

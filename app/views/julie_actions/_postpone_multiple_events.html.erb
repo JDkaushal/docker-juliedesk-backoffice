@@ -1,0 +1,6 @@
+<script>
+    window.cancelPostponeMultipleEmailSubjectType = localize("email_templates.postpone_multiple.postpone");
+    window.cancelPostponeMultipleEmailBodyType = "Please postpone this event:<br>";
+    window.actionKind = "postpone_multiple";
+</script>
+<%= render partial: "cancel_postpone_multiple_events", locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>

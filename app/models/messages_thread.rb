@@ -1,5 +1,9 @@
 class MessagesThread < ActiveRecord::Base
 
+  EVENT_SCHEDULED = "event_scheduled"
+  SCHEDULING_EVENT = "scheduling_events"
+  EVENTS_CREATED = "events_created"
+
   has_many :messages
 
   def google_thread params={}
@@ -47,36 +51,39 @@ class MessagesThread < ActiveRecord::Base
     }
   end
 
+
   def computed_data
     message_classifications = messages.map{|m|
       m.message_classifications
-    }.flatten.sort_by(&:updated_at).select{|mc| mc.classification != MessageClassification::UNKNOWN}.compact
+    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+    last_message_classification = message_classifications.last
 
-    appointment_nature = message_classifications.map(&:appointment_nature).compact.last
+    appointment_nature = last_message_classification.try(:appointment_nature)
     {
-        locale: message_classifications.map(&:locale).compact.last || self.account.try(:locale),
-        timezone: message_classifications.map(&:timezone).compact.last || self.account.try(:default_timezone_id),
+        locale: last_message_classification.try(:locale) || self.account.try(:locale),
+        timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
         appointment_nature: appointment_nature,
-        summary: message_classifications.map(&:summary).compact.last,
-        duration: message_classifications.map(&:duration).compact.last || 60,
-        location_nature: message_classifications.map(&:location_nature).compact.last,
-        location: message_classifications.map(&:location).compact.last,
-        attendees: JSON.parse(message_classifications.map(&:attendees).compact.last || "[]"),
-        notes: message_classifications.map(&:notes).compact.last,
-        other_notes: message_classifications.map(&:other_notes).compact.last,
+        summary: last_message_classification.try(:summary),
+        duration: last_message_classification.try(:duration) || 60,
+        location_nature: last_message_classification.try(:location_nature),
+        location: last_message_classification.try(:location),
+        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
+        notes: last_message_classification.try(:notes),
+        other_notes: last_message_classification.try(:other_notes),
 
         is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
 
-        private: message_classifications.map(&:private).compact.last,
+        private: last_message_classification.try(:private),
 
-        constraints: message_classifications.map(&:constraints).compact.last,
-        constraints_data: JSON.parse(message_classifications.map(&:constraints_data).compact.last || "[]"),
+        client_agreement: last_message_classification.try(:client_agreement),
+        attendees_are_noticed: last_message_classification.try(:attendees_are_noticed),
+
+        constraints: last_message_classification.try(:constraints),
+        constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
 
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"
-        },
-
-        event_id: ""
+        }
     }
   end
 
@@ -85,12 +92,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.items_to_classify_count
-    #result = 0
     MessagesThread.where(in_inbox: true).count
-    #.includes(:messages).each do |messages_thread|
-    #  result += messages_thread.messages_to_classify.length
-    #end
-    #result
   end
 
   def suggested_date_times
@@ -162,6 +164,23 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def sorted_message_classifications
+    messages.map(&:message_classifications).flatten.sort_by(&:updated_at)
+  end
+
+  def scheduling_status
+    sorted_mcs = sorted_message_classifications
+    if sorted_mcs.select{|mc| mc.classification == MessageClassification::ASK_CREATE_EVENT && mc.julie_action.done}.length > 0
+      EVENTS_CREATED
+    elsif event_data[:event_id]
+      EVENT_SCHEDULED
+    elsif sorted_mcs.select{|mc| mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || MessageClassification::ASK_AVAILABILITIES && mc.julie_action.done}.length > 0
+      SCHEDULING_EVENT
+    else
+      nil
+    end
+  end
+
   def client_email
     (account.all_emails & contacts(with_client: true).map{|c| c[:email]}).first || account_email
   end
@@ -191,16 +210,14 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def event_data
-    julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).sort_by(&:updated_at)
+    julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at)
 
     last_cancellation = julie_actions.select{|ja|
-      (ja.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT ||
-          ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT) &&
-          ja.done
+      ja.deleted_event
     }.last
 
     last_creation = julie_actions.select{|ja|
-      ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+      ja.event_id
     }.last
 
     if last_creation && (last_cancellation.nil? || julie_actions.index(last_creation) > julie_actions.index(last_cancellation))
@@ -216,7 +233,77 @@ class MessagesThread < ActiveRecord::Base
           appointment_nature: nil
       }
     end
+  end
 
+  def available_classifications
+    if account_email
+      s_status = scheduling_status
+      if s_status == EVENTS_CREATED
+        {
+            manage_events: [
+                MessageClassification::ASK_CREATE_EVENT
+            ],
+            other: [
+                MessageClassification::UNKNOWN
+            ]
+        }
+      elsif s_status == SCHEDULING_EVENT
+        {
+            event_scheduling: [
+                MessageClassification::ASK_DATE_SUGGESTIONS,
+                MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::GIVE_INFO,
+                MessageClassification::ASK_INFO,
+            ],
+            other: [
+                MessageClassification::UNKNOWN
+            ]
+        }
+      elsif s_status == EVENT_SCHEDULED
+        {
+            manage_scheduled_event: [
+                MessageClassification::GIVE_INFO,
+                MessageClassification::ASK_INFO,
+                MessageClassification::ASK_CANCEL_APPOINTMENT
+            ],
+            event_rescheduling: [
+                MessageClassification::ASK_DATE_SUGGESTIONS,
+                MessageClassification::ASK_AVAILABILITIES
+            ],
+            other: [
+                MessageClassification::UNKNOWN
+            ]
+        }
+      elsif s_status == nil
+        {
+            event_scheduling: [
+                MessageClassification::ASK_DATE_SUGGESTIONS,
+                MessageClassification::ASK_AVAILABILITIES
+            ],
+            other: [
+                MessageClassification::ASK_CREATE_EVENT,
+                MessageClassification::ASK_CANCEL_EVENTS,
+                MessageClassification::ASK_POSTPONE_EVENTS,
+                MessageClassification::UNKNOWN
+            ]
+        }
+      end
+    else
+      {
+          primary: [
+          ],
+          secondary: [
+              MessageClassification::UNKNOWN
+          ]
+      }
+    end
+
+  end
+
+  def classification_category_for_classification classification
+    available_classifications.select{|k, v|
+      v.include? classification
+    }.map{|k, v| k}.first.to_s
   end
 
 

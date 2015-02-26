@@ -20,6 +20,8 @@
 
 //= require handlebars.runtime
 
+//= require helpers
+
 //= require_tree ./templates
 
 //= require jquery.elastic.source
@@ -46,5 +48,20 @@
 //= require jquery.cookie
 
 //= require presenters
+//= require generate_templates
+
+//= require message_classification_forms/classification_form
+//= require message_classification_forms/ask_date_suggestions
+//= require message_classification_forms/ask_availabilities
+//= require message_classification_forms/give_info
+//= require message_classification_forms/ask_cancel_appointment
+
+//= require tests/common
+//= require tests/constraints
+//= require tests/ask_date_suggestions_classification_form
+//= require tests/ask_availabilities_classification_form
+//= require tests/give_info_classification_form
+//= require tests/ask_cancel_appointment_classification_form
+//= require tests/templates
 
 

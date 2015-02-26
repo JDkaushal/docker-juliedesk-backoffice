@@ -4,32 +4,45 @@ window.wordings['fr'] = {
     email_templates: {
         create_events: {
             before_dates: "J'ai ajouté à votre calendrier :\n"
-        },no_date_fits: {
+        },
+        no_date_fits: {
             before_dates: {
                 suggested: {
-                    singular: "Désolée, %{client} n'est plus disponible à cet horaire, mais serait disponible pour %{appointment_nature}%{location} :",
-                    plural: "Désolée, %{client} n'est plus disponible à ces horaires, mais serait disponible pour %{appointment_nature}%{location} :"
+                    singular: "Désolée, %{client} n'est plus disponible à cet horaire, ",
+                    plural: "Désolée, %{client} n'est plus disponible à ces horaires, "
                 },
                 not_suggested: {
-                    singular: "Désolée, cet horaire ne convient pas, mais %{client} serait disponible pour %{appointment_nature}%{location} :",
-                    plural: "Désolée, aucun de ces horaires ne convient, mais %{client} serait disponible pour %{appointment_nature}%{location} :"
+                    singular: "Désolée, cet horaire ne convient pas, ",
+                    plural: "Désolée, aucun de ces horaires ne convient, "
+                }
+            },
+            before_dates_suffix: {
+                postpone: "mais voici de nouvelles disponibilités pour %{appointment_nature}%{location} :",
+                new_appointment: {
+                    suggested: "mais serait disponible pour %{appointment_nature}%{location} :",
+                    not_suggested: "mais %{client} serait disponible pour %{appointment_nature}%{location} :"
                 }
             }
         },
         suggest_dates: {
-            before_dates: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
+            ask_agreement: {
+                postpone: "Souhaitez-vous que je propose de nouvelles disponibilités ?",
+                new_appointment: "Souhaitez-vous que je propose des disponibilités ?"
+            },
+            before_dates: {
+                new_appointment: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
+                postpone: "Voici de nouvelles disponibilités pour %{appointment_nature}%{location} :"
+            },
             after_dates: {
                 singular: "\n\nCela vous conviendrait-il ?",
                 plural: "\n\nQuel horaire vous conviendrait le mieux ?"
             },
             ask_number: {
-                call: "\nMerci de me préciser à quel numéro vous joindre.",
-                skype: "\nMerci de me préciser à quel identifiant vous joindre."
+                call: "\nMerci de me préciser à quel numéro vous êtes joignable.",
+                skype: "\nMerci de me préciser à quel identifiant vous êtes joignable."
             }
         },
-        postpone: {
-            before_dates: "Je vous propose de nouvelles disponibilités pour %{appointment_nature}%{location} :"
-        },
+
         cancel_multiple: {
             cancel: "Annulation :",
             noted_gonna_cancel: {
@@ -37,16 +50,16 @@ window.wordings['fr'] = {
                 plural: "C'est bien noté. Je vais annuler les évènements :\n"
             },
             noted_no_attendees: {
-                singular: "C'est bien noté. En revanche, cet évènement n'a pas de liste d'invités :\n",
-                plural: "C'est bien noté. En revanche, ces évènements n'ont pas de liste d'invités :\n"
+                singular: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n",
+                plural: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n"
             },
             but_no_attendees: {
-                singular: "En revanche, cet évènement n'a pas de liste d'invités :\n",
-                plural: "En revanche, ces évènements n'ont pas de liste d'invités :\n"
+                singular: "\nEn revanche, je n'ai pas les contacts pour cet évènement :\n",
+                plural: "\nEn revanche, je n'ai pas les contacts pour ces évènements :\n"
             },
             what_should_i_do: {
-                singular: "\nQue dois-je faire pour celui-ci ?",
-                plural: "\nQue dois-je faire pour ceux-cis ?"
+                singular: "\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe.",
+                plural: "\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         postpone_multiple: {
@@ -56,22 +69,51 @@ window.wordings['fr'] = {
                 plural: "C'est bien noté. Je vais reporter les évènements :\n"
             },
             noted_no_attendees: {
-                singular: "C'est bien noté. En revanche, cet évènement n'a pas de liste d'invités :\n",
-                plural: "C'est bien noté. En revanche, ces évènements n'ont pas de liste d'invités :\n"
+                singular: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n",
+                plural: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n"
             },
             but_no_attendees: {
-                singular: "En revanche, cet évènement n'a pas de liste d'invités :\n",
-                plural: "En revanche, ces évènements n'ont pas de liste d'invités :\n"
+                singular: "\nEn revanche, je n'ai pas les contacts pour cet évènement :\n",
+                plural: "\nEn revanche, je n'ai pas les contacts pour ces évènements :\n"
             },
             what_should_i_do: {
-                singular: "\nQue dois-je faire pour celui-ci ?",
-                plural: "\nQue dois-je faire pour ceux-cis ?"
+                singular: "\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe.",
+                plural: "\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
-        invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location} :\n%{date}.",
+        invites_sent: {
+            new_appointment: "Parfait, invitations envoyées pour %{appointment_nature}%{location} :\n%{date}.",
+            postpone: "Parfait, l'évènement a été mis à jour pour %{appointment_nature}%{location} :\n%{date}."
+        },
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",
-        cancel: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} avec vous %{date}.",
+        cancel: {
+            attendees_noticed: "J'ai annulé %{appointment_nature} prévu %{date}.",
+            attendees_not_noticed: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} avec vous %{date}."
+        },
+        cancel_client_agreement: "Ai-je votre approbation pour annuler %{appointment_nature} prévu %{date} ?",
+        client_agreement: {
+            prefix: {
+                available: {
+                    singular: "Vous êtes disponible pour %{appointment_nature} à cette date :\n",
+                    plural: "Vous êtes disponible pour %{appointment_nature} à ces dates :\n"
+                },
+                not_available: {
+                    singular: "Vous n'êtes pas disponible pour %{appointment_nature} à cette date :\n",
+                    plural: "Vous n'êtes disponible pour %{appointment_nature} à aucune de ces dates :\n"
+                }
+            },
+            suffix: {
+                available: {
+                    new_appointment: "\nVoulez-vous que je crée un évènement et envoie des invitations ?",
+                    postpone: "\nVoulez-vous que je reporte l'évènement?"
+                },
+                not_available: {
+                    new_appointment: "\nVoulez-vous que propose d'autres disponibilités ?",
+                    postpone: "\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
+                }
+            }
+        },
         common: {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
@@ -97,5 +139,26 @@ window.wordings['fr'] = {
         cant: "ne peux pas",
         can: "peux uniquement",
         prefers: "préfère"
+    },
+    actions: {
+        to_do: {
+            ask_agreement: "A faire : demander l'accord",
+            suggest_dates: {
+                new_appointment: "A faire : proposer des dates",
+                postpone: "A faire: proposer de nouvelles dates"
+            }
+        }
+    },
+    classification_forms: {
+        common: {
+            fill_info_in: "Remplissez les infos"
+        },
+        ask_date_suggestions: {
+
+        },
+        ask_availabilities: {
+            dates_identification: "Identification des dates",
+            suggested_dates: "Dates suggérées"
+        }
     }
 };

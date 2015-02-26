@@ -11,7 +11,6 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
-        @classification == MessageClassification::ASK_CANCEL_APPOINTMENT ||
         @classification == MessageClassification::ASK_CANCEL_EVENTS ||
         @classification == MessageClassification::ASK_POSTPONE_EVENTS ||
         @classification == MessageClassification::ASK_CREATE_EVENT

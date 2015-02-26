@@ -1,0 +1,280 @@
+<script>
+    var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
+    window.leftColumnMessage = "Create event";
+
+    var noDateFitsType = "<%=
+        date_times_to_check = JSON.parse(@julie_action.message_classification.date_times)
+        suggested_date_times = @messages_thread.suggested_date_times
+        if date_times_to_check.length > 1
+            if (date_times_to_check & suggested_date_times).empty?
+                "not_suggested_multiple"
+            else
+                "suggested_multiple"
+            end
+        else
+            if (date_times_to_check & suggested_date_times).empty?
+                "not_suggested_single"
+            else
+                "suggested_single"
+            end
+        end
+        %>";
+
+    $(function () {
+        $(".messages-thread-info-panel .create-event-panel").show();
+        if(window.threadComputedData.client_agreement) {
+            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Create event");
+            if(isPostpone) {
+                $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Update event");
+                window.afterEventFetched = function() {
+                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+                        return attendee.email;
+                    });
+                }
+            }
+        }
+        else {
+            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Select");
+        }
+
+        window.activateCalendarWithParams({
+            mode: "create_event",
+            date_times: <%== (JSON.parse(
+            @julie_action.message_classification.date_times || "[]").select{|dt|dt['date']}.map{|dt| dt['date']}.map{|date|
+              {
+                      mode: "to_check",
+                      date: date
+              }
+            } + @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+              {
+                      mode: "already_suggested",
+                      date: date
+              }
+            }).to_json %>,
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration
+        });
+
+        $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").change(function() {
+            if($(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']:checked").length > 0) {
+                $("#create-event-button").removeAttr('disabled');
+            }
+            else {
+                $("#create-event-button").attr('disabled', true);
+            }
+        });
+
+        $("#no-date-fits").click(function () {
+            window.timeSlotToCreate = null;
+            $(".messages-thread-info-panel .create-event-panel").hide();
+            if(window.threadComputedData.client_agreement) {
+                window.currentCalendar.initialData.mode = "suggest_dates";
+                $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
+            }
+            else {
+                var timeSlotsToCheck = $(".messages-thread-info-panel .create-event-panel .suggested-date-time").map(function() {
+                    var $suggestedDateTime = $(this);
+                    return moment.tz($suggestedDateTime.data("date"), $suggestedDateTime.data("timezone")).format();
+                }).get();
+                $(".calendar-container").addClass("minimized");
+                window.setReplyMessage(window.generateEmailTemplate({
+                    action: "client_agreement",
+                    isPostpone: isPostpone,
+                    dateTimesToCheck: timeSlotsToCheck,
+                    isAvailable: false,
+                    appointment: window.getCurrentAppointment(),
+                    timezoneId: window.threadComputedData.timezone,
+                    defaultTimezoneId: window.threadAccount.default_timezone_id,
+                    locale: window.threadComputedData.locale
+                }), "client");
+            }
+
+        });
+
+        $("#create-event-button").click(function () {
+            if(window.threadComputedData.client_agreement) {
+                $("#create-event-button").attr('disabled', true);
+                $(".creating-event-message").html("Creating...");
+                var start = moment(window.timeSlotToCreate);
+                var end = start.clone();
+                end.add('m', <%= @messages_thread.computed_data[:duration] %>);
+
+                $(".calendar-container").addClass("minimized");
+
+                var requestParams = {
+                    action: "create_event",
+                    email: "<%= @messages_thread.account_email %>",
+                    summary: window.threadComputedData.summary,
+                    description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes,
+                    attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
+                    location: window.threadComputedData.location,
+                    all_day: false,
+                    private: window.threadComputedData.private,
+                    start: start.format(),
+                    end: end.format()
+                };
+                if(isPostpone) {
+                    window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
+                    window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
+                    _.each({
+                        action: "update_event",
+                        event_id: window.currentEventId,
+                        calendar_id: window.currentCalendarId
+                    }, function(v, k) {
+                        requestParams[k] = v;
+                    });
+                }
+                CommonHelpers.externalRequest(requestParams, function (e) {
+                    if(!isPostpone) {
+                        window.currentEventId = e.data.event_id;
+                        window.currentCalendarId = e.data.calendar_id;
+                    }
+
+
+                    window.setReplyMessage(window.generateEmailTemplate({
+                        action: "invites_sent",
+                        isPostpone: isPostpone,
+                        timeSlotToCreate: window.timeSlotToCreate,
+                        appointment: window.getCurrentAppointment(),
+                        address: window.getCurrentAddress(),
+                        timezoneId: window.threadComputedData.timezone,
+                        defaultTimezoneId: window.threadAccount.default_timezone_id,
+                        allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+                        locale: window.threadComputedData.locale
+
+                    }), "all", window.otherEmails);
+
+                    $(".messages-thread-info-panel .create-event-panel").hide();
+
+                    $(".messages-thread-info-panel .message-container").hide();
+                    $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
+
+                    window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
+                        timezoneId: window.threadComputedData.timezone,
+                        mode: "read_only",
+                        event: {},
+                        eventId: window.currentEventId,
+                        calendarId: window.currentCalendarId,
+                        accountEmail: window.threadAccount.email,
+                        locale: window.threadComputedData.locale
+                    });
+                    $(".messages-thread-info-panel .created-event-panel").show();
+                    window.currentEventTile.redraw();
+                    window.currentEventTile.fetchEvent(function(data) {
+                        window.currentEventData = data;
+                        window.currentEventTile.redraw();
+                        setTimeout(function () {
+                            $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
+                        }, 1000);
+                    });
+
+                    $.ajax({
+                        type: "post",
+                        url: "/julie_actions/<%= @julie_action.id %>/update",
+                        data: {
+                            event_id: window.currentEventId,
+                            calendar_id: window.currentCalendarId
+                        },
+                        success: function (e) {
+                            $(".creating-event-message").html("Created.");
+                        }
+                    });
+                }, function () {
+                    $(".creating-event-message").html("Problem while creating.");
+                    window.currentCalendar.refreshEvents();
+                    $("#create-event-button").removeAttr('disabled');
+                });
+            }
+            else {
+                var availableTimeSlots = $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']:checked").map(function() {
+                    var $suggestedDateTime = $(this).closest(".suggested-date-time-container").find(".suggested-date-time");
+                    return moment.tz($suggestedDateTime.data("date"), $suggestedDateTime.data("timezone")).format();
+                }).get();
+                $(".calendar-container").addClass("minimized");
+                window.setReplyMessage(window.generateEmailTemplate({
+                    action: "client_agreement",
+                    isPostpone: isPostpone,
+                    dateTimesToCheck: availableTimeSlots,
+                    isAvailable: true,
+                    appointment: window.getCurrentAppointment(),
+                    timezoneId: window.threadComputedData.timezone,
+                    defaultTimezoneId: window.threadAccount.default_timezone_id,
+                    locale: window.threadComputedData.locale
+                }), "client");
+            }
+        });
+    });
+
+    var checkAvailabilitiesClassicReply = function() {
+        $.ajax({
+            url: "/julie_actions/<%= @julie_action.id %>/update",
+            method: "post",
+            data: {
+                text: $("textarea#reply-text").val(),
+                to: window.currentRecipients().to,
+                cc: window.currentRecipients().cc,
+                date_times: window.timeSlotsToSuggest,
+                event_id: window.currentEventId,
+                calendar_id: window.currentCalendarId,
+                deleted_event: window.actionDeletedEvent,
+                done: true,
+                processed_in: Date.now() - window.startedAt
+            }
+        });
+        window.sendReply();
+    };
+
+
+    window.clickReplyButton = function () {
+        if(isPostpone && window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
+            window.deleteEventBeforeReply(function() {
+                checkAvailabilitiesClassicReply();
+            });
+        }
+        else {
+            checkAvailabilitiesClassicReply();
+        }
+    };
+
+
+    window.addEventListener("message", function (event) {
+        if (event.data.message == "drawExternalEventsList") {
+            window.timeSlotsToSuggest = event.data.date_times;
+
+            window.setReplyMessage(window.generateEmailTemplate({
+                action: "suggest_dates",
+                client_agreement: true,
+                attendeesAreNoticed: true,
+                isPostpone: isPostpone,
+                locale: window.threadComputedData.locale,
+                appointment: window.getCurrentAppointment(),
+                address: window.getCurrentAddress(),
+                timeSlotsToSuggest: event.data.date_times,
+                client: window.threadAccount.usage_name,
+                timezoneId: window.threadComputedData.timezone,
+                noDateFits: noDateFitsType,
+                defaultTimezoneId: window.threadAccount.default_timezone_id
+            }), "all", window.otherEmails);
+            window.redrawTimeSlotsToSuggestContainer();
+        }
+        else if (event.data.message == "drawExternalEventCreation") {
+            window.timeSlotToCreate = event.data.eventStart;
+            $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
+            $(".suggested-date-times .suggested-date-time.other").remove();
+            $(".suggested-date-times .suggested-date-time").each(function () {
+                if (moment($(this).data("date")).isSame(moment(event.data.eventStart))) {
+                    $(this).addClass("btn-primary");
+                }
+            });
+            if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
+                var dateString = moment(event.data.eventStart).tz(window.currentCalendar.getCalendarTimezone()).locale("<%= I18n.locale %>").format("dddd DD MMMM YYYY à HH:mm");
+                $(".suggested-date-times").append(
+                        $("<div>")
+                                .addClass("suggested-date-time other btn btn-sm btn-block btn-primary")
+                                .html(dateString + "<br>" + window.currentCalendar.getCalendarTimezone())
+                );
+            }
+            $("#create-event-button").removeAttr('disabled');
+        }
+    }, false);
+</script>

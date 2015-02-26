@@ -204,33 +204,54 @@ fr:
       long: "%A %d %B %Y %Hh%M"
       short: "%d %b %Hh%M"
     pm: 'pm'
-  classifications:
-      ask_date_suggestions:
-        action: "Proposer des disponibilités"
-      ask_availabilities:
-        action: "Vérifier une (des) disponibilité(s)"
-      ask_cancel_appointment:
-        action: "Annuler l'évènement de ce thread"
-      ask_postpone_appointment:
-        action: "Reporter l'évènement de ce thread"
-      ask_info:
-        action: "Donner une info"
-      give_info:
-        action: "Noter une info"
-      ask_create_event:
-        action: "Créer un évènement dans le calendrier"
-      ask_and_give_nothing:
-        action: "On ne demande rien"
-      ask_cancel_events:
-        action: "Annuler autre(s) évènement(s)"
-      ask_postpone_events:
-        action: "Reporter autre(s) évènement(s)"
+
+  classification_categories:
+      event_scheduling:
+        title: "Organisation de rendez-vous"
+        classifications:
+            ask_date_suggestions:
+              action: "Proposer des disponibilités"
+            ask_availabilities:
+              action: "Vérifier une (des) disponibilité(s)"
+            ask_info:
+              action: "Donner une info"
+            give_info:
+              action: "Noter une info"
+      manage_scheduled_event:
+        title: "Gérer le rendez-vous organisé"
+        classifications:
+            ask_info:
+              action: "Donner une info"
+            give_info:
+              action: "Mettre à jour l'évènement"
+            ask_cancel_appointment:
+              action: "Annuler le rendez-vous"
+      event_rescheduling:
+        title: "Reporter le rendez-vous"
+        classifications:
+            ask_date_suggestions:
+              action: "Proposer des disponibilités"
+            ask_availabilities:
+              action: "Vérifier une (des) disponibilité(s)"
+      manage_events:
+        title: "Gérer les évènements"
+        classifications:
+          ask_create_event:
+            action: "Gérer les évènements"
       other:
-        action: "Autre"
-      unknown:
-        action: "Réponse libre"
-      to_founders:
-        action: "Je ne peux pas décider"
+        title: "Autre"
+        classifications:
+          ask_create_event:
+            action: "Créer un évènement dans le calendrier"
+          ask_cancel_events:
+            action: "Annuler autre(s) évènement(s)"
+          ask_postpone_events:
+            action: "Reporter autre(s) évènement(s)"
+          unknown:
+            action: "Réponse libre"
+          to_founders:
+            action: "Je ne peux pas décider"
+
   actions:
       suggest_dates:
         todo: "suggérer des dates"
@@ -310,6 +331,16 @@ fr:
     email_placeholder: "Adresse email..."
     send_to_founders: "Envoyer à l'équipe support"
     an_hesitation: "Un doute ?"
+    did_client_gave_agreement:
+      event_scheduling:
+        ask_date_suggestions: "%{client} a-t-il donné son accord pour proposer des dates ?"
+        ask_availabilities: "%{client} a-t-il donné son accord pour organiser le rendez-vous ?"
+      event_rescheduling:
+        ask_date_suggestions: "%{client} a-t-il donné son accord pour proposer de nouvelles dates ?"
+        ask_availabilities: "%{client} a-t-il donné son accord pour reporter le rendez-vous ?"
+      manage_scheduled_event:
+        ask_cancel_appointment: "%{client} a-t-il donné son accord pour annuler le rendez-vous ?"
+    are_attendees_noticed: "Les participants ont-ils été mis au courant ?"
 
   dates_identifications:
     add_a_date: "Ajouter une date"

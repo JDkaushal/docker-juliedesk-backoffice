@@ -1,0 +1,110 @@
+<script>
+    var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
+
+    var previousAppointment = $.grep(window.appointments,function(v) {
+      return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
+    })[0];
+
+    $(function() {
+        window.activateCalendarWithParams({
+            mode: "suggest_dates",
+            date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+            {
+                mode: "already_suggested",
+                date: date
+            }
+        }.to_json %>,
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration
+        });
+
+        if(window.threadComputedData.client_agreement) {
+            if(isPostpone) {
+                $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
+                window.afterEventFetched = function() {
+                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+                        return attendee.email;
+                    });
+                    if(!window.threadComputedData.attendees_are_noticed) {
+                        $("input#quote_message").removeAttr("checked");
+                    }
+                    suggestDatesSetReplyMessage();
+                }
+            }
+            else {
+                $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.new_appointment"));
+            }
+
+            window.addEventListener("message", function (event) {
+                if (event.data.message == "drawExternalEventsList") {
+                    window.timeSlotsToSuggest = event.data.date_times;
+                    suggestDatesSetReplyMessage();
+                    window.redrawTimeSlotsToSuggestContainer();
+                }
+            });
+        }
+        else {
+            $(".calendar-container").addClass("minimized");
+            $("#show-calendar-button").hide();
+            $(".julie-action-title .title").html(localize("actions.to_do.ask_agreement"));
+
+            window.setReplyMessage(
+                    window.generateEmailTemplate({
+                        action: "suggest_dates",
+                        client_agreement: false,
+                        isPostpone: isPostpone,
+                        locale: window.threadComputedData.locale
+                    }),
+                    "only_client"
+            );
+        }
+    });
+
+    var suggestDatesSetReplyMessage = function() {
+        window.setReplyMessage(window.generateEmailTemplate({
+            action: "suggest_dates",
+            client_agreement: true,
+            isPostpone: isPostpone,
+            attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
+            previousAppointment: previousAppointment,
+            currentEventData: window.currentEventData,
+            locale: window.threadComputedData.locale,
+            appointment: window.getCurrentAppointment(),
+            address: window.getCurrentAddress(),
+            timeSlotsToSuggest: window.timeSlotsToSuggest,
+            client: window.threadAccount.usage_name,
+            timezoneId: window.threadComputedData.timezone,
+            defaultTimezoneId: window.threadAccount.default_timezone_id
+        }), "all", window.otherEmails);
+    };
+
+    var suggestDateReplyFunction = function() {
+        $.ajax({
+            url: "/julie_actions/<%= @julie_action.id %>/update",
+            method: "post",
+            data: {
+                text: $("textarea#reply-text").val(),
+                to: window.currentRecipients().to,
+                cc: window.currentRecipients().cc,
+                date_times: window.timeSlotsToSuggest,
+                deleted_event: window.actionDeletedEvent,
+                done: true,
+                processed_in: Date.now() - window.startedAt
+            }
+        });
+        window.sendReply();
+    };
+
+    window.clickReplyButton = function() {
+        if(window.threadComputedData.client_agreement && isPostpone) {
+            window.deleteEventBeforeReply(function() {
+                suggestDateReplyFunction();
+            });
+        }
+        else {
+            suggestDateReplyFunction()
+        }
+
+    };
+
+</script>

@@ -1,0 +1,9 @@
+<div class="client-agreement-panel">
+  <% classification_category = @messages_thread.classification_category_for_classification(@classification) %>
+  <div class="client-agreement-panel-title"><%= I18n.t("info_box.did_client_gave_agreement.#{classification_category}.#{@classification}",
+                                                       client: @messages_thread.account.full_name )%></div>
+  <div class="yes-no-buttons-container">
+    <div class="no-button btn btn-default"><%= I18n.t("common.sno") %></div>
+    <div class="yes-button btn btn-success"><%= I18n.t("common.syes") %></div>
+  </div>
+</div>

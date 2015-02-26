@@ -10,7 +10,11 @@
   position: fixed;
   background-color: #fff;
   z-index: 10;
+  display: none;
 
+  &.visible {
+    display: block;
+  }
   &.minimized {
     display: none;
   }

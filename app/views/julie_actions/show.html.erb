@@ -1,3 +1,21 @@
+<% if @messages_thread.account_email %>
+    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
+<% else %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+<% end %>
+
+<% if [JulieAction::JD_ACTION_SUGGEST_DATES,
+       JulieAction::JD_ACTION_CHECK_AVAILABILITIES,
+       JulieAction::JD_ACTION_SEND_INFO,
+       JulieAction::JD_ACTION_SEND_CONFIRMATION,
+       JulieAction::JD_ACTION_FREE_ACTION,
+       JulieAction::JD_ACTION_CANCEL_EVENT,
+       JulieAction::JD_ACTION_CREATE_EVENT,
+       JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
+       JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS].include? @julie_action.action_nature %>
+    <%= render partial: @julie_action.action_nature, locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>
+<% end %>
+
 <script>
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
@@ -5,92 +23,37 @@
     window.forceCancelEventIds = [];
     window.julieAliasId = "<%= JULIE_ALIASES_DATA[@messages_thread.julie_alias][:id] %>"
 
-    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
-    window.threadTimezoneId = "<%= @messages_thread.computed_data[:timezone] %>";
-
     window.startedAt = Date.now();
 
+    window.actionDeletedEvent = false;
 
-    <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
-    window.calendarParams = {
-        mode: "suggest_dates",
-        date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
-            {
-                mode: "already_suggested",
-                date: date
-            }
-        }.to_json %>,
-        email: "<%= @messages_thread.account_email %>",
-        duration: <%= @messages_thread.computed_data[:duration] || 60 %>
-    };
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
-    window.leftColumnMessage = "Create event";
-    window.calendarParams = {
-        mode: "create_event",
-        date_times: <%== (JSON.parse(@julie_action.message_classification.date_times || "[]").select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
-            {
-                mode: "to_check",
-                date: date
-            }
-        } +
-         @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
-            {
-                mode: "already_suggested",
-                date: date
-            }
-        }).to_json %>,
-        email: "<%= @message.messages_thread.account_email %>",
-        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-    };
-    $(function() {
-       $(".messages-thread-info-panel .create-event-panel").show();
-    });
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
-    window.calendarParams = {
-        mode: "select_events",
-        date_times: [],
-        email: "<%= @message.messages_thread.account_email %>",
-        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-    };
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
-    window.calendarParams = {
-        mode: "select_events",
-        date_times: [],
-        email: "<%= @message.messages_thread.account_email %>",
-        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-    };
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
-    window.afterEventFetched = function() {
+    window.activateCalendarWithParams = function (calendarParams) {
+        calendarParams.height = $(".calendar-container").height();
+        calendarParams.other_emails = window.otherAccountEmails;
+        calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
 
+        calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+            return data.attendee_email;
+        });
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+        $(".calendar-container").addClass("visible");
+    };
+
+
+
+
+    /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
+    window.afterEventFetched = function () {
         // Add attendees as recipients if not present already
-        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function(elt) {
+        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
             return elt.name;
         });
-        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
-            return elt.name;
-        });
-
-        _.each(window.currentEventData.attendees, function(attendee) {
-            if(toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
-                $("#recipients-to-input").tokenInput("add", {name: attendee.email});
-            }
-        });
-
-        $("input#quote_message").removeAttr("checked");
-        redrawReplyText();
-    };
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
-    window.afterEventFetched = function() {
-        // Add attendees as recipients if not present already
-        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function(elt) {
-            return elt.name;
-        });
-        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
+        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
             return elt.name;
         });
 
-        _.each(window.currentEventData.attendees, function(attendee) {
-            if(toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
+        _.each(window.currentEventData.attendees, function (attendee) {
+            if (toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
                 $("#recipients-to-input").tokenInput("add", {name: attendee.email});
             }
         });
@@ -105,168 +68,8 @@
         ]);
         redrawReplyText();
     };
-    window.calendarParams = {
-        mode: "suggest_dates",
-        date_times: [],
-        email: "<%= @messages_thread.account_email %>",
-        duration: <%= @messages_thread.computed_data[:duration] || 60 %>
-    };
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
-    window.calendarParams = {
-        mode: "free_calendar",
-        date_times: [],
-        email: "<%= @message.messages_thread.account_email %>",
-        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-    };
-    $(function() {
-        $(".calendar-container").addClass("minimized");
-    });
+*/
 
-    <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
-    window.leftColumnMessage = "Create event";
-    window.calendarParams = {
-        mode: "free_calendar",
-        date_times: [],
-        email: "<%= @message.messages_thread.account_email %>",
-        duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-    };
-
-    $(function() {
-        $(".calendar-container").addClass("minimized");
-        var $container = $("#thread-header-other-entries-container");
-        $container.html($("<div>").addClass("new-events-container"));
-        $container.find(".new-events-container").append($("<div>").addClass("btn btn-success create-new-event-tile-button").html("Create new event"));
-        $container.find(".new-events-container").append($("<div>").addClass("new-event-tiles-container"));
-        window.newEventEventTiles = [];
-
-        var alreadyCreatedEvents = <%== @julie_action.events %>;
-
-        _.each(alreadyCreatedEvents, function(eventData) {
-            $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
-            window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container").last(), {
-                eventId: eventData.id,
-                calendarId: eventData.calendar_id,
-                minimized: true
-            }));
-        });
-
-        $container.find(".create-new-event-tile-button").click(function() {
-            $container.find(".new-event-tiles-container").prepend($("<div>").addClass("new-event-tile-container"));
-            window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container:eq(0)")));
-            redrawNewEventEventTiles();
-        });
-    });
-
-    function generateNewEventEventTile($selector, params) {
-        if(!params) params = {};
-        var event = {
-            title: localize("events.new_event"),
-            beingAdded: true
-        };
-        if(params.eventId) {
-            event = {};
-        }
-
-        var eventTile = new EventTile($selector, {
-            mode: "free_calendar",
-            event: event,
-            eventId: params.eventId,
-            calendarId: params.calendarId,
-            timezoneId: window.threadTimezoneId,
-            accountEmail: window.threadAccount.email,
-            minimizable: true,
-            minimized: params.minimized,
-            static: true,
-            locale: window.threadLocale,
-            doneEditingCallback: function(response) {
-                if(response.action != "cancel_event_creation" && !$(".calendar-container").hasClass("minimized")) {
-                    window.currentCalendar.refreshEvents();
-                }
-                if(response.action == "cancel_event_creation" || response.action == "delete_event") {
-                    var eventTile = this;
-                    window.newEventEventTiles.splice(window.newEventEventTiles.indexOf(eventTile), 1);
-                    $(eventTile.$selector).remove();
-                    redrawNewEventEventTiles();
-                }
-                if(response.action == "delete_event" || response.action == "create_event") {
-                    $.ajax({
-                        url: "/julie_actions/<%= @julie_action.id %>/update",
-                        method: "post",
-                        data: {
-                            events: _.map(_.filter(window.newEventEventTiles, function(eventTile) {
-                                return eventTile.eventId;
-                            }), function(eventTile) {
-                                return {
-                                    id: eventTile.eventId,
-                                    calendar_id: eventTile.calendarId,
-                                    timezone_id: eventTile.timezoneId
-                                };
-                            }),
-                            done: true,
-                            processed_in: Date.now() - window.startedAt
-                        }
-                    });
-                    redrawReplyText();
-                }
-                showEditedEventInCalendar();
-            },
-            afterRedrawCallback: function() {
-                redrawNewEventEventTiles();
-
-                showEditedEventInCalendar();
-
-            },
-            afterEventFetchedCallback: function() {
-                redrawReplyText();
-            },
-            afterNewEventEdited: function() {
-                showEditedEventInCalendar();
-            }
-        });
-        eventTile.redraw();
-        if(params.eventId) {
-            eventTile.fetchEvent(function() {
-                eventTile.redraw();
-            });
-        }
-
-        return eventTile;
-    }
-
-    function showEditedEventInCalendar() {
-        if($(".calendar-container").hasClass("minimized")) {
-            return;
-        }
-        var beingAddedEventTile =_.find(window.newEventEventTiles, function(eventTile) {
-            return eventTile.isEditing();
-        });
-        if(beingAddedEventTile) {
-            var editedEvent = beingAddedEventTile.getEditedEvent();
-            var eventData = window.currentCalendar.generateEventData(editedEvent);
-            eventData.start = eventData.start.tz(window.currentCalendar.getCalendarTimezone()).format();
-            eventData.end = eventData.end.tz(window.currentCalendar.getCalendarTimezone()).format();
-            window.currentCalendar.goToDateTime(moment(editedEvent.start));
-            window.currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
-            window.currentCalendar.addEvent(eventData);
-        }
-        else {
-            window.currentCalendar.addEvent(null);
-        }
-    }
-
-    function redrawNewEventEventTiles() {
-        var $container = $("#thread-header-other-entries-container");
-
-        if(_.filter(window.newEventEventTiles, function(eventTile){
-            return eventTile.isEditing();
-        }).length > 0) {
-            $container.find(".new-events-container").find(".create-new-event-tile-button").hide();
-        }
-        else {
-            $container.find(".new-events-container").find(".create-new-event-tile-button").show();
-        }
-    }
-    <% end %>
 
     <% initial_to_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| c['email']} %>
     <% initial_cc_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| c['email']} %>
@@ -289,32 +92,26 @@
         return <%== (@messages_thread.contacts(with_client: true).map { |c| c[:email] } + recipients_array).uniq.map{|e| {name: e}}.to_json %>;
     }
 
-    function currentRecipients() {
+    function clientRecipient() {
+        return {name: "<%= @messages_thread.client_email %>"};
+    }
+
+    window.currentRecipients = function () {
         return {
-            to: $.map($("#recipients-to-input").tokenInput("get"), function(elt) {
+            to: $.map($("#recipients-to-input").tokenInput("get"), function (elt) {
                 return elt.name;
             }),
-            cc: $.map($("#recipients-cc-input").tokenInput("get"), function(elt) {
+            cc: $.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
                 return elt.name;
             })
         };
-    }
+    };
 
-
-
-    $(function () {
-        $("#show-calendar-button").click(function() {
-           $(".calendar-container").removeClass("minimized");
-           window.currentCalendar.redrawFullCalendar();
-           if(window.newEventEventTiles) {
-               showEditedEventInCalendar();
-           }
-        });
-        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function(e) {
-            var dateTime = $(this).data("date-time");
-            $(".calendar-container").removeClass("minimized");
-            window.currentCalendar.goToDateTime(dateTime);
-        });
+    function initTokenInputs() {
+        if (window.tokenInputsInitialized) {
+            return;
+        }
+        window.tokenInputsInitialized = true;
         $("#recipients-to-input").tokenInput(
                 possibleRecipients(),
                 {
@@ -341,9 +138,24 @@
                     preventDuplicates: true,
                     theme: 'facebook'
                 });
-        window.afterFormLoadedCallback = redrawReplyText;
+    }
 
-        $(".left-column").scroll(function() {
+    $(function () {
+        initTokenInputs();
+        $("#show-calendar-button").click(function () {
+            $(".calendar-container").removeClass("minimized");
+            window.currentCalendar.redrawFullCalendar();
+            if (window.newEventEventTiles && window.showEditedEventInCalendar) {
+                window.showEditedEventInCalendar();
+            }
+        });
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function (e) {
+            var dateTime = $(this).data("date-time");
+            $(".calendar-container").removeClass("minimized");
+            window.currentCalendar.goToDateTime(dateTime);
+        });
+
+        $(".left-column").scroll(function () {
             if ($(this).scrollTop() < 40) {
                 $(".julie-action-title").css({top: 40});
             }
@@ -352,220 +164,63 @@
             }
         });
 
-        $("#no-date-fits").click(function() {
-            window.timeSlotToCreate = null;
-            $(".messages-thread-info-panel .create-event-panel").hide();
-            window.currentCalendar.initialData.mode = "suggest_dates";
-
-            $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
-        });
-
-        $("#create-event-button").click(function () {
-            $("#create-event-button").attr('disabled', true);
-            $(".creating-event-message").html("Creating...");
-            var start = moment(window.timeSlotToCreate);
-            var end = start.clone();
-            end.add('m', <%= @messages_thread.computed_data[:duration] %>);
-
-            $(".calendar-container").addClass("minimized");
-            CommonHelpers.externalRequest({
-                action: "create_event",
-                email: "<%= @messages_thread.account_email %>",
-                summary: window.threadComputedData.summary,
-                description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes,
-                attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
-                location: window.threadComputedData.location,
-                all_day: false,
-                private: window.threadComputedData.private,
-                start: start.format(),
-                end: end.format()
-            }, function (e) {
-                window.currentEventId = e.data.event_id;
-                window.currentCalendarId = e.data.calendar_id;
-                $(".messages-thread-info-panel .create-event-panel").hide();
-                redrawReplyText();
-                $(".messages-thread-info-panel .message-container").hide();
-                $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
-
-                window.presenters.redrawEvent({
-                    accountEmail: "<%= @messages_thread.account_email %>",
-                    eventId: window.currentEventId,
-                    calendarId: window.currentCalendarId,
-                    threadComputedData: window.threadComputedData,
-                    callback: function() {
-                        setTimeout(function() {
-                            $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
-                        }, 1000);
-                    }
-
-                });
-
-                $.ajax({
-                    type: "post",
-                    url: "/julie_actions/<%= @julie_action.id %>/update",
-                    data: {
-                        event_id: window.currentEventId,
-                        calendar_id: window.currentCalendarId
-                    },
-                    success: function (e) {
-                        $(".creating-event-message").html("Created.");
-                        redrawReplyText();
-                    }
-                });
-            }, function () {
-                $(".creating-event-message").html("Problem while creating.");
-                window.currentCalendar.refreshEvents();
-                $("#create-event-button").removeAttr('disabled');
-            });
-
-        });
-
         $("#reply-button").click(function () {
-
             $("#reply-button").prop('disabled', true);
-
-            <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
-            $(".reply-box #callback-message").html("Sending...");
-            $.ajax({
-                url: "/julie_actions/<%= @julie_action.id %>/update",
-                method: "post",
-                data: {
-                    text: $("textarea#reply-text").val(),
-                    to: currentRecipients().to,
-                    cc: currentRecipients().cc,
-                    date_times: window.timeSlotsToSuggest,
-                    done: true,
-                    processed_in: Date.now() - window.startedAt
-                }
-            });
-            sendReply();
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
-            $.ajax({
-                url: "/julie_actions/<%= @julie_action.id %>/update",
-                method: "post",
-                data: {
-                    text: $("textarea#reply-text").val(),
-                    to: currentRecipients().to,
-                    cc: currentRecipients().cc,
-                    date_times: window.timeSlotsToSuggest,
-                    event_id: window.currentEventId,
-                    calendar_id: window.currentCalendarId,
-                    done: true,
-                    processed_in: Date.now() - window.startedAt
-                }
-            });
-            sendReply();
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT ||
-             @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
-
-            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .edit-event-button").hide();
-            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .cancel-edit-event-button").hide();
-            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Deleting event...");
-            $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container").show();
-            CommonHelpers.externalRequest({
-                action: "delete_event",
-                email: "<%= @messages_thread.account_email %>",
-                event_id: "<%= @messages_thread.event_data[:event_id] %>",
-                calendar_id: "<%= @messages_thread.event_data[:calendar_id] %>"
-            }, function (e) {
-                $(".messages-thread-info-panel .created-event-panel").hide();
+            if(window.clickReplyButton) {
+                window.clickReplyButton();
+            }
+            else {
                 $.ajax({
                     url: "/julie_actions/<%= @julie_action.id %>/update",
                     method: "post",
                     data: {
                         text: $("textarea#reply-text").val(),
-                        to: currentRecipients().to,
-                        cc: currentRecipients().cc,
+                        to: window.currentRecipients().to,
+                        cc: window.currentRecipients().cc,
                         done: true,
-                        date_times: window.timeSlotsToSuggest,
                         processed_in: Date.now() - window.startedAt
                     }
                 });
-                sendReply();
-            }, function (e) {
-                $(".messages-thread-info-panel .created-event-panel .edit-event-buttons-container .updating-event-message").html("Problem while deleting event.");
-            });
-
-
-
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
-
-                <% if @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
-                var subjectType = localize("email_templates.cancel_multiple.cancel");
-                var bodyType = "Please cancel this event:<br>";
-                <% else %>
-                var subjectType = localize("email_templates.postpone_multiple.postpone");
-                var bodyType = "Please postpone this event:<br>";
-                <% end %>
-                $(".reply-box #callback-message").html("Creating threads...");
-                $.ajax({
-                    url: "/messages/<%= @message.id %>/generate_threads",
-                    method: "post",
-                    data: {
-                        julie_messages: _.map(getSelectedEventsToCancel(), function(event) {
-                            var dateString = capitalize(moment(event.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-                            var addInviteesString = "";
-                            if(window.forceCancelEventIds.indexOf(event.id) > -1) {
-                                addInviteesString = "<br><br>WARNING: SHOULD ADD INVITEES (See previous email)"
-                            }
-                            return {
-                                subject: subjectType + event.title,
-                                html: bodyType + event.title + " (" + dateString + ")" + addInviteesString,
-                                event_id: event.id,
-                                calendar_id: event.calId,
-                                summary: event.title,
-                                attendees: event.attendees,
-                                duration: event.duration,
-                                location: event.location,
-                                notes: event.notes
-                            }
-                        })
-                    },
-                    success: function() {
-                        sendReply();
-                    }
-                });
-            <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
-            $.ajax({
-                url: "/julie_actions/<%= @julie_action.id %>/update",
-                method: "post",
-                data: {
-                    events: _.map(_.filter(window.newEventEventTiles, function(eventTile) {
-                        return eventTile.eventId;
-                    }), function(eventTile) {
-                        return {
-                            id: eventTile.eventId,
-                            calendar_id: eventTile.calendarId,
-                            timezone_id: eventTile.timezoneId
-                        };
-                    }),
-                    text: $("textarea#reply-text").val(),
-                    to: currentRecipients().to,
-                    cc: currentRecipients().cc,
-                    done: true,
-                    processed_in: Date.now() - window.startedAt
-                }
-            });
-            sendReply();
-            <% else %>
-            $.ajax({
-                url: "/julie_actions/<%= @julie_action.id %>/update",
-                method: "post",
-                data: {
-                    text: $("textarea#reply-text").val(),
-                    to: currentRecipients().to,
-                    cc: currentRecipients().cc,
-                    done: true,
-                    processed_in: Date.now() - window.startedAt
-                }
-            });
-            sendReply();
-            <% end %>
-
+                window.sendReply();
+            }
         });
 
-        var sendReply = function() {
+        window.deleteEventBeforeReply = function (callback) {
+            if(window.currentEventTile) {
+                window.currentEventTile.doneEditingCallback = function() {
+                    window.actionDeletedEvent = true;
+                    $(".messages-thread-info-panel .created-event-panel").hide();
+                    callback();
+                };
+                window.currentEventTile.deleteEvent();
+            }
+        };
+
+        window.redrawTimeSlotsToSuggestContainer = function () {
+            var $container = $("#thread-header-other-entries-container");
+            $container.html("");
+            var $timeSlotsToSuggestDiv = $("<div>").addClass("time-slots-to-suggest-list-container");
+            var $timeSlotsToSuggestListDiv = $("<div>").addClass("time-slots-to-suggest-list");
+            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-title").html("Dates sélectionnées"));
+            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-timezone").html("(" + window.threadComputedData.timezone + ")"));
+
+            _.each(window.timeSlotsToSuggest, function (timeSlot) {
+                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block btn-primary time-slot-to-suggest").data("date-time", timeSlot).html(window.helpers.capitalize(moment(timeSlot).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"))));
+                $timeSlotsToSuggestListDiv.append($timeSlotDiv);
+            });
+            $timeSlotsToSuggestDiv.append($timeSlotsToSuggestListDiv);
+            $container.append($timeSlotsToSuggestDiv);
+            var height = $(".time-slots-to-suggest-list").outerHeight();
+
+            $(".time-slots-to-suggest-list-container").css({height: height});
+            var $fakeDiv = $("<div>").css({
+                height: height,
+                width: '100%'
+            });
+            $container.append($fakeDiv);
+        };
+
+        window.sendReply = function () {
             $(".reply-box #callback-message").html("<%= I18n.t("common.sending")%>");
             $.ajax({
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
@@ -573,8 +228,8 @@
                 data: {
                     text: $("textarea#reply-text").val(),
                     html_signature: $("#reply-text-signature").html(),
-                    to: currentRecipients().to,
-                    cc: currentRecipients().cc,
+                    to: window.currentRecipients().to,
+                    cc: window.currentRecipients().cc,
                     quote_message: $("input#quote_message:checked").length > 0
                 },
                 success: function (e) {
@@ -589,378 +244,60 @@
                 }
             });
         };
-
-
-        window.addEventListener("message", function (event) {
-            if (event.data.message == "drawExternalEventsList") {
-                window.timeSlotsToSuggest = event.data.date_times;
-                redrawReplyText();
-                redrawTimeSlotsToSuggestContainer();
-            }
-            else if (event.data.message == "drawExternalEventCreation") {
-                window.timeSlotToCreate = event.data.eventStart;
-                $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
-                $(".suggested-date-times .suggested-date-time.other").remove();
-                $(".suggested-date-times .suggested-date-time").each(function () {
-                    if (moment($(this).data("date")).isSame(moment(event.data.eventStart))) {
-                        $(this).addClass("btn-primary");
-                    }
-                });
-                if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
-                    var dateString = moment(event.data.eventStart).tz(window.currentCalendar.getCalendarTimezone()).locale("<%= I18n.locale %>").format("dddd DD MMMM YYYY à HH:mm");
-                    $(".suggested-date-times").append(
-                            $("<div>")
-                                    .addClass("suggested-date-time other btn btn-sm btn-block btn-primary")
-                                    .html(dateString + "<br>" + window.currentCalendar.getCalendarTimezone())
-                    );
-                }
-                $("#create-event-button").removeAttr('disabled');
-            }
-            else if (event.data.message == "drawExternalEventSelection") {
-                window.selectedEvents = event.data.events;
-                redrawReplyText();
-                redrawSelectedEventsContainer();
-            }
-        }, false);
-
-        function redrawSelectedEventsContainer() {
-            var $container = $("#thread-header-other-entries-container");
-            $container.html("");
-            var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");
-            var $selectedEventsListDiv = $("<div>").addClass("selected-events-list");
-            $selectedEventsListDiv.append($("<div>").addClass("selected-events-title").html("Selected events"));
-
-            for (var i in window.selectedEvents) {
-                var selectedEvent = window.selectedEvents[i];
-                var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
-                $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
-                $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id, selectedEvent.allDay)));
-                if(!selectedEvent.attendees || selectedEvent.attendees.length == 0) {
-                    var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
-                    $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));
-
-                    var $forceCancel = $("<div>").addClass("selected-event-force-cancel")   ;
-                    var $forceCancelCheckbox = $("<input type='checkbox'>");
-                    if(window.forceCancelEventIds.indexOf(selectedEvent.id) > -1) {
-                        $forceCancelCheckbox.attr("checked", true);
-                    }
-                    $forceCancel.append($forceCancelCheckbox);
-                    $forceCancel.append("Force");
-                    $selectedEventNoAttendeesContainer.append($forceCancel);
-
-
-                    $selectedEventDiv.append($selectedEventNoAttendeesContainer);
-                }
-                $selectedEventsListDiv.append($selectedEventDiv);
-            }
-            $selectedEventsListContainerDiv.append($selectedEventsListDiv);
-            $container.append($selectedEventsListContainerDiv);
-
-            $(".selected-event-force-cancel input[type=checkbox]").change(function(e) {
-                var eventId = $(this).closest(".selected-event").data("event-id");
-                var indexInArray = window.forceCancelEventIds.indexOf(eventId);
-                if(indexInArray == -1) {
-                    window.forceCancelEventIds.push(eventId);
-                }
-                else {
-                    window.forceCancelEventIds.splice(indexInArray, 1);
-                }
-                redrawReplyText();
-                redrawSelectedEventsContainer();
-            });
-        }
-
-        function redrawTimeSlotsToSuggestContainer() {
-            var $container = $("#thread-header-other-entries-container");
-            $container.html("");
-            var $timeSlotsToSuggestDiv = $("<div>").addClass("time-slots-to-suggest-list-container");
-            var $timeSlotsToSuggestListDiv = $("<div>").addClass("time-slots-to-suggest-list");
-            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-title").html("Dates sélectionnées"));
-            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-timezone").html("(" + window.threadTimezoneId + ")"));
-
-            for (var i in window.timeSlotsToSuggest) {
-                var timeSlot = timeSlotsToSuggest[i];
-                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block btn-primary time-slot-to-suggest").data("date-time", timeSlot).html(capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format"))));
-                $timeSlotsToSuggestListDiv.append($timeSlotDiv);
-            }
-            $timeSlotsToSuggestDiv.append($timeSlotsToSuggestListDiv);
-            $container.append($timeSlotsToSuggestDiv);
-            var height = $(".time-slots-to-suggest-list").outerHeight();
-
-            $(".time-slots-to-suggest-list-container").css({height: height});
-            var $fakeDiv = $("<div>").css({
-                height: height,
-                width: '100%'
-            });
-            $container.append($fakeDiv);
-        }
-
-
     });
 
-    function getSelectedEventsToCancel() {
-        return _(window.selectedEvents).filter(function(selectedEvent){
-            return(selectedEvent.attendees && selectedEvent.attendees.length > 0) || window.forceCancelEventIds.indexOf(selectedEvent.id) > -1;
-        });
-    }
-
-    function getSelectedEventsNotToCancel() {
-        return _(window.selectedEvents).filter(function(selectedEvent){
-            return(!selectedEvent.attendees || selectedEvent.attendees.length == 0) && window.forceCancelEventIds.indexOf(selectedEvent.id) == -1;
-        });
-    }
-
-    function redrawReplyText() {
-        setCurrentLocale(window.threadLocale);
-
-        var appointment = $.grep(window.appointments,function(v) {
-            return v.label == $("select#appointment_nature").val();
-        })[0];
-
-        var previousAppointment;
-        var addressArray;
-        var locationInTemplate
-        if(appointment) {
-
-
-        previousAppointment = $.grep(window.appointments,function(v) {
-            return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
-        })[0];
-
-        addressArray = $.grep(appointment.addresses_with_description, function(v) {
-            return v.label == $("select#location_nature").val();
-        });
-        locationInTemplate = "";
-        if(addressArray.length > 0) {
-            locationInTemplate = " " + addressArray[0].address_in_template[window.threadLocale];
+    window.setReplyRecipients = function(recipients, otherRecipients) {
+        initTokenInputs();
+        $("#recipients-to-input").tokenInput("clear");
+        $("#recipients-cc-input").tokenInput("clear");
+        if (recipients == "only_client") {
+            $("#recipients-to-input").tokenInput("add", clientRecipient());
         }
-        else if($("#location").val().length > 0) {
-            locationInTemplate = " " + localize("email_templates.common.custom_address_at", {location: $("#location").val()});
-        }
-        }
-        var message = "";
-
-        <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES %>
-        if (window.timeSlotsToSuggest.length > 0) {
-            message = localize("email_templates.suggest_dates.before_dates", {
-                client: "<%= @messages_thread.account.usage_name %>",
-                appointment_nature: appointment.title_in_email[window.threadLocale],
-                location: locationInTemplate
+        else {
+            _.each(initialToRecipients(), function (recipient) {
+                $("#recipients-to-input").tokenInput("add", recipient);
             });
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
-                message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
-            }
-
-            for (var i in window.timeSlotsToSuggest) {
-                var timeSlot = timeSlotsToSuggest[i];
-                message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            }
-            var timeSlotsPlural = "plural";
-            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
-            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
-            if(appointment.label == "call") {
-                message += localize("email_templates.suggest_dates.ask_number.call");
-            }
-            else if(appointment.label == "skype") {
-                message += localize("email_templates.suggest_dates.ask_number.skype");
-            }
-        }
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT %>
-        if (window.timeSlotsToSuggest.length > 0 && window.currentEventData) {
-            var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
-                dateString = dateString + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
-            }
-
-            var appointmentNature = localize("email_templates.common.default_appointment_designation_in_email");
-            if(previousAppointment) {
-                appointmentNature = previousAppointment.designation_in_email[window.threadLocale];
-            }
-
-            message = localize("email_templates.cancel", {
-                client: "<%= @messages_thread.account.usage_name %>",
-                date: dateString,
-                appointment_nature: appointmentNature
-            }) + "\n";
-
-            message = message + localize("email_templates.postpone.before_dates", {
-                appointment_nature: appointment.title_in_email[window.threadLocale],
-                location: locationInTemplate
+            _.each(initialCcRecipients(), function (recipient) {
+                $("#recipients-cc-input").tokenInput("add", recipient);
             });
-
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
-                message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
-            }
-
-            for (var i in window.timeSlotsToSuggest) {
-                var timeSlot = timeSlotsToSuggest[i];
-                message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            }
-            var timeSlotsPlural = "plural";
-            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
-            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
-        }
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES %>
-        if (window.timeSlotToCreate) {
-            var dateString = "";
-            var timezoneIds = <%== @messages_thread.all_timezones.to_json %>;
-            if(timezoneIds.length == 0) {
-                timezoneIds = [window.threadAccount.default_timezone_id];
-            }
-            if(timezoneIds.length == 1 && timezoneIds[0] == window.threadAccount.default_timezone_id && !window.threadComputedData.is_virtual_appointment) {
-                dateString = capitalize(moment(window.timeSlotToCreate).tz(timezoneIds[0]).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            }
-            else {
-                for(var i= 0; i < timezoneIds.length; i++) {
-                    if(dateString != "") {
-                        dateString = dateString + "\n";
+            if(otherRecipients) {
+                var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
+                    return elt.name;
+                });
+                var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
+                    return elt.name;
+                });
+                _(otherRecipients).each(function(email) {
+                    if (toRecipients.indexOf(email) == -1 && ccRecipients.indexOf(email) == -1) {
+                        $("#recipients-to-input").tokenInput("add", {name: email});
                     }
-                    dateString = dateString + capitalize(moment(window.timeSlotToCreate).tz(timezoneIds[i]).locale(window.threadLocale).format(localize("email_templates.common.full_date_format"))) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
-                }
+                });
             }
-
-            message = localize("email_templates.invites_sent", {
-                appointment_nature: appointment.title_in_email[window.threadLocale],
-                location: locationInTemplate,
-                date: dateString
-            });
         }
-        else if (window.timeSlotsToSuggest.length > 0) {
-            <%
-            date_times_to_check = JSON.parse(@julie_action.message_classification.date_times)
-            suggested_date_times = @messages_thread.suggested_date_times
-            %>
-            var templateName;
-            <% if date_times_to_check.length > 1
-            if (date_times_to_check & suggested_date_times).empty? %>
-                templateName = "email_templates.no_date_fits.before_dates.not_suggested.plural"
-            <% else %>
-                templateName = "email_templates.no_date_fits.before_dates.suggested.plural"
-            <% end
-            else
-            if (date_times_to_check & suggested_date_times).empty? %>
-                templateName = "email_templates.no_date_fits.before_dates.not_suggested.singular"
-            <%else %>
-                templateName = "email_templates.no_date_fits.before_dates.suggested.singular"
-            <% end
-            end %>
+    };
 
-            message = localize(templateName, {
-                client: "<%= @messages_thread.account.usage_name %>",
-                appointment_nature: appointment.title_in_email[window.threadLocale],
-                location: locationInTemplate
-            });
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id || window.threadComputedData.is_virtual_appointment) {
-                message += "\n" + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
-            }
-
-            for (var i in window.timeSlotsToSuggest) {
-                var timeSlot = timeSlotsToSuggest[i];
-                message += "\n  - " + capitalize(moment(timeSlot).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            }
-            var timeSlotsPlural = "plural";
-            if(window.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
-            message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
-        }
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_INFO %>
-        message = localize("email_templates.info_asked");
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_SEND_CONFIRMATION %>
-        message = localize("email_templates.confirmation");
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_EVENT %>
-        if(window.currentEventData) {
-            var dateString = capitalize(moment(window.currentEventData.start.dateTime).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-            if(window.threadTimezoneId != window.threadAccount.default_timezone_id) {
-                dateString = dateString + + " " + localize("email_templates.common.timezone_precision", {timezone: window.threadTimezoneId.replace("_", " ")});
-            }
-            var appointmentNature = localize("email_templates.common.default_appointment_designation_in_email");
-            if(previousAppointment) {
-                appointmentNature = previousAppointment.designation_in_email[window.threadLocale];
-            }
-            message = localize("email_templates.cancel", {
-                client: "<%= @messages_thread.account.usage_name %>",
-                date: dateString,
-                appointment_nature: appointmentNature
-            });
-        }
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS %>
-
-        <% if @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS %>
-        var wordingBase = "cancel_multiple";
-        <% else %>
-        var wordingBase = "postpone_multiple";
-        <% end %>
-
-        var selectedEventsToCancel = getSelectedEventsToCancel();
-        if(selectedEventsToCancel.length > 0) {
-            var toCancelPlural = (selectedEventsToCancel.length > 1)?"plural":"singular";
-            message += localize("email_templates." + wordingBase + ".noted_gonna_cancel." + toCancelPlural);
-
-            _.each(getSelectedEventsToCancel(), function(selectedEvent) {
-                var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-                message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
-            });
-        }
-
-        var selectedEventsNotToCancel = getSelectedEventsNotToCancel();
-
-        if(selectedEventsNotToCancel.length > 0) {
-            var notToCancelPlural = (selectedEventsNotToCancel.length > 1)?"plural":"singular";
-            if(selectedEventsToCancel.length > 0) {
-                message += localize("email_templates." + wordingBase + ".but_no_attendees." + notToCancelPlural);
-            }
-            else {
-                message += localize("email_templates." + wordingBase + ".noted_no_attendees." + notToCancelPlural);
-            }
-
-            _.each(selectedEventsNotToCancel, function(selectedEvent) {
-                var dateString = capitalize(moment(selectedEvent.start).tz(window.threadTimezoneId).locale(window.threadLocale).format(localize("email_templates.common.full_date_format")));
-                message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
-            });
-            message += localize("email_templates." + wordingBase + ".what_should_i_do." + notToCancelPlural);
-        }
-
-        <% elsif @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT %>
-            message = localize("email_templates.create_events.before_dates");
-            _.each(_.filter(window.newEventEventTiles, function(eventTile) {
-                return eventTile.eventId && eventTile.event.title && eventTile.event.start;
-            }), function(eventTile) {
-                message += "- " + eventTile.event.title + " : " + CommonHelpers.formatDateTimeRangeInText(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay) + "\n";
-            });
-        <% end %>
-
+    window.setReplyMessage = function (message, recipients, otherRecipients) {
+        window.setReplyRecipients(recipients, otherRecipients);
+        setCurrentLocale(window.threadComputedData.locale);
         $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));
         $("div#reply-text-signature").html(localize("email_templates.common.signature." + window.julieAliasId));
         $("textarea#reply-text").elastic();
-    }
-
-    var capitalize = function (txt) {
-        return txt[0].toUpperCase() + txt.substr(1);
+        setCurrentLocale("<%= I18n.locale %>");
     };
 </script>
 
 <div class="fixed-columns">
-<div class="left-column">
+  <div class="left-column">
 
-  <%= render partial: "common/header" %>
+    <%= render partial: "common/header" %>
 
     <div class="julie-action-title">
-        <span class="title"><%= I18n.t("common.to_do") %> <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %></span>
-        <div id="show-calendar-button" class="btn btn-sm btn-default"><%= I18n.t("actions.show_calendar")%></div>
+      <span class="title"><%= I18n.t("common.to_do") %> <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %></span>
+
+      <div id="show-calendar-button" class="btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
     </div>
 
-    <% if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION ||
-            @julie_action.action_nature == JulieAction::JD_ACTION_CREATE_EVENT
-    %>
-      <% if @messages_thread.account_email %>
-        <%= render template: "calendar/calendar" %>
-      <% end %>
-    <% end %>
+    <%= render template: "calendar/calendar" %>
 
 
     <div class="julie-action-fantom"></div>
@@ -971,27 +308,28 @@
         <%= @messages_thread.subject %>
       </div>
       <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classifications.#{@julie_action.message_classification.classification}.action")} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action")} %>
 
           <% if message.id == @message.id %>
               <div class="highlighted-below-email">
                 <div class="reply-box">
-                  <div class="from"><%= I18n.t("common.from")%> <%= "#{JULIE_ALIASES_DATA[@messages_thread.julie_alias][:name]} <#{@messages_thread.julie_alias}>" %></div>
+                  <div class="from"><%= I18n.t("common.from") %> <%= "#{JULIE_ALIASES_DATA[@messages_thread.julie_alias][:name]} <#{@messages_thread.julie_alias}>" %></div>
                   <div class="to">
-                    <span><%= I18n.t("common.to")%></span>
+                    <span><%= I18n.t("common.to") %></span>
                     <input id="recipients-to-input"/>
                   </div>
                   <div class="cc">
-                    <span><%= I18n.t("common.cc")%></span>
+                    <span><%= I18n.t("common.cc") %></span>
                     <input id="recipients-cc-input"/>
                   </div>
                   <textarea id="reply-text"></textarea>
+
                   <div id="reply-text-signature"></div>
                   <div class="quote-message-container">
                     <%= check_box_tag :quote_message, "", true %>
                     <%= I18n.t "common.quote_message" %>
                   </div>
-                  <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply")%></button>
+                  <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
                   <div id="callback-message"></div>
                 </div>
               </div>
@@ -1002,10 +340,5 @@
 
   </div>
 </div>
-<% if @messages_thread.account_email %>
-    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
-<% else %>
-    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
-<% end %>
 
 

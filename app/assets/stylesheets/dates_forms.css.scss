@@ -1,4 +1,6 @@
 .dates-identification-panel {
+  display: none;
+
   .date-identification-question {
     text-align: center;
     font-size: 18px;
@@ -17,7 +19,7 @@
         border-bottom: 1px solid #ccc;
         line-height: 25px;
         padding: 5px;
-        cursor: pointer;
+        position: relative;
 
         &:hover {
           background-color: #fffff5;
@@ -29,6 +31,16 @@
         .timezone {
           color: #aaa;
           text-align: right;
+        }
+
+        label {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          cursor: pointer;
+          @include user-select(none);
         }
       }
     }

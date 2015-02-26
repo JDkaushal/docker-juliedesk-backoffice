@@ -1,5 +1,8 @@
 <div class="header">
-    <%= link_to "JulieDesk Backoffice", "/" %>
+    <%= link_to "/" do %>
+      JulieDesk Backoffice
+      <span class="version">2.0</span>
+    <% end %>
     <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
     <div class="logged-as"><%= I18n.t("common.logged_as", name: session[:user_name]) %></div>
 </div>

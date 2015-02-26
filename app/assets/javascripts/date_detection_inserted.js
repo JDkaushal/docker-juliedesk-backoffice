@@ -139,6 +139,9 @@ function findDateGeneratedByPlugin(resultsArray){
 
 
 var runDateDetection = function(e) {
+  if(!e) {
+      return;
+  }
   $(".aBn").replaceWith(function() {
       return $(this).text();
   });

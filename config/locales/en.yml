@@ -32,33 +32,54 @@ en:
     zero: "No item to classify"
     one: "1 item to classify"
     other: "%{count} items to classify"
-  classifications:
-      ask_date_suggestions:
-        action: "Suggest availabilities"
-      ask_availabilities:
-        action: "Check availability(ies)"
-      ask_cancel_appointment:
-        action: "Cancel this thread's meeting"
-      ask_postpone_appointment:
-        action: "Postpone this thread's meeting"
-      ask_info:
-        action: "Give an info"
-      give_info:
-        action: "Note an info"
-      ask_create_event:
-        action: "Create an event in calendar"
-      ask_and_give_nothing:
-        action: "I am asked and given nothing"
-      ask_cancel_events:
-        action: "Cancel other event(s)"
-      ask_postpone_events:
-        action: "Postpone other event(s)"
+
+  classification_categories:
+      event_scheduling:
+        title: "Appointment scheduling"
+        classifications:
+            ask_date_suggestions:
+              action: "Suggest availabilities"
+            ask_availabilities:
+              action: "Check availability(ies)"
+            ask_info:
+              action: "Give an info"
+            give_info:
+              action: "Note an info"
+      manage_scheduled_event:
+        title: "Manage scheduled appointment"
+        classifications:
+            ask_info:
+              action: "Give an info"
+            give_info:
+              action: "Update event"
+            ask_cancel_appointment:
+              action: "Cancel appointment"
+      event_rescheduling:
+        title: "Reschedule appointment"
+        classifications:
+            ask_date_suggestions:
+              action: "Suggest availabilities"
+            ask_availabilities:
+              action: "Check availability(ies)"
+      manage_events:
+        title: "Manage events"
+        classifications:
+          ask_create_event:
+            action: "Manage events"
       other:
-        action: "Something else"
-      unknown:
-        action: "Free reply"
-      to_founders:
-        action: "I can't decide"
+        title: "Other"
+        classifications:
+          ask_create_event:
+            action: "Create an event in calendar"
+          ask_cancel_events:
+            action: "Cancel other event(s)"
+          ask_postpone_events:
+            action: "Postpone other event(s)"
+          unknown:
+            action: "Free reply"
+          to_founders:
+            action: "I can't decide"
+
   actions:
       create_event:
         todo: "create event"
@@ -142,6 +163,18 @@ en:
     email_placeholder: "Email address..."
     send_to_founders: "Send to support team"
     an_hesitation: "Hesitating?"
+    did_client_gave_agreement:
+        event_scheduling:
+          ask_date_suggestions: "Did %{client} gave agreement for suggesting dates?"
+          ask_availabilities: "Did %{client} gave agreement for scheduling appointment?"
+        event_rescheduling:
+          ask_date_suggestions: "Did %{client} gave agreement for suggesting new dates?"
+          ask_availabilities: "Did %{client} gave agreement for rescheduling appointment?"
+        manage_scheduled_event:
+          ask_cancel_appointment: "Did %{client} gave agreement for cancelling appointment?"
+    are_attendees_noticed: "Have attendees been noticed?"
+
+
 
 
   dates_identifications:

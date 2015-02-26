@@ -7,7 +7,7 @@
 
           if(date.length > 0) {
               var mDate = moment(date).tz(timezone);
-              var dateString = mDate.locale(window.threadLocale).format(localize("email_templates.common.full_date_format"));
+              var dateString = mDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
               $(this).find(".date").html(dateString);
               $(this).find(".timezone").html("(" + timezone + ")");
           }
@@ -32,13 +32,16 @@
       <div class="suggested-date-times">
         <% if local_assigns[:julie_action] %>
             <% JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").each do |dt| %>
-                <div class="suggested-date-time btn btn-sm btn-default btn-block"
-                     data-date="<%= dt['date'] %>"
-                     data-timezone="<%= dt['timezone'] %>"
-                     data-text="<%= dt['text'] %>">
-                  <div class="date"></div>
-                  <div class="timezone"></div>
-                  <div class="text"></div>
+                <div class="suggested-date-time-container">
+                    <div class="suggested-date-time btn btn-sm btn-default btn-block"
+                         data-date="<%= dt['date'] %>"
+                         data-timezone="<%= dt['timezone'] %>"
+                         data-text="<%= dt['text'] %>">
+                      <div class="date"></div>
+                      <div class="timezone"></div>
+                      <div class="text"></div>
+                    </div>
+                    <input type="checkbox"/>
                 </div>
             <% end %>
         <% end %>
@@ -47,7 +50,11 @@
   </div>
   <br>
   <br>
-  <button id="create-event-button" class="btn btn-success btn-block" disabled="disabled"><%= I18n.t("info_box.create_event")%></button>
+
+  <button id="create-event-button" class="btn btn-success btn-block" disabled="disabled">
+    <%= I18n.t("info_box.create_event")%>
+  </button>
+
   <button id="no-date-fits" class="btn btn btn-default btn-block"><%= I18n.t("info_box.no_date_fits")%></button>
   <div class="creating-event-message"></div>
 </div>

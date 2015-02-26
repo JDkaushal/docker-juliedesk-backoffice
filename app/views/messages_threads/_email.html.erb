@@ -11,7 +11,7 @@
         });
 
         $email.find(".actions-menu-button").click(function (e) {
-            $email.find(".actions-menu").toggleClass("visible");
+            $email.find(".actions-menu-positioner").toggleClass("visible");
             e.stopPropagation();
         });
 
@@ -24,7 +24,7 @@
 
         $email.click(function () {
             if ($(this).closest(".actions-menu").length == 0) {
-                $email.find(".actions-menu").removeClass("visible");
+                $email.find(".actions-menu-positioner").removeClass("visible");
             }
         });
 
@@ -78,28 +78,19 @@
       <% if local_assigns[:actions_available] %>
           <div class="actions-menu-button"></div>
 
-          <div class="actions-menu">
-            <% if local_assigns[:no_account] %>
-                <% (MessageClassification.no_account_classifications).each do |classification| %>
-                    <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
-                <% end %>
-            <% else %>
-                <% (MessageClassification.primary_classifications).each do |classification| %>
-                    <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
-                <% end %>
-                <div class="actions-separator"></div>
-                <div class="secondary-actions">
-                  <% (MessageClassification.secondary_classifications).each do |classification| %>
-                      <%= link_to I18n.t("classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", disabled: MessageClassification.is_disabled(message, classification) %>
-                  <% end %>
-                  <% if session[:user_username] == "operator@juliedesk.com" %>
-                      <%= link_to I18n.t("classifications.#{MessageClassification::TO_FOUNDERS}.action"), {controller: :messages, action: :classifying, id: message.id, classification: MessageClassification::TO_FOUNDERS}, class: "action", disabled: MessageClassification.is_disabled(message, MessageClassification::TO_FOUNDERS) %>
-                  <% end %>
-                </div>
-                <%= image_tag "ajax-loader.gif", class: "spinner" %>
-            <% end %>
+          <div class="actions-menu-positioner">
+            <div class="actions-menu">
+              <% message.messages_thread.available_classifications.each do |category, classifications| %>
+                  <div class="classification-category">
+                    <div class="classification-title"><%= I18n.t("classification_categories.#{category}.title") %></div>
+                    <% classifications.each do |classification| %>
+                        <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+                    <% end %>
+                  </div>
+                  <%= image_tag "ajax-loader.gif", class: "spinner" %>
+              <% end %>
+            </div>
           </div>
-
       <% end %>
 
       <div class="to">

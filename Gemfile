@@ -37,3 +37,7 @@ gem "detect_language"
 gem 'handlebars_assets'
 
 gem "rack-timeout"
+
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0'
+end

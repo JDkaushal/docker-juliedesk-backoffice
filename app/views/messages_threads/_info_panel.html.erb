@@ -1,6 +1,6 @@
 <script>
-    window.threadLocale = "<%= messages_thread.computed_data[:locale] %>";
-    window.threadTimezoneId = "<%= messages_thread.computed_data[:timezone] %>";
+    setCurrentLocale("<%= I18n.locale %>");
+
     window.appointments = <%== messages_thread.account.try(:appointments).try(:to_json) || [] %>;
     window.computed = <%== messages_thread.account.try(:appointments).try(:to_json) || [] %>;
 
@@ -117,18 +117,54 @@
 
         <% if messages_thread.event_data[:event_id] %>
 
-        window.presenters.redrawEvent({
-            accountEmail: "<%= messages_thread.account_email %>",
+        window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
+            timezoneId: window.threadComputedData.timezone,
+            mode: "read_only",
+            event: {},
             eventId: "<%= messages_thread.event_data[:event_id] %>",
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
-            threadComputedData: window.threadComputedData,
-            callback: window.afterEventFetched
+            accountEmail: window.threadAccount.email,
+            locale: window.threadComputedData.locale,
+            doneEditingCallback: function() {
+
+            }
         });
+        $(".messages-thread-info-panel .created-event-panel").show();
+        window.currentEventTile.redraw();
+        window.currentEventTile.fetchEvent(function(data) {
+            window.currentEventData = data;
+            window.currentEventTile.redraw();
+            if(window.afterEventFetched) {
+                window.afterEventFetched();
+            }
+        });
+
         <% end %>
 
         fetchOtherAccounts();
     });
 
+    window.getCurrentAppointment = function() {
+        return $.grep(window.appointments,function(v) {
+            return v.label == $("select#appointment_nature").val();
+        })[0];
+    };
+    window.getCurrentAddress = function() {
+        var currentAppointment = window.getCurrentAppointment();
+        if(!currentAppointment) {
+            return null;
+        }
+        var addressArray = $.grep(currentAppointment.addresses_with_description, function(v) {
+            return v.label == $("select#location_nature").val();
+        });
+        if(addressArray.length > 0) {
+            return addressArray[0];
+        }
+        else if($("#location").val().length > 0) {
+            return $("#location").val();
+        }
+        return null;
+    };
 
 
     function reProcessTitle() {
@@ -310,7 +346,11 @@
 
   <div id="thread-header-other-entries-container"></div>
 
-  <%= render partial: "messages_threads/created_event_panel" %>
+  <%= render partial: "messages_threads/client_agreement_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
+
+  <%= render partial: "messages_threads/attendees_are_noticed_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
+
+  <div class="created-event-panel"></div>
 
   <%= render partial: "messages_threads/create_event_panel", locals: {messages_thread: messages_thread, julie_action: local_assigns[:julie_action]} %>
 

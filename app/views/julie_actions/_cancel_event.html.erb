@@ -1,0 +1,64 @@
+<script>
+    window.afterEventFetched = function () {
+        var otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+            return attendee.email;
+        });
+
+        if(window.threadComputedData.client_agreement) {
+            $("input#quote_message").removeAttr("checked");
+
+            window.setReplyMessage(window.generateEmailTemplate({
+                action: "cancel_event",
+                clientAgreement: true,
+                attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
+                appointment: window.getCurrentAppointment(),
+                address: window.getCurrentAddress(),
+                timezoneId: window.threadComputedData.timezone,
+                defaultTimezoneId: window.threadAccount.defaultTimezoneId,
+                locale: window.threadComputedData.locale,
+                client: window.threadAccount.usage_name,
+                currentEventData: window.currentEventData
+            }), "all", otherEmails);
+        }
+        else {
+            window.setReplyMessage(window.generateEmailTemplate({
+                action: "cancel_event",
+                clientAgreement: false,
+                timezoneId: window.threadComputedData.timezone,
+                defaultTimezoneId: window.threadAccount.defaultTimezoneId,
+                locale: window.threadComputedData.locale,
+                appointment: window.getCurrentAppointment(),
+                address: window.getCurrentAddress()
+            }), "client");
+        }
+
+    };
+
+    var cancelEventReplyFunction = function() {
+        $.ajax({
+            url: "/julie_actions/<%= @julie_action.id %>/update",
+            method: "post",
+            data: {
+                text: $("textarea#reply-text").val(),
+                to: window.currentRecipients().to,
+                cc: window.currentRecipients().cc,
+                done: true,
+                deleted_event: window.actionDeletedEvent,
+                date_times: window.timeSlotsToSuggest,
+                processed_in: Date.now() - window.startedAt
+            }
+        });
+        window.sendReply();
+    };
+
+    window.clickReplyButton = function() {
+        if(window.threadComputedData.client_agreement) {
+            window.deleteEventBeforeReply(function() {
+                cancelEventReplyFunction();
+            });
+        }
+        else {
+            cancelEventReplyFunction();
+        }
+    };
+</script>

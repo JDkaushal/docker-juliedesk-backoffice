@@ -1,0 +1,28 @@
+.create-event-panel {
+  display: none;
+  padding: 0 0 30px 0;
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid #ccc;
+
+  .suggested-date-time-container {
+    margin: 2px 0;
+    .suggested-date-time {
+      width: 300px;
+      display: inline-block;
+    }
+    input[type='checkbox'] {
+      width: 15px;
+      height: 15px;
+      margin: 5px 5px;
+    }
+  }
+
+
+  .creating-event-message {
+    text-align: center;
+    line-height: 30px;
+    font-size: 14px;
+    color: #aaa;
+    font-weight: 200;
+  }
+}

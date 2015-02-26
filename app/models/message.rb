@@ -132,11 +132,13 @@ class Message < ActiveRecord::Base
       if existing_message.try(:messages_thread)
         # Copy the original message into the existing thread
         self.google_message.threadId = existing_message.messages_thread.google_thread_id
+        self.google_message.labelIds = (self.google_message.labelIds.select{|label| label != "SENT"} + ["INBOX"]).uniq
         updated_google_message = self.google_message.insert
       else
         # Copy the original message with a new subject and get the corresponding threadId
         self.google_message.threadId = nil
         self.google_message.subject = julie_message_hash['subject']
+        self.google_message.labelIds = (self.google_message.labelIds.select{|label| label != "SENT"} + ["INBOX"]).uniq
         updated_google_message = self.google_message.insert
       end
 
@@ -219,5 +221,9 @@ class Message < ActiveRecord::Base
     message_classification.julie_action.update_attributes done: true,
                                                           event_id: event['id'],
                                                           calendar_id: event['calendar_id']
+  end
+
+  def classification_category_for_classification classification
+    messages_thread.classification_category_for_classification(classification)
   end
 end

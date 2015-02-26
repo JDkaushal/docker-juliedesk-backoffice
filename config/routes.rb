@@ -39,7 +39,8 @@ Rails.application.routes.draw do
     get "classified_events", controller: :events, action: :classified_events
   end
 
-  get "test/js" => "application#test_js"
+  get "test/js" => "test#js"
+  get "test/templates" => "test#templates"
 
   get "/auth/:provider/callback" => "application#omniauth_callback"
 

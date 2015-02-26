@@ -1,15 +1,3 @@
-<script>
-    $(function () {
-        window.calendarParams.height = $(".calendar-container").height();
-        window.calendarParams.other_emails = window.otherAccountEmails;
-        window.calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
-
-        window.calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function(data) {
-            return data.attendee_email;
-        });
-        window.currentCalendar = new Calendar($(".calendar-container"), window.calendarParams);
-    });
-</script>
 <div class="calendar-container">
 
   <div class="global-loading">

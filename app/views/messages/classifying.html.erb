@@ -1,23 +1,18 @@
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @message.messages_thread, message: @message, classification: @classification} %>
+<script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>
 <script>
-    window.startedAt = <%= params[:started_at] || (DateTime.now.to_i * 1000) %>;
-    window.threadLocale = "<%= @messages_thread.computed_data[:locale] %>";
-    setCurrentLocale(window.threadLocale);
-
-    $(function () {
-        $("#back-button").click(function () {
-            if (window.clickBackButton) {
-                window.clickBackButton();
-            }
-            else {
-                clickBackButtonDefault();
-            }
-        });
-    });
-    function clickBackButtonDefault() {
-        window.history.back();
-    }
+  var isPostpone = <%= (@messages_thread.event_data[:event_id].present?)?"true":"false" %>;
+  var classificationForm = window.classificationForms.createClassificationForm({
+      classification:  "<%= @classification %>",
+      startedAt: <%= params[:started_at] || (DateTime.now.to_i * 1000) %>,
+      locale: "<%= I18n.locale %>",
+      threadLocale:"<%= @messages_thread.computed_data[:locale] %>",
+      isPostpone: isPostpone,
+      messageId: "<%= @message.id %>",
+      clientAgreement: window.threadComputedData.client_agreement && !isPostpone,
+      alreadySuggestedDates: <%== @message.messages_thread.suggested_date_times.map{|dt| dt.to_s}.to_json %>
+  });
 </script>
-<%= render template: "messages/classifications_form/#{@classification}" %>
 
 <div class="fixed-columns">
 
@@ -36,10 +31,10 @@
       </div>
 
       <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classifications.#{@classification}.action")} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action")} %>
       <% end %>
     </div>
   </div>
 </div>
-<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @message.messages_thread, message: @message} %>
+
 

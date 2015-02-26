@@ -11,7 +11,6 @@ class MessageClassification < ActiveRecord::Base
   ASK_INFO                 = "ask_info"
   GIVE_INFO                = "give_info"
   ASK_CREATE_EVENT         = "ask_create_event"
-  ASK_AND_GIVE_NOTHING     = "ask_and_give_nothing"
   ASK_CANCEL_EVENTS        = "ask_cancel_events"
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
@@ -38,6 +37,8 @@ class MessageClassification < ActiveRecord::Base
         private: params[:private],
         constraints: params[:constraints],
         constraints_data: (params[:constraints_data].try(:values) || []).to_json,
+        client_agreement: params[:client_agreement],
+        attendees_are_noticed: params[:attendees_are_noticed],
         operator: params[:operator],
         processed_in: params[:processed_in],
 
@@ -112,6 +113,10 @@ class MessageClassification < ActiveRecord::Base
 
   def self.no_account_classifications
     return [UNKNOWN]
+  end
+
+  def has_data?
+    [ASK_DATE_SUGGESTIONS, ASK_AVAILABILITIES, GIVE_INFO, ASK_CANCEL_APPOINTMENT].include? classification
   end
 
   def self.compare message_classifications

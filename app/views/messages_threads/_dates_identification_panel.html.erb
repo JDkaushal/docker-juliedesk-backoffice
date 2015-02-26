@@ -4,7 +4,7 @@
           var date = $(this).data("date");
           var timezone = $(this).data("timezone");
           var mDate = moment(date).tz(timezone);
-          var dateString = mDate.locale(window.threadLocale).format(localize("email_templates.common.full_date_format"));
+          var dateString = mDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
           $(this).find(".date").html(dateString);
           $(this).find(".timezone").html("(" + timezone + ")");
       });
@@ -15,11 +15,12 @@
     <div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>
 
     <div class="already-suggested-dates">
-      <%  messages_thread.suggested_date_times.each do |dt| %>
+      <%  messages_thread.suggested_date_times.each_with_index do |dt, i| %>
           <div class="already-suggested-date" data-date="<%= dt['date'].to_s %>" data-timezone="<%= dt['timezone'] %>">
-            <%= check_box_tag :already_suggested_date, "" %>
+            <%= check_box_tag "already_suggested_date_#{i}", "" %>
             <span class="date"></span>
             <div class="timezone"></div>
+            <label for="<%= "already_suggested_date_#{i}" %>"></label>
           </div>
       <% end %>
     </div>

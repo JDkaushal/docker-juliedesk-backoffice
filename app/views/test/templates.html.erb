@@ -1,0 +1,123 @@
+<script>
+
+    $(function () {
+        var $templatesContainer = $("#templates-container .templates");
+
+        var locales = ["en", "fr"];
+        _.each(window.testsData.templatesData, function (paramGroups) {
+            var $templateGroup = $("<div>").addClass("template-group");
+            _.each(paramGroups, function (params) {
+                var $template2Locales = $("<div>").addClass("template-2-locales");
+                var expectedResults = params.expectedResults;
+                delete params.expectedResults
+                $template2Locales.append($("<div>").addClass("template-name").html(JSON.stringify(params)));
+                _.each(locales, function (locale) {
+                    params.locale = locale;
+                    var template = window.generateEmailTemplate(params);
+                    var $template = $("<div>").addClass("template");
+                    var strTemplate = template.replace(/\n/g, "<br>");
+                    $template.append($("<div>").addClass("template-text").html(strTemplate));
+                    if(template == expectedResults[locale]) {
+                        $template.addClass("correct");
+                    }
+                    else {
+                        $template.addClass("incorrect");
+                        window.a = template;
+                        window.b = expectedResults[locale];
+                        console.log("***", template, expectedResults[locale]);
+                        $template.append($("<div>").html(expectedResults[locale]));
+                    }
+
+                    $template2Locales.append($template);
+                });
+                $templateGroup.append($template2Locales);
+            });
+            $templatesContainer.append($templateGroup);
+        });
+
+        if($(".template.incorrect").length == 0) {
+            $(".global-result").html("All good!");
+            $(".global-result").addClass("correct");
+        }
+        else {
+            $(".global-result").html("Oups..." + $(".template.incorrect").length + " wrong wordings...");
+            $(".global-result").addClass("incorrect");
+        }
+        /*
+
+        _.each(window.templateParams, function (paramGroups) {
+            _.each(paramGroups, function (params) {
+                params.expectedResults = [];
+                _.each(locales, function (locale) {
+                    params.locale = locale;
+                    var template = window.generateEmailTemplate(params);
+                    params.expectedResults[locale] = template;
+                });
+            });
+        });
+
+        $("body").append(JSON.stringify(window.templateParams)):
+        */
+    });
+</script>
+<style>
+    #templates-container {
+        width: 800px;
+        margin: 20px auto 100px auto;
+    }
+    #templates-container .templates {
+        margin: 40px 0;
+    }
+
+    .template-group {
+        border-top: 1px solid #ccc;
+        margin: 50px 0;
+    }
+    .template-2-locales {
+        padding: 20px 0 0 0;
+        border-bottom: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+    }
+    .template {
+
+        margin: 20px 0 0 -1px;
+        border-top: 1px solid #ccc;
+        display: inline-block;
+        width: 50%;
+        vertical-align: top;
+        padding: 20px;
+        border-left: 1px solid #ccc;
+    }
+
+    .template.incorrect {
+        background-color: #faa;
+    }
+
+
+    .template-2-locales .template-name {
+        color: #aaa;
+        font-size: 12px;
+        padding: 0 20px;
+    }
+
+    .template .template-text {
+
+    }
+
+    h3.global-result.correct {
+        color: #0c0;
+    }
+    h3.global-result.incorrect {
+        color: #d00;
+    }
+</style>
+
+
+
+<div id="templates-container">
+  <h1>Templates</h1>
+  <h3 class="global-result"></h3>
+  <div class="templates"></div>
+</div>
+

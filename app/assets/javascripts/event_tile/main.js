@@ -91,9 +91,13 @@ EventTile.prototype.redraw = function() {
 
 
 
-    eventTile.$selector.find(".event-date-all-day").removeAttr("checked");
+
+
     if(eventTile.event.allDay) {
-        eventTile.$selector.find(".event-date-all-day").attr("checked", true);
+        eventTile.$selector.find(".event-date-all-day").prop("checked", true);
+    }
+    else {
+        eventTile.$selector.find(".event-date-all-day").prop("checked", false);
     }
     eventTile.$selector.find(".event-timezone-picker").timezonePicker();
     eventTile.$selector.find(".event-timezone-picker").val(eventTile.getTimezoneId());
@@ -142,6 +146,14 @@ EventTile.prototype.redraw = function() {
         else if(eventTile.event.owned) {
             eventTile.$selector.find("#event-edit-button").show();
             eventTile.$selector.find("#event-delete-button").show();
+        }
+    }
+    if(eventTile.getMode() == "read_only") {
+
+    }
+    if(eventTile.getMode() == "edit_only") {
+        if(eventTile.event.owned) {
+            eventTile.$selector.find("#event-edit-button").show();
         }
     }
     eventTile.redrawDatePicker();
@@ -218,7 +230,7 @@ EventTile.prototype.fetchEvent = function(callback) {
     }, function(response) {
         eventTile.event = eventTile.eventDataFromEvent(response.data);
         if(eventTile.afterEventFetchedCallback) eventTile.afterEventFetchedCallback();
-        if(callback) callback();
+        if(callback) callback(response.data);
     }, function(response) {
         eventTile.hideSpinner();
         alert("Error fetching event");
@@ -232,12 +244,10 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
 
     var startTime = ev.start.dateTime;
     var endTime = ev.end.dateTime;
-    var allDay = false;
 
     if (ev.start.dateTime === undefined) {
         startTime = ev.start.date;
         endTime = ev.end.date;
-        allDay = true;
     }
 
     var sstartTime = moment(startTime).tz(eventTile.getTimezoneId()).format();
@@ -247,7 +257,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
     eventData = {
         id: ev.id,
         title: ev.summary,
-        allDay: allDay,
+        allDay: ev.all_day,
         start: sstartTime,
         end: sendTime,
         url: ev.htmlLink,
@@ -279,6 +289,109 @@ EventTile.prototype.redrawDatePicker = function() {
         eventTile.$selector.find(".hours-and-minutes").hide();
     }
 };
+EventTile.prototype.saveEvent = function() {
+    var eventTile = this;
+    var editedEvent = eventTile.getEditedEvent();
+
+    if(eventTile.event.beingAdded) {
+        eventTile.showSpinner();
+        CommonHelpers.externalRequest({
+            action: "create_event",
+            email: eventTile.accountEmail,
+
+            summary: editedEvent.title,
+            description: editedEvent.description,
+            attendees: editedEvent.attendees,
+            location: editedEvent.location,
+            all_day: editedEvent.all_day,
+            private: editedEvent.private,
+            start: editedEvent.start.format(),
+            end: editedEvent.end.format()
+        }, function(response) {
+            if(response.status == "success") {
+                eventTile.eventId = response.data.event_id;
+                eventTile.calendarId = response.data.calendar_id;
+                eventTile.fetchEvent(function() {
+                    eventTile.redraw();
+                    if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
+                        action: "create_event"
+                    });
+                });
+            }
+            else {
+                eventTile.hideSpinner();
+                alert("Error creating event");
+                console.log(response);
+            }
+        }, function(response) {
+            eventTile.hideSpinner();
+            alert("Error creating event");
+            console.log(response);
+        });
+    }
+    else {
+        eventTile.showSpinner();
+        CommonHelpers.externalRequest({
+            action: "update_event",
+            email: eventTile.accountEmail,
+
+            event_id: eventTile.eventId,
+            calendar_id: eventTile.calendarId,
+
+            summary: editedEvent.title,
+            description: editedEvent.description,
+            attendees: editedEvent.attendees,
+            location: editedEvent.location,
+            all_day: editedEvent.all_day,
+            private: editedEvent.private,
+            start: editedEvent.start.format(),
+            end: editedEvent.end.format()
+        }, function(response) {
+            if(response.status == "success") {
+                eventTile.fetchEvent(function() {
+                    eventTile.redraw();
+                    if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
+                        action: "update_event"
+                    });
+                });
+            }
+            else {
+                eventTile.hideSpinner();
+                alert("Error updating event");
+                console.log(response);
+            }
+        }, function(response) {
+            eventTile.hideSpinner();
+            alert("Error updating event");
+            console.log(response);
+        });
+    }
+};
+EventTile.prototype.deleteEvent = function() {
+    var eventTile = this;
+    eventTile.showSpinner();
+    CommonHelpers.externalRequest({
+        action: "delete_event",
+        email: eventTile.accountEmail,
+        event_id: eventTile.eventId,
+        calendar_id: eventTile.calendarId
+    }, function(response) {
+        if(response.status == "success") {
+            if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
+                action: "delete_event"
+            });
+        }
+        else {
+            eventTile.hideSpinner();
+            alert("Error deleting event");
+            console.log("error", response);
+        }
+    }, function(e) {
+        eventTile.hideSpinner();
+        alert("Error deleting event");
+        console.log("error", e);
+    });
+};
 EventTile.prototype.initActions = function() {
     var eventTile = this;
     eventTile.$selector.find("#event-edit-button").click(function() {
@@ -286,7 +399,9 @@ EventTile.prototype.initActions = function() {
         eventTile.$selector.find("#event-delete-button").hide();
         eventTile.$selector.find("#event-edit-button").hide();
 
-        eventTile.$selector.find("#event-save-button").show();
+        if(eventTile.getMode() != "edit_only") {
+            eventTile.$selector.find("#event-save-button").show();
+        }
         eventTile.$selector.find("#event-cancel-button").show();
         eventTile.$selector.find(".event-tile-container").addClass("editing");
 
@@ -307,106 +422,11 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-save-button").click(function() {
-        var editedEvent = eventTile.getEditedEvent();
-
-        if(eventTile.event.beingAdded) {
-            eventTile.showSpinner();
-            CommonHelpers.externalRequest({
-                action: "create_event",
-                email: eventTile.accountEmail,
-
-                summary: editedEvent.title,
-                description: editedEvent.description,
-                attendees: editedEvent.attendees,
-                location: editedEvent.location,
-                all_day: editedEvent.all_day,
-                private: editedEvent.private,
-                start: editedEvent.start.format(),
-                end: editedEvent.end.format()
-            }, function(response) {
-                if(response.status == "success") {
-                    eventTile.eventId = response.data.event_id;
-                    eventTile.calendarId = response.data.calendar_id;
-                    eventTile.fetchEvent(function() {
-                        eventTile.redraw();
-                    });
-                    if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
-                        action: "create_event"
-                    });
-                }
-                else {
-                    eventTile.hideSpinner();
-                    alert("Error creating event");
-                    console.log(response);
-                }
-            }, function(response) {
-                eventTile.hideSpinner();
-                alert("Error creating event");
-                console.log(response);
-            });
-        }
-        else {
-            eventTile.showSpinner();
-            CommonHelpers.externalRequest({
-                action: "update_event",
-                email: eventTile.accountEmail,
-
-                event_id: eventTile.eventId,
-                calendar_id: eventTile.calendarId,
-
-                summary: editedEvent.title,
-                description: editedEvent.description,
-                attendees: editedEvent.attendees,
-                location: editedEvent.location,
-                all_day: editedEvent.all_day,
-                private: editedEvent.private,
-                start: editedEvent.start.format(),
-                end: editedEvent.end.format()
-            }, function(response) {
-                if(response.status == "success") {
-                    eventTile.fetchEvent(function() {
-                        eventTile.redraw();
-                    });
-                    if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
-                        action: "update_event"
-                    });
-                }
-                else {
-                    eventTile.hideSpinner();
-                    alert("Error updating event");
-                    console.log(response);
-                }
-            }, function(response) {
-                eventTile.hideSpinner();
-                alert("Error updating event");
-                console.log(response);
-            });
-        }
+        eventTile.saveEvent();
     });
     eventTile.$selector.find("#event-delete-button").click(function(e) {
         if (confirm("Are you sure you want to delete this event?")) {
-            eventTile.showSpinner();
-            CommonHelpers.externalRequest({
-                action: "delete_event",
-                email: eventTile.accountEmail,
-                event_id: eventTile.eventId,
-                calendar_id: eventTile.calendarId
-            }, function(response) {
-                if(response.status == "success") {
-                    if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
-                        action: "delete_event"
-                    });
-                }
-                else {
-                    eventTile.hideSpinner();
-                    alert("Error deleting event");
-                    console.log("error", response);
-                }
-            }, function(e) {
-                eventTile.hideSpinner();
-                alert("Error deleting event");
-                console.log("error", e);
-            });
+            eventTile.deleteEvent();
         }
     });
 
