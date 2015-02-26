@@ -77,7 +77,7 @@ window.wordings['en'] = {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
             before: "Hi,\n\n",
-            full_date_format: "dddd DD MMMM YYYY, hh:mm a",
+            full_date_format: "LLLL",
             timezone_precision: "(Timezone: %{timezone})",
             footer: {
                 "juliedesk": "\n\nBest regards,\n\nJulie",//\nIntelligence artificielle",

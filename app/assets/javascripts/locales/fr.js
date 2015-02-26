@@ -76,7 +76,7 @@ window.wordings['fr'] = {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
             before: "Bonjour,\n\n",
-            full_date_format: "dddd DD MMMM YYYY à HH:mm",
+            full_date_format: "dddd D MMMM YYYY à H[h]mm",
             timezone_precision: "(Fuseau horaire : %{timezone})",
             footer: {
                 "juliedesk": "\n\nCordialement,\n\nJulie",//\nIntelligence artificielle",
