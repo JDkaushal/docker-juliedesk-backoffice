@@ -68,7 +68,7 @@ window.wordings['fr'] = {
                 plural: "\nQue dois-je faire pour ceux-cis ?"
             }
         },
-        invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location}:\n%{date}.",
+        invites_sent: "Parfait, invitations envoyées pour %{appointment_nature}%{location} :\n%{date}.",
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",
         cancel: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} avec vous %{date}.",
