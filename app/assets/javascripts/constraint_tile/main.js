@@ -302,10 +302,22 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
     var currentDate;
     _.each(data_entries, function(data) {
 
+        var realStartDate = start_date.clone();
+        var realEndDate = end_date.clone();
+        realStartDate.add('d', -1);
+        if(data.start_recurring) {
+            realStartDate = _.max([realStartDate, moment(data.start_recurring)]);
+        }
+        if(data.end_recurring) {
+            var endRecurring = moment(data.end_recurring);
+            endRecurring.add('d', 1);
+            realEndDate = _.min([realEndDate, endRecurring]);
+        }
+
         if(data.repeat == "dayly") {
-            currentDate = start_date.clone();
-            currentDate.add("d", -1);
-            while(currentDate < end_date) {
+            currentDate = realStartDate.clone();
+
+            while(currentDate < realEndDate) {
                 var mStartDate = currentDate.clone();
                 mStartDate.set("h", moment(data.start_date).hours());
                 mStartDate.set("m", moment(data.start_date).minutes());
@@ -322,9 +334,9 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
             }
         }
         else if(data.repeat == "weekly") {
-            currentDate = start_date.clone();
-            currentDate.add("d", -1);
-            while(currentDate < end_date) {
+            currentDate = realStartDate.clone();
+
+            while(currentDate < realEndDate) {
                 var weekDay = "" + (currentDate.isoWeekday() - 1);
                 if(data.days_of_weeks.indexOf(weekDay) > -1) {
                     var mStartDate = currentDate.clone();
