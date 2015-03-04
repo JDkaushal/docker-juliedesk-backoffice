@@ -157,7 +157,9 @@ en:
     dates_to_check: "Dates to check"
     suggested_dates: "Suggested dates"
     fetching_event: "Fetching event..."
-    no_date_fits: "No date fits"
+    no_date_fits:
+      one: "This date don't fit"
+      other: "No date fits"
     private_event: "Private event"
     full_name_placeholder: "Full name..."
     email_placeholder: "Email address..."

@@ -55,6 +55,8 @@
     <%= I18n.t("info_box.create_event")%>
   </button>
 
-  <button id="no-date-fits" class="btn btn btn-default btn-block"><%= I18n.t("info_box.no_date_fits")%></button>
+  <button id="no-date-fits" class="btn btn btn-default btn-block">
+    <%= I18n.t("info_box.no_date_fits", count: JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").length)%>
+  </button>
   <div class="creating-event-message"></div>
 </div>
