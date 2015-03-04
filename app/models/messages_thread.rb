@@ -235,6 +235,19 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def created_events_data
+    julie_action = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+      ja.done &&
+          ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT
+    }.sort_by(&:updated_at).last
+
+    if julie_action
+      JSON.parse(julie_action.events || "[]")
+    else
+      []
+    end
+  end
+
   def available_classifications
     if account_email
       s_status = scheduling_status

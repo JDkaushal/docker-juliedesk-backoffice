@@ -3,7 +3,11 @@ if(!window.wordings) window.wordings = {};
 window.wordings['fr'] = {
     email_templates: {
         create_events: {
-            before_dates: "J'ai ajouté à votre calendrier :\n"
+            before_dates: {
+                created: "J'ai ajouté à votre calendrier :\n",
+                updated: "J'ai mis à jour dans votre calendrier :\n",
+                deleted: "J'ai supprimé de votre calendrier :\n"
+            }
         },
         no_date_fits: {
             before_dates: {

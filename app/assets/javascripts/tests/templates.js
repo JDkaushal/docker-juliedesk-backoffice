@@ -484,50 +484,47 @@ window.testsData.templatesData = [
 
     [{
         action: "create_event",
-        newEventEventTiles: [
+        createdEvents: [
             {
-                eventId: "1234",
-                event: {
-                    title: "EVENT #1",
-                    start: "2015-01-01T12:00:00",
-                    end: "2015-01-01T14:00:00",
-                    allDay: false
-                },
-                getTimezoneId: function(){return "Europe/Paris";}
+                title: "EVENT #1",
+                start: "2015-01-01T12:00:00",
+                end: "2015-01-01T14:00:00",
+                allDay: false,
+                timezoneId: "Europe/Paris"
             },
             {
-                eventId: "1234",
-                event: {
-                    title: "EVENT #2",
-                    start: "2015-01-06T12:00:00",
-                    end: "2015-01-09T14:00:00",
-                    allDay: false
-                },
-                getTimezoneId: function(){return "America/Los_Angeles";}
-            },
+
+                title: "EVENT #2",
+                start: "2015-01-06T12:00:00",
+                end: "2015-01-09T14:00:00",
+                allDay: false,
+                timezoneId: "America/Los_Angeles"
+
+            }
+        ],
+        updatedEvents: [
             {
-                eventId: "1235",
-                event: {
-                    title: "EVENT #3",
-                    start: "2015-01-02",
-                    end: "2015-01-03",
-                    allDay: true
-                },
-                getTimezoneId: function(){return "Europe/Paris";}
-            },
+
+                title: "EVENT #3",
+                start: "2015-01-02",
+                end: "2015-01-03",
+                allDay: true,
+                timezoneId: "Europe/Paris"
+
+            }
+        ],
+        deletedEvents: [
             {
-                eventId: "1235",
-                event: {
-                    title: "EVENT #4",
-                    start: "2015-01-04",
-                    end: "2015-01-06",
-                    allDay: true
-                },
-                getTimezoneId: function(){return "Europe/Paris";}
-            }],
+                title: "EVENT #4",
+                start: "2015-01-04",
+                end: "2015-01-06",
+                allDay: true,
+                timezoneId: "Europe/Paris"
+            }
+        ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Tuesday 6 January 2015 03:00 - Friday 9 January 2015 05:00 (America/Los Angeles)\n- EVENT #3 : Friday 2 January 2015\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n",
-            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : mardi 6 janvier 2015 03:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n- EVENT #3 : vendredi 2 janvier 2015\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n"
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Tuesday 6 January 2015 03:00 - Friday 9 January 2015 05:00 (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : mardi 6 janvier 2015 03:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
     [{

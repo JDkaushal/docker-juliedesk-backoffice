@@ -184,12 +184,27 @@
 
     }
     else if(params.action == "create_event") {
-        message += localize("email_templates.create_events.before_dates");
-        _.each(_.filter(params.newEventEventTiles, function(eventTile) {
-            return eventTile.eventId && eventTile.event.title && eventTile.event.start;
-        }), function(eventTile) {
-            message += "- " + eventTile.event.title + " : " + CommonHelpers.formatDateTimeRangeInText(eventTile.event.start, eventTile.event.end, params.locale, eventTile.getTimezoneId(), eventTile.event.allDay) + "\n";
-        });
+        if(params.createdEvents.length > 0) {
+            message += localize("email_templates.create_events.before_dates.created");
+            _.each(params.createdEvents, function(event) {
+                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+            });
+            message += "\n";
+        }
+        if(params.updatedEvents.length > 0) {
+            message += localize("email_templates.create_events.before_dates.updated");
+            _.each(params.updatedEvents, function(event) {
+                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+            });
+            message += "\n";
+        }
+        if(params.deletedEvents.length > 0) {
+            message += localize("email_templates.create_events.before_dates.deleted");
+            _.each(params.deletedEvents, function(event) {
+                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+            });
+            message += "\n";
+        }
     }
     else if(params.action == "client_agreement") {
         var dateTimesToCheckPlural = "singular";

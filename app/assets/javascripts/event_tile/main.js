@@ -279,7 +279,8 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         durationEditable: false,
         calId: ev.calId,
         private: ev.private,
-        owned: ev.owned
+        owned: ev.owned,
+        timezoneId: eventTile.getTimezoneId()
     };
     return eventData;
 };

@@ -2,6 +2,9 @@
     window.leftColumnMessage = "Create event";
 
 
+    window.createdEvents = [];
+    window.updatedEvents = [];
+    window.deletedEvents = [];
 
     $(function() {
         window.activateCalendarWithParams({
@@ -18,7 +21,7 @@
         $container.find(".new-events-container").append($("<div>").addClass("new-event-tiles-container"));
         window.newEventEventTiles = [];
 
-        var alreadyCreatedEvents = <%== @julie_action.events %>;
+        var alreadyCreatedEvents = <%== @messages_thread.created_events_data.to_json %>;
 
         _.each(alreadyCreatedEvents, function(eventData) {
             $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
@@ -58,34 +61,72 @@
             static: true,
             locale: window.threadComputedData.locale,
             doneEditingCallback: function(response) {
+                var eventTile = this;
+                console.log("EVENT ID", eventTile.event.id);
+
                 if(response.action != "cancel_event_creation" && !$(".calendar-container").hasClass("minimized")) {
                     window.currentCalendar.refreshEvents();
                 }
                 if(response.action == "cancel_event_creation" || response.action == "delete_event") {
-                    var eventTile = this;
                     window.newEventEventTiles.splice(window.newEventEventTiles.indexOf(eventTile), 1);
                     $(eventTile.$selector).remove();
                     redrawNewEventEventTiles();
                 }
+                if(response.action == "create_event") {
+                    window.createdEvents.push(eventTile.event);
+                    refreshReplyText();
+                }
+                if(response.action == "update_event") {
+                    if(_.find(window.createdEvents, function(event) {
+                        return event.id == eventTile.event.id;
+                    }) !=  undefined) {
+                        window.createdEvents = _.reject(window.createdEvents, function(event) {
+                            return event.id == eventTile.event.id;
+                        });
+                        window.createdEvents.push(eventTile.event);
+                    }
+                    else {
+                        window.updatedEvents.push(eventTile.event);
+                    }
+                    refreshReplyText();
+                }
+                if(response.action == "delete_event") {
+                    if(_.find(window.createdEvents, function(event) {
+                        return event.id == eventTile.eventId;
+                    }) != undefined || _.find(window.updatedEvents, function(event) {
+                        return event.id == eventTile.eventId;
+                    }) != undefined) {
+                        window.createdEvents = _.reject(window.createdEvents, function(event) {
+                            return event.id == eventTile.eventId;
+                        });
+                        window.updatedEvents = _.reject(window.updatedEvents, function(event) {
+                            return event.id == eventTile.eventId;
+                        });
+                    }
+                    else {
+                        window.deletedEvents.push(eventTile.event);
+                    }
+                    refreshReplyText();
+                }
+
                 if(response.action == "delete_event" || response.action == "create_event") {
                     $.ajax({
                         url: "/julie_actions/<%= @julie_action.id %>/update",
                         method: "post",
                         data: {
-                            events: _.map(_.filter(window.newEventEventTiles, function(eventTile) {
-                                return eventTile.eventId;
-                            }), function(eventTile) {
+                            events: _.map(_.filter(window.newEventEventTiles, function(eventTileItem) {
+                                return eventTileItem.eventId;
+                            }), function(eventTileItem) {
                                 return {
-                                    id: eventTile.eventId,
-                                    calendar_id: eventTile.calendarId,
-                                    timezone_id: eventTile.timezoneId
+                                    id: eventTileItem.eventId,
+                                    calendar_id: eventTileItem.calendarId,
+                                    timezone_id: eventTileItem.timezoneId
                                 };
                             }),
                             done: true,
                             processed_in: Date.now() - window.startedAt
                         }
                     });
-                    refreshReplyText();
                 }
                 window.showEditedEventInCalendar();
             },
@@ -149,7 +190,9 @@
     function refreshReplyText() {
         window.setReplyMessage(window.generateEmailTemplate({
             action: "create_event",
-            newEventEventTiles: window.newEventEventTiles,
+            createdEvents: window.createdEvents,
+            updatedEvents: window.updatedEvents,
+            deletedEvents: window.deletedEvents,
             locale: window.threadComputedData.locale
         }), "all");
     }
