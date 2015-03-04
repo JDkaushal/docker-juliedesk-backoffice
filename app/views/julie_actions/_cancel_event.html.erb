@@ -5,7 +5,9 @@
         });
 
         if(window.threadComputedData.client_agreement) {
-            $("input#quote_message").removeAttr("checked");
+            if(!window.threadComputedData.attendees_are_noticed) {
+                $("input#quote_message").removeAttr("checked");
+            }
 
             window.setReplyMessage(window.generateEmailTemplate({
                 action: "cancel_event",
