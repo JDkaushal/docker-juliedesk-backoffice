@@ -148,6 +148,10 @@ window.wordings['en'] = {
             }
         }
     },
+    info_panel: {
+      event_does_not_exist_anymore: "This event does not exists anymore.",
+      remove_link: "Remove association"
+    },
     classification_forms: {
         common: {
             fill_info_in: "Please fill info in"

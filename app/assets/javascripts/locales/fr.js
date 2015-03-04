@@ -149,6 +149,10 @@ window.wordings['fr'] = {
             }
         }
     },
+    info_panel: {
+        event_does_not_exist_anymore: "Cet évènement n'existe plus.",
+        remove_link: "Supprimer l'association"
+    },
     classification_forms: {
         common: {
             fill_info_in: "Remplissez les infos"

@@ -371,6 +371,26 @@
             content: url(<%= asset_path("ajax-loader.gif")%>);
         }
     }
+    .event-does-not-exist-container {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 4;
+        background: #fff;
+        color: #999;
+        text-align: center;
+        padding: 20px;
+
+        .event-does-not-exist {
+            padding: 180px 20px;
+            .btn {
+                margin: 20px 0;
+            }
+        }
+    }
 
     input:disabled, textarea:disabled {
         border-color: transparent !important;

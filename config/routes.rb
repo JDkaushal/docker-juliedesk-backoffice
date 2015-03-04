@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       post "archive", action: :archive, as: :archive
       post "split", action: :split, as: :split
       post "associate_to_account", action: :associate_to_account
+      get "remove_event_link", action: :remove_event_link
     end
   end
 

@@ -15,6 +15,7 @@ function EventTile($selector, params) {
     this.static = params.static;
     this.minimized = params.minimized;
     this.afterNewEventEdited = params.afterNewEventEdited;
+    this.eventDoesNotExistSelector = params.eventDoesNotExistSelector;
 
     var eventTile = this;
 
@@ -228,9 +229,19 @@ EventTile.prototype.fetchEvent = function(callback) {
         event_id: eventTile.eventId,
         calendar_id: eventTile.calendarId
     }, function(response) {
-        eventTile.event = eventTile.eventDataFromEvent(response.data);
-        if(eventTile.afterEventFetchedCallback) eventTile.afterEventFetchedCallback();
-        if(callback) callback(response.data);
+        if(response.status == "error") {
+            if(response.code == "EventNotFound") {
+                eventTile.showEventDoesNotExist();
+            }
+            else {
+                alert("Unable to fetch event: " + response.message)
+            }
+        }
+        else {
+            eventTile.event = eventTile.eventDataFromEvent(response.data);
+            if(eventTile.afterEventFetchedCallback) eventTile.afterEventFetchedCallback();
+            if(callback) callback(response.data);
+        }
     }, function(response) {
         eventTile.hideSpinner();
         alert("Error fetching event");
@@ -276,6 +287,14 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
 EventTile.prototype.showSpinner = function() {
     var eventTile = this;
     eventTile.$selector.find(".spinner-container").fadeIn(200);
+};
+
+EventTile.prototype.showEventDoesNotExist = function() {
+    var eventTile = this;
+    if(eventTile.eventDoesNotExistSelector) {
+        eventTile.$selector.find(".event-does-not-exist-container").html(eventTile.eventDoesNotExistSelector);
+    }
+    eventTile.$selector.find(".event-does-not-exist-container").fadeIn(200);
 };
 
 EventTile.prototype.hideSpinner = function() {

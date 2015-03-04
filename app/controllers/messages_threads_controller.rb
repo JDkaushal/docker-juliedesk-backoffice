@@ -60,6 +60,19 @@ class MessagesThreadsController < ApplicationController
     end
   end
 
+  def remove_event_link
+    messages_thread = MessagesThread.find(params[:id])
+    message = messages_thread.messages.last
+    mc = message.message_classifications.create_from_params classification: MessageClassification::ASK_CANCEL_APPOINTMENT, operator: session[:user_username], processed_in: 0
+    mc.julie_action.update_attributes({
+                                          done: true,
+                                          deleted_event: true,
+                                          processed_in: 0
+                                      })
+
+    redirect_to messages_thread
+  end
+
   private
 
   def render_emails_threads
