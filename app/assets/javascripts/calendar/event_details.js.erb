@@ -53,7 +53,8 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         locale: window.threadComputedData.locale,
         selectEventCallback: function() {
             calendar.selectEvent(calendar.currentEvent);
-            calendar.showEventDetails(calendar.currentEvent);
+            $container.fadeOut(200);
+            //calendar.showEventDetails(calendar.currentEvent);
         },
         doneEditingCallback: function() {
             $container.fadeOut(200);
