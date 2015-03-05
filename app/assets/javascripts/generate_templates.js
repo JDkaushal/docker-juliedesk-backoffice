@@ -148,7 +148,7 @@
         });
     }
     else if(params.action == "cancel_event") {
-        var dateString = window.helpers.capitalize(moment(params.currentEventData).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
+        var dateString = window.helpers.capitalize(moment(params.currentEventData.start.dateTime).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
         if(params.timezoneId != params.defaultTimezoneId) {
             dateString = dateString + " " + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
         }

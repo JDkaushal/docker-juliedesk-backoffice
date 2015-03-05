@@ -242,7 +242,11 @@ window.testsData.templatesData = [
         client_agreement: true,
         client: "Nicolas Marlier",
         isPostpone: true,
-        currentEventData: ["2015-01-01T08:00:00"],
+        currentEventData: {
+            start: {
+                dateTime: "2015-01-01T08:00:00"
+            }
+        },
         timeSlotsToSuggest: ["2015-01-01T12:00:00"],
         timezoneId: "Europe/Paris",
         defaultTimezoneId: "Europe/Paris",
@@ -254,8 +258,8 @@ window.testsData.templatesData = [
             label: "call"
         },
         expectedResults: {
-            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 12:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?\nPlease let me know where you can be reached.",
-            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 0h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?\nMerci de me préciser à quel numéro vous êtes joignable."
+            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?\nPlease let me know where you can be reached.",
+            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?\nMerci de me préciser à quel numéro vous êtes joignable."
         }
     },
         {
@@ -263,7 +267,11 @@ window.testsData.templatesData = [
             client_agreement: true,
             client: "Nicolas Marlier",
             isPostpone: true,
-            currentEventData: ["2015-01-01T08:00:00"],
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-01T08:00:00"
+                }
+            },
             attendeesAreNoticed: false,
             timeSlotsToSuggest: ["2015-01-01T12:00:00"],
             timezoneId: "Europe/Paris",
@@ -276,8 +284,8 @@ window.testsData.templatesData = [
                 label: "call"
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 12:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?\nPlease let me know where you can be reached.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 0h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?\nMerci de me préciser à quel numéro vous êtes joignable."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?\nPlease let me know where you can be reached.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?\nMerci de me préciser à quel numéro vous êtes joignable."
             }
         },
         {
@@ -398,33 +406,45 @@ window.testsData.templatesData = [
     [{
         action: "cancel_event",
         client: "Nicolas Marlier",
-        currentEventData: "2015-01-01T12:00:00",
+        currentEventData: {
+            start: {
+                dateTime: "2015-01-01T08:00:00"
+            }
+        },
         timezoneId: "Europe/Paris",
         defaultTimezoneId: "Europe/Paris",
         clientAgreement: true,
         attendeesAreNoticed: false,
         expectedResults: {
-            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 12:00 PM.",
-            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 12h00."
+            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.",
+            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 8h00."
         }
     },
         {
             action: "cancel_event",
             client: "Nicolas Marlier",
-            currentEventData: "2015-01-01T12:00:00",
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-01T08:00:00"
+                }
+            },
             timezoneId: "America/Los_Angeles",
             defaultTimezoneId: "Europe/Paris",
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Wednesday, December 31, 2014 11:00 PM (Timezone: America/Los Angeles).",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Mercredi 31 décembre 2014 à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
             action: "cancel_event",
             client: "Nicolas Marlier",
-            currentEventData: "2015-01-01T12:00:00",
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-01T08:00:00"
+                }
+            },
             timezoneId: "Europe/Paris",
             defaultTimezoneId: "Europe/Paris",
             clientAgreement: true,
@@ -437,14 +457,18 @@ window.testsData.templatesData = [
                 label: "dinner"
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you on Thursday, January 1, 2015 12:00 PM.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Jeudi 1 janvier 2015 à 12h00."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you on Thursday, January 1, 2015 8:00 AM.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Jeudi 1 janvier 2015 à 8h00."
             }
         },
         {
             action: "cancel_event",
             client: "Nicolas Marlier",
-            currentEventData: "2015-01-01T12:00:00",
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-01T08:00:00"
+                }
+            },
             timezoneId: "Europe/Paris",
             defaultTimezoneId: "Europe/Paris",
             clientAgreement: true,
@@ -457,14 +481,18 @@ window.testsData.templatesData = [
                 label: "dinner"
             },
             expectedResults: {
-                en: "I canceled the dinner scheduled on Thursday, January 1, 2015 12:00 PM.",
-                fr: "J'ai annulé le diner prévu Jeudi 1 janvier 2015 à 12h00."
+                en: "I canceled the dinner scheduled on Thursday, January 1, 2015 8:00 AM.",
+                fr: "J'ai annulé le diner prévu Jeudi 1 janvier 2015 à 8h00."
             }
         },
         {
             action: "cancel_event",
             client: "Nicolas Marlier",
-            currentEventData: "2015-01-01T12:00:00",
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-01T08:00:00"
+                }
+            },
             timezoneId: "Europe/Paris",
             defaultTimezoneId: "Europe/Paris",
             clientAgreement: false,
@@ -476,8 +504,8 @@ window.testsData.templatesData = [
                 label: "dinner"
             },
             expectedResults: {
-                en: "Do I have your agreement to cancel the dinner scheduled on Thursday, January 1, 2015 12:00 PM?",
-                fr: "Ai-je votre approbation pour annuler le diner prévu Jeudi 1 janvier 2015 à 12h00 ?"
+                en: "Do I have your agreement to cancel the dinner scheduled on Thursday, January 1, 2015 8:00 AM?",
+                fr: "Ai-je votre approbation pour annuler le diner prévu Jeudi 1 janvier 2015 à 8h00 ?"
             }
         }],
 
