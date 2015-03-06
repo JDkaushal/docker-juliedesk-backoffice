@@ -146,7 +146,7 @@
     });
 
     window.getCurrentAppointment = function() {
-        return $.grep(window.threaAccount.appointments,function(v) {
+        return $.grep(window.threadAccount.appointments,function(v) {
             return v.label == $("select#appointment_nature").val();
         })[0];
     };

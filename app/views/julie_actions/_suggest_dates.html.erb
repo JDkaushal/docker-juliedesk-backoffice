@@ -1,7 +1,7 @@
 <script>
     var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
 
-    var previousAppointment = $.grep(window.appointments,function(v) {
+    var previousAppointment = $.grep(window.threadAccount.appointments,function(v) {
       return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
     })[0];
 
