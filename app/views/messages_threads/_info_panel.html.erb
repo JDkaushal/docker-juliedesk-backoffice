@@ -2,7 +2,6 @@
     setCurrentLocale("<%= I18n.locale %>");
 
     window.threadAccount = <%== @messages_thread.account.to_json %>;
-    window.appointments = <%== messages_thread.account.try(:appointments).try(:to_json) || [] %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
@@ -147,7 +146,7 @@
     });
 
     window.getCurrentAppointment = function() {
-        return $.grep(window.appointments,function(v) {
+        return $.grep(window.threaAccount.appointments,function(v) {
             return v.label == $("select#appointment_nature").val();
         })[0];
     };
@@ -156,11 +155,11 @@
         if(!currentAppointment) {
             return null;
         }
-        var addressArray = $.grep(currentAppointment.addresses_with_description, function(v) {
-            return v.label == $("select#location_nature").val();
+        var address = _.find(window.threadAccount.addresses, function(addressObject) {
+            return addressObject.label == $("select#location_nature").val();
         });
-        if(addressArray.length > 0) {
-            return addressArray[0];
+        if(address) {
+            return address;
         }
         else if($("#location").val().length > 0) {
             return $("#location").val();
@@ -170,7 +169,7 @@
 
 
     function reProcessTitle() {
-        var appointment = $.grep(window.appointments, function (v) {
+        var appointment = $.grep(window.threadAccount.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
         var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
@@ -204,21 +203,15 @@
 
     function initAppointments() {
         $("select#appointment_nature").html("");
-        for (var i = 0; i < window.appointments.length; i++) {
-            var appointment = window.appointments[i];
+        _.each(window.threadAccount.appointments, function(appointment) {
             $("select#appointment_nature").append($("<option>").val(appointment.label).html(appointment.label));
-        }
+        });
 
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
         if (window.threadComputedData.appointment_nature) {
-//            $("select#appointment_nature").find("option").prop('selected', false)
-//                    .filter('[value="' + window.threadComputedData.appointment_nature + '"]')
-//                    .prop('selected', true);
             initAddresses();
             if (window.threadComputedData.location_nature) {
-                $("select#location_nature").find("option").prop('selected', false)
-                        .filter('[value="' + window.threadComputedData.location_nature + '"]')
-                        .prop('selected', true);
+                $("select#location_nature").val(window.threadComputedData.location_nature);
             }
         }
 
@@ -254,20 +247,23 @@
     }
 
     function initAddresses() {
-        var appointment = $.grep(window.appointments, function (v) {
+        var appointment = $.grep(window.threadAccount.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
 
         $("select#location_nature").html("");
-        for (var i = 0; i < appointment.addresses_with_description.length; i++) {
-            var addressObject = appointment.addresses_with_description[i];
+        _.each(window.threadAccount.addresses, function(addressObject) {
             $("select#location_nature").append($("<option>").val(addressObject.label).html(addressObject.label));
-        }
+        });
         $("select#location_nature").append($("<option>").val("Custom").html("Custom"));
+        $("select#location_nature").val("Custom");
+        if (appointment.default_address) {
+            $("select#location_nature").val(appointment.default_address.label);
+        }
     }
 
     function setAppointmentValues() {
-        var appointment = $.grep(window.appointments, function (v) {
+        var appointment = $.grep(window.threadAccount.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
 
@@ -283,22 +279,21 @@
         reProcessTitle();
         initAddresses();
 
+
         setAddressValues();
     }
 
     function setAddressValues() {
-        var appointment = $.grep(window.appointments, function (v) {
-            return v.label == $("#appointment_nature").val();
-        })[0];
-
-        var addressArray = $.grep(appointment.addresses_with_description, function (v) {
-            return v.label == $("select#location_nature").val();
+        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
+            return appointmentObject.label == $("#appointment_nature").val();
         });
 
-        if (addressArray.length > 0) {
-            var addressObject = addressArray[0];
-            var location = addressObject.address;
-            $("input#location").val(location).attr('disabled', true);
+        var address = _.find(window.threadAccount.addresses, function (addressObject) {
+            return addressObject.label == $("select#location_nature").val();
+        });
+
+        if (address) {
+            $("input#location").val(address.address).attr('disabled', true);
         }
         else {
             $("input#location").val("").removeAttr('disabled');
@@ -308,18 +303,17 @@
     }
 
     function setNotes() {
-        var appointment = $.grep(window.appointments, function (v) {
-            return v.label == $("#appointment_nature").val();
-        })[0];
+        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
+            return appointmentObject.label == $("#appointment_nature").val();
+        });
 
-        var addressArray = $.grep(appointment.addresses_with_description, function (v) {
-            return v.label == $("select#location_nature").val();
+        var address = _.find(window.threadAccount.addresses, function (addressObject) {
+            return addressObject.label == $("select#location_nature").val();
         });
 
         var notes = appointment.note[$("input[name='locale']:checked").val()];
-        if (addressArray.length > 0) {
-            var addressObject = addressArray[0];
-            var addressComplement = addressObject.address_complement;
+        if (address) {
+            var addressComplement = address.address_complement;
             if(addressComplement && addressComplement.length > 0) {
                 notes = addressComplement + "\n" + notes;
             }
