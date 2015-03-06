@@ -49,9 +49,13 @@ class Message < ActiveRecord::Base
   end
 
   def self.import_emails
+    # Get google threads in inbox
     google_threads = Gmail::Label.inbox.threads
 
+    # Put by default all previous messages_thread out of inbox
     MessagesThread.update_all(in_inbox: false)
+
+
     google_threads.each do |google_thread|
       should_update_thread = true
 

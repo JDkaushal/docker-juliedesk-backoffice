@@ -3,8 +3,9 @@ class JulieActionsController < ApplicationController
   def show
     @julie_action = JulieAction.find params[:id]
     @message = @julie_action.message_classification.message
-    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(@julie_action.message_classification.message.messages_thread_id)
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)
     @messages_thread.re_import
+    @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
   end
 
   def update

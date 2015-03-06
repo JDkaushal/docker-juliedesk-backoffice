@@ -6,8 +6,6 @@ class MessagesController < ApplicationController
   def classifying
     @message = Message.find params[:id]
     @classification = params[:classification]
-    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(@message.messages_thread_id)
-    @messages_thread.re_import
 
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
@@ -23,6 +21,10 @@ class MessagesController < ApplicationController
       @messages_thread.google_thread.modify(["Label_12"], [])
       redirect_to messages_threads_path
     end
+
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)
+    @messages_thread.re_import
+    @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
   end
 
   def classify

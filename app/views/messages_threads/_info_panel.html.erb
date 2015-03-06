@@ -1,8 +1,8 @@
 <script>
     setCurrentLocale("<%= I18n.locale %>");
 
+    window.threadAccount = <%== @messages_thread.account.to_json %>;
     window.appointments = <%== messages_thread.account.try(:appointments).try(:to_json) || [] %>;
-    window.computed = <%== messages_thread.account.try(:appointments).try(:to_json) || [] %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
