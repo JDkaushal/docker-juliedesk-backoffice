@@ -1,11 +1,16 @@
 <script>
     $(function() {
-        window.activateCalendarWithParams({
-            mode: "free_calendar",
-            date_times: [],
-            email: "<%= @message.messages_thread.account_email %>",
-            duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-        });
+        if(window.threadAccount) {
+            window.activateCalendarWithParams({
+                mode: "free_calendar",
+                date_times: [],
+                email: "<%= @message.messages_thread.account_email %>",
+                duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+            });
+        }
+        else {
+            $("#show-calendar-button").hide();
+        }
 
         $(".calendar-container").addClass("minimized");
 

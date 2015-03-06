@@ -7,9 +7,6 @@
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
-    window.otherAccountEmails = _.map(window.threadComputedData.attendees, function (attendee) {
-        return attendee.account_email;
-    });
     window.otherAccountEmails = _.filter(window.otherAccountEmails, function (email) {
         return email && email != "<%= @messages_thread.account_email %>";
     });

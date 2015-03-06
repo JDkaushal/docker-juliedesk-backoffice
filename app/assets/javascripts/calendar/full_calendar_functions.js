@@ -27,7 +27,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     if(calendar.getMode() == "select_events") return;
 
     // Forbid suggestion or creation in the past
-    if(start.isBefore(moment())) {
+    if(moment.tz(start.format(), calendar.getCalendarTimezone()).isBefore(moment())) {
         return;
     }
 

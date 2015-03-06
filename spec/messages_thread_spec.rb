@@ -50,7 +50,10 @@ RSpec.describe MessagesThread, :type => :model do
             constraints_data: "[]",
             date_times: [{date: "2015-03-07T14:15:00+00:00", timezone: "America/Los_Angeles"}].to_json
         },
-        free_answer: {
+        create_events_1: {
+            classification: MessageClassification::ASK_CREATE_EVENT
+        },
+        free_answer_1: {
             classification: MessageClassification::UNKNOWN
         },
     }
@@ -73,6 +76,10 @@ RSpec.describe MessagesThread, :type => :model do
             done: true,
             deleted_event: true
         },
+        free_action_1: {
+            done: true,
+            action_nature: "free_action"
+        }
 
     }
   end
@@ -113,9 +120,6 @@ RSpec.describe MessagesThread, :type => :model do
     context "empty messages_thread and account" do
       before do
         @message_thread.instance_variable_set(:@account, @account)
-        p "*" * 50
-        p @message_thread
-        p @message_thread.account
       end
       it "should return empty data with account defaults" do
         expect(@message_thread.computed_data).to eq({
@@ -322,6 +326,73 @@ RSpec.describe MessagesThread, :type => :model do
                                                      calendar_id: nil,
                                                      appointment_nature: nil
                                                  })
+      end
+    end
+  end
+
+  describe "#scheduling_status" do
+    context "empty messages_thread" do
+      it "should be nil" do
+        expect(@message_thread.scheduling_status).to equal(nil)
+      end
+    end
+
+    context "messages_thread with free reply" do
+      before do
+        message = @message_thread.messages.create
+        mc = message.message_classifications.create(@message_classification_params[:free_answer_1])
+        mc.create_julie_action(@julie_action_params[:free_action_1])
+      end
+      it "should be nil" do
+        expect(@message_thread.scheduling_status).to equal(nil)
+      end
+    end
+
+    context "messages_thread with suggest availabilities" do
+      before do
+        message = @message_thread.messages.create
+        mc = message.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+        mc.create_julie_action(@julie_action_params[:no_creation_1])
+      end
+      it "should be scheduling" do
+        expect(@message_thread.scheduling_status).to equal(MessagesThread::SCHEDULING_EVENT)
+      end
+    end
+
+    context "messages_thread with create events" do
+      before do
+        message = @message_thread.messages.create
+        mc = message.message_classifications.create(@message_classification_params[:create_events_1])
+        mc.create_julie_action(@julie_action_params[:no_creation_1])
+      end
+      it "should be events created" do
+        expect(@message_thread.scheduling_status).to equal(MessagesThread::EVENTS_CREATED)
+      end
+    end
+
+    context "messages_thread with event scheduled" do
+      before do
+        message = @message_thread.messages.create
+        mc = message.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+        mc.create_julie_action(@julie_action_params[:creation_1])
+      end
+      it "should be event scheduled" do
+        expect(@message_thread.scheduling_status).to equal(MessagesThread::EVENT_SCHEDULED)
+      end
+    end
+
+    context "messages_thread with event unscheduled" do
+      before do
+        message_1 = @message_thread.messages.create
+        mc_1 = message_1.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+        mc_1.create_julie_action(@julie_action_params[:creation_1])
+
+        message_2 = @message_thread.messages.create
+        mc_2 = message_1.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+        mc_2.create_julie_action(@julie_action_params[:deletion_1])
+      end
+      it "should be nil" do
+        expect(@message_thread.scheduling_status).to equal(MessagesThread::SCHEDULING_EVENT )
       end
     end
   end

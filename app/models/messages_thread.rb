@@ -174,7 +174,7 @@ class MessagesThread < ActiveRecord::Base
       EVENTS_CREATED
     elsif event_data[:event_id]
       EVENT_SCHEDULED
-    elsif sorted_mcs.select{|mc| mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || MessageClassification::ASK_AVAILABILITIES && mc.julie_action.done}.length > 0
+    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES) && mc.julie_action.done}.length > 0
       SCHEDULING_EVENT
     else
       nil
@@ -182,7 +182,11 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def client_email
-    (account.all_emails & contacts(with_client: true).map{|c| c[:email]}).first || account_email
+    if account
+      (account.all_emails & contacts(with_client: true).map{|c| c[:email]}).first || account_email
+    else
+      nil
+    end
   end
 
   def self.find_account_email google_thread
@@ -303,9 +307,7 @@ class MessagesThread < ActiveRecord::Base
       end
     else
       {
-          primary: [
-          ],
-          secondary: [
+          other: [
               MessageClassification::UNKNOWN
           ]
       }

@@ -353,7 +353,7 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Perfect, invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM.",
+            en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM.",
             fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00."
         }
     },
@@ -372,7 +372,7 @@ window.testsData.templatesData = [
                 label: "skype"
             },
             expectedResults: {
-                en: "Perfect, invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris).",
+                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris).",
                 fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)."
             }
         },
@@ -397,7 +397,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect, invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles).",
+                en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles).",
                 fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)."
             }
         }],
