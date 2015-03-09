@@ -44,6 +44,9 @@ function Calendar($selector, params) {
     calendar.$selector.find("#weekends-checkbox").change(function (e) {
         calendar.changeWeekendsCheckbox(e);
     });
+    calendar.$selector.on("change", ".calendar-item input[type='checkbox']", function (e) {
+        calendar.changeShowCalendarCheckbox(e);
+    });
     calendar.$selector.find("#minimize-button").click(function(e) {
         calendar.clickMinimizeButton(e);
     });
@@ -153,10 +156,18 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         var categoryName = email;
         if(categoryName == "undefined") categoryName = "Other";
         $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
+        console.log(groupedCalendars);
         $(groupedCalendars[email]).each(function (k, calendarItem) {
 
             var $div = $("<div>").addClass("calendar-item");
-            var $checkbox = $("<input type='checkbox'>").prop("disabled", "disabled");
+            $div.data("email", email);
+            $div.data("calendar-id", calendarItem.id);
+
+            var $checkbox = $("<input type='checkbox'>");
+
+            if(email != calendar.initialData.email) {
+                $checkbox.prop("disabled", "disabled");
+            }
 
             if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
                 $checkbox.prop("checked", "checked");
@@ -165,9 +176,9 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
             $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarColor(calendarItem)}));
             $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
 
-            if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+            //if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
                 $calendarsListPopup.find(".calendars").append($div);
-            }
+            //}
         });
     }
 
@@ -199,9 +210,10 @@ Calendar.prototype.fetchCalendars = function (callback) {
             for(var j=0; j <response.items.length; j++) {
                 var calendarItem = response.items[j];
                 calendarItem.email = response.email;
-                if(calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
-                    calendar.calendars.push(calendarItem);
-                }
+                calendar.calendars.push(calendarItem);
+//                if(calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+//                    calendar.calendars.push(calendarItem);
+//                }
             }
 
             accountsToWait --;
@@ -324,16 +336,10 @@ Calendar.prototype.redrawFullCalendar = function() {
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
     var calendar = this;
 
-
-    if(!accountPreferencesHash) {
-        accountPreferencesHash = calendar.accountPreferences;
-    }
-
-
-
     CommonHelpers.externalRequest({
         action: "events",
         email: accountPreferencesHash.email,
+        calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
         start: start,
         end: end
     }, function (response) {
@@ -591,6 +597,23 @@ Calendar.prototype.drawExternalEventCreation = function () {
             eventStart: moment.tz(calendar.eventBeingAdded.start.format(), calendar.getCalendarTimezone()).format()
         }, "*");
     }
+};
+
+Calendar.prototype.changeShowCalendarCheckbox = function(e) {
+    var calendar = this;
+    calendar.accountPreferences[calendar.initialData.email].calendar_ids_to_show_override = calendar.getCheckedMainAccountCalendarIds();
+    calendar.refreshEvents();
+};
+
+Calendar.prototype.getCheckedMainAccountCalendarIds = function(e) {
+    var calendar = this;
+    return $(".calendar-item input[type='checkbox']:checked").filter(function() {
+        var $calendarItem = $(this).closest(".calendar-item");
+        return $calendarItem.data("email") == calendar.initialData.email;
+    }).map(function() {
+        var $calendarItem = $(this).closest(".calendar-item");
+        return $calendarItem.data("calendarId");
+    }).get();
 };
 
 Calendar.prototype.changeWeekendsCheckbox = function () {

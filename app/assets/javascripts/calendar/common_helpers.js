@@ -65,7 +65,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             data: {
                 start: request.start,
                 end: request.end,
-                email: request.email
+                email: request.email,
+                calendar_ids: request.calendar_ids
             },
             success: function(data) {
                 console.log(data);
