@@ -155,7 +155,7 @@
         if(!currentAppointment) {
             return null;
         }
-        var address = _.find(window.threadAccount.addresses, function(addressObject) {
+        var address = _.find(currentAppointment.addresses_with_description, function(addressObject) {
             return addressObject.label == $("select#location_nature").val();
         });
         if(address) {
