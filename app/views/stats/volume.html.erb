@@ -1,0 +1,38 @@
+
+<script>
+  $(function() {
+      var data = {
+          labels: <%== @days.map{|day| day[0].strftime("%A %d/%M")}.to_json %>,
+          datasets: [
+              {
+                  label: "Message threads",
+                  fillColor: "rgba(220,220,220,0.2)",
+                  strokeColor: "rgba(220,220,220,1)",
+                  pointColor: "rgba(220,220,220,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(220,220,220,1)",
+                  data: <%== @data[:message_threads].to_json %>
+              },
+              {
+                  label: "Emails",
+                  fillColor: "rgba(151,187,205,0.2)",
+                  strokeColor: "rgba(151,187,205,1)",
+                  pointColor: "rgba(151,187,205,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(220,220,220,1)",
+                  data: <%== @data[:messages].to_json %>
+              }
+          ]
+      };
+
+      var ctx = document.getElementById("myChart").getContext("2d");
+      var myNewChart = new Chart(ctx).Line(data);
+  })
+</script>
+<div class="col-md-8 col-md-offset-2">
+  <h1>Volume</h1>
+
+  <canvas id="myChart" width="800" height="400"></canvas>
+</div>

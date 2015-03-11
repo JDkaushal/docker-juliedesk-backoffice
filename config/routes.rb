@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   end
 
   get "stats", controller: :stats, action: :index
+  get "stats/volume", controller: :stats, action: :volume
 
   get "test/js" => "test#js"
   get "test/templates" => "test#templates"

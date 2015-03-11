@@ -1,22 +1,21 @@
-
-<h1>Stats</h1>
 <div class="col-md-8 col-md-offset-2">
-<table class="table table-striped">
-  <tr>
-    <th>Compte</th>
-    <th>Total</th>
-    <% @months.each do |months| %>
-    <th><%= months[0].strftime("%B %Y") %></th>
+  <h1>Stats</h1>
+  <table class="table table-striped">
+    <tr>
+      <th>Compte</th>
+      <th>Total</th>
+      <% @months.each do |months| %>
+          <th><%= months[0].strftime("%B %Y") %></th>
+      <% end %>
+    </tr>
+    <% @data.each do |account, counts| %>
+        <tr>
+          <td><%= account %></td>
+          <td><%= counts.sum %></td>
+          <% counts.each do |count| %>
+              <td><%= count %></td>
+          <% end %>
+        </tr>
     <% end %>
-  </tr>
-  <% @data.each do |account, counts| %>
-  <tr>
-    <td><%= account %></td>
-    <td><%= counts.sum %></td>
-    <% counts.each do |count| %>
-    <td><%= count %></td>
-    <% end %>
-  </tr>
-  <% end %>
-</table>
+  </table>
 </div>

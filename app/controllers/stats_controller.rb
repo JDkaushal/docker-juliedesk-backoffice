@@ -22,5 +22,26 @@ class StatsController < ApplicationController
         }.length
       }]
       end].sort_by{|account, counts| -(counts.sum)}
-    end
+  end
+
+  def volume
+    message_threads = MessagesThread.all.includes(messages: :message_classifications)
+    messages = message_threads.map(&:messages).flatten
+    last_day = [DateTime.now.beginning_of_day, DateTime.now.end_of_day]
+    @days = (-30..0).map{|i|
+      last_day.map{|dt| dt + i.days}
+    }
+    @data = {}
+    @data[:message_threads] = @days.map{|day|
+        message_threads.select{|mt|
+          mt.created_at >= day[0] && mt.created_at < day[1]
+        }.length
+      }
+
+    @data[:messages] = @days.map{|day|
+      messages.select{|mt|
+        mt.received_at >= day[0] && mt.received_at < day[1] && mt.message_classifications.length > 0
+      }.length
+    }
+  end
 end
