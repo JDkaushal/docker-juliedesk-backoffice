@@ -40,6 +40,8 @@ Rails.application.routes.draw do
     get "classified_events", controller: :events, action: :classified_events
   end
 
+  get "stats", controller: :stats, action: :index
+
   get "test/js" => "test#js"
   get "test/templates" => "test#templates"
 
