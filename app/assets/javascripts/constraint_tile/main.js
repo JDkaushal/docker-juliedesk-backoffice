@@ -122,7 +122,7 @@ ConstraintTile.prototype.redrawTimesContainer = function() {
 ConstraintTile.prototype.redrawDatesContainer = function() {
     var constraintTile = this;
     constraintTile.$selector.find(".constraints-start-end-recurring-container").hide();
-
+    constraintTile.$selector.find(".constraints-start-end-recurring-container *").show();
     if(constraintTile.getWhenNature() == "this-week") {
         constraintTile.$selector.find("input.constraint-start-recurring").val(moment().startOf("week").format("MM/DD/YYYY"));
         constraintTile.$selector.find("input.constraint-end-recurring").val(moment().endOf("week").format("MM/DD/YYYY"));
@@ -134,6 +134,14 @@ ConstraintTile.prototype.redrawDatesContainer = function() {
         mStart.add("w", 1);
         mEnd.add("w", 1);
         constraintTile.$selector.find("input.constraint-start-recurring").val(mStart.format("MM/DD/YYYY"));
+        constraintTile.$selector.find("input.constraint-end-recurring").val(mEnd.format("MM/DD/YYYY"));
+    }
+    else if(constraintTile.getWhenNature() == "from-date") {
+        constraintTile.$selector.find(".constraints-start-end-recurring-container").show();
+        constraintTile.$selector.find(".constraints-start-end-recurring-container *").hide();
+        constraintTile.$selector.find(".constraints-start-end-recurring-container .constraint-start-recurring").show();
+        var mEnd = moment();
+        mEnd.add("y", 1);
         constraintTile.$selector.find("input.constraint-end-recurring").val(mEnd.format("MM/DD/YYYY"));
     }
     else if(constraintTile.getWhenNature() == "always") {
