@@ -210,6 +210,11 @@
                 var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block btn-primary time-slot-to-suggest").data("date-time", timeSlot).html(window.helpers.capitalize(moment(timeSlot).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"))));
                 $timeSlotsToSuggestListDiv.append($timeSlotDiv);
             });
+
+
+            var $nextButton = $("<div>").addClass("btn btn-block btn-success suggest-dates-next-button").html("Next");
+            $timeSlotsToSuggestListDiv.append($nextButton);
+
             $timeSlotsToSuggestDiv.append($timeSlotsToSuggestListDiv);
             $container.append($timeSlotsToSuggestDiv);
             var height = $(".time-slots-to-suggest-list").outerHeight();
@@ -220,6 +225,11 @@
                 width: '100%'
             });
             $container.append($fakeDiv);
+
+            $(".time-slots-to-suggest-list-container .suggest-dates-next-button").click(function() {
+                $(".calendar-container").addClass("minimized");
+                $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+            });
         };
 
         window.sendReply = function () {

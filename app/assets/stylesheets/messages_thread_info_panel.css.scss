@@ -118,7 +118,7 @@
 
     .time-slots-to-suggest-list-container {
       position: fixed;
-      top: 0;
+      top: 40px;
       width: 350px;
       right: 0;
       border-bottom: 1px solid #ccc;
@@ -138,6 +138,9 @@
       }
       .btn {
         margin: 10px 0;
+      }
+      .btn-success {
+        margin-top: 40px;
       }
     }
   }

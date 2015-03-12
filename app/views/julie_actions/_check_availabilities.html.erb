@@ -165,7 +165,7 @@
                         window.currentEventData = data;
                         window.currentEventTile.redraw();
                         setTimeout(function () {
-                            $(".left-column").animate({scrollTop: $(".reply-box").offset().top - 80}, 300);
+                            $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
                         }, 1000);
                     });
 
