@@ -55,6 +55,9 @@
 //= require message_classification_forms/ask_availabilities
 //= require message_classification_forms/give_info
 //= require message_classification_forms/ask_cancel_appointment
+//= require message_classification_forms/ask_cancel_events
+//= require message_classification_forms/ask_postpone_events
+
 
 //= require tests/common
 //= require tests/constraints

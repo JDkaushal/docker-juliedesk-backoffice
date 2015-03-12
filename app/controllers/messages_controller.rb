@@ -9,8 +9,6 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
-        @classification == MessageClassification::ASK_CANCEL_EVENTS ||
-        @classification == MessageClassification::ASK_POSTPONE_EVENTS ||
         @classification == MessageClassification::ASK_CREATE_EVENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
       redirect_to message_classification.julie_action

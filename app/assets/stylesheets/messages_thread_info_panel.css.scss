@@ -12,6 +12,10 @@
   overflow: scroll;
   z-index: 10;
 
+  .only-locale-panel {
+    display: none;
+  }
+
   .classic-info-panel {
 
   }
@@ -212,6 +216,7 @@
 
   .data {
     padding: 50px 0 0 0;
+  }
     .data-entry {
 
       .semi-data-entry {
@@ -287,7 +292,6 @@
       text-align: center;
     }
 
-  }
   .save-info-container {
     display: none;
   }

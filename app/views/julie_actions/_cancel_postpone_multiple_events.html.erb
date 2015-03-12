@@ -21,7 +21,7 @@
                         addInviteesString = "<br><br>WARNING: SHOULD ADD INVITEES (See previous email)"
                     }
                     return {
-                        subject: window.cancelPostponeMultipleEmailSubjectType + event.title,
+                        subject: window.cancelPostponeMultipleEmailSubjectType + " " + event.title,
                         html: window.cancelPostponeMultipleEmailBodyType + event.title + " (" + dateString + ")" + addInviteesString,
                         event_id: event.id,
                         calendar_id: event.calId,

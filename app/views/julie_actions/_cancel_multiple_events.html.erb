@@ -1,7 +1,9 @@
 <script>
+    setCurrentLocale(window.threadComputedData.locale);
     window.cancelPostponeMultipleEmailSubjectType = localize("email_templates.cancel_multiple.cancel");
     window.cancelPostponeMultipleEmailBodyType = "Please cancel this event:<br>";
     window.actionKind = "cancel";
+    setCurrentLocale("<%= I18n.locale %>");
 </script>
 
 <%= render partial: "cancel_postpone_multiple_events", locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>

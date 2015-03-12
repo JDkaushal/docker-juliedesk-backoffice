@@ -14,6 +14,12 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "ask_cancel_appointment") {
         return new window.classificationForms.askCancelAppointment(params);
     }
+    else if (params.classification == "ask_cancel_events") {
+        return new window.classificationForms.askCancelEvents(params);
+    }
+    else if (params.classification == "ask_postpone_events") {
+        return new window.classificationForms.askPostponeEvents(params);
+    }
     throw "No classification form defined for classification: '" + params.classification + "'";
 };
 
@@ -64,6 +70,26 @@ window.classificationForms.classificationForm.isParentOf = function(child, param
     });
 };
 
+window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = function () {
+    var classificationForm = this;
+
+    var data = {
+        classification: classificationForm.classification,
+        locale: $("input[name='locale_only']:checked").val(),
+        processed_in: Date.now() - classificationForm.startedAt
+    };
+    $.ajax({
+        url: "/messages/" + classificationForm.messageId + "/classify",
+        type: "POST",
+        data: data,
+        success: function (e) {
+            window.location = e.redirect_url;
+        },
+        error: function (e) {
+            console.log("Error: ", e);
+        }
+    });
+};
 
 window.classificationForms.classificationForm.prototype.sendForm = function () {
     var classificationForm = this;

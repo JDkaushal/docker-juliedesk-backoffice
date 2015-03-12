@@ -116,7 +116,14 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def has_data?
-    [ASK_DATE_SUGGESTIONS, ASK_AVAILABILITIES, GIVE_INFO, ASK_CANCEL_APPOINTMENT].include? classification
+    [
+        ASK_DATE_SUGGESTIONS,
+        ASK_AVAILABILITIES,
+        GIVE_INFO,
+        ASK_CANCEL_APPOINTMENT,
+        ASK_CANCEL_EVENTS,
+        ASK_POSTPONE_EVENTS
+    ].include? classification
   end
 
   def self.compare message_classifications

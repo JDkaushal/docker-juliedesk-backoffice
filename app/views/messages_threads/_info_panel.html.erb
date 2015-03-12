@@ -355,6 +355,21 @@
   <%= render partial: "messages_threads/create_event_panel", locals: {messages_thread: messages_thread, julie_action: local_assigns[:julie_action]} %>
 
 
+  <div class="only-locale-panel">
+    <div class="data-entry">
+      <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
+      <div class="semi-data-entry">
+        <%= radio_button_tag :locale_only, "fr", (messages_thread.computed_data[:locale] != "en") %> <%= I18n.t("info_box.french") %>
+      </div>
+      <div class="semi-data-entry">
+        <%= radio_button_tag :locale_only, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
+      </div>
+      <br>
+      <br>
+      <button class="btn btn-block btn-success validate-locale-button"><%= I18n.t("common.validate") %></button>
+    </div>
+  </div>
+
   <div class="classic-info-panel">
 
 
