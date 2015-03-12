@@ -142,7 +142,13 @@ window.wordings['fr'] = {
     constraints: {
         cant: "ne peux pas",
         can: "peux uniquement",
-        prefers: "préfère"
+        prefers: "préfère",
+        from: "de",
+        to: "à",
+        every_day: "tous les jours",
+        on_days: "le",
+        starting_on: "du",
+        ending_on: "au"
     },
     actions: {
         to_do: {

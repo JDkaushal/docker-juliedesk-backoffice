@@ -32,14 +32,18 @@
             $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
             new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
                 possibleAttendees: possibleAttendees,
-                data: constraintData
+                data: constraintData,
+                locale: "<%= I18n.locale %>",
+                timezone: window.threadAccount.default_timezone_id
             });
         });
 
         $(".add-constraint-button").click(function() {
             $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
             new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
-                possibleAttendees: possibleAttendees
+                possibleAttendees: possibleAttendees,
+                locale: "<%= I18n.locale %>",
+                timezone: window.threadAccount.default_timezone_id
             });
         });
 

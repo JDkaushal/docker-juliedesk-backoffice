@@ -141,7 +141,13 @@ window.wordings['en'] = {
     constraints: {
         cant: "can't",
         can: "can only",
-        prefers: "prefers"
+        prefers: "prefers",
+        from: "from",
+        to: "to",
+        every_day: "every day",
+        on_days: "on",
+        starting_on: "from",
+        ending_on: "to"
     },
     actions: {
         to_do: {

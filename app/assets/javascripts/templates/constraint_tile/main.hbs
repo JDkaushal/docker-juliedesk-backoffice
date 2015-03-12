@@ -11,56 +11,66 @@
             <option value="prefers">Prefers</option>
         </select>
     </div>
-    <div class="constraint-repeat-container constraint-entry-container">
-        <div class="constraint-label">Repeat</div>
-        <select class="constraint-repeat-every">
-            <option value="never">Don't repeat</option>
-            <option value="dayly">Dayly</option>
-            <option value="weekly">Weekly</option>
-        </select>
-    </div>
+
     <div class="constraint-dates-container constraint-entry-container">
         <div class="constraint-label">When</div>
-        <div class="constraint-dates-days-of-week-container">
-            <input type="checkbox" value="0"/> Mon
-            <input type="checkbox" value="1"/> Tue
-            <input type="checkbox" value="2"/> Wed
-            <input type="checkbox" value="3"/> Thu
-            <input type="checkbox" value="4"/> Fri
-            <input type="checkbox" value="5"/> Sat
-            <input type="checkbox" value="6"/> Sun
-        </div>
+        <select class="constraint-when-nature">
+            <option value="this-week">This week</option>
+            <option value="next-week">Next week</option>
+            <option value="always">Always</option>
+            <option value="custom">Custom</option>
+        </select>
 
-        <div class="constraint-dates-start-container constraint-entry-container">
-            <div class="from-to-label">From</div>
-            <input class="constraint-start-date"/>
-            <input class="constraint-start-hours"/> h <input class="constraint-start-minutes"/>
-        </div>
-
-        <div class="constraint-dates-end-container constraint-entry-container">
-            <div class="from-to-label">To</div>
-            <input class="constraint-end-date"/>
-            <input class="constraint-end-hours"/> h <input class="constraint-end-minutes"/>
-        </div>
-
-
-    </div>
-
-    <div class="start-recurring-container constraint-entry-container">
-        <div class="constraint-label">Start recurring</div>
-        <input class="constraint-start-recurring"/>
-    </div>
-
-    <div class="end-recurring-container constraint-entry-container">
-        <div class="constraint-label">End recurring</div>
-        <div class="end-recurring-radios-container">
-        <div class="end-recurring-never-container">
-            <input type="radio" class="end-recurring" name="end-recurring" value="never" checked> Never
-        </div>
-        <div class="end-recurring-at-date-container">
-            <input type="radio" class="end-recurring" name="end-recurring" value="on"> on
+        <div class="constraints-start-end-recurring-container">
+            <input class="constraint-start-recurring"/>
+            to
             <input class="constraint-end-recurring"/>
         </div>
+
+        <div class="constraint-dates-days-of-week-container">
+            <div class="day-of-week">
+                <input type="checkbox" value="0" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="1" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="2" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="3" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="4" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="5" checked/> <span></span>
+            </div>
+            <div class="day-of-week">
+                <input type="checkbox" value="6" checked/> <span></span>
+            </div>
+        </div>
+
+      </div>
+
+    <div class="constraint-dates-container constraint-entry-container">
+        <div class="constraint-label">Time</div>
+        <div class="constraint-start-time-end-time-container">
+            <select class="constraint-start-time-end-time-nature">
+                <option value="all-day">All day</option>
+                <option value="custom">Custom</option>
+            </select>
+
+            <div class="constraint-start-hours-end-hours-container">
+                <input class="constraint-start-hours"/> h <input class="constraint-start-minutes"/>
+                To
+                <input class="constraint-end-hours"/> h <input class="constraint-end-minutes"/>
+
+                <div class="timezone-container">
+                    Timezone: <input class="timezone"/>
+                </div>
+
+            </div>
         </div>
     </div>
 
