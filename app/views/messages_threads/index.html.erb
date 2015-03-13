@@ -1,9 +1,12 @@
 <script>
     $(function () {
-        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at]).to_json %>);
+        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at, :account]).to_json %>);
     });
     function redrawThreadList(threadsData) {
         $(".messages-threads-container").html("");
+        var $toProcessLaterContainer = $("<div>").addClass("to-process-later-container");
+        $toProcessLaterContainer.append($("<div>").addClass("to-process-later-category-title").html("<%= I18n.t("index.to_process_later") %>"));
+
         $(".nothing-to-do").hide();
         $(".messages-threads-container").show();
         if(threadsData.length == 0) {
@@ -16,8 +19,11 @@
             var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item");
 
             var $accountEmail = $("<div>").addClass("account-email");
-            var accountName = threadData.account_name;
-            if (!accountName) accountName = "<%= I18n.t("info_box.no_account_found") %>";
+            var accountName = "<%= I18n.t("info_box.no_account_found") %>";
+            if(threadData.account) {
+                accountName = threadData.account.full_name;
+            }
+
             var messagesCount = threadData.messages.length;
             var accountEmailString = accountName;
             if (messagesCount > 1) accountEmailString = accountEmailString + " (" + messagesCount + ")";
@@ -37,10 +43,43 @@
             }
 
 
-
-            $(".messages-threads-container").append($messageThreadContainer);
+            if(shouldProcessLater(threadData)) {
+                $toProcessLaterContainer.append($messageThreadContainer);
+            }
+            else {
+                $(".messages-threads-container").append($messageThreadContainer);
+            }
+        }
+        if($toProcessLaterContainer.find(".messages-thread-item").length > 0) {
+            $(".messages-threads-container").append($toProcessLaterContainer);
         }
         redrawDates();
+    }
+
+    function shouldProcessLater(threadData) {
+        if(threadData.account && threadData.account.company_hash) {
+            var workingHours = threadData.account.company_hash.working_hours;
+            var timezone = threadData.account.company_hash.timezone;
+            var mNow = moment.tz(timezone);
+            var day = mNow.format("ddd").toLowerCase();
+            if(workingHours[day]) {
+                var currentWorkingHoursItem = _.find(workingHours[day], function(workingHoursItem) {
+                    var start = parseInt(workingHoursItem[0]);
+                    var end = parseInt(workingHoursItem[1]);
+                    var mStart = mNow.clone().set("h", start/100).set("m", start%100).set("s", 0);
+                    var mEnd = mNow.clone().set("h", end/100).set("m", end%100).set("s", 0);
+                    console.log(mStart.format(), mEnd.format());
+                    return mNow >= mStart && mNow <= mEnd;
+                });
+                return currentWorkingHoursItem == undefined;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
     function redrawDates() {

@@ -91,7 +91,7 @@ class MessagesThreadsController < ApplicationController
         render json: {
             status: "success",
             message: "",
-            data: @messages_thread.as_json(include: [:messages], methods: [:received_at])
+            data: @messages_thread.as_json(include: [:messages], methods: [:received_at, :account])
         }
       }
     end

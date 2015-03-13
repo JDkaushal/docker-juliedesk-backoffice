@@ -306,6 +306,7 @@ fr:
 
   index:
     nothing_to_do: "Tout est traité pour le moment !"
+    to_process_later: "A traiter plus tard"
   info_box:
     no_account_found: "Compte non-identifié"
     locale: "Langue"

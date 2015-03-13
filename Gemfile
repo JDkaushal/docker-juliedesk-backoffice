@@ -38,6 +38,8 @@ gem 'handlebars_assets'
 
 gem "rack-timeout"
 
+gem "redis"
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
 end
