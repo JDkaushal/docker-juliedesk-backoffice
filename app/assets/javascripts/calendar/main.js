@@ -356,13 +356,14 @@ Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
     _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
         var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
         _.each(eventsFromData.cant, function(ev) {
+
             var event = {
                 summary: attendeeEmail + " not available",
                 start: {
-                    dateTime: ev.start.format("YYYY-MM-DDTHH:mm:ssZ")
+                    dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
                 },
                 end: {
-                    dateTime: ev.end.format("YYYY-MM-DDTHH:mm:ssZ")
+                    dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
                 },
                 startEditable: false,
                 durationEditable: false,
@@ -376,10 +377,10 @@ Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
             var event = {
                 summary: attendeeEmail + " prefers not",
                 start: {
-                    dateTime: ev.start.format("YYYY-MM-DDTHH:mm:ssZ")
+                    dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
                 },
                 end: {
-                    dateTime: ev.end.format("YYYY-MM-DDTHH:mm:ssZ")
+                    dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
                 },
                 startEditable: false,
                 durationEditable: false,

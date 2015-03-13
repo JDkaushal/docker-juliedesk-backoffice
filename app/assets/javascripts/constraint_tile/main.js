@@ -157,15 +157,21 @@ ConstraintTile.prototype.redrawDatesContainer = function() {
     }
 
     var data = constraintTile.getData();
-    var distanceStartRecurringEndRecurring = (moment(data.end_recurring) - moment(data.start_recurring)) / (3600 * 1000 * 24);
+    var distanceStartRecurringEndRecurring = (moment(data.end_recurring).endOf("week") - moment(data.start_recurring).startOf("week")) / (3600 * 1000 * 24);
 
     constraintTile.$selector.find(".constraint-dates-days-of-week-container input[type='checkbox']").each(function() {
         var dayIndex = parseInt($(this).val());
         var date = moment(data.start_recurring).startOf("week");
         date.add(dayIndex, "day");
 
-        if(distanceStartRecurringEndRecurring < 7) {
+        $(this).prop("disabled", false);
+
+        if(distanceStartRecurringEndRecurring <= 7) {
             $(this).next().html(date.format("ddd D/MM"));
+            if(date < moment(data.start_recurring) || date > moment(data.end_recurring)) {
+                $(this).prop("disabled", true);
+                $(this).prop("checked", false);
+            }
         }
         else {
             $(this).next().html(date.format("ddd"));
@@ -399,8 +405,8 @@ ConstraintTile.getEventsFromDataFromDeployedConstraints = function (data_entries
     }
 
     return {
-        cant: cantResult,
-        dontPrefer: dontPreferResult
+        cant: _.filter(cantResult, function(event) {return event.end - event.start > 1000 * 60;}),
+        dontPrefer: _.filter(dontPreferResult, function(event) {return event.end - event.start > 1000 * 60;})
     };
 };
 
@@ -456,5 +462,17 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
             }
         }
     });
+    _.each(["can_only", "prefers"], function(constraintNature) {
+        if(_.filter(result, function(event) {
+            return event.constraint_nature == constraintNature;
+        }).length == 0 && _.filter(data_entries, function(data_entry) {
+            return data_entry.constraint_nature == constraintNature;
+        }).length > 0) {
+            result.push(ConstraintTile.deployConstraints(_.filter(data_entries, function(data_entry) {
+                return data_entry.constraint_nature == constraintNature;
+            }), moment("1000-01-01"), moment("4000-01-01"))[0]);
+        }
+    });
+
     return result;
 };
