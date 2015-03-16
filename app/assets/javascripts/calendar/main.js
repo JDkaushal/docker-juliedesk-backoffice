@@ -487,7 +487,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     }
 
     var eventCalendar = _.find(calendar.calendars, function(calendarItem) {
-        return calendarItem.id == ev.calId;
+        return calendarItem.id == ev.calId && calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email);
     });
     var color = calendar.getCalendarColor(null);
     if(eventCalendar) {
