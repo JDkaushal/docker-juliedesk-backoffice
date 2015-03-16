@@ -462,7 +462,7 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
             }
         }
     });
-    _.each(["can_only", "prefers"], function(constraintNature) {
+    _.each(["can", "prefers"], function(constraintNature) {
         if(_.filter(result, function(event) {
             return event.constraint_nature == constraintNature;
         }).length == 0 && _.filter(data_entries, function(data_entry) {
