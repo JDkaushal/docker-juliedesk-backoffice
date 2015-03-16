@@ -21,7 +21,7 @@
     window.timeSlotToCreate = null;
     window.selectedEvents = [];
     window.forceCancelEventIds = [];
-    window.julieAliasId = "<%= JULIE_ALIASES_DATA[@messages_thread.julie_alias][:id] %>"
+    window.julieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.startedAt = Date.now();
 
@@ -291,8 +291,16 @@
     window.setReplyMessage = function (message, recipients, otherRecipients) {
         window.setReplyRecipients(recipients, otherRecipients);
         setCurrentLocale(window.threadComputedData.locale);
-        $("textarea#reply-text").val(localize("email_templates.common.before") + message + localize("email_templates.common.footer." + window.julieAliasId));
-        $("div#reply-text-signature").html(localize("email_templates.common.signature." + window.julieAliasId));
+
+        var footer = window.julieAlias.footer_en;
+        var signature = window.julieAlias.signature_en;
+        if(getCurrentLocale() == "fr") {
+            footer = window.julieAlias.footer_fr;
+            signature = window.julieAlias.signature_fr;
+        }
+
+        $("textarea#reply-text").val(localize("email_templates.common.before") + message + footer);
+        $("div#reply-text-signature").html(signature);
         $("textarea#reply-text").elastic();
         setCurrentLocale("<%= I18n.locale %>");
     };
@@ -325,7 +333,7 @@
           <% if message.id == @message.id %>
               <div class="highlighted-below-email">
                 <div class="reply-box">
-                  <div class="from"><%= I18n.t("common.from") %> <%= "#{JULIE_ALIASES_DATA[@messages_thread.julie_alias][:name]} <#{@messages_thread.julie_alias}>" %></div>
+                  <div class="from"><%= I18n.t("common.from") %> <%= @messages_thread.julie_alias.generate_from %></div>
                   <div class="to">
                     <span><%= I18n.t("common.to") %></span>
                     <input id="recipients-to-input"/>

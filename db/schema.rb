@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150303145950) do
+ActiveRecord::Schema.define(version: 20150316141029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,17 @@ ActiveRecord::Schema.define(version: 20150303145950) do
     t.boolean  "deleted_event",             default: false
   end
 
+  create_table "julie_aliases", force: true do |t|
+    t.string   "email"
+    t.string   "name"
+    t.text     "signature_fr"
+    t.text     "signature_en"
+    t.text     "footer_fr"
+    t.text     "footer_en"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "message_classifications", force: true do |t|
     t.string   "classification"
     t.integer  "message_id"
@@ -80,7 +91,6 @@ ActiveRecord::Schema.define(version: 20150303145950) do
     t.boolean  "private",               default: false
     t.text     "other_notes"
     t.text     "constraints_data",      default: "[]"
-    t.string   "cancellation_kind"
     t.boolean  "client_agreement",      default: false
     t.boolean  "attendees_are_noticed", default: false
   end

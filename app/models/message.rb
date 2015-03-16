@@ -37,14 +37,14 @@ class Message < ActiveRecord::Base
   end
 
   def from_me?
-    JULIE_ALIASES.select{|julie_alias|
-      google_message.from.include? julie_alias
+    JulieAlias.all.select{|julie_alias|
+      google_message.from.include? julie_alias.email
     }.length > 0
   end
 
   def julie_alias
-    JULIE_ALIASES.select{|julie_alias|
-       "#{google_message.to} #{google_message.cc}".include? julie_alias
+    JulieAlias.all.select{|julie_alias|
+       "#{google_message.to} #{google_message.cc}".include? julie_alias.email
     }.first
   end
 
@@ -106,13 +106,13 @@ class Message < ActiveRecord::Base
     gm = google_message.reply_all_with(Gmail::Message.new(text: "", html: ""))
     {
 
-        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JULIE_ALIASES.include?(dest.address)}.map{|dest|
+        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address)}.map{|dest|
           {
               email: dest.address,
               name: dest.name
           }
         },
-        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JULIE_ALIASES.include?(dest.address)}.map{|dest|
+        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address)}.map{|dest|
           {
               email: dest.address,
               name: dest.name
@@ -125,7 +125,7 @@ class Message < ActiveRecord::Base
 
     # Get from field
     julie_alias = self.messages_thread.julie_alias
-    from = "#{JULIE_ALIASES_DATA[julie_alias][:name]} <#{julie_alias}>"
+    from = julie_alias.generate_from
 
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
@@ -212,7 +212,7 @@ class Message < ActiveRecord::Base
     # Create the message_classification in DB
     message_classification = message.message_classifications.create_from_params locale: original_messages_thread.computed_data[:locale],
                                                                                 classification: MessageClassification::ASK_AVAILABILITIES,
-                                                                                operator: original_messages_thread.julie_alias,
+                                                                                operator: original_messages_thread.julie_alias.email,
                                                                                 attendees: attendees,
                                                                                 processed_in: 0,
                                                                                 summary: event['summary'],

@@ -72,7 +72,7 @@ class MessagesController < ApplicationController
     end
 
     julie_alias = @message.messages_thread.julie_alias
-    response_message.from = "#{JULIE_ALIASES_DATA[julie_alias][:name]} <#{julie_alias}>"
+    response_message.from = julie_alias.generate_from
     response_message.deliver
 
     render json: {
