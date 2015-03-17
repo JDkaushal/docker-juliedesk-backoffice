@@ -1,7 +1,9 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+
+  #protect_from_forgery with: :exception
+  protect_from_forgery with: :null_session
 
   before_filter :authenticate, :set_locale
 
@@ -26,39 +28,18 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate
-    authorized_users = [
-        {
-            username: "nicolas@juliedesk.com",
-            name: "Nico",
-            password: "popp2012jmm"
-        },
-        {
-            username: "julien@juliedesk.com",
-            name: "Julien",
-            password: "popp2012jmm"
-        },
-        {
-            username: "guillaume@juliedesk.com",
-            name: "Guillaume",
-            password: "popp2012jmm"
-        },
-        {
-            username: "operator@juliedesk.com",
-            name: "Other operator",
-            password: "DareauJulieDesk2015"
-        }
-    ]
 
+    reset_session
     authenticate_or_request_with_http_basic do |username, password|
-      authenticated = false
-      authorized_users.each do |user|
-        if user[:username] == username && user[:password] == password
-          session[:user_username] = user[:username]
-          session[:user_name] = user[:name]
-          authenticated = true
-        end
+      operator = Operator.find_by_email(username)
+      if operator && operator.password_correct?(password)
+        session[:user_username] = operator.email
+        session[:user_name] = operator.name
+        session[:privilege] = operator.privilege
+        return true
       end
-      authenticated
+
+      false
     end
   end
 end
