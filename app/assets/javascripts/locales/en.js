@@ -85,8 +85,9 @@ window.wordings['en'] = {
             }
         },
         invites_sent: {
-            new_appointment: "Perfect. Invites sent for %{appointment_nature}%{location}:\n%{date}.",
-            postpone: "Perfect. The event has been updated for %{appointment_nature}%{location}:\n%{date}."
+            new_appointment: "Perfect. Invites sent for %{appointment_nature}%{location}:\n%{date}%{address}",
+            postpone: "Perfect. The event has been updated for %{appointment_nature}%{location}:\n%{date}%{address}",
+            location_in_template: "\nLocation: %{location}"
         },
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",

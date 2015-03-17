@@ -5,12 +5,15 @@
     message = "";
 
     var locationInTemplate = "";
+    var addressInTemplate = "";
     if(params.address) {
         if(params.address.address_in_template) {
             locationInTemplate = " " + params.address.address_in_template[params.locale];
         }
         else {
-            locationInTemplate = " " + localize("email_templates.common.custom_address_at", {location: params.address});
+            if (params.action != "suggest_dates") {
+                addressInTemplate = localize("email_templates.invites_sent.location_in_template", {location: params.address});
+            }
         }
     }
 
@@ -18,6 +21,10 @@
     var isVirtualAppointment = false;
     if(params.appointment) {
         isVirtualAppointment = ["call", "skype", "webex"].indexOf(params.appointment.label) > -1;
+    }
+
+    if(isVirtualAppointment) {
+        locationInTemplate = "";
     }
 
     if (params.action == "suggest_dates") {
@@ -141,9 +148,11 @@
 
         var postponeSuffix = "new_appointment";
         if(params.isPostpone)  postponeSuffix = "postpone";
+
         message = localize("email_templates.invites_sent." + postponeSuffix, {
             appointment_nature: params.appointment.title_in_email[params.locale],
             location: locationInTemplate,
+            address: addressInTemplate,
             date: dateString
         });
     }

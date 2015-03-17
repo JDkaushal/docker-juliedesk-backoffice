@@ -87,8 +87,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at 9 rue Dareau:\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au 9 rue Dareau :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment:\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -353,8 +353,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM.",
-            fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00."
+            en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM",
+            fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00"
         }
     },
         {
@@ -372,8 +372,53 @@ window.testsData.templatesData = [
                 label: "skype"
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris).",
-                fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)."
+                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un skype",
+                    en: "a skype"
+                },
+                label: "skype"
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            expectedResults: {
+                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un meeting",
+                    en: "a meeting"
+                },
+                label: "meeting"
+            },
+            address: "9 rue Dareau",
+            expectedResults: {
+                en: "Perfect. Invites sent for a meeting:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait, invitations envoyées pour un meeting :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -397,8 +442,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles).",
-                fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)."
+                en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles)",
+                fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         }],
 
