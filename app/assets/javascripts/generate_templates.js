@@ -102,12 +102,12 @@
                 var timeSlotsPlural = "plural";
                 if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
                 message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
-                if (params.appointment.label == "call") {
-                    message += localize("email_templates.suggest_dates.ask_number.call");
-                }
-                else if (params.appointment.label == "skype") {
-                    message += localize("email_templates.suggest_dates.ask_number.skype");
-                }
+//                if (params.appointment.label == "call") {
+//                    message += localize("email_templates.suggest_dates.ask_number.call");
+//                }
+//                else if (params.appointment.label == "skype") {
+//                    message += localize("email_templates.suggest_dates.ask_number.skype");
+//                }
             }
         }
         else {

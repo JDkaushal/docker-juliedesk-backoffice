@@ -36,6 +36,20 @@ class Account
     nil
   end
 
+  def contacts_from_same_company
+    accounts = Account.get_active_account_emails detailed: true
+    accounts.select{|account|
+      self.company_hash &&
+          account['company_hash'].try(:[], 'name') == self.company_hash['name'] &&
+          self.email != account['email']
+    }.map{|account|
+      {
+          name: account['full_name'],
+          email: account['email']
+      }
+    }
+  end
+
   def self.get_active_account_emails params={}
     if params[:detailed]
       self.accounts_cache.values

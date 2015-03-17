@@ -95,6 +95,7 @@
         });
 
 
+        $("#current_notes").height($("#current_notes")[0].scrollHeight);
 
 
 
@@ -424,9 +425,14 @@
         <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
         <div class="data-entry-value" id="contacts-data-list">
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
-          <% (messages_thread.contacts() + attendees.map(&:symbolize_keys)).uniq { |co| co[:email] }.each do |contact| %>
+          <% possible_attendees = messages_thread.contacts() + attendees.map(&:symbolize_keys) %>
+          <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
+          <% (possible_attendees + same_company_attendees).uniq { |co| co[:email] }.each do |contact| %>
               <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
-              <% checked = messages_thread.computed_data[:appointment_nature].nil? || attendee %>
+              <% checked = attendee || (
+                messages_thread.computed_data[:appointment_nature].nil? &&
+                possible_attendees.include?(contact)
+              ) %>
               <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <div class="attendee-name-and-email">
