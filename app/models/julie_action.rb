@@ -16,6 +16,7 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_CANCEL_MULTIPLE_EVENTS   = "cancel_multiple_events"
   JD_ACTION_POSTPONE_MULTIPLE_EVENTS = "postpone_multiple_events"
   JD_ACTION_FREE_ACTION              = "free_action"
+  JD_ACTION_ASSOCIATE_EVENT          = "associate_event"
 
 
   def event_data

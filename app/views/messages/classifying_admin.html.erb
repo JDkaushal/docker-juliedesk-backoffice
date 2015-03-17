@@ -1,0 +1,29 @@
+<div class="fixed-columns">
+
+
+  <div class="left-column">
+
+    <%= render partial: "common/header" %>
+
+    <div class="julie-action-fantom"></div>
+    <div class="messages-thread-emails">
+
+      <div id="back-button" class="btn btn-link">< <%= I18n.t("common.back")%></div>
+
+      <div class="messages-thread-subject">
+        <%= @messages_thread.subject %>
+      </div>
+
+      <div class="forbidden-for-not-admin">
+        <div class="forbidden-classification-message">
+          <%= I18n.t("forbidden_classifications.associate_event") %>
+          <br>
+          <br>
+          <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: @message.id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

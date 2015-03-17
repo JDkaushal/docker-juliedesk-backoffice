@@ -15,6 +15,8 @@ class MessageClassification < ActiveRecord::Base
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
   TO_FOUNDERS              = "to_founders"
+  GIVE_PREFERENCE          = "give_preference"
+  ASSOCIATE_EVENT          = "associate_event"
 
   def self.create_from_params params
     attendees = []
@@ -78,6 +80,9 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::GIVE_INFO
       create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
 
+    elsif self.classification == MessageClassification::GIVE_PREFERENCE
+      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
+
     elsif self.classification == MessageClassification::ASK_CANCEL_APPOINTMENT
       create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_EVENT
 
@@ -86,6 +91,9 @@ class MessageClassification < ActiveRecord::Base
 
     elsif self.classification == MessageClassification::ASK_CANCEL_EVENTS
       create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS
+
+    elsif self.classification == MessageClassification::ASSOCIATE_EVENT
+      create_julie_action action_nature: JulieAction::JD_ACTION_ASSOCIATE_EVENT
 
     elsif self.classification == MessageClassification::ASK_POSTPONE_EVENTS
       create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS

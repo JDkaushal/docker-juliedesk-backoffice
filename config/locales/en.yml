@@ -80,6 +80,9 @@ en:
           to_founders:
             action: "I can't decide"
 
+  forbidden_classifications:
+    associate_event: "Only support team can perform event linking. Please send to support team."
+
   actions:
       create_event:
         todo: "create event"
@@ -131,6 +134,8 @@ en:
     sent: "Sent."
     add: "Add"
     quote_message: "Quote previous message"
+    archive: "Archive"
+    associate_to_event: "Link an event"
 
   classification:
     please_fill_info_in: "Please fill info in"
@@ -165,7 +170,7 @@ en:
     full_name_placeholder: "Full name..."
     email_placeholder: "Email address..."
     send_to_founders: "Send to support team"
-    an_hesitation: "Hesitating?"
+    an_hesitation: "A doubt?"
     did_client_gave_agreement:
         event_scheduling:
           ask_date_suggestions: "Did %{client} gave agreement for suggesting dates?"
@@ -176,6 +181,15 @@ en:
         manage_scheduled_event:
           ask_cancel_appointment: "Did %{client} gave agreement for cancelling appointment?"
     are_attendees_noticed: "Have attendees been noticed?"
+    warning_different_timezones: "Warning: This is a physical appointment and the timezone is different from the default timezone."
+    forbidden_different_timezones: "You should send this email to support team."
+
+    warning_several_responses: "Warning: Several responses are expected."
+    forbidden_several_responses: "You should send this email to support team."
+    group_meeting:
+      title: "Group meeting"
+      several_responses: "Responses from several persons are expected"
+      one_response: "Response from only one person is expected"
 
 
 

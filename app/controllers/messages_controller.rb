@@ -15,14 +15,18 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::TO_FOUNDERS
-      @messages_thread.update_attribute :delegated_to_founders, true
-      @messages_thread.google_thread.modify(["Label_12"], [])
+      @message.messages_thread.update_attribute :delegated_to_founders, true
+      @message.messages_thread.google_thread.modify(["Label_12"], [])
       redirect_to messages_threads_path
     end
 
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
+
+    if @classification == MessageClassification::ASSOCIATE_EVENT
+      render "classifying_admin" and return
+    end
   end
 
   def classify

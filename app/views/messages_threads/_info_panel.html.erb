@@ -25,6 +25,13 @@
             askNextLinearFormEntry();
         });
 
+        $("input[name='group_meeting']").change(function() {
+            $(".several-responses-warner").hide();
+            if($("input[name='group_meeting']:checked").val() == "several") {
+                $(".several-responses-warner").show();
+            }
+        });
+
         var possibleAttendees = window.getInfoPanelAttendees();
         possibleAttendees.push({
             email: window.threadAccount.email,
@@ -53,6 +60,9 @@
         redrawLinearForm();
         if (window.threadDataIsEditable) {
             $("#timezone").timezonePicker();
+            $("#timezone").on("autocompletechange", function() {
+                redrawDifferentTimezoneWarner();
+            });
             <% if messages_thread.account.calendar_nature != "google" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
@@ -76,7 +86,10 @@
             if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $("#appointment_nature").val()) {
                     askNextLinearFormEntry();
             }
+            redrawDifferentTimezoneWarner();
         });
+
+
 
         $("input[name='locale']").change(function () {
             setNotes();
@@ -175,6 +188,18 @@
         return null;
     };
 
+
+    function redrawDifferentTimezoneWarner() {
+        $(".different-timezone-warner").hide();
+        var appointment = $.grep(window.threadAccount.appointments, function (v) {
+            return v.label == $("#appointment_nature").val();
+        })[0];
+        if(appointment.label != "call" && appointment.label != "skype" && appointment.label != "webex") {
+            if($("#timezone").val() != window.threadAccount.default_timezone_id) {
+                $(".different-timezone-warner").show();
+            }
+        }
+    }
 
     function reProcessTitle() {
         var appointment = $.grep(window.threadAccount.appointments, function (v) {
@@ -419,6 +444,19 @@
         <div class="data-entry-name"><%= I18n.t("info_box.timezone") %></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+
+        <div class="different-timezone-warner">
+          <div class="warning">
+            <%= I18n.t("info_box.warning_different_timezones") %>
+          </div>
+          <div class="forbidden">
+              <%= I18n.t("info_box.forbidden_different_timezones") %>
+              <br><br>
+              <% if local_assigns[:message] %>
+                    <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+              <% end %>
+          </div>
+        </div>
       </div>
 
       <div class="data-entry linear-form-entry">
@@ -447,6 +485,26 @@
           <%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
+
+        <div class="several-responses-container">
+          <div class="data-entry-name"><%= I18n.t("info_box.group_meeting.title") %></div>
+          <%= radio_button_tag :group_meeting, "one", true %> <%= I18n.t("info_box.group_meeting.one_response") %><br>
+          <%= radio_button_tag :group_meeting, "several", false %> <%= I18n.t("info_box.group_meeting.several_responses") %>
+
+          <div class="several-responses-warner">
+            <div class="warning">
+              <%= I18n.t("info_box.warning_several_responses") %>
+            </div>
+            <div class="forbidden">
+              <%= I18n.t("info_box.forbidden_several_responses") %>
+              <br><br>
+              <% if local_assigns[:message] %>
+                  <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 

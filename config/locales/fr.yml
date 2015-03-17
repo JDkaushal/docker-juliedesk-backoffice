@@ -252,6 +252,9 @@ fr:
           to_founders:
             action: "Je ne peux pas décider"
 
+  forbidden_classifications:
+    associate_event: "Seule l'équipe de support peut lier un évènement. Veuillez envoyer à l'équipe de support."
+
   actions:
       suggest_dates:
         todo: "suggérer des dates"
@@ -297,6 +300,8 @@ fr:
     sent: "Envoyé."
     add: "Ajouter"
     quote_message: "Citer le message précédent"
+    archive: "Archiver"
+    associate_to_event: "Lier un évènement"
 
 
 
@@ -344,6 +349,15 @@ fr:
       manage_scheduled_event:
         ask_cancel_appointment: "%{client} a-t-il donné son accord pour annuler le rendez-vous ?"
     are_attendees_noticed: "Les participants ont-ils été mis au courant ?"
+    warning_different_timezones: "Attention : Il s'agit d'un rendez-vous physique et le fuseau horaire est différent du fuseau horaire par défaut."
+    forbidden_different_timezones: "Vous devez envoyer cet email à l'équipe support."
+
+    warning_several_responses: "Attention : Plusieurs réponses sont attendues."
+    forbidden_several_responses: "Vous devez envoyer cet email à l'équipe support."
+    group_meeting:
+      title: "Rendez-vous de groupe"
+      several_responses: "On attend des réponses de plusieurs personnes"
+      one_response: "On attend la réponse d'une seule personne"
 
   dates_identifications:
     add_a_date: "Ajouter une date"
