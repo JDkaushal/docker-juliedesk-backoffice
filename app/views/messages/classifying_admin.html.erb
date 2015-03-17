@@ -1,3 +1,5 @@
+<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, message: @message, classification: @classification} %>
+
 <div class="fixed-columns">
 
 
@@ -16,10 +18,15 @@
 
       <div class="forbidden-for-not-admin">
         <div class="forbidden-classification-message">
-          <%= I18n.t("forbidden_classifications.associate_event") %>
+          <%= I18n.t("forbidden_classifications.#{@classification}") %>
           <br>
           <br>
-          <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: @message.id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+          <% if @classification == MessageClassification::GIVE_PREFERENCE %>
+              <%= link_to I18n.t("common.validate"), {controller: :messages, action: :wait_for_preference_change, id: @message.id}, class: "action btn btn-default" %>
+          <% else %>
+              <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: @message.id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+          <% end %>
+
         </div>
       </div>
     </div>

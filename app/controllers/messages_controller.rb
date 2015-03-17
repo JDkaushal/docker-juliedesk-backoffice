@@ -24,9 +24,28 @@ class MessagesController < ApplicationController
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
-    if @classification == MessageClassification::ASSOCIATE_EVENT
+    if @classification == MessageClassification::ASSOCIATE_EVENT ||
+        @classification == MessageClassification::GIVE_PREFERENCE
       render "classifying_admin" and return
     end
+  end
+
+  def wait_for_preference_change
+    message = Message.find params[:id]
+    url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/wait_for_preferences_change"
+
+    message.messages_thread.update_attribute :delegated_to_founders, true
+    message.messages_thread.google_thread.modify(["Label_12"], [])
+
+    x = Net::HTTP.post_form(URI.parse(url), {
+        email: message.messages_thread.account_email,
+        access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
+    })
+
+    p "*" * 50
+    p x.body
+
+    redirect_to :messages_threads
   end
 
   def classify

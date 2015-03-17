@@ -260,6 +260,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_CREATE_EVENT
             ],
             other: [
+                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -272,6 +273,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_INFO,
             ],
             other: [
+                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -287,6 +289,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_AVAILABILITIES
             ],
             other: [
+                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -297,6 +300,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_AVAILABILITIES
             ],
             other: [
+                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::ASK_CREATE_EVENT,
                 MessageClassification::ASK_CANCEL_EVENTS,
                 MessageClassification::ASK_POSTPONE_EVENTS,

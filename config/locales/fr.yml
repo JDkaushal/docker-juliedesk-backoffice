@@ -251,9 +251,12 @@ fr:
             action: "Réponse libre"
           to_founders:
             action: "Je ne peux pas décider"
+          give_preference:
+            action: "Noter une préférence"
 
   forbidden_classifications:
     associate_event: "Seule l'équipe de support peut lier un évènement. Veuillez envoyer à l'équipe de support."
+    give_preference: "Seule l'équipe de support peut noter une préférence. Cliquez sur valider pour soumettre à l'équipe de support et mettre en attente des messages de ce client."
 
   actions:
       suggest_dates:
@@ -312,6 +315,7 @@ fr:
   index:
     nothing_to_do: "Tout est traité pour le moment !"
     to_process_later: "A traiter plus tard"
+    waiting_for_preference_change: "En attente de changement de préférence"
   info_box:
     no_account_found: "Compte non-identifié"
     locale: "Langue"

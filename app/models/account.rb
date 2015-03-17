@@ -1,6 +1,6 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale
+  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change
 
   def self.create_from_email email
     #account_email = self.find_account_email email
@@ -22,6 +22,8 @@ class Account
     account.current_notes = data['current_notes']
     account.default_timezone_id = data['default_timezone_id']
     account.locale = data['locale']
+    account.only_admin_can_process = data['only_admin_can_process']
+    account.block_until_preferences_change = data['block_until_preferences_change']
     account
   end
 

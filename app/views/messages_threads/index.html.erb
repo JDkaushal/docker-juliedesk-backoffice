@@ -7,6 +7,9 @@
         var $toProcessLaterContainer = $("<div>").addClass("to-process-later-container");
         $toProcessLaterContainer.append($("<div>").addClass("to-process-later-category-title").html("<%= I18n.t("index.to_process_later") %>"));
 
+        $waitingForPreferenceChangerContainer = $("<div>").addClass("waiting-for-preference-change-container");
+        $waitingForPreferenceChangerContainer.append($("<div>").addClass("waiting-for-preference-change-title").html("<%= I18n.t("index.waiting_for_preference_change") %>"));
+
         $(".nothing-to-do").hide();
         $(".messages-threads-container").show();
         if(threadsData.length == 0) {
@@ -43,7 +46,11 @@
             }
 
 
-            if(shouldProcessLater(threadData)) {
+
+            if(waitingForPreferenceChange(threadData)) {
+                $waitingForPreferenceChangerContainer.append($messageThreadContainer);
+            }
+            else if(shouldProcessLater(threadData)) {
                 $toProcessLaterContainer.append($messageThreadContainer);
             }
             else {
@@ -52,6 +59,9 @@
         }
         if($toProcessLaterContainer.find(".messages-thread-item").length > 0) {
             $(".messages-threads-container").append($toProcessLaterContainer);
+        }
+        if($waitingForPreferenceChangerContainer.find(".messages-thread-item").length > 0) {
+            $(".messages-threads-container").append($waitingForPreferenceChangerContainer);
         }
         redrawDates();
     }
@@ -68,18 +78,26 @@
                     var end = parseInt(workingHoursItem[1]);
                     var mStart = mNow.clone().set("h", start/100).set("m", start%100).set("s", 0);
                     var mEnd = mNow.clone().set("h", end/100).set("m", end%100).set("s", 0);
-                    console.log(mStart.format(), mEnd.format());
+                    //console.log(mStart.format(), mEnd.format());
                     return mNow >= mStart && mNow <= mEnd;
                 });
-                return currentWorkingHoursItem == undefined;
+                if(currentWorkingHoursItem == undefined) {
+                    return true;
+                }
             }
             else {
                 return true;
             }
         }
-        else {
-            return false;
+
+        return false;
+    }
+
+    function waitingForPreferenceChange(threadData) {
+        if(threadData.account && threadData.account.block_until_preferences_change) {
+            return true;
         }
+        return false;
     }
 
     function redrawDates() {
