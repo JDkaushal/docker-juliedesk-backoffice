@@ -6,9 +6,18 @@
 
     var locationInTemplate = "";
     var addressInTemplate = "";
+    var isAskInterlocutor = false;
     if(params.address) {
         if(params.address.address_in_template) {
-            locationInTemplate = " " + params.address.address_in_template[params.locale];
+            if(params.address.address_in_template[params.locale] == "") {
+                if(params.address.address != "") {
+                    addressInTemplate = localize("email_templates.invites_sent.location_in_template", {location: params.address.address});
+                }
+            }
+            else {
+                locationInTemplate = " " + params.address.address_in_template[params.locale];
+            }
+            isAskInterlocutor = (params.address.type == "ask_interlocuter");
         }
         else {
             if (params.action != "suggest_dates") {
@@ -155,6 +164,16 @@
             address: addressInTemplate,
             date: dateString
         });
+
+        if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
+            if(isAskInterlocutor) {
+                message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
+            }
+            else {
+                message += localize("email_templates.invites_sent.ask_for_location");
+            }
+
+        }
     }
     else if(params.action == "cancel_event") {
         var dateString = window.helpers.capitalize(moment(params.currentEventData.start.dateTime).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));

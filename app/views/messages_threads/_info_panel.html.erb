@@ -180,6 +180,9 @@
             return addressObject.label == $("select#location_nature").val();
         });
         if(address) {
+            if(address.address == "") {
+                address.address = $("#location").val();
+            }
             return address;
         }
         else if($("#location").val().length > 0) {

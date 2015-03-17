@@ -445,6 +445,86 @@ window.testsData.templatesData = [
                 en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles)",
                 fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner"
+            },
+            address: {
+                address: "9 rue Dareau",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                }
+            },
+            expectedResults: {
+                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner"
+            },
+            address: {
+                address: "",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                },
+                type: "ask_client"
+            },
+            expectedResults: {
+                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nMerci de m'indiquer le lieu si vous souhaitez que je l'ajoute à l'évènement."
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner"
+            },
+            address: {
+                address: "",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                },
+                type: "ask_interlocuter"
+            },
+            expectedResults: {
+                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease provide me the address to add it to the event.",
+                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nMerci de m'indiquer l'adresse pour l'ajouter à l'évènement."
+            }
         }],
 
 
