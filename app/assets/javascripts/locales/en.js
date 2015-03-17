@@ -85,11 +85,11 @@ window.wordings['en'] = {
             }
         },
         invites_sent: {
-            new_appointment: "Perfect. Invites sent for %{appointment_nature}%{location}:\n%{date}%{address}",
-            postpone: "Perfect. The event has been updated for %{appointment_nature}%{location}:\n%{date}%{address}",
-            location_in_template: "\nLocation: %{location}",
+            new_appointment: "Perfect. I sent the invites for %{appointment_nature}%{location}:\n%{date}%{address}",
+            postpone: "Perfect. I updated the event for %{appointment_nature}%{location}:\n%{date}%{address}",
+            location_in_template: "\nAt: %{location}",
             ask_for_location: "\n\nPlease let me know the address if you want me to add it to the event.",
-            ask_interlocutor_for_location: "\n\nPlease provide me the address to add it to the event."
+            ask_interlocutor_for_location: "\n\nPlease let me know the address to add it to the event."
         },
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",
