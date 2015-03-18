@@ -76,7 +76,7 @@ class MessagesThreadsController < ApplicationController
   private
 
   def render_emails_threads
-    @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max}.reverse
+    @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
     if session[:privilege] != "admin"
       @messages_thread.select!{ |mt|
         !mt.delegated_to_founders &&
