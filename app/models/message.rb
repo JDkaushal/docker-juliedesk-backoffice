@@ -79,6 +79,11 @@ class Message < ActiveRecord::Base
         else
           account_email = MessagesThread.find_account_email(google_thread)
           messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: Account.create_from_email(account_email).try(:usage_name)
+
+          if MessagesThread.several_accounts_detected(google_thread)
+            messages_thread.update_attribute :delegated_to_founders, true
+            messages_thread.google_thread.modify(["Label_12"], [])
+          end
         end
 
         sorted_messages = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}

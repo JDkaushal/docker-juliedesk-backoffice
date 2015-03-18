@@ -97,6 +97,26 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).count
   end
 
+  def self.several_accounts_detected google_thread
+    contacts = self.contacts(google_messages_to_look: google_thread.messages)
+    other_emails = contacts.map{|contact| contact[:email]}
+    account_emails = (other_emails.map{|co| Account.find_account_email(co)}.uniq - JulieAlias.all.map(&:email)).compact
+
+    accounts = account_emails.map{|account_email|
+      Account.create_from_email(account_email)
+    }
+    company_names = accounts.map{|account|
+      account.company_hash.try(:[], 'name')
+    }
+    if company_names.select{ |company_name|
+      company_name.nil?
+    }.length > 0
+      company_names.length > 1
+    else
+      company_names.uniq.length > 1
+    end
+  end
+
   def suggested_date_times
     messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
