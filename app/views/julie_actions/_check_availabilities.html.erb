@@ -142,6 +142,7 @@
                     });
                 }
                 CommonHelpers.externalRequest(requestParams, function (e) {
+
                     if(!isPostpone) {
                         window.currentEventId = e.data.event_id;
                         window.currentCalendarId = e.data.calendar_id;

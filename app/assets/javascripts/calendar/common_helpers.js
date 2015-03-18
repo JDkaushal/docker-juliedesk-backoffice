@@ -106,7 +106,12 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 end: request.end
             }),
             success: function(e) {
-                callback(e);
+                if(e.status == "success") {
+                    callback(e);
+                }
+                else {
+                    error_callback(e);
+                }
             },
             error: function(e) {
                 error_callback(e);
