@@ -25,12 +25,7 @@
             askNextLinearFormEntry();
         });
 
-        $("input[name='group_meeting']").change(function() {
-            $(".several-responses-warner").hide();
-            if($("input[name='group_meeting']:checked").val() == "several") {
-                $(".several-responses-warner").show();
-            }
-        });
+
 
         var possibleAttendees = window.getInfoPanelAttendees();
         possibleAttendees.push({
@@ -392,6 +387,8 @@
 
   <div id="thread-header-other-entries-container"></div>
 
+  <%= render partial: "messages_threads/waiting_for_others_panel", locals: {message: @message} %>
+
   <%= render partial: "messages_threads/client_agreement_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
   <%= render partial: "messages_threads/attendees_are_noticed_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
@@ -503,24 +500,6 @@
           <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
         </div>
 
-        <div class="several-responses-container">
-          <div class="data-entry-name"><%= I18n.t("info_box.group_meeting.title") %></div>
-          <%= radio_button_tag :group_meeting, "one", true %> <%= I18n.t("info_box.group_meeting.one_response") %><br>
-          <%= radio_button_tag :group_meeting, "several", false %> <%= I18n.t("info_box.group_meeting.several_responses") %>
-
-          <div class="several-responses-warner">
-            <div class="warning">
-              <%= I18n.t("info_box.warning_several_responses") %>
-            </div>
-            <div class="forbidden">
-              <%= I18n.t("info_box.forbidden_several_responses") %>
-              <br><br>
-              <% if local_assigns[:message] %>
-                  <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
-              <% end %>
-            </div>
-          </div>
-        </div>
 
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>

@@ -292,7 +292,7 @@
         }
       }
 
-      .different-timezone-warner, .several-responses-warner {
+      .different-timezone-warner {
         background: #e00;
         color: white;
         text-align: center;
@@ -301,10 +301,6 @@
         display: none;
       }
 
-      .several-responses-container {
-        padding: 10px 0 20px 0;
-        font-size: 12px;
-      }
     }
 
     .creating-event-message {

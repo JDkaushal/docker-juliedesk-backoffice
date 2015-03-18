@@ -172,7 +172,7 @@ window.classificationForms.classificationForm.prototype.validateClientAgreement 
                 classificationForm.clickBackButtonFunctions.push(function () {
                     classificationForm.onceAgreementAndAttendeesNoticedDoneRevert();
                     $infoPanelContainer.find(".client-agreement-panel").show();
-                })
+                });
             }
             else {
                 $infoPanelContainer.find(".attendees-are-noticed-panel").show();

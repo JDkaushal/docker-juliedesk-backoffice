@@ -14,6 +14,18 @@ function mockHtml($html) {
 function generateInfoPanel() {
     var $infoPanel = $("<div>").addClass("messages-thread-info-panel");
 
+    var $waitingForOthersPanel = $("<div>").addClass("waiting-for-others-panel");
+    var $waitingForOthersYesNoButtonsContainer = $("<div>").addClass("yes-no-buttons-container");
+    var $waitingForOthersNoButton = $("<div>").addClass("no-button").html("yes");
+    var $waitingForOthersYesButton = $("<div>").addClass("yes-button").html("yes");
+    var $waitingForOthersWarner = $("<div>").addClass("waiting-for-others-warner").html("Warning");
+
+    $waitingForOthersYesNoButtonsContainer.append($waitingForOthersNoButton);
+    $waitingForOthersYesNoButtonsContainer.append($waitingForOthersYesButton);
+    $waitingForOthersPanel.append($waitingForOthersYesNoButtonsContainer);
+    $waitingForOthersPanel.append($waitingForOthersWarner);
+    $infoPanel.append($waitingForOthersPanel);
+
     var $clientAgreementPanel = $("<div>").addClass("client-agreement-panel");
     var $clientAgreementYesNoButtonsContainer = $("<div>").addClass("yes-no-buttons-container");
     var $clientAgreementNoButton = $("<div>").addClass("no-button").html("yes");

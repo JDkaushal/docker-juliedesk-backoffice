@@ -1,10 +1,10 @@
-.client-agreement-panel {
+.client-agreement-panel, .waiting-for-others-panel {
   display: none;
   margin: 0 -10px 30px -10px;
   border-bottom: 1px solid #ccc;
   padding: 10px;
 
-  .client-agreement-panel-title {
+  .client-agreement-panel-title, .waiting-for-others-panel-title {
     font-size: 16px;
     text-align: center;
   }
@@ -17,5 +17,14 @@
       width: 100px;
       margin: 0 10px;
     }
+  }
+
+  .waiting-for-others-warner {
+    display: none;
+    text-align: center;
+    background: #e00;
+    color: white;
+    margin: 0 -10px -10px -10px;
+    padding: 20px;
   }
 }

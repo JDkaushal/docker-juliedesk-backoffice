@@ -1,0 +1,21 @@
+<div class="waiting-for-others-panel">
+
+  <div class="waiting-for-others-panel-title"><%= I18n.t("info_box.are_we_waiting_for_other_answers") %></div>
+  <div class="yes-no-buttons-container">
+    <div class="no-button btn btn-default"><%= I18n.t("common.sno") %></div>
+    <div class="yes-button btn btn-success"><%= I18n.t("common.syes") %></div>
+  </div>
+
+  <div class="waiting-for-others-warner">
+    <div class="warning">
+      <%= I18n.t("info_box.warning_several_responses") %>
+    </div>
+    <div class="forbidden">
+      <%= I18n.t("info_box.forbidden_several_responses") %>
+      <br><br>
+      <% if local_assigns[:message] %>
+          <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
+      <% end %>
+    </div>
+  </div>
+</div>
