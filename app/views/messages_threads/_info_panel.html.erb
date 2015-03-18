@@ -489,12 +489,7 @@
                 <%= check_box_tag :attendee, contact[:email], checked %>
                 <div class="attendee-name-and-email">
                   <%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name], placeholder: I18n.t("info_box.full_name_placeholder") %>
-                  <div class="attendee-email">
-                    <%= contact[:email] %>
-                    <% if (account=Account.create_from_email(contact[:email])) && account.company_hash %>
-                     (<%= account.company_hash['name'] %>)
-                    <% end %>
-                  </div>
+                  <div class="attendee-email"><%= contact[:email] %></div>
                 </div>
 
               </div>
