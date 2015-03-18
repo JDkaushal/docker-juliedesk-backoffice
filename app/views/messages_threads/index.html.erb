@@ -44,6 +44,9 @@
             if(threadData.delegated_to_founders) {
                 $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("founders"));
             }
+            else if(!threadData.account || threadData.account.only_admin_can_process) {
+                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("admin only"));
+            }
 
 
 
