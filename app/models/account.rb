@@ -1,6 +1,6 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number
+  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport
 
   def self.create_from_email email
     #account_email = self.find_account_email email
@@ -23,6 +23,9 @@ class Account
     account.default_timezone_id = data['default_timezone_id']
     account.locale = data['locale']
     account.mobile_number = data['mobile_number']
+    account.landline_number = data['landline_number']
+    account.skype = data['skype']
+    account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
     account
@@ -68,6 +71,9 @@ class Account
   def client_info
     <<END
     Mobile: #{self.mobile_number}
+    Landline: #{self.landline_number}
+    Skype: #{self.skype}
+    Means of transport: #{self.means_of_transport}
     Office: #{self.addresses.select{|addr| addr['type'] == "office"}.map{|add| add['address']}.first}
 END
   end
