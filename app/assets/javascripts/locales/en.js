@@ -89,7 +89,8 @@ window.wordings['en'] = {
             postpone: "Perfect. I updated the event for %{appointment_nature}%{location}:\n%{date}%{address}",
             location_in_template: "\nLocation: %{location}",
             ask_for_location: "\n\nPlease let me know the address if you want me to add it to the event.",
-            ask_interlocutor_for_location: "\n\nPlease let me know the address to add it to the event."
+            ask_interlocutor_for_location: "\n\nPlease let me know the address to add it to the event.",
+            number_to_call: "\nNumber to call: %{number}"
         },
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",

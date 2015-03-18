@@ -90,7 +90,8 @@ window.wordings['fr'] = {
             postpone: "Parfait. J'ai mis à jour l'évènement pour %{appointment_nature}%{location} :\n%{date}%{address}",
             location_in_template: "\nLieu : %{location}",
             ask_for_location: "\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?",
-            ask_interlocutor_for_location: "\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+            ask_interlocutor_for_location: "\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?",
+            number_to_call: "\nNuméro à appeler : %{number}"
         },
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",

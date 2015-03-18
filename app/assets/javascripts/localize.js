@@ -8,10 +8,15 @@ function getCurrentLocale() {
 function localize(key, params) {
     if(!params) params = {};
     var keys = key.split(".");
-    var rawResult = window.wordings[getCurrentLocale()];
+
+    var locale = getCurrentLocale();
+    if(params.locale) {
+        locale = params.locale;
+    }
+    var rawResult = window.wordings[locale];
     while(keys.length > 0) {
         if(!rawResult) {
-            return "Missing wording: " + getCurrentLocale() + "." + key;
+            return "Missing wording: " + locale + "." + key;
         }
         var currentKey = keys.shift();
         rawResult = rawResult[currentKey];
