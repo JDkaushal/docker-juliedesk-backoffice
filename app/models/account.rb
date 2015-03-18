@@ -65,6 +65,12 @@ class Account
     [email] + email_aliases
   end
 
+  def client_info
+    <<END
+    Mobile: #{self.mobile_number}
+    Office: #{self.addresses.select{|addr| addr['type'] == "office"}.map{|add| add['address']}.first}
+END
+  end
 
   def serializable_hash
     self.to_json

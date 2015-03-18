@@ -421,7 +421,7 @@
       <% if account %>
           <%= account.usage_name %> (<%= messages_thread.account.email %>)
           <div class="account-details">
-            <%= simple_format account.raw_preferences %>
+            <%= simple_format account.client_info %>
             <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
           </div>
           <div class="other-accounts">
