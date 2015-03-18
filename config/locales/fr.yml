@@ -316,6 +316,12 @@ fr:
     nothing_to_do: "Tout est traité pour le moment !"
     to_process_later: "A traiter plus tard"
     waiting_for_preference_change: "En attente de changement de préférence"
+
+  show:
+    x_unread_emails:
+      one: "%{count} email non lu"
+      other: "%{count} emails non lus"
+
   info_box:
     no_account_found: "Compte non-identifié"
     locale: "Langue"

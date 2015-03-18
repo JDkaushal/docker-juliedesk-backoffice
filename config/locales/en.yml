@@ -149,6 +149,11 @@ en:
     to_process_later: "To process later"
     waiting_for_preference_change: "Waiting for preference change"
 
+  show:
+    x_unread_emails:
+      one: "%{count} unread email"
+      other: "%{count} unread emails"
+
   info_box:
     no_account_found: "No account identified"
     locale: "Locale"
