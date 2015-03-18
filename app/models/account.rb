@@ -69,13 +69,16 @@ class Account
   end
 
   def client_info
-    <<END
-    Mobile: #{self.mobile_number}
-    Landline: #{self.landline_number}
-    Skype: #{self.skype}
-    Means of transport: #{self.means_of_transport}
-    Office: #{self.addresses.select{|addr| addr['type'] == "office"}.map{|add| add['address']}.first}
-END
+    info = ""
+    info += "\nCompany: #{self.company_hash['name']}" if self.company_hash.present?
+    info += "\nMobile: #{self.mobile_number}" if self.mobile_number.present?
+    info += "\nLandline: #{self.landline_number}" if self.landline_number.present?
+    info += "\nSkype: #{self.skype}" if self.skype.present?
+    info += "\nMeans of transport: #{self.means_of_transport}" if self.means_of_transport.present?
+    office_address = self.addresses.select{|addr| addr['type'] == "office"}.map{|add| add['address']}.first
+    info += "\nOffice: #{office_address}" if office_address.present?
+
+    info
   end
 
   def serializable_hash
