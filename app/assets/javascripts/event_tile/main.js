@@ -499,5 +499,6 @@ EventTile.prototype.initActions = function() {
     eventTile.$selector.on("click", ".remove-attendee-button", function(e) {
         $(this).closest(".attendee-text").remove();
         eventTile.redrawAttendeesCountBadge();
+        e.stopPropagation();
     });
 };
