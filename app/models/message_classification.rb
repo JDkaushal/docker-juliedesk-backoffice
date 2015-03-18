@@ -41,6 +41,7 @@ class MessageClassification < ActiveRecord::Base
         constraints_data: (params[:constraints_data].try(:values) || []).to_json,
         client_agreement: params[:client_agreement],
         attendees_are_noticed: params[:attendees_are_noticed],
+        number_to_call: params[:number_to_call],
         operator: params[:operator],
         processed_in: params[:processed_in],
 

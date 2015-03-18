@@ -246,6 +246,7 @@
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
         if (window.threadComputedData.appointment_nature) {
             initAddresses();
+            setLocationOrNumberToCallPart();
             if (window.threadComputedData.location_nature) {
                 $("select#location_nature").val(window.threadComputedData.location_nature);
             }
@@ -317,6 +318,19 @@
 
 
         setAddressValues();
+
+        setLocationOrNumberToCallPart();
+    }
+
+    function setLocationOrNumberToCallPart() {
+        if($("#appointment_nature").val() == "call") {
+            $(".location-part-container").hide();
+            $(".number-to-call-part-container").show();
+        }
+        else {
+            $(".location-part-container").show();
+            $(".number-to-call-part-container").hide();
+        }
     }
 
     function setAddressValues() {
@@ -540,9 +554,15 @@
       </div>
 
       <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
-        <%= select_tag :location_nature, "", class: "data-entry form-control" %>
-        <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+        <div class="location-part-container">
+            <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
+            <%= select_tag :location_nature, "", class: "data-entry form-control" %>
+            <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+        </div>
+        <div class="number-to-call-part-container">
+          <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
+          <%= text_field_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
+        </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 

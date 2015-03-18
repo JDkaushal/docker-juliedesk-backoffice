@@ -329,6 +329,7 @@ fr:
     summary: "Titre"
     duration: "Durée"
     location: "Lieu"
+    number_to_call: "Numéro à appeler"
     attendees: "Participants"
     notes: "Notes"
     create_event: "Créer l'évènement"

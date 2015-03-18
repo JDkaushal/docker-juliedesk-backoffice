@@ -102,13 +102,18 @@
 
                 $(".calendar-container").addClass("minimized");
 
+                var location = window.threadComputedData.location;
+                if(window.threadComputedData.appointment_nature == "call" &&
+                        window.getCurrentAppointment().number_in_location) {
+                    location = window.threadComputedData.number_to_call;
+                }
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
                     description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes,
                     attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
-                    location: window.threadComputedData.location,
+                    location: location,
                     all_day: false,
                     private: window.threadComputedData.private,
                     start: start.format(),

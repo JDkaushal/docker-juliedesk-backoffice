@@ -113,6 +113,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         }).get(),
         client_agreement: $(".client-agreement-panel").data("client-agreement"),
         attendees_are_noticed: $(".attendees-are-noticed-panel").data("attendees-are-noticed"),
+        number_to_call: $("#number_to_call").val(),
         date_times: classificationForm.getSuggestedDateTimes(),
         processed_in: Date.now() - classificationForm.startedAt
     };

@@ -162,6 +162,7 @@ en:
     summary: "Summary"
     duration: "Duration"
     location: "Location"
+    number_to_call: "Number to call"
     attendees: "Attendees"
     notes: "Notes"
     create_event: "Create event"

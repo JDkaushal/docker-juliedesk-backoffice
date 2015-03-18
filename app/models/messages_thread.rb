@@ -81,6 +81,8 @@ class MessagesThread < ActiveRecord::Base
         constraints: last_message_classification.try(:constraints),
         constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
 
+        number_to_call: last_message_classification.try(:number_to_call) || self.account.try(:mobile_number),
+
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"
         }
