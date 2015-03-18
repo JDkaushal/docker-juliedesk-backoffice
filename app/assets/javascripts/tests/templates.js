@@ -353,8 +353,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM",
-            fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00"
+            en: "Perfect. I sent invites for a dinner at the office:\nThursday, January 1, 2015 12:00 PM",
+            fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00"
         }
     },
         {
@@ -372,8 +372,8 @@ window.testsData.templatesData = [
                 label: "skype"
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -397,8 +397,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait, invitations envoyées pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -417,8 +417,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Perfect. Invites sent for a meeting:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait, invitations envoyées pour un meeting :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a meeting:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -442,8 +442,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles)",
-                fr: "Parfait, invitations envoyées pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
+                en: "Perfect. I sent invites for a dinner at the office:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)\nThursday, January 1, 2015 3:00 AM (Timezone: America/Los Angeles)",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -468,8 +468,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a dinner:\nThursday, January 1, 2015 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -495,8 +495,8 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
-                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nMerci de m'indiquer le lieu si vous souhaitez que je l'ajoute à l'évènement."
+                en: "Perfect. I sent invites for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -522,8 +522,8 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. Invites sent for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease provide me the address to add it to the event.",
-                fr: "Parfait, invitations envoyées pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nMerci de m'indiquer l'adresse pour l'ajouter à l'évènement."
+                en: "Perfect. I sent invites for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         }],
 
