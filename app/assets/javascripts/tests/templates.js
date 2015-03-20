@@ -326,7 +326,7 @@ window.testsData.templatesData = [
             client_agreement: false,
             isPostpone: true,
             expectedResults: {
-                en: "Do you want me to new suggest availabilities?",
+                en: "Do you want me to suggest new availabilities?",
                 fr: "Souhaitez-vous que je propose de nouvelles disponibilités ?"
             }
         }],

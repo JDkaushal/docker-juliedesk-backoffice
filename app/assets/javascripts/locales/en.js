@@ -30,7 +30,7 @@ window.wordings['en'] = {
         },
         suggest_dates: {
             ask_agreement: {
-                postpone: "Do you want me to new suggest availabilities?",
+                postpone: "Do you want me to suggest new availabilities?",
                 new_appointment: "Do you want me to suggest availabilities?"
             },
             before_dates: {
