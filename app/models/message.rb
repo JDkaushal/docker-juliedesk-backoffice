@@ -38,13 +38,13 @@ class Message < ActiveRecord::Base
 
   def from_me?
     JulieAlias.all.select{|julie_alias|
-      google_message.from.include? julie_alias.email
+      google_message.from.downcase.include? julie_alias.email
     }.length > 0
   end
 
   def julie_alias
     JulieAlias.all.select{|julie_alias|
-       "#{google_message.to} #{google_message.cc}".include? julie_alias.email
+       "#{google_message.to} #{google_message.cc}".downcase.include? julie_alias.email
     }.first
   end
 
@@ -111,13 +111,13 @@ class Message < ActiveRecord::Base
     gm = google_message.reply_all_with(Gmail::Message.new(text: "", html: ""))
     {
 
-        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address)}.map{|dest|
+        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.downcase)}.map{|dest|
           {
               email: dest.address,
               name: dest.name
           }
         },
-        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address)}.map{|dest|
+        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.downcase)}.map{|dest|
           {
               email: dest.address,
               name: dest.name
