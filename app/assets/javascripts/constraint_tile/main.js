@@ -231,9 +231,13 @@ ConstraintTile.prototype.redrawSentence = function() {
 
     var sentence = "";
     data = constraintTile.getData();
-    var attendeeName = _.find(constraintTile.possibleAttendees, function(attendee) {
+    var attendee = _.find(constraintTile.possibleAttendees, function(attendee) {
         return attendee.email == data.attendee_email;
-    }).name;
+    });
+    var attendeeName = data.attendee_email;
+    if(attendee) {
+        attendeeName = attendee.name;
+    }
     sentence += attendeeName + " " + localize("constraints." + data.constraint_nature);
 
 
