@@ -42,6 +42,13 @@ class Account
     nil
   end
 
+  def number_to_call
+    appointments.select{|appointment|
+      appointment['type'] == "call"
+    }.first.try(:[], 'number_to_call')
+  end
+
+
   def contacts_from_same_company
     accounts = Account.get_active_account_emails detailed: true
     accounts.select{|account|
