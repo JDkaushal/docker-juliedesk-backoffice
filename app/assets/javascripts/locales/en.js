@@ -34,12 +34,21 @@ window.wordings['en'] = {
                 new_appointment: "Do you want me to suggest availabilities?"
             },
             before_dates: {
-                new_appointment: "%{client} would be available for %{appointment_nature}%{location}:",
+                new_appointment: {
+                    one_client: "%{client} would be available for %{appointment_nature}%{location}:",
+                    many_clients: "%{other_clients} and %{client} would be available for %{appointment_nature}%{location}:",
+                },
                 postpone: "Here are some new availabilities for %{appointment_nature}%{location}:"
             },
             after_dates: {
-                singular: "\n\nWould that work for you?",
-                plural: "\n\nWhich time would work best for you?"
+                singular: {
+                    one_attendee: "\n\nWould that work for you?",
+                    many_attendees: "\n\n%{attendees}, would that work for you?",
+                },
+                plural: {
+                    one_attendee: "\n\nWhich time would work best for you?",
+                    many_attendees: "\n\n%{attendees}, which time would work best for you?",
+                }
             },
             ask_number: {
                 call: "\nPlease let me know where you can be reached.",

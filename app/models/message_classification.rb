@@ -61,6 +61,7 @@ class MessageClassification < ActiveRecord::Base
         all_emails = [account['email']] + account['email_aliases']
         if all_emails.include? attendee['email']
           attendee['account_email'] = account['email']
+          attendee['usage_name'] = account['usage_name']
         end
       end
     end

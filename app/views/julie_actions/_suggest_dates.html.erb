@@ -74,6 +74,20 @@
             address: window.getCurrentAddress(),
             timeSlotsToSuggest: window.timeSlotsToSuggest,
             client: window.threadAccount.usage_name,
+            other_clients: _.filter(_.map(window.otherAttendeesWithAccount, function(attendee) {
+                return attendee.usage_name;
+            }), function(name) {
+                return name;
+            }),
+            attendees: _.filter(_.map(window.otherAttendeesWithoutAccount, function(attendee) {
+                      var names = attendee.name.split(" ");
+                      if(names.length > 0) {
+                          return window.helpers.capitalize(names[0]);
+                      }
+                      return null;
+                    }), function(name) {
+                        return name;
+                    }),
             timezoneId: window.threadComputedData.timezone,
             defaultTimezoneId: window.threadAccount.default_timezone_id
         }), "all", window.otherEmails);

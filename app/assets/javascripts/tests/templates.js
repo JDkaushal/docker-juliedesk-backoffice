@@ -154,6 +154,110 @@ window.testsData.templatesData = [
             }
         }],
 
+    [{
+        action: "suggest_dates",
+        client_agreement: true,
+        client: "Nicolas",
+        other_clients: ["Julien", "Guillaume"],
+        timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+        timezoneId: "Europe/Paris",
+        defaultTimezoneId: "Europe/Paris",
+        appointment: {
+            title_in_email: {
+                fr: "un rendez-vous",
+                en: "an appointment"
+            }
+        },
+        address: {
+            address_in_template: {
+                fr: "au bureau",
+                en: "at the office"
+            }
+        },
+        expectedResults: {
+            en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nWhich time would work best for you?",
+            fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+        }
+    },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John"],
+            expectedResults: {
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            }
+        },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John", "Jack"],
+            expectedResults: {
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nJohn, Jack, which time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+            }
+        },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John", "Jack"],
+            expectedResults: {
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n\nJohn, Jack, would that work for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+            }
+        }],
+
 
     [{
         action: "suggest_dates",

@@ -83,6 +83,7 @@
                         appointment_nature: params.appointment.title_in_email[params.locale],
                         location: locationInTemplate
                     });
+
                     message += localize(templateSuffixName, {
                         client: params.client,
                         appointment_nature: params.appointment.title_in_email[params.locale],
@@ -98,11 +99,26 @@
                         });
                     }
                     else {
-                        message += localize("email_templates.suggest_dates.before_dates.new_appointment", {
-                            client: params.client,
-                            appointment_nature: params.appointment.title_in_email[params.locale],
-                            location: locationInTemplate
-                        });
+                        var otherClientsString = "";
+                        if(params.other_clients) {
+                            otherClientsString = params.other_clients.join(", ");
+                        }
+
+                        if(otherClientsString == "") {
+                            message += localize("email_templates.suggest_dates.before_dates.new_appointment.one_client", {
+                                client: params.client,
+                                appointment_nature: params.appointment.title_in_email[params.locale],
+                                location: locationInTemplate
+                            });
+                        }
+                        else {
+                            message += localize("email_templates.suggest_dates.before_dates.new_appointment.many_clients", {
+                                client: params.client,
+                                other_clients: otherClientsString,
+                                appointment_nature: params.appointment.title_in_email[params.locale],
+                                location: locationInTemplate
+                            });
+                        }
                     }
 
                 }
@@ -117,7 +133,17 @@
                 });
                 var timeSlotsPlural = "plural";
                 if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
-                message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural);
+
+                var attendeesString = "";
+                var attendeesKey = ".one_attendee";
+                if(params.attendees && params.attendees.length > 1) {
+                    attendeesString = params.attendees.join(", ");
+                    var attendeesKey = ".many_attendees";
+                }
+
+                message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesKey, {
+                    attendees: attendeesString
+                });
 //                if (params.appointment.label == "call") {
 //                    message += localize("email_templates.suggest_dates.ask_number.call");
 //                }

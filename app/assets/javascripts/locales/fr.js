@@ -34,12 +34,21 @@ window.wordings['fr'] = {
                 new_appointment: "Souhaitez-vous que je propose des disponibilités ?"
             },
             before_dates: {
-                new_appointment: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
+                new_appointment: {
+                    one_client: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
+                    many_clients: "%{other_clients} et %{client} seraient disponibles pour %{appointment_nature} avec vous%{location} :",
+                },
                 postpone: "Voici de nouvelles disponibilités pour %{appointment_nature}%{location} :"
             },
             after_dates: {
-                singular: "\n\nCela vous conviendrait-il ?",
-                plural: "\n\nQuel horaire vous conviendrait le mieux ?"
+                singular: {
+                    one_attendee: "\n\nCela vous conviendrait-il ?",
+                    many_attendees: "\n\n%{attendees}, cela vous conviendrait-il ?"
+                },
+                plural: {
+                    one_attendee: "\n\nQuel horaire vous conviendrait le mieux ?",
+                    many_attendees: "\n\n%{attendees}, quel horaire vous conviendrait le mieux ?"
+                }
             },
             ask_number: {
                 call: "\nMerci de me préciser à quel numéro vous êtes joignable.",
