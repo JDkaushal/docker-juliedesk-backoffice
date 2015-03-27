@@ -1,0 +1,10 @@
+<%= form_for @julie_alias, class: "julie-alias-form" do |f| %>
+    <%= f.text_field :email, placeholder: "Email..." %>
+    <%= f.text_field :name, placeholder: "Name..." %>
+    <%= f.text_area :footer_en, placeholder: "Footer (english)..." %>
+    <%= f.text_area :footer_fr, placeholder: "Footer (french)..." %>
+    <%= f.text_area :signature_en, placeholder: "Signature (english)..." %>
+    <%= f.text_area :signature_fr, placeholder: "Signature (french)..." %>
+
+    <%= f.submit (@julie_alias.id)?"Update":"Create" %>
+<% end %>

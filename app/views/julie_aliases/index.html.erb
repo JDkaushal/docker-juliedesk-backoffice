@@ -1,0 +1,17 @@
+
+<div class="julie-aliases-page">
+<h1>
+  <%= link_to "Julie aliases", julie_aliases_path %>
+</h1>
+
+  <%= link_to "Nex alias", new_julie_alias_path %>
+
+<div class="julie-aliases-container">
+<% @julie_aliases.each do |julie_alias| %>
+    <%= link_to edit_julie_alias_path(julie_alias), class: "julie-alias-div" do %>
+        <%= julie_alias.email %>: <%= julie_alias.name %>
+    <% end %>
+<% end %>
+</div>
+
+</div>

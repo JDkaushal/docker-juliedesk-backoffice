@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :julie_aliases, only: [:index, :create, :edit, :new, :show, :update]
+
   resources :messages, only: [:show] do
     member do
       get "classifying/:classification", action: :classifying, as: :classifying

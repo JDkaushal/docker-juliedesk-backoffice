@@ -1,0 +1,56 @@
+.julie-aliases-page {
+  width: 800px;
+  margin: 20px auto;
+  form.julie-alias-form {
+    width: 400px;
+    margin: 50px auto;
+
+  }
+
+  input, textarea {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: 200;
+  }
+  textarea {
+    resize: none;
+    height: 120px;
+  }
+
+  input[type=submit] {
+    background: #46a;
+    @include border-radius(3px);
+    cursor: pointer;
+    color: white;
+  }
+
+  .julie-aliases-container {
+
+    .julie-alias-div {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 30px 0;
+      display: block;
+      label {
+
+      }
+      .julie-alias-email {
+      }
+      .julie-alias-name {
+      }
+      .julie-alias-footer-en {
+      }
+      .julie-alias-footer-fr {
+      }
+      .julie-alias-signature-en {
+      }
+      .julie-alias-signature-fr {
+      }
+    }
+  }
+}
