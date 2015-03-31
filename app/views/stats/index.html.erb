@@ -8,12 +8,27 @@
           <th><%= months[0].strftime("%B %Y") %></th>
       <% end %>
     </tr>
+    <tr>
+      <th>TOTAL</th>
+      <th><%= @data.map{|account, counts| counts.map{|c| c.values.first}.sum}.sum %></th>
+      <% @data.first[1].each_with_index do |count, i| %>
+          <th>
+              <% count.each do |key, key_count| %>
+                  <%= @data.map{|account, counts| counts[i][key]}.sum.to_i %> <%= key %><br>
+              <% end %>
+          </th>
+      <% end %>
+    </tr>
     <% @data.each do |account, counts| %>
         <tr>
           <td><%= account %></td>
-          <td><%= counts.sum %></td>
+          <td><%= counts.map{|c| c.values.first}.sum %></td>
           <% counts.each do |count| %>
-              <td><%= count %></td>
+              <td>
+              <% count.each do |key, key_count| %>
+                <%= key_count %> <%= key %><br>
+              <% end %>
+              </td>
           <% end %>
         </tr>
     <% end %>
