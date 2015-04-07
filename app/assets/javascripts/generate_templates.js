@@ -29,11 +29,12 @@
 
     var isVirtualAppointment = false;
     if(params.appointment) {
-        isVirtualAppointment = ["call", "skype", "webex"].indexOf(params.appointment.label) > -1;
+        isVirtualAppointment = ["call", "skype", "webex", "hangout"].indexOf(params.appointment.label) > -1;
     }
 
     if(isVirtualAppointment) {
         locationInTemplate = "";
+        addressInTemplate = "";
     }
 
     if (params.action == "suggest_dates") {

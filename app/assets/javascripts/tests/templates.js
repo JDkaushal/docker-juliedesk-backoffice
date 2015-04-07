@@ -629,6 +629,32 @@ window.testsData.templatesData = [
                 en: "Perfect. I sent invites for a dinner:\nThursday, January 1, 2015 12:00 PM\n\nPlease let me know the address to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un call",
+                    en: "a call"
+                },
+                label: "call"
+            },
+            address: {
+                address: "890890809",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                }
+            },
+            expectedResults: {
+                en: "Perfect. I sent invites for a call:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un call :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            }
         }],
 
 
