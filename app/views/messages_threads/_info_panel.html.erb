@@ -31,13 +31,15 @@
 
 
 
-        var possibleAttendees = window.getInfoPanelAttendees();
-        possibleAttendees.push({
-            email: window.threadAccount.email,
-            name: window.threadAccount.full_name
-        });
+
 
         _.each(window.threadComputedData.constraints_data, function(constraintData) {
+            var possibleAttendees = window.getInfoPanelAttendees();
+            possibleAttendees.push({
+                email: window.threadAccount.email,
+                name: window.threadAccount.full_name
+            });
+
             $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
             new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
                 possibleAttendees: possibleAttendees,
@@ -48,6 +50,12 @@
         });
 
         $(".add-constraint-button").click(function() {
+            var possibleAttendees = window.getInfoPanelAttendees();
+            possibleAttendees.push({
+                email: window.threadAccount.email,
+                name: window.threadAccount.full_name
+            });
+
             $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
             new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
                 possibleAttendees: possibleAttendees,

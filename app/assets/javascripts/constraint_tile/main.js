@@ -71,7 +71,7 @@ ConstraintTile.prototype.redraw = function() {
     var constraintTile = this;
     constraintTile.$selector.html(HandlebarsTemplates['constraint_tile/main']());
     _(this.possibleAttendees).each(function(attendee) {
-        constraintTile.$selector.find(".constraint-attendee-email").append($("<option>").val(attendee.email).html(attendee.name));
+        constraintTile.$selector.find(".constraint-attendee-email").append($("<option>").val(attendee.email).html(attendee.name + " (" + attendee.email + ")"));
     });
 
     constraintTile.$selector.find("input.constraint-start-date").datepicker().datepicker("setDate", "-0d");
