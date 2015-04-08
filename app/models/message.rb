@@ -96,7 +96,10 @@ class Message < ActiveRecord::Base
           message = Message.find_by_google_message_id google_message.id
 
           unless message
-            messages_thread.messages.create google_message_id: google_message.id, received_at: DateTime.parse(google_message.date), reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
+            messages_thread.messages.create google_message_id: google_message.id,
+                                            received_at: DateTime.parse(google_message.date),
+                                            reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
+                                            from_me: google_message.labelIds.include?("SENT")
           end
         end
       end
@@ -202,7 +205,8 @@ class Message < ActiveRecord::Base
     # Create the message in DB
     message = messages_thread.messages.create google_message_id: google_message.id,
                                               received_at: DateTime.parse(google_message.date),
-                                              reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json
+                                              reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
+                                              from_me: google_message.labelIds.include?("SENT")
 
     attendees = (event['attendees'] || {}).select{|k, attendee|
       !original_messages_thread.account.all_emails.include? attendee['email']
