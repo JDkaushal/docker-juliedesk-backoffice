@@ -85,7 +85,8 @@ class MessagesThread < ActiveRecord::Base
 
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"
-        }
+        },
+        last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at)
     }
   end
 

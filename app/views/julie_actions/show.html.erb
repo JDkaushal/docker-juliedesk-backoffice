@@ -299,7 +299,15 @@
             signature = window.julieAlias.signature_fr;
         }
 
-        $("textarea#reply-text").val(localize("email_templates.common.before") + message + footer);
+        var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
+        var fullMessage = "";
+        if(shouldSayHi) {
+            fullMessage += localize("email_templates.common.before");
+        }
+        fullMessage += message;
+        fullMessage += footer;
+
+        $("textarea#reply-text").val(fullMessage);
         $("div#reply-text-signature").html(signature);
         $("textarea#reply-text").elastic();
         setCurrentLocale("<%= I18n.locale %>");
