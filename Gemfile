@@ -40,6 +40,8 @@ gem "rack-timeout"
 
 gem "redis"
 
+gem "nokogiri"
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
 end

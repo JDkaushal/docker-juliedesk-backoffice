@@ -107,6 +107,8 @@
         <div class="current-action-message"><%= local_assigns[:highlight_message] %></div>
     <% end %>
 
-    <div class="body"><%== email.html.gsub(/\<style\>.*?\<\/style\>/m, "").gsub(/\<script\>.*?\<\/script\>/m, "") %></div>
+    <% email_body = email.html.gsub(/\<style\>.*?\<\/style\>/im, "").gsub(/\<script\>.*?\<\/script\>/im, "")%>
+    <% n_body = Nokogiri::HTML(email_body) %>
+    <div class="body"><%== n_body.to_s %></div>
   </div>
 </div>
