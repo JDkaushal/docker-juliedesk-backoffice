@@ -352,7 +352,13 @@
             $("input#location").val(address.address).attr('disabled', true);
         }
         else {
-            $("input#location").val("").removeAttr('disabled');
+            if(appointment.custom_location && appointment.custom_location.length > 0) {
+                $("input#location").val(appointment.custom_location).removeAttr('disabled');
+            }
+            else {
+                $("input#location").val("").removeAttr('disabled');
+            }
+
         }
 
         setNotes();
