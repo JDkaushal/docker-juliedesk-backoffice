@@ -266,10 +266,10 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
     }
     else {
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
-            return mStartDate.format("dddd D MMMM YYYY") + ", " + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + " (" + timezone.replace(/_/g, " ") + ")";
+            return mStartDate.format("dddd D MMMM YYYY") + ", " + mStartDate.format("LT") + " - " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
         }
         else {
-            return mStartDate.format("dddd D MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd D MMMM YYYY HH:mm") + " (" + timezone.replace(/_/g, " ") + ")";
+            return mStartDate.format("dddd D MMMM YYYY LT") + " - " + mEndDate.format("dddd D MMMM YYYY LT") + " (" + timezone.replace(/_/g, " ") + ")";
         }
     }
 

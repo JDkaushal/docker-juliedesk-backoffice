@@ -35,6 +35,9 @@ window.testsData.templatesData = [
             title_in_email: {
                 fr: "un rendez-vous",
                 en: "an appointment"
+            },
+            appointment_kind_hash: {
+                is_virtual: false
             }
         },
         address: {
@@ -59,6 +62,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: {
@@ -83,6 +89,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: "9 rue Dareau",
@@ -102,6 +111,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: {
@@ -127,7 +139,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -146,7 +161,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -166,6 +184,9 @@ window.testsData.templatesData = [
             title_in_email: {
                 fr: "un rendez-vous",
                 en: "an appointment"
+            },
+            appointment_kind_hash: {
+                is_virtual: false
             }
         },
         address: {
@@ -191,6 +212,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: {
@@ -217,6 +241,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: {
@@ -243,6 +270,9 @@ window.testsData.templatesData = [
                 title_in_email: {
                     fr: "un rendez-vous",
                     en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
                 }
             },
             address: {
@@ -272,7 +302,10 @@ window.testsData.templatesData = [
                 fr: "un rendez-vous téléphonique",
                 en: "a call"
             },
-            label: "call"
+            label: "call",
+            appointment_kind_hash: {
+                is_virtual: true
+            }
         },
         expectedResults: {
             en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -292,7 +325,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -312,7 +348,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -332,7 +371,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -359,7 +401,10 @@ window.testsData.templatesData = [
                 fr: "un rendez-vous téléphonique",
                 en: "a call"
             },
-            label: "call"
+            label: "call",
+            appointment_kind_hash: {
+                is_virtual: true
+            }
         },
         expectedResults: {
             en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -385,7 +430,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -407,7 +455,10 @@ window.testsData.templatesData = [
                     fr: "un rendez-vous téléphonique",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
@@ -448,7 +499,10 @@ window.testsData.templatesData = [
                 fr: "un diner",
                 en: "a dinner"
             },
-            label: "dinner"
+            label: "dinner",
+            appointment_kind_hash: {
+                is_virtual: false
+            }
         },
         address: {
             address_in_template: {
@@ -473,7 +527,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "Perfect. I sent invites for a skype:\nThursday, January 1, 2015 12:00 PM (Timezone: Europe/Paris)",
@@ -492,7 +549,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             address: {
                 address_in_template: {
@@ -517,7 +577,10 @@ window.testsData.templatesData = [
                     fr: "un meeting",
                     en: "a meeting"
                 },
-                label: "meeting"
+                label: "meeting",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             address: "9 rue Dareau",
             expectedResults: {
@@ -537,7 +600,10 @@ window.testsData.templatesData = [
                     fr: "un diner",
                     en: "a dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             address: {
                 address_in_template: {
@@ -562,7 +628,10 @@ window.testsData.templatesData = [
                     fr: "un diner",
                     en: "a dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             address: {
                 address: "9 rue Dareau",
@@ -588,7 +657,10 @@ window.testsData.templatesData = [
                     fr: "un diner",
                     en: "a dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             address: {
                 address: "",
@@ -615,7 +687,10 @@ window.testsData.templatesData = [
                     fr: "un diner",
                     en: "a dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             address: {
                 address: "",
@@ -642,7 +717,10 @@ window.testsData.templatesData = [
                     fr: "un call",
                     en: "a call"
                 },
-                label: "call"
+                label: "call",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             address: {
                 address: "890890809",
@@ -709,7 +787,10 @@ window.testsData.templatesData = [
                     fr: "le diner",
                     en: "the dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             expectedResults: {
                 en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you on Thursday, January 1, 2015 8:00 AM.",
@@ -733,7 +814,10 @@ window.testsData.templatesData = [
                     fr: "le diner",
                     en: "the dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             expectedResults: {
                 en: "I canceled the dinner scheduled on Thursday, January 1, 2015 8:00 AM.",
@@ -756,7 +840,10 @@ window.testsData.templatesData = [
                     fr: "le diner",
                     en: "the dinner"
                 },
-                label: "dinner"
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
             },
             expectedResults: {
                 en: "Do I have your agreement to cancel the dinner scheduled on Thursday, January 1, 2015 8:00 AM?",
@@ -806,7 +893,7 @@ window.testsData.templatesData = [
             }
         ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Tuesday 6 January 2015 03:00 - Friday 9 January 2015 05:00 (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Tuesday 6 January 2015 3:00 AM - Friday 9 January 2015 5:00 AM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
             fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : mardi 6 janvier 2015 03:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
@@ -821,7 +908,10 @@ window.testsData.templatesData = [
                 fr: "un skype",
                 en: "a skype"
             },
-            label: "skype"
+            label: "skype",
+            appointment_kind_hash: {
+                is_virtual: true
+            }
         },
         expectedResults: {
             en: "You are not available for a skype at this date:\n- Thursday, January 1, 2015 12:00 PM\n\nDo you want me to suggest other availabilities?",
@@ -839,7 +929,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "You are not available for a skype at this date:\n- Thursday, January 1, 2015 12:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
@@ -857,7 +950,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Monday, February 2, 2015 1:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
@@ -875,7 +971,10 @@ window.testsData.templatesData = [
                     fr: "un skype",
                     en: "a skype"
                 },
-                label: "skype"
+                label: "skype",
+                appointment_kind_hash: {
+                    is_virtual: true
+                }
             },
             expectedResults: {
                 en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Monday, February 2, 2015 1:00 PM\n\nDo you want me to suggest other availabilities?",

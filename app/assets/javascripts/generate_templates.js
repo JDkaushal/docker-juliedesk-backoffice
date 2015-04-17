@@ -7,6 +7,7 @@
     var locationInTemplate = "";
     var addressInTemplate = "";
     var isAskInterlocutor = false;
+    var isClientWillDefine = false;
     if(params.address) {
         if(params.address.address_in_template) {
             if(params.address.address_in_template[params.locale] == "") {
@@ -18,6 +19,7 @@
                 locationInTemplate = " " + params.address.address_in_template[params.locale];
             }
             isAskInterlocutor = (params.address.type == "ask_interlocuter");
+            isClientWillDefine = (params.address.type == "client_will_define");
         }
         else {
             if (params.action != "suggest_dates") {
@@ -29,7 +31,10 @@
 
     var isVirtualAppointment = false;
     if(params.appointment) {
-        isVirtualAppointment = ["call", "skype", "webex", "hangout"].indexOf(params.appointment.label) > -1;
+        if(!params.appointment.appointment_kind_hash) {
+            console.log('Oups', params);
+        }
+        isVirtualAppointment = params.appointment.appointment_kind_hash.is_virtual;
     }
 
     if(isVirtualAppointment) {
@@ -195,6 +200,9 @@
         if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
             if(isAskInterlocutor) {
                 message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
+            }
+            else if(isClientWillDefine) {
+
             }
             else {
                 message += localize("email_templates.invites_sent.ask_for_location");
