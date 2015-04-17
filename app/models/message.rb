@@ -240,14 +240,25 @@ class Message < ActiveRecord::Base
     messages_thread.classification_category_for_classification(classification)
   end
 
+  def self.expand_parts parts
+    parts.map{|part|
+      if part['mimeType'].include? "multipart"
+        self.expand_parts part['parts']
+      else
+        part
+      end
+    }.flatten
+  end
+
   def self.format_email_body message
     email_body = message.google_message.html.gsub(/\<style\>.*?\<\/style\>/im, "").gsub(/\<script\>.*?\<\/script\>/im, "")
     n_body = Nokogiri::HTML(email_body)
     n_body.css("img").each do |img|
       begin
       src = img.attr("src")
-      image_id = src.split("cid:")[1].split("@")[0]
-      attachment = message.google_message['payload']['parts'].select{|part| part['filename'] == image_id}.first
+      image_id = src.split("cid:")[1]
+      all_parts = self.expand_parts(message.google_message['payload']['parts'])
+      attachment = all_parts.select{|part| part['headers'].map{|h| h['value']}.include? "<#{image_id}>"}.first
       format = attachment.headers.select{|h| h['name'] == "Content-Type"}.first['value'].split(";").first
       attachment_id = attachment['body']['attachmentId']
 
