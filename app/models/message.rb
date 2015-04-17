@@ -239,4 +239,22 @@ class Message < ActiveRecord::Base
   def classification_category_for_classification classification
     messages_thread.classification_category_for_classification(classification)
   end
+
+  def self.format_email_body message
+    email_body = message.google_message.html.gsub(/\<style\>.*?\<\/style\>/im, "").gsub(/\<script\>.*?\<\/script\>/im, "")
+    n_body = Nokogiri::HTML(email_body)
+    n_body.css("img").each do |img|
+      begin
+      src = img.attr("src")
+      image_id = src.split("cid:")[1].split("@")[0]
+      attachment = message.google_message['payload']['parts'].select{|part| part['filename'] == image_id}.first
+      format = attachment.headers.select{|h| h['name'] == "Content-Type"}.first['value'].split(";").first
+      attachment_id = attachment['body']['attachmentId']
+
+      img["src"] = "/messages/#{message.id}/attachments/#{attachment_id}?format=#{format}"
+      rescue
+      end
+    end
+    n_body.to_s
+  end
 end

@@ -120,6 +120,19 @@ class MessagesController < ApplicationController
     }
   end
 
+  def get_attachment
+    message = Message.find params[:id]
+    google_message = message.google_message
+
+    result = Gmail.request(Gmail.service.users.to_h['gmail.users.messages.attachments.get'], {
+        messageId: google_message.id,
+        id: params[:attachment_id]
+    })
+
+    send_data Base64.decode64(result[:data].gsub("-", "+").gsub("_", "/")),
+              :type => params[:format], :disposition => 'inline'
+  end
+
   private
 
   def text_to_html text

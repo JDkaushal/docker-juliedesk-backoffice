@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
       post "reply", action: :reply, as: :reply
       post "generate_threads", action: :generate_threads, as: :generate_threads
+
+      get "attachments/:attachment_id", action: :get_attachment
     end
   end
 
