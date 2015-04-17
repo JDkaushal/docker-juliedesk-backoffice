@@ -164,6 +164,7 @@ en:
     timezone_for_physical: "Appointment timezone"
     ticket_notes: "Time constraints / free notes"
     appointment_type: "Appointment type"
+    computed_appointment_type: "Computed appointment type"
     summary: "Summary"
     duration: "Duration"
     location: "Location"

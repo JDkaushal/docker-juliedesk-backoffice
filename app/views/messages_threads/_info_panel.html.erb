@@ -66,10 +66,13 @@
 
         redrawLinearForm();
         if (window.threadDataIsEditable) {
+            $(".data select#appointment_nature").prop('disabled', true);
+
             $("#timezone").timezonePicker();
             $("#timezone").on("autocompletechange", function() {
                 redrawDifferentTimezoneWarner();
             });
+
             <% if messages_thread.account.calendar_nature != "google" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
@@ -126,6 +129,9 @@
             }
         });
 
+        $("body").on("change", "input[type=checkbox]#attendee", function() {
+            processAppointmentType();
+        });
         $(".data #add-attendee-button").click(function (e) {
             var email = $(".data #add_attendee").val();
             $(".data #add_attendee").val("");
@@ -137,6 +143,7 @@
             $contact.append($nameAndEmail);
             $(".data #contacts-data-list").append($contact);
             reProcessTitle();
+            processAppointmentType();
         });
 
         <% if messages_thread.event_data[:event_id] %>
@@ -243,13 +250,65 @@
         }
     }
 
+    function processAppointmentType() {
+        var possibleAppointmentsTypes = _.filter(window.threadAccount.appointments, function(appointment) {
+            return appointment.appointment_kind_hash.family_kind == $("select#appointment_family_nature").val();
+        });
+        if(possibleAppointmentsTypes.length == 1) {
+            $("select#appointment_nature").val(possibleAppointmentsTypes[0].kind);
+            $("select#appointment_nature").change();
+        }
+        else if(possibleAppointmentsTypes.length > 1) {
+            var possibleAppointment = _.find(possibleAppointmentsTypes, function(appointment) {
+                var rule = appointment.appointment_kind_hash.rule;
+                return _.filter(rule.split("&"), function(rule_item) {
+                    if(rule_item.indexOf("ATTENDEES") > -1) {
+                        if(rule_item.split(">").length == 2) {
+                            return window.getInfoPanelAttendees().length > rule_item.split(">")[1];
+                        }
+                        else if (rule_item.split("=").length == 2) {
+                            return window.getInfoPanelAttendees().length == rule_item.split("=")[1];
+                        }
+                        else if (rule_item.split("<").length == 2) {
+                            return window.getInfoPanelAttendees().length < rule_item.split("<")[1];
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }).length == rule.split("&").length;
+            });
+            if(possibleAppointment) {
+                $("select#appointment_nature").val(possibleAppointment.kind);
+                $("select#appointment_nature").change();
+            }
+        }
+    }
+
     function initAppointments() {
         $("select#appointment_nature").html("");
         _.each(window.threadAccount.appointments, function(appointment) {
             $("select#appointment_nature").append($("<option>").val(appointment.label).html(appointment.label));
         });
 
+        _(_(_.map(window.threadAccount.appointments, function(appointment) {
+            return appointment.appointment_kind_hash.family_kind;
+        })).uniq()).each(function(familyKind) {
+            $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
+        });
+
+        $("select#appointment_family_nature").change(function() {
+            processAppointmentType()
+        });
+
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
+        var currentAppointment = window.getCurrentAppointment();
+        if(currentAppointment) {
+            $("select#appointment_family_nature").val(currentAppointment.appointment_kind_hash.family_kind);
+        }
+        else {
+            $("select#appointment_family_nature").val(null);
+        }
         if (window.threadComputedData.appointment_nature) {
             initAddresses();
             setLocationOrNumberToCallPart();
@@ -468,6 +527,8 @@
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
+        <%= select_tag :appointment_family_nature, "", class: "data-entry form-control" %>
+        <div class="data-entry-name"><%= I18n.t("info_box.computed_appointment_type") %></div>
         <%= select_tag :appointment_nature, "", class: "data-entry form-control" %>
       </div>
 
