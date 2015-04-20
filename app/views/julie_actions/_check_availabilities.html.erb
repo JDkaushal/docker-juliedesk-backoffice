@@ -38,6 +38,11 @@
             $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Select");
         }
 
+        var currentAppointment = window.getCurrentAppointment();
+        if(currentAppointment && currentAppointment.include_email_in_notes) {
+            $("input[type=checkbox]#include-email-in-notes").attr("checked", true);
+        }
+
         window.activateCalendarWithParams({
             mode: "create_event",
             date_times: <%== (JSON.parse(
@@ -118,11 +123,19 @@
                         locale: window.threadComputedData.locale
                     });
                 }
+                var emailInNotes = "";
+                if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
+                    <% google_message = @julie_action.message_classification.message.google_message %>
+                    var textData = <%== {text: "#{"- "*30}\n#{google_message.subject}\n#{google_message.reply_all_with(Gmail::Message.new({text: "", html: ""})).text}\n#{"- "*30}"}.to_json %>;
+                    emailInNotes = "\n\n" + textData.text;
+                }
+
+
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
-                    description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + numberToCall,
+                    description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + numberToCall + emailInNotes,
                     attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
                     location: location,
                     all_day: false,
@@ -180,6 +193,7 @@
                         accountEmail: window.threadAccount.email,
                         locale: window.threadComputedData.locale
                     });
+
                     $(".messages-thread-info-panel .created-event-panel").show();
                     window.currentEventTile.redraw();
                     window.currentEventTile.fetchEvent(function(data) {
