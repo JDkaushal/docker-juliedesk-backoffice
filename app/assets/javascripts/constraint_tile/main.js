@@ -220,6 +220,35 @@ ConstraintTile.prototype.initActions = function() {
     constraintTile.$selector.find(".remove-constraint-button").click(function() {
         constraintTile.$selector.remove();
     });
+
+    constraintTile.$selector.find(".constraint-dates-days-of-week-container .day-of-week ").click(function(e) {
+        if(!$(e.target).is("input")) {
+            var $input = $(this).find("input");
+            $input.prop('checked', !$input.prop("checked")).change();
+        }
+    });
+
+    constraintTile.$selector.find(".quick-selectors .select-all").click(function() {
+        $(this).closest(".constraint-dates-days-of-week-container").find("input[type=checkbox]").prop('checked', true).change();
+    });
+
+    constraintTile.$selector.find(".quick-selectors .unselect-all").click(function() {
+        $(this).closest(".constraint-dates-days-of-week-container").find("input[type=checkbox]").prop('checked', false).change();
+    });
+
+    constraintTile.$selector.find(".quick-time-selectors .select-morning").click(function() {
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-start-hours").val(8);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-start-minutes").val(0);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-end-hours").val(12);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-end-minutes").val(0).change();
+    });
+
+    constraintTile.$selector.find(".quick-time-selectors .select-afternoon").click(function() {
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-start-hours").val(14);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-start-minutes").val(0);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-end-hours").val(22);
+        $(this).closest(".constraint-start-hours-end-hours-container").find(".constraint-end-minutes").val(0).change();
+    });
 };
 
 
