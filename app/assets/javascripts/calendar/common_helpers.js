@@ -26,7 +26,7 @@ window.CommonHelpers.filterEvents = function(events) {
 
 window.CommonHelpers.externalRequest = function (request, callback, error_callback) {
     var host = "https://juliedesk-app.herokuapp.com";
-    //var host = "http://localhost:3000";
+//    var host = "http://localhost:2000";
     var access_key = "gho67FBDJKdbhfj890oPm56VUdfhq8";
     console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
@@ -127,6 +127,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 email: request.email,
                 access_key: access_key,
                 event_id: request.event_id,
+                event_url: request.event_url,
                 calendar_id: request.calendar_id,
                 summary: request.summary,
                 description: request.description,
@@ -154,6 +155,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 email: request.email,
                 access_key: access_key,
                 event_id: request.event_id,
+                event_url: request.event_url,
                 calendar_id: request.calendar_id
             }),
             success: function(e) {
@@ -173,6 +175,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 email: request.email,
                 access_key: access_key,
                 event_id: request.event_id,
+                event_url: request.event_url,
                 calendar_id: request.calendar_id
             },
             success: function(e) {

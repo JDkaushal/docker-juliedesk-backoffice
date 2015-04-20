@@ -27,6 +27,7 @@
             $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
             window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container").last(), {
                 eventId: eventData.id,
+                eventUrl: eventData.event_url,
                 calendarId: eventData.calendar_id,
                 minimized: true
             }));
@@ -53,6 +54,7 @@
             mode: "free_calendar",
             event: event,
             eventId: params.eventId,
+            eventUrl: params.event_url,
             calendarId: params.calendarId,
             timezoneId: window.threadComputedData.timezone,
             accountEmail: window.threadAccount.email,
@@ -119,6 +121,7 @@
                             }), function(eventTileItem) {
                                 return {
                                     id: eventTileItem.eventId,
+                                    event_url: eventTileItem.eventUrl,
                                     calendar_id: eventTileItem.calendarId,
                                     timezone_id: eventTileItem.timezoneId
                                 };
@@ -207,6 +210,7 @@
                 }), function(eventTile) {
                     return {
                         id: eventTile.eventId,
+                        event_url: eventTile.eventUrl,
                         calendar_id: eventTile.calendarId,
                         timezone_id: eventTile.timezoneId
                     };

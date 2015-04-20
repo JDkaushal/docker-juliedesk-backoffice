@@ -48,6 +48,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         mode: calendar.getMode(),
         event: event,
         eventId: event.id,
+        eventUrl: event.url,
         calendarId: event.calId,
         accountEmail: calendar.initialData.email,
         locale: window.threadComputedData.locale,

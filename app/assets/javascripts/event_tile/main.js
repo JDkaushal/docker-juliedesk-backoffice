@@ -1,5 +1,6 @@
 function EventTile($selector, params) {
     this.eventId = params.eventId;
+    this.eventUrl = params.eventUrl;
     this.calendarId = params.calendarId;
     this.timezoneId = params.timezoneId;
     this.accountEmail = params.accountEmail;
@@ -234,6 +235,7 @@ EventTile.prototype.fetchEvent = function(callback) {
         action: "get_event",
         email: eventTile.accountEmail,
         event_id: eventTile.eventId,
+        event_url: eventTile.eventUrl,
         calendar_id: eventTile.calendarId
     }, function(response) {
         if(response.status == "error") {
@@ -337,6 +339,7 @@ EventTile.prototype.saveEvent = function() {
         }, function(response) {
             if(response.status == "success") {
                 eventTile.eventId = response.data.event_id;
+                eventTile.eventUrl = response.data.event_url;
                 eventTile.calendarId = response.data.calendar_id;
                 eventTile.fetchEvent(function() {
                     eventTile.redraw();
@@ -363,6 +366,7 @@ EventTile.prototype.saveEvent = function() {
             email: eventTile.accountEmail,
 
             event_id: eventTile.eventId,
+            event_url: eventTile.eventUrl,
             calendar_id: eventTile.calendarId,
 
             summary: editedEvent.title,
@@ -401,6 +405,7 @@ EventTile.prototype.deleteEvent = function() {
         action: "delete_event",
         email: eventTile.accountEmail,
         event_id: eventTile.eventId,
+        event_url: eventTile.eventUrl,
         calendar_id: eventTile.calendarId
     }, function(response) {
         if(response.status == "success") {

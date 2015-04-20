@@ -132,10 +132,12 @@
                 };
                 if(isPostpone) {
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
+                    window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,
+                        event_url: window.currentEventUrl,
                         calendar_id: window.currentCalendarId
                     }, function(v, k) {
                         requestParams[k] = v;
@@ -145,6 +147,7 @@
 
                     if(!isPostpone) {
                         window.currentEventId = e.data.event_id;
+                        window.currentEventUrl = e.data.event_url;
                         window.currentCalendarId = e.data.calendar_id;
                     }
 
@@ -172,6 +175,7 @@
                         mode: "read_only",
                         event: {},
                         eventId: window.currentEventId,
+                        eventUrl: window.currentEventUrl,
                         calendarId: window.currentCalendarId,
                         accountEmail: window.threadAccount.email,
                         locale: window.threadComputedData.locale
@@ -191,6 +195,7 @@
                         url: "/julie_actions/<%= @julie_action.id %>/update",
                         data: {
                             event_id: window.currentEventId,
+                            event_url: window.currentEventUrl,
                             calendar_id: window.currentCalendarId
                         },
                         success: function (e) {
@@ -233,6 +238,7 @@
                 cc: window.currentRecipients().cc,
                 date_times: window.timeSlotsToSuggest,
                 event_id: window.currentEventId,
+                event_url: window.currentEventUrl,
                 calendar_id: window.currentCalendarId,
                 deleted_event: window.actionDeletedEvent,
                 done: true,
