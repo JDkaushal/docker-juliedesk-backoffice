@@ -149,8 +149,18 @@ window.wordings['fr'] = {
             }
         }
     },
+    common: {
+        cancel: "Annuler"
+    },
     events: {
-        new_event: "Nouvel évènement"
+        new_event: "Nouvel évènement",
+        recurring_event: {
+            this_event_is_part_of_recurring: "Cet évènement fait partie d'un évènement récurrent.",
+            what_to_update: "Quelles occurrences voulez-vous mettre à jour ?",
+            what_to_delete: "Quelles occurrences voulez-vous supprimer ?",
+            this_occurrence: "Cette occurrence",
+            all_occurrences: "Toutes les occurrences"
+        }
     },
     constraints: {
         cant: "ne peux pas",

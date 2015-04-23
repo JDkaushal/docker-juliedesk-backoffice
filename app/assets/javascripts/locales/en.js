@@ -148,8 +148,18 @@ window.wordings['en'] = {
             }
         }
     },
+    common: {
+        cancel: "Cancel"
+    },
     events: {
-        new_event: "New event"
+        new_event: "New event",
+        recurring_event: {
+            this_event_is_part_of_recurring: "This event is part of a recurring event.",
+            what_to_update: "Which occurrences do you want to update?",
+            what_to_delete: "Which occurrences do you want to delete?",
+            this_occurrence: "This occurrence",
+            all_occurrences: "All occurrences"
+        }
     },
     constraints: {
         cant: "can't",

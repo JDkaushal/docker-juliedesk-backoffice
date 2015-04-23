@@ -512,7 +512,9 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         sequence: ev.sequence,
         private: ev.private,
         owned: ev.owned,
-        isNotAvailableEvent: ev.isNotAvailableEvent
+        isNotAvailableEvent: ev.isNotAvailableEvent,
+        recurringEventId: ev.recurringEventId,
+        recurrence: ev.recurrence
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;

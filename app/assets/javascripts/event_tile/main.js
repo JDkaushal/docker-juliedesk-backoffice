@@ -53,13 +53,56 @@ EventTile.prototype.getTimezoneIdForEndDate = function() {
     return eventTile.$selector.find("input.event-timezone-for-end-date-picker").val();
 };
 
+EventTile.prototype.enableAll = function() {
+    var eventTile = this;
+    eventTile.$selector.find("input, textarea, select").prop('disabled', false);
+    eventTile.$selector.find(".recurrence-link-container").addClass("enabled");
+};
+
+EventTile.prototype.disableAll = function() {
+    var eventTile = this;
+    eventTile.$selector.find("input, textarea, select").prop("disabled", true);
+    eventTile.$selector.find(".recurrence-link-container").removeClass("enabled");
+};
+
 EventTile.prototype.redraw = function() {
+
     var eventTile = this;
 
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
     eventTile.$selector.find("textarea.notes").val(eventTile.event.description);
+
+    eventTile.$selector.find(".recurrence-container").hide();
+
+    var rrule = "";
+    var rstart = moment(eventTile.event.start);
+    console.log("EVENT EVENT", eventTile.event);
+    if(eventTile.recurringEvent) {
+        eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
+        if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
+            eventTile.$selector.find(".recurrence-container .recurrence-rule").val(eventTile.recurringEvent.recurrence.join("\n"));
+            if(eventTile.recurringEvent.recurrence.length > 0) {
+                rrule = eventTile.recurringEvent.recurrence[0];
+            }
+        }
+        rstart = moment(eventTile.recurringEvent.start)
+    }
+    else if(eventTile.event.recurrence && $.isArray(eventTile.event.recurrence) && eventTile.event.recurrence.length > 0) {
+        rrule = eventTile.event.recurrence[0];
+        rstart = moment(eventTile.event.start)
+    }
+
+    eventTile.recurrenceForm = new RecurrenceForm(eventTile.$selector.find(".recurrence-container .recurrence-form-container"), {
+        rrule: rrule,
+        rstart: rstart,
+        ruleChangedCallback: function(recurrenceForm) {
+            eventTile.$selector.find(".recurrence-container .recurrence-rule").val(recurrenceForm.rrule);
+            eventTile.$selector.find(".recurrence-link-container .recurrence-text").html(recurrenceForm.getText());
+        }
+    });
+
 
     eventTile.$selector.find(".attendees .attendees-list").html("");
     var attendees = [];
@@ -69,7 +112,7 @@ EventTile.prototype.redraw = function() {
         eventTile.eventDetailsAddAttendeeDiv(attendee);
     });
 
-    eventTile.$selector.find("input, textarea").attr("disabled", "disabled");
+    eventTile.disableAll();
 
 
     var mStartDate = moment(eventTile.event.start).tz(eventTile.getTimezoneId()).locale(eventTile.locale);
@@ -113,7 +156,8 @@ EventTile.prototype.redraw = function() {
 
 
 
-    eventTile.$selector.find("input, textarea").attr("disabled", true);
+
+    eventTile.disableAll();
     eventTile.$selector.find("#event-delete-button").hide();
     eventTile.$selector.find("#event-edit-button").hide();
     eventTile.$selector.find("#event-save-button").hide();
@@ -147,7 +191,7 @@ EventTile.prototype.redraw = function() {
     if(eventTile.getMode() == "free_calendar") {
         if(eventTile.event.beingAdded) {
             eventTile.$selector.find(".event-tile-container").addClass("editing");
-            eventTile.$selector.find("input, textarea").removeAttr("disabled");
+            eventTile.enableAll();
             eventTile.$selector.find("#event-edit-button").hide();
             eventTile.$selector.find("#event-save-button").show();
             eventTile.$selector.find("#event-cancel-button").show();
@@ -224,10 +268,49 @@ EventTile.prototype.getEditedEvent = function() {
         all_day: allDay,
         start: mStart.tz("UTC"),
         end: mEnd.tz("UTC"),
-        attendees: attendees
+        attendees: attendees,
+        recurrence: _.filter(eventTile.$selector.find(".recurrence-rule").val().split("\n"), function(rule) {
+                return rule.length > 0;
+            }),
+        start_timezone: eventTile.getTimezoneId(),
+        end_timezone: eventTile.getTimezoneIdForEndDate()
     }
 };
+EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
+    var eventTile = this;
+    if(eventTile.event && eventTile.event.recurringEventId) {
+        eventTile.showSpinner();
+        CommonHelpers.externalRequest({
+            action: "get_event",
+            email: eventTile.accountEmail,
+            event_id: eventTile.event.recurringEventId,
+            calendar_id: eventTile.calendarId
+        }, function(response) {
+            if(response.status == "error") {
+                if(response.code == "EventNotFound") {
+                    alert("Event not found: " + response.message)
+                }
+                else {
+                    alert("Unable to fetch event: " + response.message)
+                }
+            }
+            else {
+                eventTile.hideSpinner();
+                eventTile.recurringEvent = eventTile.eventDataFromEvent(response.data);
+                eventTile.redraw();
+                callback();
+            }
+        }, function(response) {
+            eventTile.hideSpinner();
+            alert("Unable to fetch event: " + response.message)
+        });
+    }
+    else {
+        eventTile.redraw();
+        callback();
+    }
 
+};
 EventTile.prototype.fetchEvent = function(callback) {
     var eventTile = this;
     eventTile.showSpinner();
@@ -274,6 +357,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
     var sendTime = moment(endTime).tz(eventTile.getTimezoneId()).format();
 
 
+
     eventData = {
         id: ev.id,
         title: ev.summary,
@@ -289,8 +373,11 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         calId: ev.calId,
         private: ev.private,
         owned: ev.owned,
-        timezoneId: eventTile.getTimezoneId()
+        timezoneId: eventTile.getTimezoneId(),
+        recurringEventId: ev.recurringEventId,
+        recurrence: ev.recurrence
     };
+
     return eventData;
 };
 
@@ -318,6 +405,63 @@ EventTile.prototype.redrawDatePicker = function() {
         eventTile.$selector.find(".hours-and-minutes").hide();
     }
 };
+EventTile.prototype.saveRecurringEvent = function() {
+    var eventTile = this;
+    eventTile.showSpinner();
+    var editedEvent = eventTile.getEditedEvent();
+
+    var recurringStartTime, recurringEndTime;
+    if(editedEvent.recurrence.length == 0) {
+        recurringStartTime = editedEvent.start;
+        recurringEndTime = editedEvent.end;
+    }
+    else {
+        var startDiff = editedEvent.start - moment(eventTile.event.start);
+        recurringStartTime = moment(eventTile.recurringEvent.start);
+        recurringStartTime.add('s', startDiff / 1000);
+        recurringStartTime = recurringStartTime.format();
+
+        var endDiff = editedEvent.end - moment(eventTile.event.end);
+        recurringEndTime = moment(eventTile.recurringEvent.end);
+        recurringEndTime.add('s', endDiff / 1000);
+        recurringEndTime = recurringEndTime.format();
+    }
+
+    CommonHelpers.externalRequest({
+        action: "update_event",
+        email: eventTile.accountEmail,
+
+        event_id: eventTile.recurringEvent.id,
+        calendar_id: eventTile.calendarId,
+
+        summary: editedEvent.title,
+        description: editedEvent.description,
+        attendees: editedEvent.attendees,
+        location: editedEvent.location,
+        all_day: editedEvent.all_day,
+        private: editedEvent.private,
+        start: recurringStartTime,
+        end: recurringEndTime,
+        start_timezone: editedEvent.start_timezone,
+        end_timezone: editedEvent.end_timezone,
+        recurrence: editedEvent.recurrence
+    }, function(response) {
+        if(response.status == "success") {
+            if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
+                action: "update_event"
+            });
+        }
+        else {
+            eventTile.hideSpinner();
+            alert("Error updating event");
+            console.log(response);
+        }
+    }, function(response) {
+        eventTile.hideSpinner();
+        alert("Error updating event");
+        console.log(response);
+    });
+};
 EventTile.prototype.saveEvent = function() {
     var eventTile = this;
     var editedEvent = eventTile.getEditedEvent();
@@ -335,7 +479,10 @@ EventTile.prototype.saveEvent = function() {
             all_day: editedEvent.all_day,
             private: editedEvent.private,
             start: editedEvent.start.format(),
-            end: editedEvent.end.format()
+            end: editedEvent.end.format(),
+            start_timezone: editedEvent.start_timezone,
+            end_timezone: editedEvent.end_timezone,
+            recurrence: editedEvent.recurrence
         }, function(response) {
             if(response.status == "success") {
                 eventTile.eventId = response.data.event_id;
@@ -376,7 +523,10 @@ EventTile.prototype.saveEvent = function() {
             all_day: editedEvent.all_day,
             private: editedEvent.private,
             start: editedEvent.start.format(),
-            end: editedEvent.end.format()
+            end: editedEvent.end.format(),
+            start_timezone: editedEvent.start_timezone,
+            end_timezone: editedEvent.end_timezone,
+            recurrence: editedEvent.recurrence
         }, function(response) {
             if(response.status == "success") {
                 eventTile.fetchEvent(function() {
@@ -398,13 +548,57 @@ EventTile.prototype.saveEvent = function() {
         });
     }
 };
-EventTile.prototype.deleteEvent = function() {
+EventTile.prototype.confirmRecurringEventUpdate = function(params) {
+
+    var eventTile = this;
+    eventTile.$selector.find(".recurrence-confirm-container").html(HandlebarsTemplates['event_tile/recurrence_confirm_popup']()).fadeIn(200);
+
+    // Wordings
+    eventTile.$selector.find(".recurrence-confirm-container .message .message-situation").html(localize("events.recurring_event.this_event_is_part_of_recurring"));
+    eventTile.$selector.find(".recurrence-confirm-container .message .message-question").html(localize("events.recurring_event.what_to_update"));
+    if(params.mode == "delete") {
+        eventTile.$selector.find(".recurrence-confirm-container .message .message-question").html(localize("events.recurring_event.what_to_delete"));
+    }
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-all-occurrences-button").html(localize("events.recurring_event.all_occurrences"));
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-this-occurrence-button").html(localize("events.recurring_event.this_occurrence"));
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-cancel-button").html(localize("common.cancel"));
+
+
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-cancel-button").click(function() {
+        eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+    });
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-all-occurrences-button").click(function() {
+        eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+        if(params.allOccurrencesCallback) {
+            params.allOccurrencesCallback();
+        }
+    });
+    eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-this-occurrence-button").click(function() {
+        eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+        if(params.thisOccurrenceCallback) {
+            params.thisOccurrenceCallback();
+        }
+    });
+};
+
+EventTile.prototype.deleteEvent = function(params) {
     var eventTile = this;
     eventTile.showSpinner();
+    if(!params)  params = {};
+    var eventIdToDelete = eventTile.eventId;
+    if(params.recurring) {
+        if(eventTile.recurringEvent) {
+            eventIdToDelete = eventTile.recurringEvent.id;
+        }
+        else {
+            alert("Trying to delete the recurring event, but no recurring event for this event");
+            return;
+        }
+    }
     CommonHelpers.externalRequest({
         action: "delete_event",
         email: eventTile.accountEmail,
-        event_id: eventTile.eventId,
+        event_id: eventIdToDelete,
         event_url: eventTile.eventUrl,
         calendar_id: eventTile.calendarId
     }, function(response) {
@@ -424,10 +618,23 @@ EventTile.prototype.deleteEvent = function() {
         console.log("error", e);
     });
 };
+
+EventTile.prototype.showRecurrenceContainer = function() {
+    var eventTile = this;
+    eventTile.$selector.find(".recurrence-container").css({left: 330}).show().animate({left: 0}, 200);
+};
+
+EventTile.prototype.hideRecurrenceContainer = function() {
+    var eventTile = this;
+    eventTile.$selector.find(".recurrence-container").animate({left: 330}, 200, function() {
+        $(this).hide();
+    });
+};
+
 EventTile.prototype.initActions = function() {
     var eventTile = this;
     eventTile.$selector.find("#event-edit-button").click(function() {
-        eventTile.$selector.find("input, textarea").removeAttr("disabled");
+        eventTile.enableAll();
         eventTile.$selector.find("#event-delete-button").hide();
         eventTile.$selector.find("#event-edit-button").hide();
 
@@ -454,12 +661,46 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-save-button").click(function() {
-        eventTile.saveEvent();
+        if(eventTile.recurringEvent) {
+            console.log("Save event", eventTile.getEditedEvent())
+            if(eventTile.getEditedEvent().recurrence.length == 0) {
+                eventTile.saveRecurringEvent();
+            }
+            else {
+                eventTile.confirmRecurringEventUpdate({
+                    thisOccurrenceCallback: function() {
+                        eventTile.saveEvent();
+                    },
+                    allOccurrencesCallback: function() {
+                        eventTile.saveRecurringEvent();
+                    }
+                });
+            }
+        }
+        else {
+            eventTile.saveEvent();
+        }
     });
     eventTile.$selector.find("#event-delete-button").click(function(e) {
-        if (confirm("Are you sure you want to delete this event?")) {
-            eventTile.deleteEvent();
+        if(eventTile.recurringEvent) {
+            eventTile.confirmRecurringEventUpdate({
+                mode: "delete",
+                thisOccurrenceCallback: function() {
+                    eventTile.deleteEvent();
+                },
+                allOccurrencesCallback: function() {
+                    eventTile.deleteEvent({
+                        recurring: true
+                    });
+                }
+            });
         }
+        else {
+            if (confirm("Are you sure you want to delete this event?")) {
+                eventTile.deleteEvent();
+            }
+        }
+
     });
 
     eventTile.$selector.find("#event-select-button").click(function(e) {
@@ -508,6 +749,16 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find("input.event-date-all-day").change(function(e) {
         eventTile.redrawDatePicker();
+    });
+
+    eventTile.$selector.find(".recurrence-container .recurrence-back-button").click(function() {
+        eventTile.hideRecurrenceContainer();
+    });
+
+    eventTile.$selector.find(".recurrence-link-container").click(function() {
+        if($(this).hasClass("enabled")) {
+            eventTile.showRecurrenceContainer();
+        }
     });
 
     var addAttendee = function() {

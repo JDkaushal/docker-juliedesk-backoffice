@@ -62,8 +62,11 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
             calendar.refreshEvents();
         }
     });
-    calendar.currentEventTile.redraw();
     calendar.$selector.find("#event-details-container").fadeIn(200);
+    calendar.currentEventTile.fetchRecurringEventIfNeeded(function() {
+
+    });
+
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {

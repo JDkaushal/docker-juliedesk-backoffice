@@ -30,8 +30,11 @@
 //= require moment-with-locales.min
 //= require moment-timezone-with-data
 //= require timezone_picker
+//= require rrule
+//= require nlp
 
 //= require event_tile/main
+//= require event_tile/recurrence_form
 //= require constraint_tile/main
 
 //= require calendar/main
@@ -49,6 +52,7 @@
 
 //= require presenters
 //= require generate_templates
+
 
 //= require message_classification_forms/classification_form
 //= require message_classification_forms/ask_date_suggestions

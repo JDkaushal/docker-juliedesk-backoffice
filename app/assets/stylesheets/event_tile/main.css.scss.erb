@@ -16,7 +16,7 @@
 .event-tile-container {
     background: white;
     width: 330px;
-    height: 495px;
+    height: 545px;
     position: absolute;
     text-align: left;
     transition: width 0.3s;
@@ -36,6 +36,8 @@
         z-index: 2;
         background: #fff;
     }
+
+
 
     .title {
         margin: 0px 0 5px 0;
@@ -262,6 +264,46 @@
         color: #000;
     }
 
+    .recurrence-link-container {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: -10px -50px;
+        padding: 10px 50px;
+        position: relative;
+
+        .recurrence-icon {
+            position: absolute;
+            top: 5px;
+            left: 13px;
+            @include event-sprite(recurrence_icon);
+            width: 30px;
+            height: 30px
+        }
+
+        img.recurrence-go-button {
+            width: 16px;
+            content: url(<%= asset_path 'calendar/arrow_right_grey.png' %>);
+            position: absolute;
+            right: 30px;
+            top: 12px;
+            display: none;
+        }
+        .recurrence-text {
+
+        }
+
+        &.enabled {
+            cursor: pointer;
+            img.recurrence-go-button {
+                display: block;
+            }
+            &:hover {
+                background: rgba(40, 166, 203, 0.08)
+            }
+        }
+    }
+
     &.editing {
         .date-container {
             .date {
@@ -310,9 +352,9 @@
             text-align: center;
             width: 135px;
             padding: 5px;
-            line-height: 30px;
+            line-height: 20px;
             color: white;
-            bottom: 8px;
+            bottom: 13px;
             position: absolute;
             cursor: pointer;
             border-radius: 3px;
@@ -414,7 +456,7 @@
 
 
     &.minimizable {
-        height: 525px;
+        height: 575px;
         @include transition-property(height);
         @include transition-duration(0.2s);
         .minimize-button {
@@ -429,7 +471,7 @@
         }
 
         &.editing {
-            height: 495px;
+            height: 545px;
             .minimize-button {
                 display: none;
             }
@@ -440,6 +482,138 @@
     }
     &.static {
         position: relative;
+    }
+
+    .recurrence-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 55px;
+        right: 0;
+        background: white;
+        z-index: 10;
+        padding: 20px;
+        display: none;
+
+        .recurrence-title {
+            font-size: 18px;
+            background: #f0f0f0;
+            margin: -20px -20px 20px -20px;
+            padding: 15px 20px 15px 20px;
+            line-height: 20px;
+            text-align: center;
+            font-weight: 200;
+            color: #666;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+
+            .recurrence-back-button {
+                position: absolute;
+                top: 16px;
+                left: 10px;
+                color: #28A6CB;
+                cursor: pointer;
+                line-height: 20px;
+                font-size: 14px;
+                width: 20px;
+                content: url(<%= asset_path 'calendar/arrow_left_grey.png' %>);
+            }
+        }
+
+        .recurrence-rule {
+            margin-left: 0px;
+            margin-right: 0px;
+            width: 287px;
+            //border: 1px solid #ccc !important;
+            resize: none;
+            height: 80px;
+            padding: 5px;
+            display: none;
+        }
+
+        .recurrence-spinner {
+            display: none;
+            content: url(<%= asset_path("ajax-loader.gif")%>);
+            margin: 20px auto;
+            width: 20px;
+        }
+
+        .recurrence-form {
+            .form-entry {
+                padding: 0 0 0 100px;
+                position: relative;
+                margin: 5px 0;
+
+                label {
+                    color: #999;
+                    font-weight: 200;
+                    width: 100px;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+                input[name='interval'], input[name='count'] {
+                    width: 50px;
+                    text-align: center;
+                }
+                input[name='until'] {
+                    width: 140px;
+                    padding: 2px 5px;
+                    line-height: 20px;
+                }
+                .radio-container {
+                    margin: 2px 0;
+                }
+            }
+
+        }
+    }
+
+    .recurrence-confirm-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 20;
+        display: none;
+
+        .recurrence-confirm-popup {
+            position: absolute;
+            top: 80px;
+            background: white;
+            right: 0;
+            left: 0;
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            height: 300px;
+
+            .message {
+                font-size: 16px;
+                text-align: center;
+                padding: 0 0 30px;
+                font-weight: 200;
+                color: #444;
+            }
+
+            .recurrence-confirm-button {
+                border: 1px solid #ccc;
+                text-align: center;
+                padding: 10px;
+                font-size: 16px;
+                border-radius: 4px;
+                margin: 10px 0;
+                cursor: pointer;
+
+                &:hover {
+                    background: #eee;
+                }
+            }
+
+        }
     }
 }
 

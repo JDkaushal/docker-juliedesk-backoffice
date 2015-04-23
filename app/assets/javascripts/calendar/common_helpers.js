@@ -103,7 +103,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 location: request.location,
                 private: request.private,
                 start: request.start,
-                end: request.end
+                end: request.end,
+                start_timezone: request.start_timezone,
+                end_timezone: request.end_timezone,
+                recurrence: request.recurrence
             }),
             success: function(e) {
                 if(e.status == "success") {
@@ -136,7 +139,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 location: request.location,
                 private: request.private,
                 start: request.start,
-                end: request.end
+                end: request.end,
+                start_timezone: request.start_timezone,
+                end_timezone: request.end_timezone,
+                recurrence: request.recurrence
             }),
             success: function(e) {
                 callback(e);

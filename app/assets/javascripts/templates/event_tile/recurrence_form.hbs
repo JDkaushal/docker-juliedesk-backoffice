@@ -1,0 +1,64 @@
+<div class="recurrence-form">
+    <div class="form-entry freq">
+        <label>Recurrence</label>
+        <select name="freq">
+            <option value="">No recurrence</option>
+            <option value="daily">Every day</option>
+            <option value="weekly">Every week</option>
+            <option value="monthly">Every month</option>
+            <option value="yearly">Every year</option>
+        </select>
+    </div>
+
+    <div class="form-entry every">
+        <label>Repeat every</label>
+        <input name="interval"/>
+        <span class="repeat-every-what"></span>
+    </div>
+
+    <div class="form-entry week-freq-on">
+        <label>Repeat on</label>
+        <input type="checkbox" value="0"/>M
+        <input type="checkbox" value="1"/>T
+        <input type="checkbox" value="2"/>W
+        <input type="checkbox" value="3"/>T
+        <input type="checkbox" value="4"/>F
+        <input type="checkbox" value="5"/>S
+        <input type="checkbox" value="6"/>S
+    </div>
+
+    <div class="form-entry month-freq-on">
+        <label>Repeat on</label>
+
+        <div class="radio-container">
+            <input type="radio" name="recurrence-form-month-freq-repeat-on" value="day-of-month" checked/> Day of month
+        </div>
+        <div class="radio-container">
+            <input type="radio" name="recurrence-form-month-freq-repeat-on" value="day-of-week"/> Day of week
+        </div>
+    </div>
+
+    <div class="form-entry end">
+        <label>End</label>
+
+        <div class="radio-container">
+            <input type="radio" name="recurrence-form-end-by" value="never" checked/>
+            Never
+        </div>
+
+        <div class="radio-container">
+            <input type="radio" name="recurrence-form-end-by" value="count"/>
+            After <input name="count" type="text"/> occurrences
+        </div>
+
+        <div class="radio-container">
+            <input type="radio" name="recurrence-form-end-by" value="until"/>
+            On <input name="until" type="date"/>
+        </div>
+    </div>
+
+    <div class="form-entry as-text">
+        <label>Sumup</label>
+        <div class="recurrence-as-text"></div>
+    </div>
+</div>
