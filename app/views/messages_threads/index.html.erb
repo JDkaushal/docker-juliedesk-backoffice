@@ -10,10 +10,10 @@
         $waitingForPreferenceChangerContainer = $("<div>").addClass("waiting-for-preference-change-container");
         $waitingForPreferenceChangerContainer.append($("<div>").addClass("waiting-for-preference-change-title").html("<%= I18n.t("index.waiting_for_preference_change") %>"));
 
-        $(".nothing-to-do").hide();
+        $(".nothing-to-do").show();
         $(".messages-threads-container").show();
+        $(".messages-threads-container").removeClass("bordered");
         if(threadsData.length == 0) {
-            $(".nothing-to-do").show();
             $(".messages-threads-container").hide();
         }
         $(".header .global-todo-count").html(threadsData.length);
@@ -58,6 +58,8 @@
             }
             else {
                 $(".messages-threads-container").append($messageThreadContainer);
+                $(".messages-threads-container").addClass("bordered");
+                $(".nothing-to-do").hide();
             }
         }
         if($toProcessLaterContainer.find(".messages-thread-item").length > 0) {
@@ -167,12 +169,14 @@
         <%= image_tag "ajax-loader.gif", class: "spinner" %>
       </div>
 
-      <div class="messages-threads-container"></div>
+
 
       <div class="nothing-to-do">
         <%= image_tag "smiley.png" %>
         <div><%= I18n.t("index.nothing_to_do") %></div>
       </div>
+
+      <div class="messages-threads-container"></div>
     </div>
   </div>
 </div>
