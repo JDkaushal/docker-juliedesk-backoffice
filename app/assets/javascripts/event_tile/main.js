@@ -90,7 +90,6 @@ EventTile.prototype.redraw = function() {
 
     var rrule = "";
     var rstart = moment(eventTile.event.start);
-    console.log("EVENT EVENT", eventTile.event);
     if(eventTile.recurringEvent) {
         eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
         if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
@@ -127,16 +126,32 @@ EventTile.prototype.redraw = function() {
     eventTile.disableAll();
 
 
-    var mStartDate = moment(eventTile.event.start).tz(eventTile.getTimezoneId()).locale(eventTile.locale);
-    var mEndDate = moment(eventTile.event.end).tz(eventTile.getTimezoneId()).locale(eventTile.locale);
+    var dStart = eventTile.event.start;
+    var dEnd = eventTile.event.end;
 
-    if(eventTile.event.beingAdded) {
-        mStartDate = moment(eventTile.event.start).locale(eventTile.locale);
-        mEndDate = moment(eventTile.event.end).locale(eventTile.locale);
+    var mStartDate = moment();
+    var mEndDate;
+    mStartDate.set("h", 12);
+    mStartDate.set("m", 0);
+    mStartDate.set("s", 0);
+    if(dStart) {
+        mStartDate = moment(dStart);
+    }
 
-        if(!eventTile.event.end) {
-            mEndDate.add("h", 1);
-        }
+    if(dEnd) {
+        mEndDate = moment(dEnd);
+    }
+    else {
+        mEndDate = mStartDate.clone();
+        mEndDate.add("h", 1);
+    }
+    mStartDate = mStartDate.locale(eventTile.locale);
+    mEndDate = mEndDate.locale(eventTile.locale);
+
+
+    if(!eventTile.event.beingAdded) {
+        mStartDate = mStartDate.tz(eventTile.getTimezoneId());
+        mEndDate = mEndDate.tz(eventTile.getTimezoneId());
     }
 
     if(eventTile.event.allDay) {
