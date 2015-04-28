@@ -111,6 +111,8 @@ en:
         todo: "send to founders"
       free_action:
         todo: "write an email"
+      create_event:
+        todo: "create events"
       show_calendar: "Show calendar"
   back: "Back"
   time_ago: "%{time} ago"

@@ -277,7 +277,10 @@ fr:
         todo: "envoyer aux founders"
       free_action:
         todo: "envoyer un email"
+      create_event:
+        todo: "créer des évènements"
       show_calendar: "Afficher le calendrier"
+
   back: "Retour"
   time_ago: "il y a %{time}"
 
