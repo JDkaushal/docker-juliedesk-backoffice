@@ -6,13 +6,34 @@
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 $(function() {
+    <%
+    prioritary = MessagesThread.find_account_emails(messages_thread.google_thread) + ["julien@wepopp.com"]
+    source = Account.get_active_account_emails.sort_by{|contact|
+        (prioritary.include?(contact))?"aaa#{contact.downcase}":"zzz#{contact.downcase}"
+    }.to_json
+    %>
+    $("#account-email-input").autocomplete({
+        source: <%== source %>,
+        delay: 0,
+        minLength: 0
+    }).focus(function(){
+                $(this).trigger($.Event("keydown"));
+            });
+
+    $(".ui-autocomplete").css({
+        maxHeight: 200,
+        width: 200,
+        fontSize: 12,
+        overflowY: "scroll",
+        overflowX: "hidden"
+    });
     $(".associate-to-account-button").click(function() {
         $.ajax({
             url: "/messages_threads/<%= messages_thread.id %>/associate_to_account",
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({
-                account_email: $("#account-email-selector").val()
+                account_email: $("#account-email-input").val()
             }),
             success: function() {
                 window.location = window.location;
@@ -42,21 +63,7 @@ $(function() {
       </div>
 
       <div class="associate-to-account-container">
-        <select id="account-email-selector">
-
-          <% contacts = MessagesThread.find_account_emails(messages_thread.google_thread) + ["julien@wepopp.com"] %>
-
-          <optgroup>
-          <% contacts.each do |contact| %>
-              <option value="<%= contact %>"><%= contact %></option>
-          <% end %>
-          </optgroup>
-          <optgroup label="_________">
-            <% Account.get_active_account_emails.each do |contact| %>
-                <option value="<%= contact %>"><%= contact %></option>
-            <% end %>
-          </optgroup>
-        </select>
+        <input id="account-email-input"/>
 
         <div class="associate-to-account-button btn btn-block btn-success">Associate to account</div>
       </div>
