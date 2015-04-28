@@ -38,6 +38,18 @@ EventTile.prototype.isEditing = function() {
     return eventTile.$selector.find(".event-tile-container").hasClass("editing");
 };
 
+EventTile.prototype.setStartAndEnd = function(mStart, mEnd) {
+    var eventTile = this;
+    eventTile.$selector.find("input.start-date").val(mStart.tz(eventTile.getTimezoneId()).format("YYYY-MM-DD"));
+    eventTile.$selector.find("input.start-hours").val(mStart.tz(eventTile.getTimezoneId()).format("HH"));
+    eventTile.$selector.find("input.start-minutes").val(mStart.tz(eventTile.getTimezoneId()).format("mm"));
+
+    eventTile.$selector.find("input.end-date").val(mEnd.tz(eventTile.getTimezoneIdForEndDate()).format("YYYY-MM-DD"));
+    eventTile.$selector.find("input.end-hours").val(mEnd.tz(eventTile.getTimezoneIdForEndDate()).format("HH"));
+    eventTile.$selector.find("input.end-minutes").val(mEnd.tz(eventTile.getTimezoneIdForEndDate()).format("mm"));
+
+    if(eventTile.afterNewEventEdited) eventTile.afterNewEventEdited();
+};
 EventTile.prototype.getTimezoneId = function() {
     var eventTile = this;
     if(eventTile.$selector.find("input.event-timezone-picker").val()) {

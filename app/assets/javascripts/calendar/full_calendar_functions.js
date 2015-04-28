@@ -36,7 +36,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
 
     var title = calendar.generateDelayTitle();
 
-    if(calendar.getMode() == "free_calendar") {
+    if(calendar.getMode() == "free_calendar" || calendar.getMode() == "create_events") {
         title = localize("events.new_event");
         realEnd = end;
         if((realEnd - start) / 1000 / 60 < 60) {
@@ -50,14 +50,25 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         start: start,
         end: realEnd
     });
-
-    calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
-    calendar.addEvent(eventData);
-    calendar.drawEventList();
-
-    if(calendar.getMode() == "free_calendar") {
-        calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
+    if(calendar.getMode() == "create_events") {
+        if(calendar.initialData.pickEventCallback) {
+            calendar.initialData.pickEventCallback({
+                start: moment.tz(eventData.start.format(), calendar.getCalendarTimezone()),
+                end: moment.tz(eventData.end.format(), calendar.getCalendarTimezone())
+            });
+        }
     }
+    else {
+        calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+        calendar.addEvent(eventData);
+        calendar.drawEventList();
+
+        if(calendar.getMode() == "free_calendar") {
+            calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
+        }
+    }
+
+
 };
 
 Calendar.prototype.fullCalendarEventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {

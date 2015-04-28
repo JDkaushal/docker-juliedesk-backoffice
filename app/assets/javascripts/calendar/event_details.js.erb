@@ -75,7 +75,7 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
     var $target = $(e.target);
 
     if($target.closest(".event-tile-container").length == 0) {
-        if(calendar.getMode() == "free_calendar") {
+        if(calendar.getMode() == "free_calendar" || calendar.getMode() == "create_events") {
             calendar.addEvent(null);
         }
         $container.fadeOut(200);

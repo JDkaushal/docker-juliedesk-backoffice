@@ -8,10 +8,26 @@
 
     $(function() {
         window.activateCalendarWithParams({
-            mode: "free_calendar",
+            mode: "create_events",
             date_times: [],
             email: "<%= @message.messages_thread.account_email %>",
-            duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+            duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>,
+            pickEventCallback: function(e) {
+
+                var beingAddedEventTile =_.find(window.newEventEventTiles, function(eventTile) {
+                    return eventTile.isEditing();
+                });
+                if(beingAddedEventTile) {
+
+                }
+                else {
+                    $container.find(".new-event-tiles-container").prepend($("<div>").addClass("new-event-tile-container"));
+                    beingAddedEventTile = generateNewEventEventTile($container.find(".new-event-tile-container:eq(0)"));
+                    window.newEventEventTiles.push(beingAddedEventTile);
+                    redrawNewEventEventTiles();
+                }
+                beingAddedEventTile.setStartAndEnd(e.start, e.end);
+            }
         });
 
         $(".calendar-container").addClass("minimized");
@@ -64,7 +80,6 @@
             locale: window.threadComputedData.locale,
             doneEditingCallback: function(response) {
                 var eventTile = this;
-                console.log("EVENT ID", eventTile.event.id);
 
                 if(response.action != "cancel_event_creation" && !$(".calendar-container").hasClass("minimized")) {
                     window.currentCalendar.refreshEvents();
