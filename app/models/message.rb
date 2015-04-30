@@ -253,6 +253,8 @@ class Message < ActiveRecord::Base
   def self.format_email_body message
     email_body = message.google_message.html.gsub(/\<style\>.*?\<\/style\>/im, "").gsub(/\<script\>.*?\<\/script\>/im, "")
     n_body = Nokogiri::HTML(email_body)
+    n_body.css('script').remove
+    n_body.css('base').remove
     n_body.css("img").each do |img|
       begin
       src = img.attr("src")
@@ -266,6 +268,9 @@ class Message < ActiveRecord::Base
       rescue
       end
     end
+    p "*" * 50
+    p n_body.to_s
+    p "-" * 50
     n_body.to_s
   end
 end
