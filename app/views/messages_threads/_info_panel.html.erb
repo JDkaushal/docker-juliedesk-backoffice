@@ -209,6 +209,7 @@
 
     function redrawDifferentTimezoneWarner() {
         $(".different-timezone-warner").hide();
+        return;
         var appointment = $.grep(window.threadAccount.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
