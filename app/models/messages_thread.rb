@@ -38,7 +38,7 @@ class MessagesThread < ActiveRecord::Base
     forbidden_emails = JulieAlias.all.map(&:email) + (params[:forbidden_emails] || [])
 
     (to_addresses + from_addresses + cc_addresses).select{ |contact|
-      !forbidden_emails.include?(contact.address.try(:downcase))
+      !forbidden_emails.map(&:downcase).include?(contact.address.try(:downcase))
     }.map{ |contact|
       {
           email: contact.address,

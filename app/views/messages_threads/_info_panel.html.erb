@@ -341,11 +341,11 @@
 
     function askNextLinearFormEntry() {
         $(".linear-form-entry:visible .validate-linear-form-entry-button").hide();
-        if($(".linear-form-entry:hidden").length ==0) {
+        if($(".linear-form-entry:hidden:not(.dont-show)").length ==0) {
             $(".save-info-container").show();
         }
         else {
-            $(".linear-form-entry:hidden:eq(0)").show();
+            $(".linear-form-entry:hidden:not(.dont-show):eq(0)").show();
         }
         $(".messages-thread-info-panel").scrollTop($(".messages-thread-info-panel")[0].scrollHeight);
     }
@@ -390,13 +390,21 @@
     }
 
     function setLocationOrNumberToCallPart() {
-        if($("#appointment_nature").val() == "call") {
-            $(".location-part-container").hide();
-            $(".number-to-call-part-container").show();
+        $(".location-part-container").hide();
+        $(".number-to-call-part-container").hide();
+        $(".location-part-container").closest(".linear-form-entry").removeClass("dont-show");
+
+        var appointment = getCurrentAppointment();
+        if(appointment.appointment_kind_hash.is_virtual) {
+            if(appointment.kind == "call") {
+                $(".number-to-call-part-container").show();
+            }
+            else {
+                $(".location-part-container").closest(".linear-form-entry").addClass("dont-show");
+            }
         }
         else {
             $(".location-part-container").show();
-            $(".number-to-call-part-container").hide();
         }
     }
 

@@ -32,7 +32,6 @@
             });
         });
         channel.bind('new-email', function (data) {
-            newMessage();
             $(".header .global-todo-count").animate({
                 opacity: 0,
                 top: 20
@@ -43,10 +42,6 @@
                             opacity: 1,
                             top: 0
                         }, 300);
-            });
-            appendMessage({
-                message: "New email in inbox",
-                sender: "Julie"
             });
 
             if(window.newEmailCallback) {
