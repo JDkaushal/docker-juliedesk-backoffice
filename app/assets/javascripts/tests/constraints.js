@@ -10,20 +10,23 @@ window.tests.constraints = [
 
     {
         name: "Deploy constraints",
-        should: "returns deployed when weekly repeat start_date and end_date not set",
+        should: "returns deployed when ALWAYS is set, no times",
         test_result: function () {
             return ConstraintTile.deployConstraints([
                 {
                     timezone: "Europe/Paris",
-                    repeat: "weekly",
+                    constraint_when_nature: "always",
                     days_of_weeks: ["1", "4"],
-                    start_recurring: "2015-01-02",
-                    end_recurring: "2015-01-15",
                     constraint_nature: "can"
                 }
             ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
         },
         expected_result: [
+            {
+                start_date: "2015-01-01T00:00+01:00",
+                end_date: "2015-01-01T23:59+01:00",
+                constraint_nature: "can"
+            },
             {
                 start_date: "2015-01-05T00:00+01:00",
                 end_date: "2015-01-05T23:59+01:00",
@@ -48,22 +51,26 @@ window.tests.constraints = [
     },
     {
         name: "Deploy constraints",
-        should: "returns deployed when weekly repeat start_date and end_date set",
+        should: "returns deployed when ALWAYS is set, times set",
         test_result: function () {
             return ConstraintTile.deployConstraints([
                 {
-                    start_date: "2015-01-02T12:00",
-                    end_date: "2015-01-04T14:00",
+                    start_time: "12:00",
+                    end_time: "14:00",
                     timezone: "Europe/Paris",
-                    repeat: "weekly",
+                    constraint_when_nature: "always",
                     days_of_weeks: ["1", "4"],
-                    start_recurring: "2015-01-02",
-                    end_recurring: "2015-01-15",
                     constraint_nature: "can"
+
                 }
             ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
         },
         expected_result: [
+            {
+                start_date: "2015-01-01T12:00+01:00",
+                end_date: "2015-01-01T14:00+01:00",
+                constraint_nature: "can"
+            },
             {
                 start_date: "2015-01-05T12:00+01:00",
                 end_date: "2015-01-05T14:00+01:00",
@@ -88,22 +95,25 @@ window.tests.constraints = [
     },
     {
         name: "Deploy constraints",
-        should: "returns deployed when weekly repeat start_date and end_date set, different timezone",
+        should: "returns deployed when ALWAYS is set, times set, different timezone",
         test_result: function () {
             return ConstraintTile.deployConstraints([
                 {
-                    start_date: "2015-01-02T05:00",
-                    end_date: "2015-01-04T14:00",
+                    start_time: "05:00",
+                    end_time: "14:00",
                     timezone: "America/Los_Angeles",
-                    repeat: "weekly",
+                    constraint_when_nature: "always",
                     days_of_weeks: ["1", "4"],
-                    start_recurring: "2015-01-02",
-                    end_recurring: "2015-01-15",
                     constraint_nature: "can"
                 }
             ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
         },
         expected_result: [
+            {
+                start_date: "2015-01-01T05:00-08:00",
+                end_date: "2015-01-01T14:00-08:00",
+                constraint_nature: "can"
+            },
             {
                 start_date: "2015-01-05T05:00-08:00",
                 end_date: "2015-01-05T14:00-08:00",
@@ -118,10 +128,124 @@ window.tests.constraints = [
                 start_date: "2015-01-12T05:00-08:00",
                 end_date: "2015-01-12T14:00-08:00",
                 constraint_nature: "can"
+            }
+        ]
+    },
+    {
+        name: "Deploy constraints",
+        should: "returns deployed when FROM DATE is set, times sets, timezone set",
+        test_result: function () {
+            return ConstraintTile.deployConstraints([
+                {
+                    start_time: "05:00",
+                    end_time: "14:00",
+                    dates: ["2015-01-10"],
+                    timezone: "America/Los_Angeles",
+                    constraint_when_nature: "from_date",
+                    constraint_nature: "can"
+                }
+            ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
+        },
+        expected_result: [
+            {
+                start_date: "2015-01-10T05:00-08:00",
+                end_date: "2015-01-10T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-11T05:00-08:00",
+                end_date: "2015-01-11T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-12T05:00-08:00",
+                end_date: "2015-01-12T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-13T05:00-08:00",
+                end_date: "2015-01-13T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-14T05:00-08:00",
+                end_date: "2015-01-14T14:00-08:00",
+                constraint_nature: "can"
             },
             {
                 start_date: "2015-01-15T05:00-08:00",
                 end_date: "2015-01-15T14:00-08:00",
+                constraint_nature: "can"
+            }
+        ]
+    },
+    {
+        name: "Deploy constraints",
+        should: "returns deployed when RANGE is set, times sets, timezone set",
+        test_result: function () {
+            return ConstraintTile.deployConstraints([
+                {
+                    start_time: "05:00",
+                    end_time: "14:00",
+                    dates: ["2015-01-10", "2015-01-08"],
+                    timezone: "America/Los_Angeles",
+                    constraint_when_nature: "range",
+                    constraint_nature: "can"
+                }
+            ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
+        },
+        expected_result: [
+            {
+                start_date: "2015-01-08T05:00-08:00",
+                end_date: "2015-01-08T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-09T05:00-08:00",
+                end_date: "2015-01-09T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-10T05:00-08:00",
+                end_date: "2015-01-10T14:00-08:00",
+                constraint_nature: "can"
+            }
+        ]
+    },
+    {
+        name: "Deploy constraints",
+        should: "returns deployed when CUSTOM is set, times sets, timezone set",
+        test_result: function () {
+            return ConstraintTile.deployConstraints([
+                {
+                    start_time: "05:00",
+                    end_time: "14:00",
+                    dates: ["2015-01-10", "2015-01-08", "2015-01-09", "2015-01-12"],
+                    timezone: "America/Los_Angeles",
+                    constraint_when_nature: "custom",
+                    constraint_nature: "can"
+                }
+            ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
+        },
+        expected_result: [
+            {
+                start_date: "2015-01-08T05:00-08:00",
+                end_date: "2015-01-08T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-09T05:00-08:00",
+                end_date: "2015-01-09T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-10T05:00-08:00",
+                end_date: "2015-01-10T14:00-08:00",
+                constraint_nature: "can"
+            },
+            {
+                start_date: "2015-01-12T05:00-08:00",
+                end_date: "2015-01-12T14:00-08:00",
                 constraint_nature: "can"
             }
         ]

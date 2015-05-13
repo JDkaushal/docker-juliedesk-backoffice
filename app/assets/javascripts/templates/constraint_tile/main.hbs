@@ -1,93 +1,86 @@
-<div class="constraint-tile">
+<div class="constraint-tile input-like">
+    <div class="constraint-editing-container">
     <div class="constraint-attendee-container constraint-entry-container">
         <div class="constraint-label">Who</div>
         <select class="constraint-attendee-email"></select>
     </div>
     <div class="constraint-nature-container constraint-entry-container">
-        <div class="constraint-label">Nature</div>
-        <select class="constraint-nature">
-            <option value="cant">Can't</option>
-            <option value="can">Can only</option>
-            <option value="prefers">Prefers</option>
-        </select>
+        <div class="constraint-nature-selector custom-selector input-like">
+            <div class="nature-option" data-value="cant">Can't</div>
+            <div class="nature-option selected" data-value="can">Can only</div>
+            <div class="nature-option" data-value="prefers">Prefers</div>
+        </div>
     </div>
 
     <div class="constraint-dates-container constraint-entry-container">
         <div class="constraint-label">When</div>
-        <select class="constraint-when-nature">
-            <option value="this-week">This week</option>
-            <option value="next-week">Next week</option>
-            <option value="from-date">From date</option>
-            <option value="always">Always</option>
-            <option value="custom">Custom</option>
-        </select>
 
-        <div class="constraints-start-end-recurring-container">
-            <input class="constraint-start-recurring"/>
-            <span>to</span>
-            <input class="constraint-end-recurring"/>
+
+        <div class="constraint-when-nature-selector custom-selector input-like">
+            <div class="nature-option selected" data-value="custom">Custom</div>
+            <div class="nature-option" data-value="from_date">From</div>
+            <div class="nature-option" data-value="range">Range</div>
+            <div class="nature-option" data-value="always">Always</div>
+        </div>
+
+        <div class="constraint-calendar-tile-container">
+
         </div>
 
         <div class="constraint-dates-days-of-week-container">
-            <div class="day-of-week">
-                <input type="checkbox" value="0" checked/> <span></span>
+            <div class="quick-selector-container">
+                <div class="quick-selector input-like"></div>
             </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="1" checked/> <span></span>
-            </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="2" checked/> <span></span>
-            </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="3" checked/> <span></span>
-            </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="4" checked/> <span></span>
-            </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="5" checked/> <span></span>
-            </div>
-            <div class="day-of-week">
-                <input type="checkbox" value="6" checked/> <span></span>
-            </div>
-            <div class="quick-selectors">
-                <div class="unselect-all">Unselect all</div>
-                <div class="select-all">Select all</div>
-            </div>
+
+            <div class="day-of-week input-like" data-value="0">Sun</div>
+            <div class="day-of-week input-like" data-value="1">Mon</div>
+            <div class="day-of-week input-like" data-value="2">Tue</div>
+            <div class="day-of-week input-like" data-value="3">Wed</div>
+            <div class="day-of-week input-like" data-value="4">Thu</div>
+            <div class="day-of-week input-like" data-value="5">Fri</div>
+            <div class="day-of-week input-like" data-value="6">Sat</div>
         </div>
 
       </div>
 
     <div class="constraint-dates-container constraint-entry-container">
-        <div class="constraint-label">Time</div>
+
         <div class="constraint-start-time-end-time-container">
-            <select class="constraint-start-time-end-time-nature">
-                <option value="all-day">All day</option>
-                <option value="custom">Custom</option>
-            </select>
+
+            <div class="constraint-start-time-end-time-nature-selector custom-selector input-like">
+                <div class="nature-option selected" data-value="all_day">All day</div>
+                <div class="nature-option" data-value="morning">Morning</div>
+                <div class="nature-option" data-value="afternoon">Afternoon</div>
+                <div class="nature-option" data-value="custom">Custom</div>
+            </div>
 
             <div class="constraint-start-hours-end-hours-container">
-                <input class="constraint-start-hours"/> h <input class="constraint-start-minutes"/>
+                <div class="constraint-label">Time</div>
+                <br>
+                <input class="constraint-start-hours"/><span class="constraint-time-separator"> h </span><input class="constraint-start-minutes"/>
                 To
-                <input class="constraint-end-hours"/> h <input class="constraint-end-minutes"/>
+                <input class="constraint-end-hours"/><span class="constraint-time-separator"> h </span><input class="constraint-end-minutes"/>
 
-                <div class="quick-time-selectors">
-                    <div class="select-morning">Morning</div>
-                    <div class="select-afternoon">Afternoon</div>
-                </div>
+
 
                 <div class="timezone-container">
-                    Timezone: <input class="timezone"/>
+                    <div class="constraint-label">Timezone:</div>
+                    <br>
+                    <input class="timezone"/>
                 </div>
 
             </div>
         </div>
     </div>
 
+    </div>
+
     <div class="constraint-sentence"></div>
 
-
-    <div class="remove-constraint-button-container">
+    <div class="constraint-buttons-container">
+        <div class="expand-constraint-button btn btn-default btn-xs">Expand</div>
+        <div class="minimize-constraint-button btn btn-default btn-xs">Minimize</div>
+        <div class="clone-constraint-button btn btn-default btn-xs">Clone</div>
         <div class="remove-constraint-button btn btn-danger btn-xs">Remove</div>
     </div>
 

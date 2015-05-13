@@ -34,34 +34,11 @@
 
 
         _.each(window.threadComputedData.constraints_data, function(constraintData) {
-            var possibleAttendees = window.getInfoPanelAttendees();
-            possibleAttendees.push({
-                email: window.threadAccount.email,
-                name: window.threadAccount.full_name
-            });
-
-            $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
-            new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
-                possibleAttendees: possibleAttendees,
-                data: constraintData,
-                locale: "<%= I18n.locale %>",
-                timezone: window.threadAccount.default_timezone_id
-            });
+            newConstraintTile(constraintData, false);
         });
 
         $(".add-constraint-button").click(function() {
-            var possibleAttendees = window.getInfoPanelAttendees();
-            possibleAttendees.push({
-                email: window.threadAccount.email,
-                name: window.threadAccount.full_name
-            });
-
-            $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
-            new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
-                possibleAttendees: possibleAttendees,
-                locale: "<%= I18n.locale %>",
-                timezone: window.threadAccount.default_timezone_id
-            });
+            newConstraintTile(null, true    );
         });
 
         redrawLinearForm();
@@ -231,6 +208,26 @@
         }
         return null;
     };
+
+    function newConstraintTile(data, expand) {
+        var possibleAttendees = window.getInfoPanelAttendees();
+        possibleAttendees.push({
+            email: window.threadAccount.email,
+            name: window.threadAccount.full_name
+        });
+
+        $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
+        new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
+            possible_attendees: possibleAttendees,
+            locale: "<%= I18n.locale %>",
+            timezone: window.threadAccount.default_timezone_id,
+            data: data,
+            expand: expand,
+            cloneCallback: function(data) {
+                newConstraintTile(data, true);
+            }
+        });
+    }
 
 
     function redrawDifferentTimezoneWarner() {

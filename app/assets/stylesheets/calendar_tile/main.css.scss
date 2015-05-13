@@ -1,0 +1,156 @@
+.calendar-tile {
+  border: 1px solid #ccc;
+  //width: 322px;
+  height: 250px;
+
+  width: 329px;
+  margin: 0 0 0 -4px;
+  position: relative;
+
+  * {
+    @include user-select(none);
+  }
+
+
+  .disabled-cache {
+    display: none;
+    position: absolute;
+    background: transparent;
+    top: 30px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 2;
+  }
+  &.disabled {
+    .disabled-cache {
+      display: block;
+    }
+  }
+
+  .calendar-tile-header {
+    position: relative;
+    height: 30px;
+    border-bottom: 1px solid #eee;
+    .month-container {
+      text-align: center;
+      line-height: 30px;
+    }
+    .back-button, .next-button {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 26px;
+      height: 26px;
+      line-height: 26px;
+      text-align: center;
+      @include border-radius(13px);
+      cursor: pointer;
+
+      &.next-button {
+        left: auto;
+        right: 2px;
+      }
+
+      &:hover {
+        background: $darkBlue;
+        color: white;
+      }
+    }
+  }
+
+  .day-names-container {
+    width: 320px;
+    height: 30px;
+    padding: 5px 0 5px 40px;
+
+    .day-name {
+      float: left;
+      width: 40px;
+      height: 20px;
+      font-size: 12px;
+      text-align: center;
+      line-height: 20px;
+      color: #666;
+    }
+  }
+
+
+  .days-container {
+    width: 320px;
+    height: 150px;
+
+    .week-container {
+      .week-selector-container {
+        float: left;
+        width: 40px;
+        height: 30px;
+        color: white;
+        padding: 5px;
+        text-align: center;
+
+        .week-selector {
+          color: white;
+          border: 1px solid #ccc;
+          width: 20px;
+          height: 20px;
+          display: inline-block;
+          @include border-radius(10px);
+          cursor: pointer;
+
+          &:hover {
+            background: #fafafa;
+          }
+          &.selected {
+            background: $darkBlue;
+            border-color: $darkBlue;
+          }
+        }
+      }
+
+      .day {
+        float: left;
+        width: 36px;
+        height: 26px;
+        text-align: center;
+        line-height: 26px;
+        margin: 2px;
+        color: #666;
+        cursor: pointer;
+        @include border-radius(2px);
+
+
+
+        &.other-month {
+          color: #ddd;
+        }
+        &.today {
+          font-weight: 200;
+          font-size: 20px;
+          line-height: 26px;
+          color: $darkBlue;
+        }
+
+
+
+        &:hover:not(.implicit-selected):not(.selected) {
+          background: #eee;
+          color: #666;
+        }
+
+        &.implicit-selected {
+          background: $darkBlue;
+          color: white;
+        }
+
+        &.selected {
+          background: $darkBlue;
+          color: white;
+        }
+
+
+      }
+    }
+
+  }
+}

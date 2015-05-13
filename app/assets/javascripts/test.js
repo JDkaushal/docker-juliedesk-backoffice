@@ -71,5 +71,4 @@
 //= require tests/give_info_classification_form
 //= require tests/ask_cancel_appointment_classification_form
 //= require tests/templates
-
-
+//= require tests/constraint_tile

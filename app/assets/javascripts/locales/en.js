@@ -167,10 +167,13 @@ window.wordings['en'] = {
         prefers: "prefers",
         from: "from",
         to: "to",
+        from_date: "from",
+        to_date: "to",
         every_day: "every day",
         on_days: "on",
         starting_on: "from",
-        ending_on: "to"
+        ending_on: "to",
+        invalid_constraint: "Invalid constraint"
     },
     actions: {
         to_do: {

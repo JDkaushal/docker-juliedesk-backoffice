@@ -36,6 +36,7 @@
 //= require event_tile/main
 //= require event_tile/recurrence_form
 //= require constraint_tile/main
+//= require calendar_tile/main
 
 //= require calendar/main
 //= require calendar/fullcalendar
@@ -61,4 +62,5 @@
 //= require message_classification_forms/ask_cancel_appointment
 //= require message_classification_forms/ask_cancel_events
 //= require message_classification_forms/ask_postpone_events
+//= require message_classification_forms/give_preference
 //= require message_classification_forms/give_preference

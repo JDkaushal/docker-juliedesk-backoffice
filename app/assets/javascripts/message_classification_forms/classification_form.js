@@ -97,6 +97,16 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
 window.classificationForms.classificationForm.prototype.sendForm = function () {
     var classificationForm = this;
 
+    var errorInConstraintTiles = false;
+    $(".constraint-tile-container").each(function () {
+        errorInConstraintTiles = errorInConstraintTiles || ($(this).data("constraint") == null);
+    });
+    if(errorInConstraintTiles) {
+        alert("Please fix incorrect constraints");
+        $(".submit-classification").removeAttr('disabled');
+        return;
+    }
+
     var data = {
         locale: $("input[name='locale']:checked").val(),
         timezone: $("#timezone").val(),

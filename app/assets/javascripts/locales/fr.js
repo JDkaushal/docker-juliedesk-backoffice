@@ -168,10 +168,13 @@ window.wordings['fr'] = {
         prefers: "préfère",
         from: "de",
         to: "à",
+        from_date: "à partir du",
+        to_date: "jusqu'au",
         every_day: "tous les jours",
         on_days: "le",
         starting_on: "du",
-        ending_on: "au"
+        ending_on: "au",
+        invalid_constraint: "Contrainte non-valide"
     },
     actions: {
         to_do: {

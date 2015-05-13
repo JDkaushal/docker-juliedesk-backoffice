@@ -91,13 +91,16 @@
             processTestsRecap();
         }
         else {
+
+
             var $testCategory = $("<div>").addClass("test-category");
             currentTestCategory = _.keys(allInputTests)[testCategoryIndex];
             $("#test-js").append($testCategory);
             processNextTest(allInputTests[currentTestCategory], 0, $(".test-category").last(), function() {
                 var $testCategory = $(".test-category").last();
                 var $test = $("<div>").addClass("test global-category");
-                $test.append($("<div>").addClass("test-category-name").html(currentTestCategory));
+                $test.append($("<a>").addClass("test-category-name").attr("href", "?test=" + currentTestCategory).html(currentTestCategory));
+
                 var testInCategoryCount = $testCategory.find(".test").length;
                 var failedTestsInCategoryCount = $testCategory.find(".test.incorrect").length;
                 if(failedTestsInCategoryCount == 0) {
@@ -117,8 +120,16 @@
         <% if params[:test] %>
             var keys=<%== params[:test].split(",").to_json %>;
             currentTestCategory = keys[0];
-            currentTestIndex = parseInt(keys[1], 10)
-            processTest(allInputTests[currentTestCategory][currentTestIndex], $("#test-js"), function() {});
+            if(keys.length == 2) {
+                currentTestIndex = parseInt(keys[1], 10);
+                processTest(allInputTests[currentTestCategory][currentTestIndex], $("#test-js"), function() {});
+            }
+            else if(keys.length==1) {
+                allInputTests = {};
+                allInputTests[currentTestCategory] = window.tests[currentTestCategory];
+
+                processNextTestCategory(0);
+            }
         <% else %>
             processNextTestCategory(0);
         <% end %>
@@ -155,7 +166,9 @@
     .test-category-name {
         padding: 10px;
         font-size: 20px;
-        display: inline-blocck;
+        display: inline-block;
+        text-decoration: none !important;
+        color: white !important;
     }
     .test-title {
         display: block;
