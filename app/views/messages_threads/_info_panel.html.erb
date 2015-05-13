@@ -82,6 +82,8 @@
         }
         else {
             $(".data input, .data textarea, .data select").prop('disabled', true);
+            $(".data .input-like").addClass('disabled');
+
             $(".data-entry .add-attendee-container").hide();
             $(".linear-form-entry .validate-linear-form-entry-button").hide();
             $(".send-to-founders-container").hide();
@@ -97,6 +99,30 @@
                     askNextLinearFormEntry();
             }
             redrawDifferentTimezoneWarner();
+        });
+
+        $(".change-account-init-button").click(function() {
+            $(this).hide();
+            $(".change-account-container").show();
+        });
+
+        $(".change-account-button").click(function() {
+            $(".change-account-spinner").css({display: "block"});
+            $(".change-account-container").hide();
+            $.ajax({
+                url: "/messages_threads/<%= messages_thread.id %>/associate_to_account",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    account_email: $("select#change-account-input").val()
+                }),
+                success: function() {
+                    window.location = window.location;
+                },
+                error: function () {
+                    window.location = window.location;
+                }
+            })
         });
 
 
@@ -118,7 +144,9 @@
         });
 
 
-        $("#current_notes").height($("#current_notes")[0].scrollHeight);
+        if($("#current_notes").length > 0) {
+            $("#current_notes").height($("#current_notes")[0].scrollHeight);
+        }
 
 
 
@@ -505,10 +533,25 @@
     <div class="account">
       <% account = messages_thread.account %>
       <% if account %>
-          <%= account.usage_name %> (<%= messages_thread.account.email %>)
+          <div class="full-name"><%= account.full_name %></div>
+          <div class="account-email"><%= messages_thread.account.email %></div>
+          <% if account.company_hash %>
+          <div class="change-account-init-button">Change</div>
+          <%= image_tag "ajax-loader.gif", class: "change-account-spinner" %>
+          <div class="change-account-container">
+            <select id="change-account-input">
+                <% account.contacts_from_same_company.each do |contact| %>
+                    <option value="<%= contact[:email] %>"><%= contact[:name] %> - <%= contact[:email] %></option>
+                <% end %>
+            </select>
+            <div class="change-account-button btn btn-sm btn-success">Change</div>
+          </div>
+          <% end %>
           <div class="account-details">
             <%= simple_format account.client_info %>
-            <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
+            <%if account.current_notes.present? %>
+                <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
+            <% end %>
           </div>
           <div class="other-accounts">
             <div class="other-accounts-title">Other accounts</div>

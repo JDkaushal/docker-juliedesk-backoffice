@@ -150,17 +150,58 @@
     font-size: 16px;
     word-break: break-word;
 
+    .full-name {
+      font-size: 16px;
+    }
+
+    .account-email {
+      font-size: 14px;
+    }
+
+    .company {
+      font-size: 12px;
+    }
+
     .account-details {
       font-size: 12px;
 
       textarea#current_notes {
         resize: none;
-        width: 100%;
-        font-weight: 600;
-        font-size: 12px;
+        width: 350px;
+        font-weight: 400;
+        font-size: 14px;
         color: #444;
-        background: #CBEDFF;
+        margin: 5px -10px;
+        background: rgb(255, 204, 126);
+        @include border-radius(0);
         border: none;
+      }
+    }
+
+    .change-account-init-button {
+      color: $darkBlue;
+      text-decoration: underline;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .change-account-spinner {
+      width: 20px;
+      margin: 20px auto;
+      display: none;
+    }
+    .change-account-container {
+      margin: 10px -10px;
+      padding: 10px;
+      background: #fafafa;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      display: none;
+
+      select#change-account-input {
+        width: 250px;
+        vertical-align: top;
+        position: relative;
+        top: 4px;
       }
     }
 
