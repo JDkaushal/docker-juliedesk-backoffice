@@ -1,35 +1,44 @@
 .calendar-container {
-  .calendar-header-settings {
+  .calendar-header-settings-positionner {
     position: absolute;
-    right: 200px;
-    height: 30px;
-    line-height: 30px;
     top: 10px;
-    width: 400px;
-    text-align: right;
-    z-index: 10;
+    right: 200px;
+    width: 0;
+    height: 0;
 
-    .meeting-duration-label {
-      font-size: 13px;
-      padding: 0 10px 0 0px;
-    }
+    .calendar-header-settings {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      height: 0px;
+      line-height: 30px;
+      width: 400px;
+      text-align: right;
+      z-index: 10;
 
-    select {
-      font-size: 16px;
-      background-color: transparent;
-      border: 1px solid transparent;
-      outline: none;
-      width: 200px;
+      .meeting-duration-label {
+        font-size: 13px;
+        padding: 0 10px 0 0px;
+      }
 
-      &:hover {
-        border-color: #ddd;
-        background-color: #fafafa;
+      select {
+        font-size: 16px;
+        background-color: transparent;
+        border: 1px solid transparent;
+        outline: none;
+        width: 200px;
+
+        &:hover {
+          border-color: #ddd;
+          background-color: #fafafa;
+        }
+      }
+
+      .calendar-timezone-label {
+        font-size: 13px;
+        padding: 0 10px 0 20px;
       }
     }
-
-    .calendar-timezone-label {
-      font-size: 13px;
-      padding: 0 10px 0 20px;
-    }
   }
+
 }
