@@ -106,6 +106,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 end: request.end,
                 start_timezone: request.start_timezone,
                 end_timezone: request.end_timezone,
+                utc_offset: request.utc_offset,
                 recurrence: request.recurrence
             }),
             success: function(e) {
@@ -142,6 +143,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 end: request.end,
                 start_timezone: request.start_timezone,
                 end_timezone: request.end_timezone,
+                utc_offset: request.utc_offset,
                 recurrence: request.recurrence
             }),
             success: function(e) {

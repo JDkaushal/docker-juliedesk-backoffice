@@ -300,7 +300,8 @@ EventTile.prototype.getEditedEvent = function() {
                 return rule.length > 0;
             }),
         start_timezone: eventTile.getTimezoneId(),
-        end_timezone: eventTile.getTimezoneIdForEndDate()
+        end_timezone: eventTile.getTimezoneIdForEndDate(),
+        utc_offset: mStart.zone() / 60.0
     }
 };
 EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
@@ -493,6 +494,7 @@ EventTile.prototype.saveEvent = function() {
     var eventTile = this;
     var editedEvent = eventTile.getEditedEvent();
 
+
     if(eventTile.event.beingAdded) {
         eventTile.showSpinner();
         CommonHelpers.externalRequest({
@@ -509,6 +511,7 @@ EventTile.prototype.saveEvent = function() {
             end: editedEvent.end.format(),
             start_timezone: editedEvent.start_timezone,
             end_timezone: editedEvent.end_timezone,
+            utc_offset: editedEvent.utc_offset,
             recurrence: editedEvent.recurrence
         }, function(response) {
             if(response.status == "success") {
@@ -553,6 +556,7 @@ EventTile.prototype.saveEvent = function() {
             end: editedEvent.end.format(),
             start_timezone: editedEvent.start_timezone,
             end_timezone: editedEvent.end_timezone,
+            utc_offset: editedEvent.utc_offset,
             recurrence: editedEvent.recurrence
         }, function(response) {
             if(response.status == "success") {
