@@ -178,6 +178,7 @@ Calendar.prototype.fullCalendarInit = function() {
         snapDuration: {minutes: 15},
         scrollTime:'09:00:00',
         height: calendar.initialData.height,
+        allDayMaxHeight: 120,
         selectable: true,
         selectHelper: true,
         defaultView:'agendaWeek',

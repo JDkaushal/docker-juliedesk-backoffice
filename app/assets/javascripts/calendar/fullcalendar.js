@@ -2034,12 +2034,15 @@ function lazySegBind(container, segs, bindHandlers) {
 			e = parent;
 			parent = parent.parentNode;
 		}
-		if ((i = e._fci) !== undefined) {
-			e._fci = undefined;
-			seg = segs[i];
-			bindHandlers(seg.event, seg.element, seg);
-			$(ev.target).trigger(ev);
-		}
+        if( e !== undefined )
+        {
+            if ((i = e._fci) !== undefined) {
+                e._fci = undefined;
+                seg = segs[i];
+                bindHandlers(seg.event, seg.element, seg);
+                $(ev.target).trigger(ev);
+            }
+        }//if( e !== undefined )
 		ev.stopPropagation();
 	});
 }
@@ -3810,9 +3813,16 @@ function AgendaView(element, calendar, viewName) {
 			$("<div style='position:absolute;z-index:2;left:0;width:100%; border-top-style: solid; border-top-width: 1; border-top-color: #ddd;'/>").appendTo(element);
 				
 		if (opt('allDaySlot')) {
+
+            var daySegmentContainerAdditionalStyle = "";
+            var dayContentAdditionalStyle = "";
+            if(opt('allDayMaxHeight')) {
+                daySegmentContainerAdditionalStyle = "max-height:" + opt('allDayMaxHeight') + "px;overflow-y:auto;overflow-x:hidden;height:100%;width:100%;";
+                dayContentAdditionalStyle = "max-height:" + opt('allDayMaxHeight') + "px";
+            }
 		
 			daySegmentContainer =
-				$("<div class='fc-event-container' style='position:absolute;z-index:8;top:0;left:0'/>")
+				$("<div class='fc-event-container' style='position:absolute;z-index:8;top:0;left:0;" + daySegmentContainerAdditionalStyle + "'/>")
 					.appendTo(slotLayer);
 		
 			s =
@@ -3825,7 +3835,7 @@ function AgendaView(element, calendar, viewName) {
 				) +
 				"</th>" +
 				"<td>" +
-				"<div class='fc-day-content'><div style='position:relative'/></div>" +
+				"<div class='fc-day-content' style='" + dayContentAdditionalStyle + "'><div style='position:relative'/></div>" +
 				"</td>" +
 				"<th class='" + headerClass + " fc-agenda-gutter'>&nbsp;</th>" +
 				"</tr>" +
@@ -4061,6 +4071,8 @@ function AgendaView(element, calendar, viewName) {
 		}
 		viewHeight = height;
 		slotTopCache = {};
+
+
 	
 		var headHeight = dayBody.position().top;
 		var allDayHeight = slotScroller.position().top; // including divider
@@ -4069,10 +4081,11 @@ function AgendaView(element, calendar, viewName) {
 			slotTable.height() + allDayHeight + 1 // when no scrollbars. +1 for bottom border
 		);
 
+
 		dayBodyFirstCellStretcher
 			.height(bodyHeight - vsides(dayBodyFirstCell));
-		
-		slotLayer.css('top', headHeight);
+
+        slotLayer.css('top', headHeight);
 		
 		slotScroller.height(bodyHeight - allDayHeight - 1);
 		
