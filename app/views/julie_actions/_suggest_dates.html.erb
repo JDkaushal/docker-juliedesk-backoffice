@@ -7,6 +7,7 @@
     })[0];
 
     $(function() {
+
         window.activateCalendarWithParams({
             mode: "suggest_dates",
             date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|

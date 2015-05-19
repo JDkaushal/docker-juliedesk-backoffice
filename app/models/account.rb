@@ -82,7 +82,7 @@ class Account
     info += "\nLandline: #{self.landline_number}" if self.landline_number.present?
     info += "\nSkype: #{self.skype}" if self.skype.present?
     info += "\nMeans of transport: #{self.means_of_transport}" if self.means_of_transport.present?
-    office_address = self.addresses.select{|addr| addr['type'] == "office"}.map{|add| add['address']}.first
+    office_address = self.addresses.select{|addr| addr['kind'] == "office"}.map{|add| add['address']}.first
     info += "\nOffice: #{office_address}" if office_address.present?
 
     info
