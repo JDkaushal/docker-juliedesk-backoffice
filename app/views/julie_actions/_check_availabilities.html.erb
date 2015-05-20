@@ -21,6 +21,8 @@
         %>";
 
     $(function () {
+        window.setReplyMessage("");
+
         $(".messages-thread-info-panel .create-event-panel").show();
         if(window.threadComputedData.client_agreement) {
             $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Create event");
