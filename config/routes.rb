@@ -24,6 +24,8 @@ Rails.application.routes.draw do
   resources :messages, only: [:show] do
     member do
       get "classifying/:classification", action: :classifying, as: :classifying
+      post "classifying/:classification", action: :classifying
+
       get "wait_for_preference_change", action: :wait_for_preference_change
       post "classify", action: :classify, as: :classify
       post "mark_as_read", action: :mark_as_read, as: :mark_as_read

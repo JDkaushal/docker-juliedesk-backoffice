@@ -46,6 +46,7 @@
     <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
+      <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
 
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>

@@ -176,6 +176,14 @@
         @include border-radius(0);
         border: none;
       }
+      .to-founders-message-div {
+        font-weight: 400;
+        font-size: 14px;
+        color: white;
+        margin: 5px -10px;
+        padding: 20px 10px;
+        background: #F00000;
+      }
     }
 
     .change-account-init-button {

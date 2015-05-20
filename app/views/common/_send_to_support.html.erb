@@ -1,0 +1,42 @@
+<script>
+    $(function () {
+        $(".send-to-support-button").click(function () {
+            $(".send-to-support-overlay textarea#send_to_support_message").val("");
+            $(".send-to-support-overlay-container").fadeIn(200);
+            $(".send-to-support-overlay textarea#send_to_support_message").focus();
+        });
+
+        $('body').append($(".send-to-support-overlay-container"));
+
+        $(".send-to-support-overlay .send-to-support-cancel").click(function () {
+            $(".send-to-support-overlay-container").fadeOut(100, function () {
+
+            });
+        });
+        $(".send-to-support-overlay .send-to-support-submit").click(function () {
+
+        });
+    });
+</script>
+<div class="send-to-support-button btn btn-success btn-sm">Send to support</div>
+
+<div class="send-to-support-overlay-container">
+  <div class="send-to-support-overlay">
+    <div class="send-to-support-title">Send to support</div>
+
+    <% message_id = local_assigns[:messages_thread].messages.last.id %>
+        <%= form_tag url_for({ controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::TO_FOUNDERS }) do |f| %>
+        <textarea id="send_to_support_message" name="to_founders_message"></textarea>
+
+        <div class="send-to-support-buttons">
+          <div class="btn btn-default send-to-support-cancel">Cancel</div>
+
+
+
+          <%= submit_tag I18n.t("info_box.send_to_founders"), class: "btn btn-success send-to-support-submit" %>
+
+
+        </div>
+    <% end %>
+  </div>
+</div>

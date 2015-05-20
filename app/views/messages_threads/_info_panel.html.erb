@@ -77,7 +77,6 @@
             $(".data input#private").prop('disabled', true);
             <% end %>
             $(".data textarea#notes").prop('disabled', true);
-            $(".send-to-founders-container").show();
             $(".add-constraint-button").show();
         }
         else {
@@ -86,7 +85,6 @@
 
             $(".data-entry .add-attendee-container").hide();
             $(".linear-form-entry .validate-linear-form-entry-button").hide();
-            $(".send-to-founders-container").hide();
             $(".add-constraint-button").hide();
         }
         if (window.afterFormLoadedCallback) {
@@ -552,6 +550,11 @@
             <%if account.current_notes.present? %>
                 <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
             <% end %>
+            <% if @messages_thread.to_founders_message.present? %>
+                <div class="to-founders-message-div">
+                  <%= @messages_thread.to_founders_message %>
+                </div>
+            <% end %>
           </div>
           <div class="other-accounts">
             <div class="other-accounts-title">Other accounts</div>
@@ -596,10 +599,6 @@
           </div>
           <div class="forbidden">
               <%= I18n.t("info_box.forbidden_different_timezones") %>
-              <br><br>
-              <% if local_assigns[:message] %>
-                    <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action btn btn-default" %>
-              <% end %>
           </div>
         </div>
       </div>
@@ -700,13 +699,6 @@
         <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
       </div>
 
-      <% if local_assigns[:message] %>
-          <div class="send-to-founders-container">
-            <%= I18n.t("info_box.an_hesitation") %>
-            <br>
-            <%= link_to I18n.t("info_box.send_to_founders"), {controller: :messages, action: :classifying, id: local_assigns[:message].id, classification: MessageClassification::TO_FOUNDERS}, class: "action", disabled: MessageClassification.is_disabled(message, MessageClassification::TO_FOUNDERS) %>
-          </div>
-      <% end %>
     </div>
   </div>
 

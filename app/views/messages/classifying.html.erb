@@ -23,6 +23,7 @@
 
     <div class="julie-action-fantom"></div>
     <div class="messages-thread-emails">
+      <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
 
       <div id="back-button" class="btn btn-link">< <%= I18n.t("common.back")%></div>
 

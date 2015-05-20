@@ -15,7 +15,10 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::TO_FOUNDERS
-      @message.messages_thread.update_attribute :delegated_to_founders, true
+      @message.messages_thread.update_attributes({
+                                                     delegated_to_founders: true,
+                                                     to_founders_message: params[:to_founders_message]
+                                                 })
       @message.messages_thread.google_thread.modify(["Label_12"], [])
       redirect_to messages_threads_path
     end
