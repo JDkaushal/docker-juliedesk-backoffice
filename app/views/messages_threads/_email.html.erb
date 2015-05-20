@@ -35,8 +35,17 @@
                 window.location = $(this).attr('href') + "?started_at=" + window.startedAt;
             }
         });
-        $email.find("blockquote, .gmail_quote").click(function(e) {
-            $email.find("blockquote, .gmail_quote").addClass("expanded");
+
+        var $expandQuotes = $("<div>").html("...").addClass("expand-quotes-button");
+        $email.find("blockquote, .gmail_quote").first().before($expandQuotes);
+
+        $email.find(".expand-quotes-button").click(function(e) {
+            if($email.find("blockquote.expanded, .gmail_quote.expanded").length > 0) {
+                $email.find("blockquote, .gmail_quote").removeClass("expanded");
+            }
+            else {
+                $email.find("blockquote, .gmail_quote").addClass("expanded");
+            }
         });
 
         <% if email.unread? %>
