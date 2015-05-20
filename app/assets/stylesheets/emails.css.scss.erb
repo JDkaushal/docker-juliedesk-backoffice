@@ -54,6 +54,7 @@
 
     .extended {
         display: none;
+        background: white;
 
         .retractable {
             cursor: pointer;
@@ -63,9 +64,16 @@
     &.extended {
         .extended {
             display: block;
+            position: relative;
+            z-index: 2;
         }
         .retracted {
-            display: none;
+            /*display: none;*/
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
         }
     }
 

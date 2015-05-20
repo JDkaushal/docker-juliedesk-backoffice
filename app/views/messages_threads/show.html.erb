@@ -6,6 +6,7 @@
 
         $(".split-thread-button").click(function () {
             $(".messages-thread-emails").addClass("splitting");
+            $(".messages-thread-emails .email").removeClass("extended");
         });
 
         $(".cancel-split-button").click(function () {
