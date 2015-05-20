@@ -61,6 +61,7 @@
 //= require message_classification_forms/ask_cancel_appointment
 //= require message_classification_forms/ask_cancel_events
 //= require message_classification_forms/ask_postpone_events
+//= require message_classification_forms/give_preference
 
 
 //= require tests/common

@@ -27,8 +27,8 @@ class MessagesController < ApplicationController
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
-    if @classification == MessageClassification::ASSOCIATE_EVENT ||
-        @classification == MessageClassification::GIVE_PREFERENCE
+    if @classification == MessageClassification::ASSOCIATE_EVENT
+      #|| @classification == MessageClassification::GIVE_PREFERENCE
       render "classifying_admin" and return
     end
   end
@@ -55,6 +55,16 @@ class MessagesController < ApplicationController
     message = Message.find(params[:id])
     params[:operator] = session[:user_username]
     message_classification = message.message_classifications.create_from_params params
+
+    if message_classification.classification == MessageClassification::GIVE_PREFERENCE
+      url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"
+
+      Net::HTTP.post_form(URI.parse(url), {
+          email: message.messages_thread.account_email,
+          awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{message.messages_thread_id})",
+          access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
+      })
+    end
 
     render json: {
         status: "success",

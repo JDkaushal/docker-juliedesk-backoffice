@@ -20,6 +20,9 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "ask_postpone_events") {
         return new window.classificationForms.askPostponeEvents(params);
     }
+    else if (params.classification == "give_preference") {
+        return new window.classificationForms.givePreferenceForm(params);
+    }
     throw "No classification form defined for classification: '" + params.classification + "'";
 };
 

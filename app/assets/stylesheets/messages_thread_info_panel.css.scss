@@ -273,6 +273,7 @@
   .data {
     padding: 50px 0 0 0;
   }
+
     .data-entry {
 
       .semi-data-entry {
@@ -382,6 +383,26 @@
     padding: 10px;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+  }
+
+  .add-preference-panel {
+    display: none;
+
+    .add-preference-data-entry {
+
+      .data-entry-name {
+        font-size: 11px;
+        opacity: 0.8;
+        margin: 10px 0 0 0;
+      }
+
+      textarea#preference_to_add {
+        height: 100px;
+        width: 100%;
+        resize: none;
+        border: 1px solid #ccc;
+      }
+    }
   }
 }
 .associate-to-account-container {

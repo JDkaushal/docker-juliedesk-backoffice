@@ -1,6 +1,6 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport
+  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes
 
   def self.create_from_email email
     #account_email = self.find_account_email email
@@ -20,6 +20,7 @@ class Account
     account.company_hash = data['company_hash']
     account.raw_preferences = data['raw_preferences']
     account.current_notes = data['current_notes']
+    account.awaiting_current_notes = data['awaiting_current_notes']
     account.default_timezone_id = data['default_timezone_id']
     account.locale = data['locale']
     account.mobile_number = data['mobile_number']

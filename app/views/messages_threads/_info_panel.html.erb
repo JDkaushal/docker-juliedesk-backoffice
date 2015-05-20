@@ -547,8 +547,15 @@
           <% end %>
           <div class="account-details">
             <%= simple_format account.client_info %>
-            <%if account.current_notes.present? %>
-                <%= text_area_tag :current_notes, account.current_notes, class: "current-notes form-control", disabled: true %>
+            <%if account.current_notes.present? || account.awaiting_current_notes.present? %>
+                <%
+                   notes = account.current_notes
+                   if account.awaiting_current_notes.present?
+                    notes += "\nAwaiting: #{account.awaiting_current_notes}"
+                   end
+                %>
+
+                <%= text_area_tag :current_notes, notes, class: "current-notes form-control", disabled: true %>
             <% end %>
             <% if @messages_thread.to_founders_message.present? %>
                 <div class="to-founders-message-div">
@@ -700,6 +707,14 @@
       </div>
 
     </div>
+  </div>
+
+  <div class="add-preference-panel">
+      <div class="add-preference-data-entry">
+        <div class="data-entry-name">Note a preference</div>
+        <%= text_area_tag :preference_to_add, messages_thread.account.awaiting_current_notes %>
+      </div>
+    <button class="btn btn-block btn-success submit-add-preference"><%= I18n.t("common.save") %></button>
   </div>
 
   <%= render partial: "messages_threads/dates_identification_panel", locals: {messages_thread: messages_thread} %>
