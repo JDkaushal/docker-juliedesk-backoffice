@@ -1,8 +1,28 @@
+<script>
+  $(function() {
+      $(".sound-activator").click(function() {
+          $(this).toggleClass("activated");
+          var activated = $(this).hasClass("activated");
+              $.ajax({
+                  url: "change_sound",
+                  type: "post",
+                  data: {
+                      activated: activated
+                  }
+              });
+      });
+  });
+</script>
 <div class="header">
+    <div class="sound-activator <%= (session[:sound_is_activated])?"activated":"" %>">
+      <div class="sound-activated"></div>
+      <div class="sound-disactivated"></div>
+    </div>
     <%= link_to "/" do %>
       JulieDesk Backoffice
       <span class="version">2.0</span>
     <% end %>
     <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
+    <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
     <div class="logged-as"><%= I18n.t("common.logged_as", name: session[:user_name]) %></div>
 </div>

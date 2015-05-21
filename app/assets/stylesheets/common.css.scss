@@ -35,6 +35,39 @@ body {
   line-height: 40px;
   font-size: 16px;
   font-weight: 200;
+  .sound-activator {
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    cursor: pointer;
+    opacity: 0.2;
+
+    &:hover {
+      opacity: 0.4;
+    }
+
+    .sound-activated {
+      display: none;
+      background: url("speaker_on.png");
+      width: 30px;
+      height: 30px;
+    }
+    .sound-disactivated {
+      display: block;
+      background: url("speaker_off.png");
+      width: 30px;
+      height: 30px;
+    }
+    &.activated {
+      .sound-activated {
+        display: block;
+      }
+      .sound-disactivated {
+        display: none;
+      }
+    }
+  }
+
   a, a:visited {
     color: #444;
     text-decoration: none!important;

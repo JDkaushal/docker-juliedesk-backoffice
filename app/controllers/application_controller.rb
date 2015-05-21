@@ -7,12 +7,27 @@ class ApplicationController < ActionController::Base
 
   before_filter :authenticate, :set_locale
 
+  skip_before_action :verify_authenticity_token, only: :change_sound
+
   def omniauth_callback
 
     auth = request.env['omniauth.auth']
     render json: {
         message: "hello",
         data: auth["credentials"]
+    }
+  end
+
+  def change_sound
+    session[:sound_is_activated] = false
+    if params[:activated] == "true"
+      session[:sound_is_activated] = true
+    end
+
+    render json: {
+        status: "success",
+        message: "",
+        data: {}
     }
   end
 
@@ -28,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate
-
+    sound_is_activated = session[:sound_is_activated]
     reset_session
     authenticate_or_request_with_http_basic do |username, password|
       operator = Operator.find_by_email(username)
@@ -36,6 +51,8 @@ class ApplicationController < ActionController::Base
         session[:user_username] = operator.email
         session[:user_name] = operator.name
         session[:privilege] = operator.privilege
+
+        session[:sound_is_activated] = sound_is_activated
         return true
       end
 

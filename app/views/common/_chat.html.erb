@@ -32,6 +32,10 @@
             });
         });
         channel.bind('new-email', function (data) {
+            if($("audio#tada-sound").length > 0 && $(".sound-activator.activated").length > 0) {
+                $("audio#tada-sound")[0].play();
+            }
+
             $(".header .global-todo-count").animate({
                 opacity: 0,
                 top: 20

@@ -58,4 +58,6 @@ Rails.application.routes.draw do
   post "pusher/auth/", to: "pusher#auth"
 
   post "webhooks/new_email", to: "webhooks#new_email"
+
+  post "change_sound" => "application#change_sound"
 end
