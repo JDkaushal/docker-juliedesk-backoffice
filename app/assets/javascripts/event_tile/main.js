@@ -556,8 +556,7 @@ EventTile.prototype.saveEvent = function() {
             end: editedEvent.end.format(),
             start_timezone: editedEvent.start_timezone,
             end_timezone: editedEvent.end_timezone,
-            utc_offset: editedEvent.utc_offset,
-            recurrence: editedEvent.recurrence
+            utc_offset: editedEvent.utc_offset
         }, function(response) {
             if(response.status == "success") {
                 eventTile.fetchEvent(function() {
