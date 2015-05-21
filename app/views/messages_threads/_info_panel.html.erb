@@ -551,7 +551,7 @@
                 <%
                    notes = account.current_notes
                    if account.awaiting_current_notes.present?
-                    notes += "\nAwaiting: #{account.awaiting_current_notes}"
+                    notes += "\n#{I18n.t("info_box.new_preferences")} #{account.awaiting_current_notes}"
                    end
                 %>
 

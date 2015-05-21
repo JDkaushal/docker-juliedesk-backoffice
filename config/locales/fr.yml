@@ -374,6 +374,7 @@ fr:
       several_responses: "On attend des réponses de plusieurs personnes"
       one_response: "On attend la réponse d'une seule personne"
     are_we_waiting_for_other_answers: "Attend-on encore d'autres réponses ?"
+    new_preferences: "Nouvelles préférences :"
 
   dates_identifications:
     add_a_date: "Ajouter une date"
