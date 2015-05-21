@@ -33,6 +33,7 @@
         if(window.threadAccount) {
             calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
         }
+        calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
 
         calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
             return data.attendee_email;

@@ -156,7 +156,7 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         var categoryName = email;
         if(categoryName == "undefined") categoryName = "Other";
         $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
-        console.log(groupedCalendars);
+
         $(groupedCalendars[email]).each(function (k, calendarItem) {
 
             var $div = $("<div>").addClass("calendar-item");
@@ -778,8 +778,8 @@ Calendar.prototype.drawExternalEventsList = function () {
 Calendar.prototype.redrawTimeZoneSelector = function () {
     var calendar = this;
 
-    console.log(calendar.calendars);
     var allTimeZones = [];
+    // Add all calendars timezones
     $(calendar.calendars).each(function (k, calendarItem) {
         if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
             if (calendarItem.timezone && allTimeZones.indexOf(calendarItem.timezone) == -1) {
@@ -791,10 +791,24 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
         }
     });
 
+    // Add default timezone if needed
     if(allTimeZones.indexOf(calendar.initialData.default_timezone_id) == -1) {
         calendar.$selector.find("#calendar-timezone").append(
             $("<option>").val(calendar.initialData.default_timezone_id).html(calendar.initialData.default_timezone_id)
         );
+        allTimeZones.push(calendar.initialData.default_timezone_id);
+    }
+
+    // Add additional timezones if needed
+    if(calendar.initialData.additional_timezone_ids) {
+        _.each(calendar.initialData.additional_timezone_ids, function(timezone_id) {
+            if(allTimeZones.indexOf(timezone_id) == -1) {
+                calendar.$selector.find("#calendar-timezone").append(
+                    $("<option>").val(timezone_id).html(timezone_id)
+                );
+                allTimeZones.push(timezone_id);
+            }
+        });
     }
 };
 Calendar.prototype.fetchAccountPreferences = function (callback) {
