@@ -180,13 +180,35 @@ class MessagesThread < ActiveRecord::Base
     google_message_ids = self.messages.select{|m| message_ids.include? m.id}.map(&:google_message_id)
     google_messages = self.google_thread.messages.select{|gm| google_message_ids.include? gm.id}
     updated_thread_id = nil
+
+    messages_thread = nil
+
     google_messages.each do |google_message|
       google_message.threadId = updated_thread_id
       google_message.labelIds = google_message.labelIds.select{|label| label != "SENT"}
       updated_google_message = google_message.insert
       google_message.delete
       updated_thread_id = updated_google_message.thread_id
+
+      # Create messages thread and messages in DB
+      messages_thread ||= MessagesThread.create google_thread_id: updated_thread_id,
+                                                in_inbox: true,
+                                                account_email: self.account_email,
+                                                account_name: self.account_name,
+                                                subject: updated_google_message.subject,
+                                                snippet: updated_google_message.snippet
+
+      messages_thread.messages.create google_message_id: updated_google_message.id,
+                                      received_at: DateTime.parse(updated_google_message.date),
+                                      reply_all_recipients: Message.generate_reply_all_recipients(updated_google_message).to_json,
+                                      from_me: updated_google_message.labelIds.include?("SENT")
     end
+
+
+
+
+
+
   end
 
   def sorted_message_classifications
