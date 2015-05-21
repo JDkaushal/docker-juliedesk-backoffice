@@ -18,9 +18,6 @@
         $email.find(".actions-menu").click(function (e) {
             e.stopPropagation();
         });
-        $email.find("blockquote").click(function (e) {
-            $(this).toggleClass("expanded");
-        });
 
         $email.click(function () {
             if ($(this).closest(".actions-menu").length == 0) {
