@@ -1,1 +1,1 @@
-REDIS = Redis.new(:url => ENV['REDISTOGO_URL'])
+REDIS_FOR_ACCOUNTS_CACHE = Redis.new(:url => ENV['REDIS_URL_FOR_ACCOUNTS_CACHE'])

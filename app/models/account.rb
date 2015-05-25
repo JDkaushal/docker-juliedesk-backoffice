@@ -96,7 +96,7 @@ class Account
   private
 
   def self.accounts_cache
-    JSON.parse(REDIS.get("accounts_cache") || "{}")
+    JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
   end
 
   def self.get_account_details account_email
