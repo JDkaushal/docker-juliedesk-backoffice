@@ -62,3 +62,14 @@
 //= require message_classification_forms/ask_cancel_events
 //= require message_classification_forms/ask_postpone_events
 //= require message_classification_forms/give_preference
+
+
+//= require tests/common
+//= require tests/constraints
+//= require tests/ask_date_suggestions_classification_form
+//= require tests/ask_availabilities_classification_form
+//= require tests/give_info_classification_form
+//= require tests/ask_cancel_appointment_classification_form
+//= require tests/templates
+
+

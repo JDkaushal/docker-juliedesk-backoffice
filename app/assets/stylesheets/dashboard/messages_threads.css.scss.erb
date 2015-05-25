@@ -1,4 +1,6 @@
 .messages-threads-page {
+    padding: 0 0 50px 0;
+    position: relative;
 
     .refresh-container {
         margin: 60px auto 10px auto;
@@ -7,6 +9,11 @@
             margin: 10px auto 10px auto;
             display: block;
             width: 200px;
+            opacity: 0.8;
+
+            &:hover {
+                opacity: 1.0;
+            }
         }
         .spinner {
             margin: 20px auto 10px auto;
@@ -117,115 +124,3 @@
     }
 }
 
-.messages-thread-emails {
-    margin: 30px 0;
-    position: relative;
-
-    .messages-thread-subject {
-        border-bottom: 1px solid #ccc;
-        line-height: 20px;
-        padding: 5px 10px;
-        font-size: 16px;
-        font-weight: 600;
-    }
-    .split-thread-button {
-        position: absolute;
-        top: -30px;
-        right: 130px;
-        width: 120px;
-        height: 32px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-        line-height: 32px;
-        background: transparent;
-        text-align: center;
-        padding: 0;
-        opacity: 0.9;
-
-        &:hover {
-            background: #f0f0f0;
-        }
-    }
-
-    .associate-to-event-button {
-        position: absolute;
-        top: -30px;
-        right: 260px;
-        width: 150px;
-        height: 32px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-        line-height: 32px;
-        background: transparent;
-        text-align: center;
-        padding: 0;
-        opacity: 0.9;
-        text-decoration: none!important;
-        color: #000;
-
-        &:hover {
-            background: #f0f0f0;
-        }
-    }
-
-    .archive-button {
-        position: absolute;
-        top: -30px;
-        right: 0px;
-        width: 120px;
-        height: 32px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-        line-height: 32px;
-        background: transparent;
-        text-align: center;
-        padding: 0;
-
-        &:hover {
-            background: #f0f0f0;
-        }
-    }
-
-    .split-buttons-container {
-        position: absolute;
-        top: -31px;
-        display: none;
-
-        background: white;
-        width: 600px;
-        text-align: right;
-        height: 40px;
-        z-index: 2;
-        right: 0;
-    }
-
-    &.splitting {
-        .split-buttons-container {
-            display: block;
-        }
-        .email .retracted {
-            /*display: block;*/
-        }
-        .email .extended {
-            /*display: none;*/
-        }
-        .email .retracted .checkbox-container {
-            display: block;
-        }
-    }
-}
-
-.unread-emails {
-    position: fixed;
-    bottom: -3px;
-    left: 400px;
-    background: #5895D0;
-    line-height: 20px;
-    padding: 5px 20px 8px 20px;
-    @include border-radius(3px);
-    width: 250px;
-    text-align: center;
-    font-size: 18px;
-    color: white;
-    z-index: 5;
-}

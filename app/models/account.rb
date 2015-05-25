@@ -2,11 +2,11 @@ class Account
 
   attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes
 
-  def self.create_from_email email
+  def self.create_from_email email, params={}
     #account_email = self.find_account_email email
     #return nil unless account_email
     return nil unless email
-    data = get_account_details email
+    data = get_account_details(email, params)
     return nil unless data
     account = self.new
     account.email = data['email']
@@ -93,13 +93,19 @@ class Account
     self.to_json
   end
 
-  private
-
   def self.accounts_cache
     JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
   end
 
-  def self.get_account_details account_email
-    self.accounts_cache[account_email]
+  private
+
+
+
+  def self.get_account_details account_email, params={}
+    if params[:accounts_cache]
+      params[:accounts_cache][account_email]
+    else
+      self.accounts_cache[account_email]
+    end
   end
 end

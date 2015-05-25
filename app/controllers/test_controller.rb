@@ -1,5 +1,7 @@
 class TestController < ApplicationController
 
+  layout "test"
+
   def js
 
   end

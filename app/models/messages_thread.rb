@@ -6,6 +6,7 @@ class MessagesThread < ActiveRecord::Base
 
   has_many :messages
 
+
   def google_thread params={}
     if @google_thread.nil? || params[:force_refresh]
       @google_thread = Gmail::Thread.get(self.google_thread_id)
@@ -13,9 +14,10 @@ class MessagesThread < ActiveRecord::Base
     @google_thread
   end
 
-  def account
-    @account ||= Account.create_from_email account_email
+  def account params={}
+    @account ||= Account.create_from_email(account_email, params)
   end
+
 
   def julie_alias
     messages.map(&:julie_alias).compact.uniq.first || JulieAlias.find_by_email("julie@juliedesk.com")

@@ -3,8 +3,8 @@
 <head>
   <title>JuliedeskBackoffice</title>
   <%= favicon_link_tag '/favicon.ico' %>
-  <%= stylesheet_link_tag 'application', media: 'all' %>
-  <%= javascript_include_tag 'application' %>
+  <%= stylesheet_link_tag 'dashboard', media: 'all' %>
+  <%= javascript_include_tag 'dashboard' %>
   <%= csrf_meta_tags %>
 
   <script src="//js.pusher.com/2.2/pusher.min.js"></script>
@@ -12,8 +12,6 @@
 <body>
 <%= render partial: "common/chat" %>
 <%= yield %>
-
-<%= render partial: "common/footer" %>
 
 </body>
 </html>

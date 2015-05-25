@@ -154,8 +154,6 @@
     });
 </script>
 
-<% count = MessagesThread.items_to_classify_count %>
-
 <div class="fixed-columns full">
   <div class="left-column">
 
@@ -172,11 +170,13 @@
 
 
       <div class="nothing-to-do">
-        <%= image_tag "smiley.png" %>
+        <div class="smiley"></div>
         <div><%= I18n.t("index.nothing_to_do") %></div>
       </div>
 
       <div class="messages-threads-container"></div>
+
+      <%= render partial: "common/footer" %>
     </div>
   </div>
 </div>

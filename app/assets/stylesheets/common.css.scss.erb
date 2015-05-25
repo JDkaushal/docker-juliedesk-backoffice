@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700,600,500,400,300,200,100);
+@import "common/*.png";
 $pink: #f4416d;
 $darkGrey: #494242;
 
@@ -22,86 +23,7 @@ body {
   background-color: $darkBlue;
   border-color: $darkBlue;
 }
-.header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 40px;
-  border-bottom: 1px solid #ccc;
-  background: #f5f5f5;
-  padding: 0 0 0 100px;
 
-  line-height: 40px;
-  font-size: 16px;
-  font-weight: 200;
-  .sound-activator {
-    position: absolute;
-    left: 10px;
-    top: 5px;
-    cursor: pointer;
-    opacity: 0.2;
-
-    &:hover {
-      opacity: 0.4;
-    }
-
-    .sound-activated {
-      display: none;
-      background: url(<%= asset_path "speaker_on.png" %>);
-      width: 30px;
-      height: 30px;
-    }
-    .sound-disactivated {
-      display: block;
-      background: url(<%= asset_path "speaker_off.png" %>);
-      width: 30px;
-      height: 30px;
-    }
-    &.activated {
-      .sound-activated {
-        display: block;
-      }
-      .sound-disactivated {
-        display: none;
-      }
-    }
-  }
-
-  a, a:visited {
-    color: #444;
-    text-decoration: none!important;
-
-    span.version {
-      font-size: 10px;
-      color: #aaa;
-      padding: 0 10px 0 5px;
-    }
-  }
-
-  .global-todo-count {
-    background: #fff;
-    width: 30px;
-    display: inline-block;
-    height: 20px;
-    color: #999;
-    position: relative;
-    margin: 0px 0 0 5px;
-    line-height: 20px;
-    text-align: center;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    top: 0px;
-    border: 1px solid #ccc;
-  }
-  .logged-as {
-    position: absolute;
-    top: 0;
-    right: 10px;
-    font-size: 12px;
-  }
-}
 
 .fixed-columns {
   padding-right: 350px;

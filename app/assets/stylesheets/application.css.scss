@@ -6,10 +6,12 @@
 
 
 @import "common";
+@import "header";
+
 @import "events";
 @import "emails";
 @import "messages";
-@import "messages_threads";
+@import "messages_thread_show";
 @import "julie_actions";
 @import "messages_thread_info_panel";
 @import "created_event_panel";

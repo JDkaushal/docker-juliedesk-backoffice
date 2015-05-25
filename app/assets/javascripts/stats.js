@@ -1,2 +1,2 @@
 //= require jquery
-//= require Chart.min
+//= require stats/Chart.min
