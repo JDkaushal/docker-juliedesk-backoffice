@@ -14,6 +14,8 @@ class MessagesThreadsController < ApplicationController
   def show
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
     @messages_thread.re_import
+
+    @messages_thread.account
   end
 
   def archive

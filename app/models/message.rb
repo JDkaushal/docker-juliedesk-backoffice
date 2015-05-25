@@ -268,9 +268,6 @@ class Message < ActiveRecord::Base
       rescue
       end
     end
-    p "*" * 50
-    p n_body.to_s
-    p "-" * 50
     n_body.to_s
   end
 end

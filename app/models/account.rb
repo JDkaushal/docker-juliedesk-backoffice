@@ -1,12 +1,14 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes
+  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes, :contacts_from_same_company
 
   def self.create_from_email email, params={}
     #account_email = self.find_account_email email
     #return nil unless account_email
+
+    cache = params[:accounts_cache] || self.accounts_cache
     return nil unless email
-    data = get_account_details(email, params)
+    data = get_account_details(email, {accounts_cache: cache})
     return nil unless data
     account = self.new
     account.email = data['email']
@@ -29,6 +31,9 @@ class Account
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
+
+    account.build_contacts_from_same_company({accounts_cache: cache})
+
     account
   end
 
@@ -50,12 +55,18 @@ class Account
   end
 
 
-  def contacts_from_same_company
-    accounts = Account.get_active_account_emails detailed: true
-    accounts.select{|account|
+  def build_contacts_from_same_company params={}
+
+    cache = if params[:accounts_cache]
+      params[:accounts_cache]
+    else
+      self.accounts_cache
+    end
+
+    self.contacts_from_same_company = cache.values.select{|account|
       self.company_hash &&
           account['company_hash'].try(:[], 'name') == self.company_hash['name'] &&
-          self.email != account['email']
+          account['email'] != self.email
     }.map{|account|
       {
           name: account['full_name'],
