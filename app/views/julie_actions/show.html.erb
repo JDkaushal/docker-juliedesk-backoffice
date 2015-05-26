@@ -17,6 +17,8 @@
 <% end %>
 
 <script>
+    window.processingMessageThreadId = <%= @messages_thread.id %>;
+
     window.timeSlotsToSuggest = [];
     window.timeSlotToCreate = null;
     window.selectedEvents = [];

@@ -80,7 +80,7 @@ class MessagesThreadsController < ApplicationController
   private
 
   def render_emails_threads
-    @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: :message_classifications).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
+    @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {message_classifications: {}}, locked_by_operator: {}).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
 
     accounts_cache = Account.accounts_cache
     @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
@@ -102,7 +102,7 @@ class MessagesThreadsController < ApplicationController
         render json: {
             status: "success",
             message: "",
-            data: @messages_thread.as_json(include: [:messages], methods: [:received_at, :account])
+            data: @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name])
         }
       }
     end

@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   get "/auth/:provider/callback" => "application#omniauth_callback"
 
   post "pusher/auth/", to: "pusher#auth"
+  post "pusher/webhooks/", to: "pusher#webhooks"
 
   post "webhooks/new_email", to: "webhooks#new_email"
 

@@ -1,6 +1,6 @@
 <script>
     $(function () {
-        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at, :account]).to_json %>);
+        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name]).to_json %>);
     });
     function redrawThreadList(threadsData) {
         $(".messages-threads-container").html("");
@@ -19,7 +19,17 @@
         $(".header .global-todo-count").html(threadsData.length);
         for (var i in threadsData) {
             var threadData = threadsData[i];
-            var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item");
+            var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item").data("id", threadData.id);
+
+            console.log(threadData);
+            var $messagesThreadLockContainer = $("<div>").addClass("messages-thread-lock-container");
+            if(threadData.locked_by_operator_id) {
+                $messagesThreadLockContainer.html("Being processed by " + threadData.locked_by_operator_name).show();
+            }
+            else {
+                $messagesThreadLockContainer.hide()
+            }
+            $messageThreadContainer.append($messagesThreadLockContainer);
 
             var $accountEmail = $("<div>").addClass("account-email");
             var accountName = "<%= I18n.t("info_box.no_account_found") %>";
@@ -140,6 +150,15 @@
 
     window.newEmailCallback = function() {
         refreshInbox(false);
+    };
+
+    window.redrawLocksStatuses = function(lockStatuses) {
+        $(".messages-thread-item").find(".messages-thread-lock-container").hide();
+        _.each(lockStatuses, function(lockStatus) {
+           $(".messages-thread-item").filter(function() {
+               return $(this).data("id") == lockStatus.messages_thread_id;
+           }).find(".messages-thread-lock-container").html("Being processed by " + lockStatus.operator_name).show();
+        });
     };
 
 

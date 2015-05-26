@@ -6,6 +6,8 @@ class MessagesThread < ActiveRecord::Base
 
   has_many :messages
 
+  belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
+
 
   def google_thread params={}
     if @google_thread.nil? || params[:force_refresh]
@@ -373,6 +375,19 @@ class MessagesThread < ActiveRecord::Base
     available_classifications.select{|k, v|
       v.include? classification
     }.map{|k, v| k}.first.to_s
+  end
+
+  def locked_by_operator_name
+    self.locked_by_operator.try(:name)
+  end
+
+  def self.get_locks_statuses_hash
+    MessagesThread.where("locked_by_operator_id IS NOT NULL").map{|mt|
+      {
+        operator_name: mt.locked_by_operator_name,
+        messages_thread_id: mt.id
+      }
+    }
   end
 
 
