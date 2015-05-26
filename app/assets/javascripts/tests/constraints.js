@@ -250,6 +250,29 @@ window.tests.constraints = [
             }
         ]
     },
+    {
+        name: "Deploy constraints",
+        should: "returns deployed when CUSTOM is set, times sets, timezone set, out of viewing window",
+        test_result: function () {
+            return ConstraintTile.deployConstraints([
+                {
+                    start_time: "05:00",
+                    end_time: "14:00",
+                    dates: ["2014-01-10"],
+                    timezone: "America/Los_Angeles",
+                    constraint_when_nature: "custom",
+                    constraint_nature: "can"
+                }
+            ], moment.tz("2015-01-02", "Europe/Paris"), moment.tz("2015-01-15T23:59:00", "Europe/Paris"));
+        },
+        expected_result: [
+            {
+                start_date: "2014-01-10T05:00-08:00",
+                end_date: "2014-01-10T14:00-08:00",
+                constraint_nature: "can"
+            }
+        ]
+    },
 
     {
         name: "GetEventsFromData",

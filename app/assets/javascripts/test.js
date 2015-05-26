@@ -36,6 +36,7 @@
 //= require event_tile/main
 //= require event_tile/recurrence_form
 //= require constraint_tile/main
+//= require calendar_tile/main
 
 //= require calendar/main
 //= require calendar/fullcalendar

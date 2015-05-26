@@ -302,7 +302,7 @@ ConstraintTile.prototype.startTimeEndTimeChanged = function() {
         startTime: "14:00",
         endTime: "20:00"
     };
-    console.log(startTimeEndTime);
+
     if(startTimeEndTime.startTime == morningStartTimeEndTime.startTime &&
         startTimeEndTime.endTime == morningStartTimeEndTime.endTime) {
         constraintTile.setStartTimeEndTimeNature("morning");
@@ -458,7 +458,7 @@ ConstraintTile.prototype.redrawSentence = function() {
         }
 
         if(data.start_time) {
-            sentence += "<br/>" + localize("constraints.from") + " <span class='time'>" + data.start_time + "</span> " + localize("constraints.to") + " <span class='time'>" + data.end_time + "</span>";
+            sentence += "<br/>" + localize("constraints.from") + " <span class='time'>" + data.start_time + "</span> " + localize("constraints.to") + " <span class='time'>" + data.end_time + "</span><br/><span class='timezone'>" + data.timezone + "</span>";
         }
     }
 
@@ -636,7 +636,7 @@ ConstraintTile.getEventsFromDataFromDeployedConstraints = function (data_entries
         });
         currentStart = start_date.clone();
         _.each(prefersTimeWindows, function(timeWindow) {
-            console.log("currentStart", currentStart);
+
             if(currentStart < timeWindow.start && currentStart < end_date) {
                 dontPreferResult.push({
                     start: currentStart.clone(),
@@ -659,7 +659,7 @@ ConstraintTile.getEventsFromDataFromDeployedConstraints = function (data_entries
     };
 };
 
-ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) {
+ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, alreadyRecurring) {
     var result = [];
     var currentDate;
     _.each(data_entries, function(data) {
@@ -692,20 +692,11 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
 
         }
 
-        if(realStartDate > realEndDate && (data.constraint_nature == ConstraintTile.NATURE_PREFERS || data.constraint_nature == ConstraintTile.NATURE_CAN)) {
-            realEndDate = realStartDate.clone();
-            realEndDate.add("d", 1);
-        }
-
         currentDate = realStartDate.clone().tz(data.timezone);
 
 
         while(currentDate <= realEndDate) {
             var weekDay = "" + currentDate.isoWeekday();
-            if(data.constraint_when_nature == ConstraintTile.WHEN_NATURE_CUSTOM) {
-                console.log("***");
-                console.log(currentDate.format(), currentDate.format(CalendarTile.ONLY_DATE_MOMENT_FORMAT), data.dates.indexOf(currentDate.format(CalendarTile  .ONLY_DATE_MOMENT_FORMAT)));
-            }
             if(
                 (data.constraint_when_nature == ConstraintTile.WHEN_NATURE_ALWAYS &&
                 data.days_of_weeks.indexOf(weekDay) > -1) ||
@@ -739,6 +730,21 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date) 
             currentDate.add('d', 1);
         }
     });
+
+    if(!alreadyRecurring) {
+        _.each(["can", "prefers"], function(constraintNature) {
+            if(_.filter(result, function(event) {
+                return event.constraint_nature == constraintNature;
+            }).length == 0 && _.filter(data_entries, function(data_entry) {
+                return data_entry.constraint_nature == constraintNature;
+            }).length > 0) {
+                result.push(ConstraintTile.deployConstraints(_.filter(data_entries, function(data_entry) {
+                    return data_entry.constraint_nature == constraintNature;
+                }), moment("1000-01-01"), moment("4000-01-01"), true)[0]);
+            }
+        });
+    }
+
 
     return result;
 };
