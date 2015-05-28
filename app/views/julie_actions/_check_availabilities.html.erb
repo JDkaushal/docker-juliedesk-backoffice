@@ -103,7 +103,7 @@
             if(window.threadComputedData.client_agreement) {
                 $("#create-event-button").attr('disabled', true);
                 $(".creating-event-message").html("Creating...");
-                var start = moment(window.timeSlotToCreate);
+                var start = moment(window.timeSlotToCreate).tz(window.timeSlotToCreateTimezone);
                 var end = start.clone();
                 end.add('m', <%= @messages_thread.computed_data[:duration] %>);
 

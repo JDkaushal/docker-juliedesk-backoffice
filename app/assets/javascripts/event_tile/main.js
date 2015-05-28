@@ -293,8 +293,8 @@ EventTile.prototype.getEditedEvent = function() {
         location: eventTile.$selector.find("input.location").val(),
         private: false,
         all_day: allDay,
-        start: mStart.tz("UTC"),
-        end: mEnd.tz("UTC"),
+        start: mStart,
+        end: mEnd,
         attendees: attendees,
         recurrence: _.filter(eventTile.$selector.find(".recurrence-rule").val().split("\n"), function(rule) {
                 return rule.length > 0;
