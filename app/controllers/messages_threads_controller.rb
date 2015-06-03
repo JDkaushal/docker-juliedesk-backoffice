@@ -27,6 +27,11 @@ class MessagesThreadsController < ApplicationController
       messages_thread.google_thread.unarchive
     else
       messages_thread.update_attribute(:in_inbox, false)
+
+      Pusher.trigger('private-global-chat', 'archive', {
+          :message => 'archive',
+          :message_thread_id => messages_thread.id
+      })
     end
 
     redirect_to action: :index

@@ -41,6 +41,11 @@
                 window.redrawLocksStatuses(data.locks_statuses);
             }
         });
+        channel.bind('archive', function(data) {
+            if(window.archiveMessageThread) {
+                window.archiveMessageThread(data.message_thread_id);
+            }
+        });
         channel.bind('new-email', function (data) {
             if($("audio#tada-sound").length > 0 && $(".sound-activator.activated").length > 0) {
                 $("audio#tada-sound")[0].play();

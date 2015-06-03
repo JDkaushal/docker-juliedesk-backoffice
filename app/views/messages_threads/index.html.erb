@@ -161,6 +161,12 @@
         });
     };
 
+    window.archiveMessageThread = function(messageThreadId) {
+        $(".messages-thread-item").filter(function() {
+            return $(this).data("id") == messageThreadId;
+        }).hide();
+    };
+
 
     $(function () {
         setInterval(function () {
