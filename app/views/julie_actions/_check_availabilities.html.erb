@@ -214,7 +214,8 @@
                         data: {
                             event_id: window.currentEventId,
                             event_url: window.currentEventUrl,
-                            calendar_id: window.currentCalendarId
+                            calendar_id: window.currentCalendarId,
+                            done: true
                         },
                         success: function (e) {
                             $(".creating-event-message").html("Created.");
