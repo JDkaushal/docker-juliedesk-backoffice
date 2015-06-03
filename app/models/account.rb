@@ -40,7 +40,7 @@ class Account
   def self.find_account_email email
     accounts = Account.get_active_account_emails detailed: true
     accounts.each do |account|
-      if ([account['email']] + account['email_aliases']).include? email
+      if ([account['email']] + account['email_aliases']).map(&:downcase).include? "#{email}".downcase
         return account['email']
       end
     end

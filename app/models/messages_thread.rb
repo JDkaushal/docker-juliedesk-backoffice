@@ -234,7 +234,14 @@ class MessagesThread < ActiveRecord::Base
 
   def client_email
     if account
-      (account.all_emails & contacts(with_client: true).map{|c| c[:email]}).first || account_email
+      contact_emails = contacts(with_client: true).map{|c| c[:email]}
+      contact_emails.each do |email|
+        if account.all_emails.map(&:downcase).include? "#{email}".downcase
+          return email
+        end
+      end
+
+      account_email
     else
       nil
     end
