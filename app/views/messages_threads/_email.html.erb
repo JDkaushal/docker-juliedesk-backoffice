@@ -19,6 +19,12 @@
             e.stopPropagation();
         });
 
+        $email.find(".to-learn-switch .option").click(function(e) {
+            $email.find(".to-learn-switch .option").show();
+            $(this).hide();
+            e.stopPropagation();
+        });
+
         $email.click(function () {
             if ($(this).closest(".actions-menu").length == 0) {
                 $email.find(".actions-menu-positioner").removeClass("visible");
@@ -62,10 +68,31 @@
       <%= check_box_tag "checkbox-message-#{message.id}", message.id %>
       <label for="checkbox-message-<%= message.id %>"></label>
     </div>
+
+    <% if message.from_me? && (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") %>
+        <div class="review-container">
+
+          <% mc = message.generator_mcs.first %>
+          <% if mc.review_status == MessageClassification::REVIEW_STATUS_TO_REVIEW && local_assigns[:reviewing_status] == "review" %>
+              <div class="to-learn-switch" data-message-classification-id="<%= mc.id %>">
+                <div class="option to-learn">To learn</div>
+                <div class="option">Review Ok</div>
+              </div>
+          <% else %>
+              <%= mc.review_status %>
+          <% end %>
+          </div>
+    <% end %>
+
     <div class="retracted-container">
       <div class="date-and-from">
         <div class="from"><%= email.from %></div>
         <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+
+        <% if message.from_me? %>
+            <div class="operator"><%= message.generator_mcs.map(&:operator).join(" or ") %></div>
+        <% end %>
+
         <div class="clear"></div>
       </div>
       <div class="snippet">
@@ -78,6 +105,11 @@
       <div class="date-and-from">
         <div class="from"><%= email.from %></div>
         <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+
+        <% if message.from_me? %>
+            <div class="operator"><%= message.generator_mcs.map(&:operator).uniq.join(" or ") %></div>
+        <% end %>
+
         <div class="clear"></div>
       </div>
 

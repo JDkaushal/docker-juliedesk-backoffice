@@ -18,6 +18,13 @@ class MessageClassification < ActiveRecord::Base
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
 
+
+  REVIEW_STATUS_TO_REVIEW  = nil
+  REVIEW_STATUS_TO_LEARN   = 'to_learn'
+  REVIEW_STATUS_REVIEWED   = 'reviewed'
+  REVIEW_STATUS_LEARNT     = 'learnt'
+
+
   def self.create_from_params params
     attendees = []
     (params[:attendees] || {}).each do |k, att|
@@ -67,6 +74,10 @@ class MessageClassification < ActiveRecord::Base
     end
 
     attendees
+  end
+
+  def review_status_as_text
+    review_status || "To review"
   end
 
   def append_julie_action

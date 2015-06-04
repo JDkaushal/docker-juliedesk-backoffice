@@ -47,6 +47,29 @@ Rails.application.routes.draw do
     get "classified_events", controller: :events, action: :classified_events
   end
 
+  namespace :review do
+    resources :operators, only: [:show, :index]
+
+    resources :messages_threads, only: [] do
+      member do
+        get "review", action: :review
+        post "reviewed", action: :reviewed
+
+        get "learn", action: :learn
+        post "learnt", action: :learnt
+      end
+
+      collection do
+        get "review_next", action: :review_next
+        get "learn_next", action: :learn_next
+      end
+    end
+
+    root to: "operators#index"
+  end
+
+
+
   get "stats", controller: :stats, action: :index
   get "stats/volume", controller: :stats, action: :volume
 

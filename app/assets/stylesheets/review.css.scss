@@ -1,0 +1,25 @@
+.operators-page {
+  position: relative;
+  padding: 50px 0 0 0;
+}
+.operators-list {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  border-right: 1px solid #ccc;
+  width: 200px;
+
+  .operator {
+    cursor: pointer;
+    &:hover {
+      color: #7897E0;
+      text-decoration: underline;
+    }
+  }
+}
+.operators-container {
+  padding-left: 250px;
+  .operator-container {
+    display: none;
+  }
+}

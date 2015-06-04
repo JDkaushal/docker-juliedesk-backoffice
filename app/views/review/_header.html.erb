@@ -1,0 +1,21 @@
+<div class="header review">
+  <%= link_to "/review" do %>
+      JulieDesk Backoffice - Review
+  <% end %>
+
+  <% if params[:action] == "review" %>
+      (<%= @to_review_count %>)
+      <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
+          <%= hidden_field_tag :message_classification_ids_to_learn %>
+          <%= submit_tag "Next", class: "btn btn-success" %>
+      <% end %>
+  <% end %>
+
+  <% if params[:action] == "learn" %>
+      (<%= @to_learn_count %>)
+      <%= form_tag({action: :learnt}, method: "post", id: 'review-form') do |f| %>
+          <%= hidden_field_tag :operator, params[:operator] %>
+          <%= submit_tag "Next", class: "btn btn-success" %>
+      <% end %>
+  <% end %>
+</div>

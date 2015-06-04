@@ -1,0 +1,61 @@
+<script>
+    $(function () {
+        $(".operators-list .operator").click(function () {
+            var id = $(this).data("id");
+            $(".operator-container").each(function () {
+                if ($(this).data("id") == id) {
+                    $(this).show();
+                }
+                else {
+                    $(this).hide();
+                }
+            })
+        });
+    })
+</script>
+
+
+<div class="fixed-columns full">
+  <div class="left-column">
+
+    <%= render partial: "review/header" %>
+
+
+
+    <div class="messages-threads-page">
+      <div class="operators-page">
+
+
+        <div class='operators-list'>
+          <%= link_to "Review #{@to_review_count} threads", "/review/messages_threads/review_next", class: "btn btn-success" %>
+
+          <% @operators.each do |operator| %>
+              <div class='operator' data-id="<%= operator.id %>">
+                <%= operator.name %> (<%= @message_threads_to_learn_counts[operator.id] %>)
+              </div>
+          <% end %>
+
+        </div>
+
+        <div class='operators-container'>
+          <% @operators.each do |operator| %>
+              <div class="operator-container" data-id="<%= operator.id %>">
+                <%= operator.name %>
+                <br>
+
+                <%= link_to "Learn #{@message_threads_to_learn_counts[operator.id]} message threads", "/review/messages_threads/learn_next?operator=#{operator.email}", class: "btn btn-success" %>
+
+              </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%= render partial: "common/footer" %>
+    </div>
+  </div>
+</div>
+
+
+
+
+

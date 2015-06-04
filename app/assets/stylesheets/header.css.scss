@@ -11,6 +11,10 @@
   line-height: 40px;
   font-size: 16px;
   font-weight: 200;
+
+  &.review {
+    z-index: 20;
+  }
   .sound-activator {
     position: absolute;
     left: 10px;
@@ -76,5 +80,13 @@
     top: 0;
     right: 10px;
     font-size: 12px;
+  }
+
+  form#review-form {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 40px;
   }
 }
