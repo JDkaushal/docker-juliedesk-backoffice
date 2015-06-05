@@ -73,13 +73,15 @@
         <div class="review-container">
 
           <% mc = message.generator_mcs.first %>
-          <% if mc.review_status == MessageClassification::REVIEW_STATUS_TO_REVIEW && local_assigns[:reviewing_status] == "review" %>
-              <div class="to-learn-switch" data-message-classification-id="<%= mc.id %>">
-                <div class="option to-learn">To learn</div>
-                <div class="option">Review Ok</div>
-              </div>
-          <% else %>
-              <%= mc.review_status %>
+          <% if mc %>
+              <% if mc.review_status == MessageClassification::REVIEW_STATUS_TO_REVIEW && local_assigns[:reviewing_status] == "review" %>
+                  <div class="to-learn-switch" data-message-classification-id="<%= mc.id %>">
+                    <div class="option to-learn">To learn</div>
+                    <div class="option">Review Ok</div>
+                  </div>
+              <% else %>
+                  <%= mc.review_status %>
+              <% end %>
           <% end %>
           </div>
     <% end %>
