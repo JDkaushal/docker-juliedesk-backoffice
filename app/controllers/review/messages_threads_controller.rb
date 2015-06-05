@@ -63,7 +63,7 @@ class Review::MessagesThreadsController < ApplicationController
   private
 
   def review_next_messages_thread
-    mc = MessageClassification.find_by_review_status(MessageClassification::REVIEW_STATUS_TO_REVIEW)
+    mc = MessageClassification.order("updated_at ASC").find_by_review_status(MessageClassification::REVIEW_STATUS_TO_REVIEW)
     if mc
       redirect_to action: :review, id: mc.message.messages_thread_id
     else
@@ -72,7 +72,7 @@ class Review::MessagesThreadsController < ApplicationController
   end
 
   def learn_next_messages_thread
-    mc = MessageClassification.find_by_review_status_and_operator(MessageClassification::REVIEW_STATUS_TO_LEARN, params[:operator])
+    mc = MessageClassification.order("updated_at ASC").find_by_review_status_and_operator(MessageClassification::REVIEW_STATUS_TO_LEARN, params[:operator])
     if mc
       redirect_to action: :learn, id: mc.message.messages_thread_id, operator: params[:operator]
     else

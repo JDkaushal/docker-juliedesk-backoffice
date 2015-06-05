@@ -3,7 +3,7 @@ class Review::OperatorsController < ApplicationController
   def index
     @operators = Operator.all
     message_classification_to_review = MessageClassification.where(review_status: MessageClassification::REVIEW_STATUS_TO_REVIEW).includes(message: :messages_thread)
-    @to_review_count = message_classification_to_review.map{|mc| mc.message.messages_thread_id}.uniq.length
+    @to_review_count = message_classification_to_review.select{|mc| mc.message.try(:messages_thread_id)}.map{|mc| mc.message.messages_thread_id}.uniq.length
 
     message_classification_to_learn = MessageClassification.where(review_status: MessageClassification::REVIEW_STATUS_TO_LEARN).includes(message: :messages_thread)
 
