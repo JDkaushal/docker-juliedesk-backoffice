@@ -31,6 +31,14 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def logout
+    email = session[:user_username]
+    operator = Operator.find_by_email(email)
+    MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
+    reset_session
+    redirect_to "https://#{email}@juliedesk-backoffice.herokuapp.com"
+  end
+
 
   protected
 

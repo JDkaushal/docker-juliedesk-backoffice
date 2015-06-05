@@ -84,4 +84,6 @@ Rails.application.routes.draw do
   post "webhooks/new_email", to: "webhooks#new_email"
 
   post "change_sound" => "application#change_sound"
+
+  get "logout" => "application#logout", as: :logout
 end
