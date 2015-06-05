@@ -24,6 +24,10 @@ class MessageClassification < ActiveRecord::Base
   REVIEW_STATUS_REVIEWED   = 'reviewed'
   REVIEW_STATUS_LEARNT     = 'learnt'
 
+  def clean_delete
+    self.julie_action.try(:delete)
+    self.delete
+  end
 
   def self.create_from_params params
     attendees = []

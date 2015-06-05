@@ -174,7 +174,7 @@ class MessagesThread < ActiveRecord::Base
     end
 
     (self.messages - existing_messages).each do |message|
-      message.delete
+      message.clean_delete
     end
 
     self.messages = self.messages && existing_messages

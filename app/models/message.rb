@@ -12,6 +12,13 @@ class Message < ActiveRecord::Base
     [] + nil
   end
 
+  def clean_delete
+    self.message_classifications.each do |mc|
+      mc.clean_delete
+    end
+    self.delete
+  end
+
   def correct_google_message
     Message.correct_google_message @google_message
   end
