@@ -64,9 +64,6 @@ class Review::MessagesThreadsController < ApplicationController
 
   def review_next_messages_thread
     mc = MessageClassification.find_by_review_status(MessageClassification::REVIEW_STATUS_TO_REVIEW)
-    p "-" * 50
-    p mc
-    p mc.message.messages_thread_id
     if mc
       redirect_to action: :review, id: mc.message.messages_thread_id
     else

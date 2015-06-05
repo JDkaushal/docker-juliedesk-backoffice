@@ -24,6 +24,8 @@
 
 //= require_tree ./templates
 
+
+
 //= require jquery.elastic.source
 //= require jquery.tokeninput
 //= require underscore-min

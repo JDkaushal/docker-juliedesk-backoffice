@@ -1,5 +1,5 @@
 <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, message: @message, classification: @classification} %>
-<script src="https://rawgit.com/WePopp/chrono/master/chrono.min.js"></script>
+<script src="/javascripts/chrono.min.js"></script>
 <script>
   window.processingMessageThreadId = <%= @messages_thread.id %>;
 
