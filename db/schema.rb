@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150604134034) do
+ActiveRecord::Schema.define(version: 20150605140307) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 20150604134034) do
     t.boolean  "delegated_to_founders", default: false
     t.text     "to_founders_message"
     t.integer  "locked_by_operator_id"
+    t.datetime "locked_at"
   end
 
   create_table "operators", force: true do |t|
