@@ -151,6 +151,7 @@ class Message < ActiveRecord::Base
       if existing_message.try(:messages_thread)
         # Copy the original message into the existing thread
         self.google_message.threadId = existing_message.messages_thread.google_thread_id
+        self.google_message.subject = existing_message.google_message.subject
         self.google_message.labelIds = (self.google_message.labelIds.select{|label| label != "SENT"} + ["INBOX"]).uniq
         updated_google_message = self.google_message.insert
       else
