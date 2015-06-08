@@ -50,7 +50,7 @@ class Message < ActiveRecord::Base
   end
 
   def generator_mcs
-    reply_to_message_ids = google_message['in_reply_to'].split(" ")
+    reply_to_message_ids = "#{google_message['in_reply_to']}".split(" ")
     messages_thread.messages.select{|m|
       reply_to_message_ids.include? m.google_message['message_id']
     }.sort_by(&:received_at).last.try(:message_classifications) || []
