@@ -1,4 +1,4 @@
-class Review::OperatorsController < ApplicationController
+class Review::OperatorsController < ReviewController
 
   def index
     @operators = Operator.all

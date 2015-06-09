@@ -80,6 +80,7 @@
             minimized: params.minimized,
             static: true,
             locale: window.threadComputedData.locale,
+            fordibRecurringEvents: window.threadAccount.calendar_nature != "google",
             doneEditingCallback: function(response) {
                 var eventTile = this;
 

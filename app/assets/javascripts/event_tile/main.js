@@ -17,6 +17,7 @@ function EventTile($selector, params) {
     this.minimized = params.minimized;
     this.afterNewEventEdited = params.afterNewEventEdited;
     this.eventDoesNotExistSelector = params.eventDoesNotExistSelector;
+    this.fordibRecurringEvents = params.fordibRecurringEvents;
 
     var eventTile = this;
 
@@ -787,7 +788,12 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
-            eventTile.showRecurrenceContainer();
+            if(eventTile.fordibRecurringEvents) {
+                alert("Recurring events are not supported for this account. Please send to support.")
+            }
+            else {
+                eventTile.showRecurrenceContainer();
+            }
         }
     });
 

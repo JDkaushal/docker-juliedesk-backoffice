@@ -52,6 +52,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         calendarId: event.calId,
         accountEmail: calendar.initialData.email,
         locale: window.threadComputedData.locale,
+        fordibRecurringEvents: window.threadAccount.calendar_nature != "google",
         selectEventCallback: function() {
             calendar.selectEvent(calendar.currentEvent);
             $container.fadeOut(200);

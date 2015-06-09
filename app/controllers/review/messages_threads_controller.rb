@@ -1,4 +1,4 @@
-class Review::MessagesThreadsController < ApplicationController
+class Review::MessagesThreadsController < ReviewController
 
 
   def review
