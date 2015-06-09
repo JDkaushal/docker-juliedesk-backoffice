@@ -14,6 +14,34 @@
       clientAgreement: window.threadComputedData.client_agreement && !isPostpone,
       alreadySuggestedDates: <%== @message.messages_thread.suggested_date_times.map{|dt| dt.to_s}.to_json %>
   });
+
+  window.activateCalendarWithParams = function (calendarParams) {
+      calendarParams.height = $(".calendar-container").height();
+      calendarParams.other_emails = window.otherAccountEmails;
+      if(window.threadAccount) {
+          calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+      }
+      calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
+
+      calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+          return data.attendee_email;
+      });
+      window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+      $(".calendar-container").addClass("visible");
+  };
+  $(function() {
+      <% if @classification == MessageClassification::GIVE_INFO %>
+          $("#show-calendar-button").click(function () {
+              window.activateCalendarWithParams({
+                  mode: "free_calendar",
+                  date_times: [],
+                  email: "<%= @message.messages_thread.account_email %>",
+                  duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+              });
+              $(".calendar-container").removeClass("minimized");
+          });
+      <% end %>
+  });
 </script>
 
 <div class="fixed-columns">
@@ -22,8 +50,12 @@
   <div class="left-column">
 
     <%= render partial: "common/header" %>
-
+    <% if @classification == MessageClassification::GIVE_INFO %>
+        <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
+        <%= render template: "calendar/calendar" %>
+    <% end %>
     <div class="julie-action-fantom"></div>
+
     <div class="messages-thread-emails">
       <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
 

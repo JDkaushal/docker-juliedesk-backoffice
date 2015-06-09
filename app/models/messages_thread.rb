@@ -238,6 +238,7 @@ class MessagesThread < ActiveRecord::Base
     contacts.each do |attendee|
       accounts.each do |email, account|
         all_emails = [account['email']] + account['email_aliases']
+
         if all_emails.include? attendee[:email]
           thread_contacts << {
               email: attendee[:email],
