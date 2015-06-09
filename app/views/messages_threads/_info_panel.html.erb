@@ -531,12 +531,13 @@
       <% if account %>
           <div class="full-name"><%= account.full_name %></div>
           <div class="account-email"><%= messages_thread.account.email %></div>
-          <% if account.company_hash %>
+          <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
+          <% if possible_contacts_for_cache.length > 0 %>
           <div class="change-account-init-button">Change</div>
           <%= image_tag "ajax-loader.gif", class: "change-account-spinner" %>
           <div class="change-account-container">
             <select id="change-account-input">
-                <% account.contacts_from_same_company.each do |contact| %>
+                <% possible_contacts_for_cache.each do |contact| %>
                     <option value="<%= contact[:email] %>"><%= contact[:name] %> - <%= contact[:email] %></option>
                 <% end %>
             </select>

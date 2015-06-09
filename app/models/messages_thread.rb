@@ -232,6 +232,24 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def possible_contacts_for_cache
+    thread_contacts = []
+    accounts = self.account.accounts_cache
+    contacts.each do |attendee|
+      accounts.each do |email, account|
+        all_emails = [account['email']] + account['email_aliases']
+        if all_emails.include? attendee[:email]
+          thread_contacts << {
+              email: attendee[:email],
+              name: account['full_name']
+          }
+        end
+      end
+    end
+
+    (self.account.contacts_from_same_company + thread_contacts).uniq{|c| c[:email]}
+  end
+
   def client_email
     if account
       contact_emails = contacts(with_client: true).map{|c| c[:email]}
