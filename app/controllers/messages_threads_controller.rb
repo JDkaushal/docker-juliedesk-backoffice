@@ -82,6 +82,18 @@ class MessagesThreadsController < ApplicationController
     redirect_to messages_thread
   end
 
+  def unlock
+    messages_thread = MessagesThread.find(params[:id])
+    messages_thread.update_attribute :locked_by_operator_id, nil
+
+    Pusher.trigger('private-global-chat', 'locks-changed', {
+        :message => 'locks_changed',
+        :locks_statuses => MessagesThread.get_locks_statuses_hash
+    })
+    
+    redirect_to messages_thread
+  end
+
   private
 
   def render_emails_threads

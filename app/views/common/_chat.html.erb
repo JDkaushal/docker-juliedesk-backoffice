@@ -75,6 +75,7 @@
 //                console.log("Locked Ok");
             });
             threadChannel.bind('pusher:subscription_error', function(status) {
+                $(".lock-container .unlock-btn").attr("href", "/messages_threads/" + window.processingMessageThreadId + "/unlock");
                 $(".lock-container").fadeIn(200);
             });
         }
@@ -223,7 +224,13 @@
 </div>
 
 <div class="lock-container">
-  This thread is being processed by another operator
+  This thread is being processed by <span class="operator-name">another operator</span>
+  <br>
   <br>
   <a href="/">Back to home</a>
+  <br>
+  <br>
+  <%= link_to "", class:"unlock-btn btn btn-warning btn-lg" do %>
+      <span class="operator-name">I know This operator</span> is not present - Unlock
+  <% end %>
 </div>

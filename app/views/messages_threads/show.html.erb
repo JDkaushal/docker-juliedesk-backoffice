@@ -2,8 +2,16 @@
 <script>
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
+
+
     $(function () {
         window.startedAt = Date.now();
+
+        window.processingMessageThreadId = <%= @messages_thread.id %>;
+
+        <% if @messages_thread.locked_by_operator %>
+            $(".lock-container .operator-name").html("<%= @messages_thread.locked_by_operator.name %>");
+        <% end %>
 
         $(".split-thread-button").click(function () {
             $(".messages-thread-emails").addClass("splitting");
