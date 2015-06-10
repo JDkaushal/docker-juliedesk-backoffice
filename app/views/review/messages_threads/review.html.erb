@@ -25,7 +25,7 @@
     <div class="messages-thread-emails">
 
       <div class="messages-thread-subject">
-        <%= @messages_thread.subject %>
+        <%= link_to @messages_thread.subject, @messages_thread, target: "_blank" %>
       </div>
 
       <% messages = @messages_thread.messages.sort_by(&:received_at) %>

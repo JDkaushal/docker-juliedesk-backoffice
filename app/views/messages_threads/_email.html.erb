@@ -89,10 +89,10 @@
     <div class="retracted-container">
       <div class="date-and-from">
         <div class="from"><%= email.from %></div>
-        <div class="date"><%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %></div>
+        <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
 
         <% if message.from_me? %>
-            <div class="operator"><%= message.generator_mcs.map(&:operator).join(" or ") %></div>
+            <div class="operator"><%= message.generator_mcs.map(&:operator).uniq.join(" or ") %></div>
         <% end %>
 
         <div class="clear"></div>
@@ -106,7 +106,7 @@
     <div class="retractable">
       <div class="date-and-from">
         <div class="from"><%= email.from %></div>
-        <div class="date"><%= I18n.l(DateTime.parse(email.date), format: "%-d %b %H:%M") %> (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
+        <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
 
         <% if message.from_me? %>
             <div class="operator"><%= message.generator_mcs.map(&:operator).uniq.join(" or ") %></div>
