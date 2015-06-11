@@ -267,8 +267,8 @@ window.tests.constraints = [
         },
         expected_result: [
             {
-                start_date: "2014-01-10T05:00-08:00",
-                end_date: "2014-01-10T14:00-08:00",
+                start_date: "2014-12-31T00:00+01:00",
+                end_date: "2015-01-01T00:00+01:00",
                 constraint_nature: "can"
             }
         ]

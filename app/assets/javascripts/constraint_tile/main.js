@@ -738,9 +738,15 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, 
             }).length == 0 && _.filter(data_entries, function(data_entry) {
                 return data_entry.constraint_nature == constraintNature;
             }).length > 0) {
-                result.push(ConstraintTile.deployConstraints(_.filter(data_entries, function(data_entry) {
-                    return data_entry.constraint_nature == constraintNature;
-                }), moment("1000-01-01"), moment("4000-01-01"), true)[0]);
+                var fakeStartDate = start_date.clone();
+                fakeStartDate.add('d', -2);
+                var fakeEndDate = start_date.clone();
+                fakeEndDate.add('d', -1);
+                result.push({
+                    start_date: fakeStartDate.format("YYYY-MM-DDTHH:mmZ"),
+                    end_date: fakeEndDate.format("YYYY-MM-DDTHH:mmZ"),
+                    constraint_nature: constraintNature
+                });
             }
         });
     }
