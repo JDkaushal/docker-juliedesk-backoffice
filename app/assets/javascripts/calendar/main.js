@@ -248,11 +248,11 @@ Calendar.prototype.fetchCalendars = function (callback) {
 Calendar.prototype.showLoadingSpinner = function (message) {
     if (!message) message = "Loading...";
     this.$selector.find(".local-loading-message").html(message);
-    this.$selector.find(".local-loading").fadeIn(200);
+    this.$selector.find(".local-loading-container").fadeIn(200);
 };
 
 Calendar.prototype.hideLoadingSpinner = function () {
-    this.$selector.find(".local-loading").fadeOut(200);
+    this.$selector.find(".local-loading-container").fadeOut(200);
 };
 
 Calendar.prototype.addForbiddenEvents = function(events) {

@@ -34,29 +34,39 @@
     }
   }
 
-  .local-loading {
+  .local-loading-container {
     display: none;
     position: absolute;
-    top: -4px;
-    background: #fff;
-    width: 200px;
-    padding: 2px 0 0 0;
-    left: 50%;
-    margin-left: -100px;
-    height: 30px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    text-align: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 11;
+    background: rgba(255, 255, 255, 0.5);
 
-    .local-spinner {
-      width: 18px;
-      margin: 0 5px 0 0;
-    }
+    .local-loading {
+      position: absolute;
+      top: -4px;
+      background: #fff;
+      width: 200px;
+      padding: 2px 0 0 0;
+      left: 50%;
+      margin-left: -100px;
+      height: 30px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      text-align: center;
 
-    .local-loading-message {
-      font-size: 12px;
-      display: inline;
+
+      .local-spinner {
+        width: 18px;
+        margin: 0 5px 0 0;
+      }
+
+      .local-loading-message {
+        font-size: 12px;
+        display: inline;
+      }
     }
   }
 }
