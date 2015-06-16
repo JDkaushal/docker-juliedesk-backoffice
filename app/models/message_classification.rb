@@ -34,7 +34,7 @@ class MessageClassification < ActiveRecord::Base
     (params[:attendees] || {}).each do |k, att|
       attendees << att
     end
-    attendees = MessageClassification.categorize_clients attendees
+    attendees = MessageClassification.clean_and_categorize_clients attendees
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
@@ -65,7 +65,7 @@ class MessageClassification < ActiveRecord::Base
     result
   end
 
-  def self.categorize_clients attendees
+  def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
     attendees.each do |attendee|
       accounts.select do |account|
@@ -75,6 +75,7 @@ class MessageClassification < ActiveRecord::Base
           attendee['usage_name'] = account['usage_name']
         end
       end
+      attendee['email'] = attendee['email'].gsub(" ", "")
     end
 
     attendees
