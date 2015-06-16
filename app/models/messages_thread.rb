@@ -29,10 +29,10 @@ class MessagesThread < ActiveRecord::Base
                            })
     self.google_thread.modify(["Label_12"], [])
 
-    self.warn_support
+    self.warn_support params
   end
 
-  def warn_support
+  def warn_support params={}
     gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
     gmail_message.subject = "Email thread delegated to support"
     gmail_message.to = "guillaume@juliedesk.com"
@@ -51,8 +51,7 @@ class MessagesThread < ActiveRecord::Base
     unless params[:with_client]
       params[:forbidden_emails] = account.try(:all_emails) || []
     end
-    MessagesThread.contacts params
-  end
+    MessagesThread.contacts params  end
 
   def self.contacts params = {}
     to_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.to || "").to_ascii).addresses}.flatten
