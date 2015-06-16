@@ -4,6 +4,16 @@
             $("form#review-form input[name='message_classification_ids_to_learn']").val(JSON.stringify(messageClassificationIdsToLearn()));
             return true;
         });
+
+        $("#show-calendar-button").click(function () {
+            window.activateCalendarWithParams({
+                mode: "free_calendar",
+                date_times: [],
+                email: "<%= @messages_thread.account_email %>",
+                duration: <%= @messages_thread.computed_data[:duration] || 60 %>
+            });
+            $(".calendar-container").removeClass("minimized");
+        });
     });
 
     function messageClassificationIdsToLearn() {
@@ -11,12 +21,34 @@
             return $(this).closest(".to-learn-switch").data("message-classification-id");
         }).get();
     }
+
+    window.activateCalendarWithParams = function (calendarParams) {
+        calendarParams.height = $(".calendar-container").height();
+        calendarParams.other_emails = window.otherAccountEmails;
+        if(window.threadAccount) {
+            calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+        }
+        calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
+
+        calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+            return data.attendee_email;
+        });
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+        $(".calendar-container").addClass("visible");
+    };
 </script>
 
 <%= render partial: "review/header" %>
 
 <div class="fixed-columns">
-  <div class="left-column">
+  <div class="left-column review">
+
+
+
+    <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
+    <%= render template: "calendar/calendar" %>
+
+
     <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
