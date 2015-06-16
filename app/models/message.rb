@@ -100,10 +100,12 @@ class Message < ActiveRecord::Base
         else
           account_email = MessagesThread.find_account_email(google_thread)
           messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: Account.create_from_email(account_email).try(:usage_name)
+          if account_email.nil?
+            messages_thread.warn_support
+          end
 
           if MessagesThread.several_accounts_detected(google_thread)
-            messages_thread.update_attribute :delegated_to_founders, true
-            messages_thread.google_thread.modify(["Label_12"], [])
+            messages_thread.delegate_to_support
           end
         end
 

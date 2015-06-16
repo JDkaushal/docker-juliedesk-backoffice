@@ -15,11 +15,7 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::TO_FOUNDERS
-      @message.messages_thread.update_attributes({
-                                                     delegated_to_founders: true,
-                                                     to_founders_message: params[:to_founders_message]
-                                                 })
-      @message.messages_thread.google_thread.modify(["Label_12"], [])
+      @message.messages_thread.delegate_to_support message: params[:to_founders_message]
       redirect_to messages_threads_path
     end
 
@@ -35,11 +31,10 @@ class MessagesController < ApplicationController
 
   def wait_for_preference_change
     message = Message.find params[:id]
+
+    message.messages_thread.delegate_to_support
+
     url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/wait_for_preferences_change"
-
-    message.messages_thread.update_attribute :delegated_to_founders, true
-    message.messages_thread.google_thread.modify(["Label_12"], [])
-
     x = Net::HTTP.post_form(URI.parse(url), {
         email: message.messages_thread.account_email,
         access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"

@@ -22,6 +22,24 @@ class MessagesThread < ActiveRecord::Base
     @account ||= Account.create_from_email(account_email, params)
   end
 
+  def delegate_to_support params={}
+    self.update_attributes({
+                               delegated_to_founders: true,
+                               to_founders_message: params[:message]
+                           })
+    self.google_thread.modify(["Label_12"], [])
+
+    self.warn_support
+  end
+
+  def warb_support
+    gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
+    gmail_message.subject = "Email thread delegated to support"
+    gmail_message.to = "guillaume@juliedesk.com"
+    gmail_message.cc = "nicolas@juliedesk.com"
+    gmail_message.from = "julie@juliedesk.com"
+    gmail_message.deliver
+  end
 
   def julie_alias
     messages.map(&:julie_alias).compact.uniq.first || JulieAlias.find_by_email("julie@juliedesk.com")
