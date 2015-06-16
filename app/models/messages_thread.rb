@@ -32,7 +32,7 @@ class MessagesThread < ActiveRecord::Base
     self.warn_support
   end
 
-  def warb_support
+  def warn_support
     gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
     gmail_message.subject = "Email thread delegated to support"
     gmail_message.to = "guillaume@juliedesk.com"
