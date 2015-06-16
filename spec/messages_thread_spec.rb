@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MessagesThread, :type => :model do
+describe MessagesThread, :type => :model do
   before do
     MessagesThread.delete_all
     Message.delete_all
@@ -10,6 +10,7 @@ RSpec.describe MessagesThread, :type => :model do
     @account = Account.new
     @account.locale =  "en"
     @account.default_timezone_id = "America/Los_Angeles"
+    @account.appointments = []
 
     @message_classification_params = {
         ask_availabilities_1: {
@@ -112,7 +113,9 @@ RSpec.describe MessagesThread, :type => :model do
                                                         :attendees_are_noticed => nil,
                                                         :constraints => nil,
                                                         :constraints_data => [],
-                                                        :date_times => []
+                                                        :number_to_call => nil,
+                                                        :date_times => [],
+                                                        :last_message_sent_at => nil
                                                     })
       end
     end
@@ -139,7 +142,9 @@ RSpec.describe MessagesThread, :type => :model do
                                                         :attendees_are_noticed => nil,
                                                         :constraints => nil,
                                                         :constraints_data => [],
-                                                        :date_times => []
+                                                        :number_to_call => nil,
+                                                        :date_times => [],
+                                                        :last_message_sent_at => nil
                                                     })
       end
     end
@@ -167,9 +172,11 @@ RSpec.describe MessagesThread, :type => :model do
                                                         :attendees_are_noticed => true,
                                                         :constraints => "",
                                                         :constraints_data => [],
+                                                        :number_to_call => nil,
                                                         :date_times => [
                                                             {"date" => "2015-03-06T12:15:00+00:00", "timezone" => "Europe/Paris"},
-                                                        ]
+                                                        ],
+                                                        :last_message_sent_at => nil
                                                     })
       end
     end
@@ -197,10 +204,12 @@ RSpec.describe MessagesThread, :type => :model do
                                                         :attendees_are_noticed => true,
                                                         :constraints => "",
                                                         :constraints_data => [],
+                                                        :number_to_call => nil,
                                                         :date_times => [
                                                             {"date" => "2015-03-06T12:15:00+00:00", "timezone" => "Europe/Paris"},
                                                             {"date" => "2015-03-07T14:15:00+00:00", "timezone" => "America/Los_Angeles"}
-                                                        ]
+                                                        ],
+                                                        :last_message_sent_at => nil
                                                     })
       end
     end
@@ -230,9 +239,11 @@ RSpec.describe MessagesThread, :type => :model do
                                                         :attendees_are_noticed => true,
                                                         :constraints => "",
                                                         :constraints_data => [],
+                                                        :number_to_call => nil,
                                                         :date_times => [
                                                             {"date" => "2015-03-07T14:15:00+00:00", "timezone" => "America/Los_Angeles"}
-                                                        ]
+                                                        ],
+                                                        :last_message_sent_at => nil
                                                     })
       end
     end
@@ -276,7 +287,8 @@ RSpec.describe MessagesThread, :type => :model do
         expect(@message_thread.event_data).to eq({
                                                      event_id: "eid1",
                                                      calendar_id: "cid1",
-                                                     appointment_nature: "meeting"
+                                                     appointment_nature: "meeting",
+                                                     event_url: nil
                                                  })
       end
     end
@@ -300,7 +312,8 @@ RSpec.describe MessagesThread, :type => :model do
         expect(@message_thread.event_data).to eq({
                                                      event_id: "eid2",
                                                      calendar_id: "cid2",
-                                                     appointment_nature: "call"
+                                                     appointment_nature: "call",
+                                                     event_url: nil
                                                  })
       end
     end
