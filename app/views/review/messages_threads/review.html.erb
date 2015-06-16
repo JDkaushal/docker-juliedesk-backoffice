@@ -25,9 +25,25 @@
         <%= link_to @messages_thread.subject, @messages_thread, target: "_blank" %>
       </div>
 
-      <% messages = @messages_thread.messages.sort_by(&:received_at) %>
-      <% messages.each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review"} %>
+      <% items = (@messages_thread.messages + @messages_thread.mt_operator_actions).sort_by do |item|
+        if item.class == Message
+          item.received_at
+        else
+          item.initiated_at
+          end
+        end %>
+
+      <% items.each do |item| %>
+          <% if item.class == Message %>
+            <%= render partial: "messages_threads/email", locals: {message: item, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review"} %>
+          <% else %>
+              <% if item.nature == OperatorAction::NATURE_ARCHIVE %>
+                <div class="review-archived-container">
+                  <div class="review-archived-line"></div>
+                  <div class="review-archived"><%= item.operator.name %> archived - <%= I18n.l(item.initiated_at.to_time.utc, format: "%-d %b %H:%M") %> UTC</div>
+                </div>
+              <% end %>
+          <% end %>
       <% end %>
     </div>
   </div>

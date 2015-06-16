@@ -24,8 +24,16 @@ class PusherController < ApplicationController
         messages_thread = MessagesThread.find(messages_thread_id)
         operator = Operator.find_by_email(session[:user_username])
         if messages_thread.locked_by_operator_id.nil?
+          locked_at = DateTime.now
           messages_thread.update_attributes locked_by_operator_id: operator.id,
-                                            locked_at: DateTime.now
+                                            locked_at: locked_at
+
+          messages_thread.operator_actions.create({
+                                                       initiated_at: locked_at,
+                                                       nature: OperatorAction::NATURE_LOCK,
+                                                       operator_id: session[:operator_id],
+                                                       messages_thread_id: messages_thread.id
+                                                   })
 
           send_lock_changed
         elsif messages_thread.locked_by_operator_id == operator.id
@@ -62,6 +70,14 @@ class PusherController < ApplicationController
           if messages_thread.locked_by_operator_id == operator.id &&
               (messages_thread.locked_at.nil? || Time.at(params[:time_ms]/1000).to_datetime > messages_thread.locked_at + 1.second)
             messages_thread.update_attribute :locked_by_operator_id, nil
+
+            messages_thread.operator_actions.create({
+                                                        initiated_at: Time.at(params[:time_ms]/1000).to_datetime,
+                                                        nature: OperatorAction::NATURE_UNLOCK,
+                                                        operator_id: operator.id,
+                                                        messages_thread_id: messages_thread.id
+                                                    })
+
             send_lock_changed
           end
         end

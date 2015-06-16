@@ -2,7 +2,7 @@ class Review::MessagesThreadsController < ReviewController
 
 
   def review
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, mt_operator_actions: {operator: {}}).find(params[:id])
     @messages_thread.re_import
 
     @messages_thread.account
@@ -11,7 +11,7 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def learn
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, mt_operator_actions: {operator: {}}).find(params[:id])
     @messages_thread.re_import
 
     @messages_thread.account

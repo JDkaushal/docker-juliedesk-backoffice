@@ -5,4 +5,6 @@ class OperatorAction < ActiveRecord::Base
 
   NATURE_ARCHIVE = "archive"
   NATURE_OPEN    = "open"
+  NATURE_LOCK    = "lock"
+  NATURE_UNLOCK  = "unlock"
 end
