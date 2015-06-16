@@ -1,6 +1,7 @@
 class JulieAction < ActiveRecord::Base
 
   belongs_to :message_classification
+  has_many :operator_actions, as: :target
 
   JD_ACTION_CREATE_EVENT             = "create_event"
   JD_ACTION_UPDATE_EVENT             = "update_event"

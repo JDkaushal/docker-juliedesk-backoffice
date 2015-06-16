@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150605140307) do
+ActiveRecord::Schema.define(version: 20150616120827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20150605140307) do
     t.text     "events",                    default: "[]"
     t.boolean  "deleted_event",             default: false
     t.string   "event_url"
+    t.string   "google_message_id"
   end
 
   create_table "julie_aliases", force: true do |t|
@@ -124,6 +125,17 @@ ActiveRecord::Schema.define(version: 20150605140307) do
     t.text     "to_founders_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
+  end
+
+  create_table "operator_actions", force: true do |t|
+    t.integer  "target_id"
+    t.string   "target_type"
+    t.integer  "operator_id"
+    t.integer  "messages_thread_id"
+    t.string   "nature"
+    t.datetime "initiated_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "operators", force: true do |t|

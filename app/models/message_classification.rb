@@ -1,6 +1,7 @@
 class MessageClassification < ActiveRecord::Base
 
   belongs_to :message
+  has_many :operator_actions, as: :target
 
   has_one :julie_action
 

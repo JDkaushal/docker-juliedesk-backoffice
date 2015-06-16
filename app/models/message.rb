@@ -50,10 +50,17 @@ class Message < ActiveRecord::Base
   end
 
   def generator_mcs
-    reply_to_message_ids = "#{google_message['in_reply_to']}".split(" ")
-    messages_thread.messages.select{|m|
-      reply_to_message_ids.include? m.google_message['message_id']
-    }.sort_by(&:received_at).last.try(:message_classifications) || []
+    julie_action = messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+      ja.google_message_id && ja.google_message_id == self.google_message_id
+    }.first
+    if julie_action
+      [julie_action.message_classification]
+    else
+      reply_to_message_ids = "#{google_message['in_reply_to']}".split(" ")
+      messages_thread.messages.select{|m|
+        reply_to_message_ids.include? m.google_message['message_id']
+      }.sort_by(&:received_at).last.try(:message_classifications) || []
+    end
   end
 
   def julie_alias

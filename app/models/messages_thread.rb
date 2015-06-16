@@ -5,6 +5,7 @@ class MessagesThread < ActiveRecord::Base
   EVENTS_CREATED = "events_created"
 
   has_many :messages
+  has_many :operator_actions, as: :target
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
 

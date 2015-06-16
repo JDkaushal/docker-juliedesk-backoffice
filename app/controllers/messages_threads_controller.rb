@@ -13,6 +13,14 @@ class MessagesThreadsController < ApplicationController
 
   def show
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
+
+    @messages_thread.operator_actions.create({
+                                                initiated_at: DateTime.now,
+                                                nature: OperatorAction::NATURE_OPEN,
+                                                operator_id: session[:operator_id],
+                                                messages_thread_id: @messages_thread.id
+                                            })
+
     @messages_thread.re_import
 
     @messages_thread.account
@@ -20,6 +28,14 @@ class MessagesThreadsController < ApplicationController
 
   def archive
     messages_thread = MessagesThread.find(params[:id])
+
+    messages_thread.operator_actions.create({
+                                                initiated_at: DateTime.now,
+                                                nature: OperatorAction::NATURE_ARCHIVE,
+                                                operator_id: session[:operator_id],
+                                                messages_thread_id: messages_thread.id
+                                            })
+
     messages_thread.google_thread.archive
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
 
@@ -33,6 +49,8 @@ class MessagesThreadsController < ApplicationController
           :message_thread_id => messages_thread.id
       })
     end
+
+
 
     redirect_to action: :index
   end

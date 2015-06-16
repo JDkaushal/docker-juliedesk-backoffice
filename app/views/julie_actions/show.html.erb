@@ -245,7 +245,8 @@
                     html_signature: $("#reply-text-signature").html(),
                     to: window.currentRecipients().to,
                     cc: window.currentRecipients().cc,
-                    quote_message: $("input#quote_message:checked").length > 0
+                    quote_message: $("input#quote_message:checked").length > 0,
+                    julie_action_id: "<%= @julie_action.id %>"
                 },
                 success: function (e) {
                     $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");

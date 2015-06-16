@@ -56,6 +56,7 @@ class ApplicationController < ActionController::Base
     authenticate_or_request_with_http_basic do |username, password|
       operator = Operator.find_by_email(username)
       if operator && operator.password_correct?(password)
+        session[:operator_id] = operator.id
         session[:user_username] = operator.email
         session[:user_name] = operator.name
         session[:privilege] = operator.privilege

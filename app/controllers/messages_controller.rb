@@ -45,9 +45,6 @@ class MessagesController < ApplicationController
         access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
     })
 
-    p "*" * 50
-    p x.body
-
     redirect_to :messages_threads
   end
 
@@ -55,6 +52,13 @@ class MessagesController < ApplicationController
     message = Message.find(params[:id])
     params[:operator] = session[:user_username]
     message_classification = message.message_classifications.create_from_params params
+
+    message_classification.operator_actions.create({
+                                              initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
+                                              nature: OperatorAction::NATURE_OPEN,
+                                              operator_id: session[:operator_id],
+                                              messages_thread_id: message.messages_thread_id
+                                          })
 
     if message_classification.classification == MessageClassification::GIVE_PREFERENCE
       url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"
@@ -89,8 +93,6 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-
-
     html_message = "#{text_to_html(params[:text])} #{params[:html_signature]}"
     text_message = "#{params[:text]}#{strip_tags(params[:html_signature])}"
 
@@ -99,9 +101,7 @@ class MessagesController < ApplicationController
     response_message.to = (params[:to] || []).join(", ")
     response_message.cc = (params[:cc] || []).join(", ")
 
-    p "*" * 50
     unless params[:quote_message] == "true"
-      p "should not quote"
       response_message.text = text_message
       response_message.html = html_message
       response_message.body = nil
@@ -109,7 +109,14 @@ class MessagesController < ApplicationController
 
     julie_alias = @message.messages_thread.julie_alias
     response_message.from = julie_alias.generate_from
-    response_message.deliver
+    response_message_sent = response_message.deliver
+
+    p "*" * 50
+    p response_message_sent
+
+
+    julie_action = JulieAction.find params[:julie_action_id]
+    julie_action.update_attribute :google_message_id, response_message_sent.id
 
     render json: {
         status: "success",
