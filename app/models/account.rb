@@ -1,6 +1,6 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes, :contacts_from_same_company
+  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes, :contacts_from_same_company, :created_at, :complaints_count
 
   def self.create_from_email email, params={}
     #account_email = self.find_account_email email
@@ -31,6 +31,13 @@ class Account
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
+
+    begin
+      account.created_at = DateTime.parse(data['created_at'])
+    rescue
+      account.created_at = DateTime.parse("1989-05-03")
+    end
+    account.complaints_count = data['complaints_count']
 
     account.build_contacts_from_same_company({accounts_cache: cache})
 

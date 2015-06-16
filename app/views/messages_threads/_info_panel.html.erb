@@ -531,6 +531,12 @@
       <% if account %>
           <div class="full-name"><%= account.full_name %></div>
           <div class="account-email"><%= messages_thread.account.email %></div>
+
+          <div class="client-for-date">Has been client for <%= distance_of_time_in_words_to_now(account.created_at) %></div>
+          <% if account.complaints_count > 0 %>
+              <div class="complaints-count"><%= account.complaints_count %> complaints</div>
+          <% end %>
+
           <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
           <% if possible_contacts_for_cache.length > 0 %>
           <div class="change-account-init-button">Change</div>
