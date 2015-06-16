@@ -134,6 +134,7 @@ window.wordings['en'] = {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
             before: "Hi,\n\n",
+            before_only_client: "Hi %{client_name},\n\n",
             full_date_format: "LLLL",
             timezone_precision: "(Timezone: %{timezone})",
             footer: {

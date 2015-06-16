@@ -135,6 +135,7 @@ window.wordings['fr'] = {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
             before: "Bonjour,\n\n",
+            before_only_client: "Bonjour %{client_name},\n\n",
             full_date_format: "dddd D MMMM YYYY à H[h]mm",
             timezone_precision: "(Fuseau horaire : %{timezone})",
             footer: {

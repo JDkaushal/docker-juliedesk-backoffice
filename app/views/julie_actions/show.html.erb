@@ -306,7 +306,13 @@
         var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
         var fullMessage = "";
         if(shouldSayHi) {
-            fullMessage += localize("email_templates.common.before");
+            if(recipients == "only_client") {
+                fullMessage += localize("email_templates.common.before_only_client", {client_name: window.threadAccount.usage_name});
+            }
+            else {
+                fullMessage += localize("email_templates.common.before");
+            }
+
         }
         fullMessage += message;
         fullMessage += footer;
