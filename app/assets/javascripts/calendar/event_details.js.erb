@@ -67,7 +67,11 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     calendar.currentEventTile.fetchRecurringEventIfNeeded(function() {
 
     });
-
+    if(calendar.currentEvent.preview) {
+        calendar.currentEventTile.fetchEvent(function() {
+            calendar.currentEventTile.redraw();
+        });
+    }
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {
