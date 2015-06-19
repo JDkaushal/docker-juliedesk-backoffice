@@ -50,6 +50,7 @@ class Message < ActiveRecord::Base
   end
 
   def generator_operator_actions_group operator_actions_groups
+    return nil if self.generator_message_classification.nil?
     @generator_operator_actions_group ||= if operator_actions_groups
 
       operator_actions_groups.select{|operator_actions_group|
