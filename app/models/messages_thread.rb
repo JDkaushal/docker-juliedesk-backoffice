@@ -6,7 +6,8 @@ class MessagesThread < ActiveRecord::Base
 
   has_many :messages
   has_many :operator_actions, as: :target
-  has_many :mt_operator_actions, class_name: OperatorAction
+  has_many :operator_actions_groups
+
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
 
@@ -17,6 +18,8 @@ class MessagesThread < ActiveRecord::Base
     end
     @google_thread
   end
+
+
 
   def account params={}
     @account ||= Account.create_from_email(account_email, params)
@@ -434,6 +437,4 @@ class MessagesThread < ActiveRecord::Base
       }
     }
   end
-
-
 end

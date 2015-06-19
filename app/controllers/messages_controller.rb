@@ -48,12 +48,13 @@ class MessagesController < ApplicationController
     params[:operator] = session[:user_username]
     message_classification = message.message_classifications.create_from_params params
 
-    message_classification.operator_actions.create({
-                                              initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
-                                              nature: OperatorAction::NATURE_OPEN,
-                                              operator_id: session[:operator_id],
-                                              messages_thread_id: message.messages_thread_id
-                                          })
+    OperatorAction.create_and_verify({
+                                         initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
+                                         target: message_classification,
+                                         nature: OperatorAction::NATURE_OPEN,
+                                         operator_id: session[:operator_id],
+                                         messages_thread_id: message.messages_thread_id
+                                     })
 
     if message_classification.classification == MessageClassification::GIVE_PREFERENCE
       url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"

@@ -1,5 +1,6 @@
 <% email = message.google_message %>
 
+<% operator_actions_group = (message.from_me)?message.generator_operator_actions_group(local_assigns[:operator_actions_groups]):nil %>
 <script>
     $(function () {
         var $email = $(".email-<%= message.google_message_id %>");
@@ -19,10 +20,22 @@
             e.stopPropagation();
         });
 
-        $email.find(".to-learn-switch .option").click(function(e) {
-            $email.find(".to-learn-switch .option").show();
-            $(this).hide();
-            e.stopPropagation();
+        $email.find(".notation-container .notation-option").click(function() {
+            var notation = $(this).closest(".notation-container").find(".notation-option").index(this) + 1;
+
+            $(this).closest(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5");
+            $(this).closest(".notation-container").addClass("notation-" + notation);
+            $(this).closest(".notation-container").data("value", notation);
+
+            $email.find(".full-review-container").removeClass("already-set");
+
+            if(notation==5) {
+                $email.find(".full-review-container").removeClass("expanded");
+            }
+            else {
+                $email.find(".full-review-container").addClass("expanded");
+                $email.find(".full-review-container textarea").focus();
+            }
         });
 
         $email.click(function () {
@@ -38,6 +51,8 @@
                 window.location = $(this).attr('href') + "?started_at=" + window.startedAt;
             }
         });
+
+
 
         var $expandQuotes = $("<div>").html("...").addClass("expand-quotes-button");
         $email.find("blockquote, .gmail_quote").first().before($expandQuotes);
@@ -63,36 +78,40 @@
 
 
 <div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || email.unread? || local_assigns[:last])? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+  <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
+      <% notation = operator_actions_group.review_notation || 5 %>
+      <div class="full-review-container <%= (notation < 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%>">
+        <div class="notation-container notation-<%= notation %>" data-value="<%= notation %>" data-operator-actions-group-id="<%= operator_actions_group.id %>">
+          <div class="notation-option" data-value="1"></div>
+          <div class="notation-option" data-value="2"></div>
+          <div class="notation-option" data-value="3"></div>
+          <div class="notation-option" data-value="4"></div>
+          <div class="notation-option" data-value="5"></div>
+        </div>
+        <textarea><%= operator_actions_group.review_comment %></textarea>
+      </div>
+  <% end %>
+  <div class="email-container">
   <div class="retracted">
     <div class="checkbox-container">
       <%= check_box_tag "checkbox-message-#{message.id}", message.id %>
       <label for="checkbox-message-<%= message.id %>"></label>
     </div>
 
-    <% if message.from_me? && (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") %>
-        <div class="review-container">
-
-          <% mc = message.generator_mcs.first %>
-          <% if mc %>
-              <% if mc.review_status == MessageClassification::REVIEW_STATUS_TO_REVIEW && local_assigns[:reviewing_status] == "review" %>
-                  <div class="to-learn-switch" data-message-classification-id="<%= mc.id %>">
-                    <div class="option to-learn">To learn</div>
-                    <div class="option">Review Ok</div>
-                  </div>
-              <% else %>
-                  <%= mc.review_status %>
-              <% end %>
-          <% end %>
-          </div>
-    <% end %>
-
     <div class="retracted-container">
       <div class="date-and-from">
         <div class="from"><%= email.from %></div>
         <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
 
-        <% if message.from_me? %>
-            <div class="operator"><%= message.generator_mcs.map(&:operator).uniq.join(" or ") %></div>
+        <% if message.from_me %>
+            <% if operator_actions_group %>
+                <div class="operator-and-action-container">
+                    <div class="operator"><%= operator_actions_group.operator.name %></div>
+                    <% if local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn" %>
+                        <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+                    <% end %>
+                </div>
+            <% end %>
         <% end %>
 
         <div class="clear"></div>
@@ -108,8 +127,15 @@
         <div class="from"><%= email.from %></div>
         <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
 
-        <% if message.from_me? %>
-            <div class="operator"><%= message.generator_mcs.map(&:operator).uniq.join(" or ") %></div>
+        <% if message.from_me %>
+            <% if operator_actions_group %>
+                <div class="operator-and-action-container">
+                    <div class="operator"><%= operator_actions_group.operator.name %></div>
+                    <% if local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn" %>
+                        <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+                    <% end %>
+                </div>
+            <% end %>
         <% end %>
 
         <div class="clear"></div>
@@ -149,5 +175,6 @@
 
 
     <div class="body"><%== Message.format_email_body(message) %></div>
+  </div>
   </div>
 </div>

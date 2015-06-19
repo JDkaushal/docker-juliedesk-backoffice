@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150616120827) do
+ActiveRecord::Schema.define(version: 20150619095844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -134,6 +134,22 @@ ActiveRecord::Schema.define(version: 20150616120827) do
     t.integer  "messages_thread_id"
     t.string   "nature"
     t.datetime "initiated_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "operator_actions_group_id"
+  end
+
+  create_table "operator_actions_groups", force: true do |t|
+    t.integer  "operator_id"
+    t.integer  "messages_thread_id"
+    t.string   "label"
+    t.integer  "target_id"
+    t.string   "target_type"
+    t.string   "review_status"
+    t.integer  "review_notation"
+    t.text     "review_comment"
+    t.datetime "initiated_at"
+    t.integer  "duration"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

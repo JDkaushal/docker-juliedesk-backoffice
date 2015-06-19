@@ -28,12 +28,13 @@ class PusherController < ApplicationController
           messages_thread.update_attributes locked_by_operator_id: operator.id,
                                             locked_at: locked_at
 
-          messages_thread.operator_actions.create({
-                                                       initiated_at: locked_at,
-                                                       nature: OperatorAction::NATURE_LOCK,
-                                                       operator_id: session[:operator_id],
-                                                       messages_thread_id: messages_thread.id
-                                                   })
+          OperatorAction.create_and_verify({
+                                               initiated_at: locked_at,
+                                               target: messages_thread,
+                                               nature: OperatorAction::NATURE_LOCK,
+                                               operator_id: session[:operator_id],
+                                               messages_thread_id: messages_thread.id
+                                           })
 
           send_lock_changed
         elsif messages_thread.locked_by_operator_id == operator.id
@@ -71,12 +72,13 @@ class PusherController < ApplicationController
               (messages_thread.locked_at.nil? || Time.at(params[:time_ms]/1000).to_datetime > messages_thread.locked_at + 1.second)
             messages_thread.update_attribute :locked_by_operator_id, nil
 
-            messages_thread.operator_actions.create({
-                                                        initiated_at: Time.at(params[:time_ms]/1000).to_datetime,
-                                                        nature: OperatorAction::NATURE_UNLOCK,
-                                                        operator_id: operator.id,
-                                                        messages_thread_id: messages_thread.id
-                                                    })
+            OperatorAction.create_and_verify({
+                                                 initiated_at: Time.at(params[:time_ms]/1000).to_datetime,
+                                                 target: messages_thread,
+                                                 nature: OperatorAction::NATURE_UNLOCK,
+                                                 operator_id: operator.id,
+                                                 messages_thread_id: messages_thread.id
+                                             })
 
             send_lock_changed
           end

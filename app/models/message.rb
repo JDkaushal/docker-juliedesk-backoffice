@@ -49,18 +49,22 @@ class Message < ActiveRecord::Base
     }.length > 0
   end
 
-  def generator_mcs
-    julie_action = messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+  def generator_operator_actions_group operator_actions_groups
+    @generator_operator_actions_group ||= if operator_actions_groups
+
+      operator_actions_groups.select{|operator_actions_group|
+        operator_actions_group.is_action? &&
+            operator_actions_group.target_id == self.generator_message_classification.julie_action.id
+      }.first
+                                          else
+                                            nil
+                                          end
+  end
+
+  def generator_message_classification
+    messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
       ja.google_message_id && ja.google_message_id == self.google_message_id
-    }.first
-    if julie_action
-      [julie_action.message_classification]
-    else
-      reply_to_message_ids = "#{google_message['in_reply_to']}".split(" ")
-      messages_thread.messages.select{|m|
-        reply_to_message_ids.include? m.google_message['message_id']
-      }.sort_by(&:received_at).last.try(:message_classifications) || []
-    end
+    }.first.try(:message_classification)
   end
 
   def julie_alias

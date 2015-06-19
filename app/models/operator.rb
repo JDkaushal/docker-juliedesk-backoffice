@@ -9,4 +9,6 @@ class Operator < ActiveRecord::Base
   def password_correct? password
     self.encrypted_password == Digest::SHA2.hexdigest(self.salt + password)
   end
+
+
 end

@@ -5,6 +5,8 @@ require_relative "../spec/factories/messages_threads.rb"
 require_relative "../spec/factories/messages.rb"
 require_relative "../spec/factories/message_classifications.rb"
 require_relative "../spec/factories/julie_actions.rb"
+require_relative "../spec/factories/operator_actions.rb"
+require_relative "../spec/factories/operator_actions_groups.rb"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

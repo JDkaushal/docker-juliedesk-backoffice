@@ -4,12 +4,13 @@ class JulieActionsController < ApplicationController
     @julie_action = JulieAction.find params[:id]
     @message = @julie_action.message_classification.message
 
-    @julie_action.operator_actions.create({
-                                              initiated_at: DateTime.now,
-                                              nature: OperatorAction::NATURE_OPEN,
-                                              operator_id: session[:operator_id],
-                                              messages_thread_id: @message.messages_thread_id
-                                          })
+    OperatorAction.create_and_verify({
+                                         initiated_at: DateTime.now,
+                                         target: @julie_action,
+                                         nature: OperatorAction::NATURE_OPEN,
+                                         operator_id: session[:operator_id],
+                                         messages_thread_id: @message.messages_thread_id
+                                     })
 
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)
     @messages_thread.re_import

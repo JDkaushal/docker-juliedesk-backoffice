@@ -1,7 +1,7 @@
 <script>
     $(function () {
         $("#review-form").submit(function() {
-            $("form#review-form input[name='message_classification_ids_to_learn']").val(JSON.stringify(messageClassificationIdsToLearn()));
+            $("form#review-form input[name='data']").val(JSON.stringify(reviewData()));
             return true;
         });
 
@@ -16,9 +16,13 @@
         });
     });
 
-    function messageClassificationIdsToLearn() {
-        return $(".to-learn-switch .option.to-learn:visible").map(function() {
-            return $(this).closest(".to-learn-switch").data("message-classification-id");
+    function reviewData() {
+        return $(".full-review-container:not(.already-set) .notation-container").map(function() {
+            return {
+                operator_actions_group_id: $(this).data('operator-actions-group-id'),
+                notation: $(this).data('value'),
+                comment: $(this).closest(".full-review-container").find("textarea").val()
+            };
         }).get();
     }
 
@@ -57,24 +61,26 @@
         <%= link_to @messages_thread.subject, @messages_thread, target: "_blank" %>
       </div>
 
-      <% items = (@messages_thread.messages + @messages_thread.mt_operator_actions).sort_by do |item|
+      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
+      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
+        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
+        !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target.google_message_id.present?)
+      }
+      %>
+
+      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
         if item.class == Message
           item.received_at
         else
           item.initiated_at
-          end
-        end %>
+        end
+      end %>
 
       <% items.each do |item| %>
           <% if item.class == Message %>
-            <%= render partial: "messages_threads/email", locals: {message: item, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review"} %>
-          <% else %>
-              <% if item.nature == OperatorAction::NATURE_ARCHIVE %>
-                <div class="review-archived-container">
-                  <div class="review-archived-line"></div>
-                  <div class="review-archived"><%= item.operator.name %> archived - <%= I18n.l(item.initiated_at.to_time.utc, format: "%-d %b %H:%M") %> UTC</div>
-                </div>
-              <% end %>
+            <%= render partial: "messages_threads/email", locals: {message: item, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review", operator_actions_groups: operator_actions_groups} %>
+          <% elsif item.class == OperatorActionsGroup %>
+              <%= render partial: "messages_threads/fake_email", locals: {reviewing_status: "review", operator_actions_group: item} %>
           <% end %>
       <% end %>
     </div>

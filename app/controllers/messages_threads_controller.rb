@@ -14,12 +14,13 @@ class MessagesThreadsController < ApplicationController
   def show
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
 
-    @messages_thread.operator_actions.create({
-                                                initiated_at: DateTime.now,
-                                                nature: OperatorAction::NATURE_OPEN,
-                                                operator_id: session[:operator_id],
-                                                messages_thread_id: @messages_thread.id
-                                            })
+    OperatorAction.create_and_verify({
+                                         initiated_at: DateTime.now,
+                                         target: @messages_thread,
+                                         nature: OperatorAction::NATURE_OPEN,
+                                         operator_id: session[:operator_id],
+                                         messages_thread_id: @messages_thread.id
+                                     })
 
     @messages_thread.re_import
 
@@ -29,12 +30,13 @@ class MessagesThreadsController < ApplicationController
   def archive
     messages_thread = MessagesThread.find(params[:id])
 
-    messages_thread.operator_actions.create({
-                                                initiated_at: DateTime.now,
-                                                nature: OperatorAction::NATURE_ARCHIVE,
-                                                operator_id: session[:operator_id],
-                                                messages_thread_id: messages_thread.id
-                                            })
+    OperatorAction.create_and_verify({
+                                         initiated_at: DateTime.now,
+                                         target: messages_thread,
+                                         nature: OperatorAction::NATURE_ARCHIVE,
+                                         operator_id: session[:operator_id],
+                                         messages_thread_id: messages_thread.id
+                                     })
 
     messages_thread.google_thread.archive
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)

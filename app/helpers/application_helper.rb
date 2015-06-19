@@ -35,4 +35,13 @@ module ApplicationHelper
       start_time.strftime('%A %d %B %Y, %H:%M') + "<br>" + end_time.strftime('%A %d %B %Y, %H:%M')
     end
   end
+
+  def display_duration duration_in_seconds
+    duration_in_seconds = duration_in_seconds.to_i
+    hours = (duration_in_seconds/60)/60
+    minutes = (duration_in_seconds/60)%60
+    seconds = duration_in_seconds%60
+
+    "#{(hours > 0)?"#{hours}h ":nil}#{minutes}' #{seconds}''"
+  end
 end

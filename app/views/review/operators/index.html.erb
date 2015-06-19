@@ -31,7 +31,7 @@
 
           <% @operators.each do |operator| %>
               <div class='operator' data-id="<%= operator.id %>">
-                <%= operator.name %> (<%= @message_threads_to_learn_counts[operator.id] %>)
+                <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
               </div>
           <% end %>
 
@@ -43,7 +43,7 @@
                 <%= operator.name %>
                 <br>
 
-                <%= link_to "Learn #{@message_threads_to_learn_counts[operator.id]} message threads", "/review/messages_threads/learn_next?operator=#{operator.email}", class: "btn btn-success" %>
+                <%= link_to "Learn #{@oags_to_learn_counts[operator.id]} message threads", "/review/messages_threads/learn_next?operator_id=#{operator.id}", class: "btn btn-success" %>
 
               </div>
           <% end %>
