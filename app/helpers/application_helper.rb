@@ -12,7 +12,7 @@ module ApplicationHelper
   end
   def self.strip_email contact
     begin
-      Mail::AddressList.new(contact.to_ascii).addresses.first.address
+      Gmail::Message.detect_emails(contact.to_ascii).first.address
     rescue
       nil
     end
