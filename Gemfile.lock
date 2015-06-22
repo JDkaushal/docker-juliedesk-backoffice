@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/NicolasMarlier/gmail-ruby-api
-  revision: 998c9a9984f5c4a48a0eb04ce34cb5f4c0085f30
+  revision: 290051cda00836bed5f3fd18ca75cc54583b54fe
   branch: master
   specs:
     gmail-api-ruby (0.0.7)
