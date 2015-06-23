@@ -17,7 +17,11 @@ function EventTile($selector, params) {
     this.minimized = params.minimized;
     this.afterNewEventEdited = params.afterNewEventEdited;
     this.eventDoesNotExistSelector = params.eventDoesNotExistSelector;
-    this.fordibRecurringEvents = params.fordibRecurringEvents;
+
+    this.calendarLoginUsername = params.calendarLoginUsername;
+    if(!this.calendarLoginUsername && params.event) {
+        this.calendarLoginUsername = params.event.calendar_login_username;
+    }
 
     var eventTile = this;
 
@@ -313,7 +317,8 @@ EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
             action: "get_event",
             email: eventTile.accountEmail,
             event_id: eventTile.event.recurringEventId,
-            calendar_id: eventTile.calendarId
+            calendar_id: eventTile.calendarId,
+            calendar_login_username: eventTile.calendarLoginUsername
         }, function(response) {
             if(response.status == "error") {
                 if(response.code == "EventNotFound") {
@@ -348,7 +353,8 @@ EventTile.prototype.fetchEvent = function(callback) {
         email: eventTile.accountEmail,
         event_id: eventTile.eventId,
         event_url: eventTile.eventUrl,
-        calendar_id: eventTile.calendarId
+        calendar_id: eventTile.calendarId,
+        calendar_login_username: eventTile.calendarLoginUsername
     }, function(response) {
         if(response.status == "error") {
             if(response.code == "EventNotFound") {
@@ -404,7 +410,9 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         owned: ev.owned,
         timezoneId: eventTile.getTimezoneId(),
         recurringEventId: ev.recurringEventId,
-        recurrence: ev.recurrence
+        recurrence: ev.recurrence,
+        calendar_login_username: ev.calendar_login_username,
+        calendar_login_type: ev.calendar_login_type
     };
 
     return eventData;
@@ -459,6 +467,7 @@ EventTile.prototype.saveRecurringEvent = function() {
     CommonHelpers.externalRequest({
         action: "update_event",
         email: eventTile.accountEmail,
+        calendar_login_username: eventTile.event.calendar_login_username,
 
         event_id: eventTile.recurringEvent.id,
         calendar_id: eventTile.calendarId,
@@ -501,6 +510,7 @@ EventTile.prototype.saveEvent = function() {
         CommonHelpers.externalRequest({
             action: "create_event",
             email: eventTile.accountEmail,
+            calendar_login_username: eventTile.event.calendar_login_username,
 
             summary: editedEvent.title,
             description: editedEvent.description,
@@ -542,6 +552,7 @@ EventTile.prototype.saveEvent = function() {
         CommonHelpers.externalRequest({
             action: "update_event",
             email: eventTile.accountEmail,
+            calendar_login_username: eventTile.event.calendar_login_username,
 
             event_id: eventTile.eventId,
             event_url: eventTile.eventUrl,
@@ -629,6 +640,8 @@ EventTile.prototype.deleteEvent = function(params) {
     CommonHelpers.externalRequest({
         action: "delete_event",
         email: eventTile.accountEmail,
+        calendar_login_username: eventTile.event.calendar_login_username,
+
         event_id: eventIdToDelete,
         event_url: eventTile.eventUrl,
         calendar_id: eventTile.calendarId
@@ -788,7 +801,7 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
-            if(eventTile.fordibRecurringEvents) {
+            if(eventTile.event.calendar_login_type != "GoogleLogin") {
                 alert("Recurring events are not supported for this account. Please send to support.")
             }
             else {

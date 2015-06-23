@@ -30,18 +30,22 @@ class MessagesThread < ActiveRecord::Base
                                delegated_to_founders: true,
                                to_founders_message: params[:message]
                            })
-    self.google_thread.modify(["Label_12"], [])
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      self.google_thread.modify(["Label_12"], [])
 
-    self.warn_support params
+      self.warn_support params
+    end
   end
 
   def warn_support params={}
-    gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
-    gmail_message.subject = "Email thread delegated to support"
-    gmail_message.to = "guillaume@juliedesk.com"
-    gmail_message.cc = "nicolas@juliedesk.com"
-    gmail_message.from = "julie@juliedesk.com"
-    gmail_message.deliver
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
+      gmail_message.subject = "Email thread delegated to support"
+      gmail_message.to = "guillaume@juliedesk.com"
+      gmail_message.cc = "nicolas@juliedesk.com"
+      gmail_message.from = "julie@juliedesk.com"
+      gmail_message.deliver
+    end
   end
 
   def julie_alias
@@ -112,7 +116,9 @@ class MessagesThread < ActiveRecord::Base
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"
         },
-        last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at)
+        last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
+        calendar_login_username: self.calendar_login.try(:[], 'username'),
+        calendar_login_type: self.calendar_login.try(:[], 'type')
     }
   end
 
@@ -288,6 +294,16 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def calendar_login
+    if account
+      account.find_calendar_login_with_rule_data({
+                                                     email_alias: self.client_email
+                                                 })
+    else
+      nil
+    end
+  end
+
   def self.find_account_email google_thread
     account_emails = self.find_account_emails(google_thread)
     if account_emails.length == 1
@@ -328,13 +344,16 @@ class MessagesThread < ActiveRecord::Base
           event_id: last_creation.event_id,
           event_url: last_creation.event_url,
           calendar_id: last_creation.calendar_id,
-          appointment_nature: last_creation.message_classification.appointment_nature
+          appointment_nature: last_creation.message_classification.appointment_nature,
+          calendar_login_username: last_creation.calendar_login_username
       }
     else
       {
           event_id: nil,
           calendar_id: nil,
-          appointment_nature: nil
+          event_url: nil,
+          appointment_nature: nil,
+          calendar_login_username: nil
       }
     end
   end

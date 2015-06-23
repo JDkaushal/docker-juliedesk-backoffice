@@ -50,7 +50,7 @@
                 redrawDifferentTimezoneWarner();
             });
 
-            <% if messages_thread.account.calendar_nature != "google" %>
+            <% if messages_thread.calendar_login['type'] != "GoogleLogin" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
             $(".data textarea#notes").prop('disabled', true);
@@ -163,9 +163,9 @@
             eventUrl: "<%= messages_thread.event_data[:event_url] %>",
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
             accountEmail: window.threadAccount.email,
+            calendarLoginUsername: "<%= messages_thread.event_data[:calendar_login_username] %>",
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
-            fordibRecurringEvents: window.threadAccount.calendar_nature != "google",
             doneEditingCallback: function() {
 
             }

@@ -96,6 +96,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             data: JSON.stringify({
                 email: request.email,
                 access_key: access_key,
+                calendar_login_username: request.calendar_login_username,
                 summary: request.summary,
                 description: request.description,
                 attendees: request.attendees,
@@ -130,6 +131,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             data: JSON.stringify({
                 email: request.email,
                 access_key: access_key,
+                calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
                 calendar_id: request.calendar_id,
@@ -162,6 +164,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             data: JSON.stringify({
                 email: request.email,
                 access_key: access_key,
+                calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
                 calendar_id: request.calendar_id
@@ -182,6 +185,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             data: {
                 email: request.email,
                 access_key: access_key,
+                calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
                 calendar_id: request.calendar_id
@@ -195,23 +199,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
-    else if(request.action == "all_accounts") {
-        $.ajax({
-            url: host + "/api/v1/accounts/",
-            type: "GET",
-            contentType: "application/json",
-            data: {
-                access_key: access_key
-            },
-            success: function(e) {
-                callback(e);
-            },
-            error: function(e) {
-                console.log(e);
-                error_callback(e);
-            }
-        });
-    }
+
     else if(request.action == "show_account") {
         $.ajax({
             url: host + "/api/v1/accounts/show/",

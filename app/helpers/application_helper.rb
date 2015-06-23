@@ -1,8 +1,5 @@
 module ApplicationHelper
 
-  #JD_APP_HOST = "juliedesk-release.herokuapp.com"
-  JD_APP_HOST = "juliedesk-app.herokuapp.com"
-
 
   def self.hash_from_parenthesized_contact contact
     {

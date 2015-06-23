@@ -11,6 +11,10 @@ describe MessagesThread, :type => :model do
     @account.locale =  "en"
     @account.default_timezone_id = "America/Los_Angeles"
     @account.appointments = []
+    @account.calendar_logins = []
+
+
+    allow_any_instance_of(MessagesThread).to receive(:calendar_login).and_return(nil)
 
     @message_classification_params = {
         ask_availabilities_1: {
@@ -66,12 +70,14 @@ describe MessagesThread, :type => :model do
         creation_1: {
             done: true,
             event_id: "eid1",
-            calendar_id: "cid1"
+            calendar_id: "cid1",
+            calendar_login_username: "google.nmarlier@gmail.com"
         },
         creation_2: {
             done: true,
             event_id: "eid2",
-            calendar_id: "cid2"
+            calendar_id: "cid2",
+            calendar_login_username: "icloud.nmarlier@gmail.com"
         },
         deletion_1: {
             done: true,
@@ -115,7 +121,9 @@ describe MessagesThread, :type => :model do
                                                         :constraints_data => [],
                                                         :number_to_call => nil,
                                                         :date_times => [],
-                                                        :last_message_sent_at => nil
+                                                        :last_message_sent_at => nil,
+                                                        :calendar_login_username => nil,
+                                                        :calendar_login_type => nil
                                                     })
       end
     end
@@ -144,7 +152,9 @@ describe MessagesThread, :type => :model do
                                                         :constraints_data => [],
                                                         :number_to_call => nil,
                                                         :date_times => [],
-                                                        :last_message_sent_at => nil
+                                                        :last_message_sent_at => nil,
+                                                        :calendar_login_username => nil,
+                                                        :calendar_login_type => nil
                                                     })
       end
     end
@@ -176,7 +186,9 @@ describe MessagesThread, :type => :model do
                                                         :date_times => [
                                                             {"date" => "2015-03-06T12:15:00+00:00", "timezone" => "Europe/Paris"},
                                                         ],
-                                                        :last_message_sent_at => nil
+                                                        :last_message_sent_at => nil,
+                                                        :calendar_login_username => nil,
+                                                        :calendar_login_type => nil
                                                     })
       end
     end
@@ -209,7 +221,9 @@ describe MessagesThread, :type => :model do
                                                             {"date" => "2015-03-06T12:15:00+00:00", "timezone" => "Europe/Paris"},
                                                             {"date" => "2015-03-07T14:15:00+00:00", "timezone" => "America/Los_Angeles"}
                                                         ],
-                                                        :last_message_sent_at => nil
+                                                        :last_message_sent_at => nil,
+                                                        :calendar_login_username => nil,
+                                                        :calendar_login_type => nil
                                                     })
       end
     end
@@ -243,7 +257,9 @@ describe MessagesThread, :type => :model do
                                                         :date_times => [
                                                             {"date" => "2015-03-07T14:15:00+00:00", "timezone" => "America/Los_Angeles"}
                                                         ],
-                                                        :last_message_sent_at => nil
+                                                        :last_message_sent_at => nil,
+                                                        :calendar_login_username => nil,
+                                                        :calendar_login_type => nil
                                                     })
       end
     end
@@ -255,7 +271,9 @@ describe MessagesThread, :type => :model do
         expect(@message_thread.event_data).to eq({
                                                      event_id: nil,
                                                      calendar_id: nil,
-                                                     appointment_nature: nil
+                                                     appointment_nature: nil,
+                                                     event_url: nil,
+                                                     calendar_login_username: nil
                                                  })
       end
     end
@@ -271,7 +289,9 @@ describe MessagesThread, :type => :model do
         expect(@message_thread.event_data).to eq({
                                                      event_id: nil,
                                                      calendar_id: nil,
-                                                     appointment_nature: nil
+                                                     event_url: nil,
+                                                     appointment_nature: nil,
+                                                     calendar_login_username: nil
                                                  })
       end
     end
@@ -288,7 +308,8 @@ describe MessagesThread, :type => :model do
                                                      event_id: "eid1",
                                                      calendar_id: "cid1",
                                                      appointment_nature: "meeting",
-                                                     event_url: nil
+                                                     event_url: nil,
+                                                     calendar_login_username: "google.nmarlier@gmail.com"
                                                  })
       end
     end
@@ -313,7 +334,8 @@ describe MessagesThread, :type => :model do
                                                      event_id: "eid2",
                                                      calendar_id: "cid2",
                                                      appointment_nature: "call",
-                                                     event_url: nil
+                                                     event_url: nil,
+                                                     calendar_login_username: "icloud.nmarlier@gmail.com"
                                                  })
       end
     end
@@ -337,7 +359,9 @@ describe MessagesThread, :type => :model do
         expect(@message_thread.event_data).to eq({
                                                      event_id: nil,
                                                      calendar_id: nil,
-                                                     appointment_nature: nil
+                                                     appointment_nature: nil,
+                                                     event_url: nil,
+                                                     calendar_login_username: nil
                                                  })
       end
     end

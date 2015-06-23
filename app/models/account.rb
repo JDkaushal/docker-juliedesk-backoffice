@@ -1,6 +1,31 @@
 class Account
 
-  attr_accessor :email, :calendar_nature, :appointments, :company_hash, :addresses, :usage_name, :full_name, :email_aliases, :access_token, :raw_preferences, :current_notes, :default_timezone_id, :locale, :only_admin_can_process, :block_until_preferences_change, :mobile_number, :landline_number, :skype, :means_of_transport, :awaiting_current_notes, :contacts_from_same_company, :created_at, :complaints_count
+  attr_accessor :email,
+                :appointments,
+                :company_hash,
+                :addresses,
+                :usage_name,
+                :full_name,
+                :email_aliases,
+                :raw_preferences,
+                :current_notes,
+                :default_timezone_id,
+                :locale,
+                :only_admin_can_process,
+                :block_until_preferences_change,
+                :mobile_number,
+                :landline_number,
+                :skype,
+                :means_of_transport,
+                :awaiting_current_notes,
+                :contacts_from_same_company,
+                :created_at,
+                :complaints_count,
+                :calendar_logins
+
+  RULE_VALIDATED = "rule_validated"
+  RULE_UNVALIDATED = "rule_unvalidated"
+  RULE_DEFAULT = "rule_default"
 
   def self.create_from_email email, params={}
     #account_email = self.find_account_email email
@@ -12,13 +37,11 @@ class Account
     return nil unless data
     account = self.new
     account.email = data['email']
-    account.calendar_nature = data['calendar_nature']
     account.appointments = data['appointments']
     account.addresses = data['addresses']
     account.usage_name = data['usage_name']
     account.full_name = data['full_name']
     account.email_aliases = data['email_aliases']
-    account.access_token = data['access_token']
     account.company_hash = data['company_hash']
     account.raw_preferences = data['raw_preferences']
     account.current_notes = data['current_notes']
@@ -31,6 +54,9 @@ class Account
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
+
+    account.calendar_logins = data['calendar_logins']
+
 
     begin
       account.created_at = DateTime.parse(data['created_at'])
@@ -113,6 +139,36 @@ class Account
 
   def self.accounts_cache
     JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
+  end
+
+  def find_calendar_login_with_rule_data rule_data
+    computed_rules = self.calendar_logins.map{|calendar_login|
+      {
+          calendar_login: calendar_login,
+          computed_rule: Account.compute_rule(calendar_login['rule'], rule_data)
+      }
+    }
+    computed_rules.select{|cr|
+      cr[:computed_rule] ==  RULE_VALIDATED
+    }.first.try(:[], :calendar_login) ||
+        computed_rules.select{|cr|
+          cr[:computed_rule] ==  RULE_DEFAULT
+        }.first.try(:[], :calendar_login)
+  end
+
+  def self.compute_rule calendar_login_rule, rule_data
+    if calendar_login_rule.blank?
+      RULE_DEFAULT
+    else
+      if calendar_login_rule.split("|").select{|rule_item|
+        email_alias_in_rule = rule_item.gsub("EMAIL_ALIAS=", "")
+        rule_data[:email_alias] == email_alias_in_rule
+      }.length > 0
+        RULE_VALIDATED
+      else
+        RULE_UNVALIDATED
+      end
+    end
   end
 
   private

@@ -145,17 +145,20 @@
                     start: start.format(),
                     end: end.format(),
                     start_timezone: window.timeSlotToCreateTimezone,
-                    end_timezone: window.timeSlotToCreateTimezone
+                    end_timezone: window.timeSlotToCreateTimezone,
+                    calendar_login_username: window.threadComputedData.calendar_login_username
                 };
                 if(isPostpone) {
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
+                    window.currentCalendarLoginUsername = "<%= @messages_thread.event_data[:calendar_login_username] %>";
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,
                         event_url: window.currentEventUrl,
-                        calendar_id: window.currentCalendarId
+                        calendar_id: window.currentCalendarId,
+                        calendar_login_username: window.currentCalendarLoginUsername,
                     }, function(v, k) {
                         requestParams[k] = v;
                     });
@@ -166,6 +169,7 @@
                         window.currentEventId = e.data.event_id;
                         window.currentEventUrl = e.data.event_url;
                         window.currentCalendarId = e.data.calendar_id;
+                        window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
                     }
 
 
@@ -194,6 +198,7 @@
                         eventId: window.currentEventId,
                         eventUrl: window.currentEventUrl,
                         calendarId: window.currentCalendarId,
+                        calendarLoginUsername: window.currentCalendarLoginUsername,
                         accountEmail: window.threadAccount.email,
                         locale: window.threadComputedData.locale
                     });
@@ -215,6 +220,7 @@
                             event_id: window.currentEventId,
                             event_url: window.currentEventUrl,
                             calendar_id: window.currentCalendarId,
+                            calendar_login_username: window.currentCalendarLoginUsername,
                             done: true
                         },
                         success: function (e) {
@@ -259,6 +265,7 @@
                 event_id: window.currentEventId,
                 event_url: window.currentEventUrl,
                 calendar_id: window.currentCalendarId,
+                calendar_login_username: window.currentCalendarLoginUsername,
                 deleted_event: window.actionDeletedEvent,
                 done: true,
                 processed_in: Date.now() - window.startedAt

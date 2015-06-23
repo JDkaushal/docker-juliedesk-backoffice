@@ -37,6 +37,7 @@ class JulieActionsController < ApplicationController
         event_id: params[:event_id],
         event_url: params[:event_url],
         calendar_id: params[:calendar_id],
+        calendar_login_username: params[:calendar_login_username],
         done: params[:done].present?,
         events: (params[:events].try(:values) || []).to_json,
         processed_in: params[:processed_in],

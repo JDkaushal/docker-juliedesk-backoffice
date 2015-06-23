@@ -47,6 +47,7 @@
                 eventId: eventData.id,
                 eventUrl: eventData.event_url,
                 calendarId: eventData.calendar_id,
+                calendarLoginUsername: eventData.calendar_login_username,
                 minimized: true
             }));
         });
@@ -62,7 +63,9 @@
         if(!params) params = {};
         var event = {
             title: localize("events.new_event"),
-            beingAdded: true
+            beingAdded: true,
+            calendar_login_username: window.threadComputedData.calendar_login_username,
+            calendar_login_type: window.threadComputedData.calendar_login_type
         };
         if(params.eventId) {
             event = {};
@@ -74,13 +77,13 @@
             eventId: params.eventId,
             eventUrl: params.eventUrl,
             calendarId: params.calendarId,
+            calendarLoginUsername: params.calendarLoginUsername,
             timezoneId: window.threadComputedData.timezone,
             accountEmail: window.threadAccount.email,
             minimizable: true,
             minimized: params.minimized,
             static: true,
             locale: window.threadComputedData.locale,
-            fordibRecurringEvents: window.threadAccount.calendar_nature != "google",
             doneEditingCallback: function(response) {
                 var eventTile = this;
 
@@ -141,6 +144,7 @@
                                     id: eventTileItem.eventId,
                                     event_url: eventTileItem.eventUrl,
                                     calendar_id: eventTileItem.calendarId,
+                                    calendar_login_username: eventTileItem.event.calendar_login_username,
                                     timezone_id: eventTileItem.timezoneId
                                 };
                             }),

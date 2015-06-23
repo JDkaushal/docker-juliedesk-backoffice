@@ -16,7 +16,9 @@ Calendar.prototype.generateEventData = function(params) {
         allDay: allDay,
         durationEditable: false,
         editable: true,
-        beingAdded: true
+        beingAdded: true,
+        calendar_login_username: params.calendar_login_username,
+        calendar_login_type: params.calendar_login_type
     };
 };
 
@@ -48,7 +50,9 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     var eventData = calendar.generateEventData({
         title: title,
         start: start,
-        end: realEnd
+        end: realEnd,
+        calendar_login_username: calendar.initialData.default_calendar_login_username,
+        calendar_login_type: calendar.initialData.default_calendar_login_type
     });
     if(calendar.getMode() == "create_events") {
         if(calendar.initialData.pickEventCallback) {

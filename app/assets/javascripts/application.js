@@ -53,7 +53,6 @@
 
 //= require jquery.cookie
 
-//= require presenters
 //= require generate_templates
 
 

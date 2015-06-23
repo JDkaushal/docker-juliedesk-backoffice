@@ -102,12 +102,16 @@ Calendar.prototype.getMode = function () {
     return calendar.initialData.mode;
 };
 
-Calendar.prototype.shouldDisplayCalId = function (calId, email) {
+Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
     var calendar = this;
+    var accountPreferences = calendar.accountPreferences[calendarItem.email];
 
-    return (calendar.accountPreferences[email] &&
-        calendar.accountPreferences[email].calendars_to_show.indexOf(calId) > -1)
-        || calendar.isFakeCalendarId(calId);
+    return (
+        accountPreferences &&
+        accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
+        accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
+        ) ||
+        calendar.isFakeCalendarId(calendarItem.id);
 
 };
 
@@ -153,33 +157,34 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
 
     var groupedCalendars = _.groupBy(calendar.calendars, 'email');
     for(var email in groupedCalendars) {
-        var categoryName = email;
-        if(categoryName == "undefined") categoryName = "Other";
-        $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
+        var groupedCalendarsByCalendarLogin = _.groupBy(groupedCalendars[email], 'calendar_login_username');
+        for(var calendarLoginUsername in groupedCalendarsByCalendarLogin) {
+            var categoryName = email + " - " + calendarLoginUsername;
+            if(email == "undefined") categoryName = "Other";
+            $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
+            $(groupedCalendarsByCalendarLogin[calendarLoginUsername]).each(function (k, calendarItem) {
+                var $div = $("<div>").addClass("calendar-item");
+                $div.data("email", email);
+                $div.data("calendar-id", calendarItem.id);
+                $div.data("calendar-login-username", calendarItem.calendar_login_username);
 
-        $(groupedCalendars[email]).each(function (k, calendarItem) {
+                var $checkbox = $("<input type='checkbox'>");
 
-            var $div = $("<div>").addClass("calendar-item");
-            $div.data("email", email);
-            $div.data("calendar-id", calendarItem.id);
+                if(email != calendar.initialData.email) {
+                    $checkbox.prop("disabled", "disabled");
+                }
 
-            var $checkbox = $("<input type='checkbox'>");
+                if (calendar.shouldDisplayCalendarItem(calendarItem)) {
+                    $checkbox.prop("checked", "checked");
+                }
+                $div.append($checkbox);
+                $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarColor(calendarItem)}));
+                $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
 
-            if(email != calendar.initialData.email) {
-                $checkbox.prop("disabled", "disabled");
-            }
 
-            if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
-                $checkbox.prop("checked", "checked");
-            }
-            $div.append($checkbox);
-            $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarColor(calendarItem)}));
-            $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
-
-            //if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
                 $calendarsListPopup.find(".calendars").append($div);
-            //}
-        });
+            });
+        }
     }
 
 };
@@ -211,9 +216,6 @@ Calendar.prototype.fetchCalendars = function (callback) {
                 var calendarItem = response.items[j];
                 calendarItem.email = response.email;
                 calendar.calendars.push(calendarItem);
-//                if(calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
-//                    calendar.calendars.push(calendarItem);
-//                }
             }
 
             accountsToWait --;
@@ -487,7 +489,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     }
 
     var eventCalendar = _.find(calendar.calendars, function(calendarItem) {
-        return calendarItem.id == ev.calId && calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email);
+        return calendarItem.id == ev.calId && calendar.shouldDisplayCalendarItem(calendarItem);
     });
     var color = calendar.getCalendarColor(null);
     if(eventCalendar) {
@@ -515,7 +517,9 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         isNotAvailableEvent: ev.isNotAvailableEvent,
         recurringEventId: ev.recurringEventId,
         recurrence: ev.recurrence,
-        preview: ev.preview
+        preview: ev.preview,
+        calendar_login_username: ev.calendar_login_username,
+        calendar_login_type: ev.calendar_login_type
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;
@@ -611,13 +615,22 @@ Calendar.prototype.changeShowCalendarCheckbox = function(e) {
 
 Calendar.prototype.getCheckedMainAccountCalendarIds = function(e) {
     var calendar = this;
-    return $(".calendar-item input[type='checkbox']:checked").filter(function() {
+
+    var result = {};
+
+    $(".calendar-item input[type='checkbox']:checked").each(function() {
         var $calendarItem = $(this).closest(".calendar-item");
-        return $calendarItem.data("email") == calendar.initialData.email;
-    }).map(function() {
-        var $calendarItem = $(this).closest(".calendar-item");
-        return $calendarItem.data("calendarId");
-    }).get();
+        if($calendarItem.data("email") == calendar.initialData.email) {
+            var calendarId = $calendarItem.data("calendar-id");
+            var calendarLoginUsername = $calendarItem.data("calendar-login-username");
+            if(!result[calendarLoginUsername]) {
+                result[calendarLoginUsername] = [];
+            }
+            result[calendarLoginUsername].push(calendarId);
+        }
+    });
+
+    return result;
 };
 
 Calendar.prototype.changeWeekendsCheckbox = function () {
@@ -782,7 +795,7 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
     var allTimeZones = [];
     // Add all calendars timezones
     $(calendar.calendars).each(function (k, calendarItem) {
-        if (calendar.shouldDisplayCalId(calendarItem.id, calendarItem.email)) {
+        if (calendar.shouldDisplayCalendarItem(calendarItem)) {
             if (calendarItem.timezone && allTimeZones.indexOf(calendarItem.timezone) == -1) {
                 allTimeZones.push(calendarItem.timezone);
                 calendar.$selector.find("#calendar-timezone").append(
