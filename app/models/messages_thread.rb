@@ -57,9 +57,9 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.contacts params  end
 
   def self.contacts params = {}
-    to_addresses = params[:google_messages_to_look].map{|m| Gmail::Message.detect_emails(m.to)}.flatten
-    from_addresses = params[:google_messages_to_look].map{|m| Gmail::Message.detect_emails(m.from)}.flatten
-    cc_addresses = params[:google_messages_to_look].map{|m| Gmail::Message.detect_emails(m.cc)}.flatten
+    to_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.to || "").to_ascii).addresses}.flatten
+    from_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.from || "").to_ascii).addresses}.flatten
+    cc_addresses = params[:google_messages_to_look].map{|m| Mail::AddressList.new((m.cc || "").to_ascii).addresses}.flatten
 
     forbidden_emails = JulieAlias.all.map(&:email) + (params[:forbidden_emails] || [])
 
@@ -68,7 +68,7 @@ class MessagesThread < ActiveRecord::Base
     }.map{ |contact|
       {
           email: contact.address,
-          name: contact.display_name
+          name: contact.name
       }
     }.group_by{ |contact|
       contact[:email]

@@ -20,7 +20,7 @@ gem 'uglifier', '>= 1.3.0'
 
 gem 'newrelic_rpm'
 
-gem "gmail-api-ruby", require: "gmail", git: "https://github.com/NicolasMarlier/gmail-ruby-api", branch: "master"
+gem "gmail-api-ruby", require: "gmail"
 
 gem "omniauth-google-oauth2"
 
