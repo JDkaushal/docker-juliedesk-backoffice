@@ -72,9 +72,11 @@
       <% end %>
 
       <%= button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+
+      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
       <% messages = @messages_thread.messages.sort_by(&:received_at) %>
       <% messages.each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true, expend: message.received_at == @messages_thread.messages.map(&:received_at).min, last: message == messages.last, no_account: @messages_thread.account_email.nil?} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true, expend: message.received_at == @messages_thread.messages.map(&:received_at).min, last: message == messages.last, no_account: @messages_thread.account_email.nil?, operator_actions_groups: operator_actions_groups} %>
       <% end %>
     </div>
 

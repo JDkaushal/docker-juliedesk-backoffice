@@ -4,10 +4,21 @@
         var $email = $(".email-fake-<%= operator_actions_group.id %>");
         $email.find(".notation-container .notation-option").click(function() {
             var notation = $(this).closest(".notation-container").find(".notation-option").index(this) + 1;
+            setNotation(notation);
+        });
 
-            $(this).closest(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5");
-            $(this).closest(".notation-container").addClass("notation-" + notation);
-            $(this).closest(".notation-container").data("value", notation);
+        $email.find(".to-learn-button").click(function() {
+            setNotation(4);
+        });
+
+        function setNotation(notation) {
+            if(!$email.find(".full-review-container").hasClass("enabled")) {
+                return;
+            }
+
+            $email.find(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5");
+            $email.find(".notation-container").addClass("notation-" + notation);
+            $email.find(".notation-container").data("value", notation);
 
             $email.find(".full-review-container").removeClass("already-set");
 
@@ -18,7 +29,7 @@
                 $email.find(".full-review-container").addClass("expanded");
                 $email.find(".full-review-container textarea").focus();
             }
-        });
+        }
     });
 </script>
 
@@ -26,7 +37,7 @@
 <div class="email email-fake-<%= operator_actions_group.id %>">
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
-      <div class="full-review-container <%= (notation < 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%>">
+      <div class="full-review-container <%= (notation < 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">
         <div class="notation-container notation-<%= notation %>" data-value="<%= notation %>" data-operator-actions-group-id="<%= operator_actions_group.id %>">
           <div class="notation-option" data-value="1"></div>
           <div class="notation-option" data-value="2"></div>
@@ -35,6 +46,8 @@
           <div class="notation-option" data-value="5"></div>
         </div>
         <textarea><%= operator_actions_group.review_comment %></textarea>
+        <div class="to-learn-button">Review ok</div>
+        <div class="to-learn-label">To learn</div>
       </div>
   <% end %>
 
@@ -42,13 +55,15 @@
     <div class="retracted-container">
       <div class="date-and-from">
 
+        <div class="operator-and-action-container">
+          <div class="operator"><%= operator_actions_group.operator.name %></div>
+          <% if local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn" %>
+              <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+          <% end %>
+        </div>
+
         <div class="date"><%= I18n.l(operator_actions_group.initiated_at.to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(operator_actions_group.initiated_at)) %>)</div>
-            <div class="operator-and-action-container">
-              <div class="operator"><%= operator_actions_group.operator.name %></div>
-              <% if local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn" %>
-                  <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
-              <% end %>
-            </div>
+
         <div class="clear"></div>
       </div>
     </div>

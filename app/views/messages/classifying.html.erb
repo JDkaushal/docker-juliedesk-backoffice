@@ -64,9 +64,9 @@
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
       </div>
-
+      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
       <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action")} %>
+          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action"), operator_actions_groups: operator_actions_groups} %>
       <% end %>
     </div>
   </div>

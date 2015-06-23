@@ -1,0 +1,40 @@
+<div class="fixed-columns full">
+  <div class="left-column">
+
+    <%= render partial: "review/header" %>
+
+
+
+    <div class="messages-threads-page">
+      <div class="operators-page">
+        <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
+
+        <div class='operators-container'>
+
+              <div class="operator-container" data-id="<%= @operator.id %>">
+                <%= @operator.name %>
+                <br>
+                Last 7 days:
+                <br>
+                <% oags = @operator.operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.week) %>
+                <%= oags.length %> actions
+                <br>
+                <%= display_duration(oags.map(&:duration).sum / oags.length) %> average
+                <br>
+                <%= (oags.select(&:review_status).map(&:review_notation).map(&:to_i).sum * 1.0 / oags.select(&:review_status).length).round(2) %> / 5 average
+                <br>
+                <%= link_to "Learn #{@oags_to_learn_counts[@operator.id]} message threads", "/review/messages_threads/learn_next?operator_id=#{@operator.id}", class: "btn btn-success" %>
+
+              </div>
+        </div>
+      </div>
+
+      <%= render partial: "common/footer" %>
+    </div>
+  </div>
+</div>
+
+
+
+
+

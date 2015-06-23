@@ -24,29 +24,10 @@
 
     <div class="messages-threads-page">
       <div class="operators-page">
-
-
-        <div class='operators-list'>
-          <%= link_to "Review #{@to_review_count} threads", "/review/messages_threads/review_next", class: "btn btn-success" %>
-
-          <% @operators.each do |operator| %>
-              <div class='operator' data-id="<%= operator.id %>">
-                <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
-              </div>
-          <% end %>
-
-        </div>
+        <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
 
         <div class='operators-container'>
-          <% @operators.each do |operator| %>
-              <div class="operator-container" data-id="<%= operator.id %>">
-                <%= operator.name %>
-                <br>
 
-                <%= link_to "Learn #{@oags_to_learn_counts[operator.id]} message threads", "/review/messages_threads/learn_next?operator_id=#{operator.id}", class: "btn btn-success" %>
-
-              </div>
-          <% end %>
         </div>
       </div>
 

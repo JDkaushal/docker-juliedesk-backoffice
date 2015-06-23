@@ -8,16 +8,35 @@
     }
 
     .full-review-container {
-        background-color: #D2E7F2;
-        margin-left: -60px;
-        padding: 10px 10px 10px 70px;
-        height: 30px;
         position: relative;
-        @include border-radius(30px 0 0 30px);
         @include transition-property(height);
         @include transition-duration(0.2s);
-        height: 90px;
-        margin-bottom: -60px;
+        height: 0px;
+        z-index: 0;
+
+        .to-learn-button, .to-learn-label {
+            position: absolute;
+            left: -55px;
+            height: 50px;
+            width: 50px;
+            text-align: center;
+            padding: 6px 2px;
+            font-size: 13px;
+            @include border-radius(4px);
+
+            &.to-learn-button {
+                top: 5px;
+                background-color: rgb(219, 245, 219);
+                cursor: pointer;
+            }
+            &.to-learn-label {
+                top: 25px;
+                background: red;
+                color: white;
+                display: none;
+            }
+        }
+
 
         &.already-set {
             opacity: 0.3;
@@ -31,7 +50,7 @@
             width: 112px;
             position: absolute;
             top: 4px;
-            left: 70px;
+            left: 10px;
             cursor: pointer;
             @include border-radius(5px);
             @include transition-property(top);
@@ -41,13 +60,13 @@
                 width: 20px;
                 height: 20px;
                 margin: 0 1px;
-                background-color: white;
+                background-color: #ddd;
                 float: left;
                 @include border-radius(5px);
 
 
                 &:hover {
-                    background: #eee;
+                    background: #ccc;
                 }
             }
 
@@ -92,11 +111,17 @@
         }
 
         &.expanded {
-            height: 160px;
+            height: 100px;
             .notation-container {
                 top: 40px;
             }
             textarea {
+                display: block;
+            }
+            .to-learn-button {
+                display: none;
+            }
+            .to-learn-label {
                 display: block;
             }
         }
@@ -143,41 +168,6 @@
             }
         }
 
-        .review-container {
-            height: 62px;
-            width: 60px;
-            text-align: center;
-            position: relative;
-            position: absolute;
-            left: -60px;
-            top: -1px;
-            background-color: #D2E7F2;
-            cursor: default;
-            @include border-radius(0 0 0px 30px);
-
-
-            .to-learn-switch {
-                width: 100%;
-                height: 100%;
-                cursor: pointer;
-                @include user-select(none);
-
-                .option {
-                    width: 100%;
-                    height: 100%;
-                    padding: 10px 0px;
-                    background: #188d2b;
-                    color: white;
-                    @include user-select(none);
-
-                    &.to-learn {
-                        display: none;
-                        background: red;
-
-                    }
-                }
-            }
-        }
 
         .subject {
             display: none;
@@ -229,33 +219,6 @@
             font-size: 14px;
             float: right;
         }
-        .operator-and-action-container {
-            position: absolute;
-            top: 30px;
-            right: 0px;
-
-            .operator {
-                float: right;
-                margin: 0 10px;
-                padding: 0 8px;
-                background-color: white;
-                color: #646161;
-                border-radius: 4px;
-                line-height: 20px;
-                font-size: 12px;
-                border: 1px solid #ddd;
-            }
-            .nature {
-                background: $darkBlue;
-                color: white;
-                @include border-radius(4px);
-                float: right;
-                padding: 1px 5px;
-                font-size: 12px;
-                margin: 2px 0px;
-            }
-        }
-
     }
 
     .subject {
@@ -420,6 +383,48 @@
         }
     }
 }
+
+.left-column {
+    .email {
+        .operator-and-action-container {
+            position: absolute;
+            top: 30px;
+            right: 0px;
+
+            .operator {
+                float: right;
+                margin: 0 10px;
+                padding: 0 8px;
+                background-color: white;
+                color: #646161;
+                border-radius: 4px;
+                line-height: 20px;
+                font-size: 12px;
+                border: 1px solid #ddd;
+            }
+            .nature {
+                background: $darkBlue;
+                color: white;
+                @include border-radius(4px);
+                float: right;
+                padding: 1px 5px;
+                font-size: 12px;
+                margin: 2px 0px;
+            }
+        }
+    }
+
+    &.review {
+        .email {
+            .operator-and-action-container {
+                float: left;
+                position: static;
+                padding: 0 5px;
+            }
+        }
+    }
+}
+
 
 .highlighted-below-email {
     background-color: $lightBlue;

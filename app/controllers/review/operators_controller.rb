@@ -1,6 +1,17 @@
 class Review::OperatorsController < ReviewController
 
   def index
+    compute_counts
+  end
+
+  def show
+    compute_counts
+    @operator = Operator.find params[:id]
+
+  end
+
+  private
+  def compute_counts
     @operators = Operator.all
     oags_to_review = OperatorActionsGroup.where(review_status: MessageClassification::REVIEW_STATUS_TO_REVIEW)
 
@@ -12,7 +23,7 @@ class Review::OperatorsController < ReviewController
       [
           operator.id,
           oags_to_learn.select{|oag| oag.operator_id == operator.id}.map(&:messages_thread_id).uniq.length
-       ]
+      ]
     }]
   end
 end
