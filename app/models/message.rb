@@ -81,6 +81,8 @@ class Message < ActiveRecord::Base
     # Put by default all previous messages_thread out of inbox
     MessagesThread.update_all(in_inbox: false)
 
+    updated_messages_thread_ids = []
+
 
     google_threads.each do |google_thread|
       should_update_thread = true
@@ -128,12 +130,14 @@ class Message < ActiveRecord::Base
                                             received_at: DateTime.parse(google_message.date),
                                             reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
                                             from_me: google_message.labelIds.include?("SENT")
+
+            updated_messages_thread_ids << messages_thread.id
           end
         end
       end
     end
 
-    nil
+    updated_messages_thread_ids.uniq
   end
 
 
@@ -163,6 +167,7 @@ class Message < ActiveRecord::Base
     julie_alias = self.messages_thread.julie_alias
     from = julie_alias.generate_from
 
+    updated_messages_thread_ids = []
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
 
@@ -198,9 +203,10 @@ class Message < ActiveRecord::Base
       if existing_message.try(:messages_thread)
         # Just update the message thread to notice it's in the inbox
         existing_message.messages_thread.update_attribute(:in_inbox, true)
+        updated_messages_thread_ids << existing_message.messages_thread_id
       else
         # Now creating DB entries to associate the created thread with event data
-        Message.associate_event_data updated_google_message,
+        messages_thread_id = Message.associate_event_data updated_google_message,
                                      {
                                          'id' => julie_message_hash['event_id'],
                                          'calendar_id' => julie_message_hash['calendar_id'],
@@ -212,12 +218,14 @@ class Message < ActiveRecord::Base
                                      },
                                      self.messages_thread
 
+        updated_messages_thread_ids << messages_thread_id
       end
 
       # Send new email notification
       Pusher.trigger('private-global-chat', 'new-email', {
           :message => 'new_email',
-          :messages_threads_count => MessagesThread.items_to_classify_count
+          :messages_threads_count => MessagesThread.items_to_classify_count,
+          :updated_messages_thread_ids => updated_messages_thread_ids.uniq
       })
     end
   end
@@ -263,6 +271,8 @@ class Message < ActiveRecord::Base
     message_classification.julie_action.update_attributes done: true,
                                                           event_id: event['id'],
                                                           calendar_id: event['calendar_id']
+
+    messages_thread.id
   end
 
   def classification_category_for_classification classification

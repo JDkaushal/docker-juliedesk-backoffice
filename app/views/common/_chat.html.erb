@@ -63,6 +63,10 @@
                         }, 300);
             });
 
+            if(window.processingMessageThreadId && data.updated_messages_thread_ids.indexOf(window.processingMessageThreadId) > -1) {
+                alert("A new email has been received in this thread. Reload the page to see it.");
+            }
+
             if(window.newEmailCallback) {
                 window.newEmailCallback();
             }

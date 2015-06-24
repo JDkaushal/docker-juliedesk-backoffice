@@ -6,10 +6,11 @@ class WebhooksController < ApplicationController
     events = JSON.parse params[:mandrill_events]
 
     #Gmail::Message.new({text: "New email", to: "elrandil@gmail.com"}).deliver
-    Message.import_emails
+    updated_messages_thread_ids = Message.import_emails
     Pusher.trigger('private-global-chat', 'new-email', {
         :message => 'new_email',
-        :messages_threads_count => MessagesThread.items_to_classify_count
+        :messages_threads_count => MessagesThread.items_to_classify_count,
+        :updated_messages_thread_ids => updated_messages_thread_ids
     })
 
     render json: {
