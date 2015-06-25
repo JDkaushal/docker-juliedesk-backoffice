@@ -16,6 +16,7 @@ class MessageClassification < ActiveRecord::Base
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
   TO_FOUNDERS              = "to_founders"
+  CANCEL_TO_FOUNDERS       = "cancel_to_founders"
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
 

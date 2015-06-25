@@ -12,11 +12,19 @@ class MessagesController < ApplicationController
         @classification == MessageClassification::ASK_CREATE_EVENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
       redirect_to message_classification.julie_action
+      return
     end
 
     if @classification == MessageClassification::TO_FOUNDERS
-      @message.messages_thread.delegate_to_support message: params[:to_founders_message]
+      @message.messages_thread.delegate_to_support message: params[:to_founders_message], operator: session[:user_name]
       redirect_to messages_threads_path
+      return
+    end
+
+    if @classification == MessageClassification::CANCEL_TO_FOUNDERS
+      @message.messages_thread.undelegate_to_support
+      redirect_to messages_thread_path(@message.messages_thread)
+      return
     end
 
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)

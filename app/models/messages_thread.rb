@@ -28,18 +28,25 @@ class MessagesThread < ActiveRecord::Base
   def delegate_to_support params={}
     self.update_attributes({
                                delegated_to_founders: true,
-                               to_founders_message: params[:message]
+                               to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       self.google_thread.modify(["Label_12"], [])
 
-      self.warn_support params
+      self.warn_support params.merge({operator: session[:user_name]})
     end
+  end
+
+  def undelegate_to_support
+    self.update_attributes({
+                               delegated_to_founders: false
+                           })
+    self.google_thread.modify([], ["Label_12"])
   end
 
   def warn_support params={}
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-      gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}"})
+      gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}\n\nOperator: #{params[:operator]}"})
       gmail_message.subject = "Email thread delegated to support"
       gmail_message.to = "guillaume@juliedesk.com"
       gmail_message.cc = "nicolas@juliedesk.com"
