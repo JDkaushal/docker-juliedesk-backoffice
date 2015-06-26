@@ -14,7 +14,7 @@ function Calendar($selector, params) {
     }
 
 
-    this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints"]
+    this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints", "juliedesk-public-holidays"]
 
     // Init variables
     this.accountPreferences = {};
@@ -28,6 +28,7 @@ function Calendar($selector, params) {
     this.eventBeingAdded = null;
 
     this.selectedEvents = [];
+    this.publicHolidaysAdded = false;
 
     var calendar = this;
 
@@ -237,6 +238,14 @@ Calendar.prototype.fetchCalendars = function (callback) {
                     summary: "Contacts light constraints",
                     colorId: "31"
                 });
+
+                calendar.calendars.push({
+                    id: "juliedesk-public-holidays",
+                    summary: "Public holidays",
+                    colorId: "0"
+                });
+
+
 
                 calendar.redrawTimeZoneSelector();
                 calendar.redrawCalendarsListPopup();
@@ -457,6 +466,35 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
         };
         result.push(event);
     }
+
+    if(!calendar.publicHolidaysAdded) {
+        for(var i=0; i<accountPreferencesHash.public_holidays_dates.length; i++) {
+            var publicHoliday = accountPreferencesHash.public_holidays_dates[i];
+            var mStartDate = moment(publicHoliday.date);
+            var mEndDate = mStartDate.clone();
+            mEndDate.add("d", 1);
+
+            var event = {
+                summary: "HOLIDAY: " + publicHoliday.name,
+                start: {
+                    date: mStartDate.format("YYYY-MM-DD")
+                },
+                end: {
+                    date: mEndDate.format("YYYY-MM-DD")
+                },
+                url: "PUBLIC-HOLLIDAY-" + publicHoliday.date + "-" + publicHoliday.name,
+                startEditable: false,
+                durationEditable: false,
+                color: "#444",
+                textColor: "#aaa",
+                calId: "juliedesk-public-holidays",
+                isNotAvailableEvent: true
+            };
+            result.push(event);
+        }
+        calendar.publicHolidaysAdded = true;
+    }
+
 
     return result;
 };
