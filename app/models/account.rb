@@ -129,6 +129,9 @@ class Account
     info += "\nMeans of transport: #{self.means_of_transport}" if self.means_of_transport.present?
     office_address = self.addresses.select{|addr| addr['kind'] == "office"}.map{|add| add['address']}.first
     info += "\nOffice: #{office_address}" if office_address.present?
+    utc_offset = ActiveSupport::TimeZone.new(self.default_timezone_id).utc_offset/3600.0
+    utc_offset = (utc_offset.to_i == utc_offset)?(utc_offset.to_i):(utc_offset)
+    info += "\nDefault timezone: #{self.default_timezone_id} (GMT#{(utc_offset>=0)?"-#{utc_offset}":"#{utc_offset}"})"
 
     info
   end
