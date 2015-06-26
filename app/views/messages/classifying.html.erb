@@ -69,9 +69,33 @@
         <%= @messages_thread.subject %>
       </div>
       <% operator_actions_groups = @messages_thread.operator_actions_groups %>
-      <% @messages_thread.messages.sort_by(&:received_at).each do |message| %>
-          <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action"), operator_actions_groups: operator_actions_groups} %>
+
+
+
+
+      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
+        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
+                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target.google_message_id.present?)
+      }
+      %>
+      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
+        if item.class == Message
+          item.received_at
+        else
+          item.initiated_at
+        end
+      end %>
+
+      <% items.each do |item| %>
+          <% if item.class == Message %>
+              <% message = item %>
+              <%= render partial: "messages_threads/email", locals: {message: message, highlight: message.id == @message.id, expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min, highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action"), operator_actions_groups: operator_actions_groups} %>
+          <% elsif item.class == OperatorActionsGroup %>
+              <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
+          <% end %>
       <% end %>
+    </div>
+
     </div>
   </div>
 </div>

@@ -62,9 +62,7 @@
 
         <div class="operator-and-action-container">
           <div class="operator"><%= operator_actions_group.operator.name %></div>
-          <% if local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn" %>
-              <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
-          <% end %>
+          <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
         </div>
 
         <div class="date"><%= I18n.l(operator_actions_group.initiated_at.to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(operator_actions_group.initiated_at)) %>)</div>
