@@ -1,6 +1,6 @@
 <div class="header review">
   <%= link_to "/review" do %>
-      JulieDesk Backoffice - Review
+      JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
   <% end %>
 
   <% if params[:action] == "review" %>
@@ -15,6 +15,13 @@
       (<%= @to_learn_count %>)
       <%= form_tag({action: :learnt}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :operator_id, params[:operator_id] %>
+          <%= submit_tag "Next", class: "btn btn-success" %>
+      <% end %>
+  <% end %>
+
+  <% if params[:action] == "group_review" %>
+      (<%= @to_group_review_count %>)
+      <%= form_tag({action: :group_reviewed}, method: "post", id: 'review-form') do |f| %>
           <%= submit_tag "Next", class: "btn btn-success" %>
       <% end %>
   <% end %>

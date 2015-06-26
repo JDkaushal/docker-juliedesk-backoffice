@@ -42,12 +42,10 @@
             opacity: 0.3;
         }
 
-
-
         .notation-container {
             height: 22px;
             padding: 1px;
-            width: 112px;
+            width: 144px;
             position: absolute;
             top: 4px;
             left: 10px;
@@ -64,15 +62,21 @@
                 float: left;
                 @include border-radius(5px);
 
+                &:nth-child(6) {
+                    background-color: #eee;
+                    margin-left: 10px;
+                }
 
                 &:hover {
                     background: #ccc;
                 }
+
+
             }
 
             &.notation-1 {
                 .notation-option:nth-child(1) {
-                    background: red;
+                    @include common-sprite(red_flag);
                 }
             }
             &.notation-2 {
@@ -95,6 +99,21 @@
                     background: #7c7;
                 }
             }
+
+            &.notation-6 {
+                .notation-option:nth-child(1), .notation-option:nth-child(2), .notation-option:nth-child(3), .notation-option:nth-child(4), .notation-option:nth-child(5) {
+                    background: #7c7;
+                }
+                .notation-option:nth-child(6) {
+                    @include common-sprite(gold_star);
+                }
+            }
+        }
+
+        .group-review-container {
+            position: absolute;
+            top: 40px;
+            left: 240px;
         }
 
         textarea {
@@ -420,6 +439,16 @@
                 float: left;
                 position: static;
                 padding: 0 5px;
+            }
+        }
+    }
+
+    &.group-review {
+        .email {
+            .operator-and-action-container {
+                .operator {
+                    display: none;
+                }
             }
         }
     }

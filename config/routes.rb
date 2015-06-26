@@ -48,6 +48,9 @@ Rails.application.routes.draw do
         get "review", action: :review
         post "reviewed", action: :reviewed
 
+        get "group_review", action: :group_review
+        post "group_reviewed", action: :group_reviewed
+
         get "learn", action: :learn
         post "learnt", action: :learnt
       end
@@ -55,6 +58,7 @@ Rails.application.routes.draw do
       collection do
         get "review_next", action: :review_next
         get "learn_next", action: :learn_next
+        get "group_review_next", action: :group_review_next
       end
     end
 

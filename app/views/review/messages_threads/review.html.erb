@@ -21,6 +21,7 @@
             return {
                 operator_actions_group_id: $(this).data('operator-actions-group-id'),
                 notation: $(this).data('value'),
+                should_review_in_group: $(this).closest(".full-review-container").find(".group-review-container input[type=checkbox]:checked").length > 0,
                 comment: $(this).closest(".full-review-container").find("textarea").val()
             };
         }).get();

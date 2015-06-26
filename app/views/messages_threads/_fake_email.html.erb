@@ -16,7 +16,7 @@
                 return;
             }
 
-            $email.find(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5");
+            $email.find(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5 notation-6");
             $email.find(".notation-container").addClass("notation-" + notation);
             $email.find(".notation-container").data("value", notation);
 
@@ -37,13 +37,18 @@
 <div class="email email-fake-<%= operator_actions_group.id %>">
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
-      <div class="full-review-container <%= (notation < 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">
+      <div class="full-review-container <%= (notation != 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">
         <div class="notation-container notation-<%= notation %>" data-value="<%= notation %>" data-operator-actions-group-id="<%= operator_actions_group.id %>">
           <div class="notation-option" data-value="1"></div>
           <div class="notation-option" data-value="2"></div>
           <div class="notation-option" data-value="3"></div>
           <div class="notation-option" data-value="4"></div>
           <div class="notation-option" data-value="5"></div>
+          <div class="notation-option" data-value="6"></div>
+        </div>
+
+        <div class="group-review-container">
+          <input type="checkbox" <%= (operator_actions_group.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)?"checked":"" %>/> Show in group review
         </div>
         <textarea><%= operator_actions_group.review_comment %></textarea>
         <div class="to-learn-button">Review ok</div>

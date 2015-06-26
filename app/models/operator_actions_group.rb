@@ -5,11 +5,15 @@ class OperatorActionsGroup < ActiveRecord::Base
 
   has_many :operator_actions
 
-  LABEL_ARCHIVE             = "archive"
-  REVIEW_STATUS_TO_REVIEW   = nil
-  REVIEW_STATUS_TO_LEARN    = "to_learn"
-  REVIEW_STATUS_LEARNT      = "learnt"
-  REVIEW_STATUS_REVIEWED    = "reviewed"
+  LABEL_ARCHIVE                 = "archive"
+  REVIEW_STATUS_TO_REVIEW       = nil
+  REVIEW_STATUS_TO_LEARN        = "to_learn"
+  REVIEW_STATUS_LEARNT          = "learnt"
+  REVIEW_STATUS_REVIEWED        = "reviewed"
+
+  GROUP_REVIEW_STATUS_TO_LEARN  = "to_learn"
+  GROUP_REVIEW_STATUS_LEARNT    = "learnt"
+  GROUP_REVIEW_STATUS_UNSET     = nil
 
   def self.group_actions params
     # Find all operator actions for this thread and operator
