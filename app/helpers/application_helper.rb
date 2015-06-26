@@ -39,6 +39,6 @@ module ApplicationHelper
     minutes = (duration_in_seconds/60)%60
     seconds = duration_in_seconds%60
 
-    "#{(hours > 0)?"#{hours}h ":nil}#{minutes}' #{seconds}''"
+    "#{(hours > 0)?"#{hours}h ":nil}#{minutes}' #{(seconds < 10)?"0#{seconds}":seconds}''"
   end
 end

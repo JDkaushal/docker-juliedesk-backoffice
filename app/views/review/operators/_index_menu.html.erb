@@ -1,17 +1,27 @@
 <div class='operators-list'>
-  <%= link_to "Review #{@to_review_count} threads", "/review/messages_threads/review_next", class: "btn btn-success" %>
+  <%= link_to "Review #{@to_review_count} threads", "/review/messages_threads/review_next", class: "btn btn-success btn-block" %>
+  <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success btn-block" %>
 
   <br>
   <br>
 
-  <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success" %>
+  <%= link_to review_operator_path("all"), class: 'operator' do %>
+      All (<%= @oags_to_learn_counts['all'] %>)
+  <% end %>
 
   <br>
-  <br>
 
-  <% @operators.each do |operator| %>
+  <% @operators.where(privilege: nil).each do |operator| %>
       <%= link_to review_operator_path(operator), class: 'operator' do %>
         <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
+      <% end %>
+  <% end %>
+
+  <br>
+
+  <% @operators.where("privilege IS NOT NULL").each do |operator| %>
+      <%= link_to review_operator_path(operator), class: 'operator' do %>
+          <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
       <% end %>
   <% end %>
 

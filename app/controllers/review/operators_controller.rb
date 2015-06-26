@@ -6,8 +6,11 @@ class Review::OperatorsController < ReviewController
 
   def show
     compute_counts
-    @operator = Operator.find params[:id]
-
+    if params[:id] == "all"
+      @operator = nil
+    else
+      @operator = Operator.find params[:id]
+    end
   end
 
   private
@@ -27,5 +30,7 @@ class Review::OperatorsController < ReviewController
           oags_to_learn.select{|oag| oag.operator_id == operator.id}.map(&:messages_thread_id).uniq.length
       ]
     }]
+
+    @oags_to_learn_counts['all'] = oags_to_learn.count
   end
 end
