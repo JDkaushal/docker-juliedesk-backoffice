@@ -33,7 +33,7 @@ class MessagesThread < ActiveRecord::Base
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       self.google_thread.modify(["Label_12"], [])
 
-      self.warn_support params.merge({operator: session[:user_name]})
+      self.warn_support params.merge({operator: params[:operator]})
     end
   end
 
