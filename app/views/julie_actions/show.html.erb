@@ -80,30 +80,21 @@
 */
 
 
-    <% initial_to_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['to'] || []).map{|c| c['email']} %>
-    <% initial_cc_recipients = (JSON.parse(@message.reply_all_recipients || "{}")['cc'] || []).map{|c| c['email']} %>
 
-    // Add client as CC if not present
-    <% if @messages_thread.account_email && ((initial_cc_recipients + initial_to_recipients) & @messages_thread.account.all_emails).empty?
-            initial_cc_recipients += [@messages_thread.client_email]
-       end %>
     function initialToRecipients() {
-        return <%== initial_to_recipients.map{|c| {name: c}}.to_json %>;
+        return <%== @message.initial_recipients[:to].map{|c| {name: c}}.to_json %>;
     }
     function initialCcRecipients() {
-        return <%== initial_cc_recipients.map{|c| {name: c}}.to_json %>;
+        return <%== @message.initial_recipients[:cc].map{|c| {name: c}}.to_json %>;
     }
-
-    function possibleRecipients() {
-        <% recipients = JSON.parse(@message.reply_all_recipients || "{}") || [] %>
-        <% recipients_array = ((recipients['to'] || []) + (recipients['cc'] || [])).map{|c| c['email']} %>
-
-        return <%== (@messages_thread.contacts(with_client: true).map { |c| c[:email] } + recipients_array).uniq.map{|e| {name: e}}.to_json %>;
-    }
-
     function clientRecipient() {
-        return {name: "<%= @messages_thread.client_email %>"};
+        return {name: "<%= @message.initial_recipients[:client] %>"};
     }
+    function possibleRecipients() {
+        return <%== @message.initial_recipients[:possible].map{|c| {name: c}}.to_json %>;
+    }
+
+
 
     window.currentRecipients = function () {
         return {

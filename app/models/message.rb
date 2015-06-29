@@ -43,6 +43,34 @@ class Message < ActiveRecord::Base
     @google_message
   end
 
+
+  def initial_recipients
+    reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
+    initial_to_emails = reply_all_recipients['to'].map{|c| c['email']}
+    initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email']}
+
+    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
+    attendee_emails = self.messages_thread.computed_data[:attendees].map{|a| a['email']}
+
+    initial_emails = (initial_to_emails + initial_cc_emails + attendee_emails).uniq
+    all_client_emails = self.messages_thread.account.all_emails
+
+    client_email = (initial_emails & all_client_emails).first || self.messages_thread.client_email
+    initial_emails -= all_client_emails
+
+
+    possible_emails = (initial_emails +
+        contact_emails +
+        [client_email]).uniq
+
+    {
+        to: initial_emails,
+        cc: [client_email],
+        client: client_email,
+        possible: possible_emails
+    }
+  end
+
   def from_me?
     JulieAlias.all.select{|julie_alias|
       google_message.from.downcase.include? julie_alias.email

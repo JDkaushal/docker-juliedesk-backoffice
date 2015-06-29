@@ -38,4 +38,59 @@ describe Message do
       end
     end
   end
+
+  describe "initial_recipients" do
+    context "Context 1" do
+      before do
+        messages_thread = FactoryGirl.create(:messages_thread)
+        @message = FactoryGirl.create(
+            :message,
+            reply_all_recipients: {to: [{email: "elrandil1@gmail.com"}, {email: "nmarlier@gmail.com"}], cc: [{email: "elrandil2@gmail.com"}, {email: "nicolas.marlier@wanadoo.fr"}]}.to_json,
+            messages_thread: messages_thread
+        )
+        expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
+        expect(messages_thread).to receive(:computed_data).and_return({
+                                                                          attendees: []
+                                                                      })
+        expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
+        allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+      end
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients).to eq({
+                                                      to: ["elrandil1@gmail.com", "elrandil2@gmail.com"],
+                                                      cc: ["nmarlier@gmail.com"],
+                                                      client: "nmarlier@gmail.com",
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"]
+
+                                                  })
+      end
+    end
+
+    context "No client email in dest" do
+      before do
+        messages_thread = FactoryGirl.create(:messages_thread)
+        @message = FactoryGirl.create(
+            :message,
+            reply_all_recipients: {to: [{email: "elrandil1@gmail.com"}], cc: [{email: "elrandil2@gmail.com"}]}.to_json,
+            messages_thread: messages_thread
+        )
+        expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
+        expect(messages_thread).to receive(:computed_data).and_return({
+                                                                          attendees: []
+                                                                      })
+        expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
+        allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+      end
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients).to eq({
+                                                      to: ["elrandil1@gmail.com", "elrandil2@gmail.com"],
+                                                      cc: ["nmarlier@gmail.com"],
+                                                      client: "nmarlier@gmail.com",
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"]
+
+                                                  })
+      end
+    end
+
+  end
 end
