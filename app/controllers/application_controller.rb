@@ -68,4 +68,13 @@ class ApplicationController < ActionController::Base
       false
     end
   end
+
+  def only_admin
+    if session[:privilege] == "admin"
+      true
+    else
+      redirect_to "/"
+      false
+    end
+  end
 end

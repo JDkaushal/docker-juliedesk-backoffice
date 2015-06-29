@@ -61,4 +61,29 @@ class OperatorAction < ActiveRecord::Base
     end
     operator_action
   end
+
+  def nature_description params={}
+    result = if self.is_open_julie_action?
+      "Open JulieAction"
+    elsif self.is_open_message_classification?
+      "Open MessageClassification"
+    elsif self.is_archive_thread?
+      "Archive thread"
+    elsif self.is_open_thread?
+      "Open thread"
+    elsif self.nature == NATURE_LOCK
+      "Lock thread"
+    elsif self.nature == NATURE_UNLOCK
+      "Unlock thread"
+    else
+       "Unknown"
+    end
+
+    if params[:with_id]
+      "#{result} ##{self.target_id}"
+    else
+      result
+    end
+
+  end
 end

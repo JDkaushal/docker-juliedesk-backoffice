@@ -1,6 +1,7 @@
 class MessagesThreadsController < ApplicationController
 
   layout "dashboard", only: [:index]
+  before_filter :only_admin, only: [:history]
 
   def index
     render_emails_threads
@@ -9,6 +10,12 @@ class MessagesThreadsController < ApplicationController
   def index_with_import
     Message.import_emails
     render_emails_threads
+  end
+
+  def history
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}, mt_operator_actions: {operator: {}}).find(params[:id])
+
+    @messages_thread.account
   end
 
   def show

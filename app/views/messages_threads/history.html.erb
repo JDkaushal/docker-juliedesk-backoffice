@@ -1,0 +1,58 @@
+<% groups_and_non_groups = (@messages_thread.operator_actions_groups + @messages_thread.mt_operator_actions.select { |oa| !oa.is_grouped? }).sort_by(&:initiated_at) %>
+<div class="history-container">
+
+  <div class="history-messages-thread_container">
+    <div>
+      Id: <%= @messages_thread.id %>
+    </div>
+    <div>
+      Subject: <%= @messages_thread.subject %>
+    </div>
+  </div>
+  <% groups_and_non_groups.sort_by(&:initiated_at).each do |item| %>
+      <% if item.class == OperatorActionsGroup %>
+          <% operator_action_group = item %>
+          <div class="operator-actions-group-container">
+            <div>
+              Operator: <%= operator_action_group.operator.name %>
+            </div>
+            <div>
+              Initiated at : <%= operator_action_group.initiated_at %>
+            </div>
+            <div>
+              Duration: <%= display_duration(operator_action_group.duration) %>
+            </div>
+            <div>
+              Label: <%= operator_action_group.label %>
+            </div>
+            <div>
+              Target id: <%= operator_action_group.target_id %>
+            </div>
+
+            <% operator_action_group.operator_actions.sort_by(&:initiated_at).each do |operator_action| %>
+                <div class="operator-action-container color-<%= operator_action.operator_id % 7 %>">
+                  <div>
+                    Initiated at : <%= operator_action.initiated_at %>
+                  </div>
+                  <div>
+                    <%= operator_action.nature_description(with_id: true) %>
+                  </div>
+                </div>
+            <% end %>
+          </div>
+      <% else %>
+          <% operator_action = item %>
+          <div class="operator-action-container color-<%= operator_action.operator_id % 7 %>">
+            <div>
+              Initiated at : <%= operator_action.initiated_at %>
+            </div>
+            <div>
+              Operator: <%= operator_action.operator.name %>
+            </div>
+            <div>
+              <%= operator_action.nature_description(with_id: true) %>
+            </div>
+          </div>
+      <% end %>
+  <% end %>
+</div>
