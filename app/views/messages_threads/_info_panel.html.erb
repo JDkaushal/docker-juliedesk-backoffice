@@ -268,6 +268,7 @@
                 var $otherAccount = $("<div>").addClass("other-account");
                 $otherAccount.append($("<div>").addClass("other-account-name").html(sae.data.full_name));
                 $otherAccount.append($("<div>").addClass("other-account-email").html(sae.data.email));
+                $otherAccount.append($("<div>").addClass("other-account-timezone").html("Default timezone: " +  sae.data.default_timezone_id));
                 $otherAccount.append($("<div>").addClass("other-account-current-notes").html(sae.data.current_notes));
                 $(".other-accounts-list").append($otherAccount);
             }, function (sae) {
