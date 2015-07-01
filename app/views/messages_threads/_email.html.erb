@@ -103,10 +103,10 @@
         </div>
 
         <div class="group-review-container">
-          <input type="checkbox" <%= (operator_actions_group.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)?"checked":"" %>/> Show in group review
+          <input type="checkbox" <%= (operator_actions_group.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)?"checked":"" %> <%= (local_assigns[:reviewing_status] == "learn")?"disabled":"" %>/> Show in group review
         </div>
 
-        <textarea><%= operator_actions_group.review_comment %></textarea>
+        <textarea <%= (local_assigns[:reviewing_status] == "learn")?"disabled":"" %>><%= operator_actions_group.review_comment %></textarea>
         <div class="to-learn-button">Review ok</div>
         <div class="to-learn-label">To learn</div>
       </div>
@@ -125,7 +125,9 @@
         <% if message.from_me %>
             <% if operator_actions_group %>
                 <div class="operator-and-action-container">
-                    <div class="operator"><%= operator_actions_group.operator.name %></div>
+                    <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
+                        <div class="operator"><%= operator_actions_group.operator.name %></div>
+                    <% end %>
                     <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
                 </div>
             <% end %>
@@ -148,7 +150,9 @@
         <% if message.from_me %>
             <% if operator_actions_group %>
                 <div class="operator-and-action-container">
-                  <div class="operator"><%= operator_actions_group.operator.name %></div>
+                  <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
+                      <div class="operator"><%= operator_actions_group.operator.name %></div>
+                  <% end %>
                   <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
                 </div>
             <% end %>

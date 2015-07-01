@@ -1,7 +1,13 @@
 class Review::OperatorsController < ReviewController
 
+  skip_before_filter :only_admin, only: [:my_stats]
   def index
     compute_counts
+  end
+
+  def my_stats
+
+    @operator = Operator.find session[:operator_id]
   end
 
   def show

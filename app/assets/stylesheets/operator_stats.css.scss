@@ -1,0 +1,45 @@
+.operator-stats-container {
+  padding: 50px 0 0 0;
+  table.review-stats-table {
+    width: 100%;
+    margin: 0 0 80px 0;
+
+    tr {
+      height: 50px;
+
+      th {
+        text-align: center;
+        border-bottom: 1px solid $darkBlue;
+        border-top: none;
+        font-weight: 400;
+        vertical-align: top;
+
+        &.title-th {
+          text-align: left;
+          color: $darkBlue;
+          font-size: 24px;
+          font-weight: 200;
+        }
+
+        .subheader {
+          font-size: 11px;
+          color: #aaa;
+          font-weight: 200;
+        }
+      }
+      td {
+        text-align: center;
+        height: 40px;
+        border-bottom: 1px solid #ccc;
+        border-top: none;
+        width: 80px;
+
+        &:nth-child(1) {
+          text-align: left;
+          width: auto;
+        }
+      }
+    }
+
+  }
+}

@@ -42,7 +42,11 @@ Rails.application.routes.draw do
   end
 
   namespace :review do
-    resources :operators, only: [:show, :index]
+    resources :operators, only: [:show, :index] do
+      collection do
+        get "my_stats", action: :my_stats, as: :my_stats
+      end
+    end
 
     resources :messages_threads, only: [] do
       member do

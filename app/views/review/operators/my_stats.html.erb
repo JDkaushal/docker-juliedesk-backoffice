@@ -1,0 +1,103 @@
+<div class="fixed-columns full">
+  <div class="left-column">
+
+    <%= render partial: "common/header" %>
+
+    <% operator_actions_groups = @operator.operator_actions_groups
+       team_operators = Operator.where(privilege: nil)
+    %>
+
+    <div class="operator-stats-container">
+
+
+      <h2><%= @operator.try(:name) || "All" %></h2>
+
+      <br>
+      <% to_learn_count = OperatorActionsGroup.where(operator_id: @operator.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN).count %>
+      <% if to_learn_count > 0 %>
+        <%= link_to "Learn from #{to_learn_count} message threads", "/review/messages_threads/learn_next?operator_id=#{@operator.id}", class: "btn btn-success" %>
+      <% end %>
+      <br>
+      <br>
+
+      <% dates = {}
+         (0..3).each do |i|
+           dates["S#{(DateTime.now - i.weeks).strftime("%V")} #{(i==0) ? "<div class='subheader'>(en cours)</div>" : ""}"] = {start: (DateTime.now - i.weeks).beginning_of_week, end: (DateTime.now - i.weeks).end_of_week}
+         end
+         (0..3).each do |i|
+           dates["#{(DateTime.now - i.months).strftime("%B")} #{(i==0) ? "<div class='subheader'>(en cours)</div>" : ""}"] = {start: (DateTime.now - i.months).beginning_of_month, end: (DateTime.now - i.months).end_of_month}
+         end
+      %>
+
+
+      <table class="review-stats-table">
+        <tr>
+          <th class="title-th">Stats de traitement</th>
+          <% dates.each do |key, dates_hash| %>
+              <th><%== key %></th>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Nombre d'emails que j'ai traité</td>
+          <% dates.each do |key, dates_hash| %>
+              <td><%= operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count %></td>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Nombre d'emails traités en moyenne dans l'équipe</td>
+          <% dates.each do |key, dates_hash| %>
+              <td><%= OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count / team_operators.count %></td>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Mon temps moyen de traitement</td>
+          <% dates.each do |key, dates_hash| %>
+              <td><%= display_duration(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).average(:duration)) %></td>
+          <% end %>
+        </tr>
+        <tr>
+          <td>Temps moyen de traitement de l'équipe</td>
+          <% dates.each do |key, dates_hash| %>
+              <td><%= display_duration(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).average(:duration)) %></td>
+          <% end %>
+        </tr>
+      </table>
+
+
+      <table class="review-stats-table">
+        <tr>
+          <th class="title-th">Ma qualité de traitement</th>
+          <% dates.each do |key, dates_hash| %>
+              <th><%== key %></th>
+          <% end %>
+        </tr>
+        <% notations = [
+                "",
+                "Erreur inacceptable",
+                "Erreur grave",
+                "Erreur",
+                "Je peux faire mieux",
+                "Parfait",
+        ] %>
+        <% (1..5).to_a.reverse.each do |notation| %>
+            <tr>
+              <td><%= notations[notation] %> (<%= notation %>/5)</td>
+              <% dates.each do |key, dates_hash| %>
+                  <%
+                    if notation == 5
+                      possible_notations = [5, 6]
+                    else
+                      possible_notations = [notation]
+                  end
+                  %>
+                <td>
+                  <%= operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: possible_notations).count %>
+                </td>
+              <% end %>
+            </tr>
+        <% end %>
+      </table>
+
+    </div>
+  </div>
+</div>

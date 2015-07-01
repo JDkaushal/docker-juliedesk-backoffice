@@ -1,5 +1,7 @@
 class Review::MessagesThreadsController < ReviewController
 
+  skip_before_filter :only_admin, only: [:learn, :learnt, :learn_next]
+  before_filter :only_mine, only: [:learn, :learnt, :learn_next]
 
   def review
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
@@ -103,8 +105,15 @@ class Review::MessagesThreadsController < ReviewController
     if oag
       redirect_to action: :learn, id: oag.messages_thread_id, operator_id: params[:operator_id]
     else
-      redirect_to review_operators_path
+      redirect_to my_stats_review_operators_path
     end
+  end
+
+  def only_mine
+    if params[:operator_id].nil?
+      params[:operator_id] = session[:operator_id]
+    end
+    session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
   end
 
 

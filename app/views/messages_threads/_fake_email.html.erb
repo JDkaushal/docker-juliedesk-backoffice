@@ -61,7 +61,9 @@
       <div class="date-and-from">
 
         <div class="operator-and-action-container">
-          <div class="operator"><%= operator_actions_group.operator.name %></div>
+          <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
+               <div class="operator"><%= operator_actions_group.operator.name %></div>
+          <% end %>
           <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
         </div>
 
