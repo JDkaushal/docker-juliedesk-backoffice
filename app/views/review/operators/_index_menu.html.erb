@@ -5,12 +5,6 @@
   <br>
   <br>
 
-  <%= link_to review_operator_path("all"), class: 'operator' do %>
-      All (<%= @oags_to_learn_counts['all'] %>)
-  <% end %>
-
-  <br>
-
   <% @operators.where(privilege: nil).each do |operator| %>
       <%= link_to review_operator_path(operator), class: 'operator' do %>
         <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)

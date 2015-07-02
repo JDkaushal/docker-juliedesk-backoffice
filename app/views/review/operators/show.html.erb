@@ -16,68 +16,7 @@
         <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
 
         <div class='operators-container'>
-
-              <div class="operator-container">
-                <h2><%= @operator.try(:name) || "All" %></h2>
-
-                <% if @operator %>
-                    <%= link_to "Learn from #{@oags_to_learn_counts[@operator.id]} message threads", "/review/messages_threads/learn_next?operator_id=#{@operator.id}", class: "btn btn-success" %>
-                <% end %>
-                <br>
-                <br>
-                <br>
-
-                <div class="review-column">
-                  <div class="review-column-title">Nombre de mail traités</div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernière semaine</div>
-                    <div class="review-stat-value"><%= operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.week).count %></div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernier mois</div>
-                    <div class="review-stat-value"><%= operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.month).count %></div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Depuis le début</div>
-                    <div class="review-stat-value"><%= operator_actions_groups.count %></div>
-                  </div>
-                </div>
-
-                <div class="review-column">
-                  <div class="review-column-title">Durée de traitement</div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernière semaine</div>
-                    <div class="review-stat-value"><%= display_duration(operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.week).average(:duration)) %></div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernier mois</div>
-                    <div class="review-stat-value"><%= display_duration(operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.month).average(:duration)) %></div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Depuis le début</div>
-                    <div class="review-stat-value"><%= display_duration(operator_actions_groups.average(:duration)) %></div>
-                  </div>
-                </div>
-
-                <div class="review-column">
-                  <div class="review-column-title">Qualité de traitement</div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernière semaine</div>
-                    <div class="review-stat-value"><%= (operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.week).where("review_notation IS NOT NULL").average(:review_notation) || 0).round(2) %> / 5</div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Dernier mois</div>
-                    <div class="review-stat-value"><%= (operator_actions_groups.where("initiated_at > ?", DateTime.now - 1.month).where("review_notation IS NOT NULL").average(:review_notation) || 0).round(2) %> / 5</div>
-                  </div>
-                  <div class="review-stat">
-                    <div class="review-stat-name">Depuis le début</div>
-                    <div class="review-stat-value"><%= (operator_actions_groups.where("review_notation IS NOT NULL").average(:review_notation) || 0).round(2) %> / 5</div>
-                  </div>
-                </div>
-                <br>
-
-
-              </div>
+          <%= render "operator_stats" %>
         </div>
       </div>
 
