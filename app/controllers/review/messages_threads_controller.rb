@@ -61,7 +61,7 @@ class Review::MessagesThreadsController < ReviewController
 
   def group_reviewed
     messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
-    messages_thread.operator_actions_groups.select{|oag| oag.review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN}.each do |oag|
+    messages_thread.operator_actions_groups.select{|oag| oag.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN}.each do |oag|
       oag.update_attribute :group_review_status, OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT
     end
 
