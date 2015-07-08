@@ -63,6 +63,8 @@ class Account
     rescue
       account.created_at = DateTime.parse("1989-05-03")
     end
+
+
     account.complaints_count = data['complaints_count']
 
     account.build_contacts_from_same_company({accounts_cache: cache})
