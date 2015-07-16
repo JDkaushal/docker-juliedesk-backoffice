@@ -1,3 +1,15 @@
+GIT
+  remote: https://github.com/jhk753/gmail-ruby-api
+  revision: d6fd82be6ead4710889b1ab132a0394f96402573
+  specs:
+    gmail-api-ruby (0.0.10)
+      google-api-client
+      hashie (>= 3.3.2)
+      hooks (>= 0.4.0)
+      mail (>= 2.2.1)
+      mime (>= 0.1)
+      stringex
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -59,13 +71,6 @@ GEM
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     fssm (0.2.10)
-    gmail-api-ruby (0.0.10)
-      google-api-client
-      hashie (>= 3.3.2)
-      hooks (>= 0.4.0)
-      mail (>= 2.2.1)
-      mime (>= 0.1)
-      stringex
     google-api-client (0.8.6)
       activesupport (>= 3.2)
       addressable (~> 2.3)
@@ -242,7 +247,7 @@ DEPENDENCIES
   delayed_job_active_record
   detect_language
   factory_girl
-  gmail-api-ruby
+  gmail-api-ruby!
   handlebars_assets
   jquery-rails
   jquery-ui-rails
