@@ -9,10 +9,14 @@ module ApplicationHelper
   end
   def self.strip_email contact
     begin
-      Mail::AddressList.new(contact.to_ascii).addresses.first.address
+      ApplicationHelper.find_addresses(contact).addresses.first.address
     rescue
       nil
     end
+  end
+
+  def self.find_addresses str
+    Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1'))
   end
 
   def self.strip_contact_name contact

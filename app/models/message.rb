@@ -174,13 +174,14 @@ class Message < ActiveRecord::Base
     gm = Message.correct_google_message(google_message).reply_all_with(Gmail::Message.new(text: "", html: ""))
     {
 
-        to: Mail::AddressList.new("#{gm.to}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+
+        to: ApplicationHelper.find_addresses(gm.to).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
           }
         },
-        cc: Mail::AddressList.new("#{gm.cc}".to_ascii).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+        cc: ApplicationHelper.find_addresses(gm.cc).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
