@@ -277,13 +277,20 @@
         }
     }
 
+    function setAppointmentNatureAndChangeIfNeeded(appointmentNature) {
+        var oldAppointmentNatture = $("select#appointment_nature").val();
+        if(appointmentNature != oldAppointmentNatture) {
+            $("select#appointment_nature").val(appointmentNature);
+            $("select#appointment_nature").change();
+        }
+    }
+
     function processAppointmentType() {
         var possibleAppointmentsTypes = _.filter(window.threadAccount.appointments, function(appointment) {
             return appointment.appointment_kind_hash.family_kind == $("select#appointment_family_nature").val();
         });
         if(possibleAppointmentsTypes.length == 1) {
-            $("select#appointment_nature").val(possibleAppointmentsTypes[0].kind);
-            $("select#appointment_nature").change();
+            setAppointmentNatureAndChangeIfNeeded(possibleAppointmentsTypes[0].kind);
         }
         else if(possibleAppointmentsTypes.length > 1) {
             var possibleAppointment = _.find(possibleAppointmentsTypes, function(appointment) {
@@ -306,8 +313,7 @@
                 }).length == rule.split("&").length;
             });
             if(possibleAppointment) {
-                $("select#appointment_nature").val(possibleAppointment.kind);
-                $("select#appointment_nature").change();
+                setAppointmentNatureAndChangeIfNeeded(possibleAppointment.kind)
             }
         }
     }
