@@ -52,23 +52,37 @@ class Message < ActiveRecord::Base
     contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
     attendee_emails = self.messages_thread.computed_data[:attendees].map{|a| a['email']}
 
-    initial_emails = (initial_to_emails + initial_cc_emails + attendee_emails).uniq
+    initial_emails = attendee_emails.uniq
+    initial_cc_emails = (initial_to_emails + initial_cc_emails).uniq - initial_emails
+
     all_client_emails = self.messages_thread.account.all_emails
 
-    client_email = (initial_emails & all_client_emails).first || self.messages_thread.client_email
+    client_email = ((initial_to_emails + initial_cc_emails + attendee_emails) & all_client_emails).first || self.messages_thread.client_email
     initial_emails -= all_client_emails
+    initial_cc_emails -= all_client_emails
 
 
-    possible_emails = (initial_emails +
+    possible_emails = (initial_to_emails +
+        initial_cc_emails +
+        attendee_emails +
         contact_emails +
         [client_email]).uniq
 
-    {
-        to: initial_emails,
-        cc: [client_email],
-        client: client_email,
-        possible: possible_emails
-    }
+    if initial_emails.empty?
+      {
+          to: [client_email].sort,
+          cc: initial_cc_emails.sort,
+          client: client_email,
+          possible: possible_emails.sort
+      }
+    else
+      {
+          to: initial_emails.sort,
+          cc: (initial_cc_emails + [client_email]).sort,
+          client: client_email,
+          possible: possible_emails.sort
+      }
+    end
   end
 
   def from_me?
