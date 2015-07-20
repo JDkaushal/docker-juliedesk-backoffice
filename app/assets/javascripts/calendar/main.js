@@ -475,7 +475,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
             mEndDate.add("d", 1);
 
             var event = {
-                summary: "HOLIDAY: " + publicHoliday.name,
+                summary: "FERIE : " + publicHoliday.name,
                 start: {
                     date: mStartDate.format("YYYY-MM-DD")
                 },
