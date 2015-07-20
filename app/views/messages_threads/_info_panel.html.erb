@@ -533,7 +533,7 @@
           <div class="full-name"><%= account.full_name %></div>
           <div class="account-email"><%= messages_thread.account.email %></div>
 
-          <div class="client-for-date">Has been client for <%= distance_of_time_in_words_to_now(account.created_at) %></div>
+          <div class="client-for-date <%= (account.created_at > DateTime.now - 14.days)?"warning":"" %>">Has been client for <span><%= distance_of_time_in_words_to_now(account.created_at) %></span></div>
           <% if account.complaints_count > 0 %>
               <div class="complaints-count"><%= account.complaints_count %> complaints</div>
           <% end %>

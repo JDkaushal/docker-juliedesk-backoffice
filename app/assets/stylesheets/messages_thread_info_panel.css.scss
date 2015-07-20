@@ -161,6 +161,20 @@
     }
     .client-for-date {
       font-size: 12px;
+      padding: 10px 0;
+
+      span {
+        padding: 6px 12px;
+        background-color: #aaa;
+        color: #fff;
+        @include border-radius(14px);
+      }
+
+      &.important {
+        span {
+          background-color: rgb(255, 145, 0);
+        }
+      }
     }
 
     .account-email {
