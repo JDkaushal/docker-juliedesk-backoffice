@@ -70,11 +70,15 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 calendar_ids: request.calendar_ids
             },
             success: function(data) {
-                console.log(data);
-                callback({
-                    items: CommonHelpers.filterEvents(data.items),
-                    key: request.key
-                });
+                if(data.status == "error" && data.code == "AccessExpired") {
+                    alert("Office 365 access expired.");
+                }
+                else {
+                    callback({
+                        items: CommonHelpers.filterEvents(data.items),
+                        key: request.key
+                    });
+                }
             },
             error: function(xhr, textStatus, errorThrown) {
                 console.log("Error");
@@ -85,7 +89,6 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     return;
                 }
                 console.log("Retried too many times");
-                return;
             }
         });
     }

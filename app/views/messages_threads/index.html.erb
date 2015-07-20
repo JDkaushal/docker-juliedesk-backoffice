@@ -21,7 +21,6 @@
             var threadData = threadsData[i];
             var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item").data("id", threadData.id);
 
-            console.log(threadData);
             var $messagesThreadLockContainer = $("<div>").addClass("messages-thread-lock-container");
             if(threadData.locked_by_operator_id) {
                 $messagesThreadLockContainer.html("Being processed by " + threadData.locked_by_operator_name).show();
@@ -57,8 +56,9 @@
             else if(!threadData.account || threadData.account.only_admin_can_process) {
                 $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("admin only"));
             }
-
-
+            else if(threadData.account.office_365_refresh_token_expired) {
+                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("tkn expird"));
+            }
 
             if(waitingForPreferenceChange(threadData)) {
                 $waitingForPreferenceChangerContainer.append($messageThreadContainer);

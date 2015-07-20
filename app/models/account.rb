@@ -21,7 +21,8 @@ class Account
                 :contacts_from_same_company,
                 :created_at,
                 :complaints_count,
-                :calendar_logins
+                :calendar_logins,
+                :office_365_refresh_token_expired
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -54,7 +55,7 @@ class Account
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
-
+    account.office_365_refresh_token_expired = data['office_365_refresh_token_expired']
     account.calendar_logins = data['calendar_logins']
 
 
