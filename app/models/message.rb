@@ -44,7 +44,7 @@ class Message < ActiveRecord::Base
   end
 
 
-  def initial_recipients
+  def initial_recipients params={}
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
     initial_to_emails = reply_all_recipients['to'].map{|c| c['email']}
     initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email']}
@@ -52,15 +52,9 @@ class Message < ActiveRecord::Base
     contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
     attendee_emails = self.messages_thread.computed_data[:attendees].map{|a| a['email']}
 
-    initial_emails = attendee_emails.uniq
-    initial_cc_emails = (initial_to_emails + initial_cc_emails).uniq - initial_emails
 
     all_client_emails = self.messages_thread.account.all_emails
-
     client_email = ((initial_to_emails + initial_cc_emails + attendee_emails) & all_client_emails).first || self.messages_thread.client_email
-    initial_emails -= all_client_emails
-    initial_cc_emails -= all_client_emails
-
 
     possible_emails = (initial_to_emails +
         initial_cc_emails +
@@ -68,21 +62,50 @@ class Message < ActiveRecord::Base
         contact_emails +
         [client_email]).uniq
 
-    if initial_emails.empty?
+
+
+
+
+    if params[:only_reply_all]
+      computed_initial_to_emails = initial_to_emails.uniq
+      computed_initial_cc_emails = initial_cc_emails.uniq
+
+      unless (computed_initial_to_emails + computed_initial_cc_emails).include? client_email
+        if computed_initial_to_emails.empty?
+          computed_initial_to_emails += [client_email]
+        else
+          computed_initial_cc_emails += [client_email]
+        end
+      end
+
       {
-          to: [client_email].sort,
-          cc: initial_cc_emails.sort,
+          to: computed_initial_to_emails.sort,
+          cc: computed_initial_cc_emails.sort,
           client: client_email,
           possible: possible_emails.sort
       }
     else
-      {
-          to: initial_emails.sort,
-          cc: (initial_cc_emails + [client_email]).sort,
-          client: client_email,
-          possible: possible_emails.sort
-      }
+      computed_initial_to_emails = attendee_emails.uniq - all_client_emails
+      computed_initial_cc_emails = (initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails
+
+      if computed_initial_to_emails.empty?
+        {
+            to: [client_email].sort,
+            cc: computed_initial_cc_emails.sort,
+            client: client_email,
+            possible: possible_emails.sort
+        }
+      else
+        {
+            to: computed_initial_to_emails.sort,
+            cc: (computed_initial_cc_emails + [client_email]).sort,
+            client: client_email,
+            possible: possible_emails.sort
+        }
+      end
     end
+
+
   end
 
   def from_me?

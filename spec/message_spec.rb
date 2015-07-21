@@ -60,9 +60,19 @@ describe Message do
                                                       to: ["elrandil1@gmail.com"].sort,
                                                       cc: ["nmarlier@gmail.com", "elrandil2@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                   })
+      end
+
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients(only_reply_all: true)).to eq({
+                                                                            to: ["elrandil1@gmail.com", "nmarlier@gmail.com"].sort,
+                                                                            cc: ["elrandil2@gmail.com", "nicolas.marlier@wanadoo.fr"].sort,
+                                                                            client: "nmarlier@gmail.com",
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+
+                                                                        })
       end
     end
 
@@ -86,9 +96,19 @@ describe Message do
                                                       to: ["nmarlier@gmail.com"].sort,
                                                       cc: ["elrandil1@gmail.com", "elrandil2@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                   })
+      end
+
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients(only_reply_all: true)).to eq({
+                                                                            to: ["elrandil1@gmail.com", "nmarlier@gmail.com"].sort,
+                                                                            cc: ["elrandil2@gmail.com", "nicolas.marlier@wanadoo.fr"].sort,
+                                                                            client: "nmarlier@gmail.com",
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+
+                                                                        })
       end
     end
 
@@ -116,6 +136,17 @@ describe Message do
 
                                                   })
       end
+
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients(only_reply_all: true)).to eq({
+                                                      to: ["nmarlier@gmail.com"].sort,
+                                                      cc: [].sort,
+                                                      client: "nmarlier@gmail.com",
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+
+                                                  })
+      end
+
     end
 
     context "No client email in dest" do
@@ -142,6 +173,16 @@ describe Message do
 
                                                   })
       end
+
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients(only_reply_all: true)).to eq({
+                                                                            to: ["elrandil1@gmail.com"].sort,
+                                                                            cc: ["elrandil2@gmail.com", "nmarlier@gmail.com"].sort,
+                                                                            client: "nmarlier@gmail.com",
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+
+                                                                        })
+      end
     end
 
     context "Only client" do
@@ -167,6 +208,16 @@ describe Message do
                                                       possible: ["nmarlier@gmail.com"].sort
 
                                                   })
+      end
+
+      it "should return a hash with initial recipients" do
+        expect(@message.initial_recipients(only_reply_all: true)).to eq({
+                                                                            to: ["nmarlier@gmail.com"].sort,
+                                                                            cc: [].sort,
+                                                                            client: "nmarlier@gmail.com",
+                                                                            possible: ["nmarlier@gmail.com"].sort
+
+                                                                        })
       end
     end
 

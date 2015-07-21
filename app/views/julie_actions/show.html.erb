@@ -80,18 +80,19 @@
 */
 
 
+    <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification == MessageClassification::GIVE_INFO) %>
 
     function initialToRecipients() {
-        return <%== @message.initial_recipients[:to].map{|c| {name: c}}.to_json %>;
+        return <%== initial_recipients[:to].map{|c| {name: c}}.to_json %>;
     }
     function initialCcRecipients() {
-        return <%== @message.initial_recipients[:cc].map{|c| {name: c}}.to_json %>;
+        return <%== initial_recipients[:cc].map{|c| {name: c}}.to_json %>;
     }
     function clientRecipient() {
-        return {name: "<%= @message.initial_recipients[:client] %>"};
+        return {name: "<%= initial_recipients[:client] %>"};
     }
     function possibleRecipients() {
-        return <%== @message.initial_recipients[:possible].map{|c| {name: c}}.to_json %>;
+        return <%== initial_recipients[:possible].map{|c| {name: c}}.to_json %>;
     }
 
 
