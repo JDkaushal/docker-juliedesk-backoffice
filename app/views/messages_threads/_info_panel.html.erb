@@ -416,6 +416,7 @@
 
 
         setAddressValues();
+        setNumberToCallValue();
 
         setLocationOrNumberToCallPart();
     }
@@ -427,7 +428,7 @@
 
         var appointment = getCurrentAppointment();
         if(appointment.appointment_kind_hash.is_virtual) {
-            if(appointment.kind == "call") {
+            if(appointment.kind == "call" || appointment.kind == "confcall") {
                 $(".number-to-call-part-container").show();
             }
             else {
@@ -436,6 +437,19 @@
         }
         else {
             $(".location-part-container").show();
+        }
+    }
+
+    function setNumberToCallValue() {
+        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
+            return appointmentObject.label == $("#appointment_nature").val();
+        });
+
+        if(appointment.default_number_to_call && appointment.default_number_to_call.length >0) {
+            $("textarea#number_to_call").val(localize("email_templates.invites_sent.call_client_on", {client: window.threadAccount.usage_name, number_to_call: appointment.default_number_to_call, locale: $("input[name='locale']:checked").val()}));
+        }
+        else {
+            $("textarea#number_to_call").val("");
         }
     }
 
@@ -452,13 +466,8 @@
             $("input#location").val(address.address).attr('disabled', true);
         }
         else {
-            if(appointment.custom_location && appointment.custom_location.length > 0) {
-                $("input#location").val(appointment.custom_location).removeAttr('disabled');
-            }
-            else {
-                $("input#location").val("").removeAttr('disabled');
-            }
 
+            $("input#location").val("").removeAttr('disabled');
         }
 
         setNotes();
@@ -690,7 +699,7 @@
         </div>
         <div class="number-to-call-part-container">
           <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
-          <%= text_field_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
+          <%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
         </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>

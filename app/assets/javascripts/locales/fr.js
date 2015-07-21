@@ -100,7 +100,8 @@ window.wordings['fr'] = {
             location_in_template: "\nLieu : %{location}",
             ask_for_location: "\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?",
             ask_interlocutor_for_location: "\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?",
-            number_to_call: "\nNuméro à appeler : %{number}"
+            number_to_call: "Numéro à appeler : %{number}\n",
+            call_client_on: "Appeler %{client} au %{number_to_call}"
         },
         info_asked: "Voici l'information demandée :",
         confirmation: "Très bien, c'est noté.",

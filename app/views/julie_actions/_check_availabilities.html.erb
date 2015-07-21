@@ -113,17 +113,16 @@
                 $(".calendar-container").addClass("minimized");
 
                 var location = window.threadComputedData.location;
-                if(window.threadComputedData.appointment_nature == "call" &&
-                        window.getCurrentAppointment().number_in_location) {
-                    location = window.threadComputedData.number_to_call;
-                }
                 var numberToCall = "";
-                if(window.threadComputedData.appointment_nature == "call" &&
+                if((window.threadComputedData.appointment_nature == "call" ||
+                        window.threadComputedData.appointment_nature == "confcall") &&
                         window.threadComputedData.number_to_call != "") {
-                    numberToCall = localize("email_templates.invites_sent.number_to_call", {
-                        number: window.threadComputedData.number_to_call,
-                        locale: window.threadComputedData.locale
-                    });
+                    if(window.getCurrentAppointment().number_in_location) {
+                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
+                    }
+                    else {
+                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
+                    }
                 }
                 var emailInNotes = "";
                 if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
@@ -137,7 +136,7 @@
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
-                    description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + numberToCall + emailInNotes,
+                    description: numberToCall + window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
                     attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
                     location: location,
                     all_day: false,
