@@ -53,12 +53,13 @@
             if(threadData.delegated_to_founders) {
                 $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("founders"));
             }
+            else if(threadData.account && threadData.account.office_365_refresh_token_expired) {
+                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("tkn expird"));
+            }
             else if(!threadData.account || threadData.account.only_admin_can_process) {
                 $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("admin only"));
             }
-            else if(threadData.account.office_365_refresh_token_expired) {
-                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("tkn expird"));
-            }
+
 
             if(waitingForPreferenceChange(threadData)) {
                 $waitingForPreferenceChangerContainer.append($messageThreadContainer);
