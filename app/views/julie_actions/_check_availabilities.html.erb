@@ -164,6 +164,8 @@
                 }
                 CommonHelpers.externalRequest(requestParams, function (e) {
 
+                    window.currentCalendar.refreshEvents();
+                    
                     if(!isPostpone) {
                         window.currentEventId = e.data.event_id;
                         window.currentEventUrl = e.data.event_url;
