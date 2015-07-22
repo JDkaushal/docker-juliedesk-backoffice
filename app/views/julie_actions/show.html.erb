@@ -80,7 +80,7 @@
 */
 
 
-    <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification == MessageClassification::GIVE_INFO) %>
+    <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
 
     function initialToRecipients() {
         return <%== initial_recipients[:to].map{|c| {name: c}}.to_json %>;
