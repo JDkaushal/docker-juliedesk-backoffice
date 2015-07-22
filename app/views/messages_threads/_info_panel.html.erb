@@ -637,7 +637,7 @@
           <% attendees = messages_thread.computed_data[:attendees] || [] %>
           <% possible_attendees = messages_thread.contacts() + attendees.map(&:symbolize_keys) %>
           <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
-          <% (possible_attendees + same_company_attendees).uniq { |co| co[:email] }.each do |contact| %>
+          <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
               <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
               <% checked = attendee || (
                 messages_thread.computed_data[:appointment_nature].nil? &&

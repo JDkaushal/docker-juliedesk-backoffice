@@ -66,7 +66,8 @@ class MessagesThread < ActiveRecord::Base
     unless params[:with_client]
       params[:forbidden_emails] = account.try(:all_emails) || []
     end
-    MessagesThread.contacts params  end
+    MessagesThread.contacts params
+  end
 
   def self.contacts params = {}
     to_addresses = params[:google_messages_to_look].map{|m| ApplicationHelper.find_addresses(m.to).addresses}.flatten
@@ -277,7 +278,7 @@ class MessagesThread < ActiveRecord::Base
 
         if all_emails.include? attendee[:email]
           thread_contacts << {
-              email: attendee[:email],
+              email: email,
               name: account['full_name']
           }
         end
