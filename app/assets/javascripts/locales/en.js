@@ -137,6 +137,9 @@ window.wordings['en'] = {
             before: "Hi,\n\n",
             before_only_client: "Hi %{client_name},\n\n",
             full_date_format: "LLLL",
+            only_date_format: "dddd, MMMM D, YYYY",
+            date_time_separator: "at",
+            only_time_format: "LT",
             timezone_precision: "(Timezone: %{timezone})",
             footer: {
                 "juliedesk": "\n\nBest regards,\n\nJulie",//\nIntelligence artificielle",
@@ -151,7 +154,8 @@ window.wordings['en'] = {
         }
     },
     common: {
-        cancel: "Cancel"
+        cancel: "Cancel",
+        or: "or"
     },
     events: {
         new_event: "New event",

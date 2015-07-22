@@ -47,8 +47,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nWhich time would work best for you?",
-            fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+            fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
         }
     },
         {
@@ -74,7 +74,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -96,7 +96,7 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment:\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Nicolas Marlier would be available for an appointment:\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -123,7 +123,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Thursday, January 1, 2015 3:00 AM\n\nWould that work for you?",
+                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Thursday, January 1, 2015 at 3:00 AM\n\nWould that work for you?",
                 fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Jeudi 1 janvier 2015 à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -145,7 +145,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -167,7 +167,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
@@ -196,8 +196,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nWhich time would work best for you?",
-            fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+            fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
         }
     },
         {
@@ -225,8 +225,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -254,8 +254,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n - Thursday, January 1, 2015 2:00 PM\n - Sunday, January 4, 2015 12:00 PM\n - Tuesday, January 6, 2015 12:00 PM\n\nJohn, Jack, which time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n - Jeudi 1 janvier 2015 à 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nJohn, Jack, which time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -283,7 +283,7 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 12:00 PM\n\nJohn, Jack, would that work for you?",
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM\n\nJohn, Jack, would that work for you?",
                 fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         }],
@@ -308,7 +308,7 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+            en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
             fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
         }
     },
@@ -331,7 +331,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -354,7 +354,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -377,7 +377,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
@@ -407,7 +407,7 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
             fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
         }
     },
@@ -436,7 +436,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -461,7 +461,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 12:00 PM\n\nWould that work for you?",
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday, January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],

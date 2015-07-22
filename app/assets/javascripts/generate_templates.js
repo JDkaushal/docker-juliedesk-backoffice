@@ -134,9 +134,29 @@
                     message += "\n" + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
                 }
 
-                _.each(params.timeSlotsToSuggest, function (timeSlot) {
-                    message += "\n - " + window.helpers.capitalize(moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
+                _.each(_.groupBy(params.timeSlotsToSuggest, function(timeSlot) {
+                    return moment(timeSlot).tz(params.timezoneId).format("YYYY-MM-DD");
+                }), function(timeSlots, day) {
+                    var dateString = window.helpers.capitalize(moment(timeSlots[0]).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_date_format")));
+                    var timeSlotsStrings = _.map(timeSlots, function(timeSlot) {
+                        return moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_time_format"))
+                    });
+                    var lastTimeSlotString = timeSlotsStrings.pop();
+                    var timesString = timeSlotsStrings.join(", ");
+                    if(timesString != "") timesString +=  " " + localize("common.or") + " ";
+                    timesString += lastTimeSlotString;
+
+                    message += "\n - " + dateString + " " + localize("email_templates.common.date_time_separator") + " " + timesString;
                 });
+//                _.each(params.timeSlotsToSuggest, function (timeSlot) {
+//                    message += "\n - " + window.helpers.capitalize(moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
+//                });
+
+//                _.each(params.timeSlotsToSuggest, function (timeSlot) {
+//                    message += "\n - " + window.helpers.capitalize(moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
+//                });
+
+
                 var timeSlotsPlural = "plural";
                 if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
 
