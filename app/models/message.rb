@@ -134,9 +134,13 @@ class Message < ActiveRecord::Base
   end
 
   def julie_alias
-    JulieAlias.all.select{|julie_alias|
-       "#{google_message.to} #{google_message.cc}".downcase.include? julie_alias.email
-    }.first
+    Message.julie_aliases_from_google_message(self.google_message).first
+  end
+
+  def self.julie_aliases_from_google_message google_message, params={}
+    (params[:julie_aliases] || JulieAlias.all).select{|julie_alias|
+      "#{google_message.to} #{google_message.cc}".downcase.include? julie_alias.email
+    }
   end
 
   def self.import_emails
@@ -145,6 +149,9 @@ class Message < ActiveRecord::Base
 
     # Put by default all previous messages_thread out of inbox
     MessagesThread.update_all(in_inbox: false)
+
+    # Julie aliases in cache
+    julie_aliases = JulieAlias.all
 
     updated_messages_thread_ids = []
 
@@ -198,6 +205,11 @@ class Message < ActiveRecord::Base
 
             updated_messages_thread_ids << messages_thread.id
           end
+        end
+
+        # Check if there are several julie aliases only if there was a new message
+        if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_google_thread(google_thread, {julie_aliases: julie_aliases}).length > 1
+          messages_thread.delegate_to_support
         end
       end
     end

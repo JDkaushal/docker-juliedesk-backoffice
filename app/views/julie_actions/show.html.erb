@@ -239,6 +239,7 @@
                 data: {
                     text: $("textarea#reply-text").val(),
                     html_signature: $("#reply-text-signature").html(),
+                    from: $("select#julie-alias-select").val(),
                     to: window.currentRecipients().to,
                     cc: window.currentRecipients().cc,
                     quote_message: $("input#quote_message:checked").length > 0,
@@ -363,7 +364,14 @@
               <% if message.id == @message.id %>
                   <div class="highlighted-below-email">
                     <div class="reply-box">
-                      <div class="from"><%= I18n.t("common.from") %> <%= @messages_thread.julie_alias.generate_from %></div>
+                      <div class="from">
+                        <%= I18n.t("common.from") %>
+                        <select id="julie-alias-select">
+                            <% @messages_thread.julie_aliases.each do |julie_alias| %>
+                                <option><%= julie_alias.email %></option>
+                            <% end %>
+                        </select>
+                      </div>
                       <div class="to">
                         <span><%= I18n.t("common.to") %></span>
                         <input id="recipients-to-input"/>

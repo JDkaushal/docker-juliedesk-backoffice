@@ -57,7 +57,16 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def julie_alias
-    messages.map(&:julie_alias).compact.uniq.first || JulieAlias.find_by_email("julie@juliedesk.com")
+    real_julie_aliases = self.julie_aliases
+    if real_julie_aliases.empty?
+      JulieAlias.find_by_email("julie@juliedesk.com")
+    else
+      real_julie_aliases.first
+    end
+  end
+
+  def julie_aliases params={}
+    MessagesThread.julie_aliases_from_google_thread(self.google_thread, {julie_aliases: params[:julie_aliases] || JulieAlias.all})
   end
 
   def contacts params = {}
@@ -445,6 +454,12 @@ class MessagesThread < ActiveRecord::Base
       }
     end
 
+  end
+
+  def self.julie_aliases_from_google_thread google_thread, params={}
+    google_thread.messages.map do |google_message|
+      Message.julie_aliases_from_google_message(google_message, {julie_aliases: params[:julie_aliases]})
+    end.flatten.uniq
   end
 
   def classification_category_for_classification classification

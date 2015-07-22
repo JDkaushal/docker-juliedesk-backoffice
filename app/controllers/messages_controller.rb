@@ -111,12 +111,9 @@ class MessagesController < ApplicationController
       response_message.body = nil
     end
 
-    julie_alias = @message.messages_thread.julie_alias
+    julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
     response_message.from = julie_alias.generate_from
     response_message_sent = response_message.deliver
-
-    p "*" * 50
-    p response_message_sent
 
 
     julie_action = JulieAction.find params[:julie_action_id]
