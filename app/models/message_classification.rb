@@ -69,7 +69,9 @@ class MessageClassification < ActiveRecord::Base
 
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
-    attendees.each do |attendee|
+    attendees.select do |attendee|
+      attendee['email']
+    end.map do |attendee|
       accounts.select do |account|
         all_emails = [account['email']] + account['email_aliases']
         if all_emails.include? attendee['email']
@@ -78,9 +80,9 @@ class MessageClassification < ActiveRecord::Base
         end
       end
       attendee['email'] = attendee['email'].gsub(" ", "")
-    end
 
-    attendees
+      attendee
+    end
   end
 
   def review_status_as_text
