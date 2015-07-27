@@ -628,7 +628,9 @@ Calendar.prototype.drawExternalEventSelection = function () {
                calId: event.calId,
                duration: parseInt((mEnd - mStart) / 60000, 10),
                location: event.location,
-               notes: event.description
+               notes: event.description,
+               calendar_login_username: event.calendar_login_username,
+               url: event.url
            }
         })
     }, "*");

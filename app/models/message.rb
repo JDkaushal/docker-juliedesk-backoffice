@@ -288,6 +288,8 @@ class Message < ActiveRecord::Base
                                      {
                                          'id' => julie_message_hash['event_id'],
                                          'calendar_id' => julie_message_hash['calendar_id'],
+                                         'url' => julie_message_hash['url'],
+                                         'calendar_login_username' => julie_message_hash['calendar_login_username'],
                                          'attendees' => julie_message_hash['attendees'],
                                          'summary' => julie_message_hash['summary'],
                                          'location' => julie_message_hash['location'],
@@ -348,7 +350,9 @@ class Message < ActiveRecord::Base
     # Create the julie_action in DB to finally store event data
     message_classification.julie_action.update_attributes done: true,
                                                           event_id: event['id'],
-                                                          calendar_id: event['calendar_id']
+                                                          calendar_id: event['calendar_id'],
+                                                          event_url: event['url'],
+                                                          calendar_login_username: event['calendar_login_username']
 
     messages_thread.id
   end
