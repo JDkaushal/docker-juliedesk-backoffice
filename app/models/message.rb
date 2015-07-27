@@ -288,7 +288,7 @@ class Message < ActiveRecord::Base
                                      {
                                          'id' => julie_message_hash['event_id'],
                                          'calendar_id' => julie_message_hash['calendar_id'],
-                                         'url' => julie_message_hash['url'],
+                                         'url' => julie_message_hash['event_url'],
                                          'calendar_login_username' => julie_message_hash['calendar_login_username'],
                                          'attendees' => julie_message_hash['attendees'],
                                          'summary' => julie_message_hash['summary'],
