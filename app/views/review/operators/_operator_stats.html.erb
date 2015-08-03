@@ -1,6 +1,8 @@
 <% operator_actions_groups = @operator.operator_actions_groups
    team_operators = Operator.where(privilege: nil)
 %>
+
+<% max_duration = 30*60 %>
 <div class="operator-stats-container">
 <h2><%= @operator.try(:name) || "All" %></h2>
 
@@ -44,13 +46,13 @@
   <tr>
     <td>Mon temps moyen de traitement</td>
     <% dates.each do |key, dates_hash| %>
-        <td><%= display_duration(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).average(:duration)) %></td>
+        <td><%= display_duration(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where("duration < ?", max_duration).average(:duration)) %></td>
     <% end %>
   </tr>
   <tr>
     <td>Temps moyen de traitement de l'équipe</td>
     <% dates.each do |key, dates_hash| %>
-        <td><%= display_duration(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).average(:duration)) %></td>
+        <td><%= display_duration(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where("duration < ?", max_duration).average(:duration)) %></td>
     <% end %>
   </tr>
 </table>
