@@ -251,6 +251,7 @@ DEPENDENCIES
   factory_girl
   gmail-api-ruby!
   handlebars_assets
+  httpclient
   jquery-rails
   jquery-ui-rails
   mail (= 2.6.3)

@@ -43,6 +43,8 @@ gem "redis"
 gem "nokogiri"
 gem "angularjs-rails"
 
+gem "httpclient"
+
 group :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl'

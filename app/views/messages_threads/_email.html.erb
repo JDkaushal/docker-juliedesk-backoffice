@@ -1,9 +1,9 @@
-<% email = message.google_message %>
+<% email = message.server_message %>
 
 <% operator_actions_group = (message.from_me)?message.generator_operator_actions_group(local_assigns[:operator_actions_groups]):nil %>
 <script>
     $(function () {
-        var $email = $(".email-<%= message.google_message_id %>");
+        var $email = $(".email-<%= message.server_message_id %>");
         $email.find(".retracted, .checkbox-container").click(function (e) {
             e.stopPropagation();
         });
@@ -57,9 +57,6 @@
             }
         });
 
-        <% if email.unread? %>
-            $.post("<%= mark_as_read_message_path(message) %>");
-        <% end %>
 
         <% if local_assigns[:expend] %>
             $email.find("blockquote, .gmail_quote").addClass("expanded");
@@ -89,7 +86,7 @@
 </script>
 
 
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || email.unread? || local_assigns[:last])? "extended" : "" %> email-<%= message.google_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
       <div class="full-review-container <%= (notation != 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">
@@ -120,7 +117,7 @@
 
     <div class="retracted-container">
       <div class="date-and-from">
-        <div class="from"><%= email.from %></div>
+        <div class="from"><%= email['from'] %></div>
 
         <% if message.from_me %>
             <% if operator_actions_group %>
@@ -133,19 +130,19 @@
             <% end %>
         <% end %>
 
-        <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
+        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
 
         <div class="clear"></div>
       </div>
       <div class="snippet">
-        <%== email.snippet %>...
+        <%== email['snippet'] %>...
       </div>
     </div>
   </div>
   <div class="extended">
     <div class="retractable">
       <div class="date-and-from">
-        <div class="from"><%= email.from %></div>
+        <div class="from"><%= email['from'] %></div>
 
         <% if message.from_me %>
             <% if operator_actions_group %>
@@ -159,7 +156,7 @@
         <% end %>
 
 
-        <div class="date"><%= I18n.l(DateTime.parse(email.date).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email.date))) %>)</div>
+        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
 
         <div class="clear"></div>
       </div>
@@ -184,11 +181,11 @@
 
       <div class="to">
         <span class="email-label"><%= I18n.t("common.to")%></span>
-        <%= email.to %>
+        <%= email['to'] %>
       </div>
       <div class="cc">
         <span class="email-label"><%= I18n.t("common.cc")%></span>
-        <%= email.cc %>
+        <%= email['cc'] %>
       </div>
     </div>
 

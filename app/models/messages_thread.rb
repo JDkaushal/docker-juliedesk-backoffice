@@ -12,12 +12,14 @@ class MessagesThread < ActiveRecord::Base
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
 
+  attr_writer :account
 
-  def google_thread params={}
-    if @google_thread.nil? || params[:force_refresh]
-      @google_thread = Gmail::Thread.get(self.google_thread_id)
+
+  def server_thread params={}
+    if @server_thread.nil? || params[:force_refresh]
+      @server_thread = EmailServer.get_messages_thread(messages_thread_id: self.server_thread_id)
     end
-    @google_thread
+    @server_thread
   end
 
 
@@ -31,13 +33,18 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+
   def delegate_to_support params={}
     self.update_attributes({
                                delegated_to_founders: true,
                                to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-      self.google_thread.modify(["Label_12"], [])
+      EmailServer.add_and_remove_labels({
+          messages_thread_ids: [self.server_thread_id],
+          labels_to_add: ["Label_12"],
+          labels_to_remove: []
+                                        })
 
       self.warn_support params.merge({operator: params[:operator]})
     end
@@ -47,17 +54,29 @@ class MessagesThread < ActiveRecord::Base
     self.update_attributes({
                                delegated_to_founders: false
                            })
-    self.google_thread.modify([], ["Label_12"])
+    EmailServer.add_and_remove_labels({
+                                          messages_thread_ids: [self.server_thread_id],
+                                          labels_to_add: [],
+                                          labels_to_remove: ["Label_12"]
+                                      })
   end
 
   def warn_support params={}
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-      gmail_message = Gmail::Message.new({text: "A new email thread has been delegated to support:\nhttps://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}\n\nMessage: #{params[:message]}\n\nOperator: #{params[:operator]}"})
-      gmail_message.subject = "Email thread delegated to support"
-      gmail_message.to = "guillaume@juliedesk.com"
-      gmail_message.cc = "nicolas@juliedesk.com"
-      gmail_message.from = "julie@juliedesk.com"
-      gmail_message.deliver
+      EmailServer.deliver_message({
+                                      subject: "Email thread delegated to support",
+                                      to: "guillaume@juliedesk.com",
+                                      cc: "nicolas@juliedesk.com",
+                                      from: "julie@juliedesk.com",
+                                      text: <<END
+A new email thread has been delegated to support:
+https://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}
+
+Message: #{params[:message]}
+
+Operator: #{params[:operator]}
+END
+                                  })
     end
   end
 
@@ -71,11 +90,11 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def julie_aliases params={}
-    MessagesThread.julie_aliases_from_google_thread(self.google_thread, {julie_aliases: params[:julie_aliases] || JulieAlias.all})
+    MessagesThread.julie_aliases_from_server_thread(self.server_thread, {julie_aliases: params[:julie_aliases] || JulieAlias.all})
   end
 
   def contacts params = {}
-    params[:google_messages_to_look] = google_thread.messages
+    params[:server_messages_to_look] = server_thread['messages']
     params[:forbidden_emails] = []
     unless params[:with_client]
       params[:forbidden_emails] = account.try(:all_emails) || []
@@ -84,9 +103,9 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.contacts params = {}
-    to_addresses = params[:google_messages_to_look].map{|m| ApplicationHelper.find_addresses(m.to).addresses}.flatten
-    from_addresses = params[:google_messages_to_look].map{|m| ApplicationHelper.find_addresses(m.from).addresses}.flatten
-    cc_addresses = params[:google_messages_to_look].map{|m| ApplicationHelper.find_addresses(m.cc).addresses}.flatten
+    to_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['to']).addresses}.flatten
+    from_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['from']).addresses}.flatten
+    cc_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['cc']).addresses}.flatten
 
     forbidden_emails = JulieAlias.all.map(&:email) + (params[:forbidden_emails] || [])
 
@@ -153,11 +172,12 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).count
   end
 
-  def self.several_accounts_detected google_thread, params={}
-    contacts = self.contacts(google_messages_to_look: google_thread.messages)
+  def self.several_accounts_detected server_thread, params={}
+    contacts = self.contacts(server_messages_to_look: server_thread['messages'])
     other_emails = contacts.map{|contact| contact[:email]}
     account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
 
+    p account_emails
     accounts = account_emails.map{|account_email|
       Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
     }
@@ -211,16 +231,16 @@ class MessagesThread < ActiveRecord::Base
 
   def re_import
     existing_messages = []
-    self.google_thread.messages.each do |google_message|
-      google_message = Message.correct_google_message google_message
-      message = self.messages.select{|m| m.google_message_id == google_message.id}.first
+    self.server_thread['messages'].each do |server_message|
+
+      message = self.messages.select{|m| m.server_message_id == server_message['id']}.first
       unless message
-        message = self.messages.create google_message_id: google_message.id,
-                                       received_at: DateTime.parse(google_message.date),
-                                       reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
-                                       from_me: google_message.labelIds.include?("SENT")
+        message = self.messages.create server_message_id: server_message['id'],
+                                       received_at: DateTime.parse(server_message['date']),
+                                       reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
+                                       from_me: server_message['from_me']
       end
-      message.google_message = google_message
+      message.server_message = server_message
       existing_messages << message
     end
 
@@ -232,38 +252,19 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def split message_ids
-    google_message_ids = self.messages.select{|m| message_ids.include? m.id}.map(&:google_message_id)
-    google_messages = self.google_thread.messages.select{|gm| google_message_ids.include? gm.id}
-    updated_thread_id = nil
 
-    messages_thread = nil
+    server_message_ids = self.messages.select{|m| message_ids.include? m.id}.map(&:server_message_id)
+    EmailServer.split_messages({
+        messages_thread_id: self.server_thread_id,
+        message_ids: server_message_ids
+                      })
 
-    google_messages.each do |google_message|
-      google_message.threadId = updated_thread_id
-      google_message.labelIds = google_message.labelIds.select{|label| label != "SENT"} + ["Label_19"]
-      updated_google_message = google_message.insert
-      google_message.delete
-      updated_thread_id = updated_google_message.thread_id
-
-      # Create messages thread and messages in DB
-      messages_thread ||= MessagesThread.create google_thread_id: updated_thread_id,
-                                                in_inbox: true,
-                                                account_email: self.account_email,
-                                                account_name: self.account_name,
-                                                subject: updated_google_message.subject,
-                                                snippet: updated_google_message.snippet
-
-      messages_thread.messages.create google_message_id: updated_google_message.id,
-                                      received_at: DateTime.parse(updated_google_message.date),
-                                      reply_all_recipients: Message.generate_reply_all_recipients(updated_google_message).to_json,
-                                      from_me: updated_google_message.labelIds.include?("SENT")
-    end
-
-
-
-
-
-
+    updated_messages_thread_ids = Message.import_emails
+    Pusher.trigger('private-global-chat', 'new-email', {
+        :message => 'new_email',
+        :messages_threads_count => MessagesThread.items_to_classify_count,
+        :updated_messages_thread_ids => updated_messages_thread_ids
+    })
   end
 
   def sorted_message_classifications
@@ -327,8 +328,9 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def self.find_account_email google_thread, params={}
-    account_emails = self.find_account_emails(google_thread, params)
+
+  def self.find_account_email server_thread, params={}
+    account_emails = self.find_account_emails(server_thread, params)
     if account_emails.length == 1
       account_emails[0]
     else
@@ -336,14 +338,15 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def self.find_account_emails google_thread, params={}
-    first_email = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first
-    email = ApplicationHelper.strip_email(first_email.from)
+
+  def self.find_account_emails server_thread, params={}
+    first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
+    email = ApplicationHelper.strip_email(first_email['from'])
     account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
 
     # Account is not the sender
     if account_emails.empty?
-      contacts = self.contacts(google_messages_to_look: [first_email])
+      contacts = self.contacts(server_messages_to_look: [first_email])
       other_emails = contacts.map{|contact| contact[:email]}
       account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
     end
@@ -461,9 +464,9 @@ class MessagesThread < ActiveRecord::Base
 
   end
 
-  def self.julie_aliases_from_google_thread google_thread, params={}
-    google_thread.messages.map do |google_message|
-      Message.julie_aliases_from_google_message(google_message, {julie_aliases: params[:julie_aliases]})
+  def self.julie_aliases_from_server_thread server_thread, params={}
+    server_thread['messages'].map do |server_message|
+      Message.julie_aliases_from_server_message(server_message, {julie_aliases: params[:julie_aliases]})
     end.flatten.uniq
   end
 
@@ -484,5 +487,33 @@ class MessagesThread < ActiveRecord::Base
         messages_thread_id: mt.id
       }
     }
+  end
+
+  def self.migrate_to_new_email_system threads_filename, messages_filename
+    threads = File.read(threads_filename).split("\n").map do |line|
+      d = line.split(":")
+      "('#{d.first}', #{d.last})"
+    end.join(", ")
+
+    ActiveRecord::Base.connection.execute("CREATE TABLE google_threads (google_thread_id varchar(255), messages_thread_id int)")
+    ActiveRecord::Base.connection.execute("INSERT INTO google_threads (google_thread_id, messages_thread_id) VALUES #{threads}")
+
+    ActiveRecord::Base.connection.execute("UPDATE messages_threads AS mt SET server_thread_id = gt.messages_thread_id FROM google_threads AS gt WHERE mt.google_thread_id = gt.google_thread_id")
+
+    ActiveRecord::Base.connection.execute("DROP TABLE google_threads")
+
+
+    messages = File.read(messages_filename).split("\n").map do |line|
+      d = line.split(":")
+      "('#{d.first}', #{d.last})"
+    end.join(", ")
+
+    ActiveRecord::Base.connection.execute("CREATE TABLE google_messages (google_message_id varchar(255), message_id int)")
+    ActiveRecord::Base.connection.execute("INSERT INTO google_messages (google_message_id, message_id) VALUES #{messages}")
+
+    ActiveRecord::Base.connection.execute("UPDATE messages AS m SET server_message_id = gm.message_id FROM google_messages AS gm WHERE m.google_message_id = gm.google_message_id")
+    ActiveRecord::Base.connection.execute("UPDATE julie_actions AS ja SET server_message_id = gm.message_id FROM google_messages AS gm WHERE ja.google_message_id = gm.google_message_id")
+
+    ActiveRecord::Base.connection.execute("DROP TABLE google_messages")
   end
 end

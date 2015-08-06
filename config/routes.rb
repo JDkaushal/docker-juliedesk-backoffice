@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     collection do
       get "index_with_import", action: :index_with_import, as: :index_with_import
     end
+
     member do
       post "archive", action: :archive, as: :archive
       post "split", action: :split, as: :split
@@ -26,12 +27,9 @@ Rails.application.routes.draw do
 
       get "wait_for_preference_change", action: :wait_for_preference_change
       post "classify", action: :classify, as: :classify
-      post "mark_as_read", action: :mark_as_read, as: :mark_as_read
 
       post "reply", action: :reply, as: :reply
       post "generate_threads", action: :generate_threads, as: :generate_threads
-
-      get "attachments/:attachment_id", action: :get_attachment
     end
   end
 

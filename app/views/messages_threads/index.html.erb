@@ -1,9 +1,6 @@
 <script>
     var app = angular.module("backofficeApp", []);
     app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
-//        setInterval(function () {
-//            redrawDates();
-//        }, 3000);
 
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;

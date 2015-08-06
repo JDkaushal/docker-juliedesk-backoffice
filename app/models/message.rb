@@ -6,41 +6,16 @@ class Message < ActiveRecord::Base
   belongs_to :messages_thread
   has_many :message_classifications
 
-  attr_writer :google_message
+  attr_accessor :server_message
 
-  def self.bugged
-    [] + nil
-  end
+
+
 
   def clean_delete
     self.message_classifications.each do |mc|
       mc.clean_delete
     end
     self.delete
-  end
-
-  def correct_google_message
-    Message.correct_google_message @google_message
-  end
-
-  def self.correct_google_message google_message
-    m = Message.new
-
-    google_message.text ||= google_message.body || m.strip_tags(google_message.html)
-    google_message.html ||= m.send(:h, m.simple_format(google_message.text))
-
-    google_message.body = nil
-    google_message
-  end
-
-  def google_message
-    unless @google_message
-      @google_message = Gmail::Message.get self.google_message_id
-
-      correct_google_message
-    end
-
-    @google_message
   end
 
 
@@ -109,9 +84,7 @@ class Message < ActiveRecord::Base
   end
 
   def from_me?
-    JulieAlias.all.select{|julie_alias|
-      google_message.from.downcase.include? julie_alias.email
-    }.length > 0
+      server_message['from_me']
   end
 
   def generator_operator_actions_group operator_actions_groups
@@ -129,47 +102,51 @@ class Message < ActiveRecord::Base
 
   def generator_message_classification
     messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
-      ja.google_message_id && ja.google_message_id == self.google_message_id
+      ja.server_message_id && ja.server_message_id == self.server_message_id
     }.first.try(:message_classification)
   end
 
   def julie_alias
-    Message.julie_aliases_from_google_message(self.google_message).first
+    Message.julie_aliases_from_server_message(self.server_message).first
   end
 
-  def self.julie_aliases_from_google_message google_message, params={}
+  def self.julie_aliases_from_server_message server_message, params={}
     (params[:julie_aliases] || JulieAlias.all).select{|julie_alias|
-      "#{google_message.to} #{google_message.cc}".downcase.include? julie_alias.email
+      "#{server_message['to']} #{server_message['cc']}".downcase.include? julie_alias.email
     }
   end
 
   def self.import_emails
-    # Get google threads in inbox
-    google_threads = Gmail::Label.inbox.threads
+    # Get server threads in inbox
+    server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 100, full: true)
 
     # Put by default all previous messages_thread out of inbox
     MessagesThread.update_all(in_inbox: false)
+
     # Julie aliases in cache
     julie_aliases = JulieAlias.all
-
-    updated_messages_thread_ids = []
+    # Accounts in cache (light mode)
     accounts_cache = Account.accounts_cache(mode: "light")
 
-    google_threads.each do |google_thread|
+    # Store the messages_thread_ids that will be updated by this method
+    updated_messages_thread_ids = []
+
+
+    server_threads.each do |server_thread|
       should_update_thread = true
 
-      messages_thread = MessagesThread.find_by_google_thread_id google_thread.id
+
+      messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
       if messages_thread
-        should_update_thread = (messages_thread.google_history_id != google_thread.historyId || messages_thread.account_email.nil?)
-        messages_thread.update_attributes({in_inbox: true, google_history_id: google_thread.historyId})
+        should_update_thread = (messages_thread.server_version != server_thread['version'] || messages_thread.account_email.nil?)
+        messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
       end
 
       if should_update_thread
-        google_thread = google_thread.detailed
 
         if messages_thread
           if messages_thread.account_email == nil
-            account_email = MessagesThread.find_account_email(google_thread, {accounts_cache: accounts_cache})
+            account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
             account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
             messages_thread.update_attributes({
                                                   account_email: account_email,
@@ -177,39 +154,36 @@ class Message < ActiveRecord::Base
                                               })
           end
         else
-          account_email = MessagesThread.find_account_email(google_thread, {accounts_cache: accounts_cache})
+          account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
           account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-          messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
+          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
+
           if account_email.nil?
             messages_thread.warn_support
           end
 
-          if MessagesThread.several_accounts_detected(google_thread, {accounts_cache: accounts_cache})
+          if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
             messages_thread.delegate_to_support
           end
         end
 
-        sorted_messages = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}
+        messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet']})
 
-        snippet = sorted_messages.last.snippet
-        messages_thread.update_attributes({subject: sorted_messages.first.subject, snippet: snippet})
-
-        google_thread.messages.each do |google_message|
-          google_message = Message.correct_google_message google_message
-          message = Message.find_by_google_message_id google_message.id
+        server_thread['messages'].each do |server_message|
+          message = Message.find_by_server_message_id server_message['id']
 
           unless message
-            messages_thread.messages.create google_message_id: google_message.id,
-                                            received_at: DateTime.parse(google_message.date),
-                                            reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
-                                            from_me: google_message.labelIds.include?("SENT")
+            messages_thread.messages.create server_message_id: server_message['id'],
+                                            received_at: DateTime.parse(server_message['date']),
+                                            reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
+                                            from_me: server_message['from_me']
 
             updated_messages_thread_ids << messages_thread.id
           end
         end
 
         # Check if there are several julie aliases only if there was a new message
-        if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_google_thread(google_thread, {julie_aliases: julie_aliases}).length > 1
+        if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
           messages_thread.delegate_to_support
         end
       end
@@ -219,19 +193,17 @@ class Message < ActiveRecord::Base
   end
 
 
-  def self.generate_reply_all_recipients(google_message)
-
-    gm = Message.correct_google_message(google_message).reply_all_with(Gmail::Message.new(text: "", html: ""))
+  def self.generate_reply_all_recipients(server_message)
     {
 
 
-        to: ApplicationHelper.find_addresses(gm.to).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+        to: ApplicationHelper.find_addresses(server_message['to']).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
           }
         },
-        cc: ApplicationHelper.find_addresses(gm.cc).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+        cc: ApplicationHelper.find_addresses(server_message['cc']).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
@@ -241,90 +213,77 @@ class Message < ActiveRecord::Base
   end
 
   def generate_threads julie_messages
-
+    t = Time.now
     # Get from field
-    julie_alias = self.messages_thread.julie_alias
-    from = julie_alias.generate_from
 
-    updated_messages_thread_ids = []
+    self.messages_thread.re_import
+    cache_server_message = self.messages_thread.messages.select{|m| m.id == self.id}.first.server_message
+
+    julie_alias = self.messages_thread.julie_alias
+
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
-
+      p "Processing a julie messages"
+      p Time.now - t
       # Try to find an existing thread which would have resulted in the given event
       existing_message = JulieAction.where(event_id: julie_message_hash['event_id'], calendar_id: julie_message_hash['calendar_id']).first.try(:message_classification).try(:message)
 
-      if existing_message.try(:messages_thread)
-        # Copy the original message into the existing thread
-        self.google_message.threadId = existing_message.messages_thread.google_thread_id
-        self.google_message.subject = existing_message.google_message.subject
-        self.google_message.labelIds = (self.google_message.labelIds.select{|label| label != "SENT"} + ["INBOX"]).uniq + ["Label_19"]
-        updated_google_message = self.google_message.insert
-      else
-        # Copy the original message with a new subject and get the corresponding threadId
-        self.google_message.threadId = nil
-        self.google_message.subject = julie_message_hash['subject']
-        self.google_message.labelIds = (self.google_message.labelIds.select{|label| label != "SENT"} + ["INBOX"]).uniq + ["Label_19"]
-        updated_google_message = self.google_message.insert
-      end
-
-      # Create the fake Julie's message
-      julie_google_message = updated_google_message.reply_all_with(Gmail::Message.new({
-                                                                                   text: "#{strip_tags(julie_message_hash['html'])}",
-                                                                                   html: julie_message_hash['html']
-                                                                               }))
-      julie_google_message.to = from
-      julie_google_message.from = from
-      julie_google_message.cc = ""
-      julie_google_message.insert
-
-
 
       if existing_message.try(:messages_thread)
-        # Just update the message thread to notice it's in the inbox
-        existing_message.messages_thread.update_attribute(:in_inbox, true)
-        updated_messages_thread_ids << existing_message.messages_thread_id
+        EmailServer.deliver_message({
+                                        subject: julie_message_hash['subject'],
+                                        from: julie_alias.generate_from,
+                                        to: julie_alias.generate_from,
+                                        text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
+                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
+                                        quote: true,
+                                        reply_to_message_id:  existing_message.server_message_id
+                                    })
       else
-        # Now creating DB entries to associate the created thread with event data
-        messages_thread_id = Message.associate_event_data updated_google_message,
-                                     {
-                                         'id' => julie_message_hash['event_id'],
-                                         'calendar_id' => julie_message_hash['calendar_id'],
-                                         'url' => julie_message_hash['event_url'],
-                                         'calendar_login_username' => julie_message_hash['calendar_login_username'],
-                                         'attendees' => julie_message_hash['attendees'],
-                                         'summary' => julie_message_hash['summary'],
-                                         'location' => julie_message_hash['location'],
-                                         'duration' => julie_message_hash['duration'],
-                                         'notes' => julie_message_hash['notes'],
-                                     },
-                                     self.messages_thread
+        server_message = EmailServer.deliver_message({
+                                        subject: julie_message_hash['subject'],
+                                        from: julie_alias.generate_from,
+                                        to: julie_alias.generate_from,
+                                        text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
+                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html']
+                                    })
 
-        updated_messages_thread_ids << messages_thread_id
+        p "Associating event data"
+        p Time.now - t
+        Message.associate_event_data server_message,
+                                                {
+                                                    'id' => julie_message_hash['event_id'],
+                                                    'calendar_id' => julie_message_hash['calendar_id'],
+                                                    'url' => julie_message_hash['event_url'],
+                                                    'calendar_login_username' => julie_message_hash['calendar_login_username'],
+                                                    'attendees' => julie_message_hash['attendees'],
+                                                    'summary' => julie_message_hash['summary'],
+                                                    'location' => julie_message_hash['location'],
+                                                    'duration' => julie_message_hash['duration'],
+                                                    'notes' => julie_message_hash['notes'],
+                                                },
+                                                self.messages_thread
       end
 
-      # Send new email notification
-      Pusher.trigger('private-global-chat', 'new-email', {
-          :message => 'new_email',
-          :messages_threads_count => MessagesThread.items_to_classify_count,
-          :updated_messages_thread_ids => updated_messages_thread_ids.uniq
-      })
+      p "Done !"
+      p Time.now - t
     end
   end
 
-  def self.associate_event_data google_message, event, original_messages_thread
+  def self.associate_event_data server_message, event, original_messages_thread
     # Create the message_thread in DB
-    messages_thread = MessagesThread.create google_thread_id: google_message.threadId,
+    messages_thread = MessagesThread.create server_thread_id: server_message['messages_thread_id'],
                                             in_inbox: true,
                                             account_email: original_messages_thread.account_email,
                                             account_name: original_messages_thread.account_name,
-                                            subject: google_message.subject,
-                                            snippet: google_message.snippet
+                                            subject: server_message['subject'],
+                                            snippet: server_message['snippet']
 
     # Create the message in DB
-    message = messages_thread.messages.create google_message_id: google_message.id,
-                                              received_at: DateTime.parse(google_message.date),
-                                              reply_all_recipients: Message.generate_reply_all_recipients(google_message).to_json,
-                                              from_me: google_message.labelIds.include?("SENT")
+    message = messages_thread.messages.create server_message_id: server_message['id'],
+                                              received_at: DateTime.parse(server_message['date']),
+                                              reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
+                                              from_me: server_message['from_me']
 
     attendees = (event['attendees'] || {}).select{|k, attendee|
       !original_messages_thread.account.all_emails.include? attendee['email']
@@ -373,23 +332,6 @@ class Message < ActiveRecord::Base
   end
 
   def self.format_email_body message
-    email_body = message.google_message.html.gsub(/\<style\>.*?\<\/style\>/im, "").gsub(/\<script\>.*?\<\/script\>/im, "")
-    n_body = Nokogiri::HTML(email_body)
-    n_body.css('script').remove
-    n_body.css('base').remove
-    n_body.css("img").each do |img|
-      begin
-      src = img.attr("src")
-      image_id = src.split("cid:")[1]
-      all_parts = self.expand_parts(message.google_message['payload']['parts'])
-      attachment = all_parts.select{|part| part['headers'].map{|h| h['value']}.include? "<#{image_id}>"}.first
-      format = attachment.headers.select{|h| h['name'] == "Content-Type"}.first['value'].split(";").first
-      attachment_id = attachment['body']['attachmentId']
-
-      img["src"] = "/messages/#{message.id}/attachments/#{attachment_id}?format=#{format}"
-      rescue
-      end
-    end
-    n_body.to_s
+    message.server_message['parsed_html']
   end
 end

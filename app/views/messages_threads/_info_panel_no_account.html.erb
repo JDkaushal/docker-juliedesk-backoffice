@@ -7,7 +7,7 @@
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 $(function() {
     <%
-    prioritary = MessagesThread.find_account_emails(messages_thread.google_thread) + ["julien@wepopp.com"]
+    prioritary = MessagesThread.find_account_emails(messages_thread.server_thread) + ["julien@wepopp.com"]
     source = Account.get_active_account_emails.sort_by{|contact|
         (prioritary.include?(contact))?"aaa#{contact.downcase}":"zzz#{contact.downcase}"
     }.to_json
@@ -59,7 +59,7 @@ $(function() {
     <div class="account">
       <div class="no-account-detected">
         <%= I18n.t("info_box.no_account_found") %>
-        <div class="no-account-email"><%= messages_thread.messages.sort_by(&:received_at).first.google_message.from %></div>
+        <div class="no-account-email"><%= messages_thread.messages.sort_by(&:received_at).first.server_message['from'] %></div>
       </div>
 
       <div class="associate-to-account-container">

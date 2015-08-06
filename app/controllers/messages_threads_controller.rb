@@ -45,11 +45,12 @@ class MessagesThreadsController < ApplicationController
                                          messages_thread_id: messages_thread.id
                                      })
 
-    messages_thread.google_thread.archive
+    EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
+
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
 
-    if messages_thread.google_thread(force_refresh: true).messages.map(&:unread?).select(&:present?).length > 0
-      messages_thread.google_thread.unarchive
+    if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
+      EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
     else
       messages_thread.update_attribute(:in_inbox, false)
 
@@ -123,12 +124,6 @@ class MessagesThreadsController < ApplicationController
 
   private
 
-  def log_time ref
-    @i ||=0
-    @i += 1
-    print @i, Time.now - ref
-  end
-
   def render_messages_threads
     respond_to do |format|
       format.html {
@@ -154,6 +149,12 @@ class MessagesThreadsController < ApplicationController
         }
       }
     end
+  end
+
+  def print_time reference
+    @i ||= 0
+    @i+= 1
+    p @i, Time.now - reference
   end
 
 

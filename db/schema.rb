@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150803145232) do
+ActiveRecord::Schema.define(version: 20150831151849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,8 +57,8 @@ ActiveRecord::Schema.define(version: 20150803145232) do
     t.text     "events",                    default: "[]"
     t.boolean  "deleted_event",             default: false
     t.string   "event_url"
-    t.string   "google_message_id"
     t.string   "calendar_login_username"
+    t.integer  "server_message_id"
   end
 
   create_table "julie_aliases", force: true do |t|
@@ -101,7 +101,6 @@ ActiveRecord::Schema.define(version: 20150803145232) do
   end
 
   create_table "messages", force: true do |t|
-    t.string   "google_message_id"
     t.integer  "messages_thread_id"
     t.datetime "received_at"
     t.datetime "created_at"
@@ -109,16 +108,15 @@ ActiveRecord::Schema.define(version: 20150803145232) do
     t.boolean  "archived",             default: false
     t.text     "reply_all_recipients"
     t.boolean  "from_me",              default: false
+    t.integer  "server_message_id"
   end
 
   create_table "messages_threads", force: true do |t|
-    t.string   "google_thread_id"
     t.string   "account_email"
     t.boolean  "in_inbox",              default: false
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "google_history_id"
     t.string   "subject"
     t.text     "snippet"
     t.string   "account_name"
@@ -126,6 +124,8 @@ ActiveRecord::Schema.define(version: 20150803145232) do
     t.text     "to_founders_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
+    t.integer  "server_thread_id"
+    t.string   "server_version"
   end
 
   create_table "operator_actions", force: true do |t|

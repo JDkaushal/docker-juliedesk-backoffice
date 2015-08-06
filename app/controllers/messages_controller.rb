@@ -83,10 +83,13 @@ class MessagesController < ApplicationController
   end
 
   def generate_threads
+    p "*" * 50
+    p "Generating threads..."
     message = Message.find params[:id]
-
-    message.delay.generate_threads((params[:julie_messages] || {}).values)
-
+    p "Found message. genrates threads"
+    message.generate_threads((params[:julie_messages] || {}).values)
+    p "Done."
+    p "*" * 50
     render json: {
         status: "success",
         message: "",
@@ -97,27 +100,23 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-    html_message = "#{text_to_html(params[:text])} #{params[:html_signature]}"
-    text_message = "#{params[:text]}#{strip_tags(params[:html_signature])}"
-
-    response_message = @message.google_message.reply_all_with(Gmail::Message.new({text: text_message, html: html_message}))
-
-    response_message.to = (params[:to] || []).join(", ")
-    response_message.cc = (params[:cc] || []).join(", ")
-
-    unless params[:quote_message] == "true"
-      response_message.text = text_message
-      response_message.html = html_message
-      response_message.body = nil
-    end
-
     julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
-    response_message.from = julie_alias.generate_from
-    response_message_sent = response_message.deliver
+    new_server_message_id = EmailServer.deliver_message({
+        subject: @message.messages_thread.subject,
+        from: julie_alias.generate_from,
+        to: (params[:to] || []).join(", "),
+        cc: (params[:cc] || []).join(", "),
+        text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
+        html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
+        quote: params[:quote_message] == "true",
+        reply_to_message_id:  @message.server_message_id
+                                })['id']
+
+
 
 
     julie_action = JulieAction.find params[:julie_action_id]
-    julie_action.update_attribute :google_message_id, response_message_sent.id
+    julie_action.update_attribute :server_message_id, new_server_message_id
 
     render json: {
         status: "success",
@@ -126,32 +125,6 @@ class MessagesController < ApplicationController
 
         }
     }
-  end
-
-  def mark_as_read
-    message = Message.find params[:id]
-    message.google_message.mark_as_read
-
-    render json: {
-        status: "success",
-        message: "",
-        data: {
-
-        }
-    }
-  end
-
-  def get_attachment
-    message = Message.find params[:id]
-    google_message = message.google_message
-
-    result = Gmail.request(Gmail.service.users.to_h['gmail.users.messages.attachments.get'], {
-        messageId: google_message.id,
-        id: params[:attachment_id]
-    })
-
-    send_data Base64.decode64(result[:data].gsub("-", "+").gsub("_", "/")),
-              :type => params[:format], :disposition => 'inline'
   end
 
   private

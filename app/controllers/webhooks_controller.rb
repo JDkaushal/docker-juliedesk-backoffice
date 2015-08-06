@@ -3,9 +3,6 @@ class WebhooksController < ApplicationController
   protect_from_forgery except: :new_email
 
   def new_email
-    events = JSON.parse params[:mandrill_events]
-
-    #Gmail::Message.new({text: "New email", to: "elrandil@gmail.com"}).deliver
     updated_messages_thread_ids = Message.import_emails
     Pusher.trigger('private-global-chat', 'new-email', {
         :message => 'new_email',

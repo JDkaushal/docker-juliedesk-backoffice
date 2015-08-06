@@ -77,7 +77,7 @@
 
       <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
         operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
-                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.google_message_id.present?)
+                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.server_message_id.present?)
       }
       %>
       <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
@@ -98,7 +98,7 @@
       <% end %>
     </div>
 
-    <% unread_emails_count = @messages_thread.messages.select{|m| m.google_message.unread?}.length %>
+    <% unread_emails_count = @messages_thread.messages.select{|m| !m.server_message['read']}.length %>
     <% if unread_emails_count > 1 %>
         <div class="unread-emails">
           <%= I18n.t("show.x_unread_emails", count: unread_emails_count) %>
