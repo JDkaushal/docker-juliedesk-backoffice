@@ -41,6 +41,7 @@ gem "rack-timeout"
 gem "redis"
 
 gem "nokogiri"
+gem "angularjs-rails"
 
 group :test do
   gem 'rspec-rails', '~> 3.0'

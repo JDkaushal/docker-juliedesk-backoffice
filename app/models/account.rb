@@ -143,8 +143,12 @@ class Account
     self.to_json
   end
 
-  def self.accounts_cache
-    JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
+  def self.accounts_cache params={}
+    if params[:mode] == "light"
+      JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache_light") || "{}")
+    else
+      JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
+    end
   end
 
   def find_calendar_login_with_rule_data rule_data

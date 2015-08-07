@@ -1,0 +1,25 @@
+<div class="messages-thread-container">
+
+    <a href="/messages_threads/{{ messagesThread.id}} " class="messages-thread-item" data-id="{{ messagesThread.id}}">
+        <div class="messages-thread-lock-container" ng-show="messagesThread.locked_by_operator_id">Being processed by {{ messagesThread.locked_by_operator_name }}</div>
+
+        <div class="account-email">
+            <span ng-show="messagesThread.account">{{ messagesThread.account.full_name }}</span>
+            <span ng-hide="messagesThread.account"><%= I18n.t("info_box.no_account_found") %></span>
+
+            <span ng-show="messagesThread.messages.length > 1">({{ messagesThread.messages.length }})</span>
+        </div>
+
+        <div class="subject-and-snippet">
+            <div class="subject">{{ messagesThread.subject }}</div>
+            <div class="snippet"> - {{ messagesThread.snippet}}</div>
+        </div>
+
+        <div class="received-at">{{ formatDate(messagesThread.received_at) }}</div>
+
+        <div ng-show="messagesThread.delegated_to_founders" class="delegated-to-founders">founders</div>
+        <div ng-show="!messagesThread.delegated_to_founders && messagesThread.account && messagesTread.account.office_365_refresh_token_expired" class="delegated-to-founders">tkn expird</div>
+        <div ng-show="!messagesThread.delegated_to_founders && (!messagesThread.account || (!messagesTread.account.office_365_refresh_token_expired && messagesThread.account.only_admin_can_process))" class="delegated-to-founders">admin only</div>
+    </a>
+
+</div>

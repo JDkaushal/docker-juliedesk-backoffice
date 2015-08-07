@@ -1,182 +1,105 @@
 <script>
-    $(function () {
-        redrawThreadList(<%== @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name]).to_json %>);
-    });
-    function redrawThreadList(threadsData) {
-        $(".messages-threads-container").html("");
-        var $toProcessLaterContainer = $("<div>").addClass("to-process-later-container");
-        $toProcessLaterContainer.append($("<div>").addClass("to-process-later-category-title").html("<%= I18n.t("index.to_process_later") %>"));
+    var app = angular.module("backofficeApp", []);
+    app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
+//        setInterval(function () {
+//            redrawDates();
+//        }, 3000);
 
-        $waitingForPreferenceChangerContainer = $("<div>").addClass("waiting-for-preference-change-container");
-        $waitingForPreferenceChangerContainer.append($("<div>").addClass("waiting-for-preference-change-title").html("<%= I18n.t("index.waiting_for_preference_change") %>"));
+        $scope.refreshInbox = function(forceRefresh) {
+            console.log("refresh");
+            $scope.loading = true;
+            $(".refresh-inbox-button").attr("disabled", true);
 
-        $(".nothing-to-do").show();
-        $(".messages-threads-container").show();
-        $(".messages-threads-container").removeClass("bordered");
-        if(threadsData.length == 0) {
-            $(".messages-threads-container").hide();
-        }
-        $(".header .global-todo-count").html(threadsData.length);
-        for (var i in threadsData) {
-            var threadData = threadsData[i];
-            var $messageThreadContainer = $("<a>").attr("href", "/messages_threads/" + threadData.id).addClass("messages-thread-item").data("id", threadData.id);
-
-            var $messagesThreadLockContainer = $("<div>").addClass("messages-thread-lock-container");
-            if(threadData.locked_by_operator_id) {
-                $messagesThreadLockContainer.html("Being processed by " + threadData.locked_by_operator_name).show();
+            var url ="<%= messages_threads_path(format: "json") %>";
+            if (forceRefresh) {
+                url = "<%= index_with_import_messages_threads_path(format: "json") %>";
             }
-            else {
-                $messagesThreadLockContainer.hide()
-            }
-            $messageThreadContainer.append($messagesThreadLockContainer);
+            $http.get(url)
+                    .success(function(e) {
+                        console.log(e);
+                        $scope.loading = false;
+                        $scope.messagesThreads = e.data;
+                        $(".header .global-todo-count").html($scope.messagesThreads.length);
+                        console.log($scope.messagesThreads.length);
+                    })
+                    .error(function(e) {
+                        $scope.loading = false;
+                        console.log(e);
+                        alert("There was an error.");
+                    });
+        };
 
-            var $accountEmail = $("<div>").addClass("account-email");
-            var accountName = "<%= I18n.t("info_box.no_account_found") %>";
-            if(threadData.account) {
-                accountName = threadData.account.full_name;
-            }
+        $scope.formatDate = function(date) {
+            return moment(date).locale("<%= I18n.locale %>").fromNow();
+        };
 
-            var messagesCount = threadData.messages.length;
-            var accountEmailString = accountName;
-            if (messagesCount > 1) accountEmailString = accountEmailString + " (" + messagesCount + ")";
-            $accountEmail.html(accountEmailString);
-            $messageThreadContainer.append($accountEmail);
+        $scope.toProcessLaterMessagesThreads = function() {
+            return _.filter($scope.messagesThreads, function(messagesThread) {
+               return $scope.shouldProcessLater(messagesThread);
+            });
+        };
 
-            var $subjectAndSnippet = $("<div>").addClass("subject-and-snippet");
-            $subjectAndSnippet.append($("<div>").addClass("subject").html(threadData.subject));
-            $subjectAndSnippet.append($("<div>").addClass("snippet").html(" - " + threadData.snippet));
-            $messageThreadContainer.append($subjectAndSnippet);
+        $scope.toProcessNowMessagesThreads = function() {
+            return _.filter($scope.messagesThreads, function(messagesThread) {
+                return !$scope.shouldProcessLater(messagesThread);
+            });
+        };
 
-            var $receivedAt = $("<div>").addClass("received-at").data("date", moment(threadData.received_at).format());
-            $messageThreadContainer.append($receivedAt);
-
-            if(threadData.delegated_to_founders) {
-                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("founders"));
-            }
-            else if(threadData.account && threadData.account.office_365_refresh_token_expired) {
-                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("tkn expird"));
-            }
-            else if(!threadData.account || threadData.account.only_admin_can_process) {
-                $messageThreadContainer.append($("<div>").addClass("delegated-to-founders").html("admin only"));
-            }
-
-
-            if(waitingForPreferenceChange(threadData)) {
-                $waitingForPreferenceChangerContainer.append($messageThreadContainer);
-            }
-            else if(shouldProcessLater(threadData)) {
-                $toProcessLaterContainer.append($messageThreadContainer);
-            }
-            else {
-                $(".messages-threads-container").append($messageThreadContainer);
-                $(".messages-threads-container").addClass("bordered");
-                $(".nothing-to-do").hide();
-            }
-        }
-        if($toProcessLaterContainer.find(".messages-thread-item").length > 0) {
-            $(".messages-threads-container").append($toProcessLaterContainer);
-        }
-        if($waitingForPreferenceChangerContainer.find(".messages-thread-item").length > 0) {
-            $(".messages-threads-container").append($waitingForPreferenceChangerContainer);
-        }
-        redrawDates();
-    }
-
-    function shouldProcessLater(threadData) {
-        if(threadData.account && threadData.account.company_hash) {
-            var workingHours = threadData.account.company_hash.working_hours;
-            var timezone = threadData.account.company_hash.timezone;
-            var mNow = moment.tz(timezone);
-            var day = mNow.format("ddd").toLowerCase();
-            if(workingHours[day]) {
-                var currentWorkingHoursItem = _.find(workingHours[day], function(workingHoursItem) {
-                    var start = parseInt(workingHoursItem[0]);
-                    var end = parseInt(workingHoursItem[1]);
-                    var mStart = mNow.clone().set("h", start/100).set("m", start%100).set("s", 0);
-                    var mEnd = mNow.clone().set("h", end/100).set("m", end%100).set("s", 0);
-                    //console.log(mStart.format(), mEnd.format());
-                    return mNow >= mStart && mNow <= mEnd;
-                });
-                if(currentWorkingHoursItem == undefined) {
+        $scope.shouldProcessLater = function(messagesThread) {
+            if(messagesThread.account && messagesThread.account.company_hash) {
+                var workingHours = messagesThread.account.company_hash.working_hours;
+                var timezone = messagesThread.account.company_hash.timezone;
+                var mNow = moment.tz(timezone);
+                var day = mNow.format("ddd").toLowerCase();
+                if(workingHours[day]) {
+                    var currentWorkingHoursItem = _.find(workingHours[day], function(workingHoursItem) {
+                        var start = parseInt(workingHoursItem[0]);
+                        var end = parseInt(workingHoursItem[1]);
+                        var mStart = mNow.clone().set("h", start/100).set("m", start%100).set("s", 0);
+                        var mEnd = mNow.clone().set("h", end/100).set("m", end%100).set("s", 0);
+                        //console.log(mStart.format(), mEnd.format());
+                        return mNow >= mStart && mNow <= mEnd;
+                    });
+                    if(currentWorkingHoursItem == undefined) {
+                        return true;
+                    }
+                }
+                else {
                     return true;
                 }
             }
-            else {
-                return true;
-            }
-        }
 
-        return false;
-    }
+            return false;
+        };
 
-    function waitingForPreferenceChange(threadData) {
-        if(threadData.account && threadData.account.block_until_preferences_change) {
-            return true;
-        }
-        return false;
-    }
+        window.newEmailCallback = function() {
+            $scope.refreshInbox(false);
+        };
 
-    function redrawDates() {
-        $(".received-at").each(function () {
-            var date = $(this).data("date");
-            $(this).html(moment(date).locale("<%= I18n.locale %>").fromNow());
-        });
-    }
+        window.redrawLocksStatuses = function(lockStatuses) {
+            _.each(lockStatuses, function(lockStatus) {
+                $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
+                    if(lockStatus.messages_thread_id == messagesThread.id) {
+                        messagesThread.locked_by_operator_id = true;
+                        messagesThread.locked_by_operator_name = lockStatus.operator_name;
+                    }
+                    else {
+                        messagesThread.locked_by_operator_id = false;
+                    }
+                });
+            });
 
-    function refreshInbox(forceRefresh) {
-        $(".spinner").css({display: "block"});
-        $(".refresh-inbox-button").attr("disabled", true);
+            $scope.$digest();
+        };
 
-        var url ="<%= messages_threads_path %>";
-        if (forceRefresh) {
-            url = "<%= index_with_import_messages_threads_path %>";
-        }
-        $.ajax({
-            url: url,
-            type: "get",
-            dataType: "json",
-            success: function (e) {
-                redrawThreadList(e.data);
-                $(".spinner").hide();
-                $(".refresh-inbox-button").removeAttr("disabled");
-            },
-            error: function(e) {
-                $(".spinner").hide();
-                console.log(e);
-                $(".refresh-inbox-button").removeAttr("disabled");
-                alert("There was an error.");
-            }
-        });
-    }
+        window.archiveMessageThread = function(messageThreadId) {
+            $scope.messagesThreads = _.filter($scope.messagesThreads, function(messagesThread) {
+                return messagesThread.id !=  messageThreadId;
+            });
+            $scope.$digest();
+        };
 
-    window.newEmailCallback = function() {
-        refreshInbox(false);
-    };
-
-    window.redrawLocksStatuses = function(lockStatuses) {
-        $(".messages-thread-item").find(".messages-thread-lock-container").hide();
-        _.each(lockStatuses, function(lockStatus) {
-           $(".messages-thread-item").filter(function() {
-               return $(this).data("id") == lockStatus.messages_thread_id;
-           }).find(".messages-thread-lock-container").html("Being processed by " + lockStatus.operator_name).show();
-        });
-    };
-
-    window.archiveMessageThread = function(messageThreadId) {
-        $(".messages-thread-item").filter(function() {
-            return $(this).data("id") == messageThreadId;
-        }).hide();
-    };
-
-
-    $(function () {
-        setInterval(function () {
-            redrawDates();
-        }, 3000);
-
-        $(".refresh-inbox-button").click(function () {
-            refreshInbox(true);
-        });
+        $scope.refreshInbox(false);
     });
 </script>
 
@@ -187,20 +110,31 @@
 
 
 
-    <div class="messages-threads-page">
+    <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
       <div class="refresh-container">
-        <button class="btn btn-success refresh-inbox-button"><%= I18n.t("common.refresh") %></button>
-        <%= image_tag "ajax-loader.gif", class: "spinner" %>
+        <button class="btn btn-success refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading"><%= I18n.t("common.refresh") %></button>
+        <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
       </div>
 
 
 
-      <div class="nothing-to-do">
+      <div class="nothing-to-do" ng-show="messagesThreads.length == 0 && !loading">
         <div class="smiley"></div>
         <div><%= I18n.t("index.nothing_to_do") %></div>
       </div>
 
-      <div class="messages-threads-container"></div>
+      <div class="messages-threads-container bordered" ng-show="messagesThreads.length > 0">
+        <div ng-repeat="messagesThread in toProcessNowMessagesThreads()">
+            <%= render "row_in_list" %>
+        </div>
+
+        <div class="to-process-later-container" ng-show="toProcessLaterMessagesThreads().length > 0">
+          <div class="to-process-later-category-title"><%= I18n.t("index.to_process_later") %></div>
+          <div ng-repeat="messagesThread in toProcessLaterMessagesThreads()">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
 
       <%= render partial: "common/footer" %>
     </div>

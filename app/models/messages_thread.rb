@@ -23,7 +23,12 @@ class MessagesThread < ActiveRecord::Base
 
 
   def account params={}
-    @account ||= Account.create_from_email(account_email, params)
+    if @account.present? || @account_fetched
+      @account
+    else
+      @account_fetched = true
+      @account = Account.create_from_email(account_email, params)
+    end
   end
 
   def delegate_to_support params={}

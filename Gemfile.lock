@@ -40,6 +40,7 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     addressable (2.3.8)
+    angularjs-rails (1.4.3)
     arel (5.0.1.20140414130214)
     autoparse (0.3.3)
       addressable (>= 2.3.1)
@@ -242,6 +243,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  angularjs-rails
   compass-rails (~> 1.1.2)
   database_cleaner
   delayed_job_active_record
