@@ -1,6 +1,7 @@
 <div class="messages-thread-container">
 
     <a href="/messages_threads/{{ messagesThread.id}} " class="messages-thread-item" data-id="{{ messagesThread.id}}">
+      <div>{{ messagesThread.locked_by_operator_id }}</div>
         <div class="messages-thread-lock-container" ng-show="messagesThread.locked_by_operator_id">Being processed by {{ messagesThread.locked_by_operator_name }}</div>
 
         <div class="account-email">

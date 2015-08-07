@@ -6,7 +6,6 @@
 //        }, 3000);
 
         $scope.refreshInbox = function(forceRefresh) {
-            console.log("refresh");
             $scope.loading = true;
             $(".refresh-inbox-button").attr("disabled", true);
 
@@ -16,11 +15,9 @@
             }
             $http.get(url)
                     .success(function(e) {
-                        console.log(e);
                         $scope.loading = false;
                         $scope.messagesThreads = e.data;
                         $(".header .global-todo-count").html($scope.messagesThreads.length);
-                        console.log($scope.messagesThreads.length);
                     })
                     .error(function(e) {
                         $scope.loading = false;
@@ -74,29 +71,28 @@
 
         window.newEmailCallback = function() {
             $scope.refreshInbox(false);
+            $scope.$apply();
         };
 
         window.redrawLocksStatuses = function(lockStatuses) {
-            _.each(lockStatuses, function(lockStatus) {
-                $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
+            $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
+                messagesThread.locked_by_operator_id = null;
+                _.each(lockStatuses, function(lockStatus) {
                     if(lockStatus.messages_thread_id == messagesThread.id) {
-                        messagesThread.locked_by_operator_id = true;
+                        messagesThread.locked_by_operator_id = 1;
                         messagesThread.locked_by_operator_name = lockStatus.operator_name;
-                    }
-                    else {
-                        messagesThread.locked_by_operator_id = false;
                     }
                 });
             });
 
-            $scope.$digest();
+            $scope.$apply();
         };
 
         window.archiveMessageThread = function(messageThreadId) {
             $scope.messagesThreads = _.filter($scope.messagesThreads, function(messagesThread) {
                 return messagesThread.id !=  messageThreadId;
             });
-            $scope.$digest();
+            $scope.$apply();
         };
 
         $scope.refreshInbox(false);
