@@ -184,7 +184,7 @@ class Message < ActiveRecord::Base
             messages_thread.warn_support
           end
 
-          if MessagesThread.several_accounts_detected(google_thread, {account_cache: params[:account_cache]})
+          if MessagesThread.several_accounts_detected(google_thread, {accounts_cache: accounts_cache})
             messages_thread.delegate_to_support
           end
         end

@@ -156,10 +156,10 @@ class MessagesThread < ActiveRecord::Base
   def self.several_accounts_detected google_thread, params={}
     contacts = self.contacts(google_messages_to_look: google_thread.messages)
     other_emails = contacts.map{|contact| contact[:email]}
-    account_emails = (other_emails.map{|co| Account.find_account_email(co, {account_cache: params[:account_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+    account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
 
     accounts = account_emails.map{|account_email|
-      Account.create_from_email(account_email, {account_cache: params[:account_cache]})
+      Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
     }
     company_names = accounts.map{|account|
       account.company_hash.try(:[], 'name')
