@@ -285,7 +285,7 @@ class MessagesThread < ActiveRecord::Base
 
   def possible_contacts_for_cache
     thread_contacts = []
-    accounts = Account.accounts_cache
+    accounts = Account.accounts_cache(mode: "light")
     contacts.each do |attendee|
       accounts.each do |email, account|
         all_emails = [account['email']] + account['email_aliases']
