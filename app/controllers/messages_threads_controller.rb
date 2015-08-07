@@ -4,35 +4,12 @@ class MessagesThreadsController < ApplicationController
   before_filter :only_admin, only: [:history]
 
   def index
-    respond_to do |format|
-      format.html {
-
-      }
-      format.json {
-        @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {}, locked_by_operator: {}).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
-        accounts_cache = Account.accounts_cache(mode: "light")
-        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
-        if session[:privilege] != "admin"
-          @messages_thread.select!{ |mt|
-            !mt.delegated_to_founders &&
-                mt.account &&
-                !mt.account.only_admin_can_process
-          }
-        end
-
-        data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name])
-        render json: {
-            status: "success",
-            message: "",
-            data: data
-        }
-      }
-    end
+    render_messages_threads
   end
 
   def index_with_import
     Message.import_emails
-    render_emails_threads
+    render_messages_threads
   end
 
   def history
@@ -150,6 +127,33 @@ class MessagesThreadsController < ApplicationController
     @i ||=0
     @i += 1
     print @i, Time.now - ref
+  end
+
+  def render_messages_threads
+    respond_to do |format|
+      format.html {
+
+      }
+      format.json {
+        @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {}, locked_by_operator: {}).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
+        accounts_cache = Account.accounts_cache(mode: "light")
+        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
+        if session[:privilege] != "admin"
+          @messages_thread.select!{ |mt|
+            !mt.delegated_to_founders &&
+                mt.account &&
+                !mt.account.only_admin_can_process
+          }
+        end
+
+        data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name])
+        render json: {
+            status: "success",
+            message: "",
+            data: data
+        }
+      }
+    end
   end
 
 
