@@ -149,12 +149,11 @@ class Message < ActiveRecord::Base
 
     # Put by default all previous messages_thread out of inbox
     MessagesThread.update_all(in_inbox: false)
-
     # Julie aliases in cache
     julie_aliases = JulieAlias.all
 
     updated_messages_thread_ids = []
-
+    accounts_cache = Account.accounts_cache(mode: "light")
 
     google_threads.each do |google_thread|
       should_update_thread = true
@@ -170,20 +169,22 @@ class Message < ActiveRecord::Base
 
         if messages_thread
           if messages_thread.account_email == nil
-            account_email = MessagesThread.find_account_email(google_thread)
+            account_email = MessagesThread.find_account_email(google_thread, {accounts_cache: accounts_cache})
+            account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
             messages_thread.update_attributes({
                                                   account_email: account_email,
-                                                  account_name: Account.create_from_email(account_email).try(:usage_name)
+                                                  account_name: account.try(:usage_name)
                                               })
           end
         else
-          account_email = MessagesThread.find_account_email(google_thread)
-          messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: Account.create_from_email(account_email).try(:usage_name)
+          account_email = MessagesThread.find_account_email(google_thread, {accounts_cache: accounts_cache})
+          account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+          messages_thread = MessagesThread.create google_thread_id: google_thread.id, in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
           if account_email.nil?
             messages_thread.warn_support
           end
 
-          if MessagesThread.several_accounts_detected(google_thread)
+          if MessagesThread.several_accounts_detected(google_thread, {account_cache: params[:account_cache]})
             messages_thread.delegate_to_support
           end
         end

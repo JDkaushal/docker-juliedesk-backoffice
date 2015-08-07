@@ -153,13 +153,13 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).count
   end
 
-  def self.several_accounts_detected google_thread
+  def self.several_accounts_detected google_thread, params={}
     contacts = self.contacts(google_messages_to_look: google_thread.messages)
     other_emails = contacts.map{|contact| contact[:email]}
-    account_emails = (other_emails.map{|co| Account.find_account_email(co)}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+    account_emails = (other_emails.map{|co| Account.find_account_email(co, {account_cache: params[:account_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
 
     accounts = account_emails.map{|account_email|
-      Account.create_from_email(account_email)
+      Account.create_from_email(account_email, {account_cache: params[:account_cache]})
     }
     company_names = accounts.map{|account|
       account.company_hash.try(:[], 'name')
@@ -327,8 +327,8 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def self.find_account_email google_thread
-    account_emails = self.find_account_emails(google_thread)
+  def self.find_account_email google_thread, params={}
+    account_emails = self.find_account_emails(google_thread, params)
     if account_emails.length == 1
       account_emails[0]
     else
@@ -336,16 +336,16 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def self.find_account_emails google_thread
+  def self.find_account_emails google_thread, params={}
     first_email = google_thread.messages.sort_by{|m| DateTime.parse(m.date)}.first
     email = ApplicationHelper.strip_email(first_email.from)
-    account_emails = [Account.find_account_email(email)].compact
+    account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
 
     # Account is not the sender
     if account_emails.empty?
       contacts = self.contacts(google_messages_to_look: [first_email])
       other_emails = contacts.map{|contact| contact[:email]}
-      account_emails = (other_emails.map{|co| Account.find_account_email(co)}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+      account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
     end
 
     account_emails
