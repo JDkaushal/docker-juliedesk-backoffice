@@ -1,4 +1,6 @@
 <div class='operators-list'>
+  <%= link_to "See review list (#{@to_review_count})", "/review/operators/review_list", class: "btn btn-success btn-block" %>
+  <br>
   <%= link_to "Review #{@to_review_count} threads", "/review/messages_threads/review_next", class: "btn btn-success btn-block" %>
   <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success btn-block" %>
 

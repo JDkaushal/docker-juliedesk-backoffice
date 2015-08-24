@@ -19,6 +19,13 @@ class Review::OperatorsController < ReviewController
     end
   end
 
+  def review_list
+    compute_counts
+
+    messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).map(&:messages_thread_id)
+    @messages_threads = MessagesThread.where(id: messages_thread_ids)
+  end
+
   private
   def compute_counts
     @operators = Operator.all

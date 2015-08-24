@@ -1,0 +1,26 @@
+<div class="fixed-columns full">
+  <div class="left-column">
+
+    <%= render partial: "review/header" %>
+
+
+
+    <div class="messages-threads-page">
+      <div class="operators-page">
+        <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
+
+        <div class="review-list-container">
+          <% @messages_threads.each do |messages_thread| %>
+              <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
+              <br>
+          <% end %>
+        </div>
+      </div>
+
+      <%= render partial: "common/footer" %>
+    </div>
+  </div>
+</div>
+
+
+

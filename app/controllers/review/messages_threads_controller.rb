@@ -115,7 +115,4 @@ class Review::MessagesThreadsController < ReviewController
     end
     session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
   end
-
-
-
 end

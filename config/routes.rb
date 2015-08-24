@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     resources :operators, only: [:show, :index] do
       collection do
         get "my_stats", action: :my_stats, as: :my_stats
+        get "review_list", action: :review_list
       end
     end
 
