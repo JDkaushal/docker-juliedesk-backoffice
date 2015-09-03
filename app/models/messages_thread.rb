@@ -240,7 +240,7 @@ class MessagesThread < ActiveRecord::Base
 
     google_messages.each do |google_message|
       google_message.threadId = updated_thread_id
-      google_message.labelIds = google_message.labelIds.select{|label| label != "SENT"}
+      google_message.labelIds = google_message.labelIds.select{|label| label != "SENT"} + ["Label_19"]
       updated_google_message = google_message.insert
       google_message.delete
       updated_thread_id = updated_google_message.thread_id
