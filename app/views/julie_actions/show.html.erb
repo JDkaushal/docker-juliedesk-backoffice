@@ -289,6 +289,14 @@
         }
     };
 
+    window.processSignature = function(signature) {
+        if(signature) {
+            signature = signature.replace("%USER_NAME%", window.threadAccount.full_name);
+            signature = signature.replace("%USER_EMAIL%", window.threadAccount.email);
+        }
+        return signature;
+    };
+
     window.setReplyMessage = function (message, recipients, otherRecipients) {
         window.setReplyRecipients(recipients, otherRecipients);
         setCurrentLocale(window.threadComputedData.locale);
@@ -299,6 +307,8 @@
             footer = window.julieAlias.footer_fr;
             signature = window.julieAlias.signature_fr;
         }
+
+        signature = window.processSignature(signature);
 
         var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
         var fullMessage = "";
