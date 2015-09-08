@@ -293,6 +293,12 @@
         if(signature) {
             signature = signature.replace("%USER_NAME%", window.threadAccount.full_name);
             signature = signature.replace("%USER_EMAIL%", window.threadAccount.email);
+            if(window.threadAccount.is_pro) {
+                signature = signature.replace(/%REMOVE_IF_PRO%([\s\S]*)%REMOVE_IF_PRO%/m, "");
+            }
+            else {
+                signature = signature.replace(/%REMOVE_IF_PRO%/g, "");
+            }
         }
         return signature;
     };

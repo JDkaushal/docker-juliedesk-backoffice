@@ -22,7 +22,8 @@ class Account
                 :created_at,
                 :complaints_count,
                 :calendar_logins,
-                :office_365_refresh_token_expired
+                :office_365_refresh_token_expired,
+                :is_pro
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -57,6 +58,7 @@ class Account
     account.block_until_preferences_change = data['block_until_preferences_change']
     account.office_365_refresh_token_expired = data['office_365_refresh_token_expired']
     account.calendar_logins = data['calendar_logins']
+    account.is_pro = data['is_pro']
 
 
     begin
