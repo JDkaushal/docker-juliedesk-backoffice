@@ -4,12 +4,13 @@
   <%= link_to "Julie aliases", julie_aliases_path %>
 </h1>
 
-  <%= link_to "Nex alias", new_julie_alias_path %>
+<%= link_to "New alias", new_julie_alias_path, class: "btn btn-primary" %>
+<br><br>
 
 <div class="julie-aliases-container">
 <% @julie_aliases.each do |julie_alias| %>
     <%= link_to edit_julie_alias_path(julie_alias), class: "julie-alias-div" do %>
-        <%= julie_alias.email %>: <%= julie_alias.name %>
+        <span class="name-span"><%= julie_alias.name %></span> <span class="email-span"><%= julie_alias.email %></span>
     <% end %>
 <% end %>
 </div>

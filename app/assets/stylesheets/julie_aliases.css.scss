@@ -31,11 +31,35 @@
 
   .julie-aliases-container {
 
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+
     .julie-alias-div {
-      border: 1px solid #ccc;
+
       padding: 10px;
-      margin: 30px 0;
       display: block;
+      border-bottom: 1px solid #ddd;
+      text-decoration: none !important;
+      color: #000;
+
+      &:nth-child(odd) {
+        background: #fafafa;
+      }
+
+      &:hover {
+        background: #D6E9FF;
+      }
+
+      .email-span {
+
+      }
+
+      .name-span {
+        display: inline-block;
+        width: 150px;
+      }
+
       label {
 
       }
