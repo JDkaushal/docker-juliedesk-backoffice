@@ -29,6 +29,8 @@
             askNextLinearFormEntry();
         });
 
+        $(".client-current-time").html(moment.tz(window.threadAccount.default_timezone_id).format("DD/MM YYYY, HH:mm:ss"));
+
 
 
 
@@ -547,7 +549,7 @@
       <% if account %>
           <div class="full-name"><%= account.full_name %></div>
           <div class="account-email"><%= messages_thread.account.email %></div>
-
+          <div class="client-current-date">Client current time: <span class="client-current-time"></span></div>
           <div class="client-for-date <%= (account.created_at > DateTime.now - 14.days)?"warning":"" %>">Has been client for <span><%= distance_of_time_in_words_to_now(account.created_at) %></span></div>
           <% if account.complaints_count > 0 %>
               <div class="complaints-count"><%= account.complaints_count %> complaints</div>
