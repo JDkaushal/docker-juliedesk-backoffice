@@ -24,6 +24,7 @@
     window.selectedEvents = [];
     window.forceCancelEventIds = [];
     window.julieAlias = <%== @messages_thread.julie_alias.to_json %>;
+    window.julieAliases = <%== @messages_thread.julie_aliases.to_json %>;
 
     window.startedAt = Date.now();
 
@@ -165,6 +166,13 @@
             }
         });
 
+        $("select#julie-alias-select").change(function() {
+            window.julieAlias = _.find(window.julieAliases, function(julieAlias) {
+               return julieAlias.email == $("select#julie-alias-select").val();
+            });
+            window.setSignatureAndFooter();
+        });
+
         $("#reply-button").click(function () {
             $("#reply-button").prop('disabled', true);
             if(window.clickReplyButton) {
@@ -304,17 +312,9 @@
     };
 
     window.setReplyMessage = function (message, recipients, otherRecipients) {
+
         window.setReplyRecipients(recipients, otherRecipients);
         setCurrentLocale(window.threadComputedData.locale);
-
-        var footer = window.julieAlias.footer_en;
-        var signature = window.julieAlias.signature_en;
-        if(getCurrentLocale() == "fr") {
-            footer = window.julieAlias.footer_fr;
-            signature = window.julieAlias.signature_fr;
-        }
-
-        signature = window.processSignature(signature);
 
         var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
         var fullMessage = "";
@@ -328,11 +328,28 @@
 
         }
         fullMessage += message;
-        fullMessage += footer;
 
-        $("textarea#reply-text").val(fullMessage);
-        $("div#reply-text-signature").html(signature);
+        window.currentFullMessage = fullMessage;
+
+        setCurrentLocale("<%= I18n.locale %>");
+
+        window.setSignatureAndFooter();
+    };
+    window.setSignatureAndFooter = function() {
+        setCurrentLocale(window.threadComputedData.locale);
+        var signature = window.julieAlias.signature_en;
+        var footer = window.julieAlias.footer_en;
+
+        if(getCurrentLocale() == "fr") {
+            signature = window.julieAlias.signature_fr;
+            footer = window.julieAlias.footer_fr;
+        }
+        signature = window.processSignature(signature);
+
+        $("textarea#reply-text").val(window.currentFullMessage + footer);
         $("textarea#reply-text").elastic();
+        $("div#reply-text-signature").html(signature);
+
         setCurrentLocale("<%= I18n.locale %>");
     };
 </script>
