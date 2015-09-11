@@ -238,6 +238,17 @@
             font-size: 14px;
             float: right;
         }
+
+        .email-flag {
+            @include common-sprite(flag_grey);
+            width: 12px;
+            height: 21px;
+            float: right;
+            margin: 0 0 0 10Px;
+            &.flagged {
+                @include common-sprite(flag_red);
+            }
+        }
     }
 
     .subject {

@@ -29,6 +29,38 @@
             setNotation(4);
         });
 
+        $email.find(".email-flag").click(function(e) {
+            var basePath = "<%= EmailServer::API_BASE_PATH %>";
+            var accessKey = "<%= EmailServer::API_ACCESS_KEY %>";
+            var url = basePath + "/messages/update_labels?access_key=" + accessKey;
+
+            var labelsToAdd = [];
+            var labelsToRemove = [];
+            if($(this).hasClass("flagged")) {
+                $email.find(".email-flag").removeClass("flagged");
+                labelsToRemove.push("flag");
+            }
+            else {
+                $email.find(".email-flag").addClass("flagged");
+                labelsToAdd.push("flag");
+            }
+
+            var messageId = "<%= message.server_message_id %>";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    message_ids: [messageId],
+                    labels_to_add: labelsToAdd,
+                    labels_to_remove: labelsToRemove
+                },
+                success: function(response) {
+
+                }
+            });
+            e.stopPropagation();
+        });
+
         $email.click(function () {
             if ($(this).closest(".actions-menu").length == 0) {
                 $email.find(".actions-menu-positioner").removeClass("visible");
@@ -130,8 +162,8 @@
             <% end %>
         <% end %>
 
+        <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
         <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
-
         <div class="clear"></div>
       </div>
       <div class="snippet">
@@ -156,8 +188,8 @@
         <% end %>
 
 
+        <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
         <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
-
         <div class="clear"></div>
       </div>
 
