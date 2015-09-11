@@ -12,6 +12,56 @@
   font-size: 16px;
   font-weight: 200;
 
+  &.full {
+    z-index: 20;
+  }
+
+
+  .home-link {
+    position: absolute;
+    left: 20px;
+    font-weight: 600;
+  }
+
+
+  .done-buttons {
+    float: right;
+    margin: -2px 5px 0 0;
+    form {
+      display: inline-block;
+    }
+    .done-button {
+      display: inline-block;
+      margin: 0 2px 0 0;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      line-height: 20px;
+      @include border-radius(14px);
+      color: white;
+      border: none!important;
+      outline: none;
+
+
+
+      &:hover {
+        background: white;
+      }
+
+      &.send-to-support {
+        background: #d00;
+      }
+      &.done {
+        background: #2EC094;
+      }
+      &.nothing-expected, &.waiting-for-reply {
+        background: #db5c04;
+      }
+
+    }
+  }
+
   &.review {
     z-index: 20;
   }

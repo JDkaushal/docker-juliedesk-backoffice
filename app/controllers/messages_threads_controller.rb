@@ -41,6 +41,7 @@ class MessagesThreadsController < ApplicationController
                                          initiated_at: DateTime.now,
                                          target: messages_thread,
                                          nature: OperatorAction::NATURE_ARCHIVE,
+                                         sub_nature: params[:sub_nature],
                                          operator_id: session[:operator_id],
                                          messages_thread_id: messages_thread.id
                                      })

@@ -1,0 +1,18 @@
+<div class="header full">
+
+    <%= link_to "JD", "/", class: "home-link" %>
+
+    <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
+
+    <%= local_assigns[:messages_thread].account_email %> - <%= local_assigns[:messages_thread].subject %>
+
+    <div class="done-buttons">
+      <div class="done-button send-to-support">Send to support</div>
+      <% if local_assigns[:messages_thread].messages.sort_by(&:received_at).last.from_me %>
+          <%= button_to "Finish", archive_messages_thread_path(id: local_assigns[:messages_thread].id), class: "done-button done" %>
+      <% else %>
+          <%= button_to "Nothing expected from me", archive_messages_thread_path(id: local_assigns[:messages_thread].id, sub_nature: OperatorAction::SUB_NATURE_NOTHING_EXPECTED), class: "done-button nothing-expected" %>
+          <%= button_to "Waiting for reply", archive_messages_thread_path(id: local_assigns[:messages_thread].id, sub_nature: OperatorAction::SUB_NATURE_WAITING_FOR_REPLY), class: "done-button waiting-for-reply" %>
+      <% end %>
+    </div>
+</div>

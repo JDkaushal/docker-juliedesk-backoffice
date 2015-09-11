@@ -53,7 +53,7 @@
 
   <div class="left-column">
 
-    <%= render partial: "common/header" %>
+    <%= render partial: "common/classification_action_header", locals: {messages_thread: @messages_thread} %>
     <% if @classification == MessageClassification::GIVE_INFO %>
         <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
         <%= render template: "calendar/calendar" %>

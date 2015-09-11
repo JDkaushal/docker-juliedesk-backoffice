@@ -17,6 +17,15 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::TO_FOUNDERS
       @message.messages_thread.delegate_to_support message: params[:to_founders_message], operator: session[:user_name]
+
+      OperatorAction.create_and_verify({
+                                           initiated_at: DateTime.now,
+                                           target: @message.messages_thread,
+                                           nature: OperatorAction::NATURE_SEND_TO_SUPPORT,
+                                           operator_id: session[:operator_id],
+                                           messages_thread_id: @message.messages_thread_id
+                                       })
+
       redirect_to messages_threads_path
       return
     end

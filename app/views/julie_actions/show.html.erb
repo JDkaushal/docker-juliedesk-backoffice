@@ -357,7 +357,7 @@
 <div class="fixed-columns">
   <div class="left-column">
 
-    <%= render partial: "common/header" %>
+    <%= render partial: "common/classification_action_header", locals: {messages_thread: @messages_thread} %>
 
     <div class="julie-action-title">
       <span class="title"><%= I18n.t("common.to_do") %> <%= I18n.t("actions.#{@julie_action.action_nature}.todo") %></span>

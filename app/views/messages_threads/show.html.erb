@@ -45,12 +45,13 @@
         });
     });
 </script>
+<%= render partial: "common/thread_header", locals: {messages_thread: @messages_thread} %>
 <div class="fixed-columns">
 
 
   <div class="left-column">
 
-    <%= render partial: "common/header" %>
+    <div class="header"></div>
 
     <div class="julie-action-fantom"></div>
 
@@ -68,10 +69,10 @@
 
       <div class="split-thread-button"><%= I18n.t("common.split") %></div>
       <% if @messages_thread.event_data[:event_id].nil? %>
-          <%= link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
+          <% link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
       <% end %>
 
-      <%= button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+      <% button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
 
       <% operator_actions_groups = @messages_thread.operator_actions_groups %>
 

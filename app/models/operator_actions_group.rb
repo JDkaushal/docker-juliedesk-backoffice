@@ -6,6 +6,7 @@ class OperatorActionsGroup < ActiveRecord::Base
   has_many :operator_actions
 
   LABEL_ARCHIVE                 = "archive"
+  LABEL_SEND_TO_SUPPORT         = "send_to_support"
   REVIEW_STATUS_TO_REVIEW       = nil
   REVIEW_STATUS_TO_LEARN        = "to_learn"
   REVIEW_STATUS_LEARNT          = "learnt"
@@ -47,7 +48,7 @@ class OperatorActionsGroup < ActiveRecord::Base
     # Find the following 'archive thread' operator_action
     archive_thread_oa = operator_actions.sort_by(&:initiated_at).select { |oa|
       oa.initiated_at > open_thread_oa.initiated_at &&
-          oa.is_archive_thread?
+          oa.is_archive_thread? || oa.is_send_to_support?
     }.first
 
     # If found, creates corresponding group
@@ -59,7 +60,7 @@ class OperatorActionsGroup < ActiveRecord::Base
 
       target_type = archive_thread_oa.target_type
       target_id   = archive_thread_oa.target_id
-      label       = LABEL_ARCHIVE
+      label       = (archive_thread_oa.is_archive_thread?)?(LABEL_ARCHIVE):(LABEL_SEND_TO_SUPPORT)
       if (open_julie_action_oa = to_group_operator_actions.select(&:is_open_julie_action?).first)
         label       = open_julie_action_oa.target.message_classification.classification
         target_type = open_julie_action_oa.target_type
@@ -88,6 +89,6 @@ class OperatorActionsGroup < ActiveRecord::Base
   end
 
   def is_action?
-    label != LABEL_ARCHIVE
+    label != LABEL_ARCHIVE && label != LABEL_SEND_TO_SUPPORT
   end
 end

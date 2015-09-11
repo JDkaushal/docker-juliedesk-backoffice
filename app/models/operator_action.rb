@@ -8,6 +8,10 @@ class OperatorAction < ActiveRecord::Base
   NATURE_OPEN    = "open"
   NATURE_LOCK    = "lock"
   NATURE_UNLOCK  = "unlock"
+  NATURE_SEND_TO_SUPPORT = "send_to_support"
+
+  SUB_NATURE_NOTHING_EXPECTED   = "nothing_expected_from_me"
+  SUB_NATURE_WAITING_FOR_REPLY  = "waiting_for_reply"
 
   def real_action?
     ![NATURE_LOCK, NATURE_UNLOCK].include? nature
@@ -33,6 +37,11 @@ class OperatorAction < ActiveRecord::Base
         self.nature == NATURE_ARCHIVE
   end
 
+  def is_send_to_support?
+    self.target_type == MessagesThread.to_s &&
+        self.nature == NATURE_SEND_TO_SUPPORT
+  end
+
   def is_open_julie_action?
     self.target_type == JulieAction.to_s
   end
@@ -50,10 +59,11 @@ class OperatorAction < ActiveRecord::Base
     operator_action = params[:target].operator_actions.create({
         initiated_at: params[:initiated_at],
         nature: params[:nature],
+        sub_nature: params[:sub_nature],
         operator_id: params[:operator_id],
         messages_thread_id: params[:messages_thread_id]
     })
-    if params[:nature] == NATURE_ARCHIVE
+    if params[:nature] == NATURE_ARCHIVE || params[:nature] == NATURE_SEND_TO_SUPPORT
       OperatorActionsGroup.group_actions({
                                              messages_thread_id: params[:messages_thread_id],
                                              operator_id: params[:operator_id]

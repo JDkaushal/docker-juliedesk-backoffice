@@ -1,6 +1,6 @@
 <script>
     $(function () {
-        $(".send-to-support-button").click(function () {
+        $(".send-to-support-button, .done-button.send-to-support").click(function () {
             $(".send-to-support-overlay textarea#send_to_support_message").val("");
             $(".send-to-support-overlay-container").fadeIn(200);
             $(".send-to-support-overlay textarea#send_to_support_message").focus();
@@ -23,7 +23,7 @@
 <% if messages_thread.delegated_to_founders %>
     <%= button_to("Go back to normal", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_FOUNDERS }, class: "unsend-to-support-button btn btn-success btn-sm") %>
 <% else %>
-    <div class="send-to-support-button btn btn-success btn-sm">Send to support</div>
+
 <% end %>
 
 
