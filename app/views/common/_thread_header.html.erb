@@ -4,7 +4,7 @@
 
     <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
 
-    <%= local_assigns[:messages_thread].account_email %> - <%= local_assigns[:messages_thread].subject %>
+    <span class="messages-thread-sumup"><%= local_assigns[:messages_thread].account_email %> - <%= local_assigns[:messages_thread].subject %></div>
 
     <div class="done-buttons">
       <div class="done-button send-to-support">Send to support</div>
