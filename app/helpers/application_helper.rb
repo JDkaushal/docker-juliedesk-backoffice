@@ -16,7 +16,11 @@ module ApplicationHelper
   end
 
   def self.find_addresses str
-    Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1'))
+    begin
+      Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1'))
+    rescue
+      Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1').scan(/<(.*)>/).flatten.first)
+    end
   end
 
   def self.strip_contact_name contact
