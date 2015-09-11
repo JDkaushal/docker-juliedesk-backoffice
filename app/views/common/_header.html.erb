@@ -22,7 +22,9 @@
       JulieDesk Backoffice
       <span class="version">2.0</span>
     <% end %>
-    <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
+    <% if session[:privilege] == "admin" %>
+        <span class="global-todo-count"><%= MessagesThread.items_to_classify_count %></span>
+    <% end %>
     <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
     <div class="logged-as">
       <%=  session[:user_name] %> -

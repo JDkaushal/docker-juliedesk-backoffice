@@ -2,6 +2,7 @@
     var app = angular.module("backofficeApp", []);
     app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
 
+        $scope.isAdmin = <%= (session[:privilege] == "admin")?"true":"false" %>;
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
             $(".refresh-inbox-button").attr("disabled", true);
@@ -37,6 +38,32 @@
             return _.filter($scope.messagesThreads, function(messagesThread) {
                 return !$scope.shouldProcessLater(messagesThread);
             });
+        };
+
+        $scope.lockedMessagesThreads = function() {
+            return _.filter($scope.messagesThreads, function(messagesThread) {
+                return messagesThread.locked_by_operator_id != undefined;
+            });
+        };
+
+        $scope.unlockedMessagesThreads = function() {
+            return _.filter($scope.messagesThreads, function(messagesThread) {
+                return messagesThread.locked_by_operator_id == undefined;
+            });
+        };
+
+        $scope.messagesThreadToProcess = function() {
+            var possibleMessagesThreads = $scope.unlockedMessagesThreads();
+
+            possibleMessagesThreads = _.sortBy(possibleMessagesThreads, function(messagesThread) {
+                return messagesThread.date;
+            });
+            if(possibleMessagesThreads.length > 0) {
+                return possibleMessagesThreads[possibleMessagesThreads.length - 1];
+            }
+            else {
+                return null;
+            }
         };
 
         $scope.shouldProcessLater = function(messagesThread) {
@@ -105,24 +132,46 @@
 
     <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
       <div class="refresh-container">
-        <button class="btn btn-success refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading"><%= I18n.t("common.refresh") %></button>
+        <button class="btn btn-default btn-sm refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading" ng-show="isAdmin"><%= I18n.t("common.refresh") %></button>
         <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
       </div>
 
 
+      <div class="action-to-do-container">
+          <div class="start-processing-container" ng-show="messagesThreadToProcess() != null">
+            <a href="/messages_threads/{{ messagesThreadToProcess().id}} " class="process-thread-button btn btn-success btn-lg">
+              Process a thread
+            </a>
+          </div>
 
-      <div class="nothing-to-do" ng-show="messagesThreads.length == 0 && !loading">
-        <div class="smiley"></div>
-        <div><%= I18n.t("index.nothing_to_do") %></div>
+          <div class="nothing-to-do" ng-show="messagesThreadToProcess() == null && !loading">
+            <div class="smiley"></div>
+            <div><%= I18n.t("index.nothing_to_do") %></div>
+          </div>
       </div>
 
-      <div class="messages-threads-container bordered" ng-show="messagesThreads.length > 0">
-        <div ng-repeat="messagesThread in toProcessNowMessagesThreads()">
-            <%= render "row_in_list" %>
-        </div>
 
-        <div class="to-process-later-container" ng-show="toProcessLaterMessagesThreads().length > 0">
-          <div class="to-process-later-category-title"><%= I18n.t("index.to_process_later") %></div>
+      <div ng-show="lockedMessagesThreads().length > 0">
+        <div class="category-title">Threads being processed</div>
+        <div class="messages-threads-container bordered">
+          <div ng-repeat="messagesThread in lockedMessagesThreads()">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="isAdmin && unlockedMessagesThreads().length > 0">
+        <div class="category-title">Other threads in inbox</div>
+        <div class="messages-threads-container bordered">
+          <div ng-repeat="messagesThread in unlockedMessagesThreads()">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="isAdmin && toProcessLaterMessagesThreads().length > 0">
+        <div class="category-title"><%= I18n.t("index.to_process_later") %></div>
+        <div class="messages-threads-container bordered">
           <div ng-repeat="messagesThread in toProcessLaterMessagesThreads()">
             <%= render "row_in_list" %>
           </div>
