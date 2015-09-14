@@ -137,33 +137,17 @@
       </div>
 
 
-      <div class="action-to-do-container">
-          <div class="start-processing-container" ng-show="messagesThreadToProcess() != null">
-            <a href="/messages_threads/{{ messagesThreadToProcess().id}} " class="process-thread-button btn btn-success btn-lg">
-              Process a thread
-            </a>
-          </div>
-
-          <div class="nothing-to-do" ng-show="messagesThreadToProcess() == null && !loading">
+      <div class="action-to-do-container" ng-show="toProcessNowMessagesThreads().length == 0 && !loading">
+          <div class="nothing-to-do">
             <div class="smiley"></div>
             <div><%= I18n.t("index.nothing_to_do") %></div>
           </div>
       </div>
 
 
-      <div ng-show="lockedMessagesThreads().length > 0">
-        <div class="category-title">Threads being processed</div>
+      <div ng-show="toProcessNowMessagesThreads().length > 0">
         <div class="messages-threads-container bordered">
-          <div ng-repeat="messagesThread in lockedMessagesThreads()">
-            <%= render "row_in_list" %>
-          </div>
-        </div>
-      </div>
-
-      <div ng-show="isAdmin && unlockedMessagesThreads().length > 0">
-        <div class="category-title">Other threads in inbox</div>
-        <div class="messages-threads-container bordered">
-          <div ng-repeat="messagesThread in unlockedMessagesThreads()">
+          <div ng-repeat="messagesThread in toProcessNowMessagesThreads()">
             <%= render "row_in_list" %>
           </div>
         </div>
