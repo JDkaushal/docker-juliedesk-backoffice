@@ -194,6 +194,14 @@
             }
         });
 
+        $(".reply-to-all-button").click(function() {
+            window.setReplyRecipients("all");
+        });
+
+        $(".reply-to-client-button").click(function() {
+            window.setReplyRecipients("only_client");
+        });
+
         window.deleteEventBeforeReply = function (callback) {
             if(window.currentEventTile) {
                 window.currentEventTile.doneEditingCallback = function() {
@@ -404,6 +412,12 @@
                                 <option><%= julie_alias.email %></option>
                             <% end %>
                         </select>
+                        <% if @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
+                            <div class="reply-to-buttons">
+                              <div class="reply-to-client-button btn btn-xs btn-default">Reply to client only</div>
+                              <div class="reply-to-all-button btn btn-xs btn-default">Reply to all</div>
+                            </div>
+                        <% end %>
                       </div>
                       <div class="to">
                         <span><%= I18n.t("common.to") %></span>
