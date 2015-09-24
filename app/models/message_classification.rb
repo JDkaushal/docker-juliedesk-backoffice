@@ -27,7 +27,14 @@ class MessageClassification < ActiveRecord::Base
   REVIEW_STATUS_LEARNT     = 'learnt'
 
   def clean_delete
-    self.julie_action.try(:delete)
+    if self.julie_action
+      OperatorAction.delete_all(target_type: JulieAction.to_s, target_id: self.julie_action.id)
+      OperatorActionsGroup.delete_all(target_type: JulieAction.to_s, target_id: self.julie_action.id)
+      self.julie_action.delete
+    end
+
+    OperatorAction.delete_all(target_type: MessageClassification.to_s, target_id: self.id)
+    OperatorActionsGroup.delete_all(target_type: MessageClassification.to_s, target_id: self.id)
     self.delete
   end
 
