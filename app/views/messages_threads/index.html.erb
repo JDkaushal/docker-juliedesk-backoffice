@@ -132,7 +132,7 @@
 
     <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
       <div class="refresh-container">
-        <button class="btn btn-default btn-sm refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading" ng-show="isAdmin"><%= I18n.t("common.refresh") %></button>
+        <button class="btn btn-default btn-sm refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading"><%= I18n.t("common.refresh") %></button>
         <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
       </div>
 
