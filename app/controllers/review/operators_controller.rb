@@ -23,7 +23,7 @@ class Review::OperatorsController < ReviewController
     compute_counts
 
     messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).map(&:messages_thread_id)
-    @messages_threads = MessagesThread.where(id: messages_thread_ids)
+    @messages_threads = MessagesThread.where(id: messages_thread_ids).sort{|mt1, mt2| messages_thread_ids.index(mt1.id) <=> messages_thread_ids.index(mt2.id)}
   end
 
   private
