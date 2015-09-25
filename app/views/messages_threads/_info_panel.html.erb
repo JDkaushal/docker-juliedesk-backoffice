@@ -349,6 +349,13 @@
             setLocationOrNumberToCallPart();
             if (window.threadComputedData.location_nature) {
                 $("select#location_nature").val(window.threadComputedData.location_nature);
+                var address = _.find(window.threadAccount.addresses, function (addressObject) {
+                    return addressObject.label == $("select#location_nature").val();
+                });
+
+                if (address) {
+                    $("input#location").val(address.address).attr('disabled', true);
+                }
             }
         }
 
