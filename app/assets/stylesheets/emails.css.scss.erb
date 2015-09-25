@@ -412,6 +412,70 @@
             }
         }
     }
+
+    .attachments-container {
+        padding: 20px;
+        .attachment-box {
+            border: 1px solid #ddd;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 2px;
+            color: black;
+            text-decoration: none;
+            margin: 0 20px 20px 0;
+            width: 150px;
+            height: 100px;
+            position: relative;
+
+            .attachment-name {
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+                height: 30px;
+                text-align: center;
+                background-color: #f6f6f6;
+                padding: 5px;
+                line-height: 20px;
+                border-top: 1px solid #eee;
+            }
+
+            &:hover .attachment-name {
+                background: #f0f0f0;
+            }
+
+            img.attachment-preview {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 30px;
+                max-width: 148px;
+                max-height: 70px;
+                margin: 0 auto;
+            }
+
+            div.attachment-preview {
+                position: absolute;
+                top: 25px;
+                left: 0;
+                right: 0;
+                bottom: 30px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: 200;
+                color: #aaa;
+                text-transform: uppercase;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
 }
 
 .left-column {

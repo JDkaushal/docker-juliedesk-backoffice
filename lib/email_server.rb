@@ -1,7 +1,9 @@
 module EmailServer
 
   #API_BASE_PATH = "https://jd-email-server-staging.herokuapp.com/api/v1"
+  SERVER_PATH = "https://jd-email-server.herokuapp.com"
   API_BASE_PATH = "https://jd-email-server.herokuapp.com/api/v1"
+
   #API_BASE_PATH = "http://localhost:3000/api/v1"
   API_ACCESS_KEY = "wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
 
@@ -73,6 +75,10 @@ module EmailServer
                       {
                           message_ids: opts[:message_ids]
                       }
+  end
+
+  def self.attachment_inline_path opts={}
+    "#{SERVER_PATH}/messages/#{opts[:message]['id']}/get_attachment?attachment_id=#{opts[:attachment]['attachment_id']}&inline=true"
   end
 
   private

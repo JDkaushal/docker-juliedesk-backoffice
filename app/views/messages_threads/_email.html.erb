@@ -227,6 +227,21 @@
 
 
     <div class="body"><%== Message.format_email_body(message) %></div>
+
+
+    <div class="attachments-container">
+      <% (email['attachments_data'] || []).each do |attachment| %>
+          <% src = EmailServer.attachment_inline_path(message: email, attachment: attachment) %>
+          <%= link_to src, class: "attachment-box", target: "_blank" do %>
+              <% if attachment['type'].include? "image" %>
+                  <%= image_tag src, class: "attachment-preview" %>
+              <% else %>
+                  <div class="attachment-preview"><%= attachment['type'].split("/").last %></div>
+              <% end %>
+              <div class="attachment-name"><%= attachment['filename'] %></div>
+          <% end %>
+      <% end %>
+    </div>
   </div>
   </div>
 </div>
