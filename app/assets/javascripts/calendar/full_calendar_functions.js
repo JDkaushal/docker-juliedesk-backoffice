@@ -27,6 +27,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     calendar.$selector.find('#calendar').fullCalendar('unselect');
 
     if(calendar.getMode() == "select_events") return;
+    if(calendar.getMode() == "read_only") return;
 
     // Forbid suggestion or creation in the past
     if(moment.tz(start.format(), calendar.getCalendarTimezone()).isBefore(moment())) {

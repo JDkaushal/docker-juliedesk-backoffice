@@ -2,9 +2,45 @@
 <script>
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
+    window.activateCalendarWithParams = function (calendarParams) {
+        calendarParams.height = $(".calendar-container").height();
+        calendarParams.other_emails = window.otherAccountEmails;
+        if(window.threadAccount) {
+            calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+        }
+        calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
+
+        calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+            return data.attendee_email;
+        });
+
+        calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
+        calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
+
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+        $(".calendar-container").addClass("visible minimized");
+    };
 
 
     $(function () {
+
+        if(window.threadAccount) {
+            window.activateCalendarWithParams({
+                mode: "read_only",
+                date_times: [],
+                email: "<%= @messages_thread.account_email %>",
+                duration: <%= @messages_thread.computed_data[:duration] || 60 %>
+            });
+
+            $("#show-calendar-button").click(function () {
+                $(".calendar-container").removeClass("minimized");
+                window.currentCalendar.redrawFullCalendar();
+            });
+        }
+        else {
+            $("#show-calendar-button").hide();
+        }
+
         window.startedAt = Date.now();
 
         window.processingMessageThreadId = <%= @messages_thread.id %>;
@@ -53,6 +89,12 @@
 
     <div class="header jd-global-header"></div>
 
+
+
+    <div class="calendar-in-thread-details-container">
+        <%= render template: "calendar/calendar" %>
+    </div>
+
     <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
@@ -67,6 +109,7 @@
         <div class="btn btn-warning actually-split-button"><%= I18n.t("common.split") %></div>
       </div>
 
+      <div id="show-calendar-button" class="show-calendar-in-thread-details btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
       <div class="split-thread-button"><%= I18n.t("common.split") %></div>
       <% if @messages_thread.event_data[:event_id].nil? %>
           <% link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
