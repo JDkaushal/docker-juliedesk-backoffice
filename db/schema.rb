@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150911145441) do
+ActiveRecord::Schema.define(version: 20150928142917) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -139,6 +140,7 @@ ActiveRecord::Schema.define(version: 20150911145441) do
     t.datetime "updated_at"
     t.integer  "operator_actions_group_id"
     t.string   "sub_nature"
+    t.text     "message"
   end
 
   create_table "operator_actions_groups", force: true do |t|

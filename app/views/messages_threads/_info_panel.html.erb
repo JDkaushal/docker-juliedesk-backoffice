@@ -587,9 +587,10 @@
 
                 <%= text_area_tag :current_notes, notes, class: "current-notes form-control", disabled: true %>
             <% end %>
-            <% if @messages_thread.to_founders_message.present? %>
+
+            <% if @messages_thread.delegated_to_founders %>
                 <div class="to-founders-message-div">
-                  <%= @messages_thread.to_founders_message %>
+                  <%= (@messages_thread.operator_actions_groups.sort_by(&:created_at).select{|oag| oag.label == OperatorActionsGroup::LABEL_SEND_TO_SUPPORT}.last.try(:operator_actions) || []).select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message) %>
                 </div>
             <% end %>
           </div>

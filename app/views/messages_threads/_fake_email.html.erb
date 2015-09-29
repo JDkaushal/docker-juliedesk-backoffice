@@ -59,6 +59,9 @@
   <div class="retracted">
     <div class="retracted-container">
       <div class="date-and-from">
+        <% if operator_actions_group.label == OperatorActionsGroup::LABEL_SEND_TO_SUPPORT %>
+            <div class="message"><%= operator_actions_group.operator_actions.select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message) %></div>
+        <% end %>
 
         <div class="operator-and-action-container">
           <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>

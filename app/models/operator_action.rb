@@ -61,7 +61,8 @@ class OperatorAction < ActiveRecord::Base
         nature: params[:nature],
         sub_nature: params[:sub_nature],
         operator_id: params[:operator_id],
-        messages_thread_id: params[:messages_thread_id]
+        messages_thread_id: params[:messages_thread_id],
+        message: params[:message]
     })
     if params[:nature] == NATURE_ARCHIVE || params[:nature] == NATURE_SEND_TO_SUPPORT
       OperatorActionsGroup.group_actions({
@@ -81,6 +82,8 @@ class OperatorAction < ActiveRecord::Base
       "Archive thread"
     elsif self.is_open_thread?
       "Open thread"
+    elsif self.is_send_to_support?
+      "Send to support"
     elsif self.nature == NATURE_LOCK
       "Lock thread"
     elsif self.nature == NATURE_UNLOCK

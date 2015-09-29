@@ -37,6 +37,11 @@
                   <div>
                     <%= operator_action.nature_description(with_id: true) %>
                   </div>
+                  <% if operator_action.message.present? %>
+                  <div>
+                    Message: <%= operator_action.message %>
+                  </div>
+                  <% end %>
                 </div>
             <% end %>
           </div>
@@ -52,6 +57,11 @@
             <div>
               <%= operator_action.nature_description(with_id: true) %>
             </div>
+            <% if operator_action.message.present? %>
+                <div>
+                  Message: <%= operator_action.message %>
+                </div>
+            <% end %>
           </div>
       <% end %>
   <% end %>

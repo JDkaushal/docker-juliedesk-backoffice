@@ -48,7 +48,7 @@ class OperatorActionsGroup < ActiveRecord::Base
     # Find the following 'archive thread' operator_action
     archive_thread_oa = operator_actions.sort_by(&:initiated_at).select { |oa|
       oa.initiated_at > open_thread_oa.initiated_at &&
-          oa.is_archive_thread? || oa.is_send_to_support?
+          (oa.is_archive_thread? || oa.is_send_to_support?)
     }.first
 
     # If found, creates corresponding group

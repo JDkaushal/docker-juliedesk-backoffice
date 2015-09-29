@@ -19,8 +19,7 @@ class MessagesThreadsController < ApplicationController
   end
 
   def show
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
-
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
                                          target: @messages_thread,
@@ -28,9 +27,7 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @messages_thread.id
                                      })
-
     @messages_thread.re_import
-
     @messages_thread.account
   end
 
