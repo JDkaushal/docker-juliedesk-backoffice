@@ -54,13 +54,15 @@ describe Message do
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+
+        expect(messages_thread).to receive(:julie_aliases).and_return([FactoryGirl.create(:julie_alias, email: "julie@juliedesk.com")])
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
                                                       to: ["elrandil1@gmail.com"].sort,
                                                       cc: ["nmarlier@gmail.com", "elrandil2@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                   })
       end
@@ -70,7 +72,7 @@ describe Message do
                                                                             to: ["elrandil1@gmail.com", "nmarlier@gmail.com"].sort,
                                                                             cc: ["elrandil2@gmail.com", "nicolas.marlier@wanadoo.fr"].sort,
                                                                             client: "nmarlier@gmail.com",
-                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                                         })
       end
@@ -90,13 +92,15 @@ describe Message do
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+
+        expect(messages_thread).to receive(:julie_aliases).and_return([FactoryGirl.create(:julie_alias, email: "julie@juliedesk.com")])
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
                                                       to: ["nmarlier@gmail.com"].sort,
                                                       cc: ["elrandil1@gmail.com", "elrandil2@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                   })
       end
@@ -106,7 +110,7 @@ describe Message do
                                                                             to: ["elrandil1@gmail.com", "nmarlier@gmail.com"].sort,
                                                                             cc: ["elrandil2@gmail.com", "nicolas.marlier@wanadoo.fr"].sort,
                                                                             client: "nmarlier@gmail.com",
-                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
 
                                                                         })
       end
@@ -126,13 +130,15 @@ describe Message do
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+
+        expect(messages_thread).to receive(:julie_aliases).and_return([FactoryGirl.create(:julie_alias, email: "julie@juliedesk.com")])
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
                                                       to: ["elrandil1@gmail.com", "elrandil2@gmail.com"].sort,
                                                       cc: ["nmarlier@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                   })
       end
@@ -142,7 +148,7 @@ describe Message do
                                                       to: ["nmarlier@gmail.com"].sort,
                                                       cc: [].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                   })
       end
@@ -163,13 +169,15 @@ describe Message do
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+
+        expect(messages_thread).to receive(:julie_aliases).and_return([FactoryGirl.create(:julie_alias, email: "julie@juliedesk.com")])
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
                                                       to: ["elrandil1@gmail.com", "elrandil2@gmail.com"].sort,
                                                       cc: ["nmarlier@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                   })
       end
@@ -179,7 +187,7 @@ describe Message do
                                                                             to: ["elrandil1@gmail.com"].sort,
                                                                             cc: ["elrandil2@gmail.com", "nmarlier@gmail.com"].sort,
                                                                             client: "nmarlier@gmail.com",
-                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "nmarlier@gmail.com"].sort
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                                         })
       end
@@ -199,13 +207,15 @@ describe Message do
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
+
+        expect(messages_thread).to receive(:julie_aliases).and_return([FactoryGirl.create(:julie_alias, email: "julie@juliedesk.com")])
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
                                                       to: ["nmarlier@gmail.com"].sort,
                                                       cc: [].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["nmarlier@gmail.com"].sort
+                                                      possible: ["julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                   })
       end
@@ -215,7 +225,7 @@ describe Message do
                                                                             to: ["nmarlier@gmail.com"].sort,
                                                                             cc: [].sort,
                                                                             client: "nmarlier@gmail.com",
-                                                                            possible: ["nmarlier@gmail.com"].sort
+                                                                            possible: ["julie@juliedesk.com", "nmarlier@gmail.com"].sort
 
                                                                         })
       end

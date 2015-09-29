@@ -38,7 +38,7 @@ class Message < ActiveRecord::Base
         [client_email]).uniq
 
 
-
+    possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
 
 
     if params[:only_reply_all]
