@@ -24,7 +24,13 @@
                     });
         };
 
-        $scope.formatDate = function(date) {
+        $scope.formatDate = function(messageThread) {
+            var dates = _.map(_.filter(messageThread.messages, function(message) {
+                return !message.archived;
+            }), function(message) {
+                return moment(message.received_at);
+            });
+            date = _.min(dates);
             return moment(date).locale("<%= I18n.locale %>").fromNow();
         };
 

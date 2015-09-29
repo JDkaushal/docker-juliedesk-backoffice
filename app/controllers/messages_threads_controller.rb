@@ -139,7 +139,7 @@ class MessagesThreadsController < ApplicationController
 
       }
       format.json {
-        @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {}, locked_by_operator: {}).sort_by{|mt| mt.messages.map{|m| m.received_at}.max || DateTime.parse("2500-01-01")}.reverse
+        @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {}, locked_by_operator: {}).sort_by{|mt| mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min || DateTime.parse("2500-01-01")}.reverse
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
         if session[:privilege] != "admin"

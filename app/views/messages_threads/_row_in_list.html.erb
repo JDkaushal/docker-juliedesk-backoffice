@@ -15,7 +15,7 @@
             <div class="snippet"> - {{ messagesThread.snippet}}</div>
         </div>
 
-        <div class="received-at">{{ formatDate(messagesThread.received_at) }}</div>
+        <div class="received-at">{{ formatDate(messagesThread) }}</div>
 
         <div ng-show="messagesThread.delegated_to_founders" class="delegated-to-founders">founders</div>
         <div ng-show="!messagesThread.delegated_to_founders && messagesThread.account && messagesTread.account.office_365_refresh_token_expired" class="delegated-to-founders">tkn expird</div>
