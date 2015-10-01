@@ -61,10 +61,12 @@ class OperatorActionsGroup < ActiveRecord::Base
       target_type = archive_thread_oa.target_type
       target_id   = archive_thread_oa.target_id
       label       = (archive_thread_oa.is_archive_thread?)?(LABEL_ARCHIVE):(LABEL_SEND_TO_SUPPORT)
-      if (open_julie_action_oa = to_group_operator_actions.select(&:is_open_julie_action?).first)
-        label       = open_julie_action_oa.target.message_classification.classification
-        target_type = open_julie_action_oa.target_type
-        target_id   = open_julie_action_oa.target_id
+      if label == LABEL_ARCHIVE
+        if (open_julie_action_oa = to_group_operator_actions.select(&:is_open_julie_action?).first)
+          label       = open_julie_action_oa.target.message_classification.classification
+          target_type = open_julie_action_oa.target_type
+          target_id   = open_julie_action_oa.target_id
+        end
       end
 
       operator_actions_group = OperatorActionsGroup.create({
