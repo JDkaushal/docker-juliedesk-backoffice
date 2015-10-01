@@ -146,7 +146,8 @@ describe OperatorAction do
                                                                                               messages_thread_id: 1,
                                                                                               operator_id: 2,
                                                                                               nature: "nature",
-                                                                                              sub_nature: nil
+                                                                                              sub_nature: nil,
+                                                                                              message: nil
                                                                                           })
         expect(OperatorActionsGroup).not_to receive(:group_actions)
         OperatorAction.create_and_verify({
@@ -169,7 +170,8 @@ describe OperatorAction do
                                                                                               messages_thread_id: 1,
                                                                                               operator_id: 2,
                                                                                               nature: "archive",
-                                                                                              sub_nature: nil
+                                                                                              sub_nature: nil,
+                                                                                              message: nil
                                                                                           })
         expect(OperatorActionsGroup).to receive(:group_actions).with({
             operator_id: 2,

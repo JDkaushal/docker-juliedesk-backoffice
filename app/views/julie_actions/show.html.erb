@@ -291,14 +291,14 @@
             });
             if(otherRecipients) {
                 var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
-                    return elt.name;
+                    return elt.name.toLowerCase();
                 });
                 var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
-                    return elt.name;
+                    return elt.name.toLowerCase();
                 });
                 _(otherRecipients).each(function(email) {
-                    if (toRecipients.indexOf(email) == -1 && ccRecipients.indexOf(email) == -1) {
-                        $("#recipients-to-input").tokenInput("add", {name: email});
+                    if (toRecipients.indexOf(email.toLowerCase()) == -1 && ccRecipients.indexOf(email.toLowerCase()) == -1) {
+                        $("#recipients-to-input").tokenInput("add", {name: email.toLowerCase()});
                     }
                 });
             }
