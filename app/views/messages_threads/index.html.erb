@@ -30,8 +30,20 @@
             }), function(message) {
                 return moment(message.received_at);
             });
-            date = _.min(dates);
-            return moment(date).locale("<%= I18n.locale %>").fromNow();
+            if(dates.length > 0) {
+                return moment(_.min(dates)).locale("<%= I18n.locale %>").fromNow();
+            }
+            else {
+                dates = _.map(messageThread.messages, function(message) {
+                    return moment(message.received_at);
+                });
+                if(dates.length > 0) {
+                    return moment(_.max(dates)).locale("<%= I18n.locale %>").fromNow();
+                }
+                else {
+                    return "";
+                }
+            }
         };
 
         $scope.toProcessLaterMessagesThreads = function() {
