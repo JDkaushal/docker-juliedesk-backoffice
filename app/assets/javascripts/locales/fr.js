@@ -138,6 +138,7 @@ window.wordings['fr'] = {
             before: "Bonjour,\n\n",
             before_only_client: "Bonjour %{client_name},\n\n",
             full_date_format: "dddd D MMMM YYYY à H[h]mm",
+            full_time_format: "à H[h]mm",
             only_date_format: "dddd D MMMM YYYY",
             date_time_separator: "à",
             only_time_format: "H[h]mm",
@@ -180,7 +181,8 @@ window.wordings['fr'] = {
         on_days: "le",
         starting_on: "du",
         ending_on: "au",
-        invalid_constraint: "Contrainte non-valide"
+        invalid_constraint: "Contrainte non-valide",
+        before_days: ""
     },
     actions: {
         to_do: {
@@ -206,5 +208,8 @@ window.wordings['fr'] = {
             dates_identification: "Identification des dates",
             suggested_dates: "Dates suggérées"
         }
+    },
+    dates: {
+        today: "Aujourd'hui"
     }
 };

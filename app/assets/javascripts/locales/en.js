@@ -105,10 +105,10 @@ window.wordings['en'] = {
         info_asked: "Here is the info you asked:",
         confirmation: "Very well, it's noted.",
         cancel: {
-            attendees_noticed: "I canceled %{appointment_nature} scheduled on %{date}.",
-            attendees_not_noticed: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you on %{date}.",
+            attendees_noticed: "I canceled %{appointment_nature} scheduled %{date}.",
+            attendees_not_noticed: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you %{date}.",
         },
-        cancel_client_agreement: "Do I have your agreement to cancel %{appointment_nature} scheduled on %{date}?",
+        cancel_client_agreement: "Do I have your agreement to cancel %{appointment_nature} scheduled %{date}?",
         client_agreement: {
             prefix: {
                 available: {
@@ -137,6 +137,7 @@ window.wordings['en'] = {
             before: "Hi,\n\n",
             before_only_client: "Hi %{client_name},\n\n",
             full_date_format: "LLLL",
+            full_time_format: "LT",
             only_date_format: "dddd, MMMM D, YYYY",
             date_time_separator: "at",
             only_time_format: "LT",
@@ -179,7 +180,8 @@ window.wordings['en'] = {
         on_days: "on",
         starting_on: "from",
         ending_on: "to",
-        invalid_constraint: "Invalid constraint"
+        invalid_constraint: "Invalid constraint",
+        before_days: "on "
     },
     actions: {
         to_do: {
@@ -205,5 +207,9 @@ window.wordings['en'] = {
             dates_identification: "Dates identification",
             suggested_dates: "Suggested dates"
         }
+    },
+
+    dates: {
+        today: 'Today'
     }
 };
