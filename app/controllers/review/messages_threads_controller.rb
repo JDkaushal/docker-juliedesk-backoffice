@@ -8,7 +8,6 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread.re_import
 
     @messages_thread.account
-
     operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
     @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id).uniq.length
   end

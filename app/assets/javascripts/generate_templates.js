@@ -217,7 +217,6 @@
         }
         else {
             for (var i = 0; i < timezoneIds.length; i++) {
-                console.log(timezoneIds[i]);
                 if (dateString != "") {
                     dateString = dateString + "\n";
                 }

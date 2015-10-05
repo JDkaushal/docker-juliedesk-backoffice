@@ -30,6 +30,8 @@
 
     window.actionDeletedEvent = false;
 
+    window.isResponseToClient = false;
+
     window.activateCalendarWithParams = function (calendarParams) {
         calendarParams.height = $(".calendar-container").height();
         calendarParams.other_emails = window.otherAccountEmails;
@@ -125,7 +127,13 @@
                     animateDropdown: false,
                     prePopulate: initialToRecipients(),
                     preventDuplicates: true,
-                    theme: 'facebook'
+                    theme: 'facebook',
+                    onAdd: function (item) {
+                        toRecipientAdded(item);
+                    },
+                    onDelete: function (item) {
+                        toRecipientDeleted(item);
+                    }
                 });
         $("#recipients-cc-input").tokenInput(
                 possibleRecipients(),
@@ -138,11 +146,71 @@
                     animateDropdown: false,
                     prePopulate: initialCcRecipients(),
                     preventDuplicates: true,
-                    theme: 'facebook'
+                    theme: 'facebook',
+                    onAdd: function (item) {
+                        ccRecipientAdded(item);
+                    },
+                    onDelete: function (item) {
+                        ccRecipientDeleted(item);
+                    }
+
                 });
     }
 
+    function toRecipientAdded(item) {
+        setQuoteMessageCheckboxState();
+    }
+
+    function toRecipientDeleted(item) {
+        setQuoteMessageCheckboxState();
+    }
+
+    function ccRecipientAdded(item) {
+        setQuoteMessageCheckboxState();
+    }
+
+    function ccRecipientDeleted(item) {
+        setQuoteMessageCheckboxState();
+    }
+
+    function setQuoteMessageCheckboxState(){
+        var toRecipients = $("#recipients-to-input").tokenInput("get");
+        var ccRecipients = $("#recipients-cc-input").tokenInput("get");
+        var state = true;
+
+        if(window.isResponseToClient){
+            // If there are more than 1 recipients (means one or more were added
+            // Or if one or more cc recipients are presents (means one or more were added)
+            // Or if the client email is not present in the to recipient list
+
+            // If the operator then add a recipient (either To or Cc), we uncheck the quote message checkbox, because
+            // the previous message is obviously containing informations only destined to Julie or the client
+            if (toRecipients.length > 1 || ccRecipients.length > 0 || toRecipients.filter(function (item) {
+                        return (item.email == clientRecipient().email);
+                    }).length == 0)
+                state = false;
+        }
+
+        $('#quote_message').prop('checked', state);
+        return state;
+    }
+
+    function checkIfResponseToClientOnly() {
+        // If there is only one To recipient and it is the client, and there are no Cc recipients (Julie is responding
+        // to the client only)
+
+        var result = false;
+        if(initialToRecipients().length == 1 && (initialToRecipients().filter(function (item) {
+            return (item.email == clientRecipient().email);
+        })).length > 0 && initialCcRecipients().length == 0){
+            result = true;
+        }
+
+        return window.isResponseToClient = result;
+    }
+
     $(function () {
+        checkIfResponseToClientOnly();
         initTokenInputs();
         $("#show-calendar-button").click(function () {
             $(".calendar-container").removeClass("minimized");
