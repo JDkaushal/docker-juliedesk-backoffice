@@ -15,6 +15,8 @@ class JulieActionsController < ApplicationController
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(@message.messages_thread_id)
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
+
+    @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
   end
 
   def update

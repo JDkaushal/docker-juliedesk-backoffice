@@ -148,13 +148,15 @@
                     return moment(timeSlot).tz(params.timezoneId).format("YYYY-MM-DD");
                 }), function(timeSlots, day) {
                     date = moment(timeSlots[0]).tz(params.timezoneId);
-                    dateString = "";
+
+                    dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
                     if(date.isSame(today, "day"))
-                        dateString = localize('dates.today');
+                        dateString = localize('dates.today') + " (" + dateString + ")";
                     else if(date.isSame(tomorrow, "day"))
-                        dateString = localize('dates.tomorrow');
-                    else
-                        dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+                        dateString = localize('dates.tomorrow') + " (" + dateString + ")";
+
+
 
                     var timeSlotsStrings = _.map(timeSlots, function(timeSlot) {
                         return moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_time_format"))
@@ -210,6 +212,8 @@
         dateString = "";
         today = "";
         tomorrow = "";
+        var dateFormatted = "";
+
         var timezoneIds = params.allTimezoneIds;
         if (params.allTimezoneIds.length == 0) {
             timezoneIds = [params.defaultTimezoneId];
@@ -218,10 +222,14 @@
             today = moment().tz(params.defaultTimezoneId);
             tomorrow = today.clone().add(1, 'd');
             date = moment(params.timeSlotToCreate).tz(params.defaultTimezoneId);
+
+            dateFormatted = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
+
             if(date.isSame(today, "day"))
-                dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = localize("dates.today") + ' (' + dateFormatted + ')' + " " + date.format(localize("email_templates.common.full_time_format"));
             else if(date.isSame(tomorrow, "day"))
-                dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = localize("dates.tomorrow") + ' (' + dateFormatted + ')' + " " + date.format(localize("email_templates.common.full_time_format"));
             else
                 dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
         }
@@ -233,12 +241,15 @@
                 today = moment().tz(timezoneIds[i]);
                 tomorrow = today.clone().add(1, 'd');
                 date = moment(params.timeSlotToCreate).tz(timezoneIds[i]);
+                dateFormatted = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
                 if(date.isSame(today, "day"))
-                    dateString += localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
+                    dateString += localize("dates.today") + ' (' + dateFormatted + ')' + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
                 else if(date.isSame(tomorrow, "day"))
-                    dateString += localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
+                    dateString += localize("dates.tomorrow") + ' (' + dateFormatted + ')' + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
                 else
                     dateString += window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format"))) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
+
             }
         }
 
@@ -271,10 +282,12 @@
         tomorrow = today.clone().add(1, 'd');
         date = moment(params.currentEventData.start.dateTime).tz(params.timezoneId);
 
+        var formatted_date = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
         if(date.isSame(today, "day"))
-            dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
+            dateString = localize("dates.today") + " (" + formatted_date + ") " + date.format(localize("email_templates.common.full_time_format"));
         else if(date.isSame(tomorrow, "day"))
-            dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+            dateString = localize("dates.tomorrow") + " (" + formatted_date + ") " + date.format(localize("email_templates.common.full_time_format"));
         else
             dateString = localize("constraints.before_days") + window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
 
@@ -353,10 +366,12 @@
         _.each(params.dateTimesToCheck, function(dateTime) {
             date = moment(dateTime).tz(params.timezoneId);
 
+            var formattedDate = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
             if(date.isSame(today, "day"))
-                dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = localize("dates.today") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
             else if(date.isSame(tomorrow, "day"))
-                dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = localize("dates.tomorrow") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
             else
                 dateString = date.locale(params.locale).format(localize("email_templates.common.full_date_format"));
 
@@ -386,10 +401,12 @@
 
             _.each(params.selectedEventsToCancel, function (selectedEvent) {
                 date = moment(selectedEvent.start).tz(params.timezoneId);
+                var formattedDate = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
                 if(date.isSame(today, "day"))
-                    dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
+                    dateString = localize("dates.today") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
                 else if(date.isSame(tomorrow, "day"))
-                    dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                    dateString = localize("dates.tomorrow") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
                 else
                     dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
 
@@ -408,10 +425,12 @@
 
             _.each(params.selectedEventsNotToCancel, function (selectedEvent) {
                 date = moment(selectedEvent.start).tz(params.timezoneId);
+                var formattedDate = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
                 if(date.isSame(today, "day"))
-                    dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
+                    dateString = localize("dates.today") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
                 else if(date.isSame(tomorrow, "day"))
-                    dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                    dateString = localize("dates.tomorrow") + ' (' + formattedDate + ') ' + date.format(localize("email_templates.common.full_time_format"));
                 else
                     dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
 

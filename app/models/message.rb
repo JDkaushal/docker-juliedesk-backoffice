@@ -120,6 +120,21 @@ class Message < ActiveRecord::Base
     }
   end
 
+  def destined_to_julie? params={}
+    (params[:julie_aliases] || JulieAlias.all).select{|julie_alias|
+      "#{server_message['to']}".downcase.include? julie_alias.email
+    }.any?
+  end
+
+  def is_discussion_client_julie_only
+    result = false
+    if destined_to_julie?
+      # If the message is destined to Julie only
+      result = server_message['to'].split(',').size == 1 && server_message['cc'].split(',').size == 0
+    end
+    result
+  end
+
   def self.import_emails
     # Get server threads in inbox
     server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 100, full: true)

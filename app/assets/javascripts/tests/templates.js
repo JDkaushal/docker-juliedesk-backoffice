@@ -47,8 +47,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Today at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-            fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+            fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
         }
     },
         {
@@ -74,8 +74,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Tomorrow at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Nicolas Marlier would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -155,8 +155,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment at the office:\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -182,8 +182,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment at the office:\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -226,8 +226,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment:\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment:\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -248,8 +248,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment:\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment:\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -302,8 +302,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Today at 3:00 AM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Aujourd'hui à 3h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 3:00 AM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -329,8 +329,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Tomorrow at 3:00 AM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Demain à 3h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 3:00 AM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -373,8 +373,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -395,8 +395,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -439,8 +439,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -461,8 +461,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Nicolas Marlier would be available for a skype:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
 
@@ -518,8 +518,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Today at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Aujourd'hui à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -546,8 +546,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Tomorrow at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Demain à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Julien, Guillaume and Nicolas would be available for an appointment at the office:\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -604,8 +604,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Today at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -633,8 +633,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Tomorrow at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n - Tuesday, January 6, 2015 at 12:00 PM\n\nWhich time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -691,8 +691,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Today at 12:00 PM\n\nJohn, Jack, which time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Aujourd'hui à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nJohn, Jack, which time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -720,8 +720,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tomorrow at 12:00 PM\n\nJohn, Jack, which time would work best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Demain à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Thursday, January 1, 2015 at 12:00 PM or 2:00 PM\n - Sunday, January 4, 2015 at 12:00 PM\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nJohn, Jack, which time would work best for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -778,8 +778,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Today at 12:00 PM\n\nJohn, Jack, would that work for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nJohn, Jack, would that work for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         },
         {
@@ -807,8 +807,8 @@ window.testsData.templatesData = [
             },
             attendees: ["John", "Jack"],
             expectedResults: {
-                en: "Nicolas would be available for an appointment at the office:\n - Tomorrow at 12:00 PM\n\nJohn, Jack, would that work for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Demain à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+                en: "Nicolas would be available for an appointment at the office:\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nJohn, Jack, would that work for you?",
+                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         }],
 
@@ -855,8 +855,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -878,8 +878,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at these times, but would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -924,8 +924,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -947,8 +947,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry none of these times fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -993,8 +993,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1016,8 +1016,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1062,8 +1062,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1085,8 +1085,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry this time does not fit, but Nicolas Marlier would be available for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
 
@@ -1143,8 +1143,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1171,8 +1171,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1229,8 +1229,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1258,8 +1258,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1308,8 +1308,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1333,8 +1333,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow at 12:00 PM\n\nWould that work for you?",
-                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain à 12h00\n\nCela vous conviendrait-il ?"
+                en: "Sorry, Nicolas Marlier is not available anymore at this time, but here are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " at 12:00 PM\n\nWould that work for you?",
+                fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
 
@@ -1411,8 +1411,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner at the office:\nToday 12:00 PM",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui à 12h00"
+                en: "Perfect. I sent invites for a dinner at the office:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00"
             }
         },
         {
@@ -1439,8 +1439,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner at the office:\nTomorrow 12:00 PM",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain à 12h00"
+                en: "Perfect. I sent invites for a dinner at the office:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00"
             }
         },
         {
@@ -1483,8 +1483,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a skype:\nToday 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1505,8 +1505,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a skype:\nTomorrow 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1561,8 +1561,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a skype:\nToday 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1589,8 +1589,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a skype:\nTomorrow 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a skype:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1635,8 +1635,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Perfect. I sent invites for a meeting:\nToday 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nAujourd'hui à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a meeting:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1658,8 +1658,8 @@ window.testsData.templatesData = [
             },
             address: "9 rue Dareau",
             expectedResults: {
-                en: "Perfect. I sent invites for a meeting:\nTomorrow 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nDemain à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a meeting:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1714,8 +1714,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner at the office:\nToday 12:00 PM (Timezone: Europe/Paris)\nToday 3:00 AM (Timezone: America/Los Angeles)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui à 12h00 (Fuseau horaire : Europe/Paris)\nAujourd'hui à 3h00 (Fuseau horaire : America/Los Angeles)"
+                en: "Perfect. I sent invites for a dinner at the office:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 AM (Timezone: America/Los Angeles)",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -1742,8 +1742,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner at the office:\nTomorrow 12:00 PM (Timezone: Europe/Paris)\nTomorrow 3:00 AM (Timezone: America/Los Angeles)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain à 12h00 (Fuseau horaire : Europe/Paris)\nDemain à 3h00 (Fuseau horaire : America/Los Angeles)"
+                en: "Perfect. I sent invites for a dinner at the office:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 AM (Timezone: America/Los Angeles)",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -1800,8 +1800,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nToday 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a dinner:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1829,8 +1829,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nTomorrow 12:00 PM\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain à 12h00\nLieu : 9 rue Dareau"
+                en: "Perfect. I sent invites for a dinner:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\nLocation: 9 rue Dareau",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1889,8 +1889,8 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nToday 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
+                en: "Perfect. I sent invites for a dinner:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -1919,8 +1919,8 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nTomorrow 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
+                en: "Perfect. I sent invites for a dinner:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -1979,8 +1979,8 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nToday 12:00 PM\n\nPlease let me know the address to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                en: "Perfect. I sent invites for a dinner:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2009,8 +2009,8 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a dinner:\nTomorrow 12:00 PM\n\nPlease let me know the address to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                en: "Perfect. I sent invites for a dinner:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2067,8 +2067,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a call:\nToday 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un call :\nAujourd'hui à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a call:\nToday " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un call :\nAujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -2096,8 +2096,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I sent invites for a call:\nTomorrow 12:00 PM (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un call :\nDemain à 12h00 (Fuseau horaire : Europe/Paris)"
+                en: "Perfect. I sent invites for a call:\nTomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un call :\nDemain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         }],
 
@@ -2132,8 +2132,8 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today 8:00 AM.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui à 8h00."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2149,8 +2149,8 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow 8:00 AM.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain à 8h00."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2183,8 +2183,8 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today 11:00 PM (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui à 23h00 (Fuseau horaire : America/Los Angeles)."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 11:00 PM (Timezone: America/Los Angeles).",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
@@ -2200,8 +2200,8 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow 11:00 PM (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain à 23h00 (Fuseau horaire : America/Los Angeles)."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 11:00 PM (Timezone: America/Los Angeles).",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
@@ -2254,8 +2254,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you Today 8:00 AM.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Aujourd'hui à 8h00."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2281,8 +2281,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you Tomorrow 8:00 AM.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Demain à 8h00."
+                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2335,8 +2335,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "I canceled the dinner scheduled Today 8:00 AM.",
-                fr: "J'ai annulé le diner prévu Aujourd'hui à 8h00."
+                en: "I canceled the dinner scheduled Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "J'ai annulé le diner prévu Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2362,8 +2362,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "I canceled the dinner scheduled Tomorrow 8:00 AM.",
-                fr: "J'ai annulé le diner prévu Demain à 8h00."
+                en: "I canceled the dinner scheduled Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM.",
+                fr: "J'ai annulé le diner prévu Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00."
             }
         },
         {
@@ -2414,8 +2414,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Do I have your agreement to cancel the dinner scheduled Today 8:00 AM?",
-                fr: "Ai-je votre approbation pour annuler le diner prévu Aujourd'hui à 8h00 ?"
+                en: "Do I have your agreement to cancel the dinner scheduled Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM?",
+                fr: "Ai-je votre approbation pour annuler le diner prévu Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00 ?"
             }
         },
         {
@@ -2440,8 +2440,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Do I have your agreement to cancel the dinner scheduled Tomorrow 8:00 AM?",
-                fr: "Ai-je votre approbation pour annuler le diner prévu Demain à 8h00 ?"
+                en: "Do I have your agreement to cancel the dinner scheduled Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 8:00 AM?",
+                fr: "Ai-je votre approbation pour annuler le diner prévu Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 8h00 ?"
             }
         }],
 
@@ -2532,8 +2532,8 @@ window.testsData.templatesData = [
             }
         ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Today 2:00 PM - Friday 9 January 2015 5:00 AM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
-            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Aujourd'hui 14:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format("dddd D MMMM YYYY")) + ")" + " 2:00 PM - Friday 9 January 2015 5:00 AM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Aujourd'hui " + "(" + moment().hour(12).minute(0).second(0).locale('fr').format("dddd D MMMM YYYY") + ")" + " 14:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
     [{
@@ -2577,8 +2577,8 @@ window.testsData.templatesData = [
             }
         ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Tomorrow 2:00 PM - Friday 9 January 2015 5:00 AM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
-            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Demain 14:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format("dddd D MMMM YYYY")) + ")" + " 2:00 PM - Friday 9 January 2015 5:00 AM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Demain " + "(" + moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format("dddd D MMMM YYYY") + ")" + " 14:00 - vendredi 9 janvier 2015 05:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
     [{
@@ -2622,8 +2622,8 @@ window.testsData.templatesData = [
             }
         ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Today, 2:00 PM - 3:00 PM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
-            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Aujourd'hui, 14:00 - 15:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format("dddd D MMMM YYYY")) + ")" + ", 2:00 PM - 3:00 PM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Aujourd'hui " + "(" + moment().hour(12).minute(0).second(0).locale('fr').format("dddd D MMMM YYYY") + ")" + ", 14:00 - 15:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
     [{
@@ -2667,8 +2667,8 @@ window.testsData.templatesData = [
             }
         ],
         expectedResults: {
-            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Tomorrow, 2:00 PM - 3:00 PM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
-            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Demain, 14:00 - 15:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
+            en: "I added to your calendar:\n- EVENT #1 : Thursday 1 January 2015, 12:00 PM - 2:00 PM (Europe/Paris)\n- EVENT #2 : Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format("dddd D MMMM YYYY")) + ")" + ", 2:00 PM - 3:00 PM (America/Los Angeles)\n\nI updated in your calendar:\n- EVENT #3 : Friday 2 January 2015\n\nI deleted from your calendar:\n- EVENT #4 : Sunday 4 January 2015 - Monday 5 January 2015\n\n",
+            fr: "J'ai ajouté à votre calendrier :\n- EVENT #1 : jeudi 1 janvier 2015, 12:00 - 14:00 (Europe/Paris)\n- EVENT #2 : Demain " + "(" + moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format("dddd D MMMM YYYY") + ")" + ", 14:00 - 15:00 (America/Los Angeles)\n\nJ'ai mis à jour dans votre calendrier :\n- EVENT #3 : vendredi 2 janvier 2015\n\nJ'ai supprimé de votre calendrier :\n- EVENT #4 : dimanche 4 janvier 2015 - lundi 5 janvier 2015\n\n"
         }
     }],
     [{
@@ -2688,8 +2688,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "You are not available for a skype at this date:\n- Today 12:00 PM\n\nDo you want me to suggest other availabilities?",
-            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+            en: "You are not available for a skype at this date:\n- Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nDo you want me to suggest other availabilities?",
+            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
         }
     }],
     [{
@@ -2709,8 +2709,8 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "You are not available for a skype at this date:\n- Tomorrow 12:00 PM\n\nDo you want me to suggest other availabilities?",
-            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+            en: "You are not available for a skype at this date:\n- Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nDo you want me to suggest other availabilities?",
+            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
         }
     }],
         [{
@@ -2772,8 +2772,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at this date:\n- Today 12:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
-                    fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui à 12h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
+                    en: "You are not available for a skype at this date:\n- Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
+                    fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             },
             {
@@ -2793,8 +2793,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at this date:\n- Tomorrow 12:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
-                    fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain à 12h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
+                    en: "You are not available for a skype at this date:\n- Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
+                    fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             },
         {
@@ -2835,8 +2835,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Today 1:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
-                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui à 13h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
+                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 1:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
+                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 13h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             },
             {
@@ -2856,8 +2856,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Tomorrow 1:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
-                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Demain à 13h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
+                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 1:00 PM\n\nDo you want me to suggest new availabilities to postpone the appointment?",
+                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 13h00\n\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             },
         {
@@ -2898,8 +2898,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Today 1:00 PM\n\nDo you want me to suggest other availabilities?",
-                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 1:00 PM\n\nDo you want me to suggest other availabilities?",
+                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
                 }
             },
             {
@@ -2919,8 +2919,8 @@ window.testsData.templatesData = [
                     }
                 },
                 expectedResults: {
-                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Tomorrow 1:00 PM\n\nDo you want me to suggest other availabilities?",
-                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Demain à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+                    en: "You are not available for a skype at any of those dates:\n- Thursday, January 1, 2015 12:00 PM\n- Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 1:00 PM\n\nDo you want me to suggest other availabilities?",
+                    fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- jeudi 1 janvier 2015 à 12h00\n- Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
                 }
             }],
     [
@@ -2954,8 +2954,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. But I don't have any email address for this event:\n - Event #4 (Today 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
-                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n - Event #4 (Aujourd'hui à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. But I don't have any email address for this event:\n - Event #4 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
+                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n - Event #4 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -2971,8 +2971,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. But I don't have any email address for this event:\n - Event #4 (Tomorrow 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
-                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n - Event #4 (Demain à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. But I don't have any email address for this event:\n - Event #4 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
+                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour cet évènement :\n - Event #4 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3013,8 +3013,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. But I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. But I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3034,8 +3034,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. But I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Tomorrow 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Demain à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. But I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. En revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3068,8 +3068,8 @@ window.testsData.templatesData = [
             ],
             selectedEventsNotToCancel: [],
             expectedResults: {
-                en: "It's noted. I am going to cancel the event:\n - Event #1 (Today 12:00 PM)\n",
-                fr: "C'est bien noté. Je vais annuler l'évènement :\n - Event #1 (Aujourd'hui à 12h00)\n"
+                en: "It's noted. I am going to cancel the event:\n - Event #1 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM)\n",
+                fr: "C'est bien noté. Je vais annuler l'évènement :\n - Event #1 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00)\n"
             }
         },
         {
@@ -3085,8 +3085,8 @@ window.testsData.templatesData = [
             ],
             selectedEventsNotToCancel: [],
             expectedResults: {
-                en: "It's noted. I am going to cancel the event:\n - Event #1 (Tomorrow 12:00 PM)\n",
-                fr: "C'est bien noté. Je vais annuler l'évènement :\n - Event #1 (Demain à 12h00)\n"
+                en: "It's noted. I am going to cancel the event:\n - Event #1 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 12:00 PM)\n",
+                fr: "C'est bien noté. Je vais annuler l'évènement :\n - Event #1 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 12h00)\n"
             }
         },
         {
@@ -3127,8 +3127,8 @@ window.testsData.templatesData = [
             ],
             selectedEventsNotToCancel: [],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Today 2:00 PM)\n",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Aujourd'hui à 14h00)\n"
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 2:00 PM)\n",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 14h00)\n"
             }
         },
         {
@@ -3148,8 +3148,8 @@ window.testsData.templatesData = [
             ],
             selectedEventsNotToCancel: [],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Tomorrow 2:00 PM)\n",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Demain à 14h00)\n"
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 2:00 PM)\n",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 14h00)\n"
             }
         },
         {
@@ -3200,8 +3200,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Today 2:00 PM)\n\nBut I don't have any email address for this event:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Aujourd'hui à 14h00)\n\nEn revanche, je n'ai pas les contacts pour cet évènement :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 2:00 PM)\n\nBut I don't have any email address for this event:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 14h00)\n\nEn revanche, je n'ai pas les contacts pour cet évènement :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3226,8 +3226,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Tomorrow 2:00 PM)\n\nBut I don't have any email address for this event:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Demain à 14h00)\n\nEn revanche, je n'ai pas les contacts pour cet évènement :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 2:00 PM)\n\nBut I don't have any email address for this event:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n\nPlease provide attendees emails if you want me to take care of it.",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 14h00)\n\nEn revanche, je n'ai pas les contacts pour cet évènement :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3286,8 +3286,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Today 4:00 PM)\n - Event #4 (Saturday, January 3, 2015 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Aujourd'hui à 16h00)\n - Event #4 (Samedi 3 janvier 2015 à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 4:00 PM)\n - Event #4 (Saturday, January 3, 2015 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 16h00)\n - Event #4 (Samedi 3 janvier 2015 à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3316,8 +3316,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Tomorrow 4:00 PM)\n - Event #4 (Saturday, January 3, 2015 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Demain à 16h00)\n - Event #4 (Samedi 3 janvier 2015 à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to cancel these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 4:00 PM)\n - Event #4 (Saturday, January 3, 2015 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. Je vais annuler les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 16h00)\n - Event #4 (Samedi 3 janvier 2015 à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3376,8 +3376,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3406,8 +3406,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Today " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Aujourd'hui " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         },
         {
@@ -3436,8 +3436,8 @@ window.testsData.templatesData = [
                 }
             ],
             expectedResults: {
-                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Tomorrow 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
-                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Demain à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
+                en: "It's noted. I am going to postpone these events:\n - Event #1 (Thursday, January 1, 2015 12:00 PM)\n - Event #2 (Thursday, January 1, 2015 2:00 PM)\n\nBut I don't have any email address for these events:\n - Event #3 (Friday, January 2, 2015 4:00 PM)\n - Event #4 (Tomorrow " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + ")" + " 3:00 PM)\n\nPlease provide attendees emails if you want me to take care of them.",
+                fr: "C'est bien noté. Je vais reporter les évènements :\n - Event #1 (Jeudi 1 janvier 2015 à 12h00)\n - Event #2 (Jeudi 1 janvier 2015 à 14h00)\n\nEn revanche, je n'ai pas les contacts pour ces évènements :\n - Event #3 (Vendredi 2 janvier 2015 à 16h00)\n - Event #4 (Demain " + "(" + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + ")" + " à 15h00)\n\nMerci de m'indiquer les adresses email des participants si vous souhaitez que je m'en occupe."
             }
         }],
 

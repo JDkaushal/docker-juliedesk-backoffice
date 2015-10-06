@@ -25,7 +25,7 @@
     window.forceCancelEventIds = [];
     window.julieAlias = <%== @messages_thread.julie_alias.to_json %>;
     window.julieAliases = <%== @messages_thread.julie_aliases.to_json %>;
-
+    window.isResponseToClient = <%= @is_discussion_client_julie_only %>;
     window.startedAt = Date.now();
 
     window.actionDeletedEvent = false;
@@ -50,7 +50,6 @@
         window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
         $(".calendar-container").addClass("visible");
     };
-
 
 
 
@@ -195,22 +194,7 @@
         return state;
     }
 
-    function checkIfResponseToClientOnly() {
-        // If there is only one To recipient and it is the client, and there are no Cc recipients (Julie is responding
-        // to the client only)
-
-        var result = false;
-        if(initialToRecipients().length == 1 && (initialToRecipients().filter(function (item) {
-            return (item.email == clientRecipient().email);
-        })).length > 0 && initialCcRecipients().length == 0){
-            result = true;
-        }
-
-        return window.isResponseToClient = result;
-    }
-
     $(function () {
-        checkIfResponseToClientOnly();
         initTokenInputs();
         $("#show-calendar-button").click(function () {
             $(".calendar-container").removeClass("minimized");
@@ -499,7 +483,7 @@
 
                       <div id="reply-text-signature"></div>
                       <div class="quote-message-container">
-                        <%= check_box_tag :quote_message, "", true %>
+                        <%= check_box_tag :quote_message, "", !@is_discussion_client_julie_only %>
                         <%= I18n.t "common.quote_message" %>
                       </div>
                       <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
