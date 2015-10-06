@@ -210,6 +210,7 @@ window.wordings['fr'] = {
         }
     },
     dates: {
-        today: "Aujourd'hui"
+        today: "Aujourd'hui",
+        tomorrow: "Demain"
     }
 };

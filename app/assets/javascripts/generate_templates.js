@@ -2,12 +2,18 @@
     var previousLocale = window.getCurrentLocale();
     window.setCurrentLocale(params.locale);
 
-    message = "";
+    var message = "";
 
     var locationInTemplate = "";
     var addressInTemplate = "";
     var isAskInterlocutor = false;
     var isClientWillDefine = false;
+
+    var today = "";
+    var tomorrow = "";
+    var dateString = "";
+    var date = "";
+
     if(params.address) {
         if(params.address.address_in_template) {
             if(params.address.address_in_template[params.locale] == "") {
@@ -43,7 +49,10 @@
     }
 
     if (params.action == "suggest_dates") {
-        var today = moment().tz(params.timezoneId);
+        if(params.timezoneId != undefined){
+            today = moment().tz(params.timezoneId);
+            tomorrow = today.clone().add(1, "d");
+        }
         if (params.client_agreement) {
             if (params.timeSlotsToSuggest.length > 0) {
                 if(params.isPostpone && !params.attendeesAreNoticed) {
@@ -138,13 +147,14 @@
                 _.each(_.groupBy(params.timeSlotsToSuggest, function(timeSlot) {
                     return moment(timeSlot).tz(params.timezoneId).format("YYYY-MM-DD");
                 }), function(timeSlots, day) {
-                    var date = moment(timeSlots[0]).tz(params.timezoneId);
-                    var dateString = "";
-                    if(date.isSame(today, "day")){
+                    date = moment(timeSlots[0]).tz(params.timezoneId);
+                    dateString = "";
+                    if(date.isSame(today, "day"))
                         dateString = localize('dates.today');
-                    }else{
+                    else if(date.isSame(tomorrow, "day"))
+                        dateString = localize('dates.tomorrow');
+                    else
                         dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
-                    }
 
                     var timeSlotsStrings = _.map(timeSlots, function(timeSlot) {
                         return moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_time_format"))
@@ -197,23 +207,23 @@
         }
     }
     else if(params.action == "invites_sent") {
-        var dateString = "";
-        var today = "";
-
+        dateString = "";
+        today = "";
+        tomorrow = "";
         var timezoneIds = params.allTimezoneIds;
         if (params.allTimezoneIds.length == 0) {
             timezoneIds = [params.defaultTimezoneId];
         }
         if (timezoneIds.length == 1 && timezoneIds[0] == params.defaultTimezoneId && !isVirtualAppointment) {
             today = moment().tz(params.defaultTimezoneId);
-            var date = moment(params.timeSlotToCreate).tz(params.defaultTimezoneId);
+            tomorrow = today.clone().add(1, 'd');
+            date = moment(params.timeSlotToCreate).tz(params.defaultTimezoneId);
             if(date.isSame(today, "day"))
-            {
                 dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
-            }else
-            {
+            else if(date.isSame(tomorrow, "day"))
+                dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+            else
                 dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
-            }
         }
         else {
             for (var i = 0; i < timezoneIds.length; i++) {
@@ -221,13 +231,14 @@
                     dateString = dateString + "\n";
                 }
                 today = moment().tz(timezoneIds[i]);
-                var date = moment(params.timeSlotToCreate).tz(timezoneIds[i]);
+                tomorrow = today.clone().add(1, 'd');
+                date = moment(params.timeSlotToCreate).tz(timezoneIds[i]);
                 if(date.isSame(today, "day"))
                     dateString += localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
+                else if(date.isSame(tomorrow, "day"))
+                    dateString += localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
                 else
-                {
                     dateString += window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format"))) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
-                }
             }
         }
 
@@ -255,18 +266,17 @@
         }
     }
     else if(params.action == "cancel_event") {
-        var dateString = "";
-        var today = moment().tz(params.timezoneId);
-        var date = moment(params.currentEventData.start.dateTime).tz(params.timezoneId);
+        dateString = "";
+        today = moment().tz(params.timezoneId);
+        tomorrow = today.clone().add(1, 'd');
+        date = moment(params.currentEventData.start.dateTime).tz(params.timezoneId);
 
         if(date.isSame(today, "day"))
-        {
             dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
-        }
+        else if(date.isSame(tomorrow, "day"))
+            dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
         else
-        {
             dateString = localize("constraints.before_days") + window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
-        }
 
         if(params.timezoneId != params.defaultTimezoneId) {
             dateString += " " + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
@@ -327,12 +337,14 @@
     }
     else if(params.action == "client_agreement") {
         var dateTimesToCheckPlural = "singular";
-        var today = moment().tz(params.timezoneId);
+        today = moment().tz(params.timezoneId);
+        tomorrow = today.clone().add(1, 'd');
+        date  = "";
+        dateString = "";
 
-        var date  = "";
-        var dateString = "";
         if(params.dateTimesToCheck.length > 1)  dateTimesToCheckPlural = "plural";
         var available = "available";
+
         if(!params.isAvailable) available = "not_available";
         appointmentNature = params.appointment.title_in_email[params.locale];
         message += localize("email_templates.client_agreement.prefix." + available + "." + dateTimesToCheckPlural, {
@@ -342,15 +354,14 @@
             date = moment(dateTime).tz(params.timezoneId);
 
             if(date.isSame(today, "day"))
-            {
                 dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
-            }else
-            {
+            else if(date.isSame(tomorrow, "day"))
+                dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+            else
                 dateString = date.locale(params.locale).format(localize("email_templates.common.full_date_format"));
-            }
+
             message += "- " + dateString + "\n";
         });
-
 
         if(params.isPostpone) {
             message += localize("email_templates.client_agreement.suffix." + available + ".postpone");
@@ -361,9 +372,11 @@
     }
     else if(params.action == "cancel_postpone_multiple_events") {
         var wordingBase = "cancel_multiple";
-        var today = moment().tz(params.timezoneId);
-        var date = "";
-        var dateString = "";
+        today = moment().tz(params.timezoneId);
+        tomorrow = today.clone().add(1, 'd');
+        date = "";
+        dateString = "";
+
         if(params.kind == "postpone") {
             wordingBase = "postpone_multiple";
         }
@@ -374,12 +387,12 @@
             _.each(params.selectedEventsToCancel, function (selectedEvent) {
                 date = moment(selectedEvent.start).tz(params.timezoneId);
                 if(date.isSame(today, "day"))
-                {
                     dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
-                }else
-                {
+                else if(date.isSame(tomorrow, "day"))
+                    dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                else
                     dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
-                }
+
                 message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
             });
         }
@@ -396,12 +409,12 @@
             _.each(params.selectedEventsNotToCancel, function (selectedEvent) {
                 date = moment(selectedEvent.start).tz(params.timezoneId);
                 if(date.isSame(today, "day"))
-                {
                     dateString = localize("dates.today") + " " + date.format(localize("email_templates.common.full_time_format"));
-                }else
-                {
+                else if(date.isSame(tomorrow, "day"))
+                    dateString = localize("dates.tomorrow") + " " + date.format(localize("email_templates.common.full_time_format"));
+                else
                     dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.full_date_format")));
-                }
+
                 message += " - " + selectedEvent.title + " (" + dateString.replace(/<br>/g, " ") + ")\n";
             });
             message += localize("email_templates." + wordingBase + ".what_should_i_do." + notToCancelPlural);
