@@ -47,6 +47,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :operators_presence, only: [:index] do
+      collection do
+        post "/add", action: :add
+        post "/remove", action: :remove
+      end
+    end
+
     resources :messages_threads, only: [] do
       member do
         get "review", action: :review

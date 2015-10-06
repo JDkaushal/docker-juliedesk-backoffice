@@ -1,0 +1,288 @@
+<script>
+    var presenceFormat = "YYYYMMDDTHH0000";
+    var app = angular.module("backofficeApp", []);
+    app.controller("OperatorsPresenceCtrl", function($scope, $http, $sce) {
+        $scope.hours = [];
+
+        $scope.startWeekDate = moment.tz('Indian/Antananarivo').startOf("isoweek").utc().add(6, 'h');
+        $scope.endWeekDate = $scope.startWeekDate.clone().endOf("isoweek");
+
+        $scope.countsToMatch = {"100":1,"101":1,"102":1,"103":1,"104":1,"105":1,"106":2,"107":2,"108":3,"109":3,"110":3,"111":2,"112":4,"113":4,"114":4,"115":4,"116":3,"117":3,"118":3,"119":2,"120":2,"121":2,"122":1,"123":1,"200":1,"201":1,"202":1,"203":1,"204":1,"205":1,"206":2,"207":3,"208":3,"209":3,"210":2,"211":2,"212":3,"213":3,"214":3,"215":4,"216":4,"217":3,"218":3,"219":2,"220":1,"221":2,"222":1,"223":1,"300":1,"301":1,"302":1,"303":1,"304":1,"305":1,"306":2,"307":2,"308":3,"309":4,"310":3,"311":2,"312":3,"313":4,"314":4,"315":4,"316":3,"317":3,"318":3,"319":2,"320":2,"321":2,"322":2,"323":1,"400":1,"401":1,"402":1,"403":1,"404":1,"405":2,"406":2,"407":3,"408":4,"409":3,"410":3,"411":3,"412":3,"413":4,"414":3,"415":4,"416":3,"417":3,"418":2,"419":2,"420":2,"421":1,"422":1,"423":1,"500":1,"501":1,"502":1,"503":1,"504":1,"505":1,"506":2,"507":3,"508":3,"509":3,"510":2,"511":2,"512":3,"513":4,"514":2,"515":4,"516":3,"517":2,"518":1,"519":1,"520":1,"521":1,"522":1,"523":1,"600":1,"601":1,"602":1,"603":0,"604":1,"605":1,"606":1,"607":1,"608":1,"609":1,"610":1,"611":1,"612":1,"613":1,"614":1,"615":1,"616":1,"617":1,"618":1,"619":1,"620":1,"621":1,"622":1,"623":0,"700":1,"701":1,"702":0,"703":0,"704":0,"705":0,"706":0,"707":1,"708":1,"709":1,"710":1,"711":1,"712":1,"713":1,"714":1,"715":1,"716":1,"717":1,"718":1,"719":1,"720":1,"721":1,"722":1,"723":1};
+        $scope.o = {};
+        for(var i=0; i < 24*7; i++) {
+            var mTime = $scope.startWeekDate.clone();
+            mTime.add(i, 'h');
+            $scope.hours.push(mTime);
+        }
+
+        $scope.previousWeek = function() {
+            $scope.startWeekDate.add(-1, 'w');
+            $scope.fetch();
+        };
+
+        $scope.nextWeek = function() {
+            $scope.startWeekDate.add(1, 'w');
+            $scope.fetch();
+        };
+
+        $scope.fetch = function() {
+            $scope.loading = true;
+            $http.get("operators_presence.json?start=" + $scope.startWeekDate.format()).success(function(response) {
+                $scope.operators = response.data.operators;
+                $scope.loading = false;
+            });
+        };
+
+        $scope.getHours = function(weekDay) {
+            return _.filter($scope.hours, function(hour) {
+                return hour.clone().tz('Indian/Antananarivo').add(-6, 'h').isoWeekday() == weekDay;
+            });
+        };
+
+        $scope.fetch();
+
+
+        $scope.endTogglePresences = function(operator, presence) {
+            var formattedPresence = presence.format(presenceFormat);
+            if($scope.initDrag && $scope.initDrag.operator == operator) {
+                var presences = _.select(_.map($scope.hours, function(mHour) {
+                    return mHour.format(presenceFormat);
+                }), function(formattedHour) {
+                    return formattedHour <= formattedPresence && formattedHour >= $scope.initDrag.presence.format(presenceFormat);
+                });
+
+                var allSelected = true;
+                _.each(presences, function(presence) {
+                    allSelected = allSelected && operator.presences.indexOf(presence) > -1;
+                });
+
+
+                if(allSelected) {
+                    _.each(presences, function(presence) {
+                        var index = operator.presences.indexOf(presence);
+                        if(index > -1) {
+                            operator.presences.splice(index, 1);
+                        }
+                    });
+
+                    $scope.loading = true;
+                    $.post("/review/operators_presence/remove", {
+                        presences: presences,
+                        operator_id: operator.id
+                    }).success(function() {
+                                $scope.loading = false;
+                                $scope.$apply()
+                            });
+                }
+                else {
+                    _.each(presences, function(presence) {
+                        var index = operator.presences.indexOf(presence);
+                        if(index == -1) {
+                            operator.presences.push(presence);
+                        }
+                    });
+
+                    $scope.loading = true;
+                    $.post("/review/operators_presence/add", {
+                        presences: presences,
+                        operator_id: operator.id
+                    }).success(function() {
+                                $scope.loading = false;
+                                $scope.$apply();
+                            });
+                }
+            }
+            $scope.initDrag = null;
+        };
+
+        $scope.isOperatorPresent = function(operator, presence) {
+            return operator.presences.indexOf(presence.format(presenceFormat)) > -1;
+        };
+
+        $scope.initTogglePresences = function(operator, presence) {
+            $scope.initDrag = {
+                operator: operator,
+                presence: presence
+            };
+        };
+
+        $scope.countsForHour = function(hour) {
+            var result = 0;
+            _($scope.operators).each(function(operator) {
+                if($scope.isOperatorPresent(operator, hour)) {
+                    result += 1;
+                }
+            });
+            return result;
+        };
+
+        $scope.countsToMatchForHour = function(hour) {
+            return $scope.countsToMatch[hour.format("EHH")];
+        };
+    });
+</script>
+
+<style>
+    .operators-presence-container {
+        width: 984px;
+        margin: 20px auto 0 auto;
+    }
+
+    .operators-presence-container .table-container {
+        position: relative;
+    }
+    .operators-presence-container table {
+        overflow-x:visible;
+        overflow-y:visible;
+        width: 984px;
+        display: block;
+    }
+
+    .operators-presence-container table tr th.hour {
+        font-size: 12px;
+        font-weight: 400;
+    }
+    .operators-presence-container table tr th.hour.main-of-day {
+        font-weight: 800;
+        background: #C1E2F5;
+    }
+    .operators-presence-container table tr td {
+        cursor: pointer;
+        height: 20px;
+        line-height: 20px;
+        padding: 0;
+        font-size: 12px;
+    }
+    .operators-presence-container table tr th {
+        height: 60px;
+    }
+    .operators-presence-container table tr td.fixed, .operators-presence-container table tr th.fixed {
+        position: absolute;
+        left: -120px;
+        width: 120px;
+        border-right: 1px solid #eee;
+    }
+    .operators-presence-container table tr td .operator-working-hours {
+        float: right;
+        margin-right: 5px;
+    }
+    .operators-presence-container table tr td:nth-child(even) {
+        background: #fafafa !important;
+    }
+    .operators-presence-container table tr td.selected {
+        background: #0099cc !important;
+    }
+    .operators-presence-container table tr:nth-child(2) td.selected {
+        background: #7FCAFF !important;
+    }
+    .operators-presence-container table tr:nth-child(3) td.selected {
+        background: #A77FFF !important;
+    }
+    .operators-presence-container table tr:nth-child(4) td.selected {
+        background: #7F97FF !important;
+    }
+    .operators-presence-container table tr:nth-child(5) td.selected {
+        background: #E77FFF !important;
+    }
+    .operators-presence-container table tr:nth-child(6) td.selected {
+        background: #FF7FB0 !important;
+    }
+    .operators-presence-container table tr:nth-child(7) td.selected {
+        background: #FF9C7E !important;
+    }
+    .operators-presence-container table tr:nth-child(8) td.selected {
+        background: #FFBD7E !important;
+    }
+    .operators-presence-container table tr:nth-child(9) td.selected {
+        background: #FFD77E !important;
+    }
+    .operators-presence-container table tr:nth-child(10) td.selected {
+        background: #FFF17E !important;
+    }
+    .operators-presence-container table tr:nth-child(11) td.selected {
+        background: #F3FF7E !important;
+    }
+    .operators-presence-container table tr:nth-child(12) td.selected {
+        background: #CAF562 !important;
+    }
+    .operators-presence-container table tr:nth-child(13) td.selected {
+        background: #62F5C8 !important;
+    }
+    .operators-presence-container table tr td.day-counts {
+        font-size: 12px;
+        text-align: center;
+        color: #0a0;
+        font-weight: 800;
+        min-width: 41px;
+    }
+    .operators-presence-container table tr td.warn {
+        color: #cc0000;
+    }
+    .operators-presence-container table tr td.warn2 {
+        color: #FF6E00;
+    }
+    .loading {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        background: #0099cc;
+        color: white;
+        width: 160px;
+        height: 25px;
+        line-height: 24px;
+        text-align: center;
+        font-size: 12px;
+        margin-left: -100px;
+        border-radius: 0 0 4px 4px;
+    }
+
+</style>
+
+<div ng-app="backofficeApp" ng-controller="OperatorsPresenceCtrl" class="operators-presence-container">
+  <h1>Operator presence times</h1>
+
+  <div class="loading" ng-show="loading">Loading...</div>
+
+  <br>
+  <h5>
+    <a href="/review/operators_presence.csv?start={{ startWeekDate.format() }}" target="_blank" class="btn btn-default">Recap</a>
+    <div ng-click="fetch()" class="btn btn-default">Refresh</div>
+    <div class="btn btn-default" ng-click="previousWeek()"><</div>
+    <div class="btn btn-default" ng-click="nextWeek()">></div>
+    Week {{ startWeekDate.format("w") }} of {{ startWeekDate.format("YYYY") }}: {{ startWeekDate.format("dddd D MMMM") }} - {{ endWeekDate.format("dddd D MMMM") }}
+  </h5>
+  <br>
+  <br>
+
+  <div class="table-container" ng-repeat="weekday in [1, 2, 3, 4, 5, 6, 7]">
+      <table class="table table-stripped">
+        <tr>
+          <th class="fixed">Times (Madagascar)</th>
+          <th class="hour"
+              ng-class="(hour.clone().tz('Indian/Antananarivo').format('HH') == '06')?'main-of-day':''"
+              ng-repeat="hour in getHours(weekday) track by $index">
+            {{ (hour.clone().tz("Indian/Antananarivo").format("HH") == "06")?(hour.clone().tz("Indian/Antananarivo").format("ddd HH")):(hour.clone().tz("Indian/Antananarivo").format("HH")) }}h
+          </th>
+        </tr>
+        <tr ng-repeat="operator in operators track by $index">
+          <td class="fixed">
+            <span class="operator-name">{{ operator.name }}</span>
+            <span class="operator-working-hours">{{ operator.presences.length }}h</span>
+          </td>
+          <td ng-repeat="hour in getHours(weekday) track by $index"
+              ng-mouseDown="initTogglePresences(operator, hour)"
+              ng-mouseUp="endTogglePresences(operator, hour)"
+              ng-class="(isOperatorPresent(operator, hour))?'selected':''">
+          </td>
+        </tr>
+        <tr>
+          <td class="fixed"></td>
+          <td class="day-counts"
+              ng-repeat="hour in getHours(weekday) track by $index"
+              ng-class="(countsForHour(hour) < countsToMatchForHour(hour))?'warn':((countsForHour(hour) > countsToMatchForHour(hour))?'warn2':'')">
+            {{ countsForHour(hour) }} / {{ countsToMatchForHour(hour) }}
+          </td>
+        </tr>
+      </table>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+Semaine <%= DateTime.parse(params[:start]).strftime("%W").to_i + 1 %>;<%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 7.days)).map do
+|day| day.strftime("%A")
+end.join(";") %>;Count
+<% @operators.each do |operator| %>
+<%= operator.name %>;<% count = 0 %><%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).map do |day|
+  count += operator.presences_for_day(day).count
+  operator.formatted_presences_for_day(day)
+end.join(";") %>;<%= count %>
+<% end %>
