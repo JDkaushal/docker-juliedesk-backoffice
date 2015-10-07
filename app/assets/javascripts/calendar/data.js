@@ -122,7 +122,13 @@ Calendar.prototype.getCalendarColor = function (calendarItem) {
         }
     }
 
-    return calendarColors[colorId].background;
+    if(calendarColors[colorId]) {
+        return calendarColors[colorId].background;
+    }
+    else {
+        return calendarColors["0"].background;
+    }
+
 };
 Calendar.prototype.getTimeZones = function () {
     return [
