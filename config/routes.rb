@@ -79,6 +79,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "operators_count_at_time", controller: :operators_presences, action: :operators_count_at_time
+      get "inbox_count", controller: :messages_threads, action: :inbox_count
     end
   end
 
