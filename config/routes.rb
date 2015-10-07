@@ -76,6 +76,12 @@ Rails.application.routes.draw do
     root to: "operators#index"
   end
 
+  namespace :api do
+    namespace :v1 do
+      get "operators_count_at_time", controller: :operators_presences, action: :operators_count_at_time
+    end
+  end
+
 
 
   get "stats", controller: :stats, action: :index
