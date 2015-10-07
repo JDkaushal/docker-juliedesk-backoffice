@@ -2,6 +2,10 @@
     var app = angular.module("backofficeApp", []);
     app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
 
+        var serverTimestamp = <%= Time.now.to_i %>;
+        var localTimestamp = parseInt(moment().format("X"));
+
+        $scope.showWrongClock = serverTimestamp > localTimestamp + 5 * 60 || serverTimestamp < localTimestamp - 5 * 60;
         $scope.isAdmin = <%= (session[:privilege] == "admin")?"true":"false" %>;
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
@@ -139,6 +143,8 @@
 
         $scope.refreshInbox(false);
     });
+
+        console.log("h");
 </script>
 
 <div class="fixed-columns full">
@@ -148,7 +154,14 @@
 
 
 
+
     <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
+      <div class="wrong-clock" ng-show="showWrongClock">
+        Your system time is not correct. Please fix it.<br>
+        Please visit <a href="http://time.is/" target="_blank">http://time.is/</a> to get the correct time,<br>
+        and <a href="/">reload the backoffice</a>.
+      </div>
+
       <div class="refresh-container">
         <button class="btn btn-default btn-sm refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading"><%= I18n.t("common.refresh") %></button>
         <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
