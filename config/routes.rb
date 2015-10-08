@@ -51,6 +51,8 @@ Rails.application.routes.draw do
       collection do
         post "/add", action: :add
         post "/remove", action: :remove
+        post "/reset_day", action: :reset_day
+        post "/copy_day", action: :copy_day
       end
     end
 

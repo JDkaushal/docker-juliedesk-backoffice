@@ -40,6 +40,22 @@ class Review::OperatorsPresenceController < ReviewController
     render json: {}
   end
 
+  def copy_day
+    raise "no day given" unless params[:day]
+    OperatorPresence.where("date >= ? AND date < ?", DateTime.parse(params[:day]), DateTime.parse(params[:day]) + 1.day).to_a.each do |opp|
+      OperatorPresence.create date: opp.date + params[:days].to_i.days, operator_id: opp.operator_id
+    end
+
+    render json: {}
+  end
+
+  def reset_day
+    raise "no day given" unless params[:day]
+    OperatorPresence.where("date >= ? AND date < ?", DateTime.parse(params[:day]), DateTime.parse(params[:day]) + 1.day).delete_all
+
+    render json: {}
+  end
+
   def remove
     OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}).delete_all
 

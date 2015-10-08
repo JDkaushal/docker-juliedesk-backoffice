@@ -106,6 +106,27 @@
             return operator.presences.indexOf(presence.format(presenceFormat)) > -1;
         };
 
+        $scope.resetDay = function(weekDay) {
+            $scope.loading = true;
+            $.post("/review/operators_presence/reset_day", {
+                day: $scope.startWeekDate.clone().add(weekDay - 1, 'd').format()
+            }).success(function() {
+                        $scope.fetch();
+                    });
+
+        };
+
+        $scope.copyDay = function(weekDay, days) {
+            $scope.loading = true;
+            $.post("/review/operators_presence/copy_day", {
+                day: $scope.startWeekDate.clone().add(weekDay - 1, 'd').format(),
+                days: days
+            }).success(function() {
+                        $scope.fetch();
+                    });
+
+        };
+
         $scope.initTogglePresences = function(operator, presence) {
             $scope.initDrag = {
                 operator: operator,
@@ -243,6 +264,17 @@
         border-radius: 0 0 4px 4px;
     }
 
+    .day-buttons {
+        position: absolute;
+        top: 0;
+        right: -130px;
+    }
+    .day-buttons .btn {
+        width: 120px;
+        display: block;
+        margin: 5px 0;
+    }
+
 </style>
 
 <div ng-app="backofficeApp" ng-controller="OperatorsPresenceCtrl" class="operators-presence-container">
@@ -291,5 +323,12 @@
           </td>
         </tr>
       </table>
+
+    <div class="day-buttons">
+      <div class="btn btn-warning btn-xs" ng-click="resetDay(weekday)">Reset</div>
+      <div class="btn btn-warning btn-xs" ng-click="copyDay(weekday, 1)">Copy to next day</div>
+
+      <div class="btn btn-warning btn-xs" ng-click="copyDay(weekday, 7)">Copy to next week</div>
+    </div>
   </div>
 </div>
