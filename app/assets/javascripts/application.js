@@ -25,8 +25,6 @@
 
 //= require_tree ./templates
 
-
-
 //= require jquery.elastic.source
 //= require jquery.tokeninput
 //= require underscore-min
@@ -55,7 +53,6 @@
 //= require jquery.cookie
 
 //= require generate_templates
-
 
 //= require message_classification_forms/classification_form
 //= require message_classification_forms/ask_date_suggestions

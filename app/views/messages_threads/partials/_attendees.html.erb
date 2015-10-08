@@ -1,0 +1,58 @@
+<%= javascript_include_tag 'angular_attendees_app' %>
+
+<div class="data-entry linear-form-entry attendees-manager" ng-app="attendees-manager">
+  <div class="data-entry-name header"><%= I18n.t("info_box.attendees") %></div>
+  <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
+    <div class="add-attendee-btn-container">
+      <%= button_tag('ng-click' => 'attendees_manager.displayAttendeeNewForm()') do %>
+          <%= content_tag(:i, '',class: 'fa fa-plus') %>
+          <%= content_tag(:span, I18n.t("common.add_attendee")) %>
+      <% end %>
+    </div>
+    <div class="contact-group" ng-repeat="(key, value) in attendees_manager.attendees | groupBy: 'company' | toArray:true | organizeContactArray">
+      <div class="attendee-company-title">
+        {{ key }}
+      </div>
+      <div ng-repeat="attendee in value">
+        <div class="contact" data-name="{{attendee.usageName}}">
+          <attendee-general-details/>
+        </div>
+      </div>
+    </div>
+    <attendees-form/>
+  </div>
+
+
+  <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+</div>
+<div class="clearfix"></div>
+<!--<div class="data-entry linear-form-entry">-->
+  <!--<div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>-->
+  <!--<div class="data-entry-value" id="contacts-data-list">-->
+    <!--<% attendees = messages_thread.computed_data[:attendees] || [] %>-->
+    <!--<% possible_attendees = messages_thread.contacts() + attendees.map(&:symbolize_keys) %>-->
+    <!--<% same_company_attendees = messages_thread.account.contacts_from_same_company %>-->
+    <!--<% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>-->
+        <!--<% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>-->
+        <% checked = attendee || (
+#         messages_thread.computed_data[:appointment_nature].nil? &&
+#                 possible_attendees.include?(contact)
+        ) %>
+        <!--<div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">-->
+          <!--<%= check_box_tag :attendee, contact[:email], checked %>-->
+          <!--<div class="attendee-name-and-email">-->
+            <!--<%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name], placeholder: I18n.t("info_box.full_name_placeholder") %>-->
+            <!--<div class="attendee-email"><%= contact[:email] %></div>-->
+          <!--</div>-->
+
+        <!--</div>-->
+    <!--<% end %>-->
+    <!--</div>-->
+  <!--<div class="add-attendee-container">-->
+    <!--<%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>-->
+    <!--<div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>-->
+  <!--</div>-->
+
+
+  <!--<div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>-->
+<!--</div>-->

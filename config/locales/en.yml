@@ -142,6 +142,7 @@ en:
     archive: "Archive"
     associate_to_event: "Link an event"
 
+    add_attendee: "Add Attendee"
   classification:
     please_fill_info_in: "Please fill info in"
     dates_identification: "Dates identification"

@@ -8,8 +8,11 @@
 @import "common";
 @import "header";
 
+@import "font-awesome.min";
+
 @import "events";
 @import "emails";
+@import 'attendees_manager';
 @import "messages";
 @import "messages_thread_show";
 @import "julie_actions";

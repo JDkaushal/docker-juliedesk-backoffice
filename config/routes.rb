@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   root to: "messages_threads#index"
 
-
+  resources :client_contacts, param: :client_email, only: [] do
+    collection do
+      post :synchronize
+      get :fetch
+    end
+  end
 
   resources :messages_threads, only: [:show, :index] do
     collection do

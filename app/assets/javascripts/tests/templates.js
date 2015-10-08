@@ -3068,7 +3068,7 @@ window.testsData.templatesData = [
             ],
             selectedEventsNotToCancel: [],
             expectedResults: {
-                en: "It's noted. I am going to cancel the event:\n - Event #1 (today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM)\n",
+                en: "It's noted. I am going to can  cel the event:\n - Event #1 (today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM)\n",
                 fr: "C'est bien noté. Je vais annuler l'évènement :\n - Event #1 (aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00)\n"
             }
         },

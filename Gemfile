@@ -38,12 +38,19 @@ gem "redis"
 
 gem "nokogiri"
 gem "angularjs-rails"
+# To use angular templates steamlessly
+gem 'angular-rails-templates'
 
 gem "httpclient"
 
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
+end
+
+group :test, :development do
+  # Allow to test easily Javascript, including Angular apps
+  gem 'jasmine'
 end
 
 group :test do

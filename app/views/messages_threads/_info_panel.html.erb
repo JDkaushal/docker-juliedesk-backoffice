@@ -1,7 +1,24 @@
+<%= javascript_include_tag 'angular_dependencies' %>
 <script>
     setCurrentLocale("<%= I18n.locale %>");
 
-    window.threadAccount = <%== @messages_thread.account.to_json %>;
+
+    <% currentAttendees = [] %>
+    <% attendees = messages_thread.computed_data[:attendees] || [] %>
+    // Put the messages_thread contacts at the end of the array, so if we already saved it (i.e. the form for the contact has been filled) it will take precedence over the former when applying the select.first instruction
+    <% possible_attendees = attendees.map(&:symbolize_keys) + messages_thread.contacts %>
+    <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
+    <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
+        <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
+        <% if attendee || (
+             messages_thread.computed_data[:appointment_nature].nil? &&
+                     possible_attendees.include?(contact)) %>
+            <%  currentAttendees.push(contact) %>
+        <% end %>
+    <% end %>
+
+    window.currentAttendees = <%== currentAttendees.to_json %>;
+    window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
@@ -19,7 +36,8 @@
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 
-    $(function () {
+    $(document).ready(function() {
+    //$(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
         }
@@ -30,18 +48,6 @@
         });
 
         $(".client-current-time").html(moment.tz(window.threadAccount.default_timezone_id).format("DD/MM YYYY, HH:mm:ss"));
-
-
-
-
-
-        _.each(window.threadComputedData.constraints_data, function(constraintData) {
-            newConstraintTile(constraintData, false);
-        });
-
-        $(".add-constraint-button").click(function() {
-            newConstraintTile(null, true    );
-        });
 
         redrawLinearForm();
         if (window.threadDataIsEditable) {
@@ -112,6 +118,12 @@
         $("body").on("change", "input#attendee", function() {
             reProcessTitle();
         });
+
+        // Listen to the changes made in the attendees form (angular 2 way binding to the attendee list checkbox) to update the title also
+        $("body").on("change", "input#attendee_presence", function() {
+            reProcessTitle();
+        });
+
         $("body").on("change", "input#attendee_name", function() {
             reProcessTitle();
         });
@@ -214,10 +226,11 @@
 
     function newConstraintTile(data, expand) {
         var possibleAttendees = window.getInfoPanelAttendees();
-        possibleAttendees.push({
-            email: window.threadAccount.email,
-            name: window.threadAccount.full_name
-        });
+        // ALready set in the angular controller
+//        possibleAttendees.push({
+//            email: window.threadAccount.email,
+//            name: window.threadAccount.full_name
+//        });
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
         new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
@@ -250,9 +263,12 @@
         var appointment = $.grep(window.threadAccount.appointments, function (v) {
             return v.label == $("#appointment_nature").val();
         })[0];
+
         var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
-            return $(this).closest(".contact").find("input#attendee_name").val();
+            return $(this).closest(".contact").data('name');
+            //return $(this).closest(".contact").find("input#attendee_name").val();
         }).get();
+        console.log(contactNames);
         contactNames.push(window.threadAccount.full_name);
         $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + contactNames.join(" / "));
     }
@@ -505,18 +521,64 @@
     }
 
     window.getInfoPanelAttendees = function() {
-        return $("input#attendee[type='checkbox']:checked").map(function() {
-            var $contact = $(this).closest(".contact");
-
-            return {
-                name: $contact.find("input#attendee_name").val(),
-                email: $contact.find(".attendee-email").html()
-            };
-        }).get();
+        var contacts = angular.element($('#attendeesCtrl')).scope();
+        var attendees = contacts.attendees_manager.attendees.slice();
+//        var filteredAttendees = attendees.filter(function(attendee){
+//            return attendee.isPresent;
+//        }).map(function(attendee) {
+//            return{
+//                email: attendee.email,
+//                firstName: attendee.firstName,
+//                lastName: attendee.lastName,
+//                name: attendee.name,
+//                usageName: attendee.usageName,
+//                gender: attendee.gender,
+//                isAssistant: attendee.isAssistant,
+//                assisted: attendee.assisted,
+//                assistedBy: attendee.assistedBy,
+//                company: attendee.company,
+//                timezone: attendee.timezone,
+//                landline: attendee.landline,
+//                mobile: attendee.mobile,
+//                skypeId: attendee.skypeId,
+//                confCallInstructions: attendee.confCallInstructions,
+//                isPresent: attendee.isPresent
+//            }
+//        });
+        // We save every contact on the thread even those who will not attend
+        var filteredAttendees = attendees.map(function(attendee) {
+            return{
+                email: attendee.email,
+                firstName: attendee.firstName,
+                lastName: attendee.lastName,
+                name: attendee.name,
+                usageName: attendee.usageName,
+                gender: attendee.gender,
+                isAssistant: attendee.isAssistant,
+                assisted: attendee.assisted,
+                assistedBy: attendee.assistedBy,
+                company: attendee.company,
+                timezone: attendee.timezone,
+                landline: attendee.landline,
+                mobile: attendee.mobile,
+                skypeId: attendee.skypeId,
+                confCallInstructions: attendee.confCallInstructions,
+                isPresent: attendee.isPresent
+            }
+        });
+        return filteredAttendees;
+//        return $("input#attendee[type='checkbox']:checked").map(function() {
+//            var $contact = $(this).closest(".contact");
+//
+//            return {
+//                name: $contact.find("input#attendee_name").val(),
+//                email: $contact.find(".attendee-email").html()
+//            };
+//        }).get();
     };
 </script>
 
-<div class="messages-thread-info-panel">
+<div class="messages-thread-info-panel scrollable">
 
   <div class="message-container"></div>
 
@@ -641,39 +703,7 @@
         </div>
       </div>
 
-      <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.attendees") %></div>
-        <div class="data-entry-value" id="contacts-data-list">
-          <% attendees = messages_thread.computed_data[:attendees] || [] %>
-          <% possible_attendees = messages_thread.contacts() + attendees.map(&:symbolize_keys) %>
-          <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
-          <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
-              <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
-              <% checked = attendee || (
-                messages_thread.computed_data[:appointment_nature].nil? &&
-                possible_attendees.include?(contact)
-              ) %>
-              <div class="contact" data-email="<%= contact[:email] %>" data-name="<%= contact[:name] %>">
-                <%= check_box_tag :attendee, contact[:email], checked %>
-                <div class="attendee-name-and-email">
-                  <%= text_field_tag :attendee_name, attendee.try(:[], 'name') || contact[:name], placeholder: I18n.t("info_box.full_name_placeholder") %>
-                  <div class="attendee-email"><%= contact[:email] %></div>
-                </div>
-
-              </div>
-          <% end %>
-        </div>
-
-        <div class="add-attendee-container">
-          <%= text_field_tag :add_attendee, "", class: "", placeholder: I18n.t("info_box.email_placeholder") %>
-          <div id="add-attendee-button" class="btn btn-xs btn-primary"><%= I18n.t("common.add") %></div>
-        </div>
-
-
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
-      </div>
-
-
+      <%= render partial: "messages_threads/partials/attendees", locals: {messages_thread: messages_thread} %>
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
@@ -708,8 +738,10 @@
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
         </div>
         <div class="number-to-call-part-container">
-          <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
-          <%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
+          <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
+
+          <!--<div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>-->
+          <!--<%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>-->
         </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>

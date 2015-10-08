@@ -311,6 +311,7 @@ fr:
 
 
 
+    add_attendee: "Ajouter participant"
   classification:
       please_fill_info_in: "Remplissez les infos"
       dates_identification: "Identification des dates"

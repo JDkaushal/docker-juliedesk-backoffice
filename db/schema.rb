@@ -11,10 +11,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151005164357) do
+ActiveRecord::Schema.define(version: 20151016120456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
+
+  create_table "client_contacts", force: true do |t|
+    t.string   "client_email",           null: false
+    t.string   "email"
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "usage_name"
+    t.string   "gender"
+    t.boolean  "is_assistant"
+    t.boolean  "assisted"
+    t.string   "assisted_by"
+    t.string   "company"
+    t.string   "timezone"
+    t.string   "landline"
+    t.string   "mobile"
+    t.string   "skypeId"
+    t.text     "conf_call_instructions"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false

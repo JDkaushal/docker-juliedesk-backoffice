@@ -10,7 +10,19 @@ $.fn.extend({
         $elt.attr("placeholder", "Enter a city or a country...");
         $elt.autocomplete({
             source: zonedCities,
-            delay: 0
+            delay: 0,
+            close: function(event, ui){
+                // So Angular is notified of the change
+                $elt.trigger('input');
+                return true;
+            }
         });
+
+        $.fn.timezonePicker.getTimezonesNames = function(){
+            return $.map(zonedCities, function(city){
+                return city.value;
+            })
+        };
     }
 });
+
