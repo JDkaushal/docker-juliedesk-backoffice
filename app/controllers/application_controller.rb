@@ -9,15 +9,6 @@ class ApplicationController < ActionController::Base
 
   skip_before_action :verify_authenticity_token, only: :change_sound
 
-  def omniauth_callback
-
-    auth = request.env['omniauth.auth']
-    render json: {
-        message: "hello",
-        data: auth["credentials"]
-    }
-  end
-
   def change_sound
     session[:sound_is_activated] = false
     if params[:activated] == "true"

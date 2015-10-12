@@ -20,10 +20,6 @@ gem 'uglifier', '>= 1.3.0'
 
 gem 'newrelic_rpm'
 
-gem "gmail-api-ruby", require: "gmail", git: "https://github.com/jhk753/gmail-ruby-api"
-
-gem "omniauth-google-oauth2"
-
 gem "pusher"
 
 gem "mail", '2.6.3'
