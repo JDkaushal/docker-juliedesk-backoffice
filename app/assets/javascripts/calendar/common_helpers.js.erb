@@ -262,22 +262,22 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
     var today = moment().tz(timezone);
     var tomorrow = today.clone().add(1, 'd');
 
-    formattedStartDate = mStartDate.format("dddd D MMMM YYYY");
-    formattedEndDate = mEndDate.format("dddd D MMMM YYYY");
+    formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
+    formattedEndDate = mEndDate.format(localize("email_templates.common.simplified_date_format"));
 
     if(mStartDate.isSame(today, "day"))
-        formattedStartDate = localize("dates.today") + ' (' + formattedStartDate + ')';
+        formattedStartDate = localize("dates.today") + ', ' + formattedStartDate;
     else if(mStartDate.isSame(tomorrow, "day"))
-        formattedStartDate = localize("dates.tomorrow") + ' (' + formattedStartDate + ')';
+        formattedStartDate = localize("dates.tomorrow") + ', ' + formattedStartDate;
 
     if(mEndDate.isSame(today, "day"))
-        formattedEndDate = localize("dates.today") + ' (' + formattedEndDate + ')';
+        formattedEndDate = localize("dates.today") + ', ' + formattedEndDate;
     else if(mEndDate.isSame(tomorrow, "day"))
-        formattedEndDate = localize("dates.tomorrow") + ' (' + formattedEndDate + ')';
+        formattedEndDate = localize("dates.tomorrow") + ', ' + formattedEndDate;
 
 
     if(allDay) {
-        if(formattedEndDate != localize("dates.today") + ' (' + formattedStartDate + ')' || formattedEndDate != localize("dates.tomorrow") + ' (' + formattedStartDate + ')')
+        if(formattedEndDate != localize("dates.today") + ', ' + formattedStartDate || formattedEndDate != localize("dates.tomorrow") + ', ' + formattedStartDate)
         {
             formattedEndDate = moment(endDate).locale(locale);
             formattedEndDate.add('d', -1);
@@ -286,7 +286,7 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
             return formattedStartDate;
         }
         else {
-            return formattedStartDate + " - " + formattedEndDate.format("dddd D MMMM YYYY");
+            return formattedStartDate + " - " + formattedEndDate.format(localize("email_templates.common.simplified_date_format"));
         }
     }
     else {
@@ -294,7 +294,7 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
             return formattedStartDate + ", " + mStartDate.format("LT") + " - " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
         }
         else {
-            return formattedStartDate + mStartDate.format(" LT") + " - " + formattedEndDate + mEndDate.format(" LT") + " (" + timezone.replace(/_/g, " ") + ")";
+            return formattedStartDate + " " + localize("email_templates.common.date_time_separator") + " " + mStartDate.format("LT") + " - " + formattedEndDate + " " + localize("email_templates.common.date_time_separator") + " " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
         }
     }
 

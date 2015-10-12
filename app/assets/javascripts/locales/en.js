@@ -138,7 +138,8 @@ window.wordings['en'] = {
             before_only_client: "Hi %{client_name},\n\n",
             full_date_format: "LLLL",
             full_time_format: "LT",
-            only_date_format: "dddd, MMMM D, YYYY",
+            only_date_format: "dddd MMMM D, YYYY",
+            simplified_date_format: "dddd D MMMM, YYYY",
             date_time_separator: "at",
             only_time_format: "LT",
             timezone_precision: "(Timezone: %{timezone})",
@@ -210,7 +211,7 @@ window.wordings['en'] = {
     },
 
     dates: {
-        today: 'Today',
-        tomorrow: 'Tomorrow'
+        today: 'today',
+        tomorrow: 'tomorrow'
     }
 };

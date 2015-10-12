@@ -9,3 +9,13 @@ window.helpers.capitalize = function(str) {
     }
 
 };
+
+window.helpers.lowerize = function(str) {
+    if(str) {
+        return str[0].toLowerCase() + str.substr(1);
+    }
+    else {
+        return str;
+    }
+
+};
