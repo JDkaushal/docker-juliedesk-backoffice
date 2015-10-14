@@ -62,22 +62,22 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def warn_support params={}
-    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-      EmailServer.deliver_message({
-                                      subject: "Email thread delegated to support",
-                                      to: "guillaume@juliedesk.com",
-                                      cc: "nicolas@juliedesk.com",
-                                      from: "julie@juliedesk.com",
-                                      text: <<END
-A new email thread has been delegated to support:
-https://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}
-
-Message: #{params[:message]}
-
-Operator: #{params[:operator]}
-END
-                                  })
-    end
+#    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+#      EmailServer.deliver_message({
+#                                      subject: "Email thread delegated to support",
+#                                      to: "guillaume@juliedesk.com",
+#                                      cc: "",#nicolas@juliedesk.com",
+#                                      from: "julie@juliedesk.com",
+#                                      text: <<END
+#A new email thread has been delegated to support:
+#https://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}
+#
+#Message: #{params[:message]}
+#
+#Operator: #{params[:operator]}
+#END
+#                                  })
+#    end
   end
 
   def julie_alias
