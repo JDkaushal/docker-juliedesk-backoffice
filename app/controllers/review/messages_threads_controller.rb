@@ -9,7 +9,8 @@ class Review::MessagesThreadsController < ReviewController
 
     @messages_thread.account
 
-    @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).map(&:messages_thread_id).uniq.length
+    operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
+    @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id).uniq.length
   end
 
   def learn
@@ -56,7 +57,7 @@ class Review::MessagesThreadsController < ReviewController
       end
     end
 
-    review_next_messages_thread
+    close_tab
   end
 
   def group_reviewed
@@ -114,5 +115,9 @@ class Review::MessagesThreadsController < ReviewController
       params[:operator_id] = session[:operator_id]
     end
     session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
+  end
+
+  def close_tab
+    render html: "<script>window.close();</script>".html_safe
   end
 end

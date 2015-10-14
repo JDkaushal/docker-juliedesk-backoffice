@@ -21,16 +21,18 @@ class Review::OperatorsController < ReviewController
 
   def review_list
     compute_counts
-
-    messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).map(&:messages_thread_id)
+    operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
+    messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id)
     @messages_threads = MessagesThread.where(id: messages_thread_ids).sort{|mt1, mt2| messages_thread_ids.index(mt1.id) <=> messages_thread_ids.index(mt2.id)}
   end
 
   private
   def compute_counts
     @operators = Operator.all
-    oags_to_review = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW)
+    operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
+    oags_to_review = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids)
     oags_to_group_review = OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
+
 
     @to_review_count = oags_to_review.map(&:messages_thread_id).uniq.length
     @to_group_review_count = oags_to_group_review.map(&:messages_thread_id).uniq.length
