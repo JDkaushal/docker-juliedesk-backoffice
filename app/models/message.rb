@@ -130,7 +130,7 @@ class Message < ActiveRecord::Base
     result = false
     if destined_to_julie?
       # If the message is destined to Julie only
-      result = server_message['to'].split(',').size == 1 && server_message['cc'].split(',').size == 0
+      result = server_message['to'].split(',').size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0)
     end
     result
   end
