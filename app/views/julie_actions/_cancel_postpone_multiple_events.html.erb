@@ -79,7 +79,7 @@
             var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
             $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
             $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id, selectedEvent.allDay)));
-            if (!selectedEvent.attendees || selectedEvent.attendees.length == 0) {
+            if (!selectedEvent.attendees || selectedEvent.attendees.length < 2) {
                 var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
                 $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));
 
