@@ -7,3 +7,4 @@ public/assets
 config/database.yml
 *.DS_Store
 dump.rdb
+test.sh
