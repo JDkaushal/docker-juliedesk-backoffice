@@ -185,7 +185,9 @@
             if (toRecipients.length > 1 || ccRecipients.length > 0 || toRecipients.filter(function (item) {
                         return (item.name == window.threadAccount.email);
                     }).length == 0)
+            {
                 state = false;
+            }
         }
 
         $('#quote_message').prop('checked', state);

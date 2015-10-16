@@ -130,7 +130,8 @@ class Message < ActiveRecord::Base
     result = false
     if destined_to_julie?
       # If the message is destined to Julie only
-      result = server_message['to'].split(',').size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0)
+      message_tos = server_message['to'].split(',');
+      result = message_tos.size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0) && ApplicationHelper.find_addresses(server_message['from']).addresses.first.address == messages_thread.account_email
     end
     result
   end
