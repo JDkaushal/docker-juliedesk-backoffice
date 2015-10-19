@@ -94,7 +94,7 @@ window.wordings['en'] = {
             }
         },
         invites_sent: {
-            new_appointment: "Perfect. I sent invites for %{appointment_nature}%{location}:\n%{date}%{address}",
+            new_appointment: "Perfect. I've sent invites for %{appointment_nature}%{location}:\n%{date}%{address}",
             postpone: "Perfect. I updated the event for %{appointment_nature}%{location}:\n%{date}%{address}",
             location_in_template: "\nLocation: %{location}",
             ask_for_location: "\n\nPlease let me know the address if you want me to add it to the event.",
