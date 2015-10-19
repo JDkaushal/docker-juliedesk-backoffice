@@ -1,6 +1,8 @@
 class ClientContactsController < ApplicationController
   def fetch
+
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
+    puts @contacts.to_json
     render json: @contacts
   end
 

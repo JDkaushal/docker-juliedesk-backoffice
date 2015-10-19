@@ -1,6 +1,6 @@
 require 'factory_girl'
 
-
+require_relative "../spec/factories/client_contacts.rb"
 require_relative "../spec/factories/messages_threads.rb"
 require_relative "../spec/factories/messages.rb"
 require_relative "../spec/factories/message_classifications.rb"

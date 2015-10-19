@@ -162,6 +162,7 @@
                         email: informations.email,
                         firstName: informations.firstName,
                         lastName: informations.lastName,
+                        name: informations.firstName + ' ' + informations.lastName,
                         usageName: informations.usageName || informations.name,
                         gender: informations.gender,
                         isAssistant: informations.isAssistant == "true",
@@ -173,7 +174,7 @@
                         mobile: informations.mobile,
                         skypeId: informations.skypeId,
                         confCallInstructions: informations.confCallInstructions,
-                        isPresent: informations.isPresent == "true",
+                        isPresent: attendee.isPresent == "true",
                         isClient: informations.isClient == "true",
                         isThreadOwner: false
                     }));
@@ -189,6 +190,7 @@
                 email: window.threadAccount.email,
                 firstName: threadAccountFullName[0],
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
+                name: window.threadAccount.full_name,
                 usageName: window.threadAccount.usage_name,
                 gender: '?',
                 isAssistant: false,
