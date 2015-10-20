@@ -97,8 +97,8 @@ window.wordings['en'] = {
             new_appointment: "Perfect. I've sent invites for %{appointment_nature}%{location}:\n%{date}%{address}",
             postpone: "Perfect. I updated the event for %{appointment_nature}%{location}:\n%{date}%{address}",
             location_in_template: "\nLocation: %{location}",
-            ask_for_location: "\n\nPlease let me know the address if you want me to add it to the event.",
-            ask_interlocutor_for_location: "\n\nPlease let me know the address to add it to the event.",
+            ask_for_location: "\n\nPlease let me know the location if you want me to add it to the event.",
+            ask_interlocutor_for_location: "\n\nPlease let me know the location to add it to the event.",
             number_to_call: "Number to call: %{number}\n",
             call_client_on: "Call %{client} at %{number_to_call}"
         },

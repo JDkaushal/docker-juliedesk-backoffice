@@ -1859,7 +1859,7 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nThursday January 1, 2015 at 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nThursday January 1, 2015 at 12:00 PM\n\nPlease let me know the location if you want me to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
@@ -1889,7 +1889,7 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the location if you want me to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
@@ -1919,7 +1919,7 @@ window.testsData.templatesData = [
                 type: "ask_client"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the address if you want me to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the location if you want me to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
@@ -1949,7 +1949,7 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nThursday January 1, 2015 at 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nThursday January 1, 2015 at 12:00 PM\n\nPlease let me know the location to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
@@ -1979,7 +1979,7 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the location to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
@@ -2009,7 +2009,7 @@ window.testsData.templatesData = [
                 type: "ask_interlocuter"
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the address to add it to the event.",
+                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the location to add it to the event.",
                 fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
