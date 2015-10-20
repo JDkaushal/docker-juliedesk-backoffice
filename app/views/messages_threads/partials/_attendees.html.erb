@@ -3,7 +3,7 @@
 <div class="data-entry linear-form-entry attendees-manager" ng-app="attendees-manager">
   <div class="data-entry-name header"><%= I18n.t("info_box.attendees") %></div>
   <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
-    <div class="add-attendee-btn-container">
+    <div class="add-attendee-btn-container" ng-hide="attendees_manager.readOnly">
       <%= button_tag('ng-click' => 'attendees_manager.displayAttendeeNewForm()') do %>
           <%= content_tag(:i, '',class: 'fa fa-plus') %>
           <%= content_tag(:span, I18n.t("common.add_attendee")) %>

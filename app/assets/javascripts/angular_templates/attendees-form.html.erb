@@ -9,7 +9,7 @@
       <div ng-show="attendeesFormCtrl.isCurrentMode('update')">
         <div class="row" style="margin-top: 10px;">
           <div class="form-attendee-checkbox">
-            <%= check_box_tag :attendee_presence, '', true, {class: 'regular-checkbox', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.isPresent', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isThreadOwner'} %>
+            <%= check_box_tag :attendee_presence, '', true, {class: 'regular-checkbox', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.isPresent', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly'} %>
           </div>
           <div class="attendee-form-picto col-xs-1 client-picto-contact" ng-show="attendeesFormCtrl.attendeeInForm.isClient">
             <%= image_tag 'client_picto.png', width: 30, height: 30 %>
@@ -33,7 +33,7 @@
         <div class="row" style="margin-top: 0px;">
           <div class="col-xs-12">
             <%= label_tag :email %>
-            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
+            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
           </div>
         </div>
       </div>
@@ -51,18 +51,18 @@
       <div class="row">
         <div class="col-xs-6" style="padding-right: 2px;">
           <%= label_tag :first_name %>
-          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.firstNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control', capitalize: true} %>
+          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.firstNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
         </div>
         <div class="col-xs-6" style="padding-left: 0;">
           <%= label_tag :last_name %>
-          <%= text_field_tag :last_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.lastName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control', capitalize:true} %>
+          <%= text_field_tag :last_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.lastName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
         </div>
       </div>
 
       <div class="row">
         <div class="col-xs-12">
         <%= label_tag :usage_name %>
-        <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', class: 'form-control'} %>
+        <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', class: 'form-control'} %>
 
         </div>
     </div>
@@ -71,14 +71,14 @@
         <div class="col-xs-6">
             <%= label_tag :gender %>
             <br>
-            <%= radio_button_tag 'gender', "M", true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'gender-radio-btn gender-masculin' %>
-            <%= radio_button_tag 'gender', "F", true, 'ng-model' => 'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'gender-radio-btn gender-feminin' %>
-            <%= radio_button_tag 'gender', "Unknown", true, 'ng-model' => 'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'gender-radio-btn gender-unknown' %>
+            <%= radio_button_tag 'gender', "M", true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'gender-radio-btn gender-masculin' %>
+            <%= radio_button_tag 'gender', "F", true, 'ng-model' => 'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'gender-radio-btn gender-feminin' %>
+            <%= radio_button_tag 'gender', "Unknown", true, 'ng-model' => 'attendeesFormCtrl.attendeeInForm.gender', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'gender-radio-btn gender-unknown' %>
         </div>
         <div class="col-xs-6 assistant-area">
           <div class="row" style="margin-top: 0;">
             <div class="col-xs-2">
-              <%= check_box_tag :is_assistant, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.isAssistant', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', 'ng-click' => 'attendeesFormCtrl.checkAssistantConditions(attendeesForm)', class: 'form-control assistant-checkbox'%>
+              <%= check_box_tag :is_assistant, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.isAssistant', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-click' => 'attendeesFormCtrl.checkAssistantConditions(attendeesForm)', class: 'form-control assistant-checkbox'%>
             </div>
             <div class="col-xs-10 form-checkbox-label">
               <%= label_tag :is_assistant %>
@@ -87,7 +87,7 @@
 
           <div class="row" style="margin-top: 0;">
             <div class="col-xs-2">
-              <%= check_box_tag :assisted, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.assisted', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', 'ng-click' => 'attendeesFormCtrl.setAssistant()', class: 'form-control assistant-checkbox'%>
+              <%= check_box_tag :assisted, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.assisted', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-click' => 'attendeesFormCtrl.setAssistant()', class: 'form-control assistant-checkbox'%>
             </div>
             <div class="col-xs-10 form-checkbox-label">
               <%= label_tag :assisted %>
@@ -105,7 +105,7 @@
       <div class="row" ng-if="attendeesFormCtrl.attendeeInForm.isClient">
         <div class="col-xs-12">
           <%= label_tag :assisted_by %>
-          <%= text_field_tag :assisted_by, "{{attendeesFormCtrl.attendeeInForm.assistantDisplayText()}}",{'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+          <%= text_field_tag :assisted_by, "{{attendeesFormCtrl.attendeeInForm.assistantDisplayText()}}",{'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
         </div>
       </div>
 
@@ -121,7 +121,7 @@
         <div class="row">
           <div class="col-xs-12">
           <%= label_tag :company %>
-          <%= text_field_tag :company, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.company', 'uib-typeahead' => "company for company in attendees_manager.getCompaniesNames() | filter:$viewValue", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control', capitalize: true} %>
+          <%= text_field_tag :company, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.company', 'uib-typeahead' => "company for company in attendees_manager.getCompaniesNames() | filter:$viewValue", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
         </div>
     </div>
 
@@ -129,7 +129,7 @@
         <div class="row" ng-show="attendeesFormCtrl.timezoneNeeded">
               <div class="col-xs-12">
               <%= label_tag :attendee_timezone, 'Timezone' %>
-              <%= text_field_tag :attendee_timezone, "",{'ng-change' => 'attendeesFormCtrl.timezoneChanged(attendeesForm)', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.timezone', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+              <%= text_field_tag :attendee_timezone, "",{'ng-change' => 'attendeesFormCtrl.timezoneChanged(attendeesForm)', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.timezone', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
             </div>
           <div class="row error-area highlighted" ng-messages="attendeesForm.attendee_timezone.$error" style="color:grey" role="alert" id="error-area">
             <div class="col-xs-12">
@@ -142,11 +142,11 @@
         <div class="row" style="margin-top: -3px;">
           <div class="col-xs-6" style="padding-right: 2px;">
             <%= label_tag :landline %>
-            <%= text_field_tag :landline, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.landline', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+            <%= text_field_tag :landline, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.landline', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
           </div>
           <div class="col-xs-6" style="padding-left: 0;">
             <%= label_tag :mobile %>
-            <%= text_field_tag :mobile, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.mobile', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+            <%= text_field_tag :mobile, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.mobile', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
           </div>
         </div>
     </div>
@@ -154,17 +154,16 @@
         <div class="row">
             <div class="col-xs-12">
               <%= label_tag :skype_id %>
-              <%= text_field_tag :skype_id, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.skype_id', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+              <%= text_field_tag :skype_id, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.skype_id', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
               <%= label_tag :conf_call_instructions %>
-              <%= text_area_tag :conf_call_instructions, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.confCallInstructions', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient', class: 'form-control'} %>
+              <%= text_area_tag :conf_call_instructions, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.confCallInstructions', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
             </div>
         </div>
       </div>
-
       <div class="row error-area" ng-messages="attendeesForm.email.$error" style="color:grey" role="alert" id="email-error-area">
         <div class="col-xs-12">
           <div ng-message="required" ng-hide="attendeesForm.attendeeInForm.isAssistant">Ce contact a besoin d'avoir une adresse email ou un nom d'usage afin d'être enregistré.</div>
@@ -172,11 +171,22 @@
           <div ng-message="email">Veuillez spécifier un email valide.</div>
         </div>
       </div>
+
       <div class="row pull-right" style="margin-top: 0px; margin-right: 20px; margin-bottom: 40px;">
-        <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()'>
-          Cancel
-        </button>
-        <%= submit_tag 'Ok', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)'} %>
+
+        <div ng-if="!attendeesFormCtrl.attendeeInForm.isThreadOwner && !attendees_manager.readOnly">
+          <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()'>
+            Cancel
+          </button>
+          <%= submit_tag 'Ok', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)'} %>
+        </div>
+        <div ng-if="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">
+
+          <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()' style="background-color: #0099CC;">
+            OK
+          </button>
+        </div>
+
       </div>
     </form>
   </div>

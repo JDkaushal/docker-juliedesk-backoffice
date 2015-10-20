@@ -7,6 +7,7 @@ function EventTile($selector, params) {
     this.$selector = $selector;
     this.locale = params.locale || "en";
     this.mode = params.mode;
+
     this.event = params.event;
     this.selectEventCallback = params.selectEventCallback;
     this.doneEditingCallback = params.doneEditingCallback;

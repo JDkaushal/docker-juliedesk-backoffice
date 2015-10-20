@@ -41,6 +41,8 @@
 
                     attendeesFormCtrl.isVisible = true;
                     $('.messages-thread-info-panel').removeClass('scrollable').addClass('frozen');
+
+                    console.log(attendeesFormCtrl.attendeeInForm.isThreadOwner);
                 });
 
                 this.cancelAttendeeForm = function(){
@@ -55,6 +57,8 @@
 
                     if(this.attendeeInForm.company === undefined)
                         this.attendeeInForm.company = '';
+
+                    this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
@@ -148,6 +152,7 @@
     app.controller("AttendeesCtrl", ['$scope','sharedProperties', '$http', function($scope, sharedProperties, $http){
         var attendeesCtrl = this;
         this.attendees = [];
+        this.readOnly = window.threadDataIsEditable == undefined;
 
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
@@ -178,7 +183,6 @@
                         isClient: informations.isClient == "true",
                         isThreadOwner: false
                     }));
-
             });
 
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
@@ -208,6 +212,7 @@
             });
 
             this.attendees.push(threadOwner);
+
             sharedProperties.setThreadOwner(threadOwner);
 
             _.each(window.threadComputedData.constraints_data, function(constraintData) {
@@ -221,7 +226,7 @@
 
 
         this.displayAttendeeNewForm = function (){
-            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id}, action: 'new'});
+            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id, isPresent: true}, action: 'new'});
         };
 
         this.displayAttendeeUpdateForm = function(attendee){
