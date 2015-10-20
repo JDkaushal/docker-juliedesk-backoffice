@@ -1,4 +1,3 @@
-//= require angular
 //= require angular-filter.min
 //= require angular-messages.min
 //= require ui-bootstrap-tpls.min

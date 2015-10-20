@@ -1,7 +1,7 @@
 (function(){
     var app = angular.module('attendees-manager-services', []);
 
-    app.service('sharedProperties', function($rootScope) {
+    app.service('sharedProperties', ['$rootScope', function($rootScope) {
         var sharedProperties = this;
         this.threadOwner = {};
 
@@ -28,5 +28,5 @@
                 return sharedProperties.threadOwner;
             }
         }
-    });
+    }]);
 })();

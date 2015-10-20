@@ -221,7 +221,7 @@
 
 
         this.displayAttendeeNewForm = function (){
-            sharedProperties.displayAttendeeForm({attendee: {}, action: 'new'});
+            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id}, action: 'new'});
         };
 
         this.displayAttendeeUpdateForm = function(attendee){
