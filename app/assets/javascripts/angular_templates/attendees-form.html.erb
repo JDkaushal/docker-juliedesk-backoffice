@@ -16,7 +16,7 @@
           </div>
           <div class="attendee-details col-xs-11" ng-class="{'col-xs-11': !attendeesFormCtrl.attendeeInForm.isClient, 'col-xs-10 attendee-details-client': attendeesFormCtrl.attendeeInForm.isClient}">
             <div class="row ellipsable" style="margin-left: 0;">
-              <span class="attendee-usage-name">{{attendeesFormCtrl.attendeeInForm.usageName}}</span> <span class="attendee-company">{{attendeesFormCtrl.attendeeInForm.company}}</span> <span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
+              <span class="attendee-usage-name">{{attendeesFormCtrl.attendeeInForm.firstName}} {{attendeesFormCtrl.attendeeInForm.lastName}}</span> <span class="attendee-company">{{attendeesFormCtrl.attendeeInForm.company}}</span> <span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
             </div>
 
             <div class="row ellipsable" style="margin-left: 0; margin-top: -3px;">

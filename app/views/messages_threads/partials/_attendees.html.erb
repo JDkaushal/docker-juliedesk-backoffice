@@ -15,7 +15,7 @@
         {{ key }}
       </div>
       <div ng-repeat="attendee in value">
-        <div class="contact" data-name="{{attendee.usageName}}">
+        <div class="contact" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}">
           <attendee-general-details/>
         </div>
       </div>

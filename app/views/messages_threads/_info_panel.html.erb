@@ -15,6 +15,7 @@
             <%  currentAttendees.push(contact) %>
         <% end %>
     <% end %>
+    <%  currentAttendees.push(attendees.select{|a| a['email'].blank? }).flatten!  %>
 
     window.currentAttendees = <%== currentAttendees.to_json %>;
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
@@ -263,10 +264,16 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
-            return $(this).closest(".contact").data('name');
-            //return $(this).closest(".contact").find("input#attendee_name").val();
-        }).get();
+        var contactNames = [];
+        $("input#attendee[type='checkbox']:checked").each(function() {
+            if($(this).closest(".contact").attr('data-intitle') == "true")
+                contactNames.push($(this).closest(".contact").attr('data-name'));
+        });
+
+//        var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
+//            return $(this).closest(".contact").data('name');
+//            //return $(this).closest(".contact").find("input#attendee_name").val();
+//        }).get();
         console.log(contactNames);
         contactNames.push(window.threadAccount.full_name);
         $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + contactNames.join(" / "));
@@ -737,7 +744,6 @@
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
         </div>
         <div class="number-to-call-part-container">
-
 
           <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
           <%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>

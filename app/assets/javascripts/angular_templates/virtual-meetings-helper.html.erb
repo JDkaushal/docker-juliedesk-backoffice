@@ -1,19 +1,22 @@
-<div class="header">Instructions d'appel</div>
-<div class="content">
-  <%= label_tag 'Appeler' %>
-  <%= select_tag :call_target, options_for_select([]),{'ng-options' => 'callTarget.value as callTarget.name for callTarget in callTargets', 'ng-model' => 'currentConf.target'} %>
+<div>
+    <div class="header">Instructions d'appel</div>
+    <div class="content">
+      <%= label_tag 'Appeler' %>
+      <%= select_tag :call_target, options_for_select([]),{'ng-options' => 'callTarget.value as callTarget.name for callTarget in callTargets', 'ng-model' => 'currentConf.target'} %>
 
-  <div ng-show="currentConf.target == 'interlocutor'">
-    <%= select_tag :call_target_name, options_for_select([]),{'ng-options' => 'callTargetsName for callTargetsName in callTargetsNames', 'ng-model' => 'currentConf.targetName'} %>
-  </div>
+      <div ng-show="currentConf.target == 'interlocutor'">
+        <%= select_tag :call_target_name, options_for_select([]),{'ng-options' => 'callTargetsName.value as callTargetsName.name for callTargetsName in callTargetsNames', 'ng-model' => 'currentConf.targetName'} %>
+      </div>
 
-  <div ng-hide="currentConf.target == 'later'">
-    <%= label_tag 'Support' %>
-    <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-model' => 'currentConf.support'} %>
-  </div>
+      <div ng-hide="currentConf.target == 'later'">
+        <%= label_tag 'Support' %>
+        <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-model' => 'currentConf.support'} %>
+      </div>
 
-  <div ng-hide="currentConf.support == ''">
-    <%= label_tag 'Détails' %>
-    <%= text_field_tag :call_details, "" %>
-  </div>
+      <div ng-hide="currentConf.support == ''">
+        <%= label_tag 'Détails' %>
+        <%= text_field_tag :call_details, "", {'ng-model' => 'currentConf.details'} %>
+      </div>
+    </div>
+
 </div>

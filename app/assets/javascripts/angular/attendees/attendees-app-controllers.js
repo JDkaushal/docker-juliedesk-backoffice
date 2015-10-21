@@ -69,6 +69,11 @@
                     }
                     attendeesFormCtrl.isVisible = false;
                     $('.messages-thread-info-panel').removeClass('frozen').addClass('scrollable');
+
+                    // Need to wait a little in order for the ng-repeat to redraw its content and do set the data-name attribute correctly on the newly created contact
+                    setTimeout(function(){
+                        reProcessTitle();
+                    }, 500);
                 };
 
                 this.checkFormValidations =function(attendeesForm){
@@ -164,26 +169,30 @@
                 console.log(attendeeDetails);
 
                 var informations = (attendeeDetails || attendee);
-                    attendeesCtrl.attendees.push(new Attendee({
-                        email: informations.email,
-                        firstName: informations.firstName,
-                        lastName: informations.lastName,
-                        name: informations.firstName + ' ' + informations.lastName,
-                        usageName: informations.usageName || informations.name,
-                        gender: informations.gender,
-                        isAssistant: informations.isAssistant == "true",
-                        assisted: informations.assisted == "true",
-                        assistedBy: typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy,
-                        company: informations.company || '',
-                        timezone: informations.timezone || window.threadAccount.default_timezone_id,
-                        landline: informations.landline,
-                        mobile: informations.mobile,
-                        skypeId: informations.skypeId,
-                        confCallInstructions: informations.confCallInstructions,
-                        isPresent: attendee.isPresent == "true" || window.currentToCC.indexOf(informations.email) > -1,
-                        isClient: informations.isClient == "true",
-                        isThreadOwner: false
-                    }));
+                var a = new Attendee({
+                    email: informations.email,
+                    firstName: informations.firstName,
+                    lastName: informations.lastName,
+                    name: informations.firstName + ' ' + informations.lastName,
+                    usageName: informations.usageName || informations.name,
+                    gender: informations.gender,
+                    isAssistant: informations.isAssistant == "true",
+                    assisted: informations.assisted == "true",
+                    assistedBy: typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy,
+                    company: informations.company || '',
+                    timezone: informations.timezone || window.threadAccount.default_timezone_id,
+                    landline: informations.landline,
+                    mobile: informations.mobile,
+                    skypeId: informations.skypeId,
+                    confCallInstructions: informations.confCallInstructions,
+                    isPresent: attendee.isPresent == "true" || window.currentToCC.indexOf(informations.email) > -1,
+                    isClient: informations.isClient == "true",
+                    isThreadOwner: false
+                });
+
+                if((a.firstName == '' || a.firstName == undefined)  && (a.lastName == '' || a.firstName == undefined))
+                    a.firstName = a.usageName;
+                attendeesCtrl.attendees.push(a);
             });
 
             var threadAccountFullName = window.threadAccount.full_name.split(' ');

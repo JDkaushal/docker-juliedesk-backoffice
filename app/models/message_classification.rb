@@ -44,6 +44,7 @@ class MessageClassification < ActiveRecord::Base
       attendees << att
     end
     attendees = MessageClassification.clean_and_categorize_clients attendees
+
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
@@ -76,18 +77,17 @@ class MessageClassification < ActiveRecord::Base
 
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
-    attendees.select do |attendee|
-      attendee['email']
-    end.map do |attendee|
-      accounts.select do |account|
-        all_emails = [account['email']] + account['email_aliases']
-        if all_emails.include? attendee['email']
-          attendee['account_email'] = account['email']
-          attendee['usage_name'] = account['usage_name']
+    attendees.map do |attendee|
+      if attendee['email']
+        accounts.select do |account|
+          all_emails = [account['email']] + account['email_aliases']
+          if all_emails.include?(attendee['email'])
+            attendee['account_email'] = account['email']
+            attendee['usage_name'] = account['usage_name']
+          end
         end
+        attendee['email'] = attendee['email'].gsub(" ", "")
       end
-      attendee['email'] = attendee['email'].gsub(" ", "")
-
       attendee
     end
   end
