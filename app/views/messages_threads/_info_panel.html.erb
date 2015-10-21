@@ -2,7 +2,6 @@
 <script>
     setCurrentLocale("<%= I18n.locale %>");
 
-
     <% currentAttendees = [] %>
     <% attendees = messages_thread.computed_data[:attendees] || [] %>
     // Put the messages_thread contacts at the end of the array, so if we already saved it (i.e. the form for the contact has been filled) it will take precedence over the former when applying the select.first instruction
@@ -19,7 +18,6 @@
 
     window.currentAttendees = <%== currentAttendees.to_json %>;
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
-    window.currentToCC = <%== @message.get_reply_all_recipients_emails.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
@@ -739,10 +737,10 @@
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
         </div>
         <div class="number-to-call-part-container">
-          <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
 
-          <!--<div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>-->
-          <!--<%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>-->
+
+          <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
+          <%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
         </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>

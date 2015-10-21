@@ -15,6 +15,12 @@ class MessagesThread < ActiveRecord::Base
   attr_writer :account
 
 
+  def get_all_messages_recipients
+    recipients_emails = []
+    messages.each{|m| recipients_emails.push(m.get_reply_all_recipients_emails)}
+    recipients_emails.flatten
+  end
+
   def server_thread params={}
     if @server_thread.nil? || params[:force_refresh]
       @server_thread = EmailServer.get_messages_thread(messages_thread_id: self.server_thread_id)
