@@ -209,13 +209,13 @@
                 gender: '?',
                 isAssistant: false,
                 assisted: true,
-                assistedBy: {email: window.currentJulieAlias.email, usageName: window.currentJulieAlias.name},
+                assistedBy: {email: window.currentJulieAlias.email, displayName: window.currentJulieAlias.name},
                 company: companyName,
                 timezone: window.threadAccount.default_timezone_id,
                 landline: window.threadAccount.landline_number,
                 mobile: window.threadAccount.mobile_number,
                 skypeId: window.threadAccount.skype,
-                confCallInstructions: '',
+                confCallInstructions: window.threadAccount.confcall_instructions,
                 isPresent: true,
                 isClient: true,
                 isThreadOwner: true
@@ -299,6 +299,11 @@
         },
         assistantDisplayText: function(){
             return this.assistedBy.usageName + ' (' + this.assistedBy.email + ')';
+        },
+        displayNormalizedName: function(){
+            var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : ' ' + this.lastName;
+            var name = this.firstName + _lastName;
+            return name;
         },
         getName: function(){
             return this.usageName || this.email;

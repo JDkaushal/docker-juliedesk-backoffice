@@ -15,6 +15,7 @@ class Account
                 :block_until_preferences_change,
                 :mobile_number,
                 :landline_number,
+                :confcall_instructions,
                 :skype,
                 :means_of_transport,
                 :awaiting_current_notes,
@@ -52,6 +53,7 @@ class Account
     account.locale = data['locale']
     account.mobile_number = data['mobile_number']
     account.landline_number = data['landline_number']
+    account.confcall_instructions = data['confcall_instructions']
     account.skype = data['skype']
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
@@ -191,8 +193,6 @@ class Account
   end
 
   private
-
-
 
   def self.get_account_details account_email, params={}
     if params[:accounts_cache]

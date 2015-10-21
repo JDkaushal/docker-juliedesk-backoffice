@@ -7,6 +7,7 @@
     // Put the messages_thread contacts at the end of the array, so if we already saved it (i.e. the form for the contact has been filled) it will take precedence over the former when applying the select.first instruction
     <% possible_attendees = attendees.map(&:symbolize_keys) + messages_thread.contacts %>
     <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
+    <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
     <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
         <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
         <% if attendee || (
@@ -15,7 +16,13 @@
             <%  currentAttendees.push(contact) %>
         <% end %>
     <% end %>
+
     <%  currentAttendees.push(attendees.select{|a| a['email'].blank? }).flatten!  %>
+    <% if possible_contacts_for_cache.size > 0 %>
+
+    <%  currentAttendees = currentAttendees.push(possible_contacts_for_cache).flatten.uniq { |co| co[:email] }  %>
+    <% end %>
+
 
     window.currentAttendees = <%== currentAttendees.to_json %>;
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
