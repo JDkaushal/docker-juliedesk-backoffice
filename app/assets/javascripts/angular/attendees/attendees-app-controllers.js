@@ -162,6 +162,7 @@
                   return ad.email == attendee.email;
                 });
                 console.log(attendeeDetails);
+
                 var informations = (attendeeDetails || attendee);
                     attendeesCtrl.attendees.push(new Attendee({
                         email: informations.email,
@@ -179,7 +180,7 @@
                         mobile: informations.mobile,
                         skypeId: informations.skypeId,
                         confCallInstructions: informations.confCallInstructions,
-                        isPresent: attendee.isPresent == "true",
+                        isPresent: attendee.isPresent == "true" || window.currentToCC.indexOf(informations.email) > -1,
                         isClient: informations.isClient == "true",
                         isThreadOwner: false
                     }));

@@ -19,6 +19,7 @@
 
     window.currentAttendees = <%== currentAttendees.to_json %>;
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
+    window.currentToCC = <%== @message.get_reply_all_recipients_emails.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;

@@ -9,7 +9,11 @@ class Message < ActiveRecord::Base
   attr_accessor :server_message
 
 
+  def get_reply_all_recipients_emails
+    recipients = JSON.parse(self.reply_all_recipients)
 
+    recipients["to"].map{|r| r["email"]} + recipients["cc"].map{|r| r["email"]}
+  end
 
   def clean_delete
     self.message_classifications.each do |mc|
