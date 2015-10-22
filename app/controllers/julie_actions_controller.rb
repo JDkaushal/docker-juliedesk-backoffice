@@ -43,7 +43,11 @@ class JulieActionsController < ApplicationController
         events: (params[:events].try(:values) || []).to_json,
         processed_in: params[:processed_in],
         deleted_event: params[:deleted_event]
-                                   })
+     })
+
+    if params[:call_instructions].present?
+      julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
+    end
 
     render json: {
         status: "success",

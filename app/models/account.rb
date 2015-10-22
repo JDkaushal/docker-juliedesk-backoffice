@@ -24,7 +24,8 @@ class Account
                 :complaints_count,
                 :calendar_logins,
                 :office_365_refresh_token_expired,
-                :is_pro
+                :is_pro,
+                :virtual_appointments_support_config
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -42,6 +43,7 @@ class Account
     account.email = data['email']
     account.appointments = data['appointments']
     account.addresses = data['addresses']
+    account.virtual_appointments_support_config = data['virtual_appointments_support_config']
     account.usage_name = data['usage_name']
     account.full_name = data['full_name']
     account.email_aliases = data['email_aliases']

@@ -6,6 +6,10 @@
 
     window.threadAccount = {email: 'test@com'};
 
+    window.getCallInstructions = function(){
+        return {email: 'test@com'};
+    };
+
     window.onerror = function(message, file, lineNumber) {
         processTestsRecap();
         $(".test.global").addClass("incorrect");

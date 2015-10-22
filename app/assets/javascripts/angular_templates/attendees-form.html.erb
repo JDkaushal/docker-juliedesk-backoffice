@@ -33,7 +33,7 @@
         <div class="row" style="margin-top: 0px;">
           <div class="col-xs-12">
             <%= label_tag :email %>
-            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
+            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
       </div>
       <div class="attendee-details col-xs-12" style="padding-left: 15px;">
           <%= label_tag :email %>
-          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
+          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
       </div>
     </div>
 

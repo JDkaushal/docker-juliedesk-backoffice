@@ -107,6 +107,16 @@
     }
     .location-container {
         position: relative;
+        .missing-call-informations{
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background: url(<%= asset_path 'warning.png' %>);
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 6px;
+        }
     }
     .location-container .location-icon {
         position: absolute;

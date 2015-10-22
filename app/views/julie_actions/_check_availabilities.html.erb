@@ -100,6 +100,34 @@
 
         });
 
+//        $('#create-event-button').click(function() {
+//            if(window.threadComputedData.client_agreement) {
+//                message = '';
+//                message += window.generateEmailTemplate({
+//                    action: "invites_sent",
+//                    isPostpone: isPostpone,
+//                    timeSlotToCreate: window.timeSlotToCreate,
+//                    appointment: window.getCurrentAppointment(),
+//                    address: window.getCurrentAddress(),
+//                    timezoneId: window.threadComputedData.timezone,
+//                    defaultTimezoneId: window.threadAccount.default_timezone_id,
+//                    allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+//                    locale: window.threadComputedData.locale
+//
+//                });
+//                if(window.threadComputedData.is_virtual_appointment){
+//                    message += "\n";
+//                    message += window.generateEmailTemplate({
+//                        action: 'send_call_instructions',
+//                        callInstructions: window.threadComputedData.call_instructions,
+//                        locale: window.threadComputedData.locale
+//                    });
+//                }
+//
+//                window.setReplyMessage(message, 'all', window.otherEmails);
+//            }
+//        });
+
         $("#create-event-button").click(function () {
             if(window.threadComputedData.client_agreement) {
                 $("#create-event-button").attr('disabled', true);
@@ -108,36 +136,51 @@
                 var end = start.clone();
                 end.add('m', <%= @messages_thread.computed_data[:duration] %>);
 
-
-
-
                 $(".calendar-container").addClass("minimized");
 
-                var location = window.threadComputedData.location;
-                var numberToCall = "";
-                if((window.threadComputedData.appointment_nature == "call" ||
-                        window.threadComputedData.appointment_nature == "confcall") &&
-                        window.threadComputedData.number_to_call != "") {
-                    if(window.getCurrentAppointment().number_in_location) {
-                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
-                    }
-                    else {
-                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
-                    }
-                }
+               var location = window.threadComputedData.location;
+
+//                var numberToCall = "";
+//                if((window.threadComputedData.appointment_nature == "call" ||
+//                        window.threadComputedData.appointment_nature == "confcall") &&
+//                        window.threadComputedData.number_to_call != "") {
+//                    if(window.getCurrentAppointment().number_in_location) {
+//                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
+//                    }
+//                    else {
+//                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
+//                    }
+//                }
                 var emailInNotes = "";
                 if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
                     <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
                     var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
                     emailInNotes = "\n\n" + textData.text;
                 }
-                
+
+                var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
+
+                if(window.currentEventTile) {
+                    var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+                    var currentEventNotesNode = $('.created-event-panel .notes');
+                    var currentEventNotes = currentEventNotesNode.val();
+                    var newEventDescription = '';
+                    if(vmHelper && vmHelper.isVirtualAppointment()){
+                        var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+                        var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
+                        if(regExResult != null){
+                            newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
+                            description = newEventDescription;
+                        }
+                    }
+                }
+
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
-                    description: numberToCall + window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
-                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present? && a['isThreadOwner'] != 'true'}.to_json %>,
+                    description: description,
+                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
                     location: location,
                     all_day: false,
                     private: window.threadComputedData.private,
@@ -163,10 +206,11 @@
                     });
                 }
 
+                console.log(requestParams);
                 CommonHelpers.externalRequest(requestParams, function (e) {
 
                     window.currentCalendar.refreshEvents();
-                    
+
                     if(!isPostpone) {
                         window.currentEventId = e.data.event_id;
                         window.currentEventUrl = e.data.event_url;
@@ -174,8 +218,8 @@
                         window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
                     }
 
-
-                    window.setReplyMessage(window.generateEmailTemplate({
+                    var message = '';
+                    message += window.generateEmailTemplate({
                         action: "invites_sent",
                         isPostpone: isPostpone,
                         timeSlotToCreate: window.timeSlotToCreate,
@@ -185,8 +229,65 @@
                         defaultTimezoneId: window.threadAccount.default_timezone_id,
                         allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
                         locale: window.threadComputedData.locale
+                    });
 
-                    }), "all", window.otherEmails);
+                    var data = {
+                        event_id: window.currentEventId,
+                        event_url: window.currentEventUrl,
+                        calendar_id: window.currentCalendarId,
+                        calendar_login_username: window.currentCalendarLoginUsername,
+                        done: true
+                    };
+
+                    if(window.threadComputedData.is_virtual_appointment){
+                        var call_instructions = window.threadComputedData.call_instructions;
+                        if(isPostpone){
+
+                            if($('#event_update_vm_ctrl').length > 0)
+                                call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
+                            else
+                                call_instructions = window.threadComputedData.call_instructions;
+
+
+                            data['call_instructions'] = call_instructions;
+
+                            // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
+                            $.ajax({
+                                url: "/client_contacts/synchronize",
+                                type: "POST",
+                                data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
+                                success: function (e) {
+                                    console.log('Contacts Synchronized');
+                                },
+                                error: function (e) {
+                                    console.log("Error: ", e);
+                                }
+                            });
+                        }
+                        console.log(call_instructions);
+                        message += "\n\n";
+                        message += window.generateEmailTemplate({
+                            action: 'send_call_instructions',
+                            callInstructions: call_instructions,
+                            locale: window.threadComputedData.locale
+                        });
+                    }
+
+                    window.setReplyMessage(message, 'all', window.otherEmails);
+
+
+//                    window.setReplyMessage(window.generateEmailTemplate({
+//                        action: "invites_sent",
+//                        isPostpone: isPostpone,
+//                        timeSlotToCreate: window.timeSlotToCreate,
+//                        appointment: window.getCurrentAppointment(),
+//                        address: window.getCurrentAddress(),
+//                        timezoneId: window.threadComputedData.timezone,
+//                        defaultTimezoneId: window.threadAccount.default_timezone_id,
+//                        allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+//                        locale: window.threadComputedData.locale
+//
+//                    }), "all", window.otherEmails);
 
                     $(".messages-thread-info-panel .create-event-panel").hide();
 
@@ -208,6 +309,7 @@
                     $(".messages-thread-info-panel .created-event-panel").show();
                     window.currentEventTile.redraw();
                     window.currentEventTile.fetchEvent(function(data) {
+                        window.currentEventTile.displayCallingInfosForm();
                         window.currentEventData = data;
                         window.currentEventTile.redraw();
                         setTimeout(function () {
@@ -218,13 +320,7 @@
                     $.ajax({
                         type: "post",
                         url: "/julie_actions/<%= @julie_action.id %>/update",
-                        data: {
-                            event_id: window.currentEventId,
-                            event_url: window.currentEventUrl,
-                            calendar_id: window.currentCalendarId,
-                            calendar_login_username: window.currentCalendarLoginUsername,
-                            done: true
-                        },
+                        data: data,
                         success: function (e) {
                             $(".creating-event-message").html("Created.");
                         }

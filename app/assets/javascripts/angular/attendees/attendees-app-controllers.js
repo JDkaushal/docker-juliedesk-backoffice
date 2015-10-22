@@ -9,7 +9,7 @@
         return {
             restrict: 'E',
             templateUrl: 'attendees-form.html',
-            controller: [ '$scope', 'sharedProperties', function($scope, sharedProperties){
+            controller: [ '$scope', 'sharedProperties', '$http', function($scope, sharedProperties, $http){
                 var attendeesFormCtrl = this;
                 var originalAttendee = {};
                 var firstNameMirrored = false;
@@ -43,7 +43,6 @@
 
                     attendeesFormCtrl.isVisible = true;
                     $('.messages-thread-info-panel').removeClass('scrollable').addClass('frozen');
-
                 });
 
                 this.cancelAttendeeForm = function(){
@@ -80,10 +79,8 @@
                     attendeesFormCtrl.isVisible = false;
                     $('.messages-thread-info-panel').removeClass('frozen').addClass('scrollable');
 
-                    // Need to wait a little in order for the ng-repeat to redraw its content and do set the data-name attribute correctly on the newly created contact
-                    setTimeout(function(){
-                        reProcessTitle();
-                    }, 500);
+                    processAppointmentType();
+                    reProcessTitle();
                 };
 
                 this.checkFormValidations =function(attendeesForm){
@@ -135,14 +132,14 @@
                     // Angular uses Object references to deal with select options values when they are set to an object
                     // so when the page is loaded and the data are fetched the saved assistedBy object have a different
                     // reference than those in the select options
-                    // You must then update the selected option manually based on the text value for example
+                    // You must then update the selected option manually based on the option's text value for example
 
-                    if(attendeesFormCtrl.attendeeInForm.assistedBy != "" && attendeesFormCtrl.attendeeInForm.assistedBy != undefined){
+                    if(!attendeesFormCtrl.attendeeInForm.isClient && attendeesFormCtrl.attendeeInForm.assistedBy != "" && attendeesFormCtrl.attendeeInForm.assistedBy != undefined){
                         var assistant = attendeesManager.getAssistant(attendeesFormCtrl.attendeeInForm);
-
-                        angular.element($('#assisted_by option')).filter(function(){
-                            return $(this).text().trim() == assistant.displayNormalizedName();
-                        }).prop('selected', true);
+                        if(assistant)
+                            angular.element($('#assisted_by option')).filter(function(){
+                                return $(this).text().trim() == assistant.displayNormalizedName();
+                            }).prop('selected', true);
                     }
                 };
 
@@ -160,19 +157,58 @@
                 this.getOriginalAttendee = function(){
                     return originalAttendee;
                 };
+
+                this.importContactInfos = function(){
+                    $http({
+                        url: '/client_contacts/fetch_one?client_email=' + attendeesFormCtrl.getThreadOwner().email + '&email=' + attendeesFormCtrl.attendeeInForm.email,
+                        method: "GET"
+                    }).then(function success(response) {
+                        attendeesFormCtrl.setAttendeeInFormDetails(response.data);
+                    }, function error(response){
+                        console.log("Error: ", response);
+                    });
+                };
+
+                this.getThreadOwner = function(){
+                    return attendeesManager.getThreadOwner();
+                };
+
+                this.setAttendeeInFormDetails = function(attendeeDetails){
+                    attendeesFormCtrl.attendeeInForm = {isPresent: true};
+                    if(attendeeDetails.assistedBy)
+                        attendeeDetails.assistedBy = JSON.parse(attendeeDetails.assistedBy);
+                    Object.assign(attendeesFormCtrl.attendeeInForm, attendeeDetails);
+                };
+
             }],
             controllerAs: 'attendeesFormCtrl'
         };
     });
 
-    app.controller("AttendeesCtrl", ['$scope','sharedProperties', '$http', function($scope, sharedProperties, $http){
+    app.controller("AttendeesCtrl", ['$scope', '$rootScope','sharedProperties', '$http', function($scope, $rootScope, sharedProperties, $http){
         var attendeesCtrl = this;
-        var contactInfosRe = new RegExp("-Contacts-Infos-------------------(.*)----------------------------------");
+        var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
+        var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
         this.loaded = false;
         $scope.attendees = [];
         this.readOnly = window.threadDataIsEditable == undefined;
 
+        //Watchers------------------------------------------------------------------------
+        $scope.$watch('attendees', function (newVal, oldVal){
+            updateNotesCallingInfos();
+            if(newVal.length > 0)
+                $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
+        }, true);
+        //--------------------------------------------------------------------------------
+
+        //Events Listeners----------------------------------------------------------------
+        $scope.$on('attendeeAdded', function(event, args) {
+            $scope.attendees.push(args.attendee);
+        });
+        //--------------------------------------------------------------------------------
+
+        //Attendees-----------------------------------------------------------------------
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
             var companies = attendeesDetails.companies;
@@ -216,31 +252,16 @@
                 var assistant = (typeof(informations.assistedBy) == "string" && informations.assistedBy.length > 0) ? JSON.parse(informations.assistedBy) : informations.assistedBy;
                 informations.assistedBy = assistant;
 
-                if(aliasedEmails.indexOf(informations.email) > -1)
-                    informations.isClient = "true";
+                //if(aliasedEmails.indexOf(informations.email) > -1)
+                //    // If the current attendee was in the aliases response from the server, it means it is in the accounts cache => he is client
+                //    informations.isClient = "true";
                 if(Object.keys(companies).indexOf(informations.email) > -1)
                     informations.company = companies[informations.email];
 
                 //If the current email is the principal email for a user
                 if(aliasedEmails.indexOf(informations.email) > -1){
-
-                    //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
-                    //    var alreadyExist = _.find(window.currentAttendees, function(a) {
-                    //        return a.email == assistant.email;
-                    //    });
-                    //
-                    //    if(alreadyExist == undefined) {
-                    //        var assistantFullName = assistant.usageName || assistant.displayName;
-                    //        attendeesCtrl.createAttendee({
-                    //            email: assistant.email,
-                    //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
-                    //            usageName: assistantFullName,
-                    //            firstName: assistantFullName.split(' ')[0],
-                    //            isAssistant: 'true',
-                    //            timezone: informations.timezone
-                    //        }, {});
-                    //    }
-                    //}
+                    informations.isClient = "true";
+                    informations.company = companies[informations.email];
 
                     // If it is in the recipients, we create the attendee, because if there will be an alias for this email in the recipients, it will be discarded
                     if(window.currentToCC.indexOf(informations.email) > -1){
@@ -267,6 +288,7 @@
 
                  // If the current email is an alias for a client
                 }else if(aliasEmails.indexOf(informations.email) > -1) {
+                    informations.isClient = "true";
 
                     //We find the client main email
                     var clientMainEmail;
@@ -275,55 +297,20 @@
                             clientMainEmail = aliased;
                     });
 
+                    if(clientMainEmail)
+                        informations.company = companies[clientMainEmail];
+
                     // We found the client main email and it is the recipients, so we will use it as the attendee, we do nothing here
                     if (clientMainEmail && window.currentToCC.indexOf(clientMainEmail) > -1) {
 
                     }
                     // If we found it or not and it is not in the recipients, we can create the attendee
                     else{
-                        //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
-                        //    var alreadyExist = _.find(window.currentAttendees, function(a) {
-                        //        return a.email == assistant.email;
-                        //    });
-                        //
-                        //    if(alreadyExist == undefined) {
-                        //        var assistantFullName = assistant.usageName || assistant.displayName;
-                        //        attendeesCtrl.createAttendee({
-                        //            email: assistant.email,
-                        //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
-                        //            usageName: assistantFullName,
-                        //            firstName: assistantFullName.split(' ')[0],
-                        //            isAssistant: 'true',
-                        //            timezone: informations.timezone
-                        //        }, {});
-                        //    }
-                        //}
                         // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
-
                         attendeesCtrl.createAttendee(informations, attendee);
                     }
                     // If the email is not an aliased email nor a alias email, we create the attendee
                 }else{
-                    //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
-                    //    var alreadyExist = _.find(window.currentAttendees, function(a) {
-                    //        return a.email == assistant.email;
-                    //    });
-                    //
-                    //    if(alreadyExist == undefined) {
-                    //        var assistantFullName = assistant.usageName || assistant.displayName;
-                    //        attendeesCtrl.createAttendee({
-                    //            email: assistant.email,
-                    //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
-                    //            usageName: assistantFullName,
-                    //            firstName: assistantFullName.split(' ')[0],
-                    //            isAssistant: 'true',
-                    //            timezone: informations.timezone
-                    //        }, {});
-                    //    }
-                    //}
-
-                    // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
-
                     attendeesCtrl.createAttendee(informations, attendee);
                 }
             });
@@ -331,13 +318,11 @@
             angular.forEach($scope.attendees, function(a){
                 var assisted = undefined;
                 if(assisted = $scope.getAssistedByEmail(a)){
-                    console.log(a);
-                    console.log(assisted);
                     // We do that to actualize if necessary the temporary guid with the one returned by the database
                     assisted.assistedBy.guid = a.guid;
                 }
             });
-            
+
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
             var companyName = '';
             if(window.threadAccount.company_hash != undefined)
@@ -354,7 +339,7 @@
             }
 
             var threadOwner = new Attendee({
-                guid: guid(),
+                guid: -1,
                 email: threadOwnerEmail,
                 firstName: threadAccountFullName[0],
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
@@ -392,11 +377,11 @@
 
         this.createAttendee = function(informations, attendee){
             var a = new Attendee({
-                guid: informations.id || guid(),
+                guid: informations.id || $scope.guid(),
                 email: informations.email,
                 firstName: informations.firstName,
                 lastName: informations.lastName,
-                name: informations.firstName + ' ' + informations.lastName,
+                name: (informations.firstName + ' ' + informations.lastName).trim(),
                 usageName: informations.usageName || informations.name,
                 gender: informations.gender,
                 isAssistant: informations.isAssistant == "true",
@@ -419,18 +404,6 @@
             $scope.attendees.push(a);
         };
 
-        this.displayAttendeeNewForm = function (){
-            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id, isPresent: true}, action: 'new'});
-        };
-
-        this.displayAttendeeUpdateForm = function(attendee){
-            sharedProperties.displayAttendeeForm({attendee: attendee, action: 'update'});
-        };
-
-        $scope.$on('attendeeAdded', function(event, args) {
-            $scope.attendees.push(args.attendee);
-        });
-
         this.fetchAttendeeFromClientContactNetwork = function(){
             $('.submit-classification').attr('disabled', true);
             $http({
@@ -449,7 +422,9 @@
             });
 
         };
+        //--------------------------------------------------------------------------------
 
+        //Event Notes---------------------------------------------------------------------
         $scope.updateNotes = function(){
             var notes = $('#notes').val();
 
@@ -458,9 +433,10 @@
 
             var i = 0;
             var j = 0;
+
             _.each($scope.attendees, function(a){
                 // In any case if the attendee's company is not set and it is not the threadOwner (even on his aliases), we will mark the informations in the notes
-                if(a.isPresent && ((a.company == '' && attendeesCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 ) || a.company != attendeesCtrl.getThreadOwner().company)){
+                if(a.isPresent && ((a.company == '' && $scope.getThreadOwnerEmails().indexOf(a.email) == -1 ) || a.company != $scope.getThreadOwner().company)){
                     if(a.hasCallingInformations()){
                         // In case if the first contacts doesn't have any informations so it doesn't print a carriage return
 
@@ -474,36 +450,79 @@
             });
 
             if(computedContactInfos != ''){
-                wrappedContactInfos += '-Contacts-Infos-------------------';
+                wrappedContactInfos += "-" + localize("events.call_instructions.contacts_infos", {locale: window.currentLocale}) + "-------------------";
                 wrappedContactInfos += computedContactInfos;
-                wrappedContactInfos += "\n----------------------------------";
-
+                wrappedContactInfos += "\n----------------------------------------";
             }
 
-            if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
-            {
+            var tmpNotes = notes.replace(/\n/g,'');
+            var regexFrResult = contactInfosReEn.exec(tmpNotes);
+            var regexEnResult = contactInfosReFr.exec(tmpNotes);
+
+            if(regexFrResult == null && regexEnResult == null){
                 if(notes.replace(/\n/g,'').length > 0)
-                    notes += "\n";
+                    notes += "\n\n";
                 notes += wrappedContactInfos;
             }else{
-                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
+                var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
+                notes = notes.replace(/\n/g,'__n').replace(usedRegex, wrappedContactInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
             }
 
             $('#notes').val(notes);
         };
+        //--------------------------------------------------------------------------------
+
+        $scope.getAssistedByEmail = function(assistant){
+            return _.find($scope.attendees, function(a){
+                var found = false;
+                if(a.assistedBy)
+                    found = a.assistedBy.email == assistant.email;
+                return found;
+            });
+        };
+
+        this.getCurrentContactsInfos = function(notes) {
+            return contactInfosRe.exec(notes);
+        };
+
+        //Thread Owner--------------------------------------------------------------------
+        $scope.getThreadOwner = function(){
+            if($scope.threadOwner == undefined){
+                $scope.threadOwner = _.find($scope.attendees, function(a){
+                    return a.isThreadOwner;
+                });
+            }
+            return $scope.threadOwner;
+        };
+
+        $scope.getThreadOwnerEmails = function(){
+            var emails = [];
+            emails.push(window.threadAccount.email);
+            emails.push(window.threadAccount.email_aliases);
+            return _.flatten(emails);
+        };
+        //--------------------------------------------------------------------------------
+
+        //Helpers-------------------------------------------------------------------------
+        $scope.getAttendeeByGuid = function(guid){
+            return _.find($scope.attendees, function(a){
+                return a.guid == guid;
+            });
+        };
 
         $scope.getAssistant = function(attendee){
             return _.find($scope.attendees, function(a){
-               return a.guid == attendee.assistedBy.guid;
+                return a.guid == attendee.assistedBy.guid;
             });
         };
+
         $scope.getAssisted = function(assistant){
-          return _.find($scope.attendees, function(a){
-              var found = false;
-              if(a.assistedBy)
-                found = a.assistedBy.guid == assistant.guid;
-            return found;
-          });
+            return _.find($scope.attendees, function(a){
+                var found = false;
+                if(a.assistedBy)
+                    found = a.assistedBy.guid == assistant.guid;
+                return found;
+            });
         };
 
         $scope.getAssistedByEmail = function(assistant){
@@ -515,31 +534,27 @@
             });
         };
 
-        getCurrentContactsInfos = function(notes){
+        $scope.getAttendeesOnPresence = function(isPresent){
+            return _.filter($scope.attendees, function(a){
+                return a.isPresent == isPresent;
+            });
+        };
+
+        $scope.getAttendeesWithoutAssistant = function(){
+            var attendees = $scope.getAttendeesOnPresence(true).slice();
+
+            _.each(attendees.slice(), function(a){
+                if(a.assistedBy && a.assistedBy.guid){
+                    attendees = _.without(attendees, _.findWhere(attendees,{guid: a.assistedBy.guid}));
+                }
+            });
+
+            return attendees;
+        };
+
+        this.getCurrentContactsInfos = function(notes){
             return contactInfosRe.exec(notes);
         };
-
-        this.getThreadOwner = function(){
-            if(this.threadOwner == undefined){
-                this.threadOwner = _.find($scope.attendees, function(a){
-                    return a.isThreadOwner;
-                });
-            }
-          return this.threadOwner;
-        };
-
-        this.getThreadOwnerEmails = function(){
-            var emails = [];
-            emails.push(window.threadAccount.email);
-            emails.push(window.threadAccount.email_aliases);
-            return _.flatten(emails);
-        };
-
-        this.fetchAttendeeFromClientContactNetwork();
-
-        $scope.$watch('attendees', function (newVal, oldVal){
-            $scope.updateNotes();
-        }, true);
 
         this.getCompaniesNames = function(){
             return _.uniq(_.compact(_.map($scope.attendees, function(a) {
@@ -548,9 +563,32 @@
             })));
         };
 
+        this.getEmailsSuggestions = function(subString){
+            return $http.get("/client_contacts/emails_suggestions?sub_string=" + subString).then(function(response){
+                return response.data;
+            });
+        };
+
+        this.displayAttendeeNewForm = function (){
+            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id, isPresent: true}, action: 'new'});
+        };
+
+        this.displayAttendeeUpdateForm = function(attendee){
+            sharedProperties.displayAttendeeForm({attendee: attendee, action: 'update'});
+        };
+
+        $scope.guid = function(){
+            return generateGuid();
+        };
+        //--------------------------------------------------------------------------------
+
+        //Initializers--------------------------------------------------------------------
+        this.fetchAttendeeFromClientContactNetwork();
+        //--------------------------------------------------------------------------------
+
     }]);
 
-    function guid() {
+    function generateGuid() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -578,9 +616,9 @@
     var Attendee = Class({
         initialize: function(params){
             var that = this;
-
             if(params.guid == undefined)
-                that['guid'] = guid();
+                that['guid'] = generateGuid();
+
             $.each( params, function( key, value ) {
                 that[key] = value;
             });
@@ -632,6 +670,13 @@
 
             return _mobile + separator + _landline;
         },
+        displayRescuePhoneInformations: function(landline, mobile){
+            var _mobile = (mobile && this.mobile) ? this.mobile : '';
+            var _landline = (landline && this.landline) ? this.landline : '';
+            var separator = (_mobile == '' || _landline == '') ? '' : ' / ';
+
+            return _mobile + separator + _landline;
+        },
         getName: function(){
             return this.usageName || this.email;
         },
@@ -648,12 +693,12 @@
                     case 'fr':
                         notes += that.displayNormalizedName() + "\n";
                         if(hasPhoneInfos){
-                            notes += 'Téléphone: ' + that.displayPhoneInformations();
+                            notes += 'Téléphone : ' + that.displayPhoneInformations();
                             if(hasSkype)
                                 notes += "\n";
                         }
                         if(hasSkype)
-                            notes += 'Skype: ' + that.skypeId;
+                            notes += 'Skype : ' + that.skypeId;
                         break;
                     case 'en':
                         notes += that.displayNormalizedName() + "\n";
@@ -668,12 +713,12 @@
                     default:
                         notes += that.displayNormalizedName() + "\n";
                         if(hasPhoneInfos){
-                            notes += 'Téléphone: ' + that.displayPhoneInformations();
+                            notes += 'Téléphone : ' + that.displayPhoneInformations();
                             if(hasSkype)
                                 notes += "\n";
                         }
                         if(hasSkype)
-                            notes += 'Skype: ' + that.skypeId;
+                            notes += 'Skype : ' + that.skypeId;
                 }
             }
 

@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     collection do
       post :synchronize
       get :fetch
+      get :emails_suggestions
+      get :fetch_one
     end
   end
 

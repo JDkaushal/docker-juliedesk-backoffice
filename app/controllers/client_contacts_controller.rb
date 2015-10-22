@@ -2,6 +2,7 @@ class ClientContactsController < ApplicationController
   def fetch
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
     accounts_cache = Account.accounts_cache
+    accounts_cache_light = Account.accounts_cache(mode: 'light')
 
     @contacts_infos = []
     @contacts_aliases = {}
@@ -9,9 +10,16 @@ class ClientContactsController < ApplicationController
 
     if params['contacts_emails'].present?
       params['contacts_emails'].each do |contact|
-        if cache = accounts_cache[contact]
+        if cache = accounts_cache_light[contact]
           @contacts_aliases[contact] = cache["email_aliases"]
           @contacts_companies[contact] = cache["company_hash"] ? cache["company_hash"]["name"] : ''
+        else
+          accounts_cache_light.each do |email, account|
+            if account["email_aliases"].include?(contact)
+              @contacts_aliases[email] = account["email_aliases"]
+              @contacts_companies[email] = account["company_hash"] ? account["company_hash"]["name"] : ''
+            end
+          end
         end
       end
     end
@@ -108,6 +116,21 @@ class ClientContactsController < ApplicationController
       end
     end
 
+    if params['contacts_email'].present?
+      not_found_contacts_emails = params['contacts_emails'] - @contacts_infos.map{|c| c[:email]}
+
+      not_found_contacts_emails.each do |contact_email|
+        if(contact = ClientContact.where(email: contact_email).first)
+          @contacts_infos.push({
+            email: contact.email,
+            firstName: contact.first_name,
+            lastName: contact.last_name,
+            gender: contact.gender
+          })
+        end
+      end
+    end
+
     render json: {contacts: @contacts_infos, aliases: @contacts_aliases, companies: @contacts_companies}
   end
 
@@ -151,5 +174,48 @@ class ClientContactsController < ApplicationController
     end
 
     render json: {success: success}
+  end
+
+  def emails_suggestions
+    # We query postgres for a regex pattern seraching for all contacts having an email that begins by the sub string passed as parameter
+    @emails_suggestions = ClientContact.where("email ~* ?", '^' + params[:sub_string]).map(&:email).uniq
+
+    render json: @emails_suggestions
+  end
+
+  def fetch_one
+    @contact = ClientContact.find_by(client_email: params[:client_email], email:params[:email])
+
+    if @contact
+      response = {
+        email: @contact.email,
+        firstName: @contact.first_name,
+        lastName: @contact.last_name,
+        gender: @contact.gender,
+        usageName: @contact.usage_name,
+        isAssistant: @contact.is_assistant,
+        assisted: @contact.assisted,
+        assistedBy: @contact.assisted_by,
+        timezone: @contact.timezone,
+        landline: @contact.landline,
+        mobile: @contact.mobile,
+        skypeId: @contact.skypeId,
+        confCallInstructions: @contact.conf_call_instructions
+      }
+    else
+      if(@contact = ClientContact.find_by_email(params[:email]))
+        response = {
+          email: @contact.email,
+          firstName: @contact.first_name,
+          lastName: @contact.last_name,
+          gender: @contact.gender
+        }
+
+      else
+        response = {error: 'Contact Not Found'}
+      end
+    end
+
+    render json: response
   end
 end

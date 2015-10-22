@@ -11,7 +11,6 @@ class ClientContact < ActiveRecord::Base
 
     if client_account.present?
       fullname_splitted = client_account.full_name.split(' ')
-
       {
         id: self.id,
         client_email: self.client_email,

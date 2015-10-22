@@ -154,11 +154,20 @@ window.wordings['fr'] = {
                 "breega": "<br/>\n--<br/>\n<br/>\n<img src='https://lh5.googleusercontent.com/-wbWy7ExZauI/UWvRdxVcsmI/AAAAAAAAAAc/QRQxfD5TBec/w1914-h736-no/130404-BREEG-Logo_FluroGreen.png' width='200' height='76'/><br/>\n<br/>\n<b>Julie Filhol</b><br/>\nExecutive Assistant<br/>\n<br/>\n42 avenue Montaigne<br/>\n75008 Paris - France<br/>\n<br/>\nTel: +33 1 72 74 10 01<br/>\nFax: +33 1 72 74 10 02<br/>\n<br/>\nEmail: <a href='mailto:julie.filhol@breega.com'>julie.filhol@breega.com</a><br/>\nWeb: <a href='www.breega.com'>www.breega.com</a><br/>\n<br/>\nPlease consider the environment and think twice before printing this email ...",
                 "hourlynerd": ""
             }
+        },
+        send_call_instructions: {
+            placed_in_notes: "J'ai inséré les instructions d'appel dans l'événement.",
+            placed_skype_in_notes: "J’ai inséré l'identifiant Skype de %{target_name} dans l’événement.",
+            give_target_number: "Instructions d’appel : appeler %{target_name} au %{details}",
+            give_target_confcall: "Numéro de conférence : \n%{details}",
+            give_target_skype: "L’identifiant Skype de %{target_name} a été joint à l’invitation : %{details}",
+            missing_infos: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
         }
     },
     common: {
         cancel: "Annuler",
-        or: "ou"
+        or: "ou",
+        phone: "Téléphone :"
     },
     events: {
         new_event: "Nouvel évènement",
@@ -168,6 +177,16 @@ window.wordings['fr'] = {
             what_to_delete: "Quelles occurrences voulez-vous supprimer ?",
             this_occurrence: "Cette occurrence",
             all_occurrences: "Toutes les occurrences"
+        },
+        call_instructions: {
+            contacts_infos: 'Informations-de-contacts',
+            organizer_infos: "Informations-organisateur",
+            title: "Instructions-d\'appel",
+            display: "Appeler %{target_name} au %{details}",
+            display_single_attendee: "%{caller_name} appelle %{target_name} au %{details}",
+            instructions_in_notes: "Instructions d'appel dans les notes",
+            give_target_number: "Appeler %{target_name} au %{details}",
+            give_confcall: "%{details}"
         }
     },
     constraints: {

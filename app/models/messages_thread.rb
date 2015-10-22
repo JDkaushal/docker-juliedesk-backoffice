@@ -174,6 +174,7 @@ class MessagesThread < ActiveRecord::Base
         duration: last_message_classification.try(:duration) || 60,
         location_nature: last_message_classification.try(:location_nature),
         location: last_message_classification.try(:location),
+        call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
         attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
         notes: last_message_classification.try(:notes),
         other_notes: last_message_classification.try(:other_notes),
@@ -200,7 +201,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.virtual_appointment_natures
-    ["skype", "call", "webex"]
+    ["skype", "call", "webex", "confcall", "hangout"]
   end
 
   def self.items_to_classify_count

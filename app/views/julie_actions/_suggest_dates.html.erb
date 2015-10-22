@@ -48,6 +48,7 @@
             });
         }
         else {
+            console.log('Here 1');
             $(".calendar-container").addClass("minimized");
             $("#show-calendar-button").hide();
             $(".julie-action-title .title").html(localize("actions.to_do.ask_agreement"));
@@ -107,6 +108,7 @@
             attendees: _.filter(_.map(attendees(), function(attendee) {
                     if(attendee.usageName)
                         {
+                            
                             var names = attendee.usageName.split(" ");
                             if(names.length > 0) {
                                 return window.helpers.capitalize(names[0]);
@@ -117,7 +119,8 @@
                         return name;
                     }),
             timezoneId: window.threadComputedData.timezone,
-            defaultTimezoneId: window.threadAccount.default_timezone_id
+            defaultTimezoneId: window.threadAccount.default_timezone_id,
+            callInstructions: window.threadComputedData.call_instructions
         }), "all", window.otherEmails);
     };
 

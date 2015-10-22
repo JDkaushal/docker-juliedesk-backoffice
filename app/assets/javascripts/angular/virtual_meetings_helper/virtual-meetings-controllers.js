@@ -6,86 +6,271 @@
         return{
             restrict: 'E',
             templateUrl: 'virtual-meetings-helper.html',
-            controller: ['$scope' , function($scope){
+            controller: ['$scope', '$element' , function($scope, $element){
                 var virtualMeetingsHelperCtrl = this;
-                var attendeesManagerCtrl = angular.element($('#attendeesCtrl')).scope();
-                virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == (window.threadComputedData.appointment_nature || $('#appointment_nature option:selected').val()) });
-                virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash;
-                virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentAppointment.behaviour;
+                var threadOwnerInfosReFr = new RegExp("-" + localize('events.call_instructions.organizer_infos', {locale: 'fr'})+ "-----------------.+?(?:----------------------------------------)");
+                var threadOwnerInfosReEn = new RegExp("-" + localize('events.call_instructions.organizer_infos', {locale: 'en'})+ "-----------------.+?(?:----------------------------------------)");
+                var callingInstructionsInfosReFr = new RegExp("-" + localize('events.call_instructions.title', {locale: 'fr'}) + "----------------.+?(?:----------------------------------------)");
+                var callingInstructionsInfosReEn = new RegExp("-" + localize('events.call_instructions.title', {locale: 'en'}) + "----------------.+?(?:----------------------------------------)");
 
-                var suffixClient = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? ' (défaut)' : '';
-                var suffixLater = virtualMeetingsHelperCtrl.currentBehaviour == 'later' ? ' (défaut)' : '';
-                var suffixInterlocutor = virtualMeetingsHelperCtrl.currentBehaviour == 'ask_interlocutor' ? ' (défaut)' : '';
+                // We use the || affectation here for testing purposes (injecting the scope manually at creation)
+                $scope.attendeesManagerCtrl = $scope.attendeesManagerCtrl || angular.element($('#attendeesCtrl')).scope();
+                $scope.formEditMode = Boolean(window.threadDataIsEditable);
+                $scope.currentConf = {};
+                $scope.showHeader = true;
+                $scope.displayForm = true;
+                $scope.forceCurrentConfig = false;
+                $scope.lastTargetInfos = '';
+                $scope.detailsFrozen = false;
+                $scope.detailsFrozenDisabled = false;
+                $scope.configLoaded = false;
+                $scope.cachedInterlocutor = undefined;
 
-                $scope.callTargets =
-                [
-                    {name:"L'interlocuteur" + suffixInterlocutor, value:'interlocutor'},
-                    {name:"Décidé plus tard" + suffixLater, value:'later'},
-                    {name:"Le client (" + window.threadAccount.full_name + ')' + suffixClient, value:'client'}
-                ];
+                // Used to synchronize the forms when there are multiple one on the page (i.e. when an event is present)
+                $scope.otherForm = undefined;
 
-                var suffixMobile = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Mobile' ? ' (défaut)' : '';
-                var suffixLandline = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Landline' ? ' (défaut)' : '';
-                var suffixSkype = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Skype' ? ' (défaut)' : '';
-                var suffixConfcall = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Confcall' ? ' (défaut)' : '';
+                $scope.setAttendeesManagerCtrl = function(scope){
+                    $scope.attendeesManagerCtrl = scope;
+                };
 
-                $scope.callSupports = [
-                    {name:"Téléphone portable" + suffixMobile, value:'mobile'},
-                    {name:"Téléphone fixe" + suffixLandline, value:'landline'},
-                    {name:"Skype" + suffixSkype, value:'skype'},
-                    {name:"Confcall" + suffixConfcall, value:'confcall'}
-                ];
+                $scope.$watch('currentConf.targetInfos', function(newVal, oldVal){
+                    if(newVal != null){
+                        $scope.lastTargetInfos = newVal;
+                        $scope.cacheCurrentInterlocutor();
+                    }
+                    $scope.computeCallDetails();
+                }, true);
 
-                var initialConfTarget;
-                switch(virtualMeetingsHelperCtrl.currentBehaviour){
-                    case 'propose':
-                        initialConfTarget = 'client';
-                        break;
-                    case 'ask_interlocutor':
-                        initialConfTarget = 'interlocutor';
-                        break;
-                    case 'later':
-                        initialConfTarget = 'later';
-                        break;
-                    default:
-                        initialConfTarget = 'later';
-                }
+                $scope.$watch('currentConf.details', function(newVal, oldVal){
+                    console.log('details watch');
+                    updateNotesCallingInfos();
+                });
 
-                var initialConfSupport;
+                $scope.$watch('currentConf.support', function(newVal, oldVal){
+                    if($scope.currentConf.target == 'client')
+                        $scope.changeCurrentVAConfig(newVal);
+                });
 
-                switch(virtualMeetingsHelperCtrl.currentVAConfig.label){
-                    case 'Mobile':
-                        initialConfSupport = 'mobile';
-                        break;
-                    case 'Landline':
-                        initialConfSupport = 'landline';
-                        break;
-                    case 'Skype':
-                        initialConfSupport = 'skype';
-                        break;
-                    case 'Confcall':
-                        initialConfSupport = 'confcall';
-                        break;
-                    default:
-                        initialConfSupport = '';
-                }
+                $scope.$watch('currentConf', function(newVal, oldVal){
+                    if($scope.otherForm){
+                        $scope.otherForm.currentConf = newVal;
+                        $scope.updateTargetInfosSelect();
+                        if(!$scope.otherForm.$$phase){
+                            $scope.otherForm.$apply();
+                        }
+                    }
+                }, true);
+
+                $scope.$watch('virtualMeetingsHelperCtrl.currentVAConfig', function(newVal, oldVal){
+                    if($scope.otherForm){
+                        $scope.otherForm.setVAConfig(newVal);
+                        if(!$scope.otherForm.$$phase){
+                            $scope.otherForm.$apply();
+                        }
+                        updateNotesCallingInfos();
+                    }
+                }, true);
+
+                $scope.computeOptionText = function(args){
+                    return args.name + ' (' + args.email + ')'
+                };
+
+                $scope.setEditMode = function(editMode){
+                    $scope.formEditMode = editMode;
+                };
+
+                $scope.setVAConfig = function(vaConfig){
+                    virtualMeetingsHelperCtrl.currentVAConfig = vaConfig;
+                };
+
+                $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
+                    $scope.refresh(args.attendees.slice());
+                });
+
+                $scope.refresh = function(attendees) {
+                    console.log("refreshed");
+
+                    if ((JSON.stringify(_.without(Object.keys(window.threadComputedData.call_instructions), 'event_instructions')) == JSON.stringify(["target", "targetInfos", "support", "details"]) && !$scope.formEditMode && typeof(window.threadComputedData.call_instructions) == 'object') || $scope.forceCurrentConfig || (!$.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode)){
+                        $scope.loadCurrentConfig();
+                    }else if($.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode && !!$('#appointment_nature').val() && $.isEmptyObject($scope.currentConf)) {
+                        $scope.loadDefaultConfig(true);
+                        updateNotesCallingInfos();
+                    }
+
+                    if(attendees){
+                        var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
+                            return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
+                        });
+
+                        $scope.callTargetsInfos = _.map(attendeesWithoutThreadOwner, function (a) {
+                            return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
+                        });
+                        if($scope.lastTargetInfos != null)
+                        {
+                            var attendee = findTargetAttendee($scope.lastTargetInfos);
+
+                            if(attendee){
+                                setAttendeeSelected(attendee);
+                            }
+                        }
+                        $scope.computeCallDetails();
+                    }
+                };
+
+                $scope.changeCurrentVAConfig = function(configLabel){
+                    virtualMeetingsHelperCtrl.currentVAConfig = _.filter(window.threadAccount.virtual_appointments_support_config, function(vaConfig){
+                        return vaConfig.label.toLowerCase() == configLabel;
+                    })[0];
+                    updateNotesCallingInfos();
+                };
+
+                $scope.loadCurrentConfig = function(){
+                    console.log('load current config');
+
+                    if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
+                        $scope.changeCurrentVAConfig("demander à l'interlocuteur");
+
+                    virtualMeetingsHelperCtrl.currentAppointment = virtualMeetingsHelperCtrl.currentAppointment || _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
+                    virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig || (virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash);
+                    virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentBehaviour || virtualMeetingsHelperCtrl.currentAppointment.behaviour;
+
+                    $scope.callTargets = [
+                        {name:"L'interlocuteur", value:'interlocutor'},
+                        {name:"Décidé plus tard", value:'later'},
+                        {name:"Le client (" + window.threadAccount.full_name + ')', value:'client'}
+                    ];
+
+                    $scope.callSupports = [
+                        {name:"Téléphone portable", value:'mobile'},
+                        {name:"Téléphone fixe", value:'landline'},
+                        //{name:"Skype", value:'skype'},
+                        {name:"Confcall", value:'confcall'}
+                    ];
+                    //$scope.currentConf = {target: window.threadComputedData.call_instructions.target, targetInfos: window.threadComputedData.call_instructions.targetInfos, support: window.threadComputedData.call_instructions.support, details: window.threadComputedData.call_instructions.details};
+                    $scope.currentConf = window.threadComputedData.call_instructions;
+                    $scope.currentConf.targetInfos = {name: window.threadComputedData.call_instructions.targetInfos.name, email: window.threadComputedData.call_instructions.targetInfos.email, guid: window.threadComputedData.call_instructions.targetInfos.guid};
+
+                    if($scope.currentConf.details == '' && window.threadComputedData.location == '')
+                    {
+                        $scope.call_instructions_missing = true;
+                    }
+                    // Angular uses Object references to deal with select options values when they are set to an object
+                    // so when the page is loaded and the data are fetched the saved assistedBy object have a different
+                    // reference than those in the select options
+                    // You must then update the selected option manually based on the option's text value for example
+
+                    $scope.updateTargetInfosSelect();
+
+                    $scope.$apply();
+                    $scope.configLoaded =  true;
+
+                    updateNotesCallingInfos();
+                };
+
+                $scope.loadDefaultConfig = function(refreshCallDetails){
+                    console.log('load default');
+                    if((!!!$('#appointment_nature option:selected').val() && !!!window.threadComputedData.appointment_nature) || ($scope.attendeesManagerCtrl.attendees.length == 0))
+                        return;
+                    console.log('after return');
+                    virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
+                    virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash;
+                    virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentAppointment.behaviour;
+
+                    var suffixClient = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? ' (défaut)' : '';
+                    var suffixLater = virtualMeetingsHelperCtrl.currentBehaviour == 'later' ? ' (défaut)' : '';
+                    var suffixInterlocutor = virtualMeetingsHelperCtrl.currentBehaviour == 'ask_interlocutor' ? ' (défaut)' : '';
+
+                    $scope.callTargets = [
+                        {name:"L'interlocuteur" + suffixInterlocutor, value:'interlocutor'},
+                        {name:"Décidé plus tard" + suffixLater, value:'later'},
+                        {name:"Le client (" + window.threadAccount.full_name + ')' + suffixClient, value:'client'}
+                    ];
+
+                    var suffixMobile = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Mobile' ? ' (défaut)' : '';
+                    var suffixLandline = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Landline' ? ' (défaut)' : '';
+                    var suffixSkype = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Skype' ? ' (défaut)' : '';
+                    var suffixConfcall = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Confcall' ? ' (défaut)' : '';
+
+                    $scope.callSupports = [
+                        {name:"Téléphone portable" + suffixMobile, value:'mobile'},
+                        {name:"Téléphone fixe" + suffixLandline, value:'landline'},
+                        //{name:"Skype" + suffixSkype, value:'skype'},
+                        {name:"Confcall" + suffixConfcall, value:'confcall'}
+                    ];
+
+                    var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
+
+                    var initialConfTarget;
+                    var initialTargetInfos = '';
+                    switch(virtualMeetingsHelperCtrl.currentBehaviour){
+                        case 'propose':
+                            initialConfTarget = 'client';
+                            initialTargetInfos = {email: threadOwner.email, name: threadOwner.displayNormalizedName(), guid: threadOwner.guid};
+                            break;
+                        case 'ask_interlocutor':
+                            initialConfTarget = 'interlocutor';
+                            initialTargetInfos = $scope.callTargetsInfos.length == 1 ? $scope.callTargetsInfos[0] : '';
+                            break;
+                        case 'later':
+                            initialConfTarget = 'later';
+                            break;
+                        default:
+                            initialConfTarget = 'later';
+                    }
+
+                    var initialConfSupport = '';
+
+                    switch(virtualMeetingsHelperCtrl.currentVAConfig.label){
+                        case 'Mobile':
+                            initialConfSupport = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? 'mobile' : '';
+                            break;
+                        case 'Landline':
+                            initialConfSupport = 'landline';
+                            break;
+                        case 'Skype':
+                            initialConfSupport = 'skype';
+                            break;
+                        case 'Confcall':
+                            initialConfSupport = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? 'confcall' : '';
+                            break;
+                        case 'Webex':
+                            initialConfSupport = 'confcall';
+                            break;
+                        default:
+                            initialConfSupport = '';
+                    }
+
+                    $scope.currentConf = $.extend({}, $scope.currentConf, {target: initialConfTarget, targetInfos: initialTargetInfos, support: initialConfSupport, details: ''});
+
+                    if(!$scope.$$phase){
+                        $scope.$apply();
+                    }
+
+                    $scope.configLoaded = true;
+
+                    if(refreshCallDetails)
+                        $scope.computeCallDetails();
+                    else
+                        updateWindowCallInstructions();
+
+                    updateNotesCallingInfos();
+                };
 
                 $scope.computeCallDetails = function(){
                     var details = '';
+                    $scope.detailsFrozen = false;
                     if($scope.currentConf.target != 'later'){
-                        var attendees = attendeesManagerCtrl.attendees_manager.attendees.slice();
                         var attendee;
 
                         if($scope.currentConf.target == 'client'){
-                            attendee = _.find(attendees, function (a) {
-                                return a.email == window.threadAccount.email;
-                            })
+                            attendee = $scope.attendeesManagerCtrl.getThreadOwner();
                         }
 
                         if ($scope.currentConf.target == 'interlocutor'){
-                            attendee = _.find(attendees, function (a) {
-                                return a.email == $scope.currentConf.targetName;
-                            })
+                            if($scope.lastTargetInfos != '')
+                                $scope.currentConf.targetInfos = $scope.lastTargetInfos;
+
+                            attendee = findTargetAttendee($scope.currentConf.targetInfos);
                         }
 
                         if(attendee != undefined)
@@ -104,54 +289,282 @@
                                     details = attendee.confCallInstructions;
                                     break;
                             }
+
+                            if(attendee.isClient)
+                                $scope.detailsFrozen = true;
                         }
                     }
+                    if($scope.currentConf.target){
+                        $scope.currentConf.details = details;
+                        // Check if an angular digest cycle is running. If not, we force one to refresh the UI (happens when we update an attendee (i.e. phone number, skype...)
+                        // If it is the case, then it means that we are in a function callback (in this case the attendeesRedreshed event) and we must force the digest cycle to run
 
-                    $scope.currentConf.details = details;
+                        if(!$scope.$$phase){
+                            $scope.$apply();
+                        }
+                    }
+                    updateWindowCallInstructions();
+                };
+
+                $scope.detailsOverrided = function(){
+                    if($scope.currentConf.target == 'interlocutor') {
+                        var updatedDetails = $scope.currentConf.details;
+                        var attendeeAttribute = '';
+                        var attendee = findTargetAttendee($scope.currentConf.targetInfos);
+
+                        if(attendee != undefined && !attendee.isClient)
+                        {
+                            switch($scope.currentConf.support) {
+                                case 'mobile':
+                                    attendeeAttribute = 'mobile';
+                                    break;
+                                case 'landline':
+                                    attendeeAttribute = 'landline';
+                                    break;
+                                case 'skype':
+                                    attendeeAttribute = 'skypeId';
+                                    break;
+                                case 'confcall':
+                                    attendeeAttribute = 'confCallInstructions';
+                                    break;
+                            }
+
+                            if(attendeeAttribute != ''){
+                                attendee[attendeeAttribute] = updatedDetails;
+                                // Need to call this manually here because the watcher doesn't seem to pick the changes done from here
+                                // and so doesn't trigger the updateNotes method
+                                $scope.attendeesManagerCtrl.updateNotes();
+                            }
+                        }
+                    }
+                    updateWindowCallInstructions();
                 };
 
                 $scope.setEventNotes = function(){
+                    var notes = $('#notes').val();
                     var message = '';
-                    var threadOwner =_.find(attendeesManagerCtrl.attendees_manager.attendees.slice(), function (a) {
-                        return a.email == window.threadAccount.email;
-                    });
+                    var callingInfos = '';
+                    var phoneInfos = '';
+                    var confcallInfos = '';
 
-                    if(virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note)
-                        message += 'Portable ' + threadOwner.firstName + ' : ' + threadOwner.mobile + "\n";
-                    if(virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note)
-                        message += 'Fixe ' + threadOwner.firstName + ' : ' + threadOwner.landline + "\n";
-                    if(virtualMeetingsHelperCtrl.currentVAConfig.skype_in_note)
-                        message += 'SkypeId ' + threadOwner.firstName + ' : ' + threadOwner.skypeId + "\n";
-                    if(virtualMeetingsHelperCtrl.currentVAConfig.confcall_in_note)
-                        message += 'Confcall ' + threadOwner.firstName + ' : ' + threadOwner.confCallInstructions + "\n";
+                    var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
 
-                    $("textarea#notes").val(message);
+                    if(threadOwner){
+                        if(rescueInNotesUsed() && !$scope.currentConf.details){
+                            console.log('here');
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_mobile || virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_landline){
+                                phoneInfos = threadOwner.displayRescuePhoneInformations(virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_landline, virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_mobile);
+                                if(phoneInfos != '')
+                                    callingInfos += "\n" + localize('common.phone') + ' ' + phoneInfos;
+
+                            }
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_skype){
+                                if(threadOwner.skypeId != '')
+                                    callingInfos += "\n" + 'Skype : ' + threadOwner.skypeId;
+                            }
+
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_confcall){
+                                if(threadOwner.confCallInstructions != '')
+                                    callingInfos += "\n" + localize("email_templates.send_call_instructions.give_target_confcall", {
+                                        details: threadOwner.confCallInstructions
+                                    });
+                            }
+                        }else{
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note || virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note){
+                                phoneInfos = threadOwner.displayRescuePhoneInformations(virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note, virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note);
+                                if(phoneInfos != '')
+                                    callingInfos += "\n" + localize('common.phone') + ' ' + phoneInfos;
+                            }
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.skype_in_note){
+                                if(threadOwner.skypeId != '')
+                                    callingInfos += "\n" + 'Skype : ' + threadOwner.skypeId;
+                            }
+                            if(virtualMeetingsHelperCtrl.currentVAConfig.confcall_in_note){
+                                if(threadOwner.confCallInstructions != '')
+                                    callingInfos += "\n" + localize("email_templates.send_call_instructions.give_target_confcall", {
+                                        details: threadOwner.confCallInstructions
+                                    });
+                            }
+                        }
+
+                        if(callingInfos != ''){
+                            message += "-" + localize('events.call_instructions.organizer_infos', {locale: window.currentLocale})+ "-----------------";
+                            message += "\n" +threadOwner.displayNormalizedName();
+                            message += callingInfos;
+                            message += "\n----------------------------------------";
+                        }
+
+                        var tmpNotes = notes.replace(/\n/g,'');
+                        var regexFrResult = threadOwnerInfosReFr.exec(tmpNotes);
+                        var regexEnResult = threadOwnerInfosReEn.exec(tmpNotes);
+
+                        if(regexFrResult == null && regexEnResult == null){
+                            var space = message == '' ? '' : "\n\n";
+                            notes = message + space + notes;
+                        }else{
+                            var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
+                            notes = notes.replace(/\n/g,'__n').replace(usedRegex, message).replace(/__n/g, "\n");
+                        }
+
+                        $("#notes").val(notes);
+                    }
+
+                    $scope.setCallingInstructionsInNotes();
+                };
+
+                $scope.setCallingInstructionsInNotes = function(){
+                    var notes = $('#notes').val();
+                    var tmpNotes = "";
+                    var message = '';
+                    var content = '';
+
+                    if($scope.currentConf.details){
+                        if ($scope.currentConf.support == 'mobile' || $scope.currentConf.support == 'landline'){
+                            var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
+
+                            if(attendeesWithoutAssistant.length == 2){
+                                var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: parseInt($scope.currentConf.targetInfos.guid)}))[0];
+
+                                content = localize("events.call_instructions.display_single_attendee", {
+                                    target_name: $scope.currentConf.targetInfos.name,
+                                    caller_name: caller.displayNormalizedName(),
+                                    details: $scope.currentConf.details
+                                });
+                            }else{
+                                content = localize("events.call_instructions.give_target_number", {
+                                    target_name: $scope.currentConf.targetInfos.name,
+                                    details: $scope.currentConf.details
+                                });
+                            }
+                        }
+                        else if($scope.currentConf.support == 'confcall'){
+                            content = localize("events.call_instructions.give_confcall", {
+                                target_name: $scope.currentConf.targetInfos.name,
+                                details: $scope.currentConf.details
+                            });
+                        }
+                    }
+
+                    if(content != ''){
+                        window.threadComputedData.call_instructions.event_instructions = content;
+
+                        message += "-" + localize('events.call_instructions.title', {locale: window.currentLocale}) + "----------------";
+                        message += "\n" + content;
+                        message += "\n----------------------------------------";
+                    }
+
+                    tmpNotes = notes.replace(/^\s+|\s+$/g, '').replace(/\n/g, '__n');
+                    var regexFrResult = callingInstructionsInfosReFr.exec(tmpNotes);
+                    var regexEnResult = callingInstructionsInfosReEn.exec(tmpNotes);
+
+                    if(regexFrResult == null && regexEnResult == null){
+                        var space = message == '' ? '' : "\n\n";
+                        notes = message + space + notes;
+                    }else{
+                        var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
+                        notes = tmpNotes.replace(usedRegex, message).replace(/__n/g, "\n");
+                    }
+                    $("#notes").val(notes);
                 };
 
                 $scope.targetChanged = function($event){
-                  console.log($scope.currentConf);
                     if($scope.currentConf.target == 'later')
-                        $scope.currentConf.targetName = '';
+                        $scope.currentConf.targetInfos = '';
+                    else if($scope.currentConf.target == 'interlocutor'){
+                        if($scope.callTargetsInfos.length == 1){
+                            $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
+                            setTimeout(function() {
+                                angular.element($('#call_target_infos option')).filter(function () {
+                                    return $(this).text().trim() == $scope.callTargetsInfos[0].displayName;
+                                }).prop('selected', true);
+                            }, 0);
+                        }else{
+                            $scope.currentConf.targetInfos = '';
+                        }
+
+                        $scope.changeCurrentVAConfig("demander à l'interlocuteur");
+                    }
+                    else if($scope.currentConf.target == 'client'){
+                        var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
+                        $scope.currentConf.targetInfos = {email: threadOwner.email, name: threadOwner.displayNormalizedName(), guid: threadOwner.guid};
+                        $scope.changeCurrentVAConfig($scope.currentConf.support);
+                    }
+                    updateWindowCallInstructions();
+
                 };
 
-                setTimeout(function(){
-                    var attendeesWithoutThreadOwner = _.filter(attendeesManagerCtrl.attendees_manager.attendees.slice(), function (a) {
-                        return a.email != window.threadAccount.email;
+                $scope.getAttendees = function(){
+                  return $scope.attendeesManagerCtrl.attendees;
+                };
+
+                $scope.isVirtualAppointment = function(){
+                    return ['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1;
+                };
+
+                $scope.cacheCurrentInterlocutor = function(){
+                    if($scope.currentConf.target == 'interlocutor') {
+                        $scope.cachedInterlocutor = jQuery.extend(true, {}, findTargetAttendee($scope.currentConf.targetInfos));
+                    }
+
+                    console.log($scope.cachedInterlocutor);
+                };
+
+                $scope.restoreCachedInterlocutor = function(){
+                  if($scope.cachedInterlocutor){
+                      Object.assign($scope.attendeesManagerCtrl.getAttendeeByGuid($scope.cachedInterlocutor.guid), $scope.cachedInterlocutor);
+                      $scope.computeCallDetails();
+                  }
+                };
+
+                $scope.updateTargetInfosSelect = function(){
+                    // Should find another method to be sure that the ng-options are set before executing code
+                    setTimeout(function(){
+                        angular.element($($element[0]).find('#call_target_infos option')).filter(function(){
+                            return $(this).text().trim() == $scope.computeOptionText($scope.currentConf.targetInfos).trim();
+                        }).prop('selected', true);
+                    }, 0);
+                };
+
+                updateWindowCallInstructions = function(){
+                    if(!$.isEmptyObject($scope.currentConf)){
+                        window.threadComputedData.call_instructions = $scope.currentConf;
+                    }
+                };
+
+                getCurrentThreadOwnerInfos = function(notes){
+                    return threadOwnerInfosRe.exec(notes);
+                };
+
+                findTargetAttendee = function(targetInfos){
+                    return _.find($scope.attendeesManagerCtrl.attendees, function (a) {
+                        var found = false;
+                        if(targetInfos.email != null)
+                            found = a.email == targetInfos.email;
+                        else if(targetInfos.name != null)
+                            found = a.displayNormalizedName() == targetInfos.name;
+                        return found;
                     });
+                };
 
-                    $scope.callTargetsNames = _.map(attendeesWithoutThreadOwner, function (a) {
-                        var _lastName = a.lastName == null ? '' : ' ' + a.lastName;
-                        var name = a.firstName + _lastName;
-                        return {value: a.email, name: name + ' (' + a.email + ')'};
-                    });
+                setAttendeeSelected = function(attendee){
+                    setTimeout(function() {
+                        angular.element($('#call_target_infos option')).filter(function () {
+                            return $(this).text().trim() == $scope.computeOptionText({
+                                    name: attendee.displayNormalizedName(),
+                                    email: attendee.email
+                                });
+                        }).prop('selected', true);
+                    }, 0);
+                };
 
-                    var initialTargetName = attendeesWithoutThreadOwner.length == 1 ? attendeesWithoutThreadOwner[0] : '';
-                    $scope.currentConf = {target: initialConfTarget, targetName: initialTargetName, support: initialConfSupport, details: ''};
-                    $scope.$apply();
+                rescueInNotesUsed = function(){
+                    if(!virtualMeetingsHelperCtrl.currentVAConfig)
+                        return false;
+                    var currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig;
 
-                    $scope.computeCallDetails();
-                    $scope.setEventNotes();
-                }, 3000);
+                    return currentVAConfig.rescue_with_confcall || currentVAConfig.rescue_with_landline || currentVAConfig.rescue_with_mobile || currentVAConfig.rescue_with_skype;
+                };
+
             }],
             controllerAs: 'virtualMeetingsHelperCtrl'
         }

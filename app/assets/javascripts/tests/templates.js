@@ -1411,8 +1411,8 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Perfect. I've sent invites for a dinner at the office:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00"
+                en: "Perfect. I've sent invites for a dinner at the office:\nToday" + ", " + window.helpers.capitalize(moment().tz("Europe/Paris").hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().tz("Europe/Paris").hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00"
             }
         },
         {
@@ -3448,5 +3448,184 @@ window.testsData.templatesData = [
             en: "Got it, I've made a note of that!",
             fr: "Très bien, c'est noté."
         }
-    }]
+    }],
+    [
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'client',
+        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+        //        support: 'mobile',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'interlocutor',
+        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+        //        support: 'mobile',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'client',
+        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+        //        support: 'landline',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'interlocutor',
+        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+        //        support: 'landline',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
+        //    }
+        //},
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+                support: 'landline',
+                details: '06 02 02 02 02'
+            },
+            expectedResults: {
+                en: "I have noted dialing instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+                support: 'mobile',
+                details: '06 02 02 02 02'
+            },
+            expectedResults: {
+                en: "I have noted dialing instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'client',
+                targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+                support: 'confcall',
+                details: 'confcall instructions to follow fzfzefezfzefzefezf'
+            },
+            expectedResults: {
+                en: "I have noted dialing instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+                support: 'confcall',
+                details: 'confcall instructions to follow fzfzefezfzefzefezf'
+            },
+            expectedResults: {
+                en: "I have noted dialing instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'client',
+                targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+                support: 'skype',
+                details: 'ClientSkypeId'
+            },
+            expectedResults: {
+                en: "I have noted John Doe’s Skype id in the event.",
+                fr: "J’ai inséré l'identifiant Skype de John Doe dans l’événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+                support: 'skype',
+                details: 'InterlocutorSkypeId'
+            },
+            expectedResults: {
+                en: "I have noted Samy Johnny’s Skype id in the event.",
+                fr: "J’ai inséré l'identifiant Skype de Samy Johnny dans l’événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'client',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            expectedResults: {
+                en: "Could you please let me know the dialing you want to be contacted into?",
+                fr: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'later',
+                targetInfos: '',
+                support: '',
+                details: ''
+            },
+            expectedResults: {
+                en: "",
+                fr: ""
+            }
+        }
+    ],
+    [
+        {
+            action: "ask_additional_informations",
+            required_additional_informations: "mobile_only",
+            attendees: ["Attendee 1"],
+            expectedResults: {
+                en: "",
+                fr: "Atte"
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            required_additional_informations: "mobile_only",
+            attendees: ["Attendee 1", "Attendee 2"],
+            expectedResults: {
+                en: "",
+                fr: ""
+            }
+        }
+    ]
+
 ];

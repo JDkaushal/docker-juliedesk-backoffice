@@ -35,6 +35,7 @@
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
     window.otherAttendeesWithAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
@@ -50,11 +51,36 @@
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 
+    window.lastAppointmentType = '';
+
+    var notesSpacingRe = new RegExp(/(?:__n){3,}/g);
+
     $(document).ready(function() {
+
+        if(window.threadComputedData.locale)
+            window.currentLocale = window.threadComputedData.locale;
     //$(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
         }
+
+        $("#appointment_nature").change(function () {
+            if(window.lastAppointmentType == '')
+                window.lastAppointmentType = $("#appointment_nature").val();
+
+            setAppointmentValues();
+            if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $("#appointment_nature").val()) {
+                askNextLinearFormEntry();
+            }
+            redrawDifferentTimezoneWarner();
+
+            refreshVirtualAppointmentsHelper();
+
+            updateNotesCallingInfos();
+
+            window.lastAppointmentType = $("#appointment_nature").val();
+        });
+
         initAppointments();
 
         $(".validate-linear-form-entry-button").click(function() {
@@ -90,14 +116,6 @@
             window.afterFormLoadedCallback();
         }
 
-        $("#appointment_nature").change(function () {
-            setAppointmentValues();
-            if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $("#appointment_nature").val()) {
-                    askNextLinearFormEntry();
-            }
-            redrawDifferentTimezoneWarner();
-        });
-
         $(".change-account-init-button").click(function() {
             $(this).hide();
             $(".change-account-container").show();
@@ -125,6 +143,7 @@
 
 
         $("input[name='locale']").change(function () {
+            window.setCurrentLocale($(this).val());
             setNotes();
             updateNotesCallingInfos();
             reProcessTitle();
@@ -213,6 +232,7 @@
         $(".messages-thread-info-panel .created-event-panel").show();
         window.currentEventTile.redraw();
         window.currentEventTile.fetchEvent(function(data) {
+            window.currentEventTile.displayCallingInfosForm();
             window.currentEventData = data;
             window.currentEventTile.redraw();
             if(window.afterEventFetched) {
@@ -282,16 +302,42 @@
     };
 
     function updateNotesCallingInfos() {
-        angular.element($('#attendeesCtrl')).scope().updateNotes();
+        if(window.threadDataIsEditable){
+            $('#notes').val('');
+            if(['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1){
+                console.log('Updating notes');
+
+                angular.element($('#attendeesCtrl')).scope().updateNotes();
+                var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+                if(vmHelper){
+                    if(vmHelper.configLoaded)
+                        vmHelper.setEventNotes();
+                    else
+                        refreshVirtualAppointmentsHelper();
+                }
+                var notes = $('#notes').val().trim().replace(/\n/g, '__n');
+                $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
+
+                if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
+                    var currentEventNotesNode = $('.created-event-panel .notes');
+                    var currentEventNotes = currentEventNotesNode.val();
+                    var newEventDescription = '';
+                    if(vmHelper && vmHelper.isVirtualAppointment()){
+                        var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+                        var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
+                        if(regExResult != null){
+                            newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
+                            currentEventNotesNode.val(newEventDescription);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     function newConstraintTile(data, expand) {
         var possibleAttendees = window.getInfoPanelAttendees();
-        // ALready set in the angular controller
-//        possibleAttendees.push({
-//            email: window.threadAccount.email,
-//            name: window.threadAccount.full_name
-//        });
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
         new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
@@ -386,7 +432,6 @@
                     if (window.threadAccount.company_hash && window.threadAccount.company_hash.name != '' && companies.indexOf(window.threadAccount.company_hash.name) > -1)
                         realCompaniesCount--;
 
-                    console.log(realCompaniesCount);
                     _.each(companies, function (company) {
                         var attendees = _.filter(groupedPresentAttendees[company], function (a) {
                             return !a.isAssistant;
@@ -410,8 +455,7 @@
                             if (attendees.length == 1) {
                                 attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
                             }
-                            console.log(i);
-                            console.log(realCompaniesCount);
+
                             if (i < realCompaniesCount)
                                 attendeesDisplay += ' | ';
                         }
@@ -437,8 +481,10 @@
                 if (slashMatches && slashMatches.length == 1)
                     attendeesDisplay = attendeesDisplay.replace('|', '<>');
 
-
-                $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
+                var newTitle = appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay;
+                $("input#summary").val(newTitle);
+                if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only')
+                    $('.event-tile-panel .title').val(newTitle);
             }
         }
     }
@@ -481,9 +527,7 @@
             setAppointmentNatureAndChangeIfNeeded(possibleAppointmentsTypes[0].kind);
         }
         else if(possibleAppointmentsTypes.length > 1) {
-            var presentAttendees = _.filter(window.getInfoPanelAttendees(), function(a){
-                return a.isPresent;
-            });
+            var presentAttendees = window.getInfoPanelAttendeesWithoutAssistants();
 
             var possibleAppointment = _.find(possibleAppointmentsTypes, function(appointment) {
                 var rule = appointment.appointment_kind_hash.rule;
@@ -523,9 +567,9 @@
             $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
         });
 
+        console.log('init appointments');
         $("select#appointment_family_nature").change(function() {
             processAppointmentType();
-            updateNotesCallingInfos();
         });
 
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
@@ -551,6 +595,17 @@
             }
         }
 
+    }
+
+    function refreshVirtualAppointmentsHelper(){
+        var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+        if(window.threadDataIsEditable && $.isEmptyObject(window.threadComputedData.call_instructions) && !window.currentEventTile
+                || $("select#appointment_nature").val() == 'skype'
+                || $("select#appointment_nature").val() == 'webex'
+                || $("select#appointment_nature").val() == 'hangout'
+                || $("select#appointment_family_nature").val() == 'call' && (window.lastAppointmentType == 'skype' || window.lastAppointmentType == 'hangout' || window.lastAppointmentType == 'webex' || window.lastAppointmentType == 'confcall' || window.lastAppointmentType == 'call')){
+            virtualMeetingsHelper.loadDefaultConfig(true);
+        }
     }
 
     function redrawLinearForm() {
@@ -689,48 +744,34 @@
             if(addressComplement && addressComplement.length > 0) {
                 notes = addressComplement + "\n" + notes;
             }
-            console.log(notes.replace(/\n/g, '1'))
             $("textarea#notes").val(notes);
         }
         else {
-            console.log(notes.replace(/\n/g, '1'))
             $("textarea#notes").val(notes);
         }
     }
 
     window.getCallInstructions = function(){
-        var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
-        var callInstructions = virtualMeetingsHelper.currentConf;
+        var instructions = '';
+        if($('#virtual-meetings-helper').length > 0)
+        {
+            var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+            instructions = virtualMeetingsHelper.currentConf;
+            instructions.event_instructions = window.threadComputedData.call_instructions.event_instructions;
+        }
 
-        console.log(callInstructions);
-        return callInstructions;
+        return instructions;
+    };
+
+    window.getInfoPanelAttendeesWithoutAssistants = function(){
+        var contacts = angular.element($('#attendeesCtrl')).scope();
+
+        return contacts.getAttendeesWithoutAssistant();
     };
 
     window.getInfoPanelAttendees = function() {
         var contacts = angular.element($('#attendeesCtrl')).scope();
         var attendees = contacts.attendees.slice();
-//        var filteredAttendees = attendees.filter(function(attendee){
-//            return attendee.isPresent;
-//        }).map(function(attendee) {
-//            return{
-//                email: attendee.email,
-//                firstName: attendee.firstName,
-//                lastName: attendee.lastName,
-//                name: attendee.name,
-//                usageName: attendee.usageName,
-//                gender: attendee.gender,
-//                isAssistant: attendee.isAssistant,
-//                assisted: attendee.assisted,
-//                assistedBy: attendee.assistedBy,
-//                company: attendee.company,
-//                timezone: attendee.timezone,
-//                landline: attendee.landline,
-//                mobile: attendee.mobile,
-//                skypeId: attendee.skypeId,
-//                confCallInstructions: attendee.confCallInstructions,
-//                isPresent: attendee.isPresent
-//            }
-//        });
         // We save every contact on the thread even those who will not attend
         var filteredAttendees = attendees.map(function(attendee) {
             return{
@@ -756,14 +797,6 @@
             }
         });
         return filteredAttendees;
-//        return $("input#attendee[type='checkbox']:checked").map(function() {
-//            var $contact = $(this).closest(".contact");
-//
-//            return {
-//                name: $contact.find("input#attendee_name").val(),
-//                email: $contact.find(".attendee-email").html()
-//            };
-//        }).get();
     };
 </script>
 
@@ -927,9 +960,10 @@
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
         </div>
         <div class="number-to-call-part-container">
+          <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
 
-          <div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>
-          <%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>
+          <!--<div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>-->
+          <!--<%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>-->
         </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>

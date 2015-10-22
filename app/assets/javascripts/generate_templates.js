@@ -452,6 +452,35 @@ window.generateEmailTemplate = function (params) {
     }
     else if(params.action == "send_confirmation") {
         message += localize("email_templates.confirmation");
+    }else if(params.action == "send_call_instructions") {
+        var callInstructions = params.callInstructions;
+        var callInstructionsMessage = '';
+
+        if(callInstructions.target == 'later')
+            message += '';
+        else if(callInstructions.targetInfos.name != '' && callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
+            if (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall') {
+                //callInstructionsMessage = localize("email_templates.send_call_instructions.give_target_number", {
+                //    target_name: callInstructions.targetInfos.name,
+                //    details: callInstructions.details
+                //});
+                callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
+            } else if (callInstructions.support == 'skype') {
+                var names = callInstructions.targetInfos.name.split(" ");
+                var usageName = '';
+                if(names.length > 0) {
+                    usageName = window.helpers.capitalize(names[0]);
+                }
+                callInstructionsMessage = localize("email_templates.send_call_instructions.placed_skype_in_notes", {
+                    target_name: usageName
+                });
+            }
+        }else{
+            if(callInstructions.target != 'client')
+                callInstructionsMessage = localize("email_templates.send_call_instructions.missing_infos");
+        }
+
+        message += callInstructionsMessage;
     }
     window.setCurrentLocale(previousLocale);
     return message;

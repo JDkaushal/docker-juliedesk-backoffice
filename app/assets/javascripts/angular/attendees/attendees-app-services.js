@@ -6,7 +6,6 @@
         this.threadOwner = {};
 
         this.displayAttendeeForm = function(args){
-            console.log(args);
             $rootScope.$broadcast('attendeeFormDisplayed', args);
         };
 
