@@ -43,7 +43,7 @@ class Message < ActiveRecord::Base
 
 
     possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
-
+    possible_emails.reject! { |c| c.blank? }
 
     if params[:only_reply_all]
       computed_initial_to_emails = initial_to_emails.uniq
@@ -64,9 +64,17 @@ class Message < ActiveRecord::Base
           possible: possible_emails.sort
       }
     else
-      computed_initial_to_emails = attendee_emails.uniq - all_client_emails
-      computed_initial_cc_emails = (initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails
+      # Need to reject empty string because there can be some if the operator enter an email then don't suppress it appropriately
+      computed_initial_to_emails = (attendee_emails.uniq - all_client_emails).reject { |c| c.blank? }
+      computed_initial_cc_emails = ((initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails).reject { |c| c.blank? }
 
+      puts '*' * 50
+      puts computed_initial_to_emails
+      puts '*' * 50
+
+      puts '*' * 50
+      puts computed_initial_to_emails.sort
+      puts '*' * 50
       if computed_initial_to_emails.empty?
         result = {
             to: [client_email].sort.map(&:downcase),

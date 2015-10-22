@@ -10,6 +10,9 @@
           <%= content_tag(:span, I18n.t("common.add_attendee")) %>
       <% end %>
     </div>
+    <div ng-if="attendees_manager.attendees.length == 0">
+      <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
+    </div>
     <div class="contact-group" ng-repeat="(key, value) in attendees_manager.attendees | groupBy: 'company' | toArray:true | organizeContactArray">
       <div class="attendee-company-title">
         {{ key }}
