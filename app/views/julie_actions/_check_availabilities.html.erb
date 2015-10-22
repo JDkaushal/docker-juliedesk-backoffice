@@ -130,14 +130,13 @@
                     var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
                     emailInNotes = "\n\n" + textData.text;
                 }
-
-
+                
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
                     description: numberToCall + window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
-                    attendees: <%== @messages_thread.computed_data[:attendees].to_json %>,
+                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
                     location: location,
                     all_day: false,
                     private: window.threadComputedData.private,
