@@ -132,8 +132,6 @@
                   console.log($scope.currentConf);
                     if($scope.currentConf.target == 'later')
                         $scope.currentConf.targetName = '';
-
-
                 };
 
                 setTimeout(function(){

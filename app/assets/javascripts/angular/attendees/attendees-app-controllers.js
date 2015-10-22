@@ -281,7 +281,7 @@
         };
 
         this.fetchAttendeeFromClientContactNetwork = function(){
-
+            $('.submit-classification').attr('disabled', true);
             $http({
                 url: '/client_contacts/fetch?client_email=' + window.threadAccount.email,
                 method: "GET",
@@ -289,6 +289,7 @@
                     return a.email;
                 })}
             }).then(function success(attendeesDetails) {
+                $('.submit-classification').attr('disabled', false);
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
             }, function error(response){
