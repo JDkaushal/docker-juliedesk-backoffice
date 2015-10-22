@@ -8,6 +8,7 @@
     <% possible_attendees = attendees.map(&:symbolize_keys) + messages_thread.contacts %>
     <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
     <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
+
     <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
         <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
         <% if attendee || (

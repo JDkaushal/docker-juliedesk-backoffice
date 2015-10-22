@@ -115,7 +115,8 @@ class Account
     }.map{|account|
       {
           name: account['full_name'],
-          email: account['email']
+          email: account['email'],
+          isClient: 'true'
       }
     }
   end

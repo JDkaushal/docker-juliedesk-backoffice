@@ -298,7 +298,10 @@
             });
         },
         assistantDisplayText: function(){
-            return this.assistedBy.usageName + ' (' + this.assistedBy.email + ')';
+            var name = '';
+            if(this.assistedBy != undefined)
+                name = this.assistedBy.usageName + ' (' + this.assistedBy.email + ')';
+            return name;
         },
         displayNormalizedName: function(){
             var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : ' ' + this.lastName;

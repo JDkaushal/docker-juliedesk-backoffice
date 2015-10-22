@@ -300,7 +300,8 @@ class MessagesThread < ActiveRecord::Base
         if all_emails.include? attendee[:email]
           thread_contacts << {
               email: email,
-              name: account['full_name']
+              name: account['full_name'],
+              isClient: 'true'
           }
         end
       end
