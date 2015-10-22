@@ -2,6 +2,7 @@ class JulieActionsController < ApplicationController
 
   def show
     @julie_action = JulieAction.find params[:id]
+    puts @julie_action.inspect
     @message = @julie_action.message_classification.message
 
     @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten

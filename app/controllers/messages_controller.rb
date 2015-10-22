@@ -51,13 +51,13 @@ class MessagesController < ApplicationController
   end
 
   def wait_for_preference_change
-    message = Message.find params[:id]
+    @message = Message.find params[:id]
 
-    message.messages_thread.delegate_to_support
+    @message.messages_thread.delegate_to_support
 
     url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/wait_for_preferences_change"
     x = Net::HTTP.post_form(URI.parse(url), {
-        email: message.messages_thread.account_email,
+        email: @message.messages_thread.account_email,
         access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
     })
 

@@ -75,7 +75,6 @@
             redrawDifferentTimezoneWarner();
 
             refreshVirtualAppointmentsHelper();
-
             updateNotesCallingInfos();
 
             if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
@@ -97,8 +96,8 @@
                     }
                 }
             }
-
             window.lastAppointmentType = $("#appointment_nature").val();
+            refreshAttendeesMissingInformations();
         });
 
         initAppointments();
@@ -320,6 +319,14 @@
         }
         return null;
     };
+    function refreshAttendeesMissingInformations(){
+        var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+        if(!attendeesManager.$$phase){
+            attendeesManager.$apply(function(){
+                attendeesManager.lookupAttendeesMissingInfos();
+            });
+        }
+    }
 
     function updateNotesCallingInfos() {
         if(window.threadDataIsEditable){
@@ -355,6 +362,9 @@
                 }
 //            }
         }
+
+        var notes = $('#notes').val().trim().replace(/\n/g, '__n');
+        $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
     }
 
     function newConstraintTile(data, expand) {
@@ -472,13 +482,15 @@
                             }
                         } else {
                             i++;
-                            attendeesDisplay += company;
-                            if (attendees.length == 1) {
-                                attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
-                            }
+                            if(attendees.length > 0){
+                                attendeesDisplay += company;
+                                if (attendees.length == 1) {
+                                    attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
+                                }
 
-                            if (i < realCompaniesCount)
-                                attendeesDisplay += ' | ';
+                                if (i < realCompaniesCount)
+                                    attendeesDisplay += ' | ';
+                            }
                         }
                     });
                 }
@@ -588,9 +600,11 @@
             $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
         });
 
-        console.log('init appointments');
         $("select#appointment_family_nature").change(function() {
             processAppointmentType();
+
+            updateNotesCallingInfos();
+            refreshVirtualAppointmentsHelper();
         });
 
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
@@ -615,20 +629,18 @@
                 }
             }
         }
-
     }
 
     function refreshVirtualAppointmentsHelper(){
         var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
 
-        console.log(window.lastAppointmentType);
-
         if(window.threadDataIsEditable && $.isEmptyObject(window.threadComputedData.call_instructions) && !window.currentEventTile
                 || ($("select#appointment_nature").val() == 'skype' || $("select#appointment_nature").val() == 'webex' || $("select#appointment_nature").val() == 'hangout') && window.lastAppointmentType != ''
                 || $("select#appointment_family_nature").val() == 'call' && window.lastAppointmentType != ''){
-            console.log('here');
             virtualMeetingsHelper.loadDefaultConfig(true);
         }
+//        var virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
+//        virtualAppointmentsHelper.refresh();
     }
 
     function redrawLinearForm() {
@@ -820,6 +832,12 @@
             }
         });
         return filteredAttendees;
+    };
+
+    window.presentAttendees = function() {
+        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+            return attendee.isPresent;
+        });
     };
 </script>
 

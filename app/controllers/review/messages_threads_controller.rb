@@ -31,8 +31,9 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def learnt
-    messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
-    messages_thread.operator_actions_groups.select{|oag| oag.review_status == OperatorActionsGroup::REVIEW_STATUS_TO_LEARN && oag.operator_id == params[:operator_id].to_i}.each do |oag|
+    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
+
+    @messages_thread.operator_actions_groups.select{|oag| oag.review_status == OperatorActionsGroup::REVIEW_STATUS_TO_LEARN && oag.operator_id == params[:operator_id].to_i}.each do |oag|
       oag.update_attribute :review_status, OperatorActionsGroup::REVIEW_STATUS_LEARNT
     end
 
@@ -40,19 +41,19 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def reviewed
-    messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
+    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
 
     data = JSON.parse(params[:data]).map(&:with_indifferent_access)
 
-    messages_thread.operator_actions_groups.each do |operator_actions_group|
+    @messages_thread.operator_actions_groups.each do |operator_actions_group|
       data_entry = data.select{|d| d[:operator_actions_group_id] == operator_actions_group.id}.first
       if data_entry
         operator_actions_group.update_attributes({
-            review_status: (data_entry[:notation] == 5)?(OperatorActionsGroup::REVIEW_STATUS_REVIEWED):(OperatorActionsGroup::REVIEW_STATUS_TO_LEARN),
-            review_notation: data_entry[:notation],
-            group_review_status: (data_entry[:should_review_in_group])?(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN):(OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET),
-            review_comment: data_entry[:comment]
-                                                 })
+          review_status: (data_entry[:notation] == 5)?(OperatorActionsGroup::REVIEW_STATUS_REVIEWED):(OperatorActionsGroup::REVIEW_STATUS_TO_LEARN),
+          review_notation: data_entry[:notation],
+          group_review_status: (data_entry[:should_review_in_group])?(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN):(OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET),
+          review_comment: data_entry[:comment]
+         })
       end
     end
 
@@ -60,8 +61,8 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def group_reviewed
-    messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
-    messages_thread.operator_actions_groups.select{|oag| oag.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN}.each do |oag|
+    @messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
+    @messages_thread.operator_actions_groups.select{|oag| oag.group_review_status == OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN}.each do |oag|
       oag.update_attribute :group_review_status, OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT
     end
 
@@ -110,11 +111,15 @@ class Review::MessagesThreadsController < ReviewController
     end
   end
 
+  # Maybe needs a redirect when it go false
   def only_mine
     if params[:operator_id].nil?
       params[:operator_id] = session[:operator_id]
     end
-    session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
+
+    unless session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
+      redirect_to "/"
+    end
   end
 
   def close_tab

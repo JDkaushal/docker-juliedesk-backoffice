@@ -1,4 +1,8 @@
 FactoryGirl.define do
+  sequence :account_email do |n|
+    "email#{n}@test.com"
+  end
+
   factory :messages_thread do
 
     transient do
@@ -10,5 +14,23 @@ FactoryGirl.define do
         create_list(:message_complete,  evaluator.messages_count, messages_thread: messages_thread)
       end
     end
+
+    factory :messages_thread_for_inbox_count do
+      account_email
+
+      trait :is_delegated_to_founders do
+        delegated_to_founders true
+      end
+
+      trait :in_in_inbox do
+        in_inbox true
+      end
+
+      factory :messages_thread_for_inbox_count_in_inbox, traits: [:in_in_inbox]
+      factory :messages_thread_for_inbox_count_delegated_to_founders_in_inbox, traits: [:is_delegated_to_founders, :in_in_inbox]
+      factory :messages_thread_for_inbox_count_delegated_to_founders_not_in_inbox, traits: [:is_delegated_to_founders]
+
+    end
+
   end
 end

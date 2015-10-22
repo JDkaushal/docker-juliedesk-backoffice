@@ -43,7 +43,8 @@ EventTile.prototype.displayCallingInfosForm = function(){
 
     var eventTile = this;
     // We display the form in the edit event window when the event is owned by someone (we are editing it)
-    if(window.getCurrentAppointment().appointment_kind_hash.is_virtual)
+    var currentAppointment = window.getCurrentAppointment();
+    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual)
     {
         var locationContainerNode = $('.location-container');
         locationContainerNode.append('<div id="event_update_virtual_meetings_helper" style="margin-top: 10px;width:270px;"><virtual-meetings-helper id="event_update_vm_ctrl"/></div>');
@@ -198,12 +199,12 @@ EventTile.prototype.disableAll = function() {
     //$('#event_update_vm_ctrl').find('#call_target_infos').prop('disabled', false);
     //$('#event_update_vm_ctrl').find('#call_support').prop('disabled', false);
     //$('#event_update_vm_ctrl').find('#call_details').prop('disabled', false);
-
 };
 
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
+    console.log(eventTile.event);
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
@@ -359,6 +360,7 @@ EventTile.prototype.redraw = function() {
             eventTile.$selector.find("#event-edit-button").show();
         }
         angular.element($('#virtual-meetings-helper')).scope().forcedDetailsFrozen = true;
+
         $('#virtual-meetings-helper input').prop('disabled', true);
         $('#virtual-meetings-helper select').prop('disabled', true);
     }
@@ -554,7 +556,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
 
     if(ev.call_instructions)
         eventData.call_instructions = JSON.parse(ev.call_instructions);
-
+    
     return eventData;
 };
 
@@ -689,6 +691,7 @@ EventTile.prototype.saveEvent = function() {
     }
     else {
         eventTile.showSpinner();
+        console.log("Update event");
         CommonHelpers.externalRequest({
             action: "update_event",
             email: eventTile.accountEmail,
@@ -817,25 +820,6 @@ EventTile.prototype.hideRecurrenceContainer = function() {
 
 EventTile.prototype.initActions = function() {
     var eventTile = this;
-
-    //angular.element(document).ready(function () {
-    //    var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
-    //    console.log(vmHelper);
-    //    eventTile.$selector.find("#event-edit-button").click(function() {
-    //        vmHelper.formEditMode = true;
-    //    });
-    //
-    //    eventTile.$selector.find("#event-cancel-button").click(function() {
-    //        vmHelper.formEditMode = false;
-    //    });
-    //});
-
-    //if(!eventTile.isEditing()){
-    //    angular.element(document).ready(function () {
-    //        $('#virtual-meetings-helper input').prop('disabled', true);
-    //        $('#virtual-meetings-helper select').prop('disabled', true);
-    //    });
-    //}
 
     eventTile.$selector.find("#event-edit-button").click(function() {
         eventTile.enableAll();

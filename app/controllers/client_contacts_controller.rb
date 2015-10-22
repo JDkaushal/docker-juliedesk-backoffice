@@ -1,4 +1,5 @@
 class ClientContactsController < ApplicationController
+
   def fetch
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
     accounts_cache = Account.accounts_cache
@@ -45,9 +46,9 @@ class ClientContactsController < ApplicationController
               lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
               usageName: cache['usage_name'],
               gender: contact.gender,
-              isAssistant: contact.is_assistant.to_s,
-              assisted: contact.assisted.to_s,
-              assistedBy: contact.assisted_by,
+              isAssistant: "false",
+              assisted: "false",
+              assistedBy: nil,
               company: cache['company_hash'] ? cache['company_hash']["name"] : '',
               timezone: cache['default_timezone_id'],
               landline: cache['landline_number'],
@@ -116,9 +117,8 @@ class ClientContactsController < ApplicationController
       end
     end
 
-    if params['contacts_email'].present?
+    if params['contacts_emails'].present?
       not_found_contacts_emails = params['contacts_emails'] - @contacts_infos.map{|c| c[:email]}
-
       not_found_contacts_emails.each do |contact_email|
         if(contact = ClientContact.where(email: contact_email).first)
           @contacts_infos.push({
@@ -185,7 +185,6 @@ class ClientContactsController < ApplicationController
 
   def fetch_one
     @contact = ClientContact.find_by(client_email: params[:client_email], email:params[:email])
-
     accounts_cache_light = Account.accounts_cache(mode: 'light')
 
     is_client = false

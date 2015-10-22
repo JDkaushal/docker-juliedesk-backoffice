@@ -34,18 +34,20 @@
                     $scope.attendeesManagerCtrl = scope;
                 };
 
-                //$scope.$watch('currentConf.target', function(newVal, oldVal){
-                //    if(newVal != null && newVal == 'custom'){
-                //        Object.assign($scope.currentConf, {targetInfos: '', support: '', event_instructions: ''});
-                //        console.log('assign');
-                //    }
-                //}, true);
+                $scope.$watch('currentConf.target', function(newVal, oldVal){
+                    $scope.attendeesManagerCtrl.lookupAttendeesMissingInfos();
+                    if(!$scope.attendeesManagerCtrl.$$phase){
+                        $scope.attendeesManagerCtrl.$apply();
+                    }
+                }, true);
 
                 $scope.$watch('currentConf.targetInfos', function(newVal, oldVal){
                     if(newVal != null){
+                        $scope.forcedDetailsFrozen = $.isEmptyObject(newVal);
                         $scope.lastTargetInfos = newVal;
                         $scope.cacheCurrentInterlocutor();
                     }
+
                     $scope.computeCallDetails();
                 }, true);
 
@@ -167,16 +169,22 @@
                     $scope.currentConf = window.threadComputedData.call_instructions;
 
                     if(window.threadComputedData.call_instructions.targetInfos && window.threadComputedData.call_instructions.targetInfos.guid && window.threadComputedData.call_instructions.targetInfos.name) {
-                        var guid = window.threadComputedData.call_instructions.targetInfos.guid;
+                        //var guid = window.threadComputedData.call_instructions.targetInfos.guid;
+                        var selectedAttendee = findTargetAttendee(window.threadComputedData.call_instructions.targetInfos);
                         // If the currently thread-saved targetInfos guid is the temporary one, we find the real one and use it to generate the correct message XX to call YY
-                        if(window.threadComputedData.call_instructions.targetInfos.guid.length == 36)
-                            guid = findTargetAttendee(window.threadComputedData.call_instructions.targetInfos).guid;
+                        //if(window.threadComputedData.call_instructions.targetInfos.guid.length == 36)
+                        //    guid = selectedAttendee.guid;
 
-                        $scope.currentConf.targetInfos = {
-                            name: window.threadComputedData.call_instructions.targetInfos.name,
-                            email: window.threadComputedData.call_instructions.targetInfos.email,
-                            guid: guid
-                        };
+                        if(selectedAttendee){
+                            $scope.currentConf.targetInfos = {
+                                name: selectedAttendee.displayNormalizedName(),
+                                email: selectedAttendee.email,
+                                guid: selectedAttendee.guid
+                            };
+                        }else{
+                            $scope.currentConf.targetInfos = {};
+                        }
+
                     }
                     else {
                         $scope.currentConf.targetInfos = {};
@@ -306,8 +314,9 @@
                         }
 
                         if ($scope.currentConf.target == 'interlocutor'){
-                            if($scope.lastTargetInfos != '')
+                            if($scope.lastTargetInfos != '' && $scope.lastTargetInfos.guid && $scope.lastTargetInfos.guid != -1){
                                 $scope.currentConf.targetInfos = $scope.lastTargetInfos;
+                            }
 
                             attendee = findTargetAttendee($scope.currentConf.targetInfos);
                             if(attendee != undefined)
@@ -389,6 +398,7 @@
                     var confcallInfos = '';
 
                     var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
+                    var isVirtual = $scope.isVirtualAppointment();
 
                     if(threadOwner){
                         if(rescueInNotesUsed() && !$scope.currentConf.details){
@@ -410,7 +420,6 @@
                                         });
                             }
                         }else{
-                            var isVirtual = $scope.isVirtualAppointment();
                             if(!isVirtual)
                                 var currentAppointment = window.getCurrentAppointment();
 
@@ -458,7 +467,7 @@
                         $("#notes").val(notes);
                     }
 
-                    if($scope.isVirtualAppointment()){
+                    if(isVirtual){
                         $scope.setCallingInstructionsInNotes();
 
                     }
@@ -563,12 +572,13 @@
                     else if($scope.currentConf.target == 'custom'){
                         Object.assign($scope.currentConf, {targetInfos: '', support: '', details: '', event_instructions: ''});
                     }
+
                     updateWindowCallInstructions();
 
                 };
 
                 $scope.getAttendees = function(){
-                  return $scope.attendeesManagerCtrl.attendees;
+                    return $scope.attendeesManagerCtrl.attendees;
                 };
 
                 $scope.isVirtualAppointment = function(){
@@ -583,10 +593,10 @@
                 };
 
                 $scope.restoreCachedInterlocutor = function(){
-                  if($scope.cachedInterlocutor){
-                      Object.assign($scope.attendeesManagerCtrl.getAttendeeByGuid($scope.cachedInterlocutor.guid), $scope.cachedInterlocutor);
-                      $scope.computeCallDetails();
-                  }
+                    if($scope.cachedInterlocutor){
+                        Object.assign($scope.attendeesManagerCtrl.getAttendeeByGuid($scope.cachedInterlocutor.guid), $scope.cachedInterlocutor);
+                        $scope.computeCallDetails();
+                    }
                 };
 
                 $scope.cacheCurrentConf = function(){
@@ -625,6 +635,8 @@
                         var found = false;
                         if(targetInfos.email != null)
                             found = a.email == targetInfos.email;
+                        else if(targetInfos.guid != null)
+                            found = a.guid == targetInfos.guid;
                         else if(targetInfos.name != null)
                             found = a.displayNormalizedName() == targetInfos.name;
                         return found;
@@ -661,6 +673,21 @@
                 checkNullity = function(attr){
                     return attr != null && attr != undefined;
                 };
+
+                //Tests Purpose ---------------------------------------------
+
+                $scope.getCurrentAppointment = function(){
+                    return virtualMeetingsHelperCtrl.currentAppointment;
+                };
+
+                $scope.getCurrentVAConfig = function(){
+                    return virtualMeetingsHelperCtrl.currentVAConfig;
+                };
+
+                $scope.getCurrentBehaviour = function(){
+                    return virtualMeetingsHelperCtrl.currentBehaviour;
+                };
+                //-----------------------------------------------------------
 
             }],
             controllerAs: 'virtualMeetingsHelperCtrl'

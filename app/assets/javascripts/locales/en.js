@@ -161,12 +161,35 @@ window.wordings['en'] = {
             give_target_confcall: "Conference Dialing: \n%{details}",
             give_target_skype: "%{target_name}’s Skype id was included in the invite: %{details}",
             missing_infos: "Could you please let me know on which number you will be reachable at?"
+        },
+        ask_additional_informations:{
+            multiple_attendees:{
+                phone: {
+                    multiple_recipients: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case.",
+                    single_recipient: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case."
+                },
+                skype: {
+                    multiple_recipients: "%{attendees_names}, could you let me know your Skype Ids?",
+                    single_recipient: "%{attendees_names}, could you let me know your Skype Id?"
+                }
+            },
+            single_attendee:{
+                phone:{
+                    assisted: "Please%{courtesyString} indicate the number %{attendees_names} can be reached at just in case.",
+                    nonassisted: "Please%{courtesyString} indicate the number you can be reached at just in case."
+                },
+                skype:{
+                    assisted: "Could you let me know %{attendees_names}'s Skype Id?",
+                    nonassisted: "Could you let me know your Skype Id?"
+                }
+            }
         }
     },
     common: {
         cancel: "Cancel",
         or: "or",
-        phone: "Phone:"
+        phone: "Phone:",
+        egalement: "also"
     },
     events: {
         new_event: "New event",

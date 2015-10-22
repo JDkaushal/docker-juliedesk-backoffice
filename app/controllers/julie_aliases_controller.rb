@@ -17,8 +17,8 @@ class JulieAliasesController < ApplicationController
   end
 
   def update
-    julia_alias = JulieAlias.find params[:id]
-    julia_alias.update_attributes(julie_alias_params)
+    @julie_alias = JulieAlias.find params[:id]
+    @julie_alias.update_attributes(julie_alias_params)
     redirect_to action: :edit
   end
 

@@ -100,34 +100,6 @@
 
         });
 
-//        $('#create-event-button').click(function() {
-//            if(window.threadComputedData.client_agreement) {
-//                message = '';
-//                message += window.generateEmailTemplate({
-//                    action: "invites_sent",
-//                    isPostpone: isPostpone,
-//                    timeSlotToCreate: window.timeSlotToCreate,
-//                    appointment: window.getCurrentAppointment(),
-//                    address: window.getCurrentAddress(),
-//                    timezoneId: window.threadComputedData.timezone,
-//                    defaultTimezoneId: window.threadAccount.default_timezone_id,
-//                    allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
-//                    locale: window.threadComputedData.locale
-//
-//                });
-//                if(window.threadComputedData.is_virtual_appointment){
-//                    message += "\n";
-//                    message += window.generateEmailTemplate({
-//                        action: 'send_call_instructions',
-//                        callInstructions: window.threadComputedData.call_instructions,
-//                        locale: window.threadComputedData.locale
-//                    });
-//                }
-//
-//                window.setReplyMessage(message, 'all', window.otherEmails);
-//            }
-//        });
-
         $("#create-event-button").click(function () {
             if(window.threadComputedData.client_agreement) {
                 $("#create-event-button").attr('disabled', true);
@@ -140,17 +112,6 @@
 
                var location = window.threadComputedData.location;
 
-//                var numberToCall = "";
-//                if((window.threadComputedData.appointment_nature == "call" ||
-//                        window.threadComputedData.appointment_nature == "confcall") &&
-//                        window.threadComputedData.number_to_call != "") {
-//                    if(window.getCurrentAppointment().number_in_location) {
-//                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
-//                    }
-//                    else {
-//                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
-//                    }
-//                }
                 var emailInNotes = "";
                 if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
                     <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
@@ -178,10 +139,8 @@
                             }
                         }
                     }
-
                 }
 
-                console.log(location);
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
@@ -226,6 +185,8 @@
                     }
 
                     var message = '';
+                    var callInstructionsMessage = '';
+
                     message += window.generateEmailTemplate({
                         action: "invites_sent",
                         isPostpone: isPostpone,
@@ -248,13 +209,12 @@
 
                     if(window.threadComputedData.is_virtual_appointment){
                         var call_instructions = window.threadComputedData.call_instructions;
-                        if(isPostpone){
 
+                        if(isPostpone){
                             if($('#event_update_vm_ctrl').length > 0)
                                 call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
                             else
                                 call_instructions = window.threadComputedData.call_instructions;
-
 
                             data['call_instructions'] = call_instructions;
 
@@ -271,13 +231,26 @@
                                 }
                             });
                         }
-                        console.log(call_instructions);
-                        message += "\n\n";
-                        message += window.generateEmailTemplate({
+
+                        callInstructionsMessage = window.generateEmailTemplate({
                             action: 'send_call_instructions',
                             callInstructions: call_instructions,
                             locale: window.threadComputedData.locale
                         });
+
+                        if(callInstructionsMessage != ''){
+                            message += "\n\n";
+
+                            message += callInstructionsMessage;
+                        }
+
+                    }
+
+                    var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+                    var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
+                    var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+                    if(missingInfosMessage != ''){
+                        message += missingInfosMessage;
                     }
 
                     window.setReplyMessage(message, 'all', window.otherEmails);

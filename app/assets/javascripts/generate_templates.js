@@ -460,6 +460,7 @@ window.generateEmailTemplate = function (params) {
             message += '';
         else if(callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
             if (callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall')) {
+
                 //callInstructionsMessage = localize("email_templates.send_call_instructions.give_target_number", {
                 //    target_name: callInstructions.targetInfos.name,
                 //    details: callInstructions.details
@@ -483,7 +484,30 @@ window.generateEmailTemplate = function (params) {
         }
 
         message += callInstructionsMessage;
+    }else if(params.action == "ask_additional_informations"){
+        var attendees = params.attendees;
+        var multipleAttendees = params.multipleAttendees;
+        var assisted = params.assisted;
+        var requiredAdditionalInformations = params.requiredAdditionalInformations;
+        var redundantCourtesy = params.redundantCourtesy;
+
+        var templateName = "email_templates.ask_additional_informations" + (multipleAttendees ? '.multiple_attendees' : '.single_attendee') + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
+        console.log(templateName);
+
+        if(!multipleAttendees)
+            templateName += assisted ? ".assisted" : ".nonassisted";
+        else
+            templateName += attendees.length > 1 ? ".multiple_recipients" : ".single_recipient";
+
+        var courtesyString = redundantCourtesy ? ' ' + localize('common.egalement'): '';
+
+        message += localize(templateName, {
+            attendees_names: attendees.join(', '),
+            courtesyString: courtesyString
+        });
+
     }
+
     window.setCurrentLocale(previousLocale);
     return message;
 };

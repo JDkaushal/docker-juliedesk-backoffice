@@ -158,6 +158,7 @@
                     return originalAttendee;
                 };
 
+                
                 this.importContactInfos = function(){
                     $http({
                         url: '/client_contacts/fetch_one?client_email=' + attendeesFormCtrl.getThreadOwner().email + '&email=' + attendeesFormCtrl.attendeeInForm.email,
@@ -190,15 +191,23 @@
         var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
         var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
+        angular.element(document).ready(function () {
+            $scope.virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
+        });
+
         this.loaded = false;
         $scope.attendees = [];
+        $scope.missingInformationLookedFor = '';
         this.readOnly = window.threadDataIsEditable == undefined;
 
         //Watchers------------------------------------------------------------------------
         $scope.$watch('attendees', function (newVal, oldVal){
             updateNotesCallingInfos();
-            if(newVal.length > 0)
+
+            if(newVal.length > 0){
                 $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
+                $scope.lookupAttendeesMissingInfos();
+            }
         }, true);
         //--------------------------------------------------------------------------------
 
@@ -224,7 +233,6 @@
                 var emailLowCase = attendee.email ? attendee.email.toLowerCase() : undefined;
                 return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase)) == -1 && (emailLowCase != window.threadAccount.email.toLowerCase())
             }), function(attendee) {
-
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
                     var searchedEmail = attendee.email;
                     //
@@ -255,16 +263,16 @@
                 //if(aliasedEmails.indexOf(informations.email) > -1)
                 //    // If the current attendee was in the aliases response from the server, it means it is in the accounts cache => he is client
                 //    informations.isClient = "true";
+
                 if(Object.keys(companies).indexOf(informations.email) > -1)
                     informations.company = companies[informations.email];
-
                 //If the current email is the principal email for a user
                 if(aliasedEmails.indexOf(informations.email) > -1){
                     informations.isClient = "true";
                     informations.company = companies[informations.email];
 
                     // If it is in the recipients, we create the attendee, because if there will be an alias for this email in the recipients, it will be discarded
-                    if(window.currentToCC.indexOf(informations.email) > -1){
+                    if(window.currentToCC.indexOf(informations.email.toLowerCase()) > -1){
 
                         attendeesCtrl.createAttendee(informations, attendee);
                      // If it is not in the recipients, we check to see if an alias for this email is in the recipients, if not we create the attendee, if yes we don't because we will use the alias instead
@@ -273,7 +281,7 @@
 
                         // Check if an alias for this email is in the recipients
                         _.each(aliases[informations.email], function(alias){
-                            if(window.currentToCC.indexOf(alias) > -1)
+                            if(window.currentToCC.indexOf(alias.toLowerCase()) > -1)
                                 aliasInTheRecipients = true;
                         });
                         // If yes we don't create the attendee, because we will use the alias
@@ -301,7 +309,7 @@
                         informations.company = companies[clientMainEmail];
 
                     // We found the client main email and it is the recipients, so we will use it as the attendee, we do nothing here
-                    if (clientMainEmail && window.currentToCC.indexOf(clientMainEmail) > -1) {
+                    if (clientMainEmail && window.currentToCC.indexOf(clientMainEmail.toLowerCase()) > -1) {
 
                     }
                     // If we found it or not and it is not in the recipients, we can create the attendee
@@ -328,11 +336,11 @@
             if(window.threadAccount.company_hash != undefined)
                 companyName = window.threadAccount.company_hash.name;
 
-            var currentToCCDowncase = _.map(window.currentToCC, function(email){return email.toLowerCase()});
+            //var currentToCCDowncase = _.map(window.currentToCC, function(email){return email.toLowerCase()});
             var threadOwnerEmail = window.threadAccount.email;
             if(window.threadAccount.email_aliases.length > 0){
                 _.each(window.threadAccount.email_aliases, function(alias){
-                    if(currentToCCDowncase.indexOf(alias.toLowerCase()) > -1){
+                    if(window.currentToCC.indexOf(alias.toLowerCase()) > -1){
                         threadOwnerEmail = alias;
                     }
                 });
@@ -373,12 +381,13 @@
             });
 
             reProcessTitle();
+            $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
         };
 
         this.createAttendee = function(informations, attendee){
             var a = new Attendee({
                 guid: informations.id || $scope.guid(),
-                email: informations.email,
+                email: informations.email ? informations.email.toLowerCase() : undefined,
                 firstName: informations.firstName,
                 lastName: informations.lastName,
                 name: (informations.firstName + ' ' + informations.lastName).trim(),
@@ -393,9 +402,11 @@
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
-                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email) > -1),
+                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1),
                 isClient: informations.isClient == "true",
-                isThreadOwner: false
+                isThreadOwner: false,
+                hasMissingInformations: false,
+                missingInformationsTemp: {}
             });
 
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
@@ -472,19 +483,6 @@
         };
         //--------------------------------------------------------------------------------
 
-        $scope.getAssistedByEmail = function(assistant){
-            return _.find($scope.attendees, function(a){
-                var found = false;
-                if(a.assistedBy)
-                    found = a.assistedBy.email == assistant.email;
-                return found;
-            });
-        };
-
-        this.getCurrentContactsInfos = function(notes) {
-            return contactInfosRe.exec(notes);
-        };
-
         //Thread Owner--------------------------------------------------------------------
         $scope.getThreadOwner = function(){
             if($scope.threadOwner == undefined){
@@ -504,9 +502,15 @@
         //--------------------------------------------------------------------------------
 
         //Helpers-------------------------------------------------------------------------
-        $scope.getAttendeeByGuid = function(guid){
-            return _.find($scope.attendees, function(a){
+        $scope.getAttendeeByGuid = function(guid) {
+            return _.find($scope.attendees, function (a) {
                 return a.guid == guid;
+            });
+        };
+
+        $scope.getAttendeesWithoutThreadOwner = function(){
+            return _.filter($scope.attendees, function (a) {
+                return $scope.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
             });
         };
 
@@ -535,25 +539,186 @@
         };
 
         $scope.getAttendeesOnPresence = function(isPresent){
-            return _.filter($scope.attendees, function(a){
+            return _.filter($scope.attendees, function(a) {
                 return a.isPresent == isPresent;
+
             });
         };
 
-        $scope.getAttendeesWithoutAssistant = function(){
+        $scope.lookupAttendeesMissingInfos = function(){
+            if($("select#appointment_nature").val()){
+                var attendeesFromOtherCompanies = _.filter($scope.getAttendeesFromOtherCompanies(),function(att){
+                    return !att.isClient && att.isPresent;
+                });
+
+                // When we are in a virtual appointment and targeting an interlocutor, we don't care for the missing informations
+
+                $scope.missingInformationLookedFor = window.getCurrentAppointment().required_additional_informations;
+                var methodToCheck;
+
+                switch($scope.missingInformationLookedFor){
+                    case 'mobile_only':
+                        methodToCheck = 'has_mobile';
+                        break;
+                    case 'skype_only':
+                        methodToCheck = 'has_skype';
+                        break;
+                    case 'landline_or_mobile':
+                        methodToCheck = 'has_mobile_or_landline';
+                        break;
+                    default:
+                        methodToCheck = 'empty';
+                        break;
+                }
+
+                // We check on attendees that are not in the threadOwner company nor are client at Julie Desk and are present
+                _.each(attendeesFromOtherCompanies, function(a){
+                    a.hasMissingInformations = methodToCheck == 'empty' ? false : !a[methodToCheck]();
+                });
+
+            }
+        };
+
+        this.displayMissingInformationsText = function(){
+            var text = '';
+                switch($scope.missingInformationLookedFor){
+                    case 'mobile_only':
+                        text = 'Tel Mob. manquant';
+                        break;
+                    case 'skype_only':
+                        text = 'Skype manquant';
+                        break;
+                    case 'landline_or_mobile':
+                        text = 'Tel Mob. ou Fix. manquant';
+                        break;
+                }
+            return text;
+        };
+
+        // We use that on the input blur event when setting the missing informations from the attendees details thumbnail to avoid having the input disappear after the first character is entered
+        $scope.setAttendeeProperty = function(attendee, property, value){
+            attendee[property] = attendee.missingInformationsTemp[property];
+            attendee.missingInformationsTemp[property] = '';
+        };
+
+        $scope.checkMissingInformations = function(params){
+            params = params || {};
+            var check = true;
+            var result = {missingInfos: false, attendeesNames: [], assisted: false};
+            var methodToCheck;
+            var message = '';
+            var presentAttendees;
+            var presentAttendeesLength = 0;
+
+            if($("select#appointment_nature").val()){
+                result.infoScope = window.getCurrentAppointment().required_additional_informations;
+
+                if(result.infoScope != 'empty'){
+                    switch(result.infoScope){
+                        case 'mobile_only':
+                            methodToCheck = 'has_mobile';
+                            break;
+                        case 'skype_only':
+                            methodToCheck = 'has_skype';
+                            break;
+                        case 'landline_or_mobile':
+                            methodToCheck = 'has_mobile_or_landline';
+                            break;
+                    }
+
+                    if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target == 'interlocutor')
+                        check = false;
+
+                    if(check){
+                        presentAttendees = $scope.getAttendeesWithoutAssistant();
+                        presentAttendeesLength = presentAttendees.length;
+
+                        var attendeesWithMissingInfos = $scope.getAttendeesWithMissingInfos(presentAttendees);
+
+                        if(attendeesWithMissingInfos.length > 0){
+                            result.missingInfos = true;
+
+                            if(presentAttendeesLength == 2){
+                                // We can assess that if there is only one attendee (not counting assistants) plus the threadOwner and the attendeesMissingInfos array is not empty that the first item in this array is our only attendee
+                                // So we can access it to check whether it is assited by someone
+
+                                result.assisted = !!attendeesWithMissingInfos[0].assistedBy && !!attendeesWithMissingInfos[0].assistedBy.guid;
+                            }
+
+                            _.each(attendeesWithMissingInfos, function(a){
+                                if(a.usageName){
+                                    var names = a.usageName.split(" ");
+                                    if(names.length > 0) {
+                                        result.attendeesNames.push(window.helpers.capitalize(names[0]));
+                                    }
+                                }
+                            });
+                        }
+
+                        //_.each($scope.getAttendeesFromOtherCompanies(), function(a){
+                        //    if(!a[methodToCheck]()){
+                        //        result.missingInfos = true;
+                        //        if(a.usageName){
+                        //            var names = a.usageName.split(" ");
+                        //            if(names.length > 0) {
+                        //                result.attendeesNames.push(window.helpers.capitalize(names[0]));
+                        //            }
+                        //        }
+                        //    }
+                        //});
+
+                    }
+                }
+            }
+
+            if(result.missingInfos){
+                var message = params.sticky ? "\n" : "\n\n";
+                message += window.generateEmailTemplate({
+                    action: 'ask_additional_informations',
+                    requiredAdditionalInformations: result.infoScope,
+                    assisted: result.assisted,
+                    attendees: result.attendeesNames,
+                    // More than one attendee including the threadOwner
+                    multipleAttendees: presentAttendeesLength > 2,
+                    redundantCourtesy: params.redundantCourtesy || false,
+                    locale: window.threadComputedData.locale
+                });
+            }
+
+            return message;
+        };
+
+        $scope.getAttendeesFromOtherCompanies = function(){
+            var threadOwner = $scope.getThreadOwner();
+            return _($scope.attendees).filter(function(a) {
+                return a.company !== threadOwner.company;
+            });
+        };
+
+        $scope.getAttendeesWithoutAssistant = function() {
             var attendees = $scope.getAttendeesOnPresence(true).slice();
 
-            _.each(attendees.slice(), function(a){
-                if(a.assistedBy && a.assistedBy.guid){
-                    attendees = _.without(attendees, _.findWhere(attendees,{guid: a.assistedBy.guid}));
+            _.each(attendees.slice(), function (a) {
+                if (a.assistedBy && a.assistedBy.guid) {
+                    attendees = _.without(attendees, _.findWhere(attendees, {guid: a.assistedBy.guid}));
                 }
             });
 
             return attendees;
         };
 
-        this.getCurrentContactsInfos = function(notes){
-            return contactInfosRe.exec(notes);
+        $scope.getAttendeesWithMissingInfos = function(attendees){
+            return _.filter(attendees, function(a){
+                return a.hasMissingInformations;
+            });
+        };
+
+        this.getCurrentContactsInfosEn = function(notes){
+            return contactInfosReEn.exec(notes);
+        };
+
+        this.getCurrentContactsInfosFr = function(notes){
+            return contactInfosReFr.exec(notes);
         };
 
         this.getCompaniesNames = function(){
@@ -597,8 +762,7 @@
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
     }
-
-
+    
     var Class = function(methods) {
         var klass = function() {
             this.initialize.apply(this, arguments);
@@ -680,6 +844,18 @@
         getName: function(){
             return this.usageName || this.email;
         },
+        has_mobile_or_landline: function(){
+            return this.has_mobile() || this.has_landline();
+        },
+        has_mobile: function(){
+            return Boolean(this.mobile);
+        },
+        has_landline: function(){
+            return Boolean(this.landline);
+        },
+        has_skype: function(){
+            return Boolean(this.skypeId);
+        },
         computeContactNotes: function(locale){
             var notes = "";
             var that = this;
@@ -726,3 +902,5 @@
         }
     });
 })();
+
+

@@ -1,3 +1,6 @@
+//= require localize
+//= require locales/en.js
+//= require locales/fr.js
 //= require jquery
 //= require timezone_picker
 
@@ -6,9 +9,13 @@
 //= require moment-timezone-with-data
 //= require angular
 //= require angular_dependencies
+//= require helpers
 
 function reProcessTitle() {
 };
 
 function processAppointmentType(){
+};
+
+function updateNotesCallingInfos(){
 };

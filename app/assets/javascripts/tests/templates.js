@@ -3449,69 +3449,70 @@ window.testsData.templatesData = [
             fr: "Très bien, c'est noté."
         }
     }],
+    //[
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'client',
+        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+        //        support: 'mobile',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'interlocutor',
+        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+        //        support: 'mobile',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'client',
+        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+        //        support: 'landline',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
+        //    }
+        //},
+        //{
+        //    action: "send_call_instructions",
+        //    callInstructions:{
+        //        target: 'interlocutor',
+        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+        //        support: 'landline',
+        //        details: '06 02 02 02 02'
+        //    },
+        //    expectedResults: {
+        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
+        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
+        //    }
+        //},
     [
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'client',
-        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
-        //        support: 'mobile',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'interlocutor',
-        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
-        //        support: 'mobile',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'client',
-        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
-        //        support: 'landline',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'interlocutor',
-        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
-        //        support: 'landline',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
-        //    }
-        //},
         {
             action: "send_call_instructions",
             callInstructions:{
-                target: 'interlocutor',
-                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
-                support: 'landline',
+                target: 'client',
+                targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+                support: 'mobile',
                 details: '06 02 02 02 02'
             },
             expectedResults: {
-                en: "I have noted dialing instructions in the event.",
+                en: "I have included the dial-in instructions in the event.",
                 fr: "J'ai inséré les instructions d'appel dans l'événement."
             }
         },
@@ -3524,7 +3525,34 @@ window.testsData.templatesData = [
                 details: '06 02 02 02 02'
             },
             expectedResults: {
-                en: "I have noted dialing instructions in the event.",
+                en: "I have included the dial-in instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'client',
+                targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
+                support: 'landline',
+                details: '06 02 02 02 02'
+            },
+            expectedResults: {
+                en: "I have included the dial-in instructions in the event.",
+                fr: "J'ai inséré les instructions d'appel dans l'événement."
+
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
+                support: 'mobile',
+                details: '06 02 02 02 02'
+            },
+            expectedResults: {
+                en: "I have included the dial-in instructions in the event.",
                 fr: "J'ai inséré les instructions d'appel dans l'événement."
             }
         },
@@ -3537,7 +3565,7 @@ window.testsData.templatesData = [
                 details: 'confcall instructions to follow fzfzefezfzefzefezf'
             },
             expectedResults: {
-                en: "I have noted dialing instructions in the event.",
+                en: "I have included the dial-in instructions in the event.",
                 fr: "J'ai inséré les instructions d'appel dans l'événement."
             }
         },
@@ -3550,7 +3578,7 @@ window.testsData.templatesData = [
                 details: 'confcall instructions to follow fzfzefezfzefzefezf'
             },
             expectedResults: {
-                en: "I have noted dialing instructions in the event.",
+                en: "I have included the dial-in instructions in the event.",
                 fr: "J'ai inséré les instructions d'appel dans l'événement."
             }
         },
@@ -3563,8 +3591,8 @@ window.testsData.templatesData = [
                 details: 'ClientSkypeId'
             },
             expectedResults: {
-                en: "I have noted John Doe’s Skype id in the event.",
-                fr: "J’ai inséré l'identifiant Skype de John Doe dans l’événement."
+                en: "I have noted John’s Skype id in the event.",
+                fr: "J’ai inséré l'identifiant Skype de John dans l’événement."
             }
         },
         {
@@ -3576,8 +3604,8 @@ window.testsData.templatesData = [
                 details: 'InterlocutorSkypeId'
             },
             expectedResults: {
-                en: "I have noted Samy Johnny’s Skype id in the event.",
-                fr: "J’ai inséré l'identifiant Skype de Samy Johnny dans l’événement."
+                en: "I have noted Samy’s Skype id in the event.",
+                fr: "J’ai inséré l'identifiant Skype de Samy dans l’événement."
             }
         },
         {
@@ -3589,7 +3617,20 @@ window.testsData.templatesData = [
                 details: ''
             },
             expectedResults: {
-                en: "Could you please let me know the dialing you want to be contacted into?",
+                en: "",
+                fr: ""
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            expectedResults: {
+                en: "Could you please let me know on which number you will be reachable at?",
                 fr: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
             }
         },
@@ -3610,22 +3651,99 @@ window.testsData.templatesData = [
     [
         {
             action: "ask_additional_informations",
-            required_additional_informations: "mobile_only",
-            attendees: ["Attendee 1"],
+            requiredAdditionalInformations: "landline_or_mobile",
+            attendees: ["Attendee1"],
+            multipleAttendees: true,
+            redundantCourtesy: false,
             expectedResults: {
-                en: "",
-                fr: "Atte"
+                en: "Attendee1, please indicate the number you can be reached at just in case.",
+                fr: "Attendee1, merci de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
         {
             action: "ask_additional_informations",
-            required_additional_informations: "mobile_only",
-            attendees: ["Attendee 1", "Attendee 2"],
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: false,
             expectedResults: {
-                en: "",
-                fr: ""
+                en: "Please indicate the number you can be reached at just in case.",
+                fr: "Merci de me faire parvenir votre numéro de téléphone au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: false,
+            expectedResults: {
+                en: "Please indicate the number Attendee1 can be reached at just in case.",
+                fr: "Merci de me faire parvenir le numéro de téléphone de Attendee1 au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: false,
+            expectedResults: {
+                en: "Could you let me know Attendee1's Skype Id?",
+                fr: "Pourriez-vous de me faire parvenir l'identifiant de Attendee1 ?"
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: true,
+            expectedResults: {
+                en: "Please also indicate the number you can be reached at just in case.",
+                fr: "Merci aussi de me faire parvenir votre numéro de téléphone au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: true,
+            expectedResults: {
+                en: "Could you let me know your Skype Id?",
+                fr: "Pourriez de me faire parvenir votre identifiant ?"
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1", "Attendee2", "Attendee3"],
+            multipleAttendees: true,
+            redundantCourtesy: false,
+            expectedResults: {
+                en: "Attendee1, Attendee2, Attendee3, please indicate the number you can be reached at just in case.",
+                fr: "Attendee1, Attendee2, Attendee3, merci de me faire parvenir vos numéros de téléphone au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1", "Attendee2", "Attendee3"],
+            multipleAttendees: true,
+            redundantCourtesy: false,
+            expectedResults: {
+                en: "Attendee1, Attendee2, Attendee3, could you let me know your Skype Ids?",
+                fr: "Attendee1, Attendee2, Attendee3, pourriez-vous de me faire parvenir vos identifiants ?"
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1", "Attendee2", "Attendee3"],
+            multipleAttendees: true,
+            redundantCourtesy: true,
+            expectedResults: {
+                en: "Attendee1, Attendee2, Attendee3, please also indicate the number you can be reached at just in case.",
+                fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
             }
         }
     ]
-
 ];

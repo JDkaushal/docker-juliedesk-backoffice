@@ -72,6 +72,42 @@
         padding-left: 15px;
     }
 
+    .attendee-additional-informations{
+        margin-right: 7px;
+
+        label{
+            color: #7A7D84;
+            font-weight: 400;
+            margin-bottom: 0;
+            font-size: 12px;
+        }
+        input[type="text"]{
+            border-radius: 1px;
+            font-size: 15px;
+        }
+
+        .ellipsable{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            float: left;
+            width: 100%;
+        }
+
+        .missing-call-informations{
+            margin: 10px 0px 10px 0px;
+            background: url(<%= asset_path 'warning.png' %>);
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+        }
+
+        .additional-informations-fields{
+            border-top-style: solid;
+            border-top-width: 1px;
+            border-top-color: $borderGrey;
+            padding-top: 5px;
+        }
+    }
+
     .attendee-details{
         display: table-cell;
         vertical-align: top;
@@ -83,6 +119,20 @@
             text-overflow: ellipsis;
             float: left;
             width: 100%;
+        }
+
+        .missing-call-informations{
+            margin: 10px 0px 10px 0px;
+            background: url(<%= asset_path 'warning.png' %>);
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+        }
+
+        .additional-informations-fields{
+            border-top-style: solid;
+            border-top-width: 1px;
+            border-top-color: $borderGrey;
+            padding-top: 5px;
         }
 
         .attendee-usage-name{

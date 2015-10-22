@@ -64,12 +64,6 @@
         }
     });
 
-    var presentAttendees = function() {
-        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
-            return attendee.isPresent;
-        });
-    };
-
     var otherClients = function(){
         return _.filter(window.getInfoPanelAttendees(), function(attendee) {
             return attendee.isPresent && attendee.isClient && !attendee.isThreadOwner;
@@ -107,7 +101,6 @@
             attendees: _.filter(_.map(attendees(), function(attendee) {
                     if(attendee.usageName)
                         {
-                            
                             var names = attendee.usageName.split(" ");
                             if(names.length > 0) {
                                 return window.helpers.capitalize(names[0]);

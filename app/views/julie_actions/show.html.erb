@@ -345,34 +345,51 @@
         }
         else {
             var attendeesManager = angular.element($('#attendeesCtrl')).scope();
-            var presentAttendees = attendeesManager.getAttendeesOnPresence(true);
+            var presentAttendees = attendeesManager.getAttendeesWithoutThreadOwner();
 
-//            if(presentAttendees == 3){
-//                if()
-//
-//
-//
-//            }
+            // When there are 2 attendees, we will check if it is an assistant and its assisted
+            if(presentAttendees.length == 2){
+                var assistant;
+                var assisted;
+                assisted = _.find(presentAttendees, function(a){
+                   return a.assistedBy && a.assistedBy.guid;
+                });
 
-            _.each(initialToRecipients(), function (recipient) {
-                $("#recipients-to-input").tokenInput("add", recipient);
-            });
-            _.each(initialCcRecipients(), function (recipient) {
-                $("#recipients-cc-input").tokenInput("add", recipient);
-            });
-            if(otherRecipients) {
-                var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
-                    return elt.name.toLowerCase();
-                });
-                var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
-                    return elt.name.toLowerCase();
-                });
-                _(otherRecipients).each(function(email) {
-                    if (toRecipients.indexOf(email.toLowerCase()) == -1 && ccRecipients.indexOf(email.toLowerCase()) == -1) {
-                        $("#recipients-to-input").tokenInput("add", {name: email.toLowerCase()});
-                    }
-                });
+                if(assisted){
+                    assistant = attendeesManager.getAssistant(assisted);
+                }
+
+                if(assistant && assisted){
+                    $("#recipients-to-input").tokenInput("add", {name: assistant.email});
+                    $("#recipients-cc-input").tokenInput("add", {name: assisted.email});
+                }else{
+                    setDefaultRecipients(otherRecipients);
+                }
+            }else{
+                setDefaultRecipients(otherRecipients);
             }
+        }
+    };
+
+    setDefaultRecipients = function(otherRecipients){
+        _.each(initialToRecipients(), function (recipient) {
+            $("#recipients-to-input").tokenInput("add", recipient);
+        });
+        _.each(initialCcRecipients(), function (recipient) {
+            $("#recipients-cc-input").tokenInput("add", recipient);
+        });
+        if(otherRecipients) {
+            var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
+                return elt.name.toLowerCase();
+            });
+            var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
+                return elt.name.toLowerCase();
+            });
+            _(otherRecipients).each(function(email) {
+                if (toRecipients.indexOf(email.toLowerCase()) == -1 && ccRecipients.indexOf(email.toLowerCase()) == -1) {
+                    $("#recipients-to-input").tokenInput("add", {name: email.toLowerCase()});
+                }
+            });
         }
     };
 

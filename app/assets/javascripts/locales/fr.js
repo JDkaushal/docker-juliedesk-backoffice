@@ -162,12 +162,35 @@ window.wordings['fr'] = {
             give_target_confcall: "Numéro de conférence : \n%{details}",
             give_target_skype: "L’identifiant Skype de %{target_name} a été joint à l’invitation : %{details}",
             missing_infos: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
+        },
+        ask_additional_informations:{
+            multiple_attendees:{
+                phone: {
+                    multiple_recipients: "%{attendees_names}, merci%{courtesyString} de me faire parvenir vos numéros de téléphone au cas où.",
+                    single_recipient: "%{attendees_names}, merci%{courtesyString} de me faire parvenir votre numéro de téléphone au cas où."
+                },
+                skype: {
+                    multiple_recipients: "%{attendees_names}, pourriez-vous de me faire parvenir vos identifiants ?",
+                    single_recipient: "%{attendees_names}, pourriez-vous de me faire parvenir votre identifiant ?"
+                }
+            },
+            single_attendee:{
+                phone:{
+                    assisted: "Merci%{courtesyString} de me faire parvenir le numéro de téléphone de %{attendees_names} au cas où.",
+                    nonassisted: "Merci%{courtesyString} de me faire parvenir votre numéro de téléphone au cas où."
+                },
+                skype:{
+                    assisted: "Pourriez-vous de me faire parvenir l'identifiant de %{attendees_names} ?",
+                    nonassisted: "Pourriez de me faire parvenir votre identifiant ?"
+                }
+            }
         }
     },
     common: {
         cancel: "Annuler",
         or: "ou",
-        phone: "Téléphone :"
+        phone: "Téléphone :",
+        egalement: "aussi"
     },
     events: {
         new_event: "Nouvel évènement",

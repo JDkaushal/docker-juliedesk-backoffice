@@ -6,7 +6,6 @@ class Review::OperatorsController < ReviewController
   end
 
   def my_stats
-
     @operator = Operator.find session[:operator_id]
   end
 
@@ -47,6 +46,7 @@ class Review::OperatorsController < ReviewController
   def compute_counts
     @operators = Operator.all
     operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
+
     oags_to_review = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids)
     oags_to_group_review = OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
 

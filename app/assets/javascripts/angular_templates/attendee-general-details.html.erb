@@ -33,5 +33,34 @@
     <%= image_tag 'edit_contact_button.png' %>
   </button>
 </div>
+<div class="attendee-additional-informations col-xs-offset-1" ng-if="!attendee.isClient" ng-show="attendee.hasMissingInformations">
+  <div class="row ellipsable missing-call-informations"><span style="margin-left: 27px;color: #F6BB67;">{{attendees_manager.displayMissingInformationsText()}}</span></div>
+  <div class="row ellipsable additional-informations-fields" style="margin-top: -3px;">
+    <div ng-if="missingInformationLookedFor == 'landline_or_mobile'">
+      <div class="col-xs-6" style="padding-right: 6px; padding-left:0;">
+        <%= label_tag :landline, 'Tel Fix.' %>
+        <%= text_field_tag :landline, "",{'ng-model' => 'attendee.missingInformationsTemp.landline', 'ng-blur' => "setAttendeeProperty(attendee, 'landline')", 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+      </div>
+      <div class="col-xs-6" style="padding-left: 6px; padding-right:0;">
+        <%= label_tag :mobile, 'Tel Mob.' %>
+        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.missingInformationsTemp.mobile', 'ng-blur' => "setAttendeeProperty(attendee, 'mobile')", 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+      </div>
+    </div>
+    <div ng-if="missingInformationLookedFor == 'mobile_only'">
+      <div class="col-xs-12" style="padding-left: 0; padding-right:0;">
+        <%= label_tag :mobile, 'Tel Mob.' %>
+        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.missingInformationsTemp.mobile', 'ng-blur' => "setAttendeeProperty(attendee, 'mobile')", 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+      </div>
+    </div>
+    <div ng-if="missingInformationLookedFor == 'skype_only'">
+      <div class="col-xs-12" style="padding-left: 0; padding-right:0;">
+        <%= label_tag 'skypeId', 'Skype' %>
+        <%= text_field_tag 'skypeId', "",{'ng-model' => 'attendee.missingInformationsTemp.skypeId', 'ng-blur' => "setAttendeeProperty(attendee, 'skypeId')", 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
 
