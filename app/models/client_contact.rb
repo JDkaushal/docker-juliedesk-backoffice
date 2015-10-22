@@ -11,6 +11,7 @@ class ClientContact < ActiveRecord::Base
 
     if client_account.present?
       fullname_splitted = client_account.full_name.split(' ')
+
       {
         id: self.id,
         client_email: self.client_email,
@@ -22,7 +23,7 @@ class ClientContact < ActiveRecord::Base
         isAssistant: self.is_assistant.to_s,
         assisted: self.assisted.to_s,
         assistedBy: self.assisted_by,
-        company: client_account.company_hash["name"],
+        company: client_account.company_hash ? client_account.company_hash["name"] : '',
         timezone: client_account.default_timezone_id,
         landline: client_account.landline_number,
         mobile: client_account.mobile_number,

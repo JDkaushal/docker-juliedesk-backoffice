@@ -145,7 +145,7 @@ class MessagesThread < ActiveRecord::Base
         duration: last_message_classification.try(:duration) || 60,
         location_nature: last_message_classification.try(:location_nature),
         location: last_message_classification.try(:location),
-        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]").select{|a| a['isPresent'] == 'true'},
+        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
         notes: last_message_classification.try(:notes),
         other_notes: last_message_classification.try(:other_notes),
 

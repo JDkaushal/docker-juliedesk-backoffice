@@ -32,7 +32,7 @@
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
     window.otherAttendeesWithAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
-        return attendee.account_email && attendee.account_email != "<%= @messages_thread.account_email %>";
+        return attendee.isPresent == 'true' && attendee.account_email && attendee.account_email != "<%= @messages_thread.account_email %>";
     });
     window.otherAccountEmails = _.map(otherAttendeesWithAccount, function (attendee) {
         return attendee.account_email;
