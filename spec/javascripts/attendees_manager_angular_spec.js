@@ -118,7 +118,7 @@
                     gender: 'F',
                     isAssistant: "false",
                     assisted: "true",
-                    assistedBy: {email: 'Julie2@juliedesk.com', usageName: 'Julie2 Desk'},
+                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
                     company: '',
                     landline: "",
                     mobile: "617-216-2881",
@@ -142,6 +142,7 @@
                     firstName: "fname1",
                     lastName: "lname1",
                     usageName: "fname1",
+                    name: "fname1 lname1",
                     gender: 'M',
                     isAssistant: false,
                     assisted: false,
@@ -151,7 +152,7 @@
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: '',
+                    confCallInstructions: "",
                     isPresent: true,
                     isClient: true,
                     isThreadOwner: false
@@ -161,17 +162,18 @@
                     firstName: "fname2",
                     lastName: "lname2",
                     usageName: "fname2",
+                    name: "fname2 lname2",
                     gender: 'F',
                     isAssistant: false,
                     assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', usageName: 'Julie2 Desk'},
+                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
                     company: '',
                     timezone: "America/Chicago",
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: '',
-                    isPresent: false,
+                    confCallInstructions: "",
+                    isPresent: undefined,
                     isClient: false,
                     isThreadOwner: false
                 })
@@ -182,16 +184,17 @@
                 firstName: "Blake",
                 lastName: "Garrett",
                 usageName: "Blake",
+                name: "Blake Garrett",
                 gender: '?',
                 isAssistant: false,
                 assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', usageName: 'Julie Desk'},
+                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
                 company: '',
                 timezone: "America/Chicago",
                 landline: "",
                 mobile: "617-216-2881",
                 skypeId: "",
-                confCallInstructions: '',
+                confCallInstructions: undefined,
                 isPresent: true,
                 isClient: true,
                 isThreadOwner: true
@@ -210,7 +213,7 @@
 
         it('should call the displayAttendeeForm Method of the sharedProperties Service when opening a new form', function(){
             AttendeesCtrl.displayAttendeeNewForm();
-            expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: {}, action: 'new'});
+            expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: { timezone: 'America/Chicago', isPresent: true }, action: 'new'});
         });
 
         it('should call the displayAttendeeForm Method of the sharedProperties Service when opening an update form', function(){
@@ -219,28 +222,30 @@
             expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: attendee, action: 'update'});
         });
 
-        it('should send the currentThreadOwner to he sharedProperties service', function(){
+        it('should send the currentThreadOwner to the sharedProperties service', function(){
             var threadOwner = new Attendee({
                 email: "blake@aceable.com",
                 firstName: "Blake",
                 lastName: "Garrett",
                 usageName: "Blake",
+                name: "Blake Garrett",
                 gender: '?',
                 isAssistant: false,
                 assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', usageName: 'Julie Desk'},
+                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
                 company: '',
                 timezone: "America/Chicago",
                 landline: "",
                 mobile: "617-216-2881",
                 skypeId: "",
-                confCallInstructions: '',
+                confCallInstructions: undefined,
                 isPresent: true,
                 isClient: true,
                 isThreadOwner: true
             });
             $httpBackend.flush();
             console.log(SharedProperties.setThreadOwner.calls.mostRecent().args[0]);
+            console.log(threadOwner);
             expect(angular.equals(SharedProperties.setThreadOwner.calls.mostRecent().args[0], threadOwner)).toBe(true);
         });
 

@@ -130,17 +130,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         date_times: classificationForm.getSuggestedDateTimes(),
         processed_in: Date.now() - classificationForm.startedAt
     };
-    $.ajax({
-        url: "/client_contacts/synchronize",
-        type: "POST",
-        data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
-        success: function (e) {
-            console.log('Contacts Synchronized');
-        },
-        error: function (e) {
-            console.log("Error: ", e);
-        }
-    });
+
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
         type: "POST",

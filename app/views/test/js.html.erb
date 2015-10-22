@@ -4,6 +4,8 @@
     var currentTestCategory = "";
     var currentTestIndex = 0;
 
+    window.threadAccount = {email: 'test@com'};
+
     window.onerror = function(message, file, lineNumber) {
         processTestsRecap();
         $(".test.global").addClass("incorrect");

@@ -342,9 +342,6 @@ window.tests.ask_date_suggestions_classification_form = [
         }
     },
 
-
-
-
     {
         name: "Click validate",
         should: "send post with correct data",

@@ -7,6 +7,17 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
 
     window.submitClassification = function () {
+        $.ajax({
+            url: "/client_contacts/synchronize",
+            type: "POST",
+            data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
+            success: function (e) {
+                console.log('Contacts Synchronized');
+            },
+            error: function (e) {
+                console.log("Error: ", e);
+            }
+        });
         askAvailabilitiesForm.sendForm();
     };
 

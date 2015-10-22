@@ -172,23 +172,23 @@
 
                 var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
 
-                if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
-                    var alreadyExist = _.find(window.currentAttendees, function(a) {
-                        return a.email == assistant.email;
-                    });
-
-                    if(alreadyExist == undefined) {
-                        var assistantFullName = assistant.usageName || assistant.displayName;
-                        attendeesCtrl.createAttendee({
-                            email: assistant.email,
-                            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
-                            usageName: assistantFullName,
-                            firstName: assistantFullName.split(' ')[0],
-                            isAssistant: 'true',
-                            timezone: informations.timezone
-                        }, {});
-                    }
-                }
+                //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
+                //    var alreadyExist = _.find(window.currentAttendees, function(a) {
+                //        return a.email == assistant.email;
+                //    });
+                //
+                //    if(alreadyExist == undefined) {
+                //        var assistantFullName = assistant.usageName || assistant.displayName;
+                //        attendeesCtrl.createAttendee({
+                //            email: assistant.email,
+                //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
+                //            usageName: assistantFullName,
+                //            firstName: assistantFullName.split(' ')[0],
+                //            isAssistant: 'true',
+                //            timezone: informations.timezone
+                //        }, {});
+                //    }
+                //}
 
                 informations.assistedBy = assistant;
                 attendeesCtrl.createAttendee(informations, attendee);
