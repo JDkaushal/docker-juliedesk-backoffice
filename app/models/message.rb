@@ -25,11 +25,12 @@ class Message < ActiveRecord::Base
 
   def initial_recipients params={}
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
+
     initial_to_emails = reply_all_recipients['to'].map{|c| c['email']}
     initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email']}
 
     contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
-    attendee_emails = self.messages_thread.computed_data[:attendees].map{|a| a['email']}
+    attendee_emails = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' }.map{|a| a['email']}
 
 
     all_client_emails = self.messages_thread.account.all_emails
