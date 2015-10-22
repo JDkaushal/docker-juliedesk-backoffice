@@ -6,14 +6,13 @@
     <% attendees = messages_thread.computed_data[:attendees] || [] %>
     // Put the messages_thread contacts at the end of the array, so if we already saved it (i.e. the form for the contact has been filled) it will take precedence over the former when applying the select.first instruction
     <% possible_attendees = attendees.map(&:symbolize_keys) + messages_thread.contacts %>
+
     <% same_company_attendees = messages_thread.account.contacts_from_same_company %>
     <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
 
     <% (possible_attendees + same_company_attendees).each{|co| co[:email] = "#{co[:email]}".downcase }.uniq { |co| co[:email] }.each do |contact| %>
         <% attendee = attendees.select { |att| att['email'] == contact[:email] }.first %>
-        <% if attendee || (
-             messages_thread.computed_data[:appointment_nature].nil? &&
-                     possible_attendees.include?(contact)) %>
+        <% if attendee || possible_attendees.include?(contact) %>
             <%  currentAttendees.push(contact) %>
         <% end %>
     <% end %>
