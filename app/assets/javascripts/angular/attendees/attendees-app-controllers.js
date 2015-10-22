@@ -156,6 +156,7 @@
 
     app.controller("AttendeesCtrl", ['$scope','sharedProperties', '$http', function($scope, sharedProperties, $http){
         var attendeesCtrl = this;
+        this.loaded = false;
         this.attendees = [];
         this.readOnly = window.threadDataIsEditable == undefined;
 
@@ -288,8 +289,10 @@
                     return a.email;
                 })}
             }).then(function success(attendeesDetails) {
+                attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
             }, function error(response){
+                attendeesCtrl.loaded = true;
                 console.log("Error: ", e);
             });
 
