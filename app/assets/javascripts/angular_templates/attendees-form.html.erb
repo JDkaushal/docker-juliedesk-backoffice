@@ -113,7 +113,7 @@
         <div class="row">
           <div class="col-xs-12">
             <%= label_tag :assisted_by %>
-            <%= select_tag :assisted_by, options_for_select([]),{'ng-options' => '{email: attendee.email, displayName: attendee.displayNormalizedName()} as attendee.getName() for attendee in attendees_manager.attendees | filter:{isAssistant:true}' , 'ng-change' => 'attendeesFormCtrl.assistedByChange(attendeesFormCtrl.attendeeInForm.assistedBy)' ,'ng-model' => 'attendeesFormCtrl.attendeeInForm.assistedBy', class: 'form-control'} %>
+            <%= select_tag :assisted_by, options_for_select([]),{'ng-options' => '{email: attendee.email, displayName: attendee.displayNormalizedName()} as attendee.displayNormalizedName() for attendee in attendees_manager.attendees | filter:{isAssistant:true}' , 'ng-change' => 'attendeesFormCtrl.assistedByChange(attendeesFormCtrl.attendeeInForm.assistedBy)' ,'ng-model' => 'attendeesFormCtrl.attendeeInForm.assistedBy', class: 'form-control'} %>
             </div>
         </div>
       </div>

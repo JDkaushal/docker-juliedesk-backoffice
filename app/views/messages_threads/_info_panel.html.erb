@@ -534,6 +534,14 @@
         }
     }
 
+    window.getCallInstructions = function(){
+        var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+        var callInstructions = virtualMeetingsHelper.currentConf;
+
+        console.log(callInstructions);
+        return callInstructions;
+    };
+
     window.getInfoPanelAttendees = function() {
         var contacts = angular.element($('#attendeesCtrl')).scope();
         var attendees = contacts.attendees_manager.attendees.slice();

@@ -9,7 +9,7 @@
             controller: ['$scope' , function($scope){
                 var virtualMeetingsHelperCtrl = this;
                 var attendeesManagerCtrl = angular.element($('#attendeesCtrl')).scope();
-                virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == window.threadComputedData.appointment_nature });
+                virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == (window.threadComputedData.appointment_nature || $('#appointment_nature option:selected').val()) });
                 virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash;
                 virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentAppointment.behaviour;
 
@@ -142,7 +142,8 @@
                     });
 
                     $scope.callTargetsNames = _.map(attendeesWithoutThreadOwner, function (a) {
-                        var name = a.firstName + a.lastName == null ? '' : ' ' + a.lastName;
+                        var _lastName = a.lastName == null ? '' : ' ' + a.lastName;
+                        var name = a.firstName + _lastName;
                         return {value: a.email, name: name + ' (' + a.email + ')'};
                     });
 
@@ -152,7 +153,7 @@
 
                     $scope.computeCallDetails();
                     $scope.setEventNotes();
-                }, 1000);
+                }, 3000);
             }],
             controllerAs: 'virtualMeetingsHelperCtrl'
         }

@@ -113,10 +113,15 @@ class Account
           account['company_hash'].try(:[], 'name') == self.company_hash['name'] &&
           account['email'] != self.email
     }.map{|account|
+      julie_alias = account['julie_aliases'] && account['julie_aliases'].first
+      json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"} : nil
+
       {
           name: account['full_name'],
           email: account['email'],
-          isClient: 'true'
+          isClient: 'true',
+          assisted: "#{json_julie_alias.present?}",
+          assistedBy: json_julie_alias
       }
     }
   end

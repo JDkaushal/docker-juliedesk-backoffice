@@ -146,6 +146,7 @@ class MessagesThread < ActiveRecord::Base
         location_nature: last_message_classification.try(:location_nature),
         location: last_message_classification.try(:location),
         attendees: JSON.parse(last_message_classification.try(:attendees) || "[]").select{|a| a['isPresent'] == 'true'},
+        #callInstructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
         notes: last_message_classification.try(:notes),
         other_notes: last_message_classification.try(:other_notes),
 
@@ -293,15 +294,20 @@ class MessagesThread < ActiveRecord::Base
   def possible_contacts_for_cache
     thread_contacts = []
     accounts = Account.accounts_cache(mode: "light")
+
     contacts.each do |attendee|
       accounts.each do |email, account|
         all_emails = [account['email']] + account['email_aliases']
 
         if all_emails.include? attendee[:email]
+          julie_alias = account['julie_aliases'] && account['julie_aliases'].first
+          json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"}.to_json : nil
           thread_contacts << {
               email: email,
               name: account['full_name'],
-              isClient: 'true'
+              isClient: 'true',
+              assisted: "#{json_julie_alias.present?}",
+              assistedBy: json_julie_alias
           }
         end
       end

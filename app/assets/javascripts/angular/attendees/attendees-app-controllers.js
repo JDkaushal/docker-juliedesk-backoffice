@@ -42,7 +42,6 @@
                     attendeesFormCtrl.isVisible = true;
                     $('.messages-thread-info-panel').removeClass('scrollable').addClass('frozen');
 
-                    console.log(attendeesFormCtrl.attendeeInForm.isThreadOwner);
                 });
 
                 this.cancelAttendeeForm = function(){
@@ -129,8 +128,9 @@
 
                     if(attendeesFormCtrl.attendeeInForm.assistedBy != "" && attendeesFormCtrl.attendeeInForm.assistedBy != undefined){
                         var selectedAssistedBy = attendeesFormCtrl.attendeeInForm.assistedBy.usageName;
+
                         angular.element($('#assisted_by option')).filter(function(){
-                            return $(this).text() == selectedAssistedBy;
+                            return $(this).text().trim() == selectedAssistedBy;
                         }).prop('selected', true);
                     }
                 };
@@ -163,36 +163,34 @@
             // We filter the attendees to not include the threadOwner as we will add him after
 
             angular.forEach(window.currentAttendees.filter(function(attendee){ return attendee.email != window.threadAccount.email }), function(attendee) {
-                var attendeeDetails = _.find(attendeesDetails, function(ad) {
-                  return ad.email == attendee.email;
+                var attendeeDetails = _.find(attendeesDetails, function(a) {
+                  return a.email == attendee.email;
                 });
-                console.log(attendeeDetails);
 
                 var informations = (attendeeDetails || attendee);
-                var a = new Attendee({
-                    email: informations.email,
-                    firstName: informations.firstName,
-                    lastName: informations.lastName,
-                    name: informations.firstName + ' ' + informations.lastName,
-                    usageName: informations.usageName || informations.name,
-                    gender: informations.gender,
-                    isAssistant: informations.isAssistant == "true",
-                    assisted: informations.assisted == "true",
-                    assistedBy: typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy,
-                    company: informations.company || '',
-                    timezone: informations.timezone || window.threadAccount.default_timezone_id,
-                    landline: informations.landline,
-                    mobile: informations.mobile,
-                    skypeId: informations.skypeId,
-                    confCallInstructions: informations.confCallInstructions,
-                    isPresent: attendee.isPresent == "true" || window.currentToCC.indexOf(informations.email) > -1,
-                    isClient: informations.isClient == "true",
-                    isThreadOwner: false
-                });
 
-                if((a.firstName == '' || a.firstName == undefined)  && (a.lastName == '' || a.firstName == undefined))
-                    a.firstName = a.usageName;
-                attendeesCtrl.attendees.push(a);
+                var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
+
+                if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
+                    var alreadyExist = _.find(window.currentAttendees, function(a) {
+                        return a.email == assistant.email;
+                    });
+
+                    if(alreadyExist == undefined) {
+                        var assistantFullName = assistant.usageName || assistant.displayName;
+                        attendeesCtrl.createAttendee({
+                            email: assistant.email,
+                            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
+                            usageName: assistantFullName,
+                            firstName: assistantFullName.split(' ')[0],
+                            isAssistant: 'true',
+                            timezone: informations.timezone
+                        }, {});
+                    }
+                }
+
+                informations.assistedBy = assistant;
+                attendeesCtrl.createAttendee(informations, attendee);
             });
 
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
@@ -234,6 +232,33 @@
             });
         };
 
+        this.createAttendee = function(informations, attendee){
+            var a = new Attendee({
+                email: informations.email,
+                firstName: informations.firstName,
+                lastName: informations.lastName,
+                name: informations.firstName + ' ' + informations.lastName,
+                usageName: informations.usageName || informations.name,
+                gender: informations.gender,
+                isAssistant: informations.isAssistant == "true",
+                assisted: informations.assisted == "true",
+                assistedBy: informations.assistedBy,
+                company: informations.company || '',
+                timezone: informations.timezone || window.threadAccount.default_timezone_id,
+                landline: informations.landline,
+                mobile: informations.mobile,
+                skypeId: informations.skypeId,
+                confCallInstructions: informations.confCallInstructions,
+                isPresent: attendee.isPresent == "true" || window.currentToCC.indexOf(informations.email) > -1,
+                isClient: informations.isClient == "true",
+                isThreadOwner: false
+            });
+
+            if((a.firstName == '' || a.firstName == undefined)  && (a.lastName == '' || a.firstName == undefined))
+                a.firstName = a.usageName;
+
+            attendeesCtrl.attendees.push(a);
+        };
 
         this.displayAttendeeNewForm = function (){
             sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id, isPresent: true}, action: 'new'});
@@ -263,7 +288,6 @@
                     return a.email;
                 })}
             }).then(function success(attendeesDetails) {
-                console.log(attendeesDetails.data);
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
             }, function error(response){
                 console.log("Error: ", e);
@@ -300,7 +324,7 @@
         assistantDisplayText: function(){
             var name = '';
             if(this.assistedBy != undefined)
-                name = this.assistedBy.usageName + ' (' + this.assistedBy.email + ')';
+                name = (this.assistedBy.usageName || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
             return name;
         },
         displayNormalizedName: function(){

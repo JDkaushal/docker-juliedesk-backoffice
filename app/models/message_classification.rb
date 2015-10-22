@@ -54,6 +54,7 @@ class MessageClassification < ActiveRecord::Base
         duration: params[:duration],
         location_nature: params[:location_nature],
         location: params[:location],
+        #call_instructions: params[:call_instructions].to_json,
         attendees: attendees.to_json,
         notes: params[:notes],
         other_notes: params[:other_notes],

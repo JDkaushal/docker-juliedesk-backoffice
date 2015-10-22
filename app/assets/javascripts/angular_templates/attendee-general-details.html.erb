@@ -21,7 +21,7 @@
   </div>
 
   <div class="row ellipsable" ng-show="attendee.assisted">
-      <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par {{attendee.assistedBy.displayName}}</cite>
+      <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par {{attendee.assistedBy.displayName || attendee.assistedBy.usageName}} ({{attendee.assistedBy.email}})</cite>
   </div>
 
   <div class="row ellipsable" ng-show="attendee.isAssistant">

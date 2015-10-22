@@ -8,7 +8,7 @@ class ClientContactsController < ApplicationController
   def synchronize
     success = true
     JSON.parse(params[:contacts]).each do |contact_params|
-      puts contact_params
+
       if client_contact = ClientContact.find_by(client_email: params[:client_email], email: contact_params['email'])
         client_contact.update(
             first_name: contact_params['firstName'],
