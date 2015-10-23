@@ -68,13 +68,6 @@ class Message < ActiveRecord::Base
       computed_initial_to_emails = (attendee_emails.uniq - all_client_emails).reject { |c| c.blank? }
       computed_initial_cc_emails = ((initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails).reject { |c| c.blank? }
 
-      puts '*' * 50
-      puts computed_initial_to_emails
-      puts '*' * 50
-
-      puts '*' * 50
-      puts computed_initial_to_emails.sort
-      puts '*' * 50
       if computed_initial_to_emails.empty?
         result = {
             to: [client_email].sort.map(&:downcase),

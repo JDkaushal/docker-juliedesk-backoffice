@@ -50,7 +50,7 @@ describe Message do
         )
         expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
         expect(messages_thread).to receive(:computed_data).and_return({
-                                                                          attendees: [{'email' => "elrandil1@gmail.com"}]
+                                                                          attendees: [{'email' => "elrandil1@gmail.com", 'isPresent' => 'true'}, {'email' => "notThere@gmail.com", 'isPresent' => 'false'}]
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
@@ -126,7 +126,7 @@ describe Message do
         )
         expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
         expect(messages_thread).to receive(:computed_data).and_return({
-                                                                          attendees: [{'email' => "elrandil1@gmail.com"}, {'email' => "elrandil2@gmail.com"}]
+                                                                          attendees: [{'email' => "elrandil1@gmail.com", 'isPresent' => 'true'}, {'email' => "elrandil2@gmail.com", 'isPresent' => 'true'}, {'email' => "notThere@gmail.com", 'isPresent' => 'false'}]
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
@@ -165,7 +165,7 @@ describe Message do
         )
         expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
         expect(messages_thread).to receive(:computed_data).and_return({
-                                                                          attendees: [{'email' => "Elrandil1@gmail.com"}, {'email' => "elrandil2@gmail.com"}]
+                                                                          attendees: [{'email' => "Elrandil1@gmail.com", 'isPresent' => 'true'}, {'email' => "elrandil2@gmail.com", 'isPresent' => 'true'}, {'email' => "notThere@gmail.com", 'isPresent' => 'false'}]
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
@@ -194,7 +194,7 @@ describe Message do
         )
         expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
         expect(messages_thread).to receive(:computed_data).and_return({
-                                                                          attendees: [{'email' => "elrandil1@gmail.com"}, {'email' => "elrandil2@gmail.com"}]
+                                                                          attendees: [{'email' => "elrandil1@gmail.com", 'isPresent' => 'true'}, {'email' => "elrandil2@gmail.com", 'isPresent' => 'true'}, {'email' => "notThere@gmail.com", 'isPresent' => 'false'}]
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
