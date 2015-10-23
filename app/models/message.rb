@@ -233,7 +233,6 @@ class Message < ActiveRecord::Base
   end
 
   def generate_threads julie_messages
-    t = Time.now
     # Get from field
 
     self.messages_thread.re_import
@@ -243,8 +242,6 @@ class Message < ActiveRecord::Base
 
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
-      p "Processing a julie messages"
-      p Time.now - t
       # Try to find an existing thread which would have resulted in the given event
       existing_message = JulieAction.where(event_id: julie_message_hash['event_id'], calendar_id: julie_message_hash['calendar_id']).first.try(:message_classification).try(:message)
 
@@ -260,16 +257,17 @@ class Message < ActiveRecord::Base
                                         reply_to_message_id:  existing_message.server_message_id
                                     })
       else
+        copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
         server_message = EmailServer.deliver_message({
                                         subject: julie_message_hash['subject'],
                                         from: julie_alias.generate_from,
                                         to: julie_alias.generate_from,
                                         text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
-                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html']
+                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
+                                        quote: false,
+                                        reply_to_message_id: copy_response['id']
                                     })
 
-        p "Associating event data"
-        p Time.now - t
         Message.associate_event_data server_message,
                                                 {
                                                     'id' => julie_message_hash['event_id'],
@@ -284,9 +282,6 @@ class Message < ActiveRecord::Base
                                                 },
                                                 self.messages_thread
       end
-
-      p "Done !"
-      p Time.now - t
     end
   end
 

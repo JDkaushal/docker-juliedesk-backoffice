@@ -50,7 +50,21 @@ module EmailServer
                             reply_to_message_id: opts[:reply_to_message_id]
                         }
                       }
+
     res['message']
+  end
+
+  def self.copy_message_to_new_thread opts={}
+    raise "No message id given" unless opts[:server_message_id]
+    copy_options = {}
+    if opts[:force_subject]
+      copy_options[:force_subject] = opts[:force_subject]
+    end
+
+    res = self.make_request :post,
+                            "/messages/#{opts[:server_message_id]}/copy_to_new_thread?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                            copy_options
+    res
   end
 
   def self.archive_thread opts={}
