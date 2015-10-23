@@ -165,8 +165,14 @@
 
             angular.forEach(window.currentAttendees.filter(function(attendee){ return attendee.email != window.threadAccount.email }), function(attendee) {
                 var attendeeDetails = _.find(attendeesDetails, function(a) {
-                  return a.email == attendee.email;
-                });
+
+                    if(attendee.email != undefined && attendee.email != ''){
+                        return a.email == attendee.email;
+                    }else if(attendee.name != '' && attendee.name != undefined){
+                        return a.name == attendee.name;
+                    }
+                    return false;
+            });
 
                 var informations = (attendeeDetails || attendee);
 
