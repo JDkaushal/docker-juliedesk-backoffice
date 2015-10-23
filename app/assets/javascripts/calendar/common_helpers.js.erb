@@ -238,6 +238,8 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
         mStartDate = moment(startDate).locale(locale);
         mEndDate = moment(endDate).locale(locale);
         mEndDate.add('d', -1);
+        formattedEndDate = (mEndDate.isSame(today, "day") ? localize("dates.today") : mEndDate.format("dddd D MMMM YYYY"));
+
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return formattedStartDate;
         }
