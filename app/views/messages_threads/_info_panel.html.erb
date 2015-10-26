@@ -15,7 +15,7 @@
         <% if attendee || possible_attendees.include?(contact) %>
             <% new_contact = contact %>
             <% if attendee || (messages_thread.computed_data[:appointment_nature].nil? && possible_attendees.include?(contact)) %>
-                <% new_contact.isPresent = "true" %>
+                <% new_contact['isPresent'] = "true" %>
             <% end %>
             <%  currentAttendees.push(new_contact) %>
         <% end %>
