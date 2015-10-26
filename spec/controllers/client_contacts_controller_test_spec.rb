@@ -18,7 +18,7 @@ describe ClientContactsController, :type => :controller do
       cc2 = FactoryGirl.create(:client_contact)
 
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
-      puts @request.env['HTTP_AUTHORIZATION']
+      #puts @request.env['HTTP_AUTHORIZATION']
       get :fetch, client_email: 'client@test.com', contacts_emails: [cc1.email, cc2.email]
 
       contacts = ClientContact.where(client_email: 'client@test.com', email: [cc1.email, cc2.email])
