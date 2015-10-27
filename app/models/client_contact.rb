@@ -17,7 +17,7 @@ class ClientContact < ActiveRecord::Base
         client_email: self.client_email,
         email: self.email,
         firstName: fullname_splitted[0],
-        lastName: fullname_splitted.slice(1, fullname_splitted.size).join(' '),
+        lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
         usageName: client_account.usage_name,
         gender: self.gender,
         isAssistant: self.is_assistant.to_s,
