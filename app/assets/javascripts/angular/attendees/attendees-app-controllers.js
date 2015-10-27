@@ -163,7 +163,9 @@
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
 
-            angular.forEach(window.currentAttendees.filter(function(attendee){ return attendee.email != window.threadAccount.email }), function(attendee) {
+            angular.forEach(window.currentAttendees.filter(function(attendee){
+                return (window.threadAccount.email_aliases.indexOf(attendee.email)) == -1 && (attendee.email != window.threadAccount.email)
+            }), function(attendee) {
                 var attendeeDetails = _.find(attendeesDetails, function(a) {
 
                     if(attendee.email != undefined && attendee.email != ''){
@@ -212,7 +214,7 @@
                         threadOwnerEmail = alias;
                     }
                 });
-            }   
+            }
 
             var threadOwner = new Attendee({
                 email: threadOwnerEmail,
@@ -270,7 +272,7 @@
                 isThreadOwner: false
             });
 
-            if((a.firstName == '' || a.firstName == undefined)  && (a.lastName == '' || a.firstName == undefined))
+            if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
                 a.firstName = a.usageName;
 
             attendeesCtrl.attendees.push(a);

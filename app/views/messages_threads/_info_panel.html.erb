@@ -36,8 +36,7 @@
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
     <% if @message %>
-    window.currentMessageIndex = <%== @messages_thread.messages.order(:id).find_index{ |m| m.id == @message.id } %>;
-
+        window.currentMessageIndex = <%== @messages_thread.messages.order(:id).find_index{ |m| m.id == @message.id } %>;
     <% end %>
 
     window.otherAttendeesWithAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
