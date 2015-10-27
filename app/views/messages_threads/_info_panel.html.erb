@@ -303,12 +303,16 @@
         var attendeesDisplay = '';
         var threadOwnerCompanyAttendees = '';
         var noCompanyAttendees = '';
+        var i=0;
+
         _.each(companies, function(company){
+            i++;
            var attendees = _.filter(groupedPresentAttendees[company], function(a){
                return !a.isAssistant;
            });
 
             if(company == ''){
+
                 if(attendee != undefined && attendees.length > 0)
                 {
                     noCompanyAttendees += _.map(attendees, function(a){
@@ -318,18 +322,23 @@
             }else if(company == threadOwner.company) {
                 threadOwnerCompanyAttendees += company;
                 if(attendees.length == 1){
-                    threadOwnerCompanyAttendees += '[' + attendees[0].displayNormalizedName() + ']';
+                    threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
                 }
             }else {
                 attendeesDisplay += company;
                 if(attendees.length == 1){
-                    attendeesDisplay += '[' + attendees[0].displayNormalizedName() + ']';
+                    attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
                 }
-                attendeesDisplay += ' / ';
+                if(i < companies.length - 1)
+                    attendeesDisplay += ' / ';
+
             }
         });
 
-        attendeesDisplay += ' ' + noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
+        if(attendeesDisplay == '' && noCompanyAttendees == '')
+            attendeesDisplay += threadOwnerCompanyAttendees;
+        else
+            attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
         $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
     }
 

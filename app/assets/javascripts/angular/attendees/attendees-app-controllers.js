@@ -305,6 +305,8 @@
 
         };
 
+
+
         this.fetchAttendeeFromClientContactNetwork();
 
     }]);
