@@ -287,19 +287,50 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        var contactNames = [];
-        $("input#attendee[type='checkbox']:checked").each(function() {
-            if($(this).closest(".contact").attr('data-intitle') == "true")
-                contactNames.push($(this).closest(".contact").attr('data-name'));
+        var presentAttendees = _.filter(angular.element($('#attendeesCtrl')).scope().attendees_manager.attendees.slice(), function(a){
+            return a.isPresent;
         });
 
-//        var contactNames = $("input#attendee[type='checkbox']:checked").map(function() {
-//            return $(this).closest(".contact").data('name');
-//            //return $(this).closest(".contact").find("input#attendee_name").val();
-//        }).get();
-        console.log(contactNames);
-        contactNames.push(window.threadAccount.full_name);
-        $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + contactNames.join(" / "));
+        var threadOwner = _.find(presentAttendees, function(a){
+            return a.isThreadOwner;
+        });
+
+        var groupedPresentAttendees = _.groupBy(presentAttendees, function(a) {
+            return a.company;
+        });
+
+        var companies = Object.keys(groupedPresentAttendees);
+        var attendeesDisplay = '';
+        var threadOwnerCompanyAttendees = '';
+        var noCompanyAttendees = '';
+        _.each(companies, function(company){
+           var attendees = _.filter(groupedPresentAttendees[company], function(a){
+               return !a.isAssistant;
+           });
+
+            if(company == ''){
+                if(attendee != undefined && attendees.length > 0)
+                {
+                    noCompanyAttendees += _.map(attendees, function(a){
+                        return a.displayNormalizedName();
+                    }).join(' / ');
+                }
+            }else if(company == threadOwner.company) {
+                threadOwnerCompanyAttendees += company;
+                if(attendees.length == 1){
+                    threadOwnerCompanyAttendees += '[' + attendees[0].displayNormalizedName() + ']';
+                }
+            }else {
+                attendeesDisplay += company;
+                if(attendees.length == 1){
+                    attendeesDisplay += '[' + attendees[0].displayNormalizedName() + ']';
+                }
+                attendeesDisplay += ' / ';
+            }
+        });
+
+        attendeesDisplay += ' ' + noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
+        $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
     }
 
     function fetchOtherAccounts() {
