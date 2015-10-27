@@ -162,12 +162,16 @@
 
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
+            var aliases = attendeesDetails.aliases;
+            var aliasedEmails = Object.keys(aliases);
+            var aliasEmails = _.flatten(_.map(aliases, function(aliases, email){
+               return aliases;
+            }));
 
             angular.forEach(window.currentAttendees.filter(function(attendee){
                 return (window.threadAccount.email_aliases.indexOf(attendee.email)) == -1 && (attendee.email != window.threadAccount.email)
             }), function(attendee) {
-                var attendeeDetails = _.find(attendeesDetails, function(a) {
-
+                var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
                     if(attendee.email != undefined && attendee.email != ''){
                         return a.email == attendee.email;
                     }else if(attendee.name != '' && attendee.name != undefined){
@@ -175,31 +179,37 @@
                     }
                     return false;
             });
-
                 var informations = (attendeeDetails || attendee);
 
-                var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
+                //If the current attendee is not a alias for another attendee
+                if(aliasEmails.indexOf(informations.email) == -1){
+                    var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
 
-                //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
-                //    var alreadyExist = _.find(window.currentAttendees, function(a) {
-                //        return a.email == assistant.email;
-                //    });
-                //
-                //    if(alreadyExist == undefined) {
-                //        var assistantFullName = assistant.usageName || assistant.displayName;
-                //        attendeesCtrl.createAttendee({
-                //            email: assistant.email,
-                //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
-                //            usageName: assistantFullName,
-                //            firstName: assistantFullName.split(' ')[0],
-                //            isAssistant: 'true',
-                //            timezone: informations.timezone
-                //        }, {});
-                //    }
-                //}
+                    //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
+                    //    var alreadyExist = _.find(window.currentAttendees, function(a) {
+                    //        return a.email == assistant.email;
+                    //    });
+                    //
+                    //    if(alreadyExist == undefined) {
+                    //        var assistantFullName = assistant.usageName || assistant.displayName;
+                    //        attendeesCtrl.createAttendee({
+                    //            email: assistant.email,
+                    //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
+                    //            usageName: assistantFullName,
+                    //            firstName: assistantFullName.split(' ')[0],
+                    //            isAssistant: 'true',
+                    //            timezone: informations.timezone
+                    //        }, {});
+                    //    }
+                    //}
 
-                informations.assistedBy = assistant;
-                attendeesCtrl.createAttendee(informations, attendee);
+                    informations.assistedBy = assistant;
+                    // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
+
+                    if(aliasedEmails.indexOf(informations.email) > -1)
+                        informations.isClient = "true";
+                    attendeesCtrl.createAttendee(informations, attendee);
+                }
             });
 
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
@@ -267,7 +277,7 @@
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
-                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.currentMessageIndex == 0 && window.currentToCC.indexOf(informations.email) > -1),
+                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email) > -1),
                 isClient: informations.isClient == "true",
                 isThreadOwner: false
             });
@@ -311,7 +321,7 @@
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
             }, function error(response){
                 attendeesCtrl.loaded = true;
-                console.log("Error: ", e);
+                console.log("Error: ", response);
             });
 
         };

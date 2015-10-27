@@ -146,6 +146,7 @@ class MessagesThreadsController < ApplicationController
         }.reverse
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
+
         if session[:privilege] != "admin"
           @messages_thread.select!{ |mt|
             !mt.delegated_to_founders &&

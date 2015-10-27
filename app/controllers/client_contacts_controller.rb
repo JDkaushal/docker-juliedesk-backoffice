@@ -1,8 +1,17 @@
 class ClientContactsController < ApplicationController
   def fetch
-
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
-    render json: @contacts
+    accounts_cache = Account.accounts_cache
+
+    @contacts_aliases = {}
+
+    params['contacts_emails'].each do |contact|
+      if cache = accounts_cache[contact]
+        @contacts_aliases[contact] = cache["email_aliases"]
+      end
+    end
+
+    render json: {contacts: @contacts, aliases: @contacts_aliases}
   end
 
   def synchronize
