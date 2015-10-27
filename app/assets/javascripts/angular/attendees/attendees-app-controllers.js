@@ -212,7 +212,7 @@
                         threadOwnerEmail = alias;
                     }
                 });
-            }
+            }   
 
             var threadOwner = new Attendee({
                 email: threadOwnerEmail,
@@ -265,7 +265,7 @@
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
-                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.currentToCC.indexOf(informations.email) > -1),
+                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.currentMessageIndex == 0 && window.currentToCC.indexOf(informations.email) > -1),
                 isClient: informations.isClient == "true",
                 isThreadOwner: false
             });

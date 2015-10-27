@@ -35,6 +35,11 @@
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
+    <% if @message %>
+    window.currentMessageIndex = <%== @messages_thread.messages.order(:id).find_index{ |m| m.id == @message.id } %>;
+
+    <% end %>
+
     window.otherAttendeesWithAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
         return attendee.isPresent == 'true' && attendee.account_email && attendee.account_email != "<%= @messages_thread.account_email %>";
     });
