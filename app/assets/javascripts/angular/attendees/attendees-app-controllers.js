@@ -205,8 +205,17 @@
             if(window.threadAccount.company_hash != undefined)
                 companyName = window.threadAccount.company_hash.name;
 
+            var threadOwnerEmail = window.threadAccount.email;
+            if(window.threadAccount.email_aliases.length > 0){
+                _.each(window.threadAccount.email_aliases, function(alias){
+                    if(window.currentToCC.indexOf(alias) > -1){
+                        threadOwnerEmail = alias;
+                    }
+                });
+            }
+
             var threadOwner = new Attendee({
-                email: window.threadAccount.email,
+                email: threadOwnerEmail,
                 firstName: threadAccountFullName[0],
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
                 name: window.threadAccount.full_name,
