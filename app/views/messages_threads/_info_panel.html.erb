@@ -124,6 +124,7 @@
 
         $("input[name='locale']").change(function () {
             setNotes();
+            angular.element($('#attendeesCtrl')).scope().updateNotes();
             reProcessTitle();
         });
 
@@ -287,102 +288,104 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        var presentAttendees = _.filter(angular.element($('#attendeesCtrl')).scope().attendees_manager.attendees.slice(), function(a){
-            return a.isPresent;
-        });
-
-        var threadOwner = _.find(presentAttendees, function(a){
-            return a.isThreadOwner;
-        });
-
-        var groupedPresentAttendees = _.groupBy(presentAttendees, function(a) {
-            return a.company;
-        });
-
-        var companies = Object.keys(groupedPresentAttendees);
-        var attendeesDisplay = '';
-        var threadOwnerCompanyAttendees = '';
-        var noCompanyAttendees = '';
-        var i=0;
-
-        if(companies.length == 1 && companies[0] != ''){
-            attendeesDisplay += companies[0];
-            var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
-                return !a.isAssistant;
+        if(appointment){
+            var presentAttendees = _.filter(angular.element($('#attendeesCtrl')).scope().attendees.slice(), function(a){
+                return a.isPresent;
             });
 
-            var i, j = 0;
-
-            if(attendees.length > 0){
-                attendeesDisplay += ' [';
-                _.each(attendees, function(a){
-                    // We display only the first 5 attendees
-                    if(i <= 4){
-                        attendeesDisplay += a.displayNormalizedName();
-                        // We append the slash until the last attendee we display
-                        console.log(i);
-                        console.log(attendees.length - 1);
-                        if(attendees.length >= 5 && i < 4)
-                            attendeesDisplay += ' / ';
-                        else if(attendees.length < 5 && i < attendees.length - 1)
-                            attendeesDisplay += ' / ';
-                        i++;
-                    }
-                    j++;
-                });
-                attendeesDisplay += ']';
-            }
-        }else if(companies.length == 1 && companies[0] == ''){
-            var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
-                return !a.isAssistant;
+            var threadOwner = _.find(presentAttendees, function(a){
+                return a.isThreadOwner;
             });
 
-            noCompanyAttendees += _.map(attendees, function(a){
-                return a.displayNormalizedName();
-            }).join(' / ');
-        }else{
-            _.each(companies, function(company){
-                i++;
-                var attendees = _.filter(groupedPresentAttendees[company], function(a){
+            var groupedPresentAttendees = _.groupBy(presentAttendees, function(a) {
+                return a.company;
+            });
+
+            var companies = Object.keys(groupedPresentAttendees);
+            var attendeesDisplay = '';
+            var threadOwnerCompanyAttendees = '';
+            var noCompanyAttendees = '';
+            var i=0;
+
+            if(companies.length == 1 && companies[0] != ''){
+                attendeesDisplay += companies[0];
+                var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
                     return !a.isAssistant;
                 });
 
-                if(company == ''){
+                var i, j = 0;
 
-                    if(attendees != undefined && attendees.length > 0)
-                    {
-                        noCompanyAttendees += _.map(attendees, function(a){
-                            return a.displayNormalizedName();
-                        }).join(' / ');
-                    }
-                }else if(company == threadOwner.company) {
-                    threadOwnerCompanyAttendees += company;
-                    if(attendees.length == 1){
-                        threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
-                    }
-                }else {
-                    attendeesDisplay += company;
-                    if(attendees.length == 1){
-                        attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
-                    }
-                    // Minus 1 to exclude the threadOwnerCompany
-                    if(i < companies.length - 1)
-                        attendeesDisplay += ' / ';
+                if(attendees.length > 0){
+                    attendeesDisplay += ' [';
+                    _.each(attendees, function(a){
+                        // We display only the first 5 attendees
+                        if(i <= 4){
+                            attendeesDisplay += a.displayNormalizedName();
+                            // We append the slash until the last attendee we display
+                            console.log(i);
+                            console.log(attendees.length - 1);
+                            if(attendees.length >= 5 && i < 4)
+                                attendeesDisplay += ' / ';
+                            else if(attendees.length < 5 && i < attendees.length - 1)
+                                attendeesDisplay += ' / ';
+                            i++;
+                        }
+                        j++;
+                    });
+                    attendeesDisplay += ']';
                 }
-            });
-        }
+            }else if(companies.length == 1 && companies[0] == ''){
+                var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
+                    return !a.isAssistant;
+                });
 
-        if(attendeesDisplay == '' && noCompanyAttendees == '')
-            attendeesDisplay += threadOwnerCompanyAttendees;
-        else if(threadOwnerCompanyAttendees != '')
-            attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
-        else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '')
+                noCompanyAttendees += _.map(attendees, function(a){
+                    return a.displayNormalizedName();
+                }).join(' / ');
+            }else{
+                _.each(companies, function(company){
+                    i++;
+                    var attendees = _.filter(groupedPresentAttendees[company], function(a){
+                        return !a.isAssistant;
+                    });
+
+                    if(company == ''){
+
+                        if(attendees != undefined && attendees.length > 0)
+                        {
+                            noCompanyAttendees += _.map(attendees, function(a){
+                                return a.displayNormalizedName();
+                            }).join(' / ');
+                        }
+                    }else if(company == threadOwner.company) {
+                        threadOwnerCompanyAttendees += company;
+                        if(attendees.length == 1){
+                            threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
+                        }
+                    }else {
+                        attendeesDisplay += company;
+                        if(attendees.length == 1){
+                            attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
+                        }
+                        // Minus 1 to exclude the threadOwnerCompany
+                        if(i < companies.length - 1)
+                            attendeesDisplay += ' / ';
+                    }
+                });
+            }
+
+            if(attendeesDisplay == '' && noCompanyAttendees == '')
+                attendeesDisplay += threadOwnerCompanyAttendees;
+            else if(threadOwnerCompanyAttendees != '')
+                attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
+            else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '')
             // We add the slash before here because in this particular case there is no threadOwnerCompany (should never happen) so the normal algorithm will not work properly in this case
-            attendeesDisplay += ' / ' + noCompanyAttendees;
-        else if(attendeesDisplay == '' && noCompanyAttendees != '')
-            attendeesDisplay += noCompanyAttendees;
+                attendeesDisplay += ' / ' + noCompanyAttendees;
+            else if(attendeesDisplay == '' && noCompanyAttendees != '')
+                attendeesDisplay += noCompanyAttendees;
 
-        $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
+            $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
+        }
     }
 
     function fetchOtherAccounts() {
@@ -642,7 +645,7 @@
 
     window.getInfoPanelAttendees = function() {
         var contacts = angular.element($('#attendeesCtrl')).scope();
-        var attendees = contacts.attendees_manager.attendees.slice();
+        var attendees = contacts.attendees.slice();
 //        var filteredAttendees = attendees.filter(function(attendee){
 //            return attendee.isPresent;
 //        }).map(function(attendee) {

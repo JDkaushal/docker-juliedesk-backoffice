@@ -13,7 +13,7 @@
     <div>
       <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
     </div>
-    <div class="contact-group" ng-repeat="(key, value) in attendees_manager.attendees | groupBy: 'company' | toArray:true | organizeContactArray">
+    <div class="contact-group" ng-repeat="(key, value) in attendees | groupBy: 'company' | toArray:true | organizeContactArray">
       <div class="attendee-company-title">
         {{ key }}
       </div>

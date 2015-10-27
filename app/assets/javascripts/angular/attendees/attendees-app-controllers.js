@@ -156,8 +156,10 @@
 
     app.controller("AttendeesCtrl", ['$scope','sharedProperties', '$http', function($scope, sharedProperties, $http){
         var attendeesCtrl = this;
+        var contactInfosRe = new RegExp("-Contacts-Infos-------------------(.*)----------------------------------");
+
         this.loaded = false;
-        this.attendees = [];
+        $scope.attendees = [];
         this.readOnly = window.threadDataIsEditable == undefined;
 
         this.populateAttendeesDetails = function(attendeesDetails){
@@ -347,7 +349,7 @@
                 isThreadOwner: true
             });
 
-            this.attendees.push(threadOwner);
+            $scope.attendees.push(threadOwner);
 
             sharedProperties.setThreadOwner(threadOwner);
 
@@ -387,7 +389,7 @@
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
                 a.firstName = a.usageName;
 
-            attendeesCtrl.attendees.push(a);
+            $scope.attendees.push(a);
         };
 
         this.displayAttendeeNewForm = function (){
@@ -399,15 +401,8 @@
         };
 
         $scope.$on('attendeeAdded', function(event, args) {
-            attendeesCtrl.attendees.push(args.attendee);
+            $scope.attendees.push(args.attendee);
         });
-
-        this.getCompaniesNames = function(){
-            return _.uniq(_.compact(_.map(attendeesCtrl.attendees, function(a) {
-                if(a.company != '' &&  a.company != undefined)
-                    return a.company;
-            })));
-        };
 
         this.fetchAttendeeFromClientContactNetwork = function(){
             $('.submit-classification').attr('disabled', true);
@@ -428,9 +423,71 @@
 
         };
 
+        $scope.updateNotes = function(){
+            var notes = $('#notes').val();
 
+            var wrappedContactInfos = '';
+            var computedContactInfos = '';
+
+            var i = 0;
+            _.each($scope.attendees, function(a){
+                // In any case if the attendee's company is not set and it is not the threadOwner (even on his aliases), we will mark the informations in the notes
+                if(a.isPresent && ((a.company == '' && attendeesCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 ) || a.company != attendeesCtrl.getThreadOwner().company)){
+                    if(i > 0 && (a.hasCallingInformations()))
+                        computedContactInfos += "\n";
+                    computedContactInfos += a.computeContactNotes($("input[name='locale']:checked").val());
+                    i++;
+                }
+            });
+
+            if(computedContactInfos != ''){
+                wrappedContactInfos += '-Contacts-Infos-------------------';
+                wrappedContactInfos += computedContactInfos;
+                wrappedContactInfos += "\n----------------------------------";
+            }
+
+            console.log(computedContactInfos);
+
+            if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
+            {
+                notes += "\n" + wrappedContactInfos;
+            }else{
+                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/__n/g, "\n");
+            }
+
+            $('#notes').val(notes);
+        };
+
+        getCurrentContactsInfos = function(notes){
+            return contactInfosRe.exec(notes);
+        };
+
+        this.getThreadOwner = function(){
+            if(this.threadOwner == undefined){
+                this.threadOwner = _.find($scope.attendees, function(a){
+                    return a.isThreadOwner;
+                });
+            }
+          return this.threadOwner;
+        };
+
+        this.getThreadOwnerEmails = function(){
+            var emails = [];
+            emails.push(window.threadAccount.email);
+            emails.push(window.threadAccount.email_aliases);
+            return _.flatten(emails);
+        };
 
         this.fetchAttendeeFromClientContactNetwork();
+
+        $scope.$watch('attendees', function (newVal, oldVal){$scope.updateNotes();}, true);
+
+        this.getCompaniesNames = function(){
+            return _.uniq(_.compact(_.map($scope.attendees, function(a) {
+                if(a.company != '' &&  a.company != undefined)
+                    return a.company;
+            })));
+        };
 
     }]);
 
@@ -467,8 +524,68 @@
             var name = this.firstName + _lastName;
             return name;
         },
+        hasPhoneInformations: function(){
+          return ((this.mobile != undefined && this.mobile != null && this.mobile != '') || (this.landline != undefined && this.landline != null && this.landline != ''))
+        },
+        hasSkype: function(){
+            return this.skypeId != undefined && this.skypeId != null && this.skypeId != '';
+        },
+        hasCallingInformations: function(){
+          return this.hasSkype() || this.hasPhoneInformations();
+        },
+        displayPhoneInformations: function(){
+            var _mobile = (this.mobile == undefined || this.mobile == null) ? '' : this.mobile;
+            var _landline = (this.landline == undefined || this.landline == null) ? '' : this.landline;
+            var separator = (_mobile == '' || _landline == '') ? '' : ' / ';
+
+            return _mobile + separator + _landline;
+        },
         getName: function(){
             return this.usageName || this.email;
+        },
+        computeContactNotes: function(locale){
+            var notes = "";
+            var that = this;
+            var hasPhoneInfos = that.hasPhoneInformations();
+            var hasSkype = that.hasSkype();
+
+            if(this.hasCallingInformations()){
+                notes += "\n";
+                switch(locale)
+                {
+                    case 'fr':
+                        notes += that.displayNormalizedName() + "\n";
+                        if(hasPhoneInfos){
+                            notes += 'Téléphone: ' + that.displayPhoneInformations();
+                            if(hasSkype)
+                                notes += "\n";
+                        }
+                        if(hasSkype)
+                            notes += 'Skype: ' + that.skypeId;
+                        break;
+                    case 'en':
+                        notes += that.displayNormalizedName() + "\n";
+                        if(hasPhoneInfos){
+                            notes += 'Phone Number: ' + that.displayPhoneInformations();
+                            if(hasSkype)
+                                notes += "\n";
+                        }
+                        if(hasSkype)
+                            notes += 'Skype: ' + that.skypeId;
+                        break;
+                    default:
+                        notes += that.displayNormalizedName() + "\n";
+                        if(hasPhoneInfos){
+                            notes += 'Téléphone: ' + that.displayPhoneInformations();
+                            if(hasSkype)
+                                notes += "\n";
+                        }
+                        if(hasSkype)
+                            notes += 'Skype: ' + that.skypeId;
+                }
+            }
+
+            return notes;
         }
     });
 })();
