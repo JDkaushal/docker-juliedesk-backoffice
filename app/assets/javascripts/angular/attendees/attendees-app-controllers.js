@@ -162,6 +162,7 @@
 
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
+            var companies = attendeesDetails.companies;
             var aliases = attendeesDetails.aliases;
             var aliasedEmails = Object.keys(aliases);
             var aliasEmails = _.flatten(_.map(aliases, function(aliases, email){
@@ -208,6 +209,8 @@
 
                     if(aliasedEmails.indexOf(informations.email) > -1)
                         informations.isClient = "true";
+                    if(Object.keys(companies).indexOf(informations.email) > -1)
+                        informations.company = companies[informations.email];
                     attendeesCtrl.createAttendee(informations, attendee);
                 }
             });
