@@ -63,6 +63,12 @@
         }
     });
 
+    var presentAttendees = function() {
+        return _.filter(window.otherAttendeesWithAccount, function(attendee) {
+            return attendee.isPresent;
+        });
+    };
+
     var suggestDatesSetReplyMessage = function() {
         window.setReplyMessage(window.generateEmailTemplate({
             action: "suggest_dates",
@@ -76,12 +82,12 @@
             address: window.getCurrentAddress(),
             timeSlotsToSuggest: window.timeSlotsToSuggest,
             client: window.threadAccount.usage_name,
-            other_clients: _.filter(_.map(window.otherAttendeesWithAccount, function(attendee) {
+            other_clients: _.filter(_.map(presentAttendees(), function(attendee) {
                 return attendee.usage_name;
             }), function(name) {
                 return name;
             }),
-            attendees: _.filter(_.map(window.otherAttendeesWithoutAccount, function(attendee) {
+            attendees: _.filter(_.map(presentAttendees(), function(attendee) {
                       var names = attendee.name.split(" ");
                       if(names.length > 0) {
                           return window.helpers.capitalize(names[0]);
