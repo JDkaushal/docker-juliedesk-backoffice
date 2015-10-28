@@ -332,6 +332,14 @@
                 });
                 attendeesDisplay += ']';
             }
+        }else if(companies.length == 1 && companies[0] == ''){
+            var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
+                return !a.isAssistant;
+            });
+
+            noCompanyAttendees += _.map(attendees, function(a){
+                return a.displayNormalizedName();
+            }).join(' / ');
         }else{
             _.each(companies, function(company){
                 i++;
@@ -357,6 +365,7 @@
                     if(attendees.length == 1){
                         attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
                     }
+                    // Minus 1 to exclude the threadOwnerCompany
                     if(i < companies.length - 1)
                         attendeesDisplay += ' / ';
                 }
@@ -367,6 +376,11 @@
             attendeesDisplay += threadOwnerCompanyAttendees;
         else if(threadOwnerCompanyAttendees != '')
             attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
+        else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '')
+            // We add the slash before here because in this particular case there is no threadOwnerCompany (should never happen) so the normal algorithm will not work properly in this case
+            attendeesDisplay += ' / ' + noCompanyAttendees;
+        else if(attendeesDisplay == '' && noCompanyAttendees != '')
+            attendeesDisplay += noCompanyAttendees;
 
         $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
     }
