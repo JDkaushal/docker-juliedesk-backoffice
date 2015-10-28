@@ -124,7 +124,7 @@
 
         $("input[name='locale']").change(function () {
             setNotes();
-            angular.element($('#attendeesCtrl')).scope().updateNotes();
+            updateNotesCallingInfos();
             reProcessTitle();
         });
 
@@ -247,6 +247,10 @@
         }
         return null;
     };
+
+    function updateNotesCallingInfos() {
+        angular.element($('#attendeesCtrl')).scope().updateNotes();
+    }
 
     function newConstraintTile(data, expand) {
         var possibleAttendees = window.getInfoPanelAttendees();
@@ -464,7 +468,8 @@
         });
 
         $("select#appointment_family_nature").change(function() {
-            processAppointmentType()
+            processAppointmentType();
+            updateNotesCallingInfos();
         });
 
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
@@ -628,9 +633,11 @@
             if(addressComplement && addressComplement.length > 0) {
                 notes = addressComplement + "\n" + notes;
             }
+            console.log(notes.replace(/\n/g, '1'))
             $("textarea#notes").val(notes);
         }
         else {
+            console.log(notes.replace(/\n/g, '1'))
             $("textarea#notes").val(notes);
         }
     }

@@ -434,16 +434,12 @@
             _.each($scope.attendees, function(a){
                 // In any case if the attendee's company is not set and it is not the threadOwner (even on his aliases), we will mark the informations in the notes
                 if(a.isPresent && ((a.company == '' && attendeesCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 ) || a.company != attendeesCtrl.getThreadOwner().company)){
-
-                    console.log(i);
-                    console.log(j);
                     if(a.hasCallingInformations()){
                         // In case if the first contacts doesn't have any informations so it doesn't print a carriage return
 
                         if(j > 0)
                             computedContactInfos += "\n";
                         j++;
-
                     }
                     computedContactInfos += a.computeContactNotes($("input[name='locale']:checked").val());
                     i++;
@@ -454,18 +450,20 @@
                 wrappedContactInfos += '-Contacts-Infos-------------------';
                 wrappedContactInfos += computedContactInfos;
                 wrappedContactInfos += "\n----------------------------------";
+
+                if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
+                {
+                    if(notes.replace(/\n/g,'').length > 0)
+                        notes += "\n";
+                    notes += wrappedContactInfos;
+                }else{
+                    notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/__n/g, "\n");
+                }
+
+                $('#notes').val(notes);
             }
 
-            console.log(computedContactInfos);
 
-            if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
-            {
-                notes += "\n" + wrappedContactInfos;
-            }else{
-                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/__n/g, "\n");
-            }
-
-            $('#notes').val(notes);
         };
 
         getCurrentContactsInfos = function(notes){
