@@ -199,7 +199,7 @@
                 });
 
                 var informations = (attendeeDetails || attendee);
-                var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
+                var assistant = (typeof(informations.assistedBy) == "string" && informations.assistedBy.length > 0) ? JSON.parse(informations.assistedBy) : informations.assistedBy;
                 informations.assistedBy = assistant;
 
                 if(aliasedEmails.indexOf(informations.email) > -1)
