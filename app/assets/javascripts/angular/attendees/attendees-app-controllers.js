@@ -172,19 +172,41 @@
             angular.forEach(window.currentAttendees.filter(function(attendee){
                 return (window.threadAccount.email_aliases.indexOf(attendee.email)) == -1 && (attendee.email != window.threadAccount.email)
             }), function(attendee) {
+
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
-                    if(attendee.email != undefined && attendee.email != ''){
-                        return a.email == attendee.email;
+                    var searchedEmail = attendee.email;
+                    //
+                    //var clientMainEmail;
+                    //_.each(aliases, function (aliases, aliased) {
+                    //    if (aliases.indexOf(attendee.email) > -1)
+                    //        clientMainEmail = aliased;
+                    //});
+                    //
+                    //console.log(searchedEmail);
+                    //console.log(clientMainEmail);
+                    //
+                    //if(clientMainEmail)
+                    //    searchedEmail = clientMainEmail;
+
+                    if(searchedEmail != undefined && searchedEmail != ''){
+                        return a.email == searchedEmail;
                     }else if(attendee.name != '' && attendee.name != undefined){
                         return a.name == attendee.name;
                     }
                     return false;
-            });
-                var informations = (attendeeDetails || attendee);
+                });
 
-                //If the current attendee is not a alias for another attendee
-                if(aliasEmails.indexOf(informations.email) == -1){
-                    var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
+                var informations = (attendeeDetails || attendee);
+                var assistant = typeof(informations.assistedBy) == "string" ? JSON.parse(informations.assistedBy) : informations.assistedBy;
+                informations.assistedBy = assistant;
+
+                if(aliasedEmails.indexOf(informations.email) > -1)
+                    informations.isClient = "true";
+                if(Object.keys(companies).indexOf(informations.email) > -1)
+                    informations.company = companies[informations.email];
+
+                //If the current email is the principal email for a user
+                if(aliasedEmails.indexOf(informations.email) > -1){
 
                     //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
                     //    var alreadyExist = _.find(window.currentAttendees, function(a) {
@@ -204,13 +226,88 @@
                     //    }
                     //}
 
-                    informations.assistedBy = assistant;
+                    // If it is in the recipients, we create the attendee, because if there will be an alias for this email in the recipients, it will be discarded
+                    if(window.currentToCC.indexOf(informations.email) > -1){
+
+                        attendeesCtrl.createAttendee(informations, attendee);
+                     // If it is not in the recipients, we check to see if an alias for this email is in the recipients, if not we create the attendee, if yes we don't because we will use the alias instead
+                    }else{
+                        var aliasInTheRecipients = false;
+
+                        // Check if an alias for this email is in the recipients
+                        _.each(aliases[informations.email], function(alias){
+                            if(window.currentToCC.indexOf(alias) > -1)
+                                aliasInTheRecipients = true;
+                        });
+                        // If yes we don't create the attendee, because we will use the alias
+                        if(aliasInTheRecipients){
+
+                         // If no, we use the main email and we create the attendee
+                        }else{
+                            attendeesCtrl.createAttendee(informations, attendee);
+                        }
+                    }
                     // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
 
-                    if(aliasedEmails.indexOf(informations.email) > -1)
-                        informations.isClient = "true";
-                    if(Object.keys(companies).indexOf(informations.email) > -1)
-                        informations.company = companies[informations.email];
+                 // If the current email is an alias for a client
+                }else if(aliasEmails.indexOf(informations.email) > -1) {
+
+                    //We find the client main email
+                    var clientMainEmail;
+                    _.each(aliases, function (aliases, aliased) {
+                        if (aliases.indexOf(informations.email) > -1)
+                            clientMainEmail = aliased;
+                    });
+
+                    // We found the client main email and it is the recipients, so we will use it as the attendee, we do nothing here
+                    if (clientMainEmail && window.currentToCC.indexOf(clientMainEmail) > -1) {
+
+                    }
+                    // If we found it or not and it is not in the recipients, we can create the attendee
+                    else{
+                        //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
+                        //    var alreadyExist = _.find(window.currentAttendees, function(a) {
+                        //        return a.email == assistant.email;
+                        //    });
+                        //
+                        //    if(alreadyExist == undefined) {
+                        //        var assistantFullName = assistant.usageName || assistant.displayName;
+                        //        attendeesCtrl.createAttendee({
+                        //            email: assistant.email,
+                        //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
+                        //            usageName: assistantFullName,
+                        //            firstName: assistantFullName.split(' ')[0],
+                        //            isAssistant: 'true',
+                        //            timezone: informations.timezone
+                        //        }, {});
+                        //    }
+                        //}
+                        // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
+
+                        attendeesCtrl.createAttendee(informations, attendee);
+                    }
+                    // If the email is not an aliased email nor a alias email, we create the attendee
+                }else{
+                    //if(informations.isClient != "true" && assistant != undefined && assistant != '' && assistant != null){
+                    //    var alreadyExist = _.find(window.currentAttendees, function(a) {
+                    //        return a.email == assistant.email;
+                    //    });
+                    //
+                    //    if(alreadyExist == undefined) {
+                    //        var assistantFullName = assistant.usageName || assistant.displayName;
+                    //        attendeesCtrl.createAttendee({
+                    //            email: assistant.email,
+                    //            lastName: assistantFullName.split(' ').splice(1, assistantFullName.length).join(' '),
+                    //            usageName: assistantFullName,
+                    //            firstName: assistantFullName.split(' ')[0],
+                    //            isAssistant: 'true',
+                    //            timezone: informations.timezone
+                    //        }, {});
+                    //    }
+                    //}
+
+                    // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
+
                     attendeesCtrl.createAttendee(informations, attendee);
                 }
             });
@@ -261,6 +358,8 @@
             $(".add-constraint-button").click(function() {
                 newConstraintTile(null, true);
             });
+
+            reProcessTitle();
         };
 
         this.createAttendee = function(informations, attendee){

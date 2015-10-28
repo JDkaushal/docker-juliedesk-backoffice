@@ -305,40 +305,69 @@
         var noCompanyAttendees = '';
         var i=0;
 
-        _.each(companies, function(company){
-            i++;
-           var attendees = _.filter(groupedPresentAttendees[company], function(a){
-               return !a.isAssistant;
-           });
+        if(companies.length == 1 && companies[0] != ''){
+            attendeesDisplay += companies[0];
+            var attendees = _.filter(groupedPresentAttendees[companies[0]], function(a){
+                return !a.isAssistant;
+            });
 
-            if(company == ''){
+            var i, j = 0;
 
-                if(attendee != undefined && attendees.length > 0)
-                {
-                    noCompanyAttendees += _.map(attendees, function(a){
-                        return a.displayNormalizedName();
-                    }).join(' / ');
-                }
-            }else if(company == threadOwner.company) {
-                threadOwnerCompanyAttendees += company;
-                if(attendees.length == 1){
-                    threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
-                }
-            }else {
-                attendeesDisplay += company;
-                if(attendees.length == 1){
-                    attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
-                }
-                if(i < companies.length - 1)
-                    attendeesDisplay += ' / ';
-
+            if(attendees.length > 0){
+                attendeesDisplay += ' [';
+                _.each(attendees, function(a){
+                    // We display only the first 5 attendees
+                    if(i <= 4){
+                        attendeesDisplay += a.displayNormalizedName();
+                        // We append the slash until the last attendee we display
+                        console.log(i);
+                        console.log(attendees.length - 1);
+                        if(attendees.length >= 5 && i < 4)
+                            attendeesDisplay += ' / ';
+                        else if(attendees.length < 5 && i < attendees.length - 1)
+                            attendeesDisplay += ' / ';
+                        i++;
+                    }
+                    j++;
+                });
+                attendeesDisplay += ']';
             }
-        });
+        }else{
+            _.each(companies, function(company){
+                i++;
+                var attendees = _.filter(groupedPresentAttendees[company], function(a){
+                    return !a.isAssistant;
+                });
+
+                if(company == ''){
+
+                    if(attendees != undefined && attendees.length > 0)
+                    {
+                        noCompanyAttendees += _.map(attendees, function(a){
+                            return a.displayNormalizedName();
+                        }).join(' / ');
+                    }
+                }else if(company == threadOwner.company) {
+                    threadOwnerCompanyAttendees += company;
+                    if(attendees.length == 1){
+                        threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
+                    }
+                }else {
+                    attendeesDisplay += company;
+                    if(attendees.length == 1){
+                        attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
+                    }
+                    if(i < companies.length - 1)
+                        attendeesDisplay += ' / ';
+                }
+            });
+        }
 
         if(attendeesDisplay == '' && noCompanyAttendees == '')
             attendeesDisplay += threadOwnerCompanyAttendees;
-        else
+        else if(threadOwnerCompanyAttendees != '')
             attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
+
         $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
     }
 

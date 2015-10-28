@@ -135,7 +135,6 @@ class MessagesThread < ActiveRecord::Base
       m.message_classifications
     }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
     last_message_classification = message_classifications.last
-
     appointment_nature = last_message_classification.try(:appointment_nature)
     {
         locale: last_message_classification.try(:locale) || self.account.try(:locale),
