@@ -8,10 +8,12 @@ class ClientContactsController < ApplicationController
     @contacts_aliases = {}
     @contacts_companies = {}
 
-    params['contacts_emails'].each do |contact|
-      if cache = accounts_cache[contact]
-        @contacts_aliases[contact] = cache["email_aliases"]
-        @contacts_companies[contact] = cache["company_hash"] ? cache["company_hash"]["name"] : ''
+    if params['contacts_emails'].present?
+      params['contacts_emails'].each do |contact|
+        if cache = accounts_cache[contact]
+          @contacts_aliases[contact] = cache["email_aliases"]
+          @contacts_companies[contact] = cache["company_hash"] ? cache["company_hash"]["name"] : ''
+        end
       end
     end
 
@@ -71,37 +73,38 @@ class ClientContactsController < ApplicationController
         @contacts_infos.push(account)
       end
     else
+      if params['contacts_emails'].present?
+        params['contacts_emails'].each do |contact_email|
+          searched_email = contact_email
 
-      params['contacts_emails'].each do |contact_email|
-        searched_email = contact_email
-
-        @contacts_aliases.each do |aliased_email, aliases|
-          if aliases.include?(contact_email)
-            searched_email = aliased_email
-            break
+          @contacts_aliases.each do |aliased_email, aliases|
+            if aliases.include?(contact_email)
+              searched_email = aliased_email
+              break
+            end
           end
-        end
 
-        if cache = accounts_cache[searched_email]
-          fullname_splitted = cache['full_name'].split(' ')
-          @contacts_infos.push({
-              client_email: params['client_email'],
-              email: contact_email,
-              firstName: fullname_splitted[0],
-              lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
-              usageName: cache['usage_name'],
-              gender: "?",
-              isAssistant: "false",
-              assisted: "false",
-              assistedBy: nil,
-              company: cache['company_hash'] ? cache['company_hash']["name"] : '',
-              timezone: cache['default_timezone_id'],
-              landline: cache['landline_number'],
-              mobile: cache['mobile_number'],
-              skypeId: cache['skype'],
-              confCallInstructions: cache['confcall_instructions'],
-              isClient: "true"
-          })
+          if cache = accounts_cache[searched_email]
+            fullname_splitted = cache['full_name'].split(' ')
+            @contacts_infos.push({
+                 client_email: params['client_email'],
+                 email: contact_email,
+                 firstName: fullname_splitted[0],
+                 lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
+                 usageName: cache['usage_name'],
+                 gender: "?",
+                 isAssistant: "false",
+                 assisted: "false",
+                 assistedBy: nil,
+                 company: cache['company_hash'] ? cache['company_hash']["name"] : '',
+                 timezone: cache['default_timezone_id'],
+                 landline: cache['landline_number'],
+                 mobile: cache['mobile_number'],
+                 skypeId: cache['skype'],
+                 confCallInstructions: cache['confcall_instructions'],
+                 isClient: "true"
+             })
+          end
         end
       end
     end
