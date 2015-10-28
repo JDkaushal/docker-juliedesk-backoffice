@@ -20,6 +20,39 @@
         $(".calendar-container").addClass("visible minimized");
     };
 
+    window.messagesIdsHash = <%== Hash[@messages_thread.messages.map{|m|
+         [m.id, m.server_message_id]
+    }].to_json %>;
+
+    window.attemptMergeToServerThreadId = function(serverThreadId, messagesThreadId) {
+        var messageIdsToSplit = $(".email .checkbox-container input[type=checkbox]:checked").map(function () {
+            return window.messagesIdsHash[$(this).val()];
+        }).toArray();
+        if(messageIdsToSplit.length == 0) {
+            alert("Please select at least one message to merge into this thread");
+        }
+        else {
+            $(".merging-global-spinner").show();
+            $.post("<%= EmailServer::API_BASE_PATH %>/messages/merge?access_key=<%= EmailServer::API_ACCESS_KEY %>", {
+                message_ids: messageIdsToSplit,
+                messages_thread_id: serverThreadId
+            }).success(function(response) {
+                $(".merging-global-spinner").hide();
+                if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
+                    window.location = "/messages_threads/" + messagesThreadId;
+                }
+                else {
+                    window.location = window.location.href;
+                }
+
+            }).error(function(response) {
+                alert("Error while merging thread");
+                $(".merging-global-spinner").hide();
+            });
+            //alert("Attempting to merge messages: " + messageIdsToSplit + " to serverthread id: " + serverThreadId)
+        }
+    };
+
 
     $(function () {
 
@@ -53,8 +86,20 @@
             $(".messages-thread-emails .email").removeClass("extended");
         });
 
+        $(".merge-into-thread-button").click(function () {
+            $(".messages-thread-emails").addClass("merging");
+            $(".messages-thread-emails .email").removeClass("extended");
+            $(".merging-panel").addClass("merging");
+            window.launchMergingFetch();
+        });
+
         $(".cancel-split-button").click(function () {
             $(".messages-thread-emails").removeClass("splitting");
+        });
+
+        $(".cancel-merge-button").click(function () {
+            $(".messages-thread-emails").removeClass("merging");
+            $(".merging-panel").removeClass("merging");
         });
 
         $(".actually-split-button").click(function () {
@@ -81,6 +126,7 @@
     });
 </script>
 <%= render partial: "common/thread_header", locals: {messages_thread: @messages_thread} %>
+<div class="merging-global-spinner">Merging....</div>
 <div class="fixed-columns">
 
 
@@ -108,13 +154,22 @@
         <div class="btn btn-warning actually-split-button"><%= I18n.t("common.split") %></div>
       </div>
 
-      <div id="show-calendar-button" class="show-calendar-in-thread-details btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
-      <div class="split-thread-button"><%= I18n.t("common.split") %></div>
-      <% if @messages_thread.event_data[:event_id].nil? %>
-          <% link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
-      <% end %>
+      <div class="merge-buttons-container">
+        <div class="btn btn-default cancel-merge-button"><%= I18n.t("common.cancel") %></div>
+      </div>
 
-      <% button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+      <div class="thread-buttons">
+          <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
+          <% if session[:privilege] == "admin" %>
+            <div class="merge-into-thread-button thread-button"><%= I18n.t("common.merge") %></div>
+          <% end %>
+          <div class="split-thread-button thread-button"><%= I18n.t("common.split") %></div>
+          <% if @messages_thread.event_data[:event_id].nil? %>
+              <% link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
+          <% end %>
+
+          <% button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+      </div>
 
       <% operator_actions_groups = @messages_thread.operator_actions_groups %>
 
@@ -152,6 +207,8 @@
 
 
 </div>
+
+<%= render partial: "messages_threads/merging_panel", locals: {messages_thread: @messages_thread} %>
 
 <% if @messages_thread.account %>
     <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>

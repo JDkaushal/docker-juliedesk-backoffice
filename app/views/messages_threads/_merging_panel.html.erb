@@ -1,0 +1,133 @@
+<script>
+    var app = angular.module("backofficeApp", []);
+    app.controller("mergingPanelController", function($scope, $http, $sce) {
+        $scope.query = "<%== @messages_thread.messages.map{ |message|
+            ApplicationHelper.find_addresses(message.server_message['from']).addresses.map(&:address)
+        }.join(" ") %>";
+        $scope.offset = 0;
+        $scope.limit = 10;
+        $scope.currentThreadId = <%= @messages_thread.id %>;
+        $scope.fetch = function() {
+            $scope.loading = true;
+
+            var url = "<%= EmailServer::API_BASE_PATH %>/messages_threads?query=" + $scope.query + "&offset=" + $scope.offset + "&limit=" + $scope.limit + "&access_key=<%= EmailServer::API_ACCESS_KEY %>";
+            $http.get(url)
+                    .success(function(e) {
+                        $scope.messagesThreadsTotalCount = e.total_count;
+
+                        var serverThreadidsUrlPart = _.map(e.data, function(serverThread) {
+                            return "server_thread_ids[]=" + serverThread.id;
+                        }).join("&");
+
+                        $http.get("/messages_threads/search?" + serverThreadidsUrlPart).success(function(response) {
+                            $scope.messagesThreads = response.data;
+                            _.each($scope.messagesThreads, function(messagesThread) {
+                                if(messagesThread.event_data.calendar_id) {
+                                    messagesThread.event_data.date = $sce.trustAsHtml("Loading...");
+                                    window.CommonHelpers.externalRequest({
+                                        action: "get_event",
+                                        email: messagesThread.account_email,
+                                        calendar_login_username: messagesThread.event_data.calendar_login_username,
+                                        event_id: messagesThread.event_data.event_id,
+                                        event_url: messagesThread.event_data.event_url,
+                                        calendar_id: messagesThread.event_data.calendar_id
+                                    }, function(eventGetResponse) {
+                                        var startDate = eventGetResponse.data.start.dateTime;
+                                        var allDay = false;
+                                        if(!startDate) {
+                                            eventGetResponse.data.start.date;
+                                            allDay = true
+                                        }
+                                        var endDate = eventGetResponse.data.end.dateTime;
+                                        if(!endDate) eventGetResponse.data.end.date;
+                                        messagesThread.event_data.date = $sce.trustAsHtml(CommonHelpers.formatDateTimeRange(startDate, endDate, "en", messagesThread.computed_data.timezone, allDay));
+                                        $scope.$apply();
+                                    })
+                                }
+                            });
+                            $scope.loading = false;
+                        });
+                    })
+                    .error(function(e) {
+                        $scope.loading = false;
+                    });
+        };
+
+        $scope.navigationOffset = function() {
+            if(!$scope.messagesThreadsTotalCount || $scope.messagesThreadsTotalCount == 0) {
+                return "";
+            }
+            else {
+                return ($scope.offset + 1) + " - " + Math.min($scope.messagesThreadsTotalCount, $scope.offset + $scope.limit) + " / ";
+            }
+        };
+
+        $scope.mergeThread = function(messagesThread) {
+            window.attemptMergeToServerThreadId(messagesThread.server_thread_id, messagesThread.id);
+        };
+
+        $scope.navigationPrevious = function() {
+            if($scope.offset > 0) {
+                $scope.offset = Math.max(0, $scope.offset - $scope.limit);
+                $scope.fetch();
+            }
+        };
+
+        $scope.navigationNext = function() {
+            if($scope.offset + $scope.limit < $scope.messagesThreadsTotalCount) {
+                $scope.offset = Math.min($scope.messagesThreadsTotalCount - $scope.limit, $scope.offset + $scope.limit);
+                $scope.fetch();
+            }
+        };
+        window.launchMergingFetch = function() {
+            $scope.fetch();
+        };
+    });
+</script>
+
+<div class="merging-panel" ng-app="backofficeApp" ng-controller="mergingPanelController">
+  <div class="merging-search-bar">
+    <input ng-model="query"/>
+    <div class="search-button" ng-click="offset=0; fetch()">Search</div>
+    <div class="merging-results-total-count-and-navigation">
+      <span class="merging-results-total-count">{{ navigationOffset() }}{{ messagesThreadsTotalCount }} results</span>
+      <div class="merging-results-navigation">
+        <span class="merging-results-navigation-previous btn btn-xs btn-default" ng-click="navigationPrevious()"><</span>
+        <span class="merging-results-navigation-next btn btn-xs btn-default" ng-click="navigationNext()">></span>
+      </div>
+
+    </div>
+    <div class="merging-panel-spinner" ng-show="loading">Loading...</div>
+  </div>
+
+
+  <div class="threads-list">
+    <div class="thread-item"
+         ng-repeat="messagesThread in messagesThreads"
+         ng-class="(currentThreadId == messagesThread.id)?'current':''">
+      <div class="thread-client-and-status">
+        <span class="thread-client">{{ messagesThread.account.full_name }}</span>
+        <span class="thread-status">{{ (messagesThread.event_data.calendar_id)?"Scheduled":"Scheduling" }}</span>
+      </div>
+      <div class="thread-subject-and-emails-count">
+        <span class="thread-subject">{{ messagesThread.subject }}</span>
+        <span class="thread-emails-count">({{ messagesThread.messages.length }} mails)</span>
+      </div>
+      <div class="thread-date-and-nature">
+        <span class="thread-date-icon" ng-show="messagesThread.event_data.date"></span>
+        <span class="thread-date" ng-show="messagesThread.event_data.date" ng-bind-html="messagesThread.event_data.date"></span>
+        <span class="thread-nature" ng-show="messagesThread.event_data.appointment_nature">{{ messagesThread.event_data.appointment_nature }}</span>
+      </div>
+      <div class="thread-attendees">
+        <span class="thread-attendee" ng-repeat="attendee in messagesThread.computed_data.attendees | filter: {isPresent: true}">
+          <span class="thread-attendee-usage-name">{{ attendee.usageName }}</span><span class="thread-attendee-email">{{ attendee.email }}</span>
+        </span>
+      </div>
+
+      <div class="thread-action-buttons" ng-show="currentThreadId != messagesThread.id">
+        <a target="_blank" href="https://juliedesk-backoffice.herokuapp.com/messages_threads/{{ messagesThread.id }}" class="btn btn-primary thread-action-button-preview">Preview</a>
+        <div class="btn btn-success thread-action-button-really-merge" ng-click="mergeThread(messagesThread)">Merge</div>
+      </div>
+    </div>
+  </div>
+</div>

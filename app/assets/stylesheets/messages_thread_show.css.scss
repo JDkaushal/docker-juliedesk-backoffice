@@ -9,30 +9,37 @@
     font-size: 16px;
     font-weight: 600;
   }
-  .show-calendar-in-thread-details {
-    position: absolute;
-    top: -30px;
-    right: 150px;
-  }
-  .split-thread-button {
-    position: absolute;
-    top: -30px;
-    //right: 130px;
-    right: 0px;
-    width: 120px;
-    height: 32px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    line-height: 32px;
-    background: transparent;
-    text-align: center;
-    padding: 0;
-    opacity: 0.9;
 
-    &:hover {
-      background: #f0f0f0;
+  .thread-buttons {
+    position: absolute;
+    top: -30px;
+    right: 0px;
+    text-align: right;
+
+    .thread-button {
+      position: static;
+      display: inline-block;
+
+      height: 32px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      line-height: 32px;
+      text-align: center;
+      padding: 0 10px;
+      opacity: 0.9;
+      @include border-radius(0);
+      vertical-align: top;
+
+      font-size: 13px;
+      margin: 0 0 0 5px;
+      background: #fafafa;
+
+      &:hover {
+        background: #f5f5f5;
+      }
     }
   }
+
 
   .associate-to-event-button {
     position: absolute;
@@ -73,7 +80,7 @@
     }
   }
 
-  .split-buttons-container {
+  .split-buttons-container, .merge-buttons-container {
     position: absolute;
     top: -31px;
     display: none;
@@ -100,8 +107,199 @@
       display: block;
     }
   }
+
+  &.merging {
+    margin-right: 200px;
+    .merge-buttons-container {
+      display: block;
+    }
+    .email .retracted {
+      /*display: block;*/
+    }
+    .email .extended {
+      /*display: none;*/
+    }
+    .email .retracted .checkbox-container {
+      display: block;
+    }
+  }
 }
 
+.merging-panel {
+  display: none;
+  position: fixed;
+  right: 0;
+  top: 40px;
+  bottom: 0;
+  z-index: 15;
+  width: 550px;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  background: white;
+
+  &.merging {
+    display: block;
+  }
+
+  .merging-search-bar {
+    position: relative;
+    height: 100px;
+
+    input {
+      outline: none;
+      width: 100%;
+      border-radius: 15px;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      font-size: 12px;
+      line-height: 20px;
+      height: 30px;
+    }
+
+    .search-button {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      font-size: 13px;
+      color: white;
+      line-height: 30px;
+      padding: 0 10px;
+      @include border-radius(0 15px 15px 0);
+      background: $darkBlue;
+      cursor: pointer;
+    }
+
+    .merging-panel-spinner {
+      text-align: center;
+      padding: 10px;
+      color: #aaa;
+    }
+
+    .merging-results-total-count-and-navigation {
+      padding: 10px 0;
+      position: relative;
+
+      .merging-results-total-count {
+        font-size: 12px;
+      }
+      .merging-results-navigation {
+        position: absolute;
+        top: 6px;
+        right: 0;
+
+        .merging-results-navigation-previous {
+
+        }
+        .merging-results-navigation-offset {
+
+        }
+        .merging-results-navigation-next {
+
+        }
+      }
+    }
+
+  }
+
+  .threads-list {
+    .thread-item {
+      padding: 10px 10px;
+      border-bottom: 1px solid #ccc;
+      margin: 10px 0;
+      position: relative;
+      
+      &.current {
+        background: #f3f3f3;
+      }
+
+      .thread-client-and-status {
+        .thread-client {
+          background-color: #F3C384;
+          padding: 0px 10px;
+          @include border-radius(12px);
+          line-height: 24px;
+          height: 24px;
+          display: inline-block;
+          margin: 0 10px 0 0;
+        }
+
+        .thread-status {
+          font-style: italic;
+          color: #777;
+        }
+      }
+
+      .thread-subject-and-emails-count {
+        padding: 5px 0;
+        .thread-subject {
+          display: inline-block;
+          margin: 0 10px 0 0;
+        }
+        .thread-emails-count {
+          font-size: 11px;
+          color: #666;
+        }
+      }
+
+      .thread-date-and-nature {
+        position: relative;
+
+        .thread-date-icon {
+          position: absolute;
+          top: 0;
+          left: 0;
+          @include common-sprite(date_icon);
+          width: 19px;
+          height: 21px;
+        }
+        .thread-date {
+          display: inline-block;
+          color: #666;
+          margin: 0 10px 0 30px;
+        }
+        .thread-nature {
+          display: inline-block;
+          @include border-radius(12px);
+          border: 2px solid #36828E;
+          padding: 0px 8px;
+          line-height: 19px;
+          height: 24px;
+          color: #36828E;
+          vertical-align: top;
+          font-weight: 600;
+        }
+      }
+      .thread-attendees {
+        padding: 10px 0 0 0;
+        .thread-attendee {
+          display: inline-block;
+          @include border-radius(12px);
+          border: 1px solid #aaa;
+          padding: 0px 8px;
+          line-height: 21px;
+          height: 24px;
+          margin: 5px 10px 5px 0;
+          
+          .thread-attendee-email {
+            font-style: italic;
+            font-size: 11px;
+            margin: 0 0 0 5px;
+          }
+        }
+      }
+      .thread-action-buttons {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+
+        .btn {
+          display: block;
+          margin: 0 0 5px 0;
+        }
+      }
+    }
+  }
+}
 .unread-emails {
   position: fixed;
   bottom: -3px;
@@ -115,4 +313,18 @@
   font-size: 18px;
   color: white;
   z-index: 5;
+}
+
+.merging-global-spinner {
+  position: fixed;
+  top: 40px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 100;
+  text-align: center;
+  font-size: 16px;
+  padding: 250px 0;
+  display: none;
 }

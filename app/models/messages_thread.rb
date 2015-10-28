@@ -136,6 +136,15 @@ class MessagesThread < ActiveRecord::Base
     }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
     last_message_classification = message_classifications.last
     appointment_nature = last_message_classification.try(:appointment_nature)
+
+
+    begin
+      computed_calendar_login_username = self.calendar_login.try(:[], 'username')
+      computed_calendar_login_type = self.calendar_login.try(:[], 'type')
+    rescue
+      computed_calendar_login_username = nil
+      computed_calendar_login_type = nil
+    end
     {
         locale: last_message_classification.try(:locale) || self.account.try(:locale),
         timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
@@ -164,8 +173,8 @@ class MessagesThread < ActiveRecord::Base
           dt['date'] || "ZZZ"
         },
         last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
-        calendar_login_username: self.calendar_login.try(:[], 'username'),
-        calendar_login_type: self.calendar_login.try(:[], 'type')
+        calendar_login_username: computed_calendar_login_username,
+        calendar_login_type: computed_calendar_login_type
     }
   end
 

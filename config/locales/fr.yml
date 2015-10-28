@@ -308,10 +308,9 @@ fr:
     quote_message: "Citer le message précédent"
     archive: "Archiver"
     associate_to_event: "Lier un évènement"
-
-
-
     add_attendee: "Ajouter participant"
+    merge: "Associer à un autre thread"
+
   classification:
       please_fill_info_in: "Remplissez les infos"
       dates_identification: "Identification des dates"

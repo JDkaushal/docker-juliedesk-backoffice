@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :messages_threads, only: [:show, :index] do
     collection do
       get "index_with_import", action: :index_with_import, as: :index_with_import
+      get "search"
     end
 
     member do

@@ -141,8 +141,9 @@ en:
     quote_message: "Quote previous message"
     archive: "Archive"
     associate_to_event: "Link an event"
-
     add_attendee: "Add Attendee"
+    merge: "Merge into another thread"
+
   classification:
     please_fill_info_in: "Please fill info in"
     dates_identification: "Dates identification"

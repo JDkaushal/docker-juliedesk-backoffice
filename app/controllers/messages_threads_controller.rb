@@ -7,6 +7,24 @@ class MessagesThreadsController < ApplicationController
     render_messages_threads
   end
 
+  def search
+    @messages_thread = MessagesThread.where(server_thread_id: params[:server_thread_ids]).includes(messages: {message_classifications: :julie_action}).sort_by{|mt|
+      mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
+          mt.messages.map{|m| m.received_at}.max ||
+          DateTime.parse("2500-01-01")
+    }.reverse
+    accounts_cache = Account.accounts_cache(mode: "light")
+    @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
+
+
+    data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :computed_data, :event_data])
+    render json: {
+        status: "success",
+        message: "",
+        data: data
+    }
+  end
+
   def index_with_import
     Message.import_emails
     render_messages_threads
