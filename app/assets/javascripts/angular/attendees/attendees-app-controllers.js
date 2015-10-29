@@ -451,17 +451,18 @@
                 wrappedContactInfos += computedContactInfos;
                 wrappedContactInfos += "\n----------------------------------";
 
-                if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
-                {
-                    if(notes.replace(/\n/g,'').length > 0)
-                        notes += "\n";
-                    notes += wrappedContactInfos;
-                }else{
-                    notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/__n/g, "\n");
-                }
-
-                $('#notes').val(notes);
             }
+
+            if(getCurrentContactsInfos(notes.replace(/\n/g,'')) == null)
+            {
+                if(notes.replace(/\n/g,'').length > 0)
+                    notes += "\n";
+                notes += wrappedContactInfos;
+            }else{
+                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/[__n]{2,}/g, '\n\n').replace(/__n/g, "\n");
+            }
+
+            $('#notes').val(notes);
 
 
         };
