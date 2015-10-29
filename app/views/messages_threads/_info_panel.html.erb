@@ -345,8 +345,14 @@
                     return a.displayNormalizedName();
                 }).join(' | ');
             }else{
+                var realCompaniesCount = companies.length;
+                if(companies.indexOf("") > -1)
+                    realCompaniesCount --;
+                if(window.threadAccount.company_hash && window.threadAccount.company_hash.name != '' && companies.indexOf(window.threadAccount.company_hash.name) > -1)
+                    realCompaniesCount --;
+
+                console.log(realCompaniesCount);
                 _.each(companies, function(company){
-                    i++;
                     var attendees = _.filter(groupedPresentAttendees[company], function(a){
                         return !a.isAssistant;
                     });
@@ -365,26 +371,32 @@
                             threadOwnerCompanyAttendees += ' [' + attendees[0].displayNormalizedName() + ']';
                         }
                     }else {
+                        i++;
                         attendeesDisplay += company;
                         if(attendees.length == 1){
                             attendeesDisplay += ' [' + attendees[0].displayNormalizedName() + ']';
                         }
-                        // Minus 1 to exclude the threadOwnerCompany
-                        if(i < companies.length - 1)
+                        console.log(i);
+                        console.log(realCompaniesCount);
+                        if(i < realCompaniesCount)
                             attendeesDisplay += ' | ';
                     }
                 });
             }
 
-            if(attendeesDisplay == '' && noCompanyAttendees == '')
+            if(attendeesDisplay == '' && noCompanyAttendees == '' && threadOwnerCompanyAttendees != '')
                 attendeesDisplay += threadOwnerCompanyAttendees;
-            else if(threadOwnerCompanyAttendees != '')
-                attendeesDisplay += noCompanyAttendees + ' | ' + threadOwnerCompanyAttendees;
-            else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '' && noCompanyAttendees != '')
+            else if(attendeesDisplay == '' && noCompanyAttendees != '' && threadOwnerCompanyAttendees == '')
+                attendeesDisplay += noCompanyAttendees;
+            else if(attendeesDisplay != '' && noCompanyAttendees == '' && threadOwnerCompanyAttendees != '')
+                attendeesDisplay += ' | ' + threadOwnerCompanyAttendees;
+            else if(attendeesDisplay != '' && noCompanyAttendees != '' && threadOwnerCompanyAttendees == '')
             // We add the slash before here because in this particular case there is no threadOwnerCompany (should never happen) so the normal algorithm will not work properly in this case
                 attendeesDisplay += ' | ' + noCompanyAttendees;
-            else if(attendeesDisplay == '' && noCompanyAttendees != '')
-                attendeesDisplay += noCompanyAttendees;
+            else if(attendeesDisplay != '' && noCompanyAttendees != '' && threadOwnerCompanyAttendees != '')
+                attendeesDisplay += ' | ' + noCompanyAttendees + ' | ' + threadOwnerCompanyAttendees;
+            else if(attendeesDisplay == '' && noCompanyAttendees != '' && threadOwnerCompanyAttendees != '')
+                attendeesDisplay += noCompanyAttendees + ' | ' + threadOwnerCompanyAttendees;
 
             // If we only have one / in the title, we remplace it by a <>
             var slashMatches = attendeesDisplay.match(new RegExp(/\|/g));
