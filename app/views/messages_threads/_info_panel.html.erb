@@ -326,12 +326,10 @@
                         if(i <= 4){
                             attendeesDisplay += a.displayNormalizedName();
                             // We append the slash until the last attendee we display
-                            console.log(i);
-                            console.log(attendees.length - 1);
                             if(attendees.length >= 5 && i < 4)
-                                attendeesDisplay += ' / ';
+                                attendeesDisplay += ', ';
                             else if(attendees.length < 5 && i < attendees.length - 1)
-                                attendeesDisplay += ' / ';
+                                attendeesDisplay += ', ';
                             i++;
                         }
                         j++;
@@ -345,7 +343,7 @@
 
                 noCompanyAttendees += _.map(attendees, function(a){
                     return a.displayNormalizedName();
-                }).join(' / ');
+                }).join(' | ');
             }else{
                 _.each(companies, function(company){
                     i++;
@@ -359,7 +357,7 @@
                         {
                             noCompanyAttendees += _.map(attendees, function(a){
                                 return a.displayNormalizedName();
-                            }).join(' / ');
+                            }).join(' | ');
                         }
                     }else if(company == threadOwner.company) {
                         threadOwnerCompanyAttendees += company;
@@ -373,7 +371,7 @@
                         }
                         // Minus 1 to exclude the threadOwnerCompany
                         if(i < companies.length - 1)
-                            attendeesDisplay += ' / ';
+                            attendeesDisplay += ' | ';
                     }
                 });
             }
@@ -381,12 +379,18 @@
             if(attendeesDisplay == '' && noCompanyAttendees == '')
                 attendeesDisplay += threadOwnerCompanyAttendees;
             else if(threadOwnerCompanyAttendees != '')
-                attendeesDisplay += noCompanyAttendees + ' / ' + threadOwnerCompanyAttendees;
-            else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '')
+                attendeesDisplay += noCompanyAttendees + ' | ' + threadOwnerCompanyAttendees;
+            else if(attendeesDisplay != '' && threadOwnerCompanyAttendees == '' && noCompanyAttendees != '')
             // We add the slash before here because in this particular case there is no threadOwnerCompany (should never happen) so the normal algorithm will not work properly in this case
-                attendeesDisplay += ' / ' + noCompanyAttendees;
+                attendeesDisplay += ' | ' + noCompanyAttendees;
             else if(attendeesDisplay == '' && noCompanyAttendees != '')
                 attendeesDisplay += noCompanyAttendees;
+
+            // If we only have one / in the title, we remplace it by a <>
+            var slashMatches = attendeesDisplay.match(new RegExp(/\|/g));
+            if(slashMatches && slashMatches.length == 1)
+                attendeesDisplay = attendeesDisplay.replace('|', '<>');
+
 
             $("input#summary").val(appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay);
         }
