@@ -64,8 +64,8 @@
     });
 
     var presentAttendees = function() {
-        return _.filter(window.otherAttendeesWithAccount, function(attendee) {
-            return attendee.isPresent;
+        return _.filter(angular.element($('#attendeesCtrl')).scope().attendees, function(attendee) {
+            return attendee.isPresent == "true";
         });
     };
 
@@ -83,12 +83,12 @@
             timeSlotsToSuggest: window.timeSlotsToSuggest,
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(presentAttendees(), function(attendee) {
-                return attendee.usage_name;
+                return attendee.usageName;
             }), function(name) {
                 return name;
             }),
             attendees: _.filter(_.map(presentAttendees(), function(attendee) {
-                      var names = attendee.name.split(" ");
+                      var names = attendee.usageName.split(" ");
                       if(names.length > 0) {
                           return window.helpers.capitalize(names[0]);
                       }
