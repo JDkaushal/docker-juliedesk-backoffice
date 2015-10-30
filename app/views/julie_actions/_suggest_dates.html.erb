@@ -64,8 +64,8 @@
     });
 
     var presentAttendees = function() {
-        return _.filter(angular.element($('#attendeesCtrl')).scope().attendees, function(attendee) {
-            return attendee.isPresent == "true";
+        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+            return attendee.isPresent;
         });
     };
 
