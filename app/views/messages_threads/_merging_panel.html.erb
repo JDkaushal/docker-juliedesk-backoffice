@@ -1,5 +1,5 @@
 <script>
-    var app = angular.module("backofficeApp", []);
+    var app = angular.module("mergingApp", []);
     app.controller("mergingPanelController", function($scope, $http, $sce) {
         $scope.query = "<%== @messages_thread.messages.map{ |message|
             ApplicationHelper.find_addresses(message.server_message['from']).addresses.map(&:address)
@@ -83,9 +83,13 @@
             $scope.fetch();
         };
     });
+
+    angular.element(document).ready(function () {
+        angular.bootstrap(document.getElementById("merging-panel"),['mergingApp']);
+    });
 </script>
 
-<div class="merging-panel" ng-app="backofficeApp" ng-controller="mergingPanelController">
+<div class="merging-panel" ng-controller="mergingPanelController" id="merging-panel">
   <div class="merging-search-bar">
     <input ng-model="query"/>
     <div class="search-button" ng-click="offset=0; fetch()">Search</div>
