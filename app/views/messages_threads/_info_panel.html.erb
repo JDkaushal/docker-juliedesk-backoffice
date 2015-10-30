@@ -448,18 +448,23 @@
             setAppointmentNatureAndChangeIfNeeded(possibleAppointmentsTypes[0].kind);
         }
         else if(possibleAppointmentsTypes.length > 1) {
+            var presentAttendees = _.filter(window.getInfoPanelAttendees(), function(a){
+                return a.isPresent;
+            });
+
             var possibleAppointment = _.find(possibleAppointmentsTypes, function(appointment) {
                 var rule = appointment.appointment_kind_hash.rule;
+                // We used presentAttendees.length - 1 because the rules seems 0-based in the attendees calculation
                 return _.filter(rule.split("&"), function(rule_item) {
                     if(rule_item.indexOf("ATTENDEES") > -1) {
                         if(rule_item.split(">").length == 2) {
-                            return window.getInfoPanelAttendees().length > rule_item.split(">")[1];
+                            return presentAttendees.length - 1 > rule_item.split(">")[1];
                         }
                         else if (rule_item.split("=").length == 2) {
-                            return window.getInfoPanelAttendees().length == rule_item.split("=")[1];
+                            return presentAttendees.length - 1 == rule_item.split("=")[1];
                         }
                         else if (rule_item.split("<").length == 2) {
-                            return window.getInfoPanelAttendees().length < rule_item.split("<")[1];
+                            return presentAttendees.length - 1< rule_item.split("<")[1];
                         }
                         else {
                             return false;
