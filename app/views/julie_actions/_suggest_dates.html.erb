@@ -69,6 +69,18 @@
         });
     };
 
+    var otherClients = function(){
+        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+            return attendee.isPresent && attendee.isClien && !attendee.isThreadOwner;
+        });
+    };
+
+    var attendees = function(){
+        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+            return attendee.isPresent && !attendee.isClient;
+        });
+    };
+
     var suggestDatesSetReplyMessage = function() {
         window.setReplyMessage(window.generateEmailTemplate({
             action: "suggest_dates",
@@ -82,12 +94,16 @@
             address: window.getCurrentAddress(),
             timeSlotsToSuggest: window.timeSlotsToSuggest,
             client: window.threadAccount.usage_name,
-            other_clients: _.filter(_.map(presentAttendees(), function(attendee) {
-                return attendee.usageName;
+            other_clients: _.filter(_.map(otherClients(), function(attendee) {
+                var names = attendee.usageName.split(" ");
+                if(names.length > 0) {
+                    return window.helpers.capitalize(names[0]);
+                }
+                return null;
             }), function(name) {
                 return name;
             }),
-            attendees: _.filter(_.map(presentAttendees(), function(attendee) {
+            attendees: _.filter(_.map(attendees(), function(attendee) {
                       var names = attendee.usageName.split(" ");
                       if(names.length > 0) {
                           return window.helpers.capitalize(names[0]);
