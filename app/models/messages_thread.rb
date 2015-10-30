@@ -137,7 +137,6 @@ class MessagesThread < ActiveRecord::Base
     last_message_classification = message_classifications.last
     appointment_nature = last_message_classification.try(:appointment_nature)
 
-
     begin
       computed_calendar_login_username = self.calendar_login.try(:[], 'username')
       computed_calendar_login_type = self.calendar_login.try(:[], 'type')
