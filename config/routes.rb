@@ -50,6 +50,8 @@ Rails.application.routes.draw do
       collection do
         get "my_stats", action: :my_stats, as: :my_stats
         get "review_list", action: :review_list
+        get "events_review_list", action: :events_review_list
+        post "review_event_titles", action: :review_event_titles
       end
     end
 

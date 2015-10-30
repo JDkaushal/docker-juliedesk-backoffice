@@ -8,6 +8,7 @@ class MessagesThread < ActiveRecord::Base
   has_many :operator_actions, as: :target
   has_many :operator_actions_groups
   has_many :mt_operator_actions, class_name: "OperatorAction", foreign_key: "messages_thread_id"
+  has_many :event_title_reviews
 
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
@@ -106,6 +107,16 @@ class MessagesThread < ActiveRecord::Base
       params[:forbidden_emails] = account.try(:all_emails) || []
     end
     MessagesThread.contacts params
+  end
+
+  def create_event_title_review_if_needed
+    if self.scheduling_status == MessagesThread::EVENT_SCHEDULED
+      last_event_title_review = self.event_title_reviews.sort_by(&:created_at).last
+      if last_event_title_review.nil? || last_event_title_review.title != self.computed_data[:summary]
+        self.event_title_reviews.update_all(status: EventTitleReview::STATUS_REVIEWED)
+        self.event_title_reviews.create(title: self.computed_data[:summary])
+      end
+    end
   end
 
   def self.contacts params = {}
