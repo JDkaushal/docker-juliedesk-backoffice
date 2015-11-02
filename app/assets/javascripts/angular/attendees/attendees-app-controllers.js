@@ -459,7 +459,7 @@
                     notes += "\n";
                 notes += wrappedContactInfos;
             }else{
-                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/[__n]{2,}/g, '\n\n').replace(/__n/g, "\n");
+                notes = notes.replace(/\n/g,'__n').replace(contactInfosRe, wrappedContactInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
             }
 
             $('#notes').val(notes);

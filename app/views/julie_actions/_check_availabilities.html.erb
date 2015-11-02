@@ -124,7 +124,7 @@
 //                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
 //                    }
 //                }
-//                var emailInNotes = "";
+                var emailInNotes = "";
                 if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
                     <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
                     var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
