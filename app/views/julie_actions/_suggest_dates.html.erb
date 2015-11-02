@@ -71,7 +71,7 @@
 
     var otherClients = function(){
         return _.filter(window.getInfoPanelAttendees(), function(attendee) {
-            return attendee.isPresent && attendee.isClien && !attendee.isThreadOwner;
+            return attendee.isPresent && attendee.isClient && !attendee.isThreadOwner;
         });
     };
 

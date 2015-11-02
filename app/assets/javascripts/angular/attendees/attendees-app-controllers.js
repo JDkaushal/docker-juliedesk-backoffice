@@ -529,9 +529,11 @@
             return name;
         },
         displayNormalizedName: function(){
-            var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : ' ' + this.lastName;
-            var name = this.firstName + _lastName;
-            return name;
+            var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : this.lastName;
+            var _firstName = (this.firstName == undefined || this.firstName == null) ? '' : this.firstName;
+            var separator = (_firstName == '' || _lastName == '') ? '' : ' ';
+            var name = _firstName + separator + _lastName;
+            return name || this.email;
         },
         hasPhoneInformations: function(){
           return ((this.mobile != undefined && this.mobile != null && this.mobile != '') || (this.landline != undefined && this.landline != null && this.landline != ''))

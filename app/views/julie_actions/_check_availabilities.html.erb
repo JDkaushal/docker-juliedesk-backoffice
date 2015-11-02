@@ -113,18 +113,18 @@
                 $(".calendar-container").addClass("minimized");
 
                 var location = window.threadComputedData.location;
-                var numberToCall = "";
-                if((window.threadComputedData.appointment_nature == "call" ||
-                        window.threadComputedData.appointment_nature == "confcall") &&
-                        window.threadComputedData.number_to_call != "") {
-                    if(window.getCurrentAppointment().number_in_location) {
-                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
-                    }
-                    else {
-                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
-                    }
-                }
-                var emailInNotes = "";
+//                var numberToCall = "";
+//                if((window.threadComputedData.appointment_nature == "call" ||
+//                        window.threadComputedData.appointment_nature == "confcall") &&
+//                        window.threadComputedData.number_to_call != "") {
+//                    if(window.getCurrentAppointment().number_in_location) {
+//                        location = window.threadComputedData.number_to_call.replace(/\n/g, " ");
+//                    }
+//                    else {
+//                        numberToCall = window.threadComputedData.number_to_call + "\n\n";
+//                    }
+//                }
+//                var emailInNotes = "";
                 if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
                     <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
                     var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
@@ -135,7 +135,7 @@
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
-                    description: numberToCall + window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
+                    description: window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
                     attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
                     location: location,
                     all_day: false,
