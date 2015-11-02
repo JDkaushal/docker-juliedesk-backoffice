@@ -290,7 +290,7 @@
     }
 
     function reProcessTitle() {
-
+        // We only update the title when the summary input is active (prevent the title to be overriden with the automatic one when the input is disabled)
         if($("input#summary").attr('disabled') == undefined) {
             var appointment = $.grep(window.threadAccount.appointments, function (v) {
                 return v.label == $("#appointment_nature").val();
