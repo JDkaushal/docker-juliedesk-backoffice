@@ -45,6 +45,7 @@ class MessageClassification < ActiveRecord::Base
     end
     attendees = MessageClassification.clean_and_categorize_clients attendees
 
+
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
