@@ -172,7 +172,7 @@
             }));
 
             angular.forEach(window.currentAttendees.filter(function(attendee){
-                return (window.threadAccount.email_aliases.indexOf(attendee.email)) == -1 && (attendee.email != window.threadAccount.email)
+                return (window.threadAccount.email_aliases.indexOf(attendee.email.toLowerCase())) == -1 && (attendee.email.toLowerCase() != window.threadAccount.email.toLowerCase())
             }), function(attendee) {
 
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
