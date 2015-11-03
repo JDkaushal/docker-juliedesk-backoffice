@@ -586,7 +586,7 @@
 
 
         setAddressValues();
-        //setNumberToCallValue();
+        setNumberToCallValue();
 
         setLocationOrNumberToCallPart();
     }
@@ -610,18 +610,18 @@
         }
     }
 
-//    function setNumberToCallValue() {
-//        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
-//            return appointmentObject.label == $("#appointment_nature").val();
-//        });
-//
-//        if(appointment.default_number_to_call && appointment.default_number_to_call.length >0) {
-//            $("textarea#number_to_call").val(localize("email_templates.invites_sent.call_client_on", {client: window.threadAccount.usage_name, number_to_call: appointment.default_number_to_call, locale: $("input[name='locale']:checked").val()}));
-//        }
-//        else {
-//            $("textarea#number_to_call").val("");
-//        }
-//    }
+    function setNumberToCallValue() {
+        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
+            return appointmentObject.label == $("#appointment_nature").val();
+        });
+
+        if(appointment.default_number_to_call && appointment.default_number_to_call.length >0) {
+            $("textarea#number_to_call").val(localize("email_templates.invites_sent.call_client_on", {client: window.threadAccount.usage_name, number_to_call: appointment.default_number_to_call, locale: $("input[name='locale']:checked").val()}));
+        }
+        else {
+            $("textarea#number_to_call").val("");
+        }
+    }
 
     function setAddressValues() {
         var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
