@@ -28,7 +28,7 @@ class Review::OperatorsController < ReviewController
 
   def events_review_list
     compute_counts
-    @event_title_reviews = EventTitleReview.where(status: nil).includes(messages_thread: {messages: :message_classifications}).order(:created_at)
+    @event_title_reviews = EventTitleReview.where(status: nil).includes(messages_thread: {messages: {message_classifications: :julie_action}}).order(:created_at)
   end
 
   def review_event_titles
