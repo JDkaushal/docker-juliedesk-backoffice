@@ -79,7 +79,6 @@
     };
 */
 
-
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
 
     function initialToRecipients() {
