@@ -703,6 +703,7 @@
         // We save every contact on the thread even those who will not attend
         var filteredAttendees = attendees.map(function(attendee) {
             return{
+                guid: attendee.guid,
                 email: attendee.email,
                 firstName: attendee.firstName,
                 lastName: attendee.lastName,

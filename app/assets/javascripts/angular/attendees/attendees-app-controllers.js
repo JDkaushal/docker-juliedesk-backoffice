@@ -325,6 +325,16 @@
                 }
             });
 
+            angular.forEach($scope.attendees, function(a){
+                var assisted = undefined;
+                if(assisted = $scope.getAssistedByEmail(a)){
+                    console.log(a);
+                    console.log(assisted);
+                    // We do that to actualize if necessary the temporary guid with the one returned by the database
+                    assisted.assistedBy.guid = a.guid;
+                }
+            });
+            
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
             var companyName = '';
             if(window.threadAccount.company_hash != undefined)
@@ -398,6 +408,7 @@
                 isClient: informations.isClient == "true",
                 isThreadOwner: false
             });
+            console.log(a);
 
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
                 a.firstName = a.usageName;
@@ -492,6 +503,15 @@
           });
         };
 
+        $scope.getAssistedByEmail = function(assistant){
+            return _.find($scope.attendees, function(a){
+                var found = false;
+                if(a.assistedBy)
+                    found = a.assistedBy.email == assistant.email;
+                return found;
+            });
+        };
+
         getCurrentContactsInfos = function(notes){
             return contactInfosRe.exec(notes);
         };
@@ -555,7 +575,9 @@
     var Attendee = Class({
         initialize: function(params){
             var that = this;
-            //that['guid'] = guid();
+
+            if(params.guid == undefined)
+                that['guid'] = guid();
             $.each( params, function( key, value ) {
                 that[key] = value;
             });
