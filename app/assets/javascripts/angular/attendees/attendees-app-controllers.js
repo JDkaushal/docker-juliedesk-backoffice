@@ -378,7 +378,7 @@
 
         this.createAttendee = function(informations, attendee){
             var a = new Attendee({
-                guid: informations.guid || guid(),
+                guid: informations.id || guid(),
                 email: informations.email,
                 firstName: informations.firstName,
                 lastName: informations.lastName,

@@ -3,7 +3,6 @@ class ClientContactsController < ApplicationController
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
     accounts_cache = Account.accounts_cache
 
-
     @contacts_infos = []
     @contacts_aliases = {}
     @contacts_companies = {}
@@ -17,7 +16,7 @@ class ClientContactsController < ApplicationController
       end
     end
 
-    if @contact && @contact.size > 0
+    if @contacts && @contacts.size > 0
       @contacts.each do |contact|
         searched_email = contact.email
 
