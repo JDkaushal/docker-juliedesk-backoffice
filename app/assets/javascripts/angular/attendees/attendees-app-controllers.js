@@ -13,6 +13,8 @@
                 var attendeesFormCtrl = this;
                 var originalAttendee = {};
                 var firstNameMirrored = false;
+                var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+
                 this.isVisible = false;
                 this.attendeeInForm = {};
 
@@ -65,6 +67,15 @@
                         console.log("Added" + attendeesFormCtrl.isVisible);
                     }else{
                         console.log("Updated");
+                        if(this.attendeeInForm.isAssistant){
+                            var assisted = attendeesManager.getAssisted(this.attendeeInForm);
+
+                            if(assisted)
+                            {
+                                assisted.assistedBy.email = this.attendeeInForm.email;
+                                assisted.assistedBy.displayName = this.attendeeInForm.displayNormalizedName();
+                            }
+                        }
                     }
                     attendeesFormCtrl.isVisible = false;
                     $('.messages-thread-info-panel').removeClass('frozen').addClass('scrollable');
@@ -127,10 +138,10 @@
                     // You must then update the selected option manually based on the text value for example
 
                     if(attendeesFormCtrl.attendeeInForm.assistedBy != "" && attendeesFormCtrl.attendeeInForm.assistedBy != undefined){
-                        var selectedAssistedBy = attendeesFormCtrl.attendeeInForm.assistedBy.usageName;
+                        var assistant = attendeesManager.getAssistant(attendeesFormCtrl.attendeeInForm);
 
                         angular.element($('#assisted_by option')).filter(function(){
-                            return $(this).text().trim() == selectedAssistedBy;
+                            return $(this).text().trim() == assistant.displayNormalizedName();
                         }).prop('selected', true);
                     }
                 };
@@ -329,6 +340,7 @@
             }
 
             var threadOwner = new Attendee({
+                guid: guid(),
                 email: threadOwnerEmail,
                 firstName: threadAccountFullName[0],
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
@@ -366,6 +378,7 @@
 
         this.createAttendee = function(informations, attendee){
             var a = new Attendee({
+                guid: informations.guid || guid(),
                 email: informations.email,
                 firstName: informations.firstName,
                 lastName: informations.lastName,
@@ -463,8 +476,20 @@
             }
 
             $('#notes').val(notes);
+        };
 
-
+        $scope.getAssistant = function(attendee){
+            return _.find($scope.attendees, function(a){
+               return a.guid == attendee.assistedBy.guid;
+            });
+        };
+        $scope.getAssisted = function(assistant){
+          return _.find($scope.attendees, function(a){
+              var found = false;
+              if(a.assistedBy)
+                found = a.assistedBy.guid == assistant.guid;
+            return found;
+          });
         };
 
         getCurrentContactsInfos = function(notes){
@@ -489,7 +514,9 @@
 
         this.fetchAttendeeFromClientContactNetwork();
 
-        $scope.$watch('attendees', function (newVal, oldVal){$scope.updateNotes();}, true);
+        $scope.$watch('attendees', function (newVal, oldVal){
+            $scope.updateNotes();
+        }, true);
 
         this.getCompaniesNames = function(){
             return _.uniq(_.compact(_.map($scope.attendees, function(a) {
@@ -499,6 +526,16 @@
         };
 
     }]);
+
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+    }
 
 
     var Class = function(methods) {
@@ -518,9 +555,28 @@
     var Attendee = Class({
         initialize: function(params){
             var that = this;
+            //that['guid'] = guid();
             $.each( params, function( key, value ) {
                 that[key] = value;
             });
+        },
+        displayGender: function(){
+            var displayedGender = '';
+          if(this.gender){
+              switch(this.gender){
+                  case('M'):
+                      displayedGender = 'M.';
+                      break;
+                  case('F'):
+                      displayedGender = 'Mme.';
+                      break;
+                  default:
+                      displayedGender = '';
+                      break;
+              }
+
+          }
+            return displayedGender;
         },
         assistantDisplayText: function(){
             var name = '';

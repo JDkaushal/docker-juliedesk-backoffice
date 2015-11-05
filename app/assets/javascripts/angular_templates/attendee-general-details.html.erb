@@ -9,7 +9,7 @@
 </div>
 <div class="attendee-details" ng-class="{'col-xs-8': attendee.isClient, 'col-xs-9': !attendee.isClient}">
   <div class="row ellipsable">
-    <span class="attendee-usage-name">{{(attendee.gender == 'M' || attendee.gender == 'Mme') ? attendee.gender + '.' : '' }} {{attendee.firstName}} {{attendee.lastName}}</span><span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
+    <span class="attendee-usage-name">{{(attendee.gender == 'M' || attendee.gender == 'F') ? attendee.displayGender() : '' }} {{attendee.firstName}} {{attendee.lastName}}</span><span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
   </div>
 
   <div class="row ellipsable" style="margin-top: -3px;">
