@@ -47,6 +47,8 @@ class MessagesThreadsController < ApplicationController
                                      })
     @messages_thread.re_import
     @messages_thread.account
+
+    @messages_thread.create_event_title_review_if_needed
   end
 
   def archive

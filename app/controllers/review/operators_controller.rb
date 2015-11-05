@@ -26,6 +26,16 @@ class Review::OperatorsController < ReviewController
     @messages_threads = MessagesThread.where(id: messages_thread_ids).sort{|mt1, mt2| messages_thread_ids.index(mt1.id) <=> messages_thread_ids.index(mt2.id)}
   end
 
+  def events_review_list
+    compute_counts
+    @event_title_reviews = EventTitleReview.where(status: nil).includes(messages_thread: {messages: {message_classifications: :julie_action}}).order(:created_at)
+  end
+
+  def review_event_titles
+    EventTitleReview.where(status: nil).update_all(status: EventTitleReview::STATUS_REVIEWED)
+    redirect_to action: :events_review_list
+  end
+
   private
   def compute_counts
     @operators = Operator.all

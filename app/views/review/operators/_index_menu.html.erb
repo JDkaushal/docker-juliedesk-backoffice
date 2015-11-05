@@ -4,6 +4,9 @@
   <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success btn-block" %>
 
   <br>
+  <%= link_to "Title review #{EventTitleReview.where(status: nil).count} threads", "/review/operators/events_review_list", class: "btn btn-success btn-block" %>
+
+  <br>
   <br>
 
   <% @operators.where(privilege: nil).each do |operator| %>

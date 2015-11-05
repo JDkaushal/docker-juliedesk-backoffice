@@ -68,6 +68,7 @@ class Review::MessagesThreadsController < ReviewController
     group_review_next_messages_thread
   end
 
+
   def review_next
     review_next_messages_thread
   end

@@ -22,6 +22,7 @@ class JulieActionsController < ApplicationController
   def update
     julie_action = JulieAction.find params[:id]
 
+
     date_times = []
     if params[:date_times]
       date_times = params[:date_times].map{|dt|
@@ -43,6 +44,7 @@ class JulieActionsController < ApplicationController
         processed_in: params[:processed_in],
         deleted_event: params[:deleted_event]
                                    })
+
     render json: {
         status: "success",
         message: "",
