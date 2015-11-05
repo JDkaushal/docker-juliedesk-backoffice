@@ -140,6 +140,17 @@ class MessagesThread < ActiveRecord::Base
     }
   end
 
+  def computed_data_only_attendees
+    message_classifications = messages.map{|m|
+      m.message_classifications
+    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+    last_message_classification = message_classifications.last
+
+    {
+        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
+    }
+  end
+
 
   def computed_data
     message_classifications = messages.map{|m|

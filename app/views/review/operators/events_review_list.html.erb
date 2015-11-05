@@ -11,12 +11,12 @@
 
         <div class="review-list-container">
           <% @event_title_reviews.each do |event_title_review| %>
-            <%= link_to review_review_messages_thread_path(id: event_title_review.messages_thread_id), target: "_blank" do %>
-              <%= event_title_review.title %>
+            <%= link_to review_review_messages_thread_path(id: event_title_review.messages_thread_id), target: "_blank", class: "events-review-link" do %>
+              <span class="event-title"><%= event_title_review.title %></span>
               <br>
-              <% event_title_review.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == "true"}.each do |attendee| %>
-              <span class="attendee"><%= attendee['name'] %></span>
-              <% end %>
+              <%= event_title_review.messages_thread.computed_data_only_attendees[:attendees].select{|a| a['isPresent'] == "true"}.map do |attendee|
+               "#{attendee['email']}"
+              end.join(" / ") %>
             <% end %>
             <br>
             <br>
@@ -24,6 +24,9 @@
 
           <br>
           <%= button_to "Review all #{@event_title_reviews.count} event titles", review_event_titles_review_operators_path, class: "btn btn-success" %>
+          <br>
+          <br>
+          <br>
         </div>
       </div>
 
