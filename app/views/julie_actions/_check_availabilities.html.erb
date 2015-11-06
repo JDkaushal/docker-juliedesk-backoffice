@@ -29,9 +29,10 @@
             if(isPostpone) {
                 $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Update event");
                 window.afterEventFetched = function() {
-                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
-                        return attendee.email;
-                    });
+//                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+//                        return attendee.email;
+//                    });
+                    window.otherEmails = [];
                 }
             }
             $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").hide();
@@ -136,7 +137,7 @@
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
                     description: numberToCall + window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes,
-                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
+                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present? && a['isThreadOwner'] == 'false'}.to_json %>,
                     location: location,
                     all_day: false,
                     private: window.threadComputedData.private,

@@ -3,9 +3,10 @@
         window.setReplyMessage("");
     });
     window.afterEventFetched = function () {
-        var otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
-            return attendee.email;
-        });
+//        var otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+//            return attendee.email;
+//        });
+        var otherEmails = [];
 
         if(window.threadComputedData.client_agreement) {
             if(!window.threadComputedData.attendees_are_noticed) {

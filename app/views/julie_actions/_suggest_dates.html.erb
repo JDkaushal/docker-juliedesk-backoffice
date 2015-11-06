@@ -24,9 +24,10 @@
             if(isPostpone) {
                 $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
                 window.afterEventFetched = function() {
-                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
-                        return attendee.email;
-                    });
+//                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+//                        return attendee.email;
+//                    });
+                    window.otherEmails = [];
                     if(!window.threadComputedData.attendees_are_noticed) {
                         $("input#quote_message").removeAttr("checked");
                         $("input#include-email-in-notes").removeAttr("checked");

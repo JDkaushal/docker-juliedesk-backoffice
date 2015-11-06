@@ -182,8 +182,10 @@
                return aliases;
             }));
 
+            var threadOwnerEmailAliasesDowncase = _.map(window.threadAccount.email_aliases, function(email){return email.toLowerCase()});
+
             angular.forEach(window.currentAttendees.filter(function(attendee){
-                return (window.threadAccount.email_aliases.indexOf(attendee.email.toLowerCase())) == -1 && (attendee.email.toLowerCase() != window.threadAccount.email.toLowerCase())
+                return (threadOwnerEmailAliasesDowncase.indexOf(attendee.email.toLowerCase())) == -1 && (attendee.email.toLowerCase() != window.threadAccount.email.toLowerCase())
             }), function(attendee) {
 
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
@@ -340,10 +342,11 @@
             if(window.threadAccount.company_hash != undefined)
                 companyName = window.threadAccount.company_hash.name;
 
+            var currentToCCDowncase = _.map(window.currentToCC, function(email){return email.toLowerCase()});
             var threadOwnerEmail = window.threadAccount.email;
             if(window.threadAccount.email_aliases.length > 0){
                 _.each(window.threadAccount.email_aliases, function(alias){
-                    if(window.currentToCC.indexOf(alias) > -1){
+                    if(currentToCCDowncase.indexOf(alias.toLowerCase()) > -1){
                         threadOwnerEmail = alias;
                     }
                 });
@@ -408,7 +411,6 @@
                 isClient: informations.isClient == "true",
                 isThreadOwner: false
             });
-            console.log(a);
 
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
                 a.firstName = a.usageName;
