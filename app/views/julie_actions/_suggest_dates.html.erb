@@ -105,11 +105,14 @@
                 return name;
             }),
             attendees: _.filter(_.map(attendees(), function(attendee) {
-                      var names = attendee.usageName.split(" ");
-                      if(names.length > 0) {
-                          return window.helpers.capitalize(names[0]);
-                      }
-                      return null;
+                    if(attendee.usageName)
+                        {
+                            var names = attendee.usageName.split(" ");
+                            if(names.length > 0) {
+                                return window.helpers.capitalize(names[0]);
+                            }
+                        }
+                    return null;
                     }), function(name) {
                         return name;
                     }),
