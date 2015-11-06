@@ -185,7 +185,8 @@
             var threadOwnerEmailAliasesDowncase = _.map(window.threadAccount.email_aliases, function(email){return email.toLowerCase()});
 
             angular.forEach(window.currentAttendees.filter(function(attendee){
-                return (threadOwnerEmailAliasesDowncase.indexOf(attendee.email.toLowerCase())) == -1 && (attendee.email.toLowerCase() != window.threadAccount.email.toLowerCase())
+                var emailLowCase = attendee.email ? attendee.email.toLowerCase() : undefined;
+                return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase)) == -1 && (emailLowCase != window.threadAccount.email.toLowerCase())
             }), function(attendee) {
 
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
