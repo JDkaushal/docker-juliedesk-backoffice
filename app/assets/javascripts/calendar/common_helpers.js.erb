@@ -226,19 +226,19 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
 
 CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone, allDay) {
+    console.log(startDate, endDate, allDay, timezone);
     if(!locale) locale = "en";
-    var mStartDate = moment(startDate).tz(timezone).locale(locale);
-    var mEndDate = moment(endDate).tz(timezone).locale(locale);
-    var today = moment();
-
-    var formattedStartDate = (mStartDate.isSame(today, "day") ? localize("dates.today") : mStartDate.format("dddd D MMMM YYYY"));
-    var formattedEndDate = (mEndDate.isSame(today, "day") ? localize("dates.today") : mEndDate.format("dddd D MMMM YYYY"));
-
+    var mStartDate, mEndDate, today;
+    var formattedStartDate, formattedEndDate;
     if(allDay) {
         mStartDate = moment(startDate).locale(locale);
         mEndDate = moment(endDate).locale(locale);
         mEndDate.add('d', -1);
-        formattedEndDate = (mEndDate.isSame(today, "day") ? localize("dates.today") : mEndDate.format("dddd D MMMM YYYY"));
+
+        today = moment();
+
+        formattedStartDate = (mStartDate.isSame(today, "day") ? (localize("dates.today") + " " + mStartDate.format("dddd D MMMM YYYY")) : mStartDate.format("dddd D MMMM YYYY"));
+        formattedEndDate = (mEndDate.isSame(today, "day") ? (localize("dates.today") + " " + mEndDate.format("dddd D MMMM YYYY")) : mEndDate.format("dddd D MMMM YYYY"));
 
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return formattedStartDate;
@@ -248,6 +248,14 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
         }
     }
     else {
+        mStartDate = moment(startDate).tz(timezone).locale(locale);
+        mEndDate = moment(endDate).tz(timezone).locale(locale);
+
+        today = moment();
+
+        formattedStartDate = (mStartDate.isSame(today, "day") ? (localize("dates.today") + " " + mStartDate.format("dddd D MMMM YYYY")) : mStartDate.format("dddd D MMMM YYYY"));
+        formattedEndDate = (mEndDate.isSame(today, "day") ? (localize("dates.today") + " " + mEndDate.format("dddd D MMMM YYYY")) : mEndDate.format("dddd D MMMM YYYY"));
+
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return formattedStartDate + "<br>" + mStartDate.format("HH:mm") + " - " + mEndDate.format("HH:mm") + "<br>(" + timezone.replace(/_/g, " ") + ")";
         }
@@ -259,39 +267,52 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
 
 CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, timezone, allDay) {
     if(!locale) locale = "en";
-    var mStartDate = moment(startDate).tz(timezone).locale(locale);
-    var mEndDate = moment(endDate).tz(timezone).locale(locale);
-    var today = moment().tz(timezone);
-    var tomorrow = today.clone().add(1, 'd');
+    var mStartDate, mEndDate, today, tomorrow;
 
-    formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
-    formattedEndDate = mEndDate.format(localize("email_templates.common.simplified_date_format"));
-
-    if(mStartDate.isSame(today, "day"))
-        formattedStartDate = localize("dates.today") + ', ' + formattedStartDate;
-    else if(mStartDate.isSame(tomorrow, "day"))
-        formattedStartDate = localize("dates.tomorrow") + ', ' + formattedStartDate;
-
-    if(mEndDate.isSame(today, "day"))
-        formattedEndDate = localize("dates.today") + ', ' + formattedEndDate;
-    else if(mEndDate.isSame(tomorrow, "day"))
-        formattedEndDate = localize("dates.tomorrow") + ', ' + formattedEndDate;
-
-
+    var formattedStartDate, formattedEndDate;
     if(allDay) {
-        if(formattedEndDate != localize("dates.today") + ', ' + formattedStartDate || formattedEndDate != localize("dates.tomorrow") + ', ' + formattedStartDate)
-        {
-            formattedEndDate = moment(endDate).locale(locale);
-            formattedEndDate.add('d', -1);
-        }
-        if(mStartDate.format("YYYY-MM-DD") == formattedEndDate.format("YYYY-MM-DD")) {
+        mStartDate = moment(startDate).locale(locale);
+        mEndDate = moment(endDate).locale(locale);
+        mEndDate.add('d', -1);
+
+        formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
+        formattedEndDate = mEndDate.format(localize("email_templates.common.simplified_date_format"));
+
+        today = moment();
+        tomorrow = today.clone().add(1, 'd');
+
+        if(mStartDate.isSame(today, "day"))
+            formattedStartDate = localize("dates.today") + ', ' + formattedStartDate;
+        else if(mStartDate.isSame(tomorrow, "day"))
+            formattedStartDate = localize("dates.tomorrow") + ', ' + formattedStartDate;
+
+        if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return formattedStartDate;
         }
         else {
-            return formattedStartDate + " - " + formattedEndDate.format(localize("email_templates.common.simplified_date_format"));
+            return formattedStartDate + " - " + formattedEndDate;
         }
     }
     else {
+        mStartDate = moment(startDate).tz(timezone).locale(locale);
+        mEndDate = moment(endDate).tz(timezone).locale(locale);
+
+        formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
+        formattedEndDate = mEndDate.format(localize("email_templates.common.simplified_date_format"));
+
+        today = moment().tz(timezone);
+        tomorrow = today.clone().add(1, 'd');
+
+        if(mStartDate.isSame(today, "day"))
+            formattedStartDate = localize("dates.today") + ', ' + formattedStartDate;
+        else if(mStartDate.isSame(tomorrow, "day"))
+            formattedStartDate = localize("dates.tomorrow") + ', ' + formattedStartDate;
+
+        if(mEndDate.isSame(today, "day"))
+            formattedEndDate = localize("dates.today") + ', ' + formattedEndDate;
+        else if(mEndDate.isSame(tomorrow, "day"))
+            formattedEndDate = localize("dates.tomorrow") + ', ' + formattedEndDate;
+
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
             return formattedStartDate + ", " + mStartDate.format("LT") + " - " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
         }

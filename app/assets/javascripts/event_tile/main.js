@@ -389,8 +389,16 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         endTime = ev.end.date;
     }
 
-    var sstartTime = moment(startTime).tz(eventTile.getTimezoneId()).format();
-    var sendTime = moment(endTime).tz(eventTile.getTimezoneId()).format();
+    var sstartTime, sendTime;
+    if(ev.allDay) {
+        sstartTime = moment(startTime).format();
+        sendTime = moment(endTime).format();
+    }
+    else {
+        sstartTime = moment(startTime).tz(eventTile.getTimezoneId()).format();
+        sendTime = moment(endTime).tz(eventTile.getTimezoneId()).format();
+    }
+
 
 
 
