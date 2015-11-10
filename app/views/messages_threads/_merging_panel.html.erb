@@ -1,16 +1,43 @@
 <script>
-    var app = angular.module("mergingApp", []);
+
+    var app = angular.module("mergingApp", ['ngTagsInput']);
+    app.config(function(tagsInputConfigProvider) {
+        tagsInputConfigProvider.setDefaults('tagsInput', {
+            placeholder: ''
+        });
+    });
+
     app.controller("mergingPanelController", function($scope, $http, $sce) {
-        $scope.query = "<%== @messages_thread.messages.map{ |message|
+        $scope.queryTags = <%== @messages_thread.messages.map{ |message|
             ApplicationHelper.find_addresses(message.server_message['from']).addresses.map(&:address)
-        }.join(" ") %>";
+        }.flatten.uniq.map{|email|
+        {
+            text: email
+        }
+        }.to_json %>;
         $scope.offset = 0;
-        $scope.limit = 10;
+        $scope.limit = 5;
         $scope.currentThreadId = <%= @messages_thread.id %>;
+
+        $scope.loadTags = function(query) {
+            var possibleEmails =  <%== (@messages_thread.messages.map{ |message|
+            ApplicationHelper.find_addresses(message.server_message['from']).addresses.map(&:address) +
+            ApplicationHelper.find_addresses(message.server_message['to'] || "").addresses.map(&:address) +
+            ApplicationHelper.find_addresses(message.server_message['cc'] || "").addresses.map(&:address)
+        }.flatten + [@messages_thread.account_email]).compact.uniq.to_json %>;
+            return _.filter(possibleEmails, function(email) {
+                return email.indexOf(query) > - 1;
+            });
+        };
+
         $scope.fetch = function() {
             $scope.loading = true;
 
-            var url = "<%= EmailServer::API_BASE_PATH %>/messages_threads?query=" + $scope.query + "&offset=" + $scope.offset + "&limit=" + $scope.limit + "&access_key=<%= EmailServer::API_ACCESS_KEY %>";
+            var query = _.map($scope.queryTags, function(tag) {
+                return tag.text
+            }).join("%20");
+
+            var url = "<%= EmailServer::API_BASE_PATH %>/messages_threads?query=" + query + "&offset=" + $scope.offset + "&limit=" + $scope.limit + "&access_key=<%= EmailServer::API_ACCESS_KEY %>";
             $http.get(url)
                     .success(function(e) {
                         $scope.messagesThreadsTotalCount = e.total_count;
@@ -40,7 +67,10 @@
                                         }
                                         var endDate = eventGetResponse.data.end.dateTime;
                                         if(!endDate) eventGetResponse.data.end.date;
+                                        console.log("HOHO", eventGetResponse.data);
                                         messagesThread.event_data.date = $sce.trustAsHtml(CommonHelpers.formatDateTimeRange(startDate, endDate, "en", messagesThread.computed_data.timezone, allDay));
+                                        messagesThread.event_data.summary = eventGetResponse.data.summary;
+                                        messagesThread.event_data.location = eventGetResponse.data.location;
                                         $scope.$apply();
                                     })
                                 }
@@ -91,7 +121,10 @@
 
 <div class="merging-panel" ng-controller="mergingPanelController" id="merging-panel">
   <div class="merging-search-bar">
-    <input ng-model="query"/>
+    <!--<input ng-model="query"/>-->
+    <tags-input ng-model="queryTags" replace-spaces-with-dashes="false">
+      <auto-complete source="loadTags($query)" min-length="1" debounce-delay="0" selectFirstMatch="true"></auto-complete>
+    </tags-input>
     <div class="search-button" ng-click="offset=0; fetch()">Search</div>
     <div class="merging-results-total-count-and-navigation">
       <span class="merging-results-total-count">{{ navigationOffset() }}{{ messagesThreadsTotalCount }} results</span>
@@ -109,27 +142,37 @@
     <div class="thread-item"
          ng-repeat="messagesThread in messagesThreads"
          ng-class="(currentThreadId == messagesThread.id)?'current':''">
-      <div class="thread-client-and-status">
-        <span class="thread-client">{{ messagesThread.account.full_name }}</span>
-        <span class="thread-status">{{ (messagesThread.event_data.calendar_id)?"Scheduled":"Scheduling" }}</span>
-      </div>
       <div class="thread-subject-and-emails-count">
         <span class="thread-subject">{{ messagesThread.subject }}</span>
         <span class="thread-emails-count">({{ messagesThread.messages.length }} mails)</span>
       </div>
-      <div class="thread-date-and-nature">
-        <span class="thread-date-icon" ng-show="messagesThread.event_data.date"></span>
-        <span class="thread-date" ng-show="messagesThread.event_data.date" ng-bind-html="messagesThread.event_data.date"></span>
+      <div class="thread-client-and-status">
+        <span class="thread-client">{{ messagesThread.account.full_name }}</span>
+        <span class="thread-status">{{ (messagesThread.event_data.calendar_id)?"Scheduled":"Scheduling" }}</span>
+      </div>
+      <div class="thread-event" ng-show="messagesThread.event_data.date">
+        <div class="thread-event-summary">{{ messagesThread.event_data.summary }}</div>
+        <div class="thread-event-location">
+          <span class="thread-event-location-icon"></span>
+          <span class="thread-event-location-location">{{ messagesThread.event_data.location }}</span>
+        </div>
+        <div class="thread-event-date">
+          <span class="thread-event-date-icon"></span>
+          <span class="thread-event-date-date" ng-bind-html="messagesThread.event_data.date"></span>
+        </div>
+      </div>
+      <div class="thread-nature" ng-hide="messagesThread.event_data.date">
         <span class="thread-nature" ng-show="messagesThread.event_data.appointment_nature">{{ messagesThread.event_data.appointment_nature }}</span>
       </div>
       <div class="thread-attendees">
+        <span class="thread-attendees-icon"></span>
         <span class="thread-attendee" ng-repeat="attendee in messagesThread.computed_data.attendees | filter: {isPresent: true}">
           <span class="thread-attendee-usage-name">{{ attendee.usageName }}</span><span class="thread-attendee-email">{{ attendee.email }}</span>
         </span>
       </div>
 
       <div class="thread-action-buttons" ng-show="currentThreadId != messagesThread.id">
-        <a target="_blank" href="https://juliedesk-backoffice.herokuapp.com/messages_threads/{{ messagesThread.id }}" class="btn btn-primary thread-action-button-preview">Preview</a>
+        <a target="_blank" href="/messages_threads/{{ messagesThread.id }}/preview" class="btn btn-primary thread-action-button-preview">Preview</a>
         <div class="btn btn-success thread-action-button-really-merge" ng-click="mergeThread(messagesThread)">Merge</div>
       </div>
     </div>

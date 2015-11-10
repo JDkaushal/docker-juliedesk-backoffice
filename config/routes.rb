@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       get "remove_event_link", action: :remove_event_link
       get "unlock", action: :unlock
       get "history", action: :history
+      get "preview", action: :preview
     end
   end
 

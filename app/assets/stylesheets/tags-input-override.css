@@ -1,0 +1,39 @@
+tags-input {
+	position: relative;
+    top: 4px;
+}
+tags-input .tags {
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	border: 1px solid #ccc !important;
+}
+tags-input .tag-item {
+	background: #eee!important;
+	border-color: #ccc!important;
+}
+
+tags-input .host {
+    margin-top: -4px !important;
+}
+
+tags-input .tag-item.selected {
+	background: #48B8E2!important;
+	border-color: #48B8E2!important;
+	color: white;
+}
+tags-input .tag-item.selected .remove-button {
+	color: white;	
+}
+tags-input input {
+	padding: 0 !important;
+	height: auto !important;
+	width: auto !important;
+	line-height: 26px !important;
+}
+
+tags-input .autocomplete .suggestion-item * {
+	font-size: 14px !important;
+}
+tags-input .autocomplete .suggestion-item.selected, tags-input .autocomplete .suggestion-item.selected em {
+	background: #48B8E2;
+}

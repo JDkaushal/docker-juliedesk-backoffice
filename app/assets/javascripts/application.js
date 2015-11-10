@@ -19,6 +19,8 @@
 //= require jquery-ui
 //= require angular
 
+//= require angular/merging_panel/ng-tags-input.min.js
+
 //= require handlebars.runtime
 
 //= require helpers

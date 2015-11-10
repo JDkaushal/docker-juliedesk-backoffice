@@ -136,30 +136,32 @@
   padding: 20px;
   border-left: 1px solid #ddd;
   background: white;
+  overflow-y: scroll;
 
   &.merging {
     display: block;
   }
 
   .merging-search-bar {
-    position: relative;
-    height: 100px;
+    position: fixed;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    z-index: 15;
+    width: 549px;
+    padding: 20px 20px 0 20px;
+    height: 140px;
+    border-bottom: 1px solid #ccc;
+    background: white;
 
-    input {
-      outline: none;
-      width: 100%;
-      border-radius: 15px;
-      border: 1px solid #ccc;
-      padding: 5px 10px;
-      font-size: 12px;
-      line-height: 20px;
-      height: 30px;
+    tags-input {
+      margin-right: 61px;
     }
 
     .search-button {
       position: absolute;
-      top: 0px;
-      right: 0px;
+      top: 20px;
+      right: 20px;
       font-size: 13px;
       color: white;
       line-height: 30px;
@@ -202,6 +204,7 @@
   }
 
   .threads-list {
+    padding: 140px 0 0 0;
     .thread-item {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;
@@ -213,6 +216,8 @@
       }
 
       .thread-client-and-status {
+        margin: 0 0 10px 0;
+
         .thread-client {
           background-color: #F3C384;
           padding: 0px 10px;
@@ -225,7 +230,7 @@
 
         .thread-status {
           font-style: italic;
-          color: #777;
+          color: $pink;
         }
       }
 
@@ -236,27 +241,58 @@
           margin: 0 10px 0 0;
         }
         .thread-emails-count {
-          font-size: 11px;
-          color: #666;
+          font-size: 14px;
+          color: $darkBlue;
+          font-style: italic;
         }
       }
 
-      .thread-date-and-nature {
+      .thread-event {
+        position: relative;
+        .thread-event-summary {
+          padding: 5px 0;
+        }
+
+        .thread-event-location {
+          position: relative;
+          padding: 5px 0;
+          .thread-event-location-icon {
+            position: absolute;
+            top: 7px;
+            left: 0;
+            @include common-sprite(location_icon);
+            width: 20px;
+            height: 20px;
+          }
+          .thread-event-location-location {
+            display: inline-block;
+            color: #666;
+            margin: 0 10px 0 30px;
+          }
+        }
+
+        .thread-event-date {
+          position: relative;
+          padding: 5px 0;
+          .thread-event-date-icon {
+            position: absolute;
+            top: 7px;
+            left: 0;
+            @include common-sprite(date_icon);
+            width: 20px;
+            height: 18px;
+          }
+          .thread-event-date-date {
+            display: inline-block;
+            color: #666;
+            margin: 0 10px 0 30px;
+          }
+        }
+      }
+
+      .thread-nature {
         position: relative;
 
-        .thread-date-icon {
-          position: absolute;
-          top: 0;
-          left: 0;
-          @include common-sprite(date_icon);
-          width: 19px;
-          height: 21px;
-        }
-        .thread-date {
-          display: inline-block;
-          color: #666;
-          margin: 0 10px 0 30px;
-        }
         .thread-nature {
           display: inline-block;
           @include border-radius(12px);
@@ -270,7 +306,18 @@
         }
       }
       .thread-attendees {
-        padding: 10px 0 0 0;
+        padding: 5px 0 0 30px;
+        position: relative;
+        min-height: 30px;
+
+        .thread-attendees-icon {
+          position: absolute;
+          top: 13px;
+          left: 0;
+          @include common-sprite(attendees_icon);
+          width: 20px;
+          height: 20px;
+        }
         .thread-attendee {
           display: inline-block;
           @include border-radius(12px);

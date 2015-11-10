@@ -1,0 +1,71 @@
+<script>
+    window.processingMessageThreadId = <%= @messages_thread.id %>;
+
+    window.messagesIdsHash = <%== Hash[@messages_thread.messages.map{|m|
+         [m.id, m.server_message_id]
+    }].to_json %>;
+
+    $(function () {
+
+    });
+</script>
+
+<div class="fixed-columns">
+
+
+  <div class="left-column">
+
+    <%= render partial: "common/classification_action_header", locals: {messages_thread: @messages_thread} %>
+    
+
+    <div class="julie-action-fantom"></div>
+
+    <div class="messages-thread-emails">
+      <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
+
+      <div class="messages-thread-subject">
+        <%= @messages_thread.subject %>
+      </div>
+
+      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
+
+      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
+        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
+                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.server_message_id.present?)
+      }
+      %>
+      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
+        if item.class == Message
+          item.received_at
+        else
+          item.initiated_at
+        end
+      end %>
+
+      <% items.each do |item| %>
+          <% if item.class == Message %>
+              <% message = item %>
+              <%= render partial: "messages_threads/email", locals: {message: message, actions_available: false, expend: message.received_at == @messages_thread.messages.map(&:received_at).min, last: message == items.select{|i| i.class == Message}.last, no_account: @messages_thread.account_email.nil?, operator_actions_groups: operator_actions_groups} %>
+          <% elsif item.class == OperatorActionsGroup %>
+              <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
+          <% end %>
+      <% end %>
+    </div>
+
+    <% unread_emails_count = @messages_thread.messages.select{|m| !m.server_message['read']}.length %>
+    <% if unread_emails_count > 1 %>
+        <div class="unread-emails">
+          <%= I18n.t("show.x_unread_emails", count: unread_emails_count) %>
+        </div>
+    <% end %>
+
+  </div>
+
+
+</div>
+
+<% if @messages_thread.account %>
+    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
+<% else %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+<% end %>

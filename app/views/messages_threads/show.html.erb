@@ -32,23 +32,26 @@
             alert("Please select at least one message to merge into this thread");
         }
         else {
-            $(".merging-global-spinner").show();
-            $.post("<%= EmailServer::API_BASE_PATH %>/messages/merge?access_key=<%= EmailServer::API_ACCESS_KEY %>", {
-                message_ids: messageIdsToSplit,
-                messages_thread_id: serverThreadId
-            }).success(function(response) {
-                $(".merging-global-spinner").hide();
-                if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
-                    window.location = "/messages_threads/" + messagesThreadId;
-                }
-                else {
-                    window.location = window.location.href;
-                }
+            if(confirm("This action is irreversible. Are you sure you want to merge?")) {
+                $(".merging-global-spinner").show();
+                $.post("<%= EmailServer::API_BASE_PATH %>/messages/merge?access_key=<%= EmailServer::API_ACCESS_KEY %>", {
+                    message_ids: messageIdsToSplit,
+                    messages_thread_id: serverThreadId
+                }).success(function(response) {
+                    $(".merging-global-spinner").hide();
+                    if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
+                        window.location = "/messages_threads/" + messagesThreadId;
+                    }
+                    else {
+                        window.location = window.location.href;
+                    }
 
-            }).error(function(response) {
-                alert("Error while merging thread");
-                $(".merging-global-spinner").hide();
-            });
+                }).error(function(response) {
+                    alert("Error while merging thread");
+                    $(".merging-global-spinner").hide();
+                });
+            }
+
             //alert("Attempting to merge messages: " + messageIdsToSplit + " to serverthread id: " + serverThreadId)
         }
     };
@@ -90,6 +93,9 @@
             $(".messages-thread-emails").addClass("merging");
             $(".messages-thread-emails .email").removeClass("extended");
             $(".merging-panel").addClass("merging");
+            if($(".email .checkbox-container input[type=checkbox]").length < 2) {
+                $(".email .checkbox-container input[type=checkbox]").prop('checked', true);
+            }
             window.launchMergingFetch();
         });
 
