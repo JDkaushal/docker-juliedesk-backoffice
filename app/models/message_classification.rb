@@ -20,11 +20,23 @@ class MessageClassification < ActiveRecord::Base
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
 
+  NOTHING_TO_DO            = "nothing_to_do"
+
 
   REVIEW_STATUS_TO_REVIEW  = nil
   REVIEW_STATUS_TO_LEARN   = 'to_learn'
   REVIEW_STATUS_REVIEWED   = 'reviewed'
   REVIEW_STATUS_LEARNT     = 'learnt'
+
+
+  THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT   = "scheduling_waiting_for_client"
+  THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT  = "scheduling_waiting_for_contact"
+  THREAD_STATUS_SCHEDULED                       = "scheduled"
+  THREAD_STATUS_SCHEDULING_ABORTED              = "scheduling_aborted"
+  THREAD_STATUS_DOES_NOT_CONCERN_CLIENT         = "does_not_concern_client"
+  THREAD_STATUS_HANDLED_IN_OTHER_THREADS        = "handled_in_other_threads"
+  THREAD_STATUS_EVENTS_CREATION                 = "events_creation"
+  THREAD_STATUS_OTHER                           = "other"
 
   def clean_delete
     if self.julie_action
@@ -67,7 +79,8 @@ class MessageClassification < ActiveRecord::Base
         operator: params[:operator],
         processed_in: params[:processed_in],
 
-        date_times: (params[:date_times].try(:values) || []).to_json
+        date_times: (params[:date_times].try(:values) || []).to_json,
+        thread_status: params[:thread_status]
     )
     result.save!
 
@@ -131,9 +144,11 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::ASK_CREATE_EVENT
       create_julie_action action_nature: JulieAction::JD_ACTION_CREATE_EVENT
 
-    else  self.classification == MessageClassification::UNKNOWN
+    elsif self.classification == MessageClassification::UNKNOWN
       create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
 
+    elsif self.classification == MessageClassification::NOTHING_TO_DO
+      create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
     end
   end
 
@@ -178,6 +193,52 @@ class MessageClassification < ActiveRecord::Base
     forbidden_classifications.include? classification
   end
 
+  def self.all_thread_statuses
+    [
+        THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT,
+        THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+        THREAD_STATUS_SCHEDULED,
+        THREAD_STATUS_SCHEDULING_ABORTED,
+        THREAD_STATUS_HANDLED_IN_OTHER_THREADS,
+        THREAD_STATUS_DOES_NOT_CONCERN_CLIENT,
+        THREAD_STATUS_EVENTS_CREATION,
+        THREAD_STATUS_OTHER
+    ]
+  end
+
+  def computed_thread_status
+    if self.classification == NOTHING_TO_DO
+      self.thread_status
+    elsif self.classification == UNKNOWN
+      self.thread_status
+    elsif self.classification == ASK_DATE_SUGGESTIONS
+      THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+    elsif self.classification == ASK_AVAILABILITIES
+      if self.julie_action.event_id
+        THREAD_STATUS_SCHEDULED
+      else
+        THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+      end
+    elsif self.classification == ASK_CANCEL_APPOINTMENT
+      THREAD_STATUS_SCHEDULING_ABORTED
+    elsif self.classification == ASK_POSTPONE_APPOINTMENT
+      THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+    elsif self.classification == ASK_INFO
+      nil
+    elsif self.classification == GIVE_INFO
+      nil
+    elsif self.classification == ASK_CREATE_EVENT
+      THREAD_STATUS_EVENTS_CREATION
+    elsif self.classification == ASK_CANCEL_EVENTS
+      THREAD_STATUS_HANDLED_IN_OTHER_THREADS
+    elsif self.classification == ASK_POSTPONE_EVENTS
+      THREAD_STATUS_HANDLED_IN_OTHER_THREADS
+    elsif self.classification == CANCEL_TO_FOUNDERS
+      nil
+    elsif self.classification == GIVE_PREFERENCE
+      nil
+    end
+  end
 
 
   private

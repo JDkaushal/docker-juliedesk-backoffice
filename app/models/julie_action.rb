@@ -18,6 +18,7 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_POSTPONE_MULTIPLE_EVENTS = "postpone_multiple_events"
   JD_ACTION_FREE_ACTION              = "free_action"
   JD_ACTION_ASSOCIATE_EVENT          = "associate_event"
+  JD_ACTION_NOTHING_TO_DO            = "nothing_to_do"
 
 
   def event_data

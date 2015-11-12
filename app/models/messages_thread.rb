@@ -505,6 +505,27 @@ class MessagesThread < ActiveRecord::Base
 
   end
 
+  def last_message_classification
+    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).last
+  end
+
+  def last_email_status
+    if self.messages.sort_by(&:received_at).last.from_me
+
+      if self.last_message_classification.classification == MessageClassification::UNKNOWN
+        "from_me_free_reply"
+      else
+        "from_me"
+      end
+    else
+      "not_from_me"
+    end
+  end
+
+  def current_status
+    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:computed_thread_status).compact.last
+  end
+
   def self.julie_aliases_from_server_thread server_thread, params={}
     server_thread['messages'].map do |server_message|
       Message.julie_aliases_from_server_message(server_message, {julie_aliases: params[:julie_aliases]})

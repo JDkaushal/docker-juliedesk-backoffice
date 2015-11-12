@@ -28,6 +28,70 @@
   }
 
 
+  .finish-buttons {
+    position: absolute;
+    top: 0;
+    left: 100px;
+    right: 0;
+    bottom: 0;
+    background: yellow;
+    font-size: 15px;
+    text-align: right;
+    font-weight: 400;
+    background: #f5f5f5;
+    z-index: 10;
+    display: none;
+
+    span.old-thread-status-label {
+
+    }
+    select.old-thread-status-select {
+      width: 250px;
+      margin-right: 50px;
+      opacity: 0.7;
+    }
+
+    span.new-thread-status-label {
+
+    }
+    select.new-thread-status-select {
+      font-size: 15px;
+      width: 250px;
+    }
+
+    form {
+      display: inline;
+    }
+    .finish-buttons-finish-button {
+      display: inline-block;
+      margin: 0 50px;
+      font-size: 15px;
+      color: white;
+      background: #2EC094;
+      padding: 4px 50px;
+      line-height: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+      @include border-radius(14px);
+      font-weight: 600;
+      border: none;
+      
+      &:disabled {
+        opacity: 0.5;
+      }
+    }
+    .finish-buttons-cancel-button {
+      display: inline-block;
+      cursor: pointer;
+      padding: 4px 20px;
+      font-size: 20px;
+      line-height: 20px;
+      position: relative;
+      top: 1px;
+    }
+  }
+
+
   .done-buttons {
     float: right;
     margin: -2px 5px 0 0;
@@ -59,7 +123,7 @@
       &.done {
         background: #2EC094;
       }
-      &.nothing-expected, &.waiting-for-reply {
+      &.nothing-expected {
         background: #db5c04;
       }
 

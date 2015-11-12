@@ -221,3 +221,13 @@ en:
     calendar_tz: "Calendar TZ"
     display_weekends: "Display weekends"
 
+  thread_statuses:
+    scheduling_waiting_for_client: "Scheduling, waiting for client"
+    scheduling_waiting_for_contact: "Scheduling, waiting for contact"
+    scheduled: "Scheduled"
+    scheduling_aborted: "Scheduling aborted"
+    handled_in_other_threads: "Handled in other threads"
+    does_not_concern_client: "Does not concerns client"
+    events_creation: "Events creation"
+    other: "Non-related to scheduling"
+

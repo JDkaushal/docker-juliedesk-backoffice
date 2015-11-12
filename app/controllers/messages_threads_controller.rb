@@ -52,13 +52,24 @@ class MessagesThreadsController < ApplicationController
   end
 
   def archive
-    messages_thread = MessagesThread.find(params[:id])
+    messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
+    last_email_status = messages_thread.last_email_status
+    if last_email_status == "from_me"
+      # Nothing to do
+    elsif last_email_status == "from_me_free_reply"
+      last_message_classification = messages_thread.last_message_classification
+      last_message_classification.update_attribute :thread_status, params[:thread_status]
+    else
+      last_message = messages_thread.messages.sort_by(&:updated_at).last
+      message_classification = last_message.message_classifications.create_from_params classification: MessageClassification::NOTHING_TO_DO, operator: session[:user_username], thread_status: params[:thread_status]
+      message_classification.julie_action.update_attribute :done, true
+    end
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
                                          target: messages_thread,
                                          nature: OperatorAction::NATURE_ARCHIVE,
-                                         sub_nature: params[:sub_nature],
+                                         sub_nature: params[:thread_status],
                                          operator_id: session[:operator_id],
                                          messages_thread_id: messages_thread.id
                                      })

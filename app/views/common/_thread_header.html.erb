@@ -1,18 +1,126 @@
+<script>
+    $(function () {
+        $(".new-thread-status-select, .old-thread-status-select").each(function () {
+            var $selector = $(this);
+            $selector.change(function () {
+                setThreadStatusSelectColor($selector);
+                $(".finish-buttons-finish-button").prop("disabled", false);
+            });
+            setThreadStatusSelectColor($selector);
+        });
+
+        $("#archive-form").submit(function() {
+            if($(".new-thread-status-select:visible").length > 0 && $(".new-thread-status-select:visible").val() == null) {
+                alert("You must set a status");
+                return false;
+            }
+            return true;
+        });
+
+        if(window.lastEmailStatus == "from_me") {
+            $(".current-thread-status-label").show();
+            $(".old-thread-status-label").hide();
+            $(".finish-buttons-cancel-button").hide();
+            $(".new-thread-status-label").hide();
+            $(".new-thread-status-select").hide();
+
+            $(".free-reply-done-button").show();
+            $(".nothing-to-do-button").hide();
+
+            $(".free-reply-done-button").click(function() {
+                $(".finish-buttons").show();
+            });
+
+        }
+        else if(window.lastEmailStatus == "from_me_free_reply") {
+            $(".current-thread-status-label").hide();
+            $(".old-thread-status-label").show();
+
+            $(".free-reply-done-button").show();
+            $(".nothing-to-do-button").hide();
+
+            $(".finish-buttons-finish-button").prop("disabled", true);
+
+            $(".free-reply-done-button").click(function() {
+                $(".finish-buttons").show();
+            });
+        }
+        else {
+            $(".current-thread-status-label").hide();
+            $(".old-thread-status-label").show();
+            $(".free-reply-done-button").hide();
+            $(".nothing-to-do-button").show();
+
+            $(".finish-buttons-finish-button").prop("disabled", true);
+
+            $(".nothing-to-do-button").click(function() {
+                $(".finish-buttons").show();
+            });
+        }
+        $(".finish-buttons-cancel-button").click(function() {
+            $(".finish-buttons").hide();
+        });
+    });
+
+    setThreadStatusSelectColor = function ($selector) {
+        var color = getColorForThreadStatus($selector.val());
+        if(!color) {
+            color = "white";
+        }
+        $selector.css({backgroundColor: color});
+    };
+
+    getColorForThreadStatus = function (threadStatus) {
+        return {
+            scheduling_waiting_for_client: "rgba(219, 123, 4, 0.62)",
+            scheduling_waiting_for_contact: "rgba(219, 123, 4, 0.62)",
+            scheduled: "rgba(46, 192, 148, 0.55)",
+            scheduling_aborted: "rgba(221, 0, 0, 0.42)",
+            does_not_concern_client: "#ccc",
+            events_creation: "#ccc",
+            other: "white"
+        }[threadStatus];
+    };
+    window.lastEmailStatus = "<%= local_assigns[:messages_thread].last_email_status %>";
+
+</script>
 <div class="header jd-global-header full">
 
-    <%= link_to "JD", "/", class: "home-link" %>
+  <%= link_to "JD", "/", class: "home-link" %>
 
-    <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
+  <%= audio_tag "ding.mp3", id: "tada-sound", preload: "auto" %>
 
-    <span class="messages-thread-sumup"><%= local_assigns[:messages_thread].account_email %> - <%= local_assigns[:messages_thread].subject %></span>
+  <span class="messages-thread-sumup"><%= local_assigns[:messages_thread].account_email %>
+    - <%= local_assigns[:messages_thread].subject %></span>
 
-    <div class="done-buttons">
-      <div class="done-button send-to-support">Send to support</div>
-      <% if local_assigns[:messages_thread].messages.sort_by(&:received_at).last.from_me %>
-          <%= button_to "Finish", archive_messages_thread_path(id: local_assigns[:messages_thread].id), class: "done-button done" %>
-      <% else %>
-          <%= button_to "Nothing expected from me", archive_messages_thread_path(id: local_assigns[:messages_thread].id, sub_nature: OperatorAction::SUB_NATURE_NOTHING_EXPECTED), class: "done-button nothing-expected" %>
-          <%= button_to "Waiting for reply", archive_messages_thread_path(id: local_assigns[:messages_thread].id, sub_nature: OperatorAction::SUB_NATURE_WAITING_FOR_REPLY), class: "done-button waiting-for-reply" %>
+  <div class="finish-buttons">
+    <span class="old-thread-status-label">Old status:</span>
+    <span class="current-thread-status-label">Current status:</span>
+
+    <select class="old-thread-status-select" disabled>
+      <option value="">No status</option>
+      <% MessageClassification.all_thread_statuses.each do |thread_status| %>
+          <option value="<%= thread_status %>" <%= (thread_status == local_assigns[:messages_thread].current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
       <% end %>
-    </div>
+    </select>
+
+    <span class="new-thread-status-label">New status:</span>
+    <%= form_tag archive_messages_thread_path, id: "archive-form" do %>
+        <select name="thread_status" class="new-thread-status-select">
+          <option selected disabled>Please select a status...</option>
+          <% MessageClassification.all_thread_statuses.each do |thread_status| %>
+              <option value="<%= thread_status %>"><%= I18n.t("thread_statuses.#{thread_status}") %></option>
+          <% end %>
+        </select>
+
+        <%= submit_tag "Finish", class: "finish-buttons-finish-button" %>
+        <div class="finish-buttons-cancel-button">x</div>
+    <% end %>
+  </div>
+
+  <div class="done-buttons">
+    <div class="done-button send-to-support">Send to support</div>
+    <div class="done-button done free-reply-done-button">Done</div>
+    <div class="done-button nothing-expected nothing-to-do-button">Nothing to do</div>
+  </div>
 </div>
