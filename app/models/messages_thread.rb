@@ -511,8 +511,10 @@ class MessagesThread < ActiveRecord::Base
 
   def last_email_status
     if self.messages.sort_by(&:received_at).last.from_me
-
-      if self.last_message_classification.classification == MessageClassification::UNKNOWN
+      lmc = self.last_message_classification
+      if lmc.nil?
+        "not_from_me"
+      elsif lmc.classification == MessageClassification::UNKNOWN
         "from_me_free_reply"
       else
         "from_me"
