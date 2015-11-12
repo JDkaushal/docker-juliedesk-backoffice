@@ -67,6 +67,19 @@ module EmailServer
     res
   end
 
+  def self.copy_message_to_existing_thread opts={}
+    raise "No message id given" unless opts[:server_message_id]
+    raise "No thread id given" unless opts[:server_thread_id]
+
+
+    res = self.make_request :post,
+                            "/messages/#{opts[:server_message_id]}/copy_to_existing_thread?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                            {
+                                messages_thread_id: opts[:server_thread_id]
+                            }
+    res
+  end
+
   def self.archive_thread opts={}
     self.add_and_remove_labels({
       messages_thread_ids: [opts[:messages_thread_id]],

@@ -252,14 +252,15 @@ class Message < ActiveRecord::Base
 
 
       if existing_message.try(:messages_thread)
+        copy_response = EmailServer.copy_message_to_existing_thread server_message_id: self.server_message_id, server_thread_id: existing_message.messages_thread.server_thread_id
         EmailServer.deliver_message({
                                         subject: julie_message_hash['subject'],
                                         from: julie_alias.generate_from,
                                         to: julie_alias.generate_from,
                                         text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
                                         html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
-                                        quote: true,
-                                        reply_to_message_id:  existing_message.server_message_id
+                                        quote: false,
+                                        reply_to_message_id:  copy_response['id']
                                     })
       else
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
