@@ -24,8 +24,9 @@
                         $template.addClass("incorrect");
                         window.a = template;
                         window.b = expectedResults[locale];
-                        console.log("***", template, expectedResults[locale]);
-                        $template.append($("<div>").html(expectedResults[locale]));
+                        //console.log("***", template, expectedResults[locale]);
+                        $template.append($("<br><br>"));
+                        $template.append($("<div>").html(expectedResults[locale].replace(/\n/g, "<br>")));
                     }
 
                     $template2Locales.append($template);
@@ -58,6 +59,23 @@
 
         $("body").append(JSON.stringify(window.templateParams)):
         */
+
+        $(".only-errors-button").click(function() {
+            $(".template-name").hide();
+            $(".template.correct").hide();
+            $(".template-2-locales").filter(function() {
+                return $(this).find(".template:visible").length == 0;
+            }).hide();
+            $(".template-group").filter(function() {
+                return $(this).find(".template:visible").length == 0;
+            }).hide();
+        });
+        $(".all-button").click(function() {
+            $(".template-name").show();
+            $(".template.correct").show();
+            $(".template-2-locales").show();
+            $(".template-group").show();
+        });
     });
 </script>
 <style>
@@ -118,6 +136,8 @@
 <div id="templates-container">
   <h1>Templates</h1>
   <h3 class="global-result"></h3>
+  <div class="btn btn-warning all-button" >all</div>
+  <div class="btn btn-warning only-errors-button">Only errors</div>
   <div class="templates"></div>
 </div>
 

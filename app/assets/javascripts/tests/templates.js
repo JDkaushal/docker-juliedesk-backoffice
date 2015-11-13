@@ -1115,7 +1115,7 @@ window.testsData.templatesData = [
             }
         },
         expectedResults: {
-            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday January 1, 2015 at 12:00 PM\n\nWould that work for you?",
+            en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday January 1, 2015 at 12:00 PM\n\nWould that work for you?",
             fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
         }
     },
@@ -1143,7 +1143,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -1171,7 +1171,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -1200,7 +1200,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday January 1, 2015 at 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you on Thursday, January 1, 2015 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Thursday January 1, 2015 at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -1229,7 +1229,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -1258,7 +1258,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.\n\nHere are some new availabilities for a call:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nWould that work for you?",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
@@ -2115,7 +2115,7 @@ window.testsData.templatesData = [
         clientAgreement: true,
         attendeesAreNoticed: false,
         expectedResults: {
-            en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Thursday, January 1, 2015 8:00 AM.",
+            en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you on Thursday, January 1, 2015 8:00 AM.",
             fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00."
         }
     },
@@ -2132,7 +2132,7 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
@@ -2149,7 +2149,7 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", "+ window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
@@ -2166,7 +2166,7 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you on Wednesday, December 31, 2014 11:00 PM (Timezone: America/Los Angeles).",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you on Wednesday, December 31, 2014 11:00 PM (Timezone: America/Los Angeles).",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous mercredi 31 décembre 2014 à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
@@ -2183,7 +2183,7 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00 PM (Timezone: America/Los Angeles).",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00 PM (Timezone: America/Los Angeles).",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
@@ -2200,7 +2200,7 @@ window.testsData.templatesData = [
             clientAgreement: true,
             attendeesAreNoticed: false,
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00 PM (Timezone: America/Los Angeles).",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00 PM (Timezone: America/Los Angeles).",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
@@ -2227,7 +2227,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you on Thursday, January 1, 2015 8:00 AM.",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the dinner with you on Thursday, January 1, 2015 8:00 AM.",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous jeudi 1 janvier 2015 à 8h00."
             }
         },
@@ -2254,7 +2254,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the dinner with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
@@ -2281,7 +2281,7 @@ window.testsData.templatesData = [
                 }
             },
             expectedResults: {
-                en: "Very sorry for the setback but unfortunately, Nicolas Marlier won't be able to ensure the dinner with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
+                en: "Very sorry for the inconvenience, but something has came up and Nicolas Marlier won't be able to make the dinner with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00 AM.",
                 fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
@@ -3445,7 +3445,7 @@ window.testsData.templatesData = [
     [{
         action: "send_confirmation",
         expectedResults: {
-            en: "Very well, it's noted.",
+            en: "Got it, I've made a note of that!",
             fr: "Très bien, c'est noté."
         }
     }]

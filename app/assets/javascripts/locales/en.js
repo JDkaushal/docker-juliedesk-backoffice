@@ -103,10 +103,10 @@ window.wordings['en'] = {
             call_client_on: "Call %{client} at %{number_to_call}"
         },
         info_asked: "Here is the info you asked:",
-        confirmation: "Very well, it's noted.",
+        confirmation: "Got it, I've made a note of that!",
         cancel: {
             attendees_noticed: "I canceled %{appointment_nature} scheduled %{date}.",
-            attendees_not_noticed: "Very sorry for the setback but unfortunately, %{client} won't be able to ensure %{appointment_nature} with you %{date}.",
+            attendees_not_noticed: "Very sorry for the inconvenience, but something has came up and %{client} won't be able to make %{appointment_nature} with you %{date}.",
         },
         cancel_client_agreement: "Do I have your agreement to cancel %{appointment_nature} scheduled %{date}?",
         client_agreement: {
