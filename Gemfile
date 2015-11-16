@@ -43,6 +43,10 @@ gem 'angular-rails-templates'
 
 gem "httpclient"
 
+group :production do
+  gem 'lograge'
+end
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
