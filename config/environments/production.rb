@@ -47,12 +47,15 @@ Rails.application.configure do
   # Use SimpleFormatter so that PID and timestamp are suppressed = pure JSON
   config.logger.formatter = ActiveSupport::Logger::SimpleFormatter.new
 
-  # Prepend all log lines with the following tags.
-  # config.log_tags = [ :subdomain, :uuid ]
   # Lograge
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
 
+  # Prepend all log lines with the following tags.
+  # config.log_tags = [ :uuid ]
+  config.lograge.custom_options = lambda do |event|
+    {:request_id => event.payload[:request_id]}
+  end
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
