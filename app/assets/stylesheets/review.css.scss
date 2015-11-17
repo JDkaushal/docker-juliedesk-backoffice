@@ -10,11 +10,13 @@
   padding: 0 20px 0 0;
 
   .operator {
-    cursor: pointer;
-    display: block;
-    &:hover {
+    a {
+      cursor: pointer;
       color: #7897E0;
-      text-decoration: underline;
+
+      &.hover {
+        text-decoration: underline;
+      }
     }
   }
 }

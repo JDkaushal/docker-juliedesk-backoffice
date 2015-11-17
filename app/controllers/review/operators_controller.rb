@@ -22,6 +22,9 @@ class Review::OperatorsController < ReviewController
   def review_list
     compute_counts
     operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
+    if params[:operator_id]
+      operator_ids = [params[:operator_id]]
+    end
     messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id)
     @messages_threads = MessagesThread.where(id: messages_thread_ids).sort{|mt1, mt2| messages_thread_ids.index(mt1.id) <=> messages_thread_ids.index(mt2.id)}
   end
@@ -45,6 +48,14 @@ class Review::OperatorsController < ReviewController
 
 
     @to_review_count = oags_to_review.map(&:messages_thread_id).uniq.length
+
+    @oags_to_review_counts = Hash[@operators.map{|operator|
+                                   [
+                                       operator.id,
+                                       oags_to_review.select{|oag| oag.operator_id == operator.id}.map(&:messages_thread_id).uniq.length
+                                   ]
+                                 }]
+
     @to_group_review_count = oags_to_group_review.map(&:messages_thread_id).uniq.length
 
     oags_to_learn = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN)

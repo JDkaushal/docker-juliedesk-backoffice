@@ -10,6 +10,10 @@
         <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
 
         <div class="review-list-container">
+
+          <% if params[:operator_id] %>
+            <h3><%= Operator.find_by_id(params[:operator_id]).try(:name) %> threads:</h3>
+          <% end %>
           <% @messages_threads.each do |messages_thread| %>
               <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
               <br>

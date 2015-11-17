@@ -10,16 +10,18 @@
   <br>
 
   <% @operators.where(privilege: nil).each do |operator| %>
-      <%= link_to review_operator_path(operator), class: 'operator' do %>
-        <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
-      <% end %>
+      <div class="operator">
+        <%= link_to operator.name, review_operator_path(operator) %> (<%= @oags_to_learn_counts[operator.id] %>) - <%= link_to "Review #{@oags_to_review_counts[operator.id]}", {action: :review_list, operator_id: operator.id} %>
+      </div>
   <% end %>
 
   <br>
 
   <% @operators.where("privilege IS NOT NULL").each do |operator| %>
       <%= link_to review_operator_path(operator), class: 'operator' do %>
-          <%= operator.name %> (<%= @oags_to_learn_counts[operator.id] %>)
+          <div class="operator">
+            <%= link_to operator.name, review_operator_path(operator) %> (<%= @oags_to_learn_counts[operator.id] %>) - <%= link_to "Review #{@oags_to_review_counts[operator.id]}", {action: :review_list, operator_id: operator.id} %>
+          </div>
       <% end %>
   <% end %>
 
