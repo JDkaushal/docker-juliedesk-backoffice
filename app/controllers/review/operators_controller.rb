@@ -25,7 +25,11 @@ class Review::OperatorsController < ReviewController
     if params[:operator_id]
       operator_ids = [params[:operator_id]]
     end
-    messages_thread_ids = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id)
+    operator_action_groups = OperatorActionsGroup.order("initiated_at ASC").where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids)
+
+    messages_thread_ids = operator_action_groups.map(&:messages_thread_id)
+    @created_events_messages_thread_ids = operator_action_groups.where(label: "ask_create_event").map(&:messages_thread_id)
+
     @messages_threads = MessagesThread.where(id: messages_thread_ids).sort{|mt1, mt2| messages_thread_ids.index(mt1.id) <=> messages_thread_ids.index(mt2.id)}
   end
 

@@ -13,11 +13,30 @@
 
           <% if params[:operator_id] %>
             <h3><%= Operator.find_by_id(params[:operator_id]).try(:name) %> threads:</h3>
+          <% else %>
+              <h3>All threads: <%= @messages_threads.length %></h3>
           <% end %>
-          <% @messages_threads.each do |messages_thread| %>
+
+          <h4>
+            <a href="#not-created-events"><%= @messages_threads.select{|mt| !@created_events_messages_thread_ids.include?(mt.id)}.length %> created event threads</a>
+            -
+            <a href="#created-events"><%= @messages_threads.select{|mt| @created_events_messages_thread_ids.include? mt.id}.length %> created event threads</a>
+          </h4>
+          <br>
+          <br>
+
+          <h4 id="not-created-events">Non-Created events threads:</h4>
+          <% @messages_threads.select{|mt| !@created_events_messages_thread_ids.include?(mt.id)}.each do |messages_thread| %>
               <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
               <br>
           <% end %>
+          <br><br><br><br>
+          <h4 id="created-events">Created events threads:</h4>
+          <% @messages_threads.select{|mt| @created_events_messages_thread_ids.include? mt.id}.each do |messages_thread| %>
+              <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
+              <br>
+          <% end %>
+          <br><br>
         </div>
       </div>
 

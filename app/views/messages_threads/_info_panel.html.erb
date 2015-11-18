@@ -222,6 +222,37 @@
 
         <% end %>
 
+        <% if messages_thread.scheduling_status == MessagesThread::EVENTS_CREATED &&
+        (
+        (params[:controller] == "messages_threads" && params[:action] == "show") ||
+        (params[:controller] == "review/messages_threads")
+        )%>
+
+
+            var alreadyCreatedEvents = <%== @messages_thread.created_events_data.to_json %>;
+
+            _.each(alreadyCreatedEvents, function(eventData) {
+                $(".messages-thread-info-panel .created-event-panel").append($("<div>").addClass("new-event-tile-container"));
+                var eventTile = new EventTile($(".messages-thread-info-panel .created-event-panel").find(".new-event-tile-container").last(), {
+                    timezoneId: window.threadComputedData.timezone,
+                    mode: "read_only",
+                    event: {},
+                    eventId: eventData.id,
+                    eventUrl: eventData.event_url,
+                    calendarId: eventData.calendar_id,
+                    accountEmail: window.threadAccount.email,
+                    calendarLoginUsername: eventData.calendar_login_username,
+                    locale: window.threadComputedData.locale
+                });
+                eventTile.redraw();
+                eventTile.fetchEvent(function(data) {
+                    eventTile.redraw();
+                });
+            });
+
+            $(".messages-thread-info-panel .created-event-panel").show();
+        <% end %>
+
         fetchOtherAccounts();
     });
 
