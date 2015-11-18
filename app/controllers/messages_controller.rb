@@ -110,10 +110,9 @@ class MessagesController < ApplicationController
 
   def reply
     @message = Message.find params[:id]
-
     julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
     new_server_message_id = EmailServer.deliver_message({
-        subject: @message.messages_thread.subject,
+        subject: params[:subject],
         from: julie_alias.generate_from,
         to: (params[:to] || []).join(", "),
         cc: (params[:cc] || []).join(", "),
