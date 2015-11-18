@@ -163,6 +163,9 @@
         <% end %>
 
         <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
+        <% if email['was_merged'] %>
+            <div class="email-was-merged">M</div>
+        <% end %>
         <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
         <div class="clear"></div>
       </div>

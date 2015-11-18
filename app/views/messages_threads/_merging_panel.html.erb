@@ -49,6 +49,9 @@
                         $http.get("/messages_threads/search?" + serverThreadidsUrlPart).success(function(response) {
                             $scope.messagesThreads = response.data;
                             _.each($scope.messagesThreads, function(messagesThread) {
+                                //console.log("HOHO", eventGetResponse.data);
+                                messagesThread.received_at_formatted = moment(messagesThread.received_at).format("dddd D MMMM");
+
                                 if(messagesThread.event_data.calendar_id) {
                                     messagesThread.event_data.date = $sce.trustAsHtml("Loading...");
                                     window.CommonHelpers.externalRequest({
@@ -67,7 +70,7 @@
                                         }
                                         var endDate = eventGetResponse.data.end.dateTime;
                                         if(!endDate) eventGetResponse.data.end.date;
-                                        console.log("HOHO", eventGetResponse.data);
+
                                         messagesThread.event_data.date = $sce.trustAsHtml(CommonHelpers.formatDateTimeRange(startDate, endDate, "en", messagesThread.computed_data.timezone, allDay));
                                         messagesThread.event_data.summary = eventGetResponse.data.summary;
                                         messagesThread.event_data.location = eventGetResponse.data.location;
@@ -145,6 +148,7 @@
       <div class="thread-subject-and-emails-count">
         <span class="thread-subject">{{ messagesThread.subject }}</span>
         <span class="thread-emails-count">({{ messagesThread.messages.length }} mails)</span>
+        <span class="thread-date">{{ messagesThread.received_at_formatted }}</span>
       </div>
       <div class="thread-client-and-status">
         <span class="thread-client">{{ messagesThread.account.full_name }}</span>
