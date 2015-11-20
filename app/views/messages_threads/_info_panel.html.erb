@@ -78,6 +78,26 @@
 
             updateNotesCallingInfos();
 
+            if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
+                if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
+                    if($('#event_update_vm_ctrl').length == 0){
+                        window.currentEventTile.displayCallingInfosForm();
+                        // If we can see the edit button, it means we have not clicked it so the event is not editable => the form is disabled
+                        if($('#event-edit-button').css('display') == 'block'){
+                            $('#event_update_vm_ctrl').find('input').prop('disabled', true);
+                            $('#event_update_vm_ctrl').find('select').prop('disabled', true);
+                        }
+                    }
+                }else{
+                    var eventUpdateNode = $('#event_update_virtual_meetings_helper');
+                    if(eventUpdateNode.length > 0){
+                        eventUpdateNode.remove();
+                        $('.event-tile-container').css('height', '545px');
+                        $('.created-event-panel').css('height', '515px');
+                    }
+                }
+            }
+
             window.lastAppointmentType = $("#appointment_nature").val();
         });
 
@@ -329,6 +349,8 @@
                         if(regExResult != null){
                             newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
                             currentEventNotesNode.val(newEventDescription);
+                        }else{
+                            currentEventNotesNode.val($('.classic-info-panel #notes').val());
                         }
                     }
                 }
@@ -599,11 +621,13 @@
 
     function refreshVirtualAppointmentsHelper(){
         var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+        console.log(window.lastAppointmentType);
+
         if(window.threadDataIsEditable && $.isEmptyObject(window.threadComputedData.call_instructions) && !window.currentEventTile
-                || $("select#appointment_nature").val() == 'skype'
-                || $("select#appointment_nature").val() == 'webex'
-                || $("select#appointment_nature").val() == 'hangout'
-                || $("select#appointment_family_nature").val() == 'call' && (window.lastAppointmentType == 'skype' || window.lastAppointmentType == 'hangout' || window.lastAppointmentType == 'webex' || window.lastAppointmentType == 'confcall' || window.lastAppointmentType == 'call')){
+                || ($("select#appointment_nature").val() == 'skype' || $("select#appointment_nature").val() == 'webex' || $("select#appointment_nature").val() == 'hangout') && window.lastAppointmentType != ''
+                || $("select#appointment_family_nature").val() == 'call' && window.lastAppointmentType != ''){
+            console.log('here');
             virtualMeetingsHelper.loadDefaultConfig(true);
         }
     }

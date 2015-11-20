@@ -160,21 +160,28 @@
 
                 var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
 
-                if(window.currentEventTile) {
-                    var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
-                    var currentEventNotesNode = $('.created-event-panel .notes');
-                    var currentEventNotes = currentEventNotesNode.val();
-                    var newEventDescription = '';
-                    if(vmHelper && vmHelper.isVirtualAppointment()){
-                        var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
-                        var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
-                        if(regExResult != null){
-                            newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
-                            description = newEventDescription;
+                if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
+                    if(window.threadComputedData.call_instructions.event_instructions)
+                        location = window.threadComputedData.call_instructions.event_instructions;
+
+                    if(window.currentEventTile) {
+                        var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+                        var currentEventNotesNode = $('.created-event-panel .notes');
+                        var currentEventNotes = currentEventNotesNode.val();
+                        var newEventDescription = '';
+                        if(vmHelper && vmHelper.isVirtualAppointment()){
+                            var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+                            var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
+                            if(regExResult != null){
+                                newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
+                                description = newEventDescription;
+                            }
                         }
                     }
+
                 }
 
+                console.log(location);
                 var requestParams = {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",

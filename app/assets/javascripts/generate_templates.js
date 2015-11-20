@@ -458,8 +458,8 @@ window.generateEmailTemplate = function (params) {
 
         if(callInstructions.target == 'later')
             message += '';
-        else if(callInstructions.targetInfos.name != '' && callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
-            if (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall') {
+        else if(callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
+            if (callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall')) {
                 //callInstructionsMessage = localize("email_templates.send_call_instructions.give_target_number", {
                 //    target_name: callInstructions.targetInfos.name,
                 //    details: callInstructions.details
@@ -474,6 +474,8 @@ window.generateEmailTemplate = function (params) {
                 callInstructionsMessage = localize("email_templates.send_call_instructions.placed_skype_in_notes", {
                     target_name: usageName
                 });
+            } else if(callInstructions.target == 'custom'){
+                callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
             }
         }else{
             if(callInstructions.target != 'client')

@@ -124,7 +124,7 @@
         <div class="row">
           <div class="col-xs-12">
           <%= label_tag :company %>
-          <%= text_field_tag :company, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.company', 'uib-typeahead' => "company for company in attendees_manager.getCompaniesNames() | filter:$viewValue", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
+          <%= text_field_tag :company, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.company', 'uib-typeahead' => "company for company in attendees_manager.getCompaniesNames() | filter:$viewValue", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true, autocomplete:"off"} %>
         </div>
     </div>
 

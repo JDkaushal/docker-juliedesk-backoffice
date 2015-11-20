@@ -40,6 +40,7 @@ EventTile.prototype.render = function() {
 };
 
 EventTile.prototype.displayCallingInfosForm = function(){
+
     var eventTile = this;
     // We display the form in the edit event window when the event is owned by someone (we are editing it)
     if(window.getCurrentAppointment().appointment_kind_hash.is_virtual)
@@ -61,47 +62,26 @@ EventTile.prototype.displayCallingInfosForm = function(){
         if(scope.getAttendees().length > 0)
             scope.refresh(scope.getAttendees());
 
+        if($('#event-cancel-button').css('display') == 'block'){
+            scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+
+            vmHelperNode.closest('.event-tile-container').css('height', '810px');
+            vmHelperNode.closest('.created-event-panel').css('height', '790px');
+        }
+
         var call_instructions = eventTile.event.call_instructions || window.threadComputedData.call_instructions;
 
         if(!!!call_instructions.details && eventTile.event.location == '' && eventTile.event.owned)
         {
-            locationContainerNode.find('.location').remove();
-
-            scope.$apply(function(){scope.displayForm = true;});
+            locationContainerNode.find('.location').hide();
 
             locationContainerNode.prepend('<div class="missing-call-informations"></div> <span style="display: inline-block; margin-top: 6px;margin-left: 27px;color: #F6BB67;">Instructions d\'appels manquantes</span>');
+        }else if(eventTile.event.owned && eventTile.event.location){
+            $('input.location').change(function(){
+                var $that = $(this);
+                scope.$apply(function(){Object.assign(scope.currentConf, {target: 'custom', event_instructions: $that.val(), details: $that.val()});});
 
-            // When the event tile is refreshed we check if the select is empty, if so it means we need to refresh the form
-            vmHelperNode.closest('.event-tile-container').css('height', '810px');
-            vmHelperNode.closest('.created-event-panel').css('height', '790px');
-        }else if(eventTile.event.location == '' && eventTile.event.owned && call_instructions.details){
-            locationContainerNode.find('.location-icon').css('top', '-5px');
-            var message = '';
-
-            eventTile.$selector.find("#event-edit-button").click(function() {
-                scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor();});
-
-                vmHelperNode.closest('.event-tile-container').css('height', '810px');
-                vmHelperNode.closest('.created-event-panel').css('height', '790px');
             });
-
-            eventTile.$selector.find("#event-cancel-button").click(function() {
-                scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor();});
-
-                vmHelperNode.closest('.event-tile-container').css('height', '545px');
-                vmHelperNode.closest('.created-event-panel').css('height', '515px');
-            });
-
-            if(call_instructions.support == "mobile" || call_instructions.support == "landline"){
-                locationContainerNode.find('.location').remove();
-                message = call_instructions.event_instructions;
-            }else if(call_instructions.support == "confcall"){
-                locationContainerNode.find('.location').remove();
-                message = localize("events.call_instructions.instructions_in_notes", {
-                    locale: window.threadComputedData.locale
-                });
-            }
-
             //if(call_instructions.support == "mobile" || call_instructions.support == "landline"){
             //    locationContainerNode.find('.location').remove();
             //
@@ -141,8 +121,26 @@ EventTile.prototype.displayCallingInfosForm = function(){
             //}
 
             //if(message != '')
-            locationContainerNode.prepend('<span style="margin-top: 10px;">' + message + '</span>');
+            //locationContainerNode.prepend('<span style="margin-top: 10px;">' + message + '</span>');
         }
+
+        eventTile.$selector.find("#event-edit-button").click(function() {
+            scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+
+            $('.event-tile-container .location').hide();
+
+            vmHelperNode.closest('.event-tile-container').css('height', '810px');
+            vmHelperNode.closest('.created-event-panel').css('height', '790px');
+        });
+
+        eventTile.$selector.find("#event-cancel-button").click(function() {
+            scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
+
+            $('.event-tile-container .location').show();
+            vmHelperNode.closest('.event-tile-container').css('height', '545px');
+            vmHelperNode.closest('.created-event-panel').css('height', '515px');
+        });
+
     }
 };
 
@@ -180,9 +178,15 @@ EventTile.prototype.getTimezoneIdForEndDate = function() {
 
 EventTile.prototype.enableAll = function() {
     var eventTile = this;
+
+    var vmHelper = angular.element($('#event_update_vm_ctrl')).scope();
+
     eventTile.$selector.find("input, textarea, select").prop('disabled', false);
     eventTile.$selector.find(".recurrence-link-container").addClass("enabled");
-};
+
+    if(vmHelper && vmHelper.currentConf.target == 'client')
+        $('#event_update_vm_ctrl').find('input').prop('disabled', true);
+}
 
 EventTile.prototype.disableAll = function() {
     var eventTile = this;
@@ -200,7 +204,6 @@ EventTile.prototype.disableAll = function() {
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
-    console.log(eventTile.event);
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
@@ -355,7 +358,7 @@ EventTile.prototype.redraw = function() {
         if(eventTile.event.owned) {
             eventTile.$selector.find("#event-edit-button").show();
         }
-        angular.element($('#virtual-meetings-helper')).scope().detailsFrozenDisabled = true;
+        angular.element($('#virtual-meetings-helper')).scope().forcedDetailsFrozen = true;
         $('#virtual-meetings-helper input').prop('disabled', true);
         $('#virtual-meetings-helper select').prop('disabled', true);
     }
@@ -412,12 +415,19 @@ EventTile.prototype.getEditedEvent = function() {
 
 
     var description = eventTile.$selector.find("textarea.notes").val();
+    var location = eventTile.$selector.find("input.location").val();
 
-    console.log(description);
+    var currentAppointment = window.getCurrentAppointment();
+
+    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+        if(window.threadComputedData.call_instructions.event_instructions || window.threadComputedData.call_instructions.event_instructions == '')
+            location = window.threadComputedData.call_instructions.event_instructions;
+    }
+
     return {
         title: eventTile.$selector.find("input.title").val(),
         description: description,
-        location: eventTile.$selector.find("input.location").val(),
+        location: location,
         private: false,
         all_day: allDay,
         start: mStart,
@@ -545,7 +555,6 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
     if(ev.call_instructions)
         eventData.call_instructions = JSON.parse(ev.call_instructions);
 
-    console.log('eventData', eventData);
     return eventData;
 };
 
@@ -680,7 +689,6 @@ EventTile.prototype.saveEvent = function() {
     }
     else {
         eventTile.showSpinner();
-        console.log("Update event");
         CommonHelpers.externalRequest({
             action: "update_event",
             email: eventTile.accountEmail,
@@ -858,7 +866,6 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find("#event-save-button").click(function() {
         if(eventTile.recurringEvent) {
-            console.log("Save event", eventTile.getEditedEvent())
             if(eventTile.getEditedEvent().recurrence.length == 0) {
                 eventTile.saveRecurringEvent();
             }

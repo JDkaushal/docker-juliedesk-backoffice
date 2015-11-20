@@ -8,14 +8,14 @@
         <%= select_tag :call_target_infos, options_for_select([]),{'ng-options' => '{email: callTargetsInfo.email, name: callTargetsInfo.name, guid: callTargetsInfo.guid} as callTargetsInfo.displayName for callTargetsInfo in callTargetsInfos', 'ng-model' => 'currentConf.targetInfos', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
       </div>
 
-      <div ng-hide="currentConf.target == 'later'">
+      <div ng-hide="currentConf.target == 'later' || currentConf.target == 'custom'">
         <%= label_tag 'Support' %>
         <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-change' => 'computeCallDetails()', 'ng-model' => 'currentConf.support', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
       </div>
 
       <div ng-hide="currentConf.target == 'later' || (currentConf.target == 'interlocutor' && currentConf.targetInfos == '')">
         <%= label_tag 'Détails' %>
-        <%= text_field_tag :call_details, "", {'ng-model' => 'currentConf.details', 'ng-change' => 'detailsOverrided()', 'ng-disabled' => '!formEditMode || (detailsFrozen && !detailsFrozenDisabled)', class: 'form-control'} %>
+        <%= text_field_tag :call_details, "", {'ng-model' => 'currentConf.details', 'ng-change' => 'detailsOverrided()', 'ng-disabled' => 'detailsDisabled()', class: 'form-control'} %>
       </div>
     </div>
 
