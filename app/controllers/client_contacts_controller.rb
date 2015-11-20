@@ -186,6 +186,21 @@ class ClientContactsController < ApplicationController
   def fetch_one
     @contact = ClientContact.find_by(client_email: params[:client_email], email:params[:email])
 
+    accounts_cache_light = Account.accounts_cache(mode: 'light')
+
+    is_client = false
+
+    if accounts_cache_light[params[:email]]
+      is_client = true
+    else
+      accounts_cache_light.each do |email, account|
+        if account["email_aliases"].include?(params[:email])
+          is_client = true
+          break
+        end
+      end
+    end
+
     if @contact
       response = {
         email: @contact.email,
@@ -200,7 +215,8 @@ class ClientContactsController < ApplicationController
         landline: @contact.landline,
         mobile: @contact.mobile,
         skypeId: @contact.skypeId,
-        confCallInstructions: @contact.conf_call_instructions
+        confCallInstructions: @contact.conf_call_instructions,
+        isClient: is_client
       }
     else
       if(@contact = ClientContact.find_by_email(params[:email]))
@@ -208,9 +224,9 @@ class ClientContactsController < ApplicationController
           email: @contact.email,
           firstName: @contact.first_name,
           lastName: @contact.last_name,
-          gender: @contact.gender
+          gender: @contact.gender,
+          isClient: is_client
         }
-
       else
         response = {error: 'Contact Not Found'}
       end

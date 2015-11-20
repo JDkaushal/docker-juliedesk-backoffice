@@ -263,6 +263,9 @@
                     else
                         updateWindowCallInstructions();
 
+                    //Set the correct attendee in the targetInfos select if there is one
+                    $scope.updateTargetInfosSelect();
+
                     updateNotesCallingInfos();
                 };
 

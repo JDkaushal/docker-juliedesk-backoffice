@@ -156,6 +156,15 @@
 
     attendees-form{
 
+        .header-row{
+            &.isClient{
+                margin-top: 4px !important;
+            }
+            &.notClient{
+                margin-top: -25px !important;
+            }
+        }
+
         label{
             font-size: 12px;
         }
@@ -169,10 +178,18 @@
             padding-left: 30px;
         }
 
+        .new-attendee-form-picto{
+            position: relative;
+            top: 75%;
+            @include vertical-align(65%);
+            left: 4px;
+        }
+
         .attendee-form-picto{
             @include vertical-align(15%);
             left: 4px;
         }
+
         .form-header{
             text-transform: uppercase;
             top: 0;
@@ -220,10 +237,31 @@
             }
         }
 
+        .new-form-attendee-checkbox{
+            z-index: 4;
+            position: relative;
+            top: 17px;
+            right: 10%;
+            display: inline-block;
+
+            input[type="checkbox"]{
+                right: 7px;
+                @include vertical-align(30%);
+            }
+        }
+
+        .new-attendee-details-client{
+            padding-left: 25px !important;
+            padding-right: 0 !important;
+            width: 87.333333% !important;
+            top: -30px;
+            margin-bottom: -29px;
+        }
+
         .form-checkbox-label{
             font-size: smaller;
-            padding-left: 0px;
-            padding-right: 0px;
+            padding-left: 0;
+            padding-right: 0;
             @include vertical-align(10%);
         }
 

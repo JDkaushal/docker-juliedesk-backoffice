@@ -23,10 +23,10 @@
               <cite class="attendee-email">{{attendeesFormCtrl.attendeeInForm.email}}</cite>
             </div>
 
-            <div class="row ellipsable" style="margin-left: 0">
-              <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par Sandrine Ayolé</cite>
-              <cite class="attendee-assistant" ng-show="attendee.isAssistant">Assistant(e)</cite>
-            </div>
+            <!--<div class="row ellipsable" style="margin-left: 0">-->
+              <!--<cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par Sandrine Ayolé</cite>-->
+              <!--<cite class="attendee-assistant" ng-show="attendee.isAssistant">Assistant(e)</cite>-->
+            <!--</div>-->
           </div>
         </div>
 
@@ -38,11 +38,14 @@
         </div>
       </div>
 
-    <div class="row" ng-show="attendeesFormCtrl.isCurrentMode('new')" style="margin-top: -25px;">
-      <div class="attendee-checkbox new-form-checkbox">
+    <div class="row" ng-show="attendeesFormCtrl.isCurrentMode('new')" ng-class="{'header-row notClient': !attendeesFormCtrl.attendeeInForm.isClient, 'header-row isClient': attendeesFormCtrl.attendeeInForm.isClient}">
+      <div ng-class="{'attendee-checkbox new-form-checkbox': !attendeesFormCtrl.attendeeInForm.isClient, 'new-form-checkbox new-form-attendee-checkbox': attendeesFormCtrl.attendeeInForm.isClient}">
         <%= check_box_tag :attendee_presence, '', true, {class: 'regular-checkbox', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.isPresent'} %>
       </div>
-      <div class="attendee-details col-xs-12" style="padding-left: 15px;">
+      <div class="attendee-form-picto col-xs-1 client-picto-contact" ng-class="{'attendee-form-picto': !attendeesFormCtrl.attendeeInForm.isClient, 'new-attendee-form-picto': attendeesFormCtrl.attendeeInForm.isClient}" ng-show="attendeesFormCtrl.attendeeInForm.isClient">
+        <%= image_tag 'client_picto.png', width: 30, height: 30 %>
+      </div>
+      <div class="attendee-details" ng-class="{'col-xs-12': !attendeesFormCtrl.attendeeInForm.isClient, 'col-xs-10 new-attendee-details-client': attendeesFormCtrl.attendeeInForm.isClient}" style="padding-left: 15px;">
           <%= label_tag :email %>
           <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
       </div>
