@@ -305,6 +305,8 @@
                                 $scope.currentConf.targetInfos = $scope.lastTargetInfos;
 
                             attendee = findTargetAttendee($scope.currentConf.targetInfos);
+                            if(attendee != undefined)
+                                setAttendeeSelected(attendee);
                         }
 
                         if(attendee != undefined)
@@ -611,6 +613,7 @@
                 };
 
                 setAttendeeSelected = function(attendee){
+
                     setTimeout(function() {
                         angular.element($('#call_target_infos option')).filter(function () {
                             return $(this).text().trim() == $scope.computeOptionText({
