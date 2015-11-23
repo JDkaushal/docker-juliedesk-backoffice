@@ -462,7 +462,9 @@
                                 var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
 
                                 if(attendeesWithoutAssistant.length == 2){
-                                    var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: parseInt($scope.currentConf.targetInfos.guid)}))[0];
+                                    var guid = $scope.currentConf.targetInfos.guid.length == 36 ? $scope.currentConf.targetInfos.guid : parseInt($scope.currentConf.targetInfos.guid);
+
+                                    var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: guid}))[0];
 
                                     content = localize("events.call_instructions.display_single_attendee", {
                                         target_name: $scope.currentConf.targetInfos.name,
