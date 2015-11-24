@@ -142,7 +142,6 @@
                 };
 
                 $scope.loadCurrentConfig = function(){
-
                     if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
                         $scope.changeCurrentVAConfig("demander à l'interlocuteur");
 
@@ -166,11 +165,17 @@
                     //$scope.currentConf = {target: window.threadComputedData.call_instructions.target, targetInfos: window.threadComputedData.call_instructions.targetInfos, support: window.threadComputedData.call_instructions.support, details: window.threadComputedData.call_instructions.details};
 
                     $scope.currentConf = window.threadComputedData.call_instructions;
+
                     if(window.threadComputedData.call_instructions.targetInfos) {
+                        var guid = window.threadComputedData.call_instructions.targetInfos.guid;
+                        // If the currently thread-saved targetInfos guid is the temporary one, we find the real one and use it to generate the correct message XX to call YY
+                        if(window.threadComputedData.call_instructions.targetInfos.guid.length == 36)
+                            guid = findTargetAttendee(window.threadComputedData.call_instructions.targetInfos).guid;
+
                         $scope.currentConf.targetInfos = {
                             name: window.threadComputedData.call_instructions.targetInfos.name,
                             email: window.threadComputedData.call_instructions.targetInfos.email,
-                            guid: window.threadComputedData.call_instructions.targetInfos.guid
+                            guid: guid
                         };
                     }
                     else {
