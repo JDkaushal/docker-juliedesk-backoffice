@@ -166,7 +166,7 @@
 
                     $scope.currentConf = window.threadComputedData.call_instructions;
 
-                    if(window.threadComputedData.call_instructions.targetInfos) {
+                    if(window.threadComputedData.call_instructions.targetInfos && window.threadComputedData.call_instructions.targetInfos.guid && window.threadComputedData.call_instructions.targetInfos.name) {
                         var guid = window.threadComputedData.call_instructions.targetInfos.guid;
                         // If the currently thread-saved targetInfos guid is the temporary one, we find the real one and use it to generate the correct message XX to call YY
                         if(window.threadComputedData.call_instructions.targetInfos.guid.length == 36)

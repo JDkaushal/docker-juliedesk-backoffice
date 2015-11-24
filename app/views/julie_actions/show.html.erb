@@ -335,6 +335,16 @@
             $("#recipients-to-input").tokenInput("add", clientRecipient());
         }
         else {
+            var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+            var presentAttendees = attendeesManager.getAttendeesOnPresence(true);
+
+//            if(presentAttendees == 3){
+//                if()
+//
+//
+//
+//            }
+
             _.each(initialToRecipients(), function (recipient) {
                 $("#recipients-to-input").tokenInput("add", recipient);
             });
