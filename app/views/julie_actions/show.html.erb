@@ -304,7 +304,7 @@
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
                 method: "post",
                 data: {
-                    subject: "<%= "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ") %>",
+                    subject: "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ") %>",
                     text: $("textarea#reply-text").val(),
                     html_signature: $("#reply-text-signature").html(),
                     from: $("select#julie-alias-select").val(),
