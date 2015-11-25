@@ -30,11 +30,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     <% elsif Rails.env == 'staging' %>
         var host = "<%= "https://juliedesk-release.herokuapp.com" %>";
     <% else %>
-        var host = "<%= "http://localhost:3001" %>";
+        var host = "<%= ENV['CALENDAR_API_URL'] %>";
     <% end %>
-//    var host = "http://localhost:2000";
+
     var access_key = "gho67FBDJKdbhfj890oPm56VUdfhq8";
-    console.log("Receiving request: ", request);
+    //console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
         $.ajax({
             url: host + "/api/v1/accounts/show?email=" + request.email + "&access_key=" + access_key,
@@ -44,7 +44,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 console.log("Error: ", e);
             },
             success: function(response) {
-                console.log(response);
+                //console.log(response);
                 callback(response.data);
             }
         });

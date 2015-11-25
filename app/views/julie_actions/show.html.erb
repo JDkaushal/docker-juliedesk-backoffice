@@ -273,7 +273,14 @@
             $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-timezone").html("(" + window.threadComputedData.timezone + ")"));
 
             _.each(window.timeSlotsToSuggest, function (timeSlot) {
-                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block btn-primary time-slot-to-suggest").data("date-time", timeSlot).html(window.helpers.capitalize(moment(timeSlot).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"))));
+                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block time-slot-to-suggest").data("date-time", timeSlot).html(window.helpers.capitalize(moment(timeSlot).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"))));
+                var hour = moment(timeSlot).tz(window.threadComputedData.timezone).hour();
+                if(hour < 8 || hour > 22) {
+                    $timeSlotDiv.addClass("btn-danger");
+                }
+                else {
+                    $timeSlotDiv.addClass("btn-primary");
+                }
                 $timeSlotsToSuggestListDiv.append($timeSlotDiv);
             });
 
