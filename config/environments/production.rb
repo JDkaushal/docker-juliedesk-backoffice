@@ -41,15 +41,21 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
-  # Set to :debug to see everything in the log.
-  config.log_level = :info
+  # Logs
+  config.log_level = ENV.fetch("LOG_LEVEL", "INFO")
   config.logger = Logger.new(STDOUT)
+  # Use SimpleFormatter so that PID and timestamp are suppressed = pure JSON
+  config.logger.formatter = ActiveSupport::Logger::SimpleFormatter.new
+
+  # Lograge
+  config.lograge.enabled = true
+  config.lograge.formatter = Lograge::Formatters::Json.new
 
   # Prepend all log lines with the following tags.
-  # config.log_tags = [ :subdomain, :uuid ]
-
-  # Use a different logger for distributed setups.
-  # config.logger = ActiveSupport::TaggedLogging.new(SyslogLogger.new)
+  # config.log_tags = [ :uuid ]
+  config.lograge.custom_options = lambda do |event|
+    {:request_id => event.payload[:request_id]}
+  end
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -70,9 +76,6 @@ Rails.application.configure do
 
   # Disable automatic flushing of the log to improve performance.
   # config.autoflush_log = false
-
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false

@@ -30,6 +30,11 @@ class ApplicationController < ActionController::Base
     redirect_to "https://#{email}@juliedesk-backoffice.herokuapp.com"
   end
 
+  # Add X-Request-ID to logs
+  def append_info_to_payload(payload)
+    super
+    payload[:request_id] = request.uuid
+  end
 
   protected
 
