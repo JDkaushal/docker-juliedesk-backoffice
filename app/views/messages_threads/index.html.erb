@@ -23,8 +23,10 @@
                     })
                     .error(function(e) {
                         $scope.loading = false;
-                        console.log(e);
-                        alert("There was an error.");
+                        if(e != null) {
+                            console.log(e);
+                            alert("There was an error.");
+                        }
                     });
         };
 
