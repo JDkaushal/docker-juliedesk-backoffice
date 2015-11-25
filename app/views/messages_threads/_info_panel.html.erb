@@ -324,7 +324,7 @@
     function updateNotesCallingInfos() {
         if(window.threadDataIsEditable){
             $('#notes').val('');
-            if(['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1){
+//            if(['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1){
 
                 angular.element($('#attendeesCtrl')).scope().updateNotes();
                 var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
@@ -353,7 +353,7 @@
                         }
                     }
                 }
-            }
+//            }
         }
     }
 

@@ -406,24 +406,33 @@
                             if(virtualMeetingsHelperCtrl.currentVAConfig.rescue_with_confcall){
                                 if(threadOwner.confCallInstructions != '')
                                     callingInfos += "\n" + localize("email_templates.send_call_instructions.give_target_confcall", {
-                                        details: threadOwner.confCallInstructions
-                                    });
+                                            details: threadOwner.confCallInstructions
+                                        });
                             }
                         }else{
-                            if(virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note || virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note){
-                                phoneInfos = threadOwner.displayRescuePhoneInformations(virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note, virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note);
+                            var isVirtual = $scope.isVirtualAppointment();
+                            if(!isVirtual)
+                                var currentAppointment = window.getCurrentAppointment();
+
+                            var mobileInNote = isVirtual ? virtualMeetingsHelperCtrl.currentVAConfig.mobile_in_note : currentAppointment.support_config_hash.mobile_in_note;
+                            var landlineInNote = isVirtual ? virtualMeetingsHelperCtrl.currentVAConfig.landline_in_note : currentAppointment.support_config_hash.landline_in_note;
+                            var skypeInNote = isVirtual ? virtualMeetingsHelperCtrl.currentVAConfig.skype_in_note : currentAppointment.support_config_hash.skype_in_note;
+                            var confcallInNote = isVirtual ? virtualMeetingsHelperCtrl.currentVAConfig.confcall_in_note : currentAppointment.support_config_hash.confcall_in_note;
+
+                            if(mobileInNote || landlineInNote){
+                                phoneInfos = threadOwner.displayRescuePhoneInformations(landlineInNote, mobileInNote);
                                 if(phoneInfos != '')
                                     callingInfos += "\n" + localize('common.phone') + ' ' + phoneInfos;
                             }
-                            if(virtualMeetingsHelperCtrl.currentVAConfig.skype_in_note){
+                            if(skypeInNote){
                                 if(threadOwner.skypeId != '')
                                     callingInfos += "\n" + 'Skype : ' + threadOwner.skypeId;
                             }
-                            if(virtualMeetingsHelperCtrl.currentVAConfig.confcall_in_note){
+                            if(confcallInNote){
                                 if(threadOwner.confCallInstructions != '')
                                     callingInfos += "\n" + localize("email_templates.send_call_instructions.give_target_confcall", {
-                                        details: threadOwner.confCallInstructions
-                                    });
+                                            details: threadOwner.confCallInstructions
+                                        });
                             }
                         }
 
@@ -449,7 +458,10 @@
                         $("#notes").val(notes);
                     }
 
-                    $scope.setCallingInstructionsInNotes();
+                    if($scope.isVirtualAppointment()){
+                        $scope.setCallingInstructionsInNotes();
+
+                    }
                 };
 
                 $scope.setCallingInstructionsInNotes = function(){
@@ -469,15 +481,17 @@
                                 var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
 
                                 if(attendeesWithoutAssistant.length == 2){
-                                    var guid = $scope.currentConf.targetInfos.guid.length == 36 ? $scope.currentConf.targetInfos.guid : parseInt($scope.currentConf.targetInfos.guid);
+                                    if($scope.currentConf.targetInfos.guid){
+                                        var guid = $scope.currentConf.targetInfos.guid.length == 36 ? $scope.currentConf.targetInfos.guid : parseInt($scope.currentConf.targetInfos.guid);
 
-                                    var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: guid}))[0];
+                                        var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: guid}))[0];
 
-                                    content = localize("events.call_instructions.display_single_attendee", {
-                                        target_name: $scope.currentConf.targetInfos.name,
-                                        caller_name: caller.displayNormalizedName(),
-                                        details: $scope.currentConf.details
-                                    });
+                                        content = localize("events.call_instructions.display_single_attendee", {
+                                            target_name: $scope.currentConf.targetInfos.name,
+                                            caller_name: caller.displayNormalizedName(),
+                                            details: $scope.currentConf.details
+                                        });
+                                    }
                                 }else{
                                     content = localize("events.call_instructions.give_target_number", {
                                         target_name: $scope.currentConf.targetInfos.name,
