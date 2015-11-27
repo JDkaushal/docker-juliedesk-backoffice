@@ -550,6 +550,49 @@
     }
 }
 
+.ics-preview-container {
+    display: none;
+
+    .ics-preview {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fafafa;
+        border: 1px solid #eee;
+        border-top: 6px solid #00d;
+
+        .summary {
+            font-size: 30px;
+            font-weight: 200;
+        }
+
+        .ics-preview-field {
+            position: relative;
+            padding: 0 0 0 60px;
+            margin: 10px 0;
+            min-height: 30px;
+            word-break: break-all;
+
+            &.notes {
+                color: #aaa;
+            }
+
+            .organizer {
+                font-weight: 800;
+            }
+
+            .ics-preview-label {
+                position: absolute;
+                left: 0;
+                color: #999;
+                font-size: 12px;
+                font-weight: 200;
+                line-height: 22px;
+            }
+        }
+    }
+}
+
 
 .highlighted-below-email {
     background-color: $lightBlue;

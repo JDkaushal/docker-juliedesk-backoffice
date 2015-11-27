@@ -35,6 +35,7 @@
 //= require timezone_picker
 //= require rrule
 //= require nlp
+//= require ical
 
 //= require event_tile/main
 //= require event_tile/recurrence_form
