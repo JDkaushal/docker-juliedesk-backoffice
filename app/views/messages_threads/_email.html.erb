@@ -29,6 +29,23 @@
             setNotation(4);
         });
 
+
+        var clientEmails = <%== (local_assigns[:client_emails] || []).to_json %>;
+        var highlightEmails = function($div) {
+            console.log($div, clientEmails);
+            $.each(clientEmails, function() {
+                var clientEmail = this;
+                $div.html($div.html().replace(clientEmail, function(ma) {
+                    return "<span class='highlighted'>" + ma + "</span>";
+                }));
+            });
+        };
+        highlightEmails($email.find(".retracted .from"));
+        highlightEmails($email.find(".extended .from"));
+        highlightEmails($email.find(".extended .to"));
+        highlightEmails($email.find(".extended .cc"));
+
+
         $email.find(".email-flag").click(function(e) {
             var basePath = "<%= EmailServer::API_BASE_PATH %>";
             var accessKey = "<%= EmailServer::API_ACCESS_KEY %>";

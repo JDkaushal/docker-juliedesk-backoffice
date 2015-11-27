@@ -4,6 +4,8 @@ class JulieActionsController < ApplicationController
     @julie_action = JulieAction.find params[:id]
     @message = @julie_action.message_classification.message
 
+    @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
                                          target: @julie_action,

@@ -7,6 +7,8 @@ class MessagesController < ApplicationController
     @message = Message.find params[:id]
     @classification = params[:classification]
 
+    @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
     if @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
         @classification == MessageClassification::ASK_CREATE_EVENT

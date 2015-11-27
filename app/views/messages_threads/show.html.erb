@@ -195,7 +195,15 @@
       <% items.each do |item| %>
           <% if item.class == Message %>
               <% message = item %>
-              <%= render partial: "messages_threads/email", locals: {message: message, actions_available: true, expend: message.received_at == @messages_thread.messages.map(&:received_at).min, last: message == items.select{|i| i.class == Message}.last, no_account: @messages_thread.account_email.nil?, operator_actions_groups: operator_actions_groups} %>
+              <%= render partial: "messages_threads/email", locals: {
+                      message: message,
+                      actions_available: true,
+                      expend: message.received_at == @messages_thread.messages.map(&:received_at).min,
+                      last: message == items.select{|i| i.class == Message}.last,
+                      no_account: @messages_thread.account_email.nil?,
+                      operator_actions_groups: operator_actions_groups,
+                      client_emails: @client_emails
+                  } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
           <% end %>
