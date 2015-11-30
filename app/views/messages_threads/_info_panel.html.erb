@@ -349,7 +349,7 @@
                     var currentEventNotesNode = $('.created-event-panel .notes');
                     var currentEventNotes = currentEventNotesNode.val();
                     var newEventDescription = '';
-                    if(vmHelper){
+                    if(vmHelper && vmHelper.isVirtualAppointment()){
                         var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
                         var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
                         if(regExResult != null){
