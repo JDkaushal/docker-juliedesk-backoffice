@@ -129,7 +129,7 @@
             }
         }
 
-        getIcsAttachments = function(message, callback) {
+        function getIcsAttachments(message, callback) {
             message.icsAttachments = [];
             icsAttachments = _.filter(message.attachments_data, function(attachment) {
                 return attachment.type == "application/ics" || attachment.type == "text/calendar";
@@ -140,13 +140,12 @@
                             callback(response);
                         });
             }
-        };
+        }
 
-        parseIcs = function(icsString) {
+        function parseIcs(icsString) {
             var comp = new ICAL.Component(ICAL.parse(icsString));
             var vevent = comp.getFirstSubcomponent("vevent");
             var event = new ICAL.Event(vevent);
-            window.raw = event;
             return {
                 summary: event.summary,
                 description: event.description,
@@ -159,9 +158,9 @@
                 organizer: event.organizer.toLowerCase().replace("mailto:", ""),
                 raw: vevent
             }
-        };
+        }
 
-        generateIcsPreview = function(icsData) {
+        function generateIcsPreview (icsData) {
             $email.find(".ics-preview-container .ics-preview .summary").html(icsData.summary);
             $email.find(".ics-preview-container .ics-preview .ics-date .start-date").html(icsData.startDate);
             $email.find(".ics-preview-container .ics-preview .ics-date .end-date").html(icsData.endDate);
@@ -173,7 +172,7 @@
             });
             $email.find(".ics-preview-container .ics-preview .notes .notes-div").html(icsData.notes);
             $email.find(".ics-preview-container").show();
-        };
+        }
 
         getIcsAttachments(<%== email.to_json %>, function(icsData) {
             generateIcsPreview(parseIcs(icsData));
