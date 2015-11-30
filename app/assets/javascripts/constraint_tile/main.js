@@ -551,6 +551,7 @@ ConstraintTile.prototype.getConstraintNature = function() {
     return constraintTile.$selector.find(".constraint-nature-selector .nature-option.selected").data("value");
 };
 
+
 ConstraintTile.getEventsFromData = function (data_entries, start_date, end_date) {
     var deployedDataEntries = ConstraintTile.deployConstraints(data_entries, start_date, end_date);
     return ConstraintTile.getEventsFromDataFromDeployedConstraints(deployedDataEntries, start_date, end_date);

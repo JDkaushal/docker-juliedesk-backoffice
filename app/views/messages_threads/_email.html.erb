@@ -32,7 +32,6 @@
 
         var clientEmails = <%== (local_assigns[:client_emails] || []).to_json %>;
         var highlightEmails = function($div) {
-            console.log($div, clientEmails);
             $.each(clientEmails, function() {
                 var clientEmail = this;
                 $div.html($div.html().replace(clientEmail, function(ma) {

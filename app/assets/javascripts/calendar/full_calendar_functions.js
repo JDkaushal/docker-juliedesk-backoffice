@@ -169,6 +169,27 @@ Calendar.prototype.fullCalendarInit = function() {
            return v.start;
         }).sort()[0];
     }
+
+    if(calendar.getMode() == "suggest_dates" && calendar.initialData.constraintsData) {
+        var allEvents = [];
+        _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+            var mNow = moment();
+            var mOneYearFromNow = moment();
+            mOneYearFromNow.add('y', 1);
+            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
+            _.each(events.cant, function(event) {
+                allEvents.push(event);
+            });
+        });
+        var i=0;
+        while(conflictingEvent = _.find(allEvents, function(event) {
+            return event.start <= defaultDate && event.end > defaultDate;
+        }) && i<100) {
+            i += 1;
+            defaultDate = conflictingEvent.end;
+        }
+    }
+
     //defaultDate = moment("2015-03-01");
     $('#calendar').fullCalendar({
         header: {
