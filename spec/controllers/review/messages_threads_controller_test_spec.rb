@@ -113,15 +113,15 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         # Need to check the only_mine before filter to decide if there must be a redirection when the test fail
         it 'should not be accessible to a normal operator that is not specified by its id' do
+          op1 = FactoryGirl.create(:operator_actif)
+
           @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
-          expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
-          expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
-
-          get :learn, id: mt1.id, operator_id: @admin.id
-          expect(response.code).to eq(301), 'Must check only_mine before filter in Review/MessagesThreadCntroller for pertinence'
+          get :learn, id: mt1.id, operator_id: op1.id
+          expect(response.code).to eq("302")
+          expect(response).to redirect_to("/")
         end
       end
 
@@ -224,7 +224,8 @@ describe Review::MessagesThreadsController, :type => :controller do
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
           post :learnt, id: mt1.id, operator_id: @admin.id
-          expect(response.code).to eq(301), 'Must check only_mine before filter in Review/MessagesThreadCntroller for pertinence'
+          expect(response.code).to eq("302")
+          expect(response).to redirect_to('/')
         end
       end
 

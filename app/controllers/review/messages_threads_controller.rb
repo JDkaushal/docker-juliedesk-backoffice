@@ -117,7 +117,7 @@ class Review::MessagesThreadsController < ReviewController
       params[:operator_id] = session[:operator_id]
     end
 
-    unless session[:privilege] == "admin" || params[:operator_id] == session[:operator_id]
+    unless session[:privilege] == "admin" || "#{params[:operator_id]}" == "#{session[:operator_id]}"
       redirect_to "/"
     end
   end

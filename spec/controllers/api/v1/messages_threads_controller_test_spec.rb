@@ -9,8 +9,6 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
   describe 'inbox_count' do
 
     it 'should return 0 messages threads count when no threads in inbox' do
-      puts self.class
-
       mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
       mt2 = FactoryGirl.create(:messages_thread_for_inbox_count)
       mt3 = FactoryGirl.create(:messages_thread_for_inbox_count)
