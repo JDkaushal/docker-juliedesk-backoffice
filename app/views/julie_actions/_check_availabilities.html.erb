@@ -146,7 +146,7 @@
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
                     description: description,
-                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
+                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present?}.to_json %>,
                     location: location,
                     all_day: false,
                     private: window.threadComputedData.private,
@@ -172,7 +172,6 @@
                     });
                 }
 
-                console.log(requestParams);
                 CommonHelpers.externalRequest(requestParams, function (e) {
 
                     window.currentCalendar.refreshEvents();
