@@ -334,6 +334,11 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
             localWaitingAccounts -= 1;
             if(localWaitingAccounts == 0) {
                 calendar.hideLoadingSpinner();
+
+                if(calendar.initialData.calendarandEventsLoadedFirstTimeCallback) {
+                    calendar.initialData.calendarandEventsLoadedFirstTimeCallback();
+                    calendar.initialData.calendarandEventsLoadedFirstTimeCallback = null;
+                }
             }
         });
     }

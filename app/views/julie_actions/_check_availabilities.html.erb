@@ -61,7 +61,17 @@
               }
             }).to_json %>,
             email: window.threadAccount.email,
-            duration: window.threadComputedData.duration
+            duration: window.threadComputedData.duration,
+            calendarandEventsLoadedFirstTimeCallback: function() {
+                if($(".suggested-date-time").length > 0) {
+                    var dateTime = $(".suggested-date-time:eq(0)").data("date");
+                    if (dateTime) {
+                        setTimeout(function() {
+                            window.currentCalendar.selectSuggestedEvent(dateTime);
+                        }, 100);
+                    }
+                }
+            }
         });
 
         $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").change(function() {
