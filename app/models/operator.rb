@@ -42,5 +42,26 @@ class Operator < ActiveRecord::Base
     }
   end
 
+  def self.generate_operator first_name
+    email = "#{first_name}@operator.juliedesk.com"
+    password = "julie#{self.generate_random_string(4)}desk"
+
+    Operator.create({
+        email: email,
+        name: first_name.capitalize,
+        active: true,
+        password: password
+    })
+
+    print "Username: #{email}\n"
+    print "Password: #{password}\n\n\n"
+  end
+
+
+  def self.generate_random_string length
+    o = [('a'..'z')].map { |i| i.to_a }.flatten
+    (1..length).map { o[rand(o.length)] }.join
+  end
+
 
 end
