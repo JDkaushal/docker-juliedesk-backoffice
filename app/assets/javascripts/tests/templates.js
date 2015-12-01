@@ -1353,8 +1353,8 @@ window.testsData.templatesData = [
             client_agreement: false,
             isPostpone: true,
             expectedResults: {
-                en: "Do you want me to suggest new availabilities?",
-                fr: "Souhaitez-vous que je propose de nouvelles disponibilités ?"
+                en: "Do you want me to suggest new availabilities? I cancelled the event in the meantime.",
+                fr: "Souhaitez-vous que je propose de nouvelles disponibilités ? J'ai annulé l'évènement en attendant."
             }
         }],
 

@@ -134,7 +134,7 @@
     };
 
     window.clickReplyButton = function() {
-        if(window.threadComputedData.client_agreement && isPostpone) {
+        if(isPostpone) {
             window.deleteEventBeforeReply(function() {
                 suggestDateReplyFunction();
             });
