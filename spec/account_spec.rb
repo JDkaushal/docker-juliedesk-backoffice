@@ -76,4 +76,175 @@ describe Account do
     end
 
   end
+
+  describe "migrate_account_email" do
+    context "simple context - only account_email to update" do
+      before do
+        @messages_thread_1 = FactoryGirl.create(:messages_thread, account_email: "nicolas1@juliedesk.com")
+        @messages_thread_2 = FactoryGirl.create(:messages_thread, account_email: "nicolas3@juliedesk.com")
+      end
+
+      it "should migrate all" do
+        Account.migrate_account_email "nicolas1@juliedesk.com", "nicolas2@juliedesk.com"
+        expect(MessagesThread.find(@messages_thread_1.id).account_email).to eq("nicolas2@juliedesk.com")
+        expect(MessagesThread.find(@messages_thread_2.id).account_email).to eq("nicolas3@juliedesk.com")
+      end
+    end
+
+    context "simple context - with attendees to update" do
+      before do
+        @messages_thread_1 = FactoryGirl.create(:messages_thread, account_email: "nicolas4@juliedesk.com")
+        message_1 = FactoryGirl.create(:message, messages_thread: @messages_thread_1)
+        attendees_1 = [
+            {
+                email: "julien@juliedesk.com"
+            },
+            {
+                email: "nicolas@gmail.com",
+                account_email: "nicolas1@juliedesk.com"
+            },
+            {
+                email: "juju@gmail.com",
+                account_email: "juju@juliedesk.com"
+            }
+        ].to_json
+        @message_classification_1 = FactoryGirl.create(:message_classification, message: message_1, attendees: attendees_1)
+        @messages_thread_2 = FactoryGirl.create(:messages_thread, account_email: "nicolas3@juliedesk.com")
+      end
+
+      it "should migrate all" do
+        Account.migrate_account_email "nicolas1@juliedesk.com", "nicolas2@juliedesk.com"
+        expect(MessagesThread.find(@messages_thread_1.id).account_email).to eq("nicolas4@juliedesk.com")
+        expect(MessageClassification.find(@message_classification_1.id).attendees).to eq([
+        {
+            email: "julien@juliedesk.com"
+        },
+        {
+            email: "nicolas@gmail.com",
+            account_email: "nicolas2@juliedesk.com"
+        },
+        {
+            email: "juju@gmail.com",
+            account_email: "juju@juliedesk.com"
+        }
+                                                                                                          ].to_json)
+        expect(MessagesThread.find(@messages_thread_2.id).account_email).to eq("nicolas3@juliedesk.com")
+      end
+    end
+
+    context "simple context - with constraints to update" do
+      before do
+        @messages_thread_1 = FactoryGirl.create(:messages_thread, account_email: "nicolas1@juliedesk.com")
+        message_1 = FactoryGirl.create(:message, messages_thread: @messages_thread_1)
+        attendees_1 = [
+            {
+                email: "julien@juliedesk.com"
+        },
+            {
+                email: "nicolas@gmail.com",
+            account_email: "nicolas1@juliedesk.com"
+        },
+            {
+                email: "juju@gmail.com",
+            account_email: "juju@juliedesk.com"
+        }
+        ].to_json
+
+        constraints_1 = [
+            {
+                attendee_email: "nicolas1@juliedesk.com",
+                data: "Lorem"
+            },
+            {
+                attendee_email: "juju@gmail.com",
+                data: "Lorem"
+            }
+        ].to_json
+        @message_classification_1 = FactoryGirl.create(:message_classification, message: message_1, attendees: attendees_1, constraints_data: constraints_1)
+        attendees_2 = [
+        {
+            email: "julien@juliedesk.com"
+        },
+        {
+            email: "nicolas1@juliedesk.com",
+            account_email: "nicolas1@juliedesk.com"
+        },
+        {
+            email: "juju@gmail.com",
+            account_email: "juju@juliedesk.com"
+        }
+        ].to_json
+
+        constraints_2 = [
+        {
+            attendee_email: "nicolas1@juliedesk.com",
+            data: "Lorem"
+        },
+        {
+            attendee_email: "juju@gmail.com",
+            data: "Lorem"
+        }
+        ].to_json
+        @messages_thread_2 = FactoryGirl.create(:messages_thread, account_email: "nicolas3@juliedesk.com")
+        message_2 = FactoryGirl.create(:message, messages_thread: @messages_thread_2)
+        @message_classification_2 = FactoryGirl.create(:message_classification, message: message_2, attendees: attendees_2, constraints_data: constraints_2)
+      end
+
+      it "should migrate all" do
+        Account.migrate_account_email "nicolas1@juliedesk.com", "nicolas2@juliedesk.com"
+        expect(MessagesThread.find(@messages_thread_1.id).account_email).to eq("nicolas2@juliedesk.com")
+        expect(MessageClassification.find(@message_classification_1.id).attendees).to eq([
+                                                                                             {
+                                                                                                 email: "julien@juliedesk.com"
+        },
+            {
+                email: "nicolas@gmail.com",
+            account_email: "nicolas2@juliedesk.com"
+        },
+            {
+                email: "juju@gmail.com",
+            account_email: "juju@juliedesk.com"
+        }
+        ].to_json)
+        expect(MessageClassification.find(@message_classification_1.id).constraints_data).to eq(
+        [
+           {
+            attendee_email: "nicolas2@juliedesk.com",
+            data: "Lorem"
+           },
+           {
+            attendee_email: "juju@gmail.com",
+            data: "Lorem"
+           }
+        ].to_json)
+
+        expect(MessagesThread.find(@messages_thread_2.id).account_email).to eq("nicolas3@juliedesk.com")
+
+        expect(MessageClassification.find(@message_classification_2.id).attendees).to eq([
+         {
+             email: "julien@juliedesk.com"
+         },
+         {
+             email: "nicolas1@juliedesk.com",
+             account_email: "nicolas2@juliedesk.com"
+         },
+         {
+             email: "juju@gmail.com",
+             account_email: "juju@juliedesk.com"
+        }
+        ].to_json)
+        expect(MessageClassification.find(@message_classification_2.id).constraints_data).to eq(
+        [
+        {
+            attendee_email: "nicolas1@juliedesk.com",
+            data: "Lorem"
+        },
+        {
+            attendee_email: "juju@gmail.com",
+            data: "Lorem"
+        }
+        ].to_json)
+      end
+    end
+  end
 end
