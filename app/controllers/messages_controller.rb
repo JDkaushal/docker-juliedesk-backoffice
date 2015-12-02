@@ -9,7 +9,8 @@ class MessagesController < ApplicationController
 
     @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
-    if @classification == MessageClassification::UNKNOWN ||
+    if @classification == MessageClassification::FORWARD_TO_CLIENT ||
+        @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
         @classification == MessageClassification::ASK_CREATE_EVENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
@@ -113,6 +114,14 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
     julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
+
+    quote_replied_message = false
+    quote_forward_message = false
+    if params[:forward] == "true"
+      quote_forward_message = true
+    elsif params[:quote_message] == "true"
+      quote_replied_message = true
+    end
     new_server_message_id = EmailServer.deliver_message({
         subject: params[:subject],
         from: julie_alias.generate_from,
@@ -120,7 +129,8 @@ class MessagesController < ApplicationController
         cc: (params[:cc] || []).join(", "),
         text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
         html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
-        quote: params[:quote_message] == "true",
+        quote_replied_message: quote_replied_message,
+        quote_forward_message: quote_forward_message,
         reply_to_message_id:  @message.server_message_id
                                 })['id']
 

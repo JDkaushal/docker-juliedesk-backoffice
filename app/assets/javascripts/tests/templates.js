@@ -3744,6 +3744,13 @@ window.testsData.templatesData = [
                 en: "Attendee1, Attendee2, Attendee3, please also indicate the number you can be reached at just in case.",
                 fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
             }
+        },
+        {
+            action: "forward_to_client",
+            expectedResults: {
+                en: "Please allow me to forward you this email.\nI remain at your disposal.",
+                fr: "Permettez-moi de vous transférer cet email.\nJe reste à votre disposition."
+            }
         }
     ]
 ];

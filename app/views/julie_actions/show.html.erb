@@ -12,7 +12,8 @@
        JulieAction::JD_ACTION_CANCEL_EVENT,
        JulieAction::JD_ACTION_CREATE_EVENT,
        JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
-       JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS].include? @julie_action.action_nature %>
+       JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS,
+       JulieAction::JD_ACTION_FORWARD_TO_CLIENT].include? @julie_action.action_nature %>
     <%= render partial: @julie_action.action_nature, locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>
 <% end %>
 
@@ -245,6 +246,27 @@
             }
         });
 
+        $("#forward-button").click(function () {
+            $("#forward-button").prop('disabled', true);
+            if(window.clickForwardButton) {
+                window.clickForwardButton();
+            }
+            else {
+                $.ajax({
+                    url: "/julie_actions/<%= @julie_action.id %>/update",
+                    method: "post",
+                    data: {
+                        text: $("textarea#reply-text").val(),
+                        to: window.currentRecipients().to,
+                        cc: window.currentRecipients().cc,
+                        done: true,
+                        processed_in: Date.now() - window.startedAt
+                    }
+                });
+                window.sendReply({forward: true});
+            }
+        });
+
         $(".reply-to-all-button").click(function() {
             window.setReplyRecipients("all");
         });
@@ -307,20 +329,29 @@
 
 
 
-        window.sendReply = function () {
+        window.sendReply = function (replyParams) {
+            var forward = false;
+            if(replyParams && replyParams.forward) {
+                forward =  true;
+            }
             $(".reply-box #callback-message").html("<%= I18n.t("common.sending")%>");
+            var subject = "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ").gsub("\"", "\\\"") %>";
+            if(forward) {
+                subject = "<%== "Fw: #{@message.server_message['subject']}".gsub(/(Fw: )+/, "Fw: ").gsub("\"", "\\\"") %>";
+            }
             $.ajax({
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
                 method: "post",
                 data: {
-                    subject: "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ").gsub("\"", "\\\"") %>",
+                    subject: subject,
                     text: $("textarea#reply-text").val(),
                     html_signature: $("#reply-text-signature").html(),
                     from: $("select#julie-alias-select").val(),
                     to: window.currentRecipients().to,
                     cc: window.currentRecipients().cc,
                     quote_message: $("input#quote_message:checked").length > 0,
-                    julie_action_id: "<%= @julie_action.id %>"
+                    julie_action_id: "<%= @julie_action.id %>",
+                    forward: forward
                 },
                 success: function (e) {
                     $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
@@ -334,6 +365,7 @@
                 }
             });
         };
+
     });
 
     window.setReplyRecipients = function(recipients, otherRecipients) {
@@ -529,6 +561,7 @@
                         <%= I18n.t "common.quote_message" %>
                       </div>
                       <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
+                      <button class="btn btn-success" id="forward-button"><%= I18n.t("common.forward") %></button>
                       <div id="callback-message"></div>
                     </div>
                   </div>

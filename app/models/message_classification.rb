@@ -20,6 +20,8 @@ class MessageClassification < ActiveRecord::Base
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
 
+  FORWARD_TO_CLIENT        = "forward_to_client"
+
   NOTHING_TO_DO            = "nothing_to_do"
 
 
@@ -150,23 +152,9 @@ class MessageClassification < ActiveRecord::Base
 
     elsif self.classification == MessageClassification::NOTHING_TO_DO
       create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
+    elsif self.classification == MessageClassification::FORWARD_TO_CLIENT
+      create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_CLIENT
     end
-  end
-
-  def self.all_classifications
-    self.classifications.values.flatten
-  end
-
-  def self.primary_classifications
-    self.classifications[:primary]
-  end
-
-  def self.secondary_classifications
-    self.classifications[:secondary]
-  end
-
-  def self.no_account_classifications
-    return [UNKNOWN]
   end
 
   def has_data?
@@ -238,16 +226,8 @@ class MessageClassification < ActiveRecord::Base
       nil
     elsif self.classification == GIVE_PREFERENCE
       nil
+    elsif self.classification == FORWARD_TO_CLIENT
+      nil
     end
-  end
-
-
-  private
-
-  def self.classifications
-    {
-        primary: [ASK_DATE_SUGGESTIONS, ASK_AVAILABILITIES, ASK_CANCEL_APPOINTMENT, ASK_POSTPONE_APPOINTMENT],
-        secondary: [ASK_INFO, GIVE_INFO, ASK_CREATE_EVENT, ASK_CANCEL_EVENTS, ASK_POSTPONE_EVENTS, UNKNOWN]
-    }
   end
 end

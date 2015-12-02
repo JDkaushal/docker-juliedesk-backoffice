@@ -131,6 +131,7 @@ window.wordings['en'] = {
                 }
             }
         },
+        forward_to_client: "Please allow me to forward you this email.\nI remain at your disposal.",
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",

@@ -247,6 +247,8 @@ fr:
             action: "Annuler autre(s) évènement(s)"
           ask_postpone_events:
             action: "Reporter autre(s) évènement(s)"
+          forward_to_client:
+            action: "Transférer au client"
           unknown:
             action: "Réponse libre"
           to_founders:
@@ -293,6 +295,7 @@ fr:
     from: "De :"
     to: "A :"
     reply: "Répondre"
+    forward: "Transférer"
     cc: "Cc:"
     refresh: "Rafraichir"
     cancel: "Annuler"

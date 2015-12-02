@@ -492,7 +492,6 @@ window.generateEmailTemplate = function (params) {
         var redundantCourtesy = params.redundantCourtesy;
 
         var templateName = "email_templates.ask_additional_informations" + (multipleAttendees ? '.multiple_attendees' : '.single_attendee') + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
-        console.log(templateName);
 
         if(!multipleAttendees)
             templateName += assisted ? ".assisted" : ".nonassisted";
@@ -506,6 +505,9 @@ window.generateEmailTemplate = function (params) {
             courtesyString: courtesyString
         });
 
+    }
+    else if(params.action == "forward_to_client") {
+        message += localize("email_templates.forward_to_client");
     }
 
     window.setCurrentLocale(previousLocale);

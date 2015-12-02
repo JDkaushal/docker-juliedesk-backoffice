@@ -449,6 +449,7 @@ class MessagesThread < ActiveRecord::Base
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -462,6 +463,7 @@ class MessagesThread < ActiveRecord::Base
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -478,6 +480,7 @@ class MessagesThread < ActiveRecord::Base
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -492,6 +495,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_CREATE_EVENT,
                 MessageClassification::ASK_CANCEL_EVENTS,
                 MessageClassification::ASK_POSTPONE_EVENTS,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -499,6 +503,7 @@ class MessagesThread < ActiveRecord::Base
     else
       {
           other: [
+              MessageClassification::FORWARD_TO_CLIENT,
               MessageClassification::UNKNOWN
           ]
       }

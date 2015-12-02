@@ -75,6 +75,8 @@ en:
             action: "Cancel other event(s)"
           ask_postpone_events:
             action: "Postpone other event(s)"
+          forward_to_client:
+            action: "Forward to client"
           unknown:
             action: "Free reply"
           to_founders:
@@ -126,6 +128,7 @@ en:
     from: "From:"
     to: "To:"
     reply: "Reply"
+    forward: "Forward"
     cc: "Cc:"
     refresh: "Refresh"
     cancel: "Cancel"

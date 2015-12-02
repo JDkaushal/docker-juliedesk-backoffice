@@ -132,6 +132,7 @@ window.wordings['fr'] = {
                 }
             }
         },
+        forward_to_client: "Permettez-moi de vous transférer cet email.\nJe reste à votre disposition.",
         common: {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
