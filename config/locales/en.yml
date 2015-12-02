@@ -45,6 +45,8 @@ en:
               action: "Give an info"
             give_info:
               action: "Note an info"
+            wait_for_contact:
+              action: "Wait for contact suggestions"
       manage_scheduled_event:
         title: "Manage scheduled appointment"
         classifications:
@@ -61,6 +63,8 @@ en:
               action: "Suggest availabilities"
             ask_availabilities:
               action: "Check availability(ies)"
+            wait_for_contact:
+              action: "Wait for contact suggestions"
       manage_events:
         title: "Manage events"
         classifications:

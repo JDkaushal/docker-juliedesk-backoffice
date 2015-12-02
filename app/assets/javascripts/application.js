@@ -65,4 +65,4 @@
 //= require message_classification_forms/ask_cancel_events
 //= require message_classification_forms/ask_postpone_events
 //= require message_classification_forms/give_preference
-//= require message_classification_forms/give_preference
+//= require message_classification_forms/wait_for_contact

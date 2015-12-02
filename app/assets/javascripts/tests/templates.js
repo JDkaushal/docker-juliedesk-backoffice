@@ -3751,6 +3751,35 @@ window.testsData.templatesData = [
                 en: "Please allow me to forward you this email.\nI remain at your disposal.",
                 fr: "Permettez-moi de vous transférer cet email.\nJe reste à votre disposition."
             }
+        },
+        {
+            action: "wait_for_contact",
+            isPostpone: false,
+            expectedResults: {
+                en: "I understand I have to wait for your contact response.\nI remain at your disposal if you need me to suggest your availabilities beforehand.",
+                fr: "Je comprends que je dois attendre le retour de votre interlocuteur avant d'intervenir.\nJe reste à votre disposition si vous souhaitez que je propose des disponibilités en avance de phase."
+            }
+        },
+        {
+            action: "wait_for_contact",
+            isPostpone: true,
+            previousAppointment: {
+                designation_in_email: {
+                    "fr": "le verre",
+                    "en": "the drink"
+                }
+            },
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-05T12:00:00+00"
+                }
+            },
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            expectedResults: {
+                en: "I understand I have to wait for your contact response before rescheduling.\nI am cancelling the drink scheduled on Monday, January 5, 2015 12:00 PM in the meantime.",
+                fr: "Je comprends que je dois attendre le retour de votre interlocuteur avant de reprogrammer.\nJ'annule le verre prévu lundi 5 janvier 2015 à 12h00 en attendant."
+            }
         }
     ]
 ];

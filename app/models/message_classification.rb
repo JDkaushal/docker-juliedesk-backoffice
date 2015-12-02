@@ -19,8 +19,8 @@ class MessageClassification < ActiveRecord::Base
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
-
   FORWARD_TO_CLIENT        = "forward_to_client"
+  WAIT_FOR_CONTACT         = "wait_for_contact"
 
   NOTHING_TO_DO            = "nothing_to_do"
 
@@ -154,6 +154,8 @@ class MessageClassification < ActiveRecord::Base
       create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
     elsif self.classification == MessageClassification::FORWARD_TO_CLIENT
       create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_CLIENT
+    elsif self.classification == MessageClassification::WAIT_FOR_CONTACT
+      create_julie_action action_nature: JulieAction::JD_ACTION_WAIT_FOR_CONTACT
     end
   end
 
@@ -164,7 +166,8 @@ class MessageClassification < ActiveRecord::Base
         GIVE_INFO,
         ASK_CANCEL_APPOINTMENT,
         ASK_CANCEL_EVENTS,
-        ASK_POSTPONE_EVENTS
+        ASK_POSTPONE_EVENTS,
+        WAIT_FOR_CONTACT
     ].include? classification
   end
 
@@ -228,6 +231,8 @@ class MessageClassification < ActiveRecord::Base
       nil
     elsif self.classification == FORWARD_TO_CLIENT
       nil
+    elsif self.classification == WAIT_FOR_CONTACT
+      THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
     end
   end
 end

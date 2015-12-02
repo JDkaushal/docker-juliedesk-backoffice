@@ -13,7 +13,8 @@
        JulieAction::JD_ACTION_CREATE_EVENT,
        JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
        JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS,
-       JulieAction::JD_ACTION_FORWARD_TO_CLIENT].include? @julie_action.action_nature %>
+       JulieAction::JD_ACTION_FORWARD_TO_CLIENT,
+       JulieAction::JD_ACTION_WAIT_FOR_CONTACT].include? @julie_action.action_nature %>
     <%= render partial: @julie_action.action_nature, locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>
 <% end %>
 

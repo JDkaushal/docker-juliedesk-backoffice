@@ -313,7 +313,7 @@ class MessagesThread < ActiveRecord::Base
       EVENTS_CREATED
     elsif event_data[:event_id]
       EVENT_SCHEDULED
-    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES) && mc.julie_action.done}.length > 0
+    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES || mc.classification == MessageClassification::WAIT_FOR_CONTACT) && mc.julie_action.done}.length > 0
       SCHEDULING_EVENT
     else
       nil
@@ -458,6 +458,7 @@ class MessagesThread < ActiveRecord::Base
             event_scheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
                 MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT,
                 MessageClassification::GIVE_INFO,
                 MessageClassification::ASK_INFO,
             ],
@@ -476,7 +477,8 @@ class MessagesThread < ActiveRecord::Base
             ],
             event_rescheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
-                MessageClassification::ASK_AVAILABILITIES
+                MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
@@ -488,7 +490,8 @@ class MessagesThread < ActiveRecord::Base
         {
             event_scheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
-                MessageClassification::ASK_AVAILABILITIES
+                MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,

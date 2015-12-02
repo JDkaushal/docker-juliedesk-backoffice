@@ -132,6 +132,10 @@ window.wordings['en'] = {
             }
         },
         forward_to_client: "Please allow me to forward you this email.\nI remain at your disposal.",
+        wait_for_contact: {
+            postpone: "I understand I have to wait for your contact response before rescheduling.\nI am cancelling %{appointment_nature} scheduled %{date} in the meantime.",
+            no_postpone: "I understand I have to wait for your contact response.\nI remain at your disposal if you need me to suggest your availabilities beforehand."
+        },
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
