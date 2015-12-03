@@ -3656,7 +3656,7 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Attendee1, please indicate the number you can be reached at just in case.",
+                en: "Attendee1, please provide your phone number, just in case!",
                 fr: "Attendee1, merci de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3666,7 +3666,7 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             redundantCourtesy: false,
             expectedResults: {
-                en: "Please indicate the number you can be reached at just in case.",
+                en: "Please provide your phone number, just in case!",
                 fr: "Merci de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3677,7 +3677,7 @@ window.testsData.templatesData = [
             assisted: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Please indicate the number Attendee1 can be reached at just in case.",
+                en: "Please provide Attendee1 phone number, just in case!",
                 fr: "Merci de me faire parvenir le numéro de téléphone de Attendee1 au cas où."
             }
         },
@@ -3698,7 +3698,7 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             redundantCourtesy: true,
             expectedResults: {
-                en: "Please also indicate the number you can be reached at just in case.",
+                en: "Please also provide your phone number, just in case!",
                 fr: "Merci aussi de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3719,7 +3719,7 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please indicate the number you can be reached at just in case.",
+                en: "Attendee1, Attendee2, Attendee3, please provide your phone number, just in case!",
                 fr: "Attendee1, Attendee2, Attendee3, merci de me faire parvenir vos numéros de téléphone au cas où."
             }
         },
@@ -3741,7 +3741,7 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: true,
             expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please also indicate the number you can be reached at just in case.",
+                en: "Attendee1, Attendee2, Attendee3, please also provide your phone number, just in case!",
                 fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
             }
         },

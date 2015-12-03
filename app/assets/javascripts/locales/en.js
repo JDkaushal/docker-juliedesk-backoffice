@@ -170,8 +170,8 @@ window.wordings['en'] = {
         ask_additional_informations:{
             multiple_attendees:{
                 phone: {
-                    multiple_recipients: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case.",
-                    single_recipient: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case."
+                    multiple_recipients: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!",
+                    single_recipient: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!"
                 },
                 skype: {
                     multiple_recipients: "%{attendees_names}, could you let me know your Skype Ids?",
@@ -180,8 +180,8 @@ window.wordings['en'] = {
             },
             single_attendee:{
                 phone:{
-                    assisted: "Please%{courtesyString} indicate the number %{attendees_names} can be reached at just in case.",
-                    nonassisted: "Please%{courtesyString} indicate the number you can be reached at just in case."
+                    assisted: "Please%{courtesyString} provide %{attendees_names} phone number, just in case!",
+                    nonassisted: "Please%{courtesyString} provide your phone number, just in case!"
                 },
                 skype:{
                     assisted: "Could you let me know %{attendees_names}'s Skype Id?",
