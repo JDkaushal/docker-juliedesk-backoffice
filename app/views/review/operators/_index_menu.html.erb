@@ -1,28 +1,32 @@
 <div class='operators-list'>
   <%= link_to "See review list (#{@to_review_count})", "/review/operators/review_list", class: "btn btn-success btn-block" %>
   <br>
-  <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success btn-block" %>
-
-  <br>
   <%= link_to "Title review #{EventTitleReview.where(status: nil).count} threads", "/review/operators/events_review_list", class: "btn btn-success btn-block" %>
-
   <br>
-  <br>
+  <% if session[:privilege] == Operator::PRIVILEGE_ADMIN %>
 
-  <% @operators.where(privilege: nil).each do |operator| %>
-      <div class="operator">
-        <%= link_to operator.name, review_operator_path(operator) %> (<%= @oags_to_learn_counts[operator.id] %>) - <%= link_to "Review #{@oags_to_review_counts[operator.id]}", {action: :review_list, operator_id: operator.id} %>
-      </div>
-  <% end %>
+      <%= link_to "Group review #{@to_group_review_count} threads", "/review/messages_threads/group_review_next", class: "btn btn-success btn-block" %>
+      <br>
+      <br>
 
-  <br>
 
-  <% @operators.where("privilege IS NOT NULL").each do |operator| %>
-      <%= link_to review_operator_path(operator), class: 'operator' do %>
+
+      <% @operators.where(privilege: nil).each do |operator| %>
           <div class="operator">
             <%= link_to operator.name, review_operator_path(operator) %> (<%= @oags_to_learn_counts[operator.id] %>) - <%= link_to "Review #{@oags_to_review_counts[operator.id]}", {action: :review_list, operator_id: operator.id} %>
           </div>
       <% end %>
+
+      <br>
+
+      <% @operators.where("privilege IS NOT NULL").each do |operator| %>
+          <%= link_to review_operator_path(operator), class: 'operator' do %>
+              <div class="operator">
+                <%= link_to operator.name, review_operator_path(operator) %> (<%= @oags_to_learn_counts[operator.id] %>) - <%= link_to "Review #{@oags_to_review_counts[operator.id]}", {action: :review_list, operator_id: operator.id} %>
+              </div>
+          <% end %>
+      <% end %>
+
   <% end %>
 
 </div>

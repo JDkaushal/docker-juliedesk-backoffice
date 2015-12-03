@@ -1,6 +1,7 @@
 class Review::OperatorsPresenceController < ReviewController
 
   skip_before_filter :verify_authenticity_token
+  before_filter :only_admin
 
   def index
     respond_to do |format|

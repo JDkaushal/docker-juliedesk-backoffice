@@ -1,6 +1,8 @@
 class Review::OperatorsController < ReviewController
 
-  skip_before_filter :only_admin, only: [:my_stats]
+  skip_before_filter :only_super_operator_level_2_or_admin, only: [:my_stats]
+  before_filter :only_admin, only: [:index, :show]
+
   def index
     compute_counts
   end

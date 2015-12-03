@@ -1,6 +1,6 @@
 class Review::MessagesThreadsController < ReviewController
 
-  skip_before_filter :only_admin, only: [:learn, :learnt, :learn_next]
+  skip_before_filter :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
   before_filter :only_mine, only: [:learn, :learnt, :learn_next]
 
   def review
@@ -117,13 +117,14 @@ class Review::MessagesThreadsController < ReviewController
     end
   end
 
-  # Maybe needs a redirect when it go false
   def only_mine
     if params[:operator_id].nil?
       params[:operator_id] = session[:operator_id]
     end
 
-    unless session[:privilege] == "admin" || "#{params[:operator_id]}" == "#{session[:operator_id]}"
+    unless session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+        session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 ||
+        "#{params[:operator_id]}" == "#{session[:operator_id]}"
       redirect_to "/"
     end
   end

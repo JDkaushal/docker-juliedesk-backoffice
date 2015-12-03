@@ -86,7 +86,7 @@ Rails.application.routes.draw do
       end
     end
 
-    root to: "operators#index"
+    root to: "operators#review_list"
   end
 
   namespace :api do

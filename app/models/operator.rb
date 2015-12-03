@@ -5,6 +5,12 @@ class Operator < ActiveRecord::Base
   has_many :operator_actions_groups
   has_many :operator_presences
 
+  PRIVILEGE_OPERATOR = nil
+  PRIVILEGE_ADMIN = "admin"
+  PRIVILEGE_SUPER_OPERATOR_LEVEL_1 = "super_operator_level_1"
+  PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
+
+
   def password=(value)
     self.salt = SecureRandom.base64(8)
     self.encrypted_password = Digest::SHA2.hexdigest(self.salt + value)
