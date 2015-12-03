@@ -166,7 +166,9 @@
 
       <div class="thread-buttons">
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
-          <% if session[:privilege] == "admin" %>
+          <% if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
+                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 %>
             <div class="merge-into-thread-button thread-button"><%= I18n.t("common.merge") %></div>
           <% end %>
           <div class="split-thread-button thread-button"><%= I18n.t("common.split") %></div>
