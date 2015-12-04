@@ -1,6 +1,7 @@
 class MessagesThreadsController < ApplicationController
 
   layout "dashboard", only: [:index]
+  layout "review", only: [:preview]
   before_filter :only_admin, only: [:history]
 
   def index
