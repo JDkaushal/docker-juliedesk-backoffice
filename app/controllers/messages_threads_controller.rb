@@ -1,7 +1,6 @@
 class MessagesThreadsController < ApplicationController
 
   layout "dashboard", only: [:index]
-  layout "review", only: [:preview]
   before_filter :only_admin, only: [:history]
 
   def index
@@ -178,6 +177,8 @@ class MessagesThreadsController < ApplicationController
     })
     @messages_thread.re_import
     @messages_thread.account
+
+    render action: :preview, layout: "review"
   end
 
   private
