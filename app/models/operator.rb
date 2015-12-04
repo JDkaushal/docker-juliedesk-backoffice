@@ -20,6 +20,22 @@ class Operator < ActiveRecord::Base
     self.encrypted_password == Digest::SHA2.hexdigest(self.salt + password)
   end
 
+  def stars
+    if privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+      "*"
+    elsif privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+      "**"
+    end
+  end
+
+  def level
+    {
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => 10,
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 100,
+      PRIVILEGE_ADMIN => 1000
+    }[privilege] || 0
+  end
+
   def formatted_presences_for_day day
     ops = presences_for_day(day).map{|op|
       op.date.in_time_zone("Indian/Antananarivo").strftime("%H").to_i

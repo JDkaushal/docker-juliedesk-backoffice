@@ -7,7 +7,7 @@ class Review::OperatorsPresenceController < ReviewController
     respond_to do |format|
       format.html {
         if params[:start]
-          @operators = Operator.where(privilege: nil, active: true).includes(:operator_presences)
+          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences)
           render "index.csv"
           return
         end
@@ -16,9 +16,10 @@ class Review::OperatorsPresenceController < ReviewController
         render json: {
             status: "success",
             data: {
-                operators: Operator.where(privilege: nil, active: true).includes(:operator_presences).map{|o|
+                operators: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level).map{|o|
                   {
                       name: o.name,
+                      stars: o.stars,
                       id: o.id,
                       presences: o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days).map{|op| op.date.strftime("%Y%m%dT%H0000")}
                   }
