@@ -321,6 +321,10 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def possible_contacts_for_cache
+    accounts = Account.accounts_cache(mode: "light")
+  end
+
+  def possible_contacts_for_cache
     thread_contacts = []
     accounts = Account.accounts_cache(mode: "light")
 

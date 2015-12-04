@@ -244,11 +244,14 @@
       border-bottom: 1px solid #ddd;
       display: none;
 
-      select#change-account-input {
+      input#change-account-input {
         width: 250px;
         vertical-align: top;
         position: relative;
-        top: 4px;
+        top: 0px;
+        outline: none;
+        font-size: 14px;
+        padding: 3px;
       }
     }
 
@@ -447,7 +450,24 @@
       }
     }
   }
+
 }
+
+li.contact-autocomplete-item {
+  .contact-autocomplete-name {
+    font-size: 14px !important;
+  }
+  .contact-autocomplete-email {
+    font-size: 12px !important;
+  }
+  .contact-autocomplete-company {
+    font-size: 10px !important;
+  }
+  .contact-autocomplete-email-alias {
+    font-size: 10px !important;
+  }
+}
+
 .associate-to-account-container {
   border: 1px solid #ccc;
   padding: 10px;

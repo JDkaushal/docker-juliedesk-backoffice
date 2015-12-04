@@ -48,7 +48,9 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.re_import
     @messages_thread.account
 
-    @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
     @messages_thread.create_event_title_review_if_needed
   end
