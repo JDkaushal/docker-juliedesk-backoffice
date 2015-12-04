@@ -41,6 +41,34 @@ class MessagesThread < ActiveRecord::Base
   end
 
 
+  def delegate_to_founders params={}
+    self.update_attributes({
+                               delegated_to_founders: true,
+                               to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
+                           })
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: ["Founders"],
+                                            labels_to_remove: []
+                                        })
+    end
+  end
+
+  def undelegate_to_founders params={}
+    self.update_attributes({
+                               delegated_to_founders: false
+                           })
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: [],
+                                            labels_to_remove: ["Founders"]
+                                        })
+    end
+  end
+
+
   def delegate_to_support params={}
     self.update_attributes({
                                delegated_to_founders: true,
@@ -48,12 +76,10 @@ class MessagesThread < ActiveRecord::Base
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
-          messages_thread_ids: [self.server_thread_id],
-          labels_to_add: ["Label_12"],
-          labels_to_remove: []
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: ["Founders"],
+                                            labels_to_remove: []
                                         })
-
-      self.warn_support params.merge({operator: params[:operator]})
     end
   end
 
@@ -61,30 +87,13 @@ class MessagesThread < ActiveRecord::Base
     self.update_attributes({
                                delegated_to_founders: false
                            })
-    EmailServer.add_and_remove_labels({
-                                          messages_thread_ids: [self.server_thread_id],
-                                          labels_to_add: [],
-                                          labels_to_remove: ["Label_12"]
-                                      })
-  end
-
-  def warn_support params={}
-#    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-#      EmailServer.deliver_message({
-#                                      subject: "Email thread delegated to support",
-#                                      to: "guillaume@juliedesk.com",
-#                                      cc: "",#nicolas@juliedesk.com",
-#                                      from: "julie@juliedesk.com",
-#                                      text: <<END
-#A new email thread has been delegated to support:
-#https://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}
-#
-#Message: #{params[:message]}
-#
-#Operator: #{params[:operator]}
-#END
-#                                  })
-#    end
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: [],
+                                            labels_to_remove: ["Founders"]
+                                        })
+    end
   end
 
   def julie_alias

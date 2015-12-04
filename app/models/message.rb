@@ -183,10 +183,6 @@ class Message < ActiveRecord::Base
           account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
 
-          if account_email.nil?
-            messages_thread.warn_support
-          end
-
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
             messages_thread.delegate_to_support
           end

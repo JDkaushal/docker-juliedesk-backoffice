@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::TO_FOUNDERS
       delegation_message = params[:to_founders_message]
-      @message.messages_thread.delegate_to_support message: delegation_message, operator: session[:user_name]
+      @message.messages_thread.delegate_to_founders message: delegation_message, operator: session[:user_name]
 
       OperatorAction.create_and_verify({
                                            initiated_at: DateTime.now,
@@ -45,24 +45,6 @@ class MessagesController < ApplicationController
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
-    if @classification == MessageClassification::ASSOCIATE_EVENT
-      #|| @classification == MessageClassification::GIVE_PREFERENCE
-      render "classifying_admin" and return
-    end
-  end
-
-  def wait_for_preference_change
-    @message = Message.find params[:id]
-
-    @message.messages_thread.delegate_to_support
-
-    url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/wait_for_preferences_change"
-    x = Net::HTTP.post_form(URI.parse(url), {
-        email: @message.messages_thread.account_email,
-        access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
-    })
-
-    redirect_to :messages_threads
   end
 
   def classify

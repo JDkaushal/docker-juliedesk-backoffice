@@ -81,7 +81,7 @@ describe MessagesController, :type => :controller do
 
           mt1.messages << m1
 
-          expect_any_instance_of(MessagesThread).to receive(:delegate_to_support).with(message: 'delegation message', operator: @normal.name)
+          expect_any_instance_of(MessagesThread).to receive(:delegate_to_founders).with(message: 'delegation message', operator: @normal.name)
           expect(OperatorAction).to receive(:create_and_verify).with({
                initiated_at: DateTime.new(2015, 10, 10, 12, 00, 00),
                target: mt1,
@@ -107,19 +107,6 @@ describe MessagesController, :type => :controller do
           post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_FOUNDERS
 
           expect(response).to redirect_to(messages_thread_path(mt1))
-        end
-      end
-      context 'Message Classification ASSOCIATE_EVENT' do
-        it 'should classify the message correctly' do
-          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
-          m1 = FactoryGirl.create(:message_complete)
-
-          mt1.messages << m1
-
-          expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
-          post :classifying, id: m1.id, classification: MessageClassification::ASSOCIATE_EVENT
-
-          expect(response).to render_template(:classifying_admin)
         end
       end
     end
