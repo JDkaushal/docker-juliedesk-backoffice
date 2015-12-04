@@ -119,6 +119,36 @@
             }
         });
 
+        $email.find(".suggested-action-by-julie").click(function(e) {
+            if($(this).hasClass("enabled")) {
+                $email.find(".suggested-action-by-julie").html("Thinking...");
+                var serverMessageId = <%= email['id'] %>;
+
+//                setTimeout(function() {
+//                    response = {"algo_duration": [13, 2, 0, 11], "request_classif": "ask_date_suggestions", "language_detected": "fr", "appointment_classif": "lunch", "appointment_threshold": 0.4, "appointment_proba": 0.44, "email_id": 103847, "request_threshold": 0.71, "request_proba": 0.97, "body": "Salut \u00c9ric\n\nOn parlait de se faire un dej tous les 3 ? Mon assistante Juliette va te\nproposer des dates fin juin d\u00e9but juillet si \u00e7a te va !\n\nA+"};
+//                    var classif = response.request_classif;
+//                    var locale = response.language_detected;
+//                    var appointmentType = response.appointment_classif;
+//                    $email.find(".suggested-action-by-julie").html("Classif: " + classif + "<br>Locale: " + locale + "<br>Appointment: " + appointmentType);
+//                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+//                }, 500);
+//                serverMessageId = 103847;
+                $.get("https://juliedesk-conscience.herokuapp.com/conscience/?id=" + serverMessageId + "&token=pA6rVsU04o9J").success(function(response) {
+                    console.log(response);
+                    var classif = response.request_classif;
+                    var locale = response.language_detected;
+                    var appointmentType = response.appointment_classif;
+                    $email.find(".suggested-action-by-julie").html("Classif: " + classif + "<br>Locale: " + locale + "<br>Appointment: " + appointmentType);
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                }).error(function() {
+                    $email.find(".suggested-action-by-julie").html("I don't know...");
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                });
+                e.stopPropagation();
+            }
+        });
+
 
         <% if local_assigns[:expend] %>
             $email.find("blockquote, .gmail_quote").addClass("expanded");
@@ -288,6 +318,9 @@
       </div>
 
       <% if local_assigns[:actions_available] %>
+          <% if session[:privilege] == Operator::PRIVILEGE_ADMIN %>
+            <div class="suggested-action-by-julie enabled">Give me your opinion, Julie.</div>
+          <% end %>
           <div class="actions-menu-button"></div>
 
           <div class="actions-menu-positioner">
