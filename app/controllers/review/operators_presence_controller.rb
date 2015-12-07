@@ -28,7 +28,7 @@ class Review::OperatorsPresenceController < ReviewController
         }
       }
       format.csv {
-        @operators = Operator.where(privilege: nil, active: true).includes(:operator_presences)
+        @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level)
       }
     end
   end
