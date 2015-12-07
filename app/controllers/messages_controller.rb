@@ -36,6 +36,12 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::CANCEL_TO_FOUNDERS
+      @message.messages_thread.undelegate_to_founders
+      redirect_to messages_thread_path(@message.messages_thread)
+      return
+    end
+
+    if @classification == MessageClassification::CANCEL_TO_SUPPORT
       @message.messages_thread.undelegate_to_support
       redirect_to messages_thread_path(@message.messages_thread)
       return

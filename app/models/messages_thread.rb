@@ -71,13 +71,13 @@ class MessagesThread < ActiveRecord::Base
 
   def delegate_to_support params={}
     self.update_attributes({
-                               delegated_to_founders: true,
+                               delegated_to_support: true,
                                to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
                                             messages_thread_ids: [self.server_thread_id],
-                                            labels_to_add: ["Founders"],
+                                            labels_to_add: ["Support"],
                                             labels_to_remove: []
                                         })
     end
@@ -85,13 +85,13 @@ class MessagesThread < ActiveRecord::Base
 
   def undelegate_to_support
     self.update_attributes({
-                               delegated_to_founders: false
+                               delegated_to_support: false
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
                                             messages_thread_ids: [self.server_thread_id],
                                             labels_to_add: [],
-                                            labels_to_remove: ["Founders"]
+                                            labels_to_remove: ["Support"]
                                         })
     end
   end

@@ -89,8 +89,8 @@ en:
             action: "Note preference"
 
   forbidden_classifications:
-    associate_event: "Only support team can perform event linking. Please send to support team."
-    give_preference: "Only support team can note an preference. Click on validate to transfer to support team and put this client's messages on hold."
+    associate_event: "Only admin can perform event linking. Please send to admin."
+    give_preference: "Only admin team can note an preference. Click on validate to transfer to admin and put this client's messages on hold."
 
   actions:
       create_event:
@@ -192,7 +192,7 @@ en:
     private_event: "Private event"
     full_name_placeholder: "Full name..."
     email_placeholder: "Email address..."
-    send_to_founders: "Send to support team"
+    send_to_founders: "Send to admin"
     an_hesitation: "A doubt?"
     did_client_gave_agreement:
         event_scheduling:

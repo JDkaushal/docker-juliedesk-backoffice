@@ -17,6 +17,9 @@ class MessageClassification < ActiveRecord::Base
   UNKNOWN                  = "unknown"
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
+  CANCEL_TO_SUPPORT        = "cancel_to_support"
+
+
   GIVE_PREFERENCE          = "give_preference"
   ASSOCIATE_EVENT          = "associate_event"
   FORWARD_TO_CLIENT        = "forward_to_client"

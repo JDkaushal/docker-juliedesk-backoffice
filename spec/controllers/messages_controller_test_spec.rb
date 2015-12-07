@@ -103,8 +103,22 @@ describe MessagesController, :type => :controller do
 
           mt1.messages << m1
 
-          expect_any_instance_of(MessagesThread).to receive(:undelegate_to_support)
+          expect_any_instance_of(MessagesThread).to receive(:undelegate_to_founders)
           post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_FOUNDERS
+
+          expect(response).to redirect_to(messages_thread_path(mt1))
+        end
+      end
+
+      context 'Message Classification CANCEL_TO_SUPPORT' do
+        it 'should classify the message correctly' do
+          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+          m1 = FactoryGirl.create(:message_complete)
+
+          mt1.messages << m1
+
+          expect_any_instance_of(MessagesThread).to receive(:undelegate_to_support)
+          post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_SUPPORT
 
           expect(response).to redirect_to(messages_thread_path(mt1))
         end
