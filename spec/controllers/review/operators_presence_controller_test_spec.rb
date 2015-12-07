@@ -60,6 +60,11 @@ describe Review::OperatorsPresenceController, :type => :controller do
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
 
+        @op3.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+        @op3.save
+        @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+        @op4.save
+
 
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
@@ -67,9 +72,9 @@ Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Cou
 #{@normal.name};;;;;;;;0
 #{@op1.name};13h - 14h;15h - 16h;;;;;;2
 #{@op2.name};;15h - 16h;;;;;;1
-#{@op3.name};;;;;;;;0
-#{@op4.name};;;;;;;;0
 #{@op5.name};;;;;;;;0
+* #{@op3.name};;;;;;;;0
+** #{@op4.name};;;;;;;;0
 END
 )
       end
