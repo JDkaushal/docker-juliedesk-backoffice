@@ -18,8 +18,9 @@
         <div class="received-at">{{ formatDate(messagesThread) }}</div>
 
         <div ng-show="messagesThread.delegated_to_founders" class="delegated-to-founders">founders</div>
-        <div ng-show="!messagesThread.delegated_to_founders && messagesThread.account && messagesTread.account.office_365_refresh_token_expired" class="delegated-to-founders">tkn expird</div>
-        <div ng-show="!messagesThread.delegated_to_founders && (!messagesThread.account || (!messagesTread.account.office_365_refresh_token_expired && messagesThread.account.only_admin_can_process))" class="delegated-to-founders">admin only</div>
+        <div ng-show="!messagesThread.delegated_to_founders && messagesThread.delegated_to_support" class="delegated-to-founders">support</div>
+        <div ng-show="!messagesThread.delegated_to_founders && !messagesThread.delegated_to_support && messagesThread.account && messagesTread.account.office_365_refresh_token_expired" class="delegated-to-founders">tkn expird</div>
+        <div ng-show="!messagesThread.delegated_to_founders && !messagesThread.delegated_to_support && (!messagesThread.account || (!messagesTread.account.office_365_refresh_token_expired && messagesThread.account.only_admin_can_process))" class="delegated-to-founders">admin only</div>
     </a>
 
 </div>
