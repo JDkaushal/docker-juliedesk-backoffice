@@ -197,17 +197,17 @@ class MessagesThreadsController < ApplicationController
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
 
-        if session[:privilege] != Operator::PRIVILEGE_ADMIN
+        if session[:privilege] == Operator::PRIVILEGE_OPERATOR
           @messages_thread.select!{ |mt|
             !mt.delegated_to_founders &&
+                !mt.delegated_to_support &&
                 mt.account &&
                 !mt.account.only_admin_can_process
           }
-        end
-
-        if session[:privilege] == Operator::PRIVILEGE_OPERATOR
+        elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
           @messages_thread.select!{ |mt|
-            !mt.delegated_to_support
+            !mt.delegated_to_founders &&
+                (!mt.account || !mt.account.only_admin_can_process)
           }
         end
 
