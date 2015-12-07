@@ -144,5 +144,14 @@
     .edit-event-buttons-container {
       display: none;
     }
+
+    &.several-events {
+      height: auto;
+
+      .new-event-tile-container {
+        height: 515px;
+        margin: 0 0 60px 0;
+      }
+    }
   }
 }
