@@ -204,7 +204,7 @@ class MessageClassification < ActiveRecord::Base
     if self.classification == NOTHING_TO_DO
       self.thread_status
     elsif self.classification == UNKNOWN
-      self.MessageClassification.where(classification: classifications, thread_status: nil).count
+      self.thread_status
     elsif self.classification == ASK_DATE_SUGGESTIONS
       THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
     elsif self.classification == ASK_AVAILABILITIES
