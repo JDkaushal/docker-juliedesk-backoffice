@@ -1353,8 +1353,8 @@ window.testsData.templatesData = [
             client_agreement: false,
             isPostpone: true,
             expectedResults: {
-                en: "Do you want me to suggest new availabilities?",
-                fr: "Souhaitez-vous que je propose de nouvelles disponibilités ?"
+                en: "Do you want me to suggest new availabilities? I cancelled the event in the meantime.",
+                fr: "Souhaitez-vous que je propose de nouvelles disponibilités ? J'ai annulé l'évènement en attendant."
             }
         }],
 
@@ -3656,7 +3656,7 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Attendee1, please indicate the number you can be reached at just in case.",
+                en: "Attendee1, please provide your phone number, just in case!",
                 fr: "Attendee1, merci de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3666,7 +3666,7 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             redundantCourtesy: false,
             expectedResults: {
-                en: "Please indicate the number you can be reached at just in case.",
+                en: "Please provide your phone number, just in case!",
                 fr: "Merci de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3677,7 +3677,7 @@ window.testsData.templatesData = [
             assisted: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Please indicate the number Attendee1 can be reached at just in case.",
+                en: "Please provide Attendee1 phone number, just in case!",
                 fr: "Merci de me faire parvenir le numéro de téléphone de Attendee1 au cas où."
             }
         },
@@ -3698,7 +3698,7 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             redundantCourtesy: true,
             expectedResults: {
-                en: "Please also indicate the number you can be reached at just in case.",
+                en: "Please also provide your phone number, just in case!",
                 fr: "Merci aussi de me faire parvenir votre numéro de téléphone au cas où."
             }
         },
@@ -3719,7 +3719,7 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: false,
             expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please indicate the number you can be reached at just in case.",
+                en: "Attendee1, Attendee2, Attendee3, please provide your phone number, just in case!",
                 fr: "Attendee1, Attendee2, Attendee3, merci de me faire parvenir vos numéros de téléphone au cas où."
             }
         },
@@ -3741,8 +3741,44 @@ window.testsData.templatesData = [
             multipleAttendees: true,
             redundantCourtesy: true,
             expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please also indicate the number you can be reached at just in case.",
+                en: "Attendee1, Attendee2, Attendee3, please also provide your phone number, just in case!",
                 fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
+            }
+        },
+        {
+            action: "forward_to_client",
+            expectedResults: {
+                en: "Please allow me to forward you this email.\nI remain at your disposal.",
+                fr: "Permettez-moi de vous transférer cet email.\nJe reste à votre disposition."
+            }
+        },
+        {
+            action: "wait_for_contact",
+            isPostpone: false,
+            expectedResults: {
+                en: "I understand I have to wait for your contact response.\nI remain at your disposal if you need me to suggest your availabilities beforehand.",
+                fr: "Je comprends que je dois attendre le retour de votre interlocuteur avant d'intervenir.\nJe reste à votre disposition si vous souhaitez que je propose des disponibilités en avance de phase."
+            }
+        },
+        {
+            action: "wait_for_contact",
+            isPostpone: true,
+            previousAppointment: {
+                designation_in_email: {
+                    "fr": "le verre",
+                    "en": "the drink"
+                }
+            },
+            currentEventData: {
+                start: {
+                    dateTime: "2015-01-05T12:00:00+00"
+                }
+            },
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            expectedResults: {
+                en: "I understand I have to wait for your contact response before rescheduling.\nI am cancelling the drink scheduled on Monday, January 5, 2015 12:00 PM in the meantime.",
+                fr: "Je comprends que je dois attendre le retour de votre interlocuteur avant de reprogrammer.\nJ'annule le verre prévu lundi 5 janvier 2015 à 12h00 en attendant."
             }
         }
     ]

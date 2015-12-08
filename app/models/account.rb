@@ -200,6 +200,36 @@ class Account
     end
   end
 
+  def self.migrate_account_email origin_email, target_email
+    mts = MessagesThread.where(account_email: origin_email).includes(messages: :message_classifications)
+    other_mt_ids = MessageClassification.where("attendees LIKE '%#{origin_email}%'").includes(:message).map{|mc| mc.message.messages_thread_id}
+    mts += MessagesThread.where(id: other_mt_ids)
+
+    mts.each do |mt|
+      if mt.account_email == origin_email
+        mt.update_attribute :account_email, target_email
+      end
+
+      mt.messages.map(&:message_classifications).flatten.each do |mc|
+        attendees = JSON.parse(mc.attendees || "[]")
+        attendees.each{|att|
+          if att['account_email'] == origin_email
+            att['account_email'] = target_email
+          end
+        }
+        constraints_data = JSON.parse(mc.constraints_data || "[]")
+        constraints_data.each do |constraint|
+          if constraint['attendee_email'] == origin_email && !attendees.map{|att| att['email']}.include?(constraint['attendee_email'])
+            constraint['attendee_email'] = target_email
+          end
+        end
+        mc.attendees = attendees.to_json
+        mc.constraints_data = constraints_data.to_json
+        mc.save
+      end
+    end
+  end
+
   private
 
   def self.get_account_details account_email, params={}

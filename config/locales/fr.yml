@@ -217,6 +217,8 @@ fr:
               action: "Donner une info"
             give_info:
               action: "Noter une info"
+            wait_for_contact:
+              action: "Attendre des suggestions du contact"
       manage_scheduled_event:
         title: "Gérer le rendez-vous organisé"
         classifications:
@@ -233,6 +235,8 @@ fr:
               action: "Proposer des disponibilités"
             ask_availabilities:
               action: "Vérifier une (des) disponibilité(s)"
+            wait_for_contact:
+              action: "Attendre des suggestions du contact"
       manage_events:
         title: "Gérer les évènements"
         classifications:
@@ -247,6 +251,8 @@ fr:
             action: "Annuler autre(s) évènement(s)"
           ask_postpone_events:
             action: "Reporter autre(s) évènement(s)"
+          forward_to_client:
+            action: "Transférer au client"
           unknown:
             action: "Réponse libre"
           to_founders:
@@ -293,6 +299,7 @@ fr:
     from: "De :"
     to: "A :"
     reply: "Répondre"
+    forward: "Transférer"
     cc: "Cc:"
     refresh: "Rafraichir"
     cancel: "Annuler"

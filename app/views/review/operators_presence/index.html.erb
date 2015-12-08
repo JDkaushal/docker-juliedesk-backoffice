@@ -310,7 +310,7 @@
         </tr>
         <tr ng-repeat="operator in operators track by $index">
           <td class="fixed">
-            <span class="operator-name">{{ operator.name }}</span>
+            <span class="operator-name">{{ operator.stars }} {{ operator.name }}</span>
             <span class="operator-working-hours">{{ operator.presences.length }}h</span>
           </td>
           <td ng-repeat="hour in getHours(weekday) track by $index"

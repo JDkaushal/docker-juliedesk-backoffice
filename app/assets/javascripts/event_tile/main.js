@@ -945,7 +945,7 @@ EventTile.prototype.initActions = function() {
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
             if(eventTile.event.calendar_login_type != "GoogleLogin") {
-                alert("Recurring events are not supported for this account. Please send to support.")
+                alert("Recurring events are not supported for this account. Please send to admin.")
             }
             else {
                 eventTile.showRecurrenceContainer();

@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151112113319) do
+ActiveRecord::Schema.define(version: 20151204145246) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "client_contacts", force: true do |t|
     t.string   "client_email",           null: false
@@ -159,6 +158,7 @@ ActiveRecord::Schema.define(version: 20151112113319) do
     t.datetime "locked_at"
     t.integer  "server_thread_id"
     t.string   "server_version"
+    t.boolean  "delegated_to_support",  default: false
   end
 
   create_table "operator_actions", force: true do |t|
@@ -189,7 +189,8 @@ ActiveRecord::Schema.define(version: 20151112113319) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "group_review_status"
-    t.boolean  "duration_edited",     default: false
+    t.boolean  "duration_edited",         default: false
+    t.integer  "reviewed_by_operator_id"
   end
 
   create_table "operator_presences", force: true do |t|

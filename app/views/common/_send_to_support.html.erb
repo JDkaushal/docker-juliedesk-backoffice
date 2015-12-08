@@ -21,15 +21,15 @@
 <% message_id = local_assigns[:messages_thread].messages.last.id %>
 
 <% if messages_thread.delegated_to_founders %>
-    <%= button_to("Go back to normal", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_FOUNDERS }, class: "unsend-to-support-button btn btn-success btn-sm") %>
-<% else %>
-
+    <%= button_to("Remove admin delegation", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_FOUNDERS }, class: "unsend-to-support-button btn btn-success btn-sm") %>
+<% elsif messages_thread.delegated_to_support %>
+    <%= button_to("Remove support delegation", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_SUPPORT }, class: "unsend-to-support-button btn btn-success btn-sm") %>
 <% end %>
 
 
 <div class="send-to-support-overlay-container">
   <div class="send-to-support-overlay">
-    <div class="send-to-support-title">Send to support</div>
+    <div class="send-to-support-title">Send to admin</div>
 
 
         <%= form_tag url_for({ controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::TO_FOUNDERS }) do |f| %>

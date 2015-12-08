@@ -48,7 +48,9 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.re_import
     @messages_thread.account
 
-    @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
     @messages_thread.create_event_title_review_if_needed
   end
@@ -175,6 +177,8 @@ class MessagesThreadsController < ApplicationController
     })
     @messages_thread.re_import
     @messages_thread.account
+
+    render action: :preview, layout: "review"
   end
 
   private
@@ -193,11 +197,17 @@ class MessagesThreadsController < ApplicationController
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
 
-        if session[:privilege] != "admin"
+        if session[:privilege] == Operator::PRIVILEGE_OPERATOR
           @messages_thread.select!{ |mt|
             !mt.delegated_to_founders &&
+                !mt.delegated_to_support &&
                 mt.account &&
                 !mt.account.only_admin_can_process
+          }
+        elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+          @messages_thread.select!{ |mt|
+            !mt.delegated_to_founders &&
+                (!mt.account || !mt.account.only_admin_can_process)
           }
         end
 

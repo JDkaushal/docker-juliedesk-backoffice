@@ -9,7 +9,8 @@ class MessagesController < ApplicationController
 
     @client_emails = Account.accounts_cache(mode: "light").map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
-    if @classification == MessageClassification::UNKNOWN ||
+    if @classification == MessageClassification::FORWARD_TO_CLIENT ||
+        @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::ASK_INFO ||
         @classification == MessageClassification::ASK_CREATE_EVENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
@@ -19,7 +20,7 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::TO_FOUNDERS
       delegation_message = params[:to_founders_message]
-      @message.messages_thread.delegate_to_support message: delegation_message, operator: session[:user_name]
+      @message.messages_thread.delegate_to_founders message: delegation_message, operator: session[:user_name]
 
       OperatorAction.create_and_verify({
                                            initiated_at: DateTime.now,
@@ -35,6 +36,12 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::CANCEL_TO_FOUNDERS
+      @message.messages_thread.undelegate_to_founders
+      redirect_to messages_thread_path(@message.messages_thread)
+      return
+    end
+
+    if @classification == MessageClassification::CANCEL_TO_SUPPORT
       @message.messages_thread.undelegate_to_support
       redirect_to messages_thread_path(@message.messages_thread)
       return
@@ -44,24 +51,6 @@ class MessagesController < ApplicationController
     @messages_thread.re_import
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
-    if @classification == MessageClassification::ASSOCIATE_EVENT
-      #|| @classification == MessageClassification::GIVE_PREFERENCE
-      render "classifying_admin" and return
-    end
-  end
-
-  def wait_for_preference_change
-    @message = Message.find params[:id]
-
-    @message.messages_thread.delegate_to_support
-
-    url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/wait_for_preferences_change"
-    x = Net::HTTP.post_form(URI.parse(url), {
-        email: @message.messages_thread.account_email,
-        access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
-    })
-
-    redirect_to :messages_threads
   end
 
   def classify
@@ -112,7 +101,17 @@ class MessagesController < ApplicationController
 
   def reply
     @message = Message.find params[:id]
+
     @julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
+
+    quote_replied_message = false
+    quote_forward_message = false
+    if params[:forward] == "true"
+      quote_forward_message = true
+    elsif params[:quote_message] == "true"
+      quote_replied_message = true
+    end
+
     @new_server_message_id = EmailServer.deliver_message({
       subject: params[:subject],
       from: @julie_alias.generate_from,
@@ -120,7 +119,8 @@ class MessagesController < ApplicationController
       cc: (params[:cc] || []).join(", "),
       text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
       html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
-      quote: params[:quote_message] == "true",
+      quote_replied_message: quote_replied_message,
+      quote_forward_message: quote_forward_message,
       reply_to_message_id:  @message.server_message_id
     })['id']
 

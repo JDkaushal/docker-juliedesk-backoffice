@@ -61,7 +61,17 @@
               }
             }).to_json %>,
             email: window.threadAccount.email,
-            duration: window.threadComputedData.duration
+            duration: window.threadComputedData.duration,
+            calendarandEventsLoadedFirstTimeCallback: function() {
+                if($(".suggested-date-time").length > 0) {
+                    var dateTime = $(".suggested-date-time:eq(0)").data("date");
+                    if (dateTime) {
+                        setTimeout(function() {
+                            window.currentCalendar.selectSuggestedEvent(dateTime);
+                        }, 100);
+                    }
+                }
+            }
         });
 
         $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").change(function() {
@@ -146,7 +156,7 @@
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
                     description: description,
-                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}.to_json %>,
+                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present?}.to_json %>,
                     location: location,
                     all_day: false,
                     private: window.threadComputedData.private,
@@ -172,7 +182,6 @@
                     });
                 }
 
-                console.log(requestParams);
                 CommonHelpers.externalRequest(requestParams, function (e) {
 
                     window.currentCalendar.refreshEvents();

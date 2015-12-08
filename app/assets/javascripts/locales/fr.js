@@ -30,7 +30,7 @@ window.wordings['fr'] = {
         },
         suggest_dates: {
             ask_agreement: {
-                postpone: "Souhaitez-vous que je propose de nouvelles disponibilités ?",
+                postpone: "Souhaitez-vous que je propose de nouvelles disponibilités ? J'ai annulé l'évènement en attendant.",
                 new_appointment: "Souhaitez-vous que je propose des disponibilités ?"
             },
             before_dates: {
@@ -131,6 +131,11 @@ window.wordings['fr'] = {
                     postpone: "\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             }
+        },
+        forward_to_client: "Permettez-moi de vous transférer cet email.\nJe reste à votre disposition.",
+        wait_for_contact: {
+            postpone: "Je comprends que je dois attendre le retour de votre interlocuteur avant de reprogrammer.\nJ'annule %{appointment_nature} prévu %{date} en attendant.",
+            no_postpone: "Je comprends que je dois attendre le retour de votre interlocuteur avant d'intervenir.\nJe reste à votre disposition si vous souhaitez que je propose des disponibilités en avance de phase."
         },
         common: {
             default_appointment_designation_in_email: "le rendez-vous",

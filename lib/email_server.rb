@@ -46,7 +46,8 @@ module EmailServer
                             cc: opts[:cc],
                             text: opts[:text],
                             html: opts[:html],
-                            quote_replied_message: opts[:quote],
+                            quote_replied_message: opts[:quote_replied_message],
+                            quote_forward_message: opts[:quote_forward_message],
                             reply_to_message_id: opts[:reply_to_message_id]
                         }
                       }

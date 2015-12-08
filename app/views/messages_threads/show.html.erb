@@ -153,6 +153,9 @@
 
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
+        <% (@messages_thread.server_thread['labels'] || []).each do |label| %>
+            <span class="messages-thread-label"><%= label %></span>
+        <% end %>
       </div>
 
       <div class="split-buttons-container">
@@ -166,13 +169,12 @@
 
       <div class="thread-buttons">
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
-          <% if session[:privilege] == "admin" %>
+          <% if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
+                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 %>
             <div class="merge-into-thread-button thread-button"><%= I18n.t("common.merge") %></div>
           <% end %>
           <div class="split-thread-button thread-button"><%= I18n.t("common.split") %></div>
-          <% if @messages_thread.event_data[:event_id].nil? %>
-              <% link_to I18n.t("common.associate_to_event"), {controller: :messages, action: :classifying, id: @messages_thread.messages.sort_by(&:received_at).last.id, classification: MessageClassification::ASSOCIATE_EVENT}, class: "associate-to-event-button" %>
-          <% end %>
 
           <% button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
       </div>
@@ -225,7 +227,10 @@
 <%= render partial: "messages_threads/merging_panel", locals: {messages_thread: @messages_thread} %>
 
 <% if @messages_thread.account %>
-    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
+    <%= render partial: "messages_threads/info_panel", locals: {
+            messages_thread: @messages_thread,
+            accounts_cache_light: @accounts_cache_light
+        } %>
 <% else %>
     <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
 <% end %>

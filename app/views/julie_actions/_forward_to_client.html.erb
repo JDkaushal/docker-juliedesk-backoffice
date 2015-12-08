@@ -1,0 +1,12 @@
+<script>
+  $(function() {
+      $("#reply-button").hide();
+      $("#forward-button").show();
+
+      $("input#quote_message").prop("checked", true).prop("disabled", true);
+      window.setReplyMessage(window.generateEmailTemplate({
+          action: "forward_to_client",
+          locale: window.threadAccount.locale
+      }), "only_client", []);
+  });
+</script>

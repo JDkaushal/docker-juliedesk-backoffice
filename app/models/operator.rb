@@ -5,6 +5,12 @@ class Operator < ActiveRecord::Base
   has_many :operator_actions_groups
   has_many :operator_presences
 
+  PRIVILEGE_OPERATOR = nil
+  PRIVILEGE_ADMIN = "admin"
+  PRIVILEGE_SUPER_OPERATOR_LEVEL_1 = "super_operator_level_1"
+  PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
+
+
   def password=(value)
     self.salt = SecureRandom.base64(8)
     self.encrypted_password = Digest::SHA2.hexdigest(self.salt + value)
@@ -12,6 +18,22 @@ class Operator < ActiveRecord::Base
 
   def password_correct? password
     self.encrypted_password == Digest::SHA2.hexdigest(self.salt + password)
+  end
+
+  def stars
+    if privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+      "*"
+    elsif privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+      "**"
+    end
+  end
+
+  def level
+    {
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => 10,
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 100,
+      PRIVILEGE_ADMIN => 1000
+    }[privilege] || 0
   end
 
   def formatted_presences_for_day day

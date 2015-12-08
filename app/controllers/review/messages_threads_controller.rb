@@ -1,6 +1,6 @@
 class Review::MessagesThreadsController < ReviewController
 
-  skip_before_filter :only_admin, only: [:learn, :learnt, :learn_next]
+  skip_before_filter :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
   before_filter :only_mine, only: [:learn, :learnt, :learn_next]
 
   def review
@@ -52,8 +52,14 @@ class Review::MessagesThreadsController < ReviewController
           review_status: (data_entry[:notation] == 5)?(OperatorActionsGroup::REVIEW_STATUS_REVIEWED):(OperatorActionsGroup::REVIEW_STATUS_TO_LEARN),
           review_notation: data_entry[:notation],
           group_review_status: (data_entry[:should_review_in_group])?(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN):(OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET),
-          review_comment: data_entry[:comment]
+          review_comment: data_entry[:comment],
+          reviewed_by_operator_id: session[:operator_id]
          })
+      else
+        operator_actions_group.update_attributes({
+            review_status: OperatorActionsGroup::REVIEW_STATUS_REVIEWED,
+            reviewed_by_operator_id: session[:operator_id]
+        })
       end
     end
 
@@ -111,13 +117,14 @@ class Review::MessagesThreadsController < ReviewController
     end
   end
 
-  # Maybe needs a redirect when it go false
   def only_mine
     if params[:operator_id].nil?
       params[:operator_id] = session[:operator_id]
     end
 
-    unless session[:privilege] == "admin" || "#{params[:operator_id]}" == "#{session[:operator_id]}"
+    unless session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+        session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 ||
+        "#{params[:operator_id]}" == "#{session[:operator_id]}"
       redirect_to "/"
     end
   end

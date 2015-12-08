@@ -30,7 +30,7 @@ window.wordings['en'] = {
         },
         suggest_dates: {
             ask_agreement: {
-                postpone: "Do you want me to suggest new availabilities?",
+                postpone: "Do you want me to suggest new availabilities? I cancelled the event in the meantime.",
                 new_appointment: "Do you want me to suggest availabilities?"
             },
             before_dates: {
@@ -131,6 +131,11 @@ window.wordings['en'] = {
                 }
             }
         },
+        forward_to_client: "Please allow me to forward you this email.\nI remain at your disposal.",
+        wait_for_contact: {
+            postpone: "I understand I have to wait for your contact response before rescheduling.\nI am cancelling %{appointment_nature} scheduled %{date} in the meantime.",
+            no_postpone: "I understand I have to wait for your contact response.\nI remain at your disposal if you need me to suggest your availabilities beforehand."
+        },
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
@@ -165,8 +170,8 @@ window.wordings['en'] = {
         ask_additional_informations:{
             multiple_attendees:{
                 phone: {
-                    multiple_recipients: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case.",
-                    single_recipient: "%{attendees_names}, please%{courtesyString} indicate the number you can be reached at just in case."
+                    multiple_recipients: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!",
+                    single_recipient: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!"
                 },
                 skype: {
                     multiple_recipients: "%{attendees_names}, could you let me know your Skype Ids?",
@@ -175,8 +180,8 @@ window.wordings['en'] = {
             },
             single_attendee:{
                 phone:{
-                    assisted: "Please%{courtesyString} indicate the number %{attendees_names} can be reached at just in case.",
-                    nonassisted: "Please%{courtesyString} indicate the number you can be reached at just in case."
+                    assisted: "Please%{courtesyString} provide %{attendees_names} phone number, just in case!",
+                    nonassisted: "Please%{courtesyString} provide your phone number, just in case!"
                 },
                 skype:{
                     assisted: "Could you let me know %{attendees_names}'s Skype Id?",

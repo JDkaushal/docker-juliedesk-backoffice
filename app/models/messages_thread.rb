@@ -41,50 +41,59 @@ class MessagesThread < ActiveRecord::Base
   end
 
 
-  def delegate_to_support params={}
+  def delegate_to_founders params={}
     self.update_attributes({
                                delegated_to_founders: true,
                                to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
-          messages_thread_ids: [self.server_thread_id],
-          labels_to_add: ["Label_12"],
-          labels_to_remove: []
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: ["Founders"],
+                                            labels_to_remove: []
                                         })
+    end
+  end
 
-      self.warn_support params.merge({operator: params[:operator]})
+  def undelegate_to_founders params={}
+    self.update_attributes({
+                               delegated_to_founders: false
+                           })
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: [],
+                                            labels_to_remove: ["Founders"]
+                                        })
+    end
+  end
+
+
+  def delegate_to_support params={}
+    self.update_attributes({
+                               delegated_to_support: true,
+                               to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
+                           })
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: ["Support"],
+                                            labels_to_remove: []
+                                        })
     end
   end
 
   def undelegate_to_support
     self.update_attributes({
-                               delegated_to_founders: false
+                               delegated_to_support: false
                            })
-    EmailServer.add_and_remove_labels({
-                                          messages_thread_ids: [self.server_thread_id],
-                                          labels_to_add: [],
-                                          labels_to_remove: ["Label_12"]
-                                      })
-  end
-
-  def warn_support params={}
-#    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
-#      EmailServer.deliver_message({
-#                                      subject: "Email thread delegated to support",
-#                                      to: "guillaume@juliedesk.com",
-#                                      cc: "",#nicolas@juliedesk.com",
-#                                      from: "julie@juliedesk.com",
-#                                      text: <<END
-#A new email thread has been delegated to support:
-#https://juliedesk-backoffice.herokuapp.com/messages_threads/#{self.id}
-#
-#Message: #{params[:message]}
-#
-#Operator: #{params[:operator]}
-#END
-#                                  })
-#    end
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: [],
+                                            labels_to_remove: ["Support"]
+                                        })
+    end
   end
 
   def julie_alias
@@ -313,11 +322,15 @@ class MessagesThread < ActiveRecord::Base
       EVENTS_CREATED
     elsif event_data[:event_id]
       EVENT_SCHEDULED
-    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES) && mc.julie_action.done}.length > 0
+    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES || mc.classification == MessageClassification::WAIT_FOR_CONTACT) && mc.julie_action.done}.length > 0
       SCHEDULING_EVENT
     else
       nil
     end
+  end
+
+  def possible_contacts_for_cache
+    accounts = Account.accounts_cache(mode: "light")
   end
 
   def possible_contacts_for_cache
@@ -449,6 +462,7 @@ class MessagesThread < ActiveRecord::Base
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -457,11 +471,13 @@ class MessagesThread < ActiveRecord::Base
             event_scheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
                 MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT,
                 MessageClassification::GIVE_INFO,
                 MessageClassification::ASK_INFO,
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -474,10 +490,12 @@ class MessagesThread < ActiveRecord::Base
             ],
             event_rescheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
-                MessageClassification::ASK_AVAILABILITIES
+                MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -485,13 +503,15 @@ class MessagesThread < ActiveRecord::Base
         {
             event_scheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
-                MessageClassification::ASK_AVAILABILITIES
+                MessageClassification::ASK_AVAILABILITIES,
+                MessageClassification::WAIT_FOR_CONTACT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::ASK_CREATE_EVENT,
                 MessageClassification::ASK_CANCEL_EVENTS,
                 MessageClassification::ASK_POSTPONE_EVENTS,
+                MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN
             ]
         }
@@ -499,6 +519,7 @@ class MessagesThread < ActiveRecord::Base
     else
       {
           other: [
+              MessageClassification::FORWARD_TO_CLIENT,
               MessageClassification::UNKNOWN
           ]
       }

@@ -34,7 +34,6 @@ Rails.application.routes.draw do
       get "classifying/:classification", action: :classifying, as: :classifying
       post "classifying/:classification", action: :classifying
 
-      get "wait_for_preference_change", action: :wait_for_preference_change
       post "classify", action: :classify, as: :classify
 
       post "reply", action: :reply, as: :reply
@@ -86,7 +85,7 @@ Rails.application.routes.draw do
       end
     end
 
-    root to: "operators#index"
+    root to: "operators#review_list"
   end
 
   namespace :api do

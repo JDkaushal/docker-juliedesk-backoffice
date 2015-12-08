@@ -57,6 +57,66 @@
 
     $(document).ready(function() {
 
+        var accountsAutocompleteSource = <%==
+        (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
+            [{
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}"
+            }] +
+            (contact['email_aliases'] || []).map do |email_alias|
+            {
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}",
+                email_alias: email_alias
+            }
+            end
+        end.flatten.to_json
+        %>;
+
+        $("#change-account-input").autocomplete({
+            source: function(request, callback) {
+                callback(
+                        _.union(
+                                _.filter(accountsAutocompleteSource, function (contact) {
+                                    return (
+                                                    contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                    contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                    contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
+                                            ) &&
+                                            contact.email_alias == null;
+                                }),
+                                _.filter(accountsAutocompleteSource, function (contact) {
+                                    return contact.email_alias &&
+                                            contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
+                                })
+                        )
+                );
+            },
+            focus: function (event, ui) {
+                $("#change-account-input").val(ui.item.email);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#change-account-input").val(ui.item.email);
+                return false;
+            },
+            delay: 0,
+            minLength: 0
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li>")
+                    .addClass("contact-autocomplete-item")
+                    .data("item.autocomplete", item)
+                    .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
+                    .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
+                    .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
+                    .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
+                    .appendTo(ul);
+        };
         if(window.threadComputedData.locale)
             window.currentLocale = window.threadComputedData.locale;
     //$(function () {
@@ -148,7 +208,7 @@
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({
-                    account_email: $("select#change-account-input").val()
+                    account_email: $("#change-account-input").val()
                 }),
                 success: function() {
                     window.location = window.location;
@@ -289,7 +349,7 @@
                 });
             });
 
-            $(".messages-thread-info-panel .created-event-panel").show();
+            $(".messages-thread-info-panel .created-event-panel").addClass("several-events").show();
         <% end %>
 
         fetchOtherAccounts();
@@ -349,7 +409,7 @@
                     var currentEventNotesNode = $('.created-event-panel .notes');
                     var currentEventNotes = currentEventNotesNode.val();
                     var newEventDescription = '';
-                    if(vmHelper && vmHelper.isVirtualAppointment()){
+                    if(vmHelper){
                         var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
                         var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
                         if(regExResult != null){
@@ -887,19 +947,14 @@
               <div class="complaints-count"><%= account.complaints_count %> complaints</div>
           <% end %>
 
-          <% possible_contacts_for_cache = messages_thread.possible_contacts_for_cache %>
-          <% if possible_contacts_for_cache.length > 0 %>
+
           <div class="change-account-init-button">Change</div>
           <%= image_tag "ajax-loader.gif", class: "change-account-spinner" %>
           <div class="change-account-container">
-            <select id="change-account-input">
-                <% possible_contacts_for_cache.each do |contact| %>
-                    <option value="<%= contact[:email] %>"><%= contact[:name] %> - <%= contact[:email] %></option>
-                <% end %>
-            </select>
+            <input id="change-account-input">
             <div class="change-account-button btn btn-sm btn-success">Change</div>
           </div>
-          <% end %>
+
           <div class="account-details">
             <%= simple_format account.client_info %>
             <%if account.current_notes.present? || account.awaiting_current_notes.present? %>

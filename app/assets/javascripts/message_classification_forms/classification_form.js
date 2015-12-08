@@ -23,6 +23,9 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "give_preference") {
         return new window.classificationForms.givePreferenceForm(params);
     }
+    else if (params.classification == "wait_for_contact") {
+        return new window.classificationForms.waitForContactForm(params);
+    }
     throw "No classification form defined for classification: '" + params.classification + "'";
 };
 
