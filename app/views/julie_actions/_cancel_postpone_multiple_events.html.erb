@@ -38,6 +38,17 @@
                 })
             },
             success: function () {
+                $.ajax({
+                    url: "/julie_actions/<%= @julie_action.id %>/update",
+                    method: "post",
+                    data: {
+                        text: $("textarea#reply-text").val(),
+                        to: window.currentRecipients().to,
+                        cc: window.currentRecipients().cc,
+                        done: true,
+                        processed_in: Date.now() - window.startedAt
+                    }
+                });
                 window.sendReply();
             }
         });

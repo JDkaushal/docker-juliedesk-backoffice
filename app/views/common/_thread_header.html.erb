@@ -35,7 +35,7 @@
             $(".free-reply-done-button").show();
             $(".nothing-to-do-button").hide();
 
-            if($(".new-thread-status-select").val() == "") {
+            if($(".new-thread-status-select").val() == null) {
                 $(".finish-buttons-finish-button").prop("disabled", true);
             }
 
@@ -48,7 +48,7 @@
             $(".free-reply-done-button").hide();
             $(".nothing-to-do-button").show();
 
-            if($(".new-thread-status-select").val() == "") {
+            if($(".new-thread-status-select").val() == null) {
                 $(".finish-buttons-finish-button").prop("disabled", true);
             }
 

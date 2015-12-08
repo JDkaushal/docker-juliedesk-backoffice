@@ -206,12 +206,20 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == UNKNOWN
       self.thread_status
     elsif self.classification == ASK_DATE_SUGGESTIONS
-      THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+      if self.client_agreement
+        THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+      else
+        THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT
+      end
     elsif self.classification == ASK_AVAILABILITIES
       if self.julie_action.event_id
         THREAD_STATUS_SCHEDULED
       else
-        THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+        if self.client_agreement
+          THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+        else
+          THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT
+        end
       end
     elsif self.classification == ASK_CANCEL_APPOINTMENT
       THREAD_STATUS_SCHEDULING_ABORTED
