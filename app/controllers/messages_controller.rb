@@ -65,24 +65,24 @@ class MessagesController < ApplicationController
   end
 
   def classify
-    message = Message.find(params[:id])
+    @message = Message.find(params[:id])
     params[:operator] = session[:user_username]
-    message_classification = message.message_classifications.create_from_params params
+    @message_classification = @message.message_classifications.create_from_params params
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
-                                         target: message_classification,
+                                         target: @message_classification,
                                          nature: OperatorAction::NATURE_OPEN,
                                          operator_id: session[:operator_id],
-                                         messages_thread_id: message.messages_thread_id
+                                         messages_thread_id: @message.messages_thread_id
                                      })
 
-    if message_classification.classification == MessageClassification::GIVE_PREFERENCE
+    if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
       url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"
 
       Net::HTTP.post_form(URI.parse(url), {
-          email: message.messages_thread.account_email,
-          awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{message.messages_thread_id})",
+          email: @message.messages_thread.account_email,
+          awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})",
           access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
       })
     end
@@ -90,7 +90,7 @@ class MessagesController < ApplicationController
     render json: {
         status: "success",
         message: "",
-        redirect_url: julie_action_path(message_classification.julie_action),
+        redirect_url: julie_action_path(@message_classification.julie_action),
         data: {}
     }
   end
@@ -98,9 +98,9 @@ class MessagesController < ApplicationController
   def generate_threads
     p "*" * 50
     p "Generating threads..."
-    message = Message.find params[:id]
+    @message = Message.find params[:id]
     p "Found message. genrates threads"
-    message.generate_threads((params[:julie_messages] || {}).values)
+    @message.generate_threads((params[:julie_messages] || {}).values)
     p "Done."
     p "*" * 50
     render json: {
@@ -112,23 +112,20 @@ class MessagesController < ApplicationController
 
   def reply
     @message = Message.find params[:id]
-    julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
-    new_server_message_id = EmailServer.deliver_message({
-        subject: params[:subject],
-        from: julie_alias.generate_from,
-        to: (params[:to] || []).join(", "),
-        cc: (params[:cc] || []).join(", "),
-        text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
-        html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
-        quote: params[:quote_message] == "true",
-        reply_to_message_id:  @message.server_message_id
-                                })['id']
+    @julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
+    @new_server_message_id = EmailServer.deliver_message({
+      subject: params[:subject],
+      from: @julie_alias.generate_from,
+      to: (params[:to] || []).join(", "),
+      cc: (params[:cc] || []).join(", "),
+      text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
+      html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
+      quote: params[:quote_message] == "true",
+      reply_to_message_id:  @message.server_message_id
+    })['id']
 
-
-
-
-    julie_action = JulieAction.find params[:julie_action_id]
-    julie_action.update_attribute :server_message_id, new_server_message_id
+    @julie_action = JulieAction.find params[:julie_action_id]
+    @julie_action.update_attribute :server_message_id, @new_server_message_id
 
     render json: {
         status: "success",

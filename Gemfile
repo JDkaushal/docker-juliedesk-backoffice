@@ -62,4 +62,6 @@ group :test do
   gem 'factory_girl'
   gem 'database_cleaner'
   gem "webmock-rspec-helper"
+  #Code test coverage tool https://github.com/colszowka/simplecov
+  gem 'simplecov', :require => false
 end
