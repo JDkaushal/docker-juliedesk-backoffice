@@ -226,6 +226,3 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   unicorn
   webmock-rspec-helper
-
-BUNDLED WITH
-   1.10.6
