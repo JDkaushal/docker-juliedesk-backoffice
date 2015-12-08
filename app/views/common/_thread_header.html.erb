@@ -35,7 +35,9 @@
             $(".free-reply-done-button").show();
             $(".nothing-to-do-button").hide();
 
-            $(".finish-buttons-finish-button").prop("disabled", true);
+            if($(".new-thread-status-select").val() == "") {
+                $(".finish-buttons-finish-button").prop("disabled", true);
+            }
 
             $(".free-reply-done-button").click(function() {
                 $(".finish-buttons").show();
@@ -46,7 +48,9 @@
             $(".free-reply-done-button").hide();
             $(".nothing-to-do-button").show();
 
-            $(".finish-buttons-finish-button").prop("disabled", true);
+            if($(".new-thread-status-select").val() == "") {
+                $(".finish-buttons-finish-button").prop("disabled", true);
+            }
 
             $(".nothing-to-do-button").click(function() {
                 $(".finish-buttons").show();
@@ -100,7 +104,7 @@
 
     <span class="new-thread-status-label">New status:</span>
     <%= form_tag archive_messages_thread_path, id: "archive-form" do %>
-        <select name="thread_status" class="new-thread-status-select">
+        <select value="" name="thread_status" class="new-thread-status-select">
           <option selected disabled>Please select a status...</option>
           <% MessageClassification.all_thread_statuses.each do |thread_status| %>
               <option value="<%= thread_status %>" <%= (thread_status == local_assigns[:messages_thread].suggested_current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
