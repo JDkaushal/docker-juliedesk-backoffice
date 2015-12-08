@@ -546,8 +546,16 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def suggested_current_status
+    if self.event_data[:event_id].present?
+      MessageClassification::THREAD_STATUS_SCHEDULED
+    else
+      self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:computed_thread_status).compact.last
+    end
+  end
+
   def current_status
-    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:computed_thread_status).compact.last
+    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:thread_status).compact.last
   end
 
   def self.julie_aliases_from_server_thread server_thread, params={}

@@ -59,7 +59,8 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
     last_email_status = messages_thread.last_email_status
     if last_email_status == "from_me"
-      # Nothing to do
+      last_message_classification = messages_thread.last_message_classification
+      last_message_classification.update_attribute :thread_status, params[:thread_status]
     elsif last_email_status == "from_me_free_reply"
       last_message_classification = messages_thread.last_message_classification
       last_message_classification.update_attribute :thread_status, params[:thread_status]
