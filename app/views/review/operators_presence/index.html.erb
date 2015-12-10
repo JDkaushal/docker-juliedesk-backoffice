@@ -151,9 +151,6 @@
         };
 
         $scope.countsForHalfHour = function(halfHour) {
-            if(halfHour.minutes() != 0) {
-                return 0
-            }
             var result = 0;
             _($scope.operators).each(function(operator) {
                 if($scope.isOperatorPresent(operator, halfHour)) {
@@ -264,6 +261,8 @@
         color: #0a0;
         font-weight: 800;
         width: 21px;
+        line-height: 14px;
+        padding: 5px 0;
     }
     .operators-presence-container table tr td.warn {
         color: #cc0000;
