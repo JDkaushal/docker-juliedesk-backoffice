@@ -7,7 +7,7 @@ class Review::OperatorsPresenceController < ReviewController
     respond_to do |format|
       format.html {
         if params[:start]
-          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences)
+          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level)
           render "index.csv"
           return
         end

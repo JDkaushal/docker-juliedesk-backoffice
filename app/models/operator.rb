@@ -38,20 +38,31 @@ class Operator < ActiveRecord::Base
 
   def formatted_presences_for_day day
     ops = presences_for_day(day).map{|op|
-      op.date.in_time_zone("Indian/Antananarivo").strftime("%H").to_i
+      date = op.date.in_time_zone("Indian/Antananarivo")
+      number = date.strftime("%H").to_i
+      if date.min == 30
+        number += 0.5
+      end
+      number
     }
     ranges = []
-    ops.sort_by!{|op| (op - 6)% 24}
+    ops.sort_by!{|op|
+      if op >= 6
+        op
+      else
+        op + 24
+      end
+    }
     while ops.length > 0
       current_op = ops.shift
       if ranges.length > 0 && current_op == ranges.last.last
-        ranges[ranges.length - 1] = [ranges.last.first, (ranges.last.last + 1) % 24]
+        ranges[ranges.length - 1] = [ranges.last.first, (ranges.last.last + 0.5) % 24]
       else
-        ranges << [current_op, (current_op + 1) % 24]
+        ranges << [current_op, (current_op + 0.5) % 24]
       end
     end
     ranges.map{|range|
-      "#{range.first}h - #{range.last}h"
+      "#{range.first.floor}h#{((range.first - range.first.floor) == 0.5)?"30":"00"} - #{range.last.floor}h#{((range.last - range.last.floor) == 0.5)?"30":"00"}"
     }.join(" / ")
   end
 
