@@ -21,7 +21,7 @@ class Review::OperatorsPresenceController < ReviewController
                       name: o.name,
                       id: o.id,
                       stars: o.stars,
-                      presences: o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days).map{|op| op.date.strftime("%Y%m%dT%H0000")}
+                      presences: o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days).map{|op| op.date.strftime("%Y%m%dT%H%M00")}
                   }
                 }
             }
