@@ -5,5 +5,5 @@ end.join(";") %>;Count
 <%= [operator.stars, operator.name].compact.join(" ") %>;<% count = 0 %><%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).map do |day|
   count += operator.presences_for_day(day).count
   operator.formatted_presences_for_day(day)
-end.join(";") %>;<%= count %>
+end.join(";") %>;<%= count / 2.0 %>
 <% end %>
