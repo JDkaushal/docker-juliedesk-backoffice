@@ -232,5 +232,8 @@
             accounts_cache_light: @accounts_cache_light
         } %>
 <% else %>
-    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {
+                                                                        messages_thread: @messages_thread,
+                                                                        accounts_cache_light: @accounts_cache_light
+                                                                } %>
 <% end %>
