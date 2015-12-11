@@ -57,6 +57,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
       it 'should return the correct html if a start parameter is provided' do
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 30, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
 
@@ -69,12 +70,12 @@ describe Review::OperatorsPresenceController, :type => :controller do
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
 Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
-#{@normal.name};;;;;;;;0
-#{@op1.name};13h - 14h;15h - 16h;;;;;;2
-#{@op2.name};;15h - 16h;;;;;;1
-#{@op5.name};;;;;;;;0
-* #{@op3.name};;;;;;;;0
-** #{@op4.name};;;;;;;;0
+#{@normal.name};;;;;;;;0.0
+#{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
+#{@op2.name};;15h00 - 15h30;;;;;;0.5
+#{@op5.name};;;;;;;;0.0
+* #{@op3.name};;;;;;;;0.0
+** #{@op4.name};;;;;;;;0.0
 END
 )
       end
@@ -108,11 +109,21 @@ END
 
       it 'should render the correct csv to be downloaded' do
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 30, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
 
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
-        expect(response.body).to eq("Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count\n#{@normal.name};;;;;;;;0\n#{@op1.name};13h - 14h;15h - 16h;;;;;;2\n#{@op2.name};;15h - 16h;;;;;;1\n#{@op3.name};;;;;;;;0\n#{@op4.name};;;;;;;;0\n#{@op5.name};;;;;;;;0\n")
+        expect(response.body).to eq(<<END
+Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+#{@normal.name};;;;;;;;0.0
+#{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
+#{@op2.name};;15h00 - 15h30;;;;;;0.5
+#{@op3.name};;;;;;;;0.0
+#{@op4.name};;;;;;;;0.0
+#{@op5.name};;;;;;;;0.0
+END
+)
       end
     end
 
