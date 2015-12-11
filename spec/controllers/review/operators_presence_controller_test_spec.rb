@@ -84,6 +84,7 @@ END
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 13, 00, 00), is_review: true)
 
         @op3.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1
         @op3.save
@@ -96,12 +97,12 @@ END
         expect(body['status']).to eq("success")
         expect(body['data']).to eq({
                                        "operators" => [
-                                           {"name" => @normal.name, "id" => @normal.id, "stars" => nil,   "presences" => []},
-                                           {"name" => @op1.name,    "id" => @op1.id,    "stars" => nil,   "presences" => ["20150910T100000", "20150911T120000"]},
-                                           {"name" => @op2.name,    "id" => @op2.id,    "stars" => nil,   "presences" => ["20150911T120000"]},
-                                           {"name" => @op5.name,    "id" => @op5.id,    "stars" => nil,   "presences" => []},
-                                           {"name" => @op3.name,    "id" => @op3.id,    "stars" => "*",   "presences" => []},
-                                           {"name" => @op4.name,    "id" => @op4.id,    "stars" => "**",  "presences" => []}
+                                           {"name" => @normal.name, "id" => @normal.id, "stars" => nil,   "privilege" => nil, "presences" => [], "review_presences" => []},
+                                           {"name" => @op1.name,    "id" => @op1.id,    "stars" => nil,   "privilege" => nil, "presences" => ["20150910T100000", "20150911T120000"], "review_presences" => []},
+                                           {"name" => @op2.name,    "id" => @op2.id,    "stars" => nil,   "privilege" => nil, "presences" => ["20150911T120000"], "review_presences" => ["20150911T130000"]},
+                                           {"name" => @op5.name,    "id" => @op5.id,    "stars" => nil,   "privilege" => nil, "presences" => [], "review_presences" => []},
+                                           {"name" => @op3.name,    "id" => @op3.id,    "stars" => "*",   "privilege" => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, "presences" => [], "review_presences" => []},
+                                           {"name" => @op4.name,    "id" => @op4.id,    "stars" => "**",  "privilege" => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, "presences" => [], "review_presences" => []}
                                        ]
                                    })
 

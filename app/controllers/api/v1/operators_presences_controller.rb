@@ -10,7 +10,7 @@ class Api::V1::OperatorsPresencesController < Api::ApiV1Controller
     # Set to closest half-hour
     date = date.change(min: (date.min / 30) * 30)
 
-    operator_presences = OperatorPresence.where(date: date).includes(:operator)
+    operator_presences = OperatorPresence.where(date: date, is_review: false).includes(:operator)
 
     pusher_user_emails = Pusher.get("/channels/presence-global/users")[:users].map{|u| u['id']}
     render json: {

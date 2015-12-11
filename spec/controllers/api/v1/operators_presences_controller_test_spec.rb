@@ -33,6 +33,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
         op3.operator_presences.create(date: DateTime.new(2015, 11, 25, 12, 00, 00))
         op4.operator_presences.create(date: DateTime.new(2015, 11, 25, 12, 00, 00))
         op5.operator_presences.create(date: DateTime.new(2015, 11, 25, 12, 00, 00))
+        op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 16, 00, 00), is_review: true)
 
         expect(Pusher).to receive(:get).and_return(users: [
                                                        {'id' => op1.email},
@@ -77,6 +78,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
         op3.operator_presences.create(date: DateTime.new(2015, 11, 26, 15, 00, 00))
         op4.operator_presences.create(date: DateTime.new(2015, 11, 26, 15, 00, 00))
         op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 15, 00, 00))
+        op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 16, 00, 00), is_review: true)
 
         expect(Pusher).to receive(:get).and_return(users: [{'id' => op1.email}, {'id' => op3.email}, {'id' => op4.email}, {'id' => op5.email}])
 

@@ -30,6 +30,12 @@
         };
         $scope.setHalfHours();
 
+        $scope.levelTwo0perators = function() {
+            return _.filter($scope.operators, function(operator) {
+                return operator.privilege == "<%= Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 %>";
+            });
+        };
+
         $scope.previousWeek = function() {
             $scope.startWeekDate.add(-1, 'w');
             $scope.setHalfHours();
@@ -65,7 +71,7 @@
         $scope.fetch();
 
 
-        $scope.endTogglePresences = function(operator, presence) {
+        $scope.endTogglePresences = function(operator, presence, reviewMode) {
             var formattedPresence = presence.format(presenceFormat);
             if($scope.initDrag && $scope.initDrag.operator == operator) {
                 var presences = _.select(_.map($scope.halfHours, function(mHalfHour) {
@@ -76,22 +82,38 @@
 
                 var allSelected = true;
                 _.each(presences, function(presence) {
-                    allSelected = allSelected && operator.presences.indexOf(presence) > -1;
+                    if(reviewMode) {
+                        allSelected = allSelected && operator.review_presences.indexOf(presence) > -1;
+                    }
+                    else {
+                        allSelected = allSelected && operator.presences.indexOf(presence) > -1;
+                    }
+
                 });
 
 
                 if(allSelected) {
                     _.each(presences, function(presence) {
-                        var index = operator.presences.indexOf(presence);
-                        if(index > -1) {
-                            operator.presences.splice(index, 1);
+                        var index;
+                        if(reviewMode) {
+                            index = operator.review_presences.indexOf(presence);
+                            if(index > -1) {
+                                operator.review_presences.splice(index, 1);
+                            }
+                        }
+                        else {
+                            index = operator.presences.indexOf(presence);
+                            if(index > -1) {
+                                operator.presences.splice(index, 1);
+                            }
                         }
                     });
 
                     $scope.loading = true;
                     $.post("/review/operators_presence/remove", {
                         presences: presences,
-                        operator_id: operator.id
+                        operator_id: operator.id,
+                        is_review: reviewMode
                     }).success(function() {
                                 $scope.loading = false;
                                 $scope.$apply()
@@ -99,16 +121,26 @@
                 }
                 else {
                     _.each(presences, function(presence) {
-                        var index = operator.presences.indexOf(presence);
-                        if(index == -1) {
-                            operator.presences.push(presence);
+                        var index;
+                        if(reviewMode) {
+                            index = operator.review_presences.indexOf(presence);
+                            if (index == -1) {
+                                operator.review_presences.push(presence);
+                            }
+                        }
+                        else {
+                            index = operator.presences.indexOf(presence);
+                            if (index == -1) {
+                                operator.presences.push(presence);
+                            }
                         }
                     });
 
                     $scope.loading = true;
                     $.post("/review/operators_presence/add", {
                         presences: presences,
-                        operator_id: operator.id
+                        operator_id: operator.id,
+                        is_review: reviewMode
                     }).success(function() {
                                 $scope.loading = false;
                                 $scope.$apply();
@@ -118,8 +150,14 @@
             $scope.initDrag = null;
         };
 
-        $scope.isOperatorPresent = function(operator, presence) {
-            return operator.presences.indexOf(presence.format(presenceFormat)) > -1;
+        $scope.isOperatorPresent = function(operator, presence, reviewMode) {
+            if(reviewMode) {
+                return operator.review_presences.indexOf(presence.format(presenceFormat)) > -1;
+            }
+            else {
+                return operator.presences.indexOf(presence.format(presenceFormat)) > -1;
+            }
+
         };
 
         $scope.resetDay = function(weekDay) {
@@ -337,6 +375,20 @@
               >
           </td>
         </tr>
+
+        <tr ng-repeat="operator in levelTwo0perators() track by $index">
+          <td class="fixed">
+            <span class="operator-name">{{ operator.stars }} {{ operator.name }} (rv)</span>
+            <span class="operator-working-hours">{{ operator.review_presences.length / 2.0 }}h</span>
+          </td>
+          <td ng-repeat="halfHour in getHalfHours(weekday) track by $index"
+              ng-mouseDown="initTogglePresences(operator, halfHour)"
+              ng-mouseUp="endTogglePresences(operator, halfHour, true)"
+              ng-class="(isOperatorPresent(operator, halfHour, true))?'selected':''"
+          >
+          </td>
+        </tr>
+
         <tr>
           <td class="fixed"></td>
           <td class="day-counts"
