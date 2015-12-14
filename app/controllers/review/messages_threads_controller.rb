@@ -88,6 +88,16 @@ class Review::MessagesThreadsController < ReviewController
     learn_next_messages_thread
   end
 
+  def change_messages_thread_status
+    messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
+
+    last_message = messages_thread.messages.sort_by(&:updated_at).last
+    message_classification = last_message.message_classifications.create_from_params classification: MessageClassification::NOTHING_TO_DO, operator: session[:user_username], thread_status: params[:thread_status]
+    message_classification.julie_action.update_attribute :done, true
+
+    redirect_to action: :review
+  end
+
   private
 
   def group_review_next_messages_thread

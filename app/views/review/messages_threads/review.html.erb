@@ -52,6 +52,19 @@
 <div class="fixed-columns">
   <div class="left-column review">
 
+    <div class="messages-thread-status-for-review">
+      Status:
+      <%= form_tag change_messages_thread_status_review_messages_thread_path(id: @messages_thread.id) do %>
+          <select class="thread-status-select-for-review" name="thread_status">
+            <option value="">No status</option>
+            <% MessageClassification.all_thread_statuses.each do |thread_status| %>
+                <option value="<%= thread_status %>" <%= (thread_status == @messages_thread.current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
+            <% end %>
+          </select>
+          <%= submit_tag "Change status" %>
+      <% end %>
+    </div>
+
     <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
     <%= render template: "calendar/calendar" %>
 

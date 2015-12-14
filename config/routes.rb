@@ -77,6 +77,8 @@ Rails.application.routes.draw do
 
         get "learn", action: :learn
         post "learnt", action: :learnt
+
+        post "change_messages_thread_status", action: :change_messages_thread_status
       end
 
       collection do
