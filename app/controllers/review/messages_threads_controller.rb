@@ -52,7 +52,7 @@ class Review::MessagesThreadsController < ReviewController
           review_status: (data_entry[:notation] == 5)?(OperatorActionsGroup::REVIEW_STATUS_REVIEWED):(OperatorActionsGroup::REVIEW_STATUS_TO_LEARN),
           review_notation: data_entry[:notation],
           group_review_status: (data_entry[:should_review_in_group])?(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN):(OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET),
-          review_comment: data_entry[:comment],
+          review_comment: (data_entry[:comment].blank?)?nil:("#{data_entry[:comment]}\n\n#{session[:user_name]}"),
           reviewed_by_operator_id: session[:operator_id]
          })
       else
