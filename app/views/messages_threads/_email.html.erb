@@ -31,18 +31,32 @@
 
 
         var clientEmails = <%== (local_assigns[:client_emails] || []).to_json %>;
-        var highlightEmails = function($div) {
+        var highlightClientEmails = function($div) {
             $.each(clientEmails, function() {
                 var clientEmail = this;
-                $div.html($div.html().replace(new RegExp(clientEmail, "i"), function(ma) {
+                $div.html($div.html().replace(new RegExp(clientEmail, "gi"), function(ma) {
                     return "<span class='highlighted'>" + ma + "</span>";
                 }));
             });
         };
-        highlightEmails($email.find(".retracted .from"));
-        highlightEmails($email.find(".extended .from"));
-        highlightEmails($email.find(".extended .to"));
-        highlightEmails($email.find(".extended .cc"));
+        highlightClientEmails($email.find(".retracted .from"));
+        highlightClientEmails($email.find(".extended .from"));
+        highlightClientEmails($email.find(".extended .to"));
+        highlightClientEmails($email.find(".extended .cc"));
+
+        var julieEmails = <%== (local_assigns[:julie_emails] || []).to_json %>;
+        var highlightJulieEmails = function($div) {
+            $.each(julieEmails, function() {
+                var julieEmail = this;
+                $div.html($div.html().replace(new RegExp(julieEmail, "gi"), function(ma) {
+                    return "<span class='julie-highlighted'>" + ma + "</span>";
+                }));
+            });
+        };
+        highlightJulieEmails($email.find(".retracted .from"));
+        highlightJulieEmails($email.find(".extended .from"));
+        highlightJulieEmails($email.find(".extended .to"));
+        highlightJulieEmails($email.find(".extended .cc"));
 
 
         $email.find(".email-flag").click(function(e) {

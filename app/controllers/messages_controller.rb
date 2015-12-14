@@ -8,6 +8,7 @@ class MessagesController < ApplicationController
     @classification = params[:classification]
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
     if @classification == MessageClassification::FORWARD_TO_CLIENT ||

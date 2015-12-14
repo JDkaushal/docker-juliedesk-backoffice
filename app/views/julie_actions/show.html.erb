@@ -532,7 +532,8 @@
                       highlight: message.id == @message.id,
                       highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action"),
                       operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails
+                      client_emails: @client_emails,
+                      julie_emails: @julie_emails
                   } %>
               <% if message.id == @message.id %>
                   <div class="highlighted-below-email">

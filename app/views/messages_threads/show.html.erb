@@ -207,7 +207,8 @@
                       last: message == items.select{|i| i.class == Message}.last,
                       no_account: @messages_thread.account_email.nil?,
                       operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails
+                      client_emails: @client_emails,
+                      julie_emails: @julie_emails
                   } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
