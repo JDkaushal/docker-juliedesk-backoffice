@@ -201,6 +201,7 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       actions_available: true,
                       expend: message.received_at == @messages_thread.messages.map(&:received_at).min,
                       last: message == items.select{|i| i.class == Message}.last,

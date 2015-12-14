@@ -91,6 +91,7 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       highlight: message.id == @message.id,
                       expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min,
                       highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action"),

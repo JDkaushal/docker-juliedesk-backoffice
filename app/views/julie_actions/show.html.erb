@@ -524,6 +524,7 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       highlight: message.id == @message.id,
                       highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action"),
                       operator_actions_groups: operator_actions_groups,

@@ -98,7 +98,16 @@
 
       <% items.each do |item| %>
           <% if item.class == Message %>
-            <%= render partial: "messages_threads/email", locals: {message: item, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review", operator_actions_groups: operator_actions_groups} %>
+            <%= render partial: "messages_threads/email", locals: {
+                                                                message: item,
+                                                                timezone: @messages_thread.computed_data[:timezone],
+                                                                actions_available: false,
+                                                                expend: false,
+                                                                last: false,
+                                                                no_account: @messages_thread.account_email.nil?,
+                                                                reviewing_status: "review",
+                                                                operator_actions_groups: operator_actions_groups
+                                                        } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {reviewing_status: "review", operator_actions_group: item} %>
           <% end %>
