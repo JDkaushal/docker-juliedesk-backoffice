@@ -1,5 +1,9 @@
 <% if @messages_thread.account %>
-    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
+    <%= render partial: "messages_threads/info_panel", locals: {
+                                                             messages_thread: @messages_thread,
+                                                             julie_action: @julie_action,
+                                                             accounts_cache_light: @accounts_cache_light
+                                                     } %>
 <% else %>
     <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
 <% end %>

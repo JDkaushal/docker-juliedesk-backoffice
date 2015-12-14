@@ -1,4 +1,9 @@
-<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, message: @message, classification: @classification} %>
+<%= render partial: "messages_threads/info_panel", locals: {
+                                                         messages_thread: @messages_thread,
+                                                         message: @message,
+                                                         classification: @classification,
+                                                         accounts_cache_light: @accounts_cache_light
+                                                 } %>
 <script src="/javascripts/chrono.min.js"></script>
 <script>
   window.processingMessageThreadId = <%= @messages_thread.id %>;
