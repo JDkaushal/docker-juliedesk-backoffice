@@ -17,7 +17,7 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
 
 
-    data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :computed_data, :event_data])
+    data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :computed_data, :event_data, :current_status])
     render json: {
         status: "success",
         message: "",
