@@ -40,7 +40,9 @@
                 }).success(function(response) {
                     $(".merging-global-spinner").hide();
                     if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
-                        window.location = "/messages_threads/" + messagesThreadId;
+                        $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
+                            window.location = "/messages_threads/" + messagesThreadId;
+                        });
                     }
                     else {
                         window.location = window.location.href;

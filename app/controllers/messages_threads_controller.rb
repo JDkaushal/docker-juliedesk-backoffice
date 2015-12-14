@@ -182,6 +182,21 @@ class MessagesThreadsController < ApplicationController
     render action: :preview, layout: "review"
   end
 
+  def remove_data
+    messages_thread = MessagesThread.find params[:id]
+    messages_thread.operator_actions_groups.destroy_all
+    messages_thread.mt_operator_actions.destroy_all
+    Pusher.trigger('private-global-chat', 'archive', {
+                                            :message => 'archive',
+                                            :message_thread_id => messages_thread.id
+                                        })
+
+    render json: {
+               status: "success",
+               data: {}
+           }
+  end
+
   private
 
   def render_messages_threads
