@@ -34,7 +34,7 @@
         var highlightEmails = function($div) {
             $.each(clientEmails, function() {
                 var clientEmail = this;
-                $div.html($div.html().replace(clientEmail, function(ma) {
+                $div.html($div.html().replace(new RegExp(clientEmail, "i"), function(ma) {
                     return "<span class='highlighted'>" + ma + "</span>";
                 }));
             });
