@@ -193,7 +193,7 @@ Calendar.prototype.fullCalendarInit = function() {
     //defaultDate = moment("2015-03-01");
     $('#calendar').fullCalendar({
         header: {
-            left: 'today prev,next title',
+            left: 'today prevYear,prev,next,nextYear title',
             center: '',
             right: ''
         },
