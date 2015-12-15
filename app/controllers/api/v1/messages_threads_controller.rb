@@ -66,32 +66,53 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         data: {
             results: [
                 {
-                    status: "scheduling",
-                    subject: "Hello hello",
+                    status: "scheduled",
+                    subject: "Call Alexandro Gonzales <> Julie Desk [Julien Hobeika]",
                     other: {
-
-                    }
-                },
-                {
-                    status: "scheduling",
-                    subject: "Hello hello with me",
-                    other: {
-
+                        date: "20151118T130000"
                     }
                 },
                 {
                     status: "scheduled",
-                    subject: "YO yo this is scheduled",
+                    subject: "Déjeuner Matthieu | L’Oréal | Julie Desk",
                     other: {
-
+                        date: "20150412T123000"
+                    }
+                },
+                {
+                    status: "scheduling",
+                    subject: "Mtg avec Angel Kulk",
+                    other: {
+                        waiting_for: "contact",
+                        valid_suggestions_count: 4,
+                        suggestions_count: 4
+                    }
+                },
+                {
+                    status: "scheduling",
+                    subject: "Call avec Diego Delavega",
+                    other: {
+                        waiting_for: "client",
+                        valid_suggestions_count: 0,
+                        suggestions_count: 0
+                    }
+                },
+                {
+                    status: "scheduling",
+                    subject: "Déj avec Nicolas Berreau",
+                    other: {
+                        waiting_for: "contact",
+                        valid_suggestions_count: 0,
+                        suggestions_count: 4
                     }
                 },
                 {
                     status: "aborted",
-                    subject: "Aha aborted",
-                    other: {
-
-                    }
+                    subject: "Mtg avec Minh Tralus"
+                },
+                {
+                    status: "aborted",
+                    subject: "Déj avec Jako Pastorius"
                 }
             ]
         }
