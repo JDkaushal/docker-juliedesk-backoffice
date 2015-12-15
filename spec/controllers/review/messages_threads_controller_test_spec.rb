@@ -350,9 +350,9 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2.reload
         oag3.reload
 
-        expect([oag1.review_status, oag1.review_notation, oag1.group_review_status, oag1.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_REVIEWED, 5, OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET, 'Comment\n\n'])
-        expect([oag2.review_status, oag2.review_notation, oag2.group_review_status, oag2.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, 4, OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET, 'Comment 2\n\n'])
-        expect([oag3.review_status, oag3.review_notation, oag3.group_review_status, oag3.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, 3, OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, 'Comment 3\n\n'])
+        expect([oag1.review_status, oag1.review_notation, oag1.group_review_status, oag1.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_REVIEWED, 5, OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET, "Comment\n\n"])
+        expect([oag2.review_status, oag2.review_notation, oag2.group_review_status, oag2.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, 4, OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET, "Comment 2\n\n"])
+        expect([oag3.review_status, oag3.review_notation, oag3.group_review_status, oag3.review_comment]).to eq([OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, 3, OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, "Comment 3\n\n"])
       end
 
       it 'should close the tab after execution' do
