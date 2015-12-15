@@ -68,7 +68,7 @@ describe JulieAliasesController, :type => :controller do
         expect(JulieAlias).to receive(:new).with(
           {
             name: "Julie Desk",
-            footer_en: "\n\nBest regards,\n\nJulie\nArtificial intelligence @",
+            footer_en: "\n\nBest regards,\n\nJulie\nArtificial Intelligence @",
             footer_fr: "\n\nCordialement,\n\nJulie\nIntelligence Artificielle @"
           }
         )
