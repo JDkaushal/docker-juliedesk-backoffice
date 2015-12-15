@@ -49,4 +49,52 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
     }
   end
+
+  def weekly_recap_data
+    account_email = params[:email]
+    unless account_email.present?
+      render json: {
+          status: "error",
+          message: "missing required param email",
+          data: {}
+      }
+      return
+    end
+
+    render json: {
+        status: "success",
+        data: {
+            results: [
+                {
+                    status: "scheduling",
+                    subject: "Hello hello",
+                    other: {
+
+                    }
+                },
+                {
+                    status: "scheduling",
+                    subject: "Hello hello with me",
+                    other: {
+
+                    }
+                },
+                {
+                    status: "scheduled",
+                    subject: "YO yo this is scheduled",
+                    other: {
+
+                    }
+                },
+                {
+                    status: "aborted",
+                    subject: "Aha aborted",
+                    other: {
+
+                    }
+                }
+            ]
+        }
+    }
+  end
 end
