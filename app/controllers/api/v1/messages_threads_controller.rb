@@ -60,127 +60,113 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       }
       return
     end
-
-    # results = [
-    #     {
-    #         status: "scheduled",
-    #         subject: "Call Alexandro Gonzales <> Julie Desk [Julien Hobeika]",
-    #         other: {
-    #             date: "20151118T130000"
-    #         }
-    #     },
-    #     {
-    #         status: "scheduled",
-    #         subject: "Déjeuner Matthieu | L’Oréal | Julie Desk",
-    #         other: {
-    #             date: "20150412T123000"
-    #         }
-    #     },
-    #     {
-    #         status: "scheduling",
-    #         subject: "Mtg avec Angel Kulk",
-    #         other: {
-    #             waiting_for: "contact",
-    #             valid_suggestions_count: 4,
-    #             suggestions_count: 4
-    #         }
-    #     },
-    #     {
-    #         status: "scheduling",
-    #         subject: "Call avec Diego Delavega",
-    #         other: {
-    #             waiting_for: "client",
-    #             valid_suggestions_count: 0,
-    #             suggestions_count: 0
-    #         }
-    #     },
-    #     {
-    #         status: "scheduling",
-    #         subject: "Déj avec Nicolas Berreau",
-    #         other: {
-    #             waiting_for: "contact",
-    #             valid_suggestions_count: 0,
-    #             suggestions_count: 4
-    #         }
-    #     },
-    #     {
-    #         status: "aborted",
-    #         subject: "Mtg avec Minh Tralus"
-    #     },
-    #     {
-    #         status: "aborted",
-    #         subject: "Déj avec Jako Pastorius"
-    #     }
-    # ]
+    
 
     start_of_week = DateTime.now.beginning_of_week
-    end_of_week = DateTime.now.end_of_week
 
-    messages_thread_ids = MessageClassification.where("message_classifications.created_at >= ? AND message_classifications.created_at <= ?", start_of_week, end_of_week).joins(message: :messages_thread).where(messages_threads: {account_email: account_email}).includes(message: :messages_thread).map{|mc| mc.message.messages_thread}.map(&:id)
 
-    messages_threads = MessagesThread.where(id: messages_thread_ids).includes(messages: :message_classifications)
-
-    messages_thread_statuses = messages_threads.map{|mt|
-      statuses = mt.messages.map(&:message_classifications).flatten.map{|mc|
-        {
-            date: mc.created_at,
-            thread_status: mc.thread_status
+    scheduled_mts = MessagesThread.were_statused_as({
+                                        start_date: start_of_week,
+                                        account_email: account_email,
+                                        thread_status: MessageClassification::THREAD_STATUS_SCHEDULED
+                                    }).
+        includes(messages: {message_classifications: :julie_action}).
+        select {|mt|
+          status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
+          [MessageClassification::THREAD_STATUS_SCHEDULED].include?(mt.current_status) &&
+              (status_before_this_week.nil? || status_before_this_week != mt.current_status)
         }
-      }.sort_by{|s| s[:date]}
-      {
-          id: mt.id,
-          this_week_status: statuses.last.try(:[], :thread_status),
-          before_this_week_status: statuses.select{|s| s[:date] < end_of_week}.last.try(:[], :thread_status)
-      }
-    }
-    messages_thread_statuses.select{|mts|
-      mts[:this_week_status] && (
-        mts[:before_this_week_status].nil? ||
-          mts[:before_this_week_status] != mts[:this_week_status]
-      )
-    }
 
+    scheduling_mts = MessagesThread.were_statused_as({
+                                        start_date: DateTime.now - 1.month,
+                                        account_email: account_email,
+                                        thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]
+                                    }).
+        includes(messages: {message_classifications: :julie_action}).
+        select {|mt|
+          status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
+          [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
+            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+        }
 
-    scheduled_this_week = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULED].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
-    scheduling_this_week_wf_contact = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
-    scheduling_this_week_wf_client = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
-    aborted_this_week = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
+    event_creation_mts = MessagesThread.were_statused_as({
+                                        start_date: start_of_week,
+                                        account_email: account_email,
+                                        thread_status: MessageClassification::THREAD_STATUS_EVENTS_CREATION
+                                    }).
+        includes(messages: {message_classifications: :julie_action}).
+        select {|mt|
+          status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
+          [MessageClassification::THREAD_STATUS_EVENTS_CREATION].include?(mt.current_status) &&
+            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+        }
+
+    aborted_mts = MessagesThread.were_statused_as({
+                                        start_date: DateTime.now - 1.month,
+                                        account_email: account_email,
+                                        thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED]
+                                    }).
+        includes(messages: {message_classifications: :julie_action}).
+        select {|mt|
+          status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
+          [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED].include?(mt.current_status) &&
+            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+        }
+
+    events_creation_data = event_creation_mts.map{|mt|
+          mt.messages.map(&:message_classifications).
+          flatten.
+          map(&:julie_action).
+          select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
+          map{|ja| JSON.parse(ja.events || "[]")}
+    }.flatten
 
     render json: {
         status: "success",
         data: {
-            results: scheduled_this_week.map{|mt|
+            results: scheduled_mts.map{|mt|
               {
                   status: "scheduled",
-                  subject: mt.computed_data[:summary],
+                  subject: mt.computed_data_light[:summary],
                   other: {
-                      date: "20150101120000"
+                      date: "20150101120000",
+                      event: mt.event_data,
+                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
                   }
               }
-            } + scheduling_this_week_wf_contact.map{|mt|
+            } + events_creation_data.map{|event|
+              {
+                  status: "scheduled",
+                  other: {
+                      event: event
+                  }
+              }
+            } + scheduling_mts.select{|mt| mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT}.map{|mt|
               {
                   status: "scheduling",
-                  subject: mt.computed_data[:summary],
+                  subject: mt.computed_data_light[:summary],
                   other: {
                       waiting_for: "contact",
-                      valid_suggestions_count: mt.suggested_date_times.select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
-                      suggestions_count: mt.suggested_date_times.length
+                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      suggestions_count: mt.computed_data_light[:date_times].length,
+                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
                   }
               }
-            } + scheduling_this_week_wf_client.map{|mt|
+            } + scheduling_mts.select{|mt| mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT}.map{|mt|
               {
                   status: "scheduling",
-                  subject: mt.computed_data[:summary],
+                  subject: mt.computed_data_light[:summary],
                   other: {
                       waiting_for: "client",
-                      valid_suggestions_count: mt.suggested_date_times.select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
-                      suggestions_count: mt.suggested_date_times
+                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      suggestions_count: mt.computed_data_light[:date_times].length,
+                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
                   }
               }
-            } + aborted_this_week.map{|mt|
+            } + aborted_mts.map{|mt|
               {
                   status: "aborted",
-                  subject: mt.computed_data[:summary],
+                  subject: mt.computed_data_light[:summary],
                   other: {
                   }
               }

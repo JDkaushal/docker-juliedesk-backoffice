@@ -160,6 +160,22 @@ class MessagesThread < ActiveRecord::Base
     }
   end
 
+  def computed_data_light
+    message_classifications = messages.map{|m|
+      m.message_classifications
+    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+    last_message_classification = message_classifications.last
+    appointment_nature = last_message_classification.try(:appointment_nature)
+
+    {
+        appointment_nature: appointment_nature,
+        summary: last_message_classification.try(:summary),
+        date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
+          dt['date'] || "ZZZ"
+        },
+        last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
+    }
+  end
 
   def computed_data
     message_classifications = messages.map{|m|
@@ -572,6 +588,20 @@ class MessagesThread < ActiveRecord::Base
 
   def locked_by_operator_name
     self.locked_by_operator.try(:name)
+  end
+
+  def self.were_statused_as params
+    raise "Missing param start_date" unless params[:start_date]
+    raise "Missing param thread_status" unless params[:thread_status]
+    raise "Missing param account_email" unless params[:account_email]
+
+
+    MessagesThread.
+        joins(messages: :message_classifications).
+        where(messages_threads: {account_email: params[:account_email]}).
+        where(message_classifications: {thread_status: params[:thread_status]}).
+        where("message_classifications.created_at >= ?", params[:start_date]).
+        distinct
   end
 
   def self.get_locks_statuses_hash
