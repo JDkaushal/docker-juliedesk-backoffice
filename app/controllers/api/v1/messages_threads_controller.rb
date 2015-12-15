@@ -61,60 +61,130 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       return
     end
 
+    # results = [
+    #     {
+    #         status: "scheduled",
+    #         subject: "Call Alexandro Gonzales <> Julie Desk [Julien Hobeika]",
+    #         other: {
+    #             date: "20151118T130000"
+    #         }
+    #     },
+    #     {
+    #         status: "scheduled",
+    #         subject: "Déjeuner Matthieu | L’Oréal | Julie Desk",
+    #         other: {
+    #             date: "20150412T123000"
+    #         }
+    #     },
+    #     {
+    #         status: "scheduling",
+    #         subject: "Mtg avec Angel Kulk",
+    #         other: {
+    #             waiting_for: "contact",
+    #             valid_suggestions_count: 4,
+    #             suggestions_count: 4
+    #         }
+    #     },
+    #     {
+    #         status: "scheduling",
+    #         subject: "Call avec Diego Delavega",
+    #         other: {
+    #             waiting_for: "client",
+    #             valid_suggestions_count: 0,
+    #             suggestions_count: 0
+    #         }
+    #     },
+    #     {
+    #         status: "scheduling",
+    #         subject: "Déj avec Nicolas Berreau",
+    #         other: {
+    #             waiting_for: "contact",
+    #             valid_suggestions_count: 0,
+    #             suggestions_count: 4
+    #         }
+    #     },
+    #     {
+    #         status: "aborted",
+    #         subject: "Mtg avec Minh Tralus"
+    #     },
+    #     {
+    #         status: "aborted",
+    #         subject: "Déj avec Jako Pastorius"
+    #     }
+    # ]
+
+    start_of_week = DateTime.now.beginning_of_week
+    end_of_week = DateTime.now.end_of_week
+
+    messages_thread_ids = MessageClassification.where("message_classifications.created_at >= ? AND message_classifications.created_at <= ?", start_of_week, end_of_week).joins(message: :messages_thread).where(messages_threads: {account_email: account_email}).includes(message: :messages_thread).map{|mc| mc.message.messages_thread}.map(&:id)
+
+    messages_threads = MessagesThread.where(id: messages_thread_ids).includes(messages: :message_classifications)
+
+    messages_thread_statuses = messages_threads.map{|mt|
+      statuses = mt.messages.map(&:message_classifications).flatten.map{|mc|
+        {
+            date: mc.created_at,
+            thread_status: mc.thread_status
+        }
+      }.sort_by{|s| s[:date]}
+      {
+          id: mt.id,
+          this_week_status: statuses.last.try(:[], :thread_status),
+          before_this_week_status: statuses.select{|s| s[:date] < end_of_week}.last.try(:[], :thread_status)
+      }
+    }
+    messages_thread_statuses.select{|mts|
+      mts[:this_week_status] && (
+        mts[:before_this_week_status].nil? ||
+          mts[:before_this_week_status] != mts[:this_week_status]
+      )
+    }
+
+
+    scheduled_this_week = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULED].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
+    scheduling_this_week_wf_contact = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
+    scheduling_this_week_wf_client = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
+    aborted_this_week = MessagesThread.where(id: messages_thread_statuses.select{|mts| [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED].include? mts[:this_week_status]}.map{|mts| mts[:id]}).includes(messages: {message_classifications: :julie_action})
+
     render json: {
         status: "success",
         data: {
-            results: [
-                {
-                    status: "scheduled",
-                    subject: "Call Alexandro Gonzales <> Julie Desk [Julien Hobeika]",
-                    other: {
-                        date: "20151118T130000"
-                    }
-                },
-                {
-                    status: "scheduled",
-                    subject: "Déjeuner Matthieu | L’Oréal | Julie Desk",
-                    other: {
-                        date: "20150412T123000"
-                    }
-                },
-                {
-                    status: "scheduling",
-                    subject: "Mtg avec Angel Kulk",
-                    other: {
-                        waiting_for: "contact",
-                        valid_suggestions_count: 4,
-                        suggestions_count: 4
-                    }
-                },
-                {
-                    status: "scheduling",
-                    subject: "Call avec Diego Delavega",
-                    other: {
-                        waiting_for: "client",
-                        valid_suggestions_count: 0,
-                        suggestions_count: 0
-                    }
-                },
-                {
-                    status: "scheduling",
-                    subject: "Déj avec Nicolas Berreau",
-                    other: {
-                        waiting_for: "contact",
-                        valid_suggestions_count: 0,
-                        suggestions_count: 4
-                    }
-                },
-                {
-                    status: "aborted",
-                    subject: "Mtg avec Minh Tralus"
-                },
-                {
-                    status: "aborted",
-                    subject: "Déj avec Jako Pastorius"
-                }
-            ]
+            results: scheduled_this_week.map{|mt|
+              {
+                  status: "scheduled",
+                  subject: mt.computed_data[:summary],
+                  other: {
+                      date: "20150101120000"
+                  }
+              }
+            } + scheduling_this_week_wf_contact.map{|mt|
+              {
+                  status: "scheduling",
+                  subject: mt.computed_data[:summary],
+                  other: {
+                      waiting_for: "contact",
+                      valid_suggestions_count: mt.suggested_date_times.select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      suggestions_count: mt.suggested_date_times.length
+                  }
+              }
+            } + scheduling_this_week_wf_client.map{|mt|
+              {
+                  status: "scheduling",
+                  subject: mt.computed_data[:summary],
+                  other: {
+                      waiting_for: "client",
+                      valid_suggestions_count: mt.suggested_date_times.select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      suggestions_count: mt.suggested_date_times
+                  }
+              }
+            } + aborted_this_week.map{|mt|
+              {
+                  status: "aborted",
+                  subject: mt.computed_data[:summary],
+                  other: {
+                  }
+              }
+            }
         }
     }
   end
