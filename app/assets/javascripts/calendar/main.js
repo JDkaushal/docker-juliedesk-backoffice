@@ -197,6 +197,15 @@ Calendar.prototype.allEmails = function() {
     return allEmails;
 };
 
+Calendar.prototype.findAccountEmailForEvent = function(event) {
+    var calendar = this;
+    var calendarLoginUsername = event.calendar_login_username;
+    var calendarObject = _.find(calendar.calendars, function(calendar) {
+        return calendar.calendar_login_username == calendarLoginUsername;
+    });
+    return calendarObject.email;
+};
+
 Calendar.prototype.fetchCalendars = function (callback) {
     var calendar = this;
     calendar.showLoadingSpinner();
