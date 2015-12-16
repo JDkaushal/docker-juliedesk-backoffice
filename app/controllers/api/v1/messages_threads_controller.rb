@@ -149,6 +149,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       waiting_for: "contact",
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
+                      appointment_nature: mt.computed_data_light[:appointment_nature],
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                        {
+                            name: att['usage_name'] || att['name'],
+                            company: att['company']
+                        }
+                      },
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
                   }
               }
@@ -160,6 +167,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       waiting_for: "client",
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
+                      appointment_nature: mt.computed_data_light[:appointment_nature],
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                        {
+                            name: att['usage_name'] || att['name'],
+                            company: att['company']
+                        }
+                      },
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
                   }
               }
@@ -168,6 +182,14 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "aborted",
                   subject: mt.computed_data_light[:summary],
                   other: {
+                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
+                      appointment_nature: mt.computed_data_light[:appointment_nature],
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true"}.map { |att|
+                        {
+                            name: att['usage_name'] || att['name'],
+                            company: att['company']
+                        }
+                      }
                   }
               }
             }

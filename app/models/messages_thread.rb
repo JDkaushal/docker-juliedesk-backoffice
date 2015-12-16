@@ -169,6 +169,7 @@ class MessagesThread < ActiveRecord::Base
 
     {
         appointment_nature: appointment_nature,
+        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
         summary: last_message_classification.try(:summary),
         date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
           dt['date'] || "ZZZ"
