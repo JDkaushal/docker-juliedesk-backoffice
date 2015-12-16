@@ -118,8 +118,12 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           flatten.
           map(&:julie_action).
           select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
-          map{|ja| JSON.parse(ja.events || "[]")}
+          map{|ja| JSON.parse(ja.events || "[]").merge({'messages_thread_id' => mt.id})}
     }.flatten
+
+    all_messages_threads = MessagesThread.joins(:messages).
+        where(messages_threads: {account_email: account_email}).
+        where("messages.created_at > ?", DateTime.now - 1.month).distinct.includes(:messages)
 
     render json: {
         status: "success",
@@ -129,6 +133,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "scheduled",
                   subject: mt.computed_data_light[:summary],
                   other: {
+                      id: mt.id,
                       date: "20150101120000",
                       event: mt.event_data,
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
@@ -138,6 +143,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
               {
                   status: "scheduled",
                   other: {
+                      id: event['messages_thread_id'],
                       event: event
                   }
               }
@@ -146,6 +152,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "scheduling",
                   subject: mt.computed_data_light[:summary],
                   other: {
+                      id: mt.id,
                       waiting_for: "contact",
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
@@ -164,6 +171,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "scheduling",
                   subject: mt.computed_data_light[:summary],
                   other: {
+                      id: mt.id,
                       waiting_for: "client",
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
@@ -182,6 +190,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "aborted",
                   subject: mt.computed_data_light[:summary],
                   other: {
+                      id: mt.id,
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true"}.map { |att|
@@ -190,6 +199,14 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                             company: att['company']
                         }
                       }
+                  }
+              }
+            } + all_messages_threads.map{|mt|
+              {
+                  status: "all",
+                  other: {
+                      id: mt.id,
+                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
                   }
               }
             }
