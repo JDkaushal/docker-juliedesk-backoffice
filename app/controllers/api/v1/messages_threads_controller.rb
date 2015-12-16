@@ -84,7 +84,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                                     }).
         includes(messages: {message_classifications: :julie_action}).
         select {|mt|
-          [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status)
+          [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
+              mt.computed_data_light[:attendees].length > 0
         }
 
     event_creation_mts = MessagesThread.were_statused_as({
@@ -108,7 +109,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         select {|mt|
           status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
           [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED].include?(mt.current_status) &&
-            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+            (status_before_this_week.nil? || status_before_this_week != mt.current_status) &&
+              mt.computed_data_light[:attendees].length > 0
         }
 
     events_creation_data = event_creation_mts.map{|mt|
@@ -173,9 +175,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                        company = att['company']
+                        if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
+                          company = ""
+                        end
                         {
-                            name: att['usage_name'] || att['name'],
-                            company: att['company']
+                            name: [att['firstName'], att['lastName']].select(&:present?).join(" "),
+                            company: company
                         }
                       },
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
@@ -192,9 +198,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                        company = att['company']
+                        if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
+                          company = ""
+                        end
                         {
-                            name: att['usage_name'] || att['name'],
-                            company: att['company']
+                            name: [att['firstName'], att['lastName']].select(&:present?).join(" "),
+                            company: company
                         }
                       },
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
@@ -209,9 +219,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true"}.map { |att|
+                        company = att['company']
+                        if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
+                          company = ""
+                        end
                         {
-                            name: att['usage_name'] || att['name'],
-                            company: att['company']
+                            name: [att['firstName'], att['lastName']].select(&:present?).join(" "),
+                            company: company
                         }
                       }
                   }
