@@ -78,15 +78,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
 
     scheduling_mts = MessagesThread.were_statused_as({
-                                        start_date: DateTime.now - 1.month,
+                                        start_date: DateTime.now - 2.weeks,
                                         account_email: account_email,
                                         thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]
                                     }).
         includes(messages: {message_classifications: :julie_action}).
         select {|mt|
-          status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
-          [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
-            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+          [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status)
         }
 
     event_creation_mts = MessagesThread.were_statused_as({
@@ -121,9 +119,26 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           map{|ja| JSON.parse(ja.events || "[]").merge({'messages_thread_id' => mt.id})}
     }.flatten
 
-    all_messages_threads = MessagesThread.joins(:messages).
+    all_message_thread_ids = MessagesThread.joins(:messages).
         where(messages_threads: {account_email: account_email}).
-        where("messages.created_at > ?", DateTime.now - 1.month).distinct.includes(:messages)
+        where("messages.received_at > ?", DateTime.now - 2.weeks).distinct.map(&:id)
+
+    all_message_thread_ids -= scheduled_mts.map(&:id)
+    all_message_thread_ids -= scheduling_mts.map(&:id)
+    all_message_thread_ids -= event_creation_mts.map(&:id)
+    all_message_thread_ids -= aborted_mts.map(&:id)
+
+    all_messages_threads = MessagesThread.where(id: all_message_thread_ids).includes(messages: :message_classifications).select{|mt|
+      if mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULED && mt.messages.map(&:received_at).max < start_of_week
+        false
+      elsif mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED && mt.messages.map(&:received_at).max < start_of_week
+        false
+      elsif mt.current_status == MessageClassification::THREAD_STATUS_EVENTS_CREATION && mt.messages.map(&:received_at).max < start_of_week
+        false
+      else
+        true
+      end
+    }
 
     render json: {
         status: "success",
