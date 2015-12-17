@@ -83,7 +83,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         select {|mt|
           status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
           [MessageClassification::THREAD_STATUS_SCHEDULED].include?(mt.current_status) &&
-              (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+              (status_before_this_week.nil? || status_before_this_week != mt.current_status) &&
+              mt.messages.select{|m| !m.from_me}.length > 0
         }
 
     scheduling_mts = MessagesThread.were_statused_as({
@@ -94,7 +95,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         includes(messages: {message_classifications: :julie_action}).
         select {|mt|
           [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
-              mt.computed_data_light[:attendees].length > 0
+              mt.computed_data_light[:attendees].length > 0 &&
+              mt.messages.select{|m| !m.from_me}.length > 0
         }
 
     scheduling_aborted_mts = MessagesThread.were_statused_as({
@@ -105,7 +107,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         includes(messages: {message_classifications: :julie_action}).
         select {|mt|
       [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
-          mt.computed_data_light[:attendees].length > 0
+          mt.computed_data_light[:attendees].length > 0 &&
+          mt.messages.select{|m| !m.from_me}.length > 0
     } - scheduling_mts
 
     event_creation_mts = MessagesThread.were_statused_as({
@@ -117,7 +120,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         select {|mt|
           status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
           [MessageClassification::THREAD_STATUS_EVENTS_CREATION].include?(mt.current_status) &&
-            (status_before_this_week.nil? || status_before_this_week != mt.current_status)
+            (status_before_this_week.nil? || status_before_this_week != mt.current_status) &&
+              mt.messages.select{|m| !m.from_me}.length > 0
         }
 
     aborted_mts = MessagesThread.were_statused_as({
@@ -130,7 +134,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
           [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED].include?(mt.current_status) &&
             (status_before_this_week.nil? || status_before_this_week != mt.current_status) &&
-              mt.computed_data_light[:attendees].length > 0
+              mt.computed_data_light[:attendees].length > 0 &&
+              mt.messages.select{|m| !m.from_me}.length > 0
         }
 
     events_creation_data = event_creation_mts.map{|mt|
