@@ -60,9 +60,18 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       }
       return
     end
+
+    unless params[:start_date].present?
+      render json: {
+          status: "error",
+          message: "missing required param email",
+          data: {}
+      }
+      return
+    end
     
 
-    start_of_week = DateTime.now.beginning_of_week
+    start_of_week = DateTime.parse(params[:start_date])
 
 
     scheduled_mts = MessagesThread.were_statused_as({
@@ -78,7 +87,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
 
     scheduling_mts = MessagesThread.were_statused_as({
-                                        start_date: DateTime.now - 2.weeks,
+                                        start_date: start_of_week - 1.weeks,
                                         account_email: account_email,
                                         thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]
                                     }).
@@ -87,6 +96,17 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
               mt.computed_data_light[:attendees].length > 0
         }
+
+    scheduling_aborted_mts = MessagesThread.were_statused_as({
+                                                         start_date: start_of_week - 2.weeks,
+                                                         account_email: account_email,
+                                                         thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]
+                                                     }).
+        includes(messages: {message_classifications: :julie_action}).
+        select {|mt|
+      [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT].include?(mt.current_status) &&
+          mt.computed_data_light[:attendees].length > 0
+    } - scheduling_mts
 
     event_creation_mts = MessagesThread.were_statused_as({
                                         start_date: start_of_week,
@@ -101,7 +121,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
 
     aborted_mts = MessagesThread.were_statused_as({
-                                        start_date: DateTime.now - 1.month,
+                                        start_date: start_of_week,
                                         account_email: account_email,
                                         thread_status: [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED]
                                     }).
@@ -118,7 +138,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           flatten.
           map(&:julie_action).
           select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
-          map{|ja| JSON.parse(ja.events || "[]").merge({'messages_thread_id' => mt.id})}
+          map{|ja| JSON.parse(ja.events || "[]").map{|ev| ev.merge({'messages_thread_id' => mt.id})}}
     }.flatten
 
     all_message_thread_ids = MessagesThread.joins(:messages).
@@ -153,7 +173,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       id: mt.id,
                       date: "20150101120000",
                       event: mt.event_data,
-                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
+                      last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max
                   }
               }
             } + events_creation_data.map{|event|
@@ -184,7 +204,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                             company: company
                         }
                       },
-                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
+                      last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max
                   }
               }
             } + scheduling_mts.select{|mt| mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT}.map{|mt|
@@ -207,16 +227,16 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                             company: company
                         }
                       },
-                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at)
+                      last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max
                   }
               }
-            } + aborted_mts.map{|mt|
+            } + (aborted_mts + scheduling_aborted_mts).map{|mt|
               {
                   status: "aborted",
                   subject: mt.computed_data_light[:summary],
                   other: {
                       id: mt.id,
-                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
+                      last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true"}.map { |att|
                         company = att['company']
@@ -235,7 +255,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   status: "all",
                   other: {
                       id: mt.id,
-                      last_message_received_at: mt.messages.sort_by(&:received_at).last.try(:received_at),
+                      last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max
                   }
               }
             }
