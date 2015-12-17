@@ -139,11 +139,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
 
     events_creation_data = event_creation_mts.map{|mt|
-          mt.messages.map(&:message_classifications).
-          flatten.
-          map(&:julie_action).
-          select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
-          map{|ja| JSON.parse(ja.events || "[]").map{|ev| ev.merge({'messages_thread_id' => mt.id})}}
+          julie_action = mt.messages.map(&:message_classifications).
+            flatten.
+            map(&:julie_action).
+            select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
+            sort_by(&:updated_at).
+            last
+          JSON.parse(julie_action.events || "[]").map{|ev| ev.merge({'messages_thread_id' => mt.id})}
     }.flatten
 
     all_message_thread_ids = MessagesThread.joins(:messages).
