@@ -33,6 +33,7 @@ gem "detect_language"
 gem 'handlebars_assets'
 
 gem "rack-timeout"
+gem 'rack-cors', :require => 'rack/cors'
 
 gem "redis"
 

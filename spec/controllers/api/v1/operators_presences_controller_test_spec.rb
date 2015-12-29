@@ -7,6 +7,9 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
   end
 
   describe 'Operators count for a given time' do
+    before do
+      request.headers['Authorization'] = 'EDx19D72bH7e5I64EXk1kwa4jXvynddS'
+    end
 
     describe 'No date provided' do
       before(:each) do
@@ -17,8 +20,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
         expect(Pusher).to receive(:get).and_return(users: [])
 
         # We just check if DateTime receive the method Now in the before filter
-        path, params = ApiHelper.authenticated_request(:operators_count_at_time)
-        get path, params
+        get :operators_count_at_time
       end
 
       it 'should return the correct data' do
@@ -42,9 +44,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
                                                        {'id' => op4.email},
                                                        {'id' => op5.email}
                                                    ])
-
-        path, params = ApiHelper.authenticated_request(:operators_count_at_time)
-        get path, params
+        get :operators_count_at_time
 
         expect(JSON.parse(response.body)).to eq(
                                                  {
@@ -82,8 +82,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
 
         expect(Pusher).to receive(:get).and_return(users: [{'id' => op1.email}, {'id' => op3.email}, {'id' => op4.email}, {'id' => op5.email}])
 
-        path, params = ApiHelper.authenticated_request(:operators_count_at_time, {date: "2015-11-26T15:14:00+00:00"})
-        get path, params
+        get :operators_count_at_time, {date: "2015-11-26T15:14:00+00:00"}
 
         expect(JSON.parse(response.body)).to eq({
                                         "status" => "success",
