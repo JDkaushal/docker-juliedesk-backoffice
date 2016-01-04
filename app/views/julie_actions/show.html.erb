@@ -1,5 +1,9 @@
 <% if @messages_thread.account %>
-    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, julie_action: @julie_action} %>
+    <%= render partial: "messages_threads/info_panel", locals: {
+                                                             messages_thread: @messages_thread,
+                                                             julie_action: @julie_action,
+                                                             accounts_cache_light: @accounts_cache_light
+                                                     } %>
 <% else %>
     <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
 <% end %>
@@ -524,10 +528,12 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       highlight: message.id == @message.id,
                       highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action"),
                       operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails
+                      client_emails: @client_emails,
+                      julie_emails: @julie_emails
                   } %>
               <% if message.id == @message.id %>
                   <div class="highlighted-below-email">

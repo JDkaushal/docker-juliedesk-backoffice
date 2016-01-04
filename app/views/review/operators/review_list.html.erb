@@ -1,3 +1,22 @@
+<script>
+  $(function() {
+      $(".ten-links .open-ten-links-link").click(function() {
+          $(this).closest(".ten-links").find("a").each(function() {
+              window.open($(this).attr("href"));
+          });
+      });
+  });
+</script>
+<style>
+    .ten-links {
+        border-left: 1px solid #ccc;
+        padding: 0 0 0 10px;
+        margin: 0 0 10px 0
+    }
+    .open-ten-links-link {
+        cursor: pointer;
+    }
+</style>
 <div class="fixed-columns full">
   <div class="left-column">
 
@@ -26,21 +45,31 @@
           <br>
 
           <h4 id="not-created-events">Non-Created events threads:</h4>
-          <% @messages_threads.select{|mt| !@created_events_messages_thread_ids.include?(mt.id)}.each do |messages_thread| %>
-              <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
-              <br>
+          <% @messages_threads.select{|mt| !@created_events_messages_thread_ids.include?(mt.id)}.each_slice(10) do |messages_threads| %>
+              <div class="ten-links">
+                  <% messages_threads.each do |messages_thread| %>
+                    <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank", class: "non-created-event-link" %>
+                    <br>
+                  <% end %>
+                  <div class="open-ten-links-link">Open these links</div>
+              </div>
+
           <% end %>
           <br><br><br><br>
           <h4 id="created-events">Created events threads:</h4>
-          <% @messages_threads.select{|mt| @created_events_messages_thread_ids.include? mt.id}.each do |messages_thread| %>
-              <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank" %>
-              <br>
+          <% @messages_threads.select{|mt| @created_events_messages_thread_ids.include? mt.id}.each_slice(10) do |messages_threads| %>
+              <div class="ten-links">
+                  <% messages_threads.each do |messages_thread| %>
+                    <%= link_to "#{messages_thread.id} - #{messages_thread.subject}", review_review_messages_thread_path(id: messages_thread.id), target: "_blank", class: "created-event-link" %>
+                    <br>
+                  <% end %>
+                  <div class="open-ten-links-link">Open these links</div>
+              </div>
           <% end %>
           <br><br>
         </div>
       </div>
 
-      <%= render partial: "common/footer" %>
     </div>
   </div>
 </div>

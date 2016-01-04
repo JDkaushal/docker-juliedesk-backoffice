@@ -57,6 +57,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
       it 'should return the correct html if a start parameter is provided' do
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 30, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
 
@@ -69,12 +70,12 @@ describe Review::OperatorsPresenceController, :type => :controller do
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
 Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
-#{@normal.name};;;;;;;;0
-#{@op1.name};13h - 14h;15h - 16h;;;;;;2
-#{@op2.name};;15h - 16h;;;;;;1
-#{@op5.name};;;;;;;;0
-* #{@op3.name};;;;;;;;0
-** #{@op4.name};;;;;;;;0
+#{@normal.name};;;;;;;;0.0
+#{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
+#{@op2.name};;15h00 - 15h30;;;;;;0.5
+#{@op5.name};;;;;;;;0.0
+* #{@op3.name};;;;;;;;0.0
+** #{@op4.name};;;;;;;;0.0
 END
 )
       end
@@ -83,6 +84,7 @@ END
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 13, 00, 00), is_review: true)
 
         @op3.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1
         @op3.save
@@ -95,12 +97,12 @@ END
         expect(body['status']).to eq("success")
         expect(body['data']).to eq({
                                        "operators" => [
-                                           {"name" => @normal.name, "id" => @normal.id, "stars" => nil,   "presences" => []},
-                                           {"name" => @op1.name,    "id" => @op1.id,    "stars" => nil,   "presences" => ["20150910T100000", "20150911T120000"]},
-                                           {"name" => @op2.name,    "id" => @op2.id,    "stars" => nil,   "presences" => ["20150911T120000"]},
-                                           {"name" => @op5.name,    "id" => @op5.id,    "stars" => nil,   "presences" => []},
-                                           {"name" => @op3.name,    "id" => @op3.id,    "stars" => "*",   "presences" => []},
-                                           {"name" => @op4.name,    "id" => @op4.id,    "stars" => "**",  "presences" => []}
+                                           {"name" => @normal.name, "id" => @normal.id, "stars" => nil,   "privilege" => nil, "presences" => [], "review_presences" => []},
+                                           {"name" => @op1.name,    "id" => @op1.id,    "stars" => nil,   "privilege" => nil, "presences" => ["20150910T100000", "20150911T120000"], "review_presences" => []},
+                                           {"name" => @op2.name,    "id" => @op2.id,    "stars" => nil,   "privilege" => nil, "presences" => ["20150911T120000"], "review_presences" => ["20150911T130000"]},
+                                           {"name" => @op5.name,    "id" => @op5.id,    "stars" => nil,   "privilege" => nil, "presences" => [], "review_presences" => []},
+                                           {"name" => @op3.name,    "id" => @op3.id,    "stars" => "*",   "privilege" => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, "presences" => [], "review_presences" => []},
+                                           {"name" => @op4.name,    "id" => @op4.id,    "stars" => "**",  "privilege" => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, "presences" => [], "review_presences" => []}
                                        ]
                                    })
 
@@ -108,11 +110,21 @@ END
 
       it 'should render the correct csv to be downloaded' do
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 30, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
 
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
-        expect(response.body).to eq("Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count\n#{@normal.name};;;;;;;;0\n#{@op1.name};13h - 14h;15h - 16h;;;;;;2\n#{@op2.name};;15h - 16h;;;;;;1\n#{@op3.name};;;;;;;;0\n#{@op4.name};;;;;;;;0\n#{@op5.name};;;;;;;;0\n")
+        expect(response.body).to eq(<<END
+Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+#{@normal.name};;;;;;;;0.0
+#{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
+#{@op2.name};;15h00 - 15h30;;;;;;0.5
+#{@op3.name};;;;;;;;0.0
+#{@op4.name};;;;;;;;0.0
+#{@op5.name};;;;;;;;0.0
+END
+)
       end
     end
 

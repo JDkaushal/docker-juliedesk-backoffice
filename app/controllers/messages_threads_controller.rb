@@ -17,7 +17,7 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
 
 
-    data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :computed_data, :event_data])
+    data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :computed_data, :event_data, :current_status])
     render json: {
         status: "success",
         message: "",
@@ -49,8 +49,9 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.account
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
-
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
 
     @messages_thread.create_event_title_review_if_needed
   end
@@ -59,7 +60,8 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
     last_email_status = messages_thread.last_email_status
     if last_email_status == "from_me"
-      # Nothing to do
+      last_message_classification = messages_thread.last_message_classification
+      last_message_classification.update_attribute :thread_status, params[:thread_status]
     elsif last_email_status == "from_me_free_reply"
       last_message_classification = messages_thread.last_message_classification
       last_message_classification.update_attribute :thread_status, params[:thread_status]
@@ -179,6 +181,21 @@ class MessagesThreadsController < ApplicationController
     @messages_thread.account
 
     render action: :preview, layout: "review"
+  end
+
+  def remove_data
+    messages_thread = MessagesThread.find params[:id]
+    messages_thread.operator_actions_groups.destroy_all
+    messages_thread.mt_operator_actions.destroy_all
+    Pusher.trigger('private-global-chat', 'archive', {
+                                            :message => 'archive',
+                                            :message_thread_id => messages_thread.id
+                                        })
+
+    render json: {
+               status: "success",
+               data: {}
+           }
   end
 
   private

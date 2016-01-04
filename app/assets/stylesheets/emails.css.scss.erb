@@ -7,6 +7,7 @@
         background-color: $lightBlue;
     }
 
+
     .full-review-container {
         position: relative;
         @include transition-property(height);
@@ -296,6 +297,10 @@
             background: rgb(191, 228, 240);
             padding: 2px 5px;
         }
+        .julie-highlighted {
+            background: #F3B9D2;
+            padding: 2px 5px;
+        }
     }
 
     .current-action-message {
@@ -308,6 +313,16 @@
         cursor: default;
         color: rgba(0, 0, 0, 0.3);
         font-weight: 600;
+    }
+
+    .suggested-action-by-julie {
+        position: absolute;
+        top: 40px;
+        right: 70px;
+
+        &.enabled {
+            cursor: pointer;
+        }
     }
 
     .actions-menu-button {

@@ -1,4 +1,9 @@
-<%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread, message: @message, classification: @classification} %>
+<%= render partial: "messages_threads/info_panel", locals: {
+                                                         messages_thread: @messages_thread,
+                                                         message: @message,
+                                                         classification: @classification,
+                                                         accounts_cache_light: @accounts_cache_light
+                                                 } %>
 <script src="/javascripts/chrono.min.js"></script>
 <script>
   window.processingMessageThreadId = <%= @messages_thread.id %>;
@@ -91,11 +96,13 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       highlight: message.id == @message.id,
                       expend: message.id == @message.id && message.received_at == @messages_thread.messages.map(&:received_at).min,
                       highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @classification}.classifications.#{@classification}.action"),
                       operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails
+                      client_emails: @client_emails,
+                      julie_emails: @julie_emails
                   } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>

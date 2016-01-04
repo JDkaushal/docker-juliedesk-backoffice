@@ -76,7 +76,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             success: function(data) {
                 if(data.status == "error" && data.code == "AccessExpired") {
-                    alert("Office 365 access expired.");
+                    alert("Office 365 access expired for account: " + request.email);
                 }
                 else {
                     callback({

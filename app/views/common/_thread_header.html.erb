@@ -18,11 +18,10 @@
         });
 
         if(window.lastEmailStatus == "from_me") {
-            $(".current-thread-status-label").show();
-            $(".old-thread-status-label").hide();
+
             $(".finish-buttons-cancel-button").hide();
-            $(".new-thread-status-label").hide();
-            $(".new-thread-status-select").hide();
+            //$(".new-thread-status-label").hide();
+            //$(".new-thread-status-select").hide();
 
             $(".free-reply-done-button").show();
             $(".nothing-to-do-button").hide();
@@ -33,25 +32,25 @@
 
         }
         else if(window.lastEmailStatus == "from_me_free_reply") {
-            $(".current-thread-status-label").hide();
-            $(".old-thread-status-label").show();
-
             $(".free-reply-done-button").show();
             $(".nothing-to-do-button").hide();
 
-            $(".finish-buttons-finish-button").prop("disabled", true);
+            if($(".new-thread-status-select").val() == null) {
+                $(".finish-buttons-finish-button").prop("disabled", true);
+            }
 
             $(".free-reply-done-button").click(function() {
                 $(".finish-buttons").show();
             });
         }
         else {
-            $(".current-thread-status-label").hide();
             $(".old-thread-status-label").show();
             $(".free-reply-done-button").hide();
             $(".nothing-to-do-button").show();
 
-            $(".finish-buttons-finish-button").prop("disabled", true);
+            if($(".new-thread-status-select").val() == null) {
+                $(".finish-buttons-finish-button").prop("disabled", true);
+            }
 
             $(".nothing-to-do-button").click(function() {
                 $(".finish-buttons").show();
@@ -95,7 +94,6 @@
 
   <div class="finish-buttons">
     <span class="old-thread-status-label">Old status:</span>
-    <span class="current-thread-status-label">Current status:</span>
 
     <select class="old-thread-status-select" disabled>
       <option value="">No status</option>
@@ -106,10 +104,10 @@
 
     <span class="new-thread-status-label">New status:</span>
     <%= form_tag archive_messages_thread_path, id: "archive-form" do %>
-        <select name="thread_status" class="new-thread-status-select">
+        <select value="" name="thread_status" class="new-thread-status-select">
           <option selected disabled>Please select a status...</option>
           <% MessageClassification.all_thread_statuses.each do |thread_status| %>
-              <option value="<%= thread_status %>"><%= I18n.t("thread_statuses.#{thread_status}") %></option>
+              <option value="<%= thread_status %>" <%= (thread_status == local_assigns[:messages_thread].suggested_current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
           <% end %>
         </select>
 

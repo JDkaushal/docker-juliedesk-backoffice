@@ -40,7 +40,9 @@
                 }).success(function(response) {
                     $(".merging-global-spinner").hide();
                     if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
-                        window.location = "/messages_threads/" + messagesThreadId;
+                        $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
+                            window.location = "/messages_threads/" + messagesThreadId;
+                        });
                     }
                     else {
                         window.location = window.location.href;
@@ -199,12 +201,14 @@
               <% message = item %>
               <%= render partial: "messages_threads/email", locals: {
                       message: message,
+                      timezone: @messages_thread.computed_data[:timezone],
                       actions_available: true,
                       expend: message.received_at == @messages_thread.messages.map(&:received_at).min,
                       last: message == items.select{|i| i.class == Message}.last,
                       no_account: @messages_thread.account_email.nil?,
                       operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails
+                      client_emails: @client_emails,
+                      julie_emails: @julie_emails
                   } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
@@ -232,5 +236,8 @@
             accounts_cache_light: @accounts_cache_light
         } %>
 <% else %>
-    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {
+                                                                        messages_thread: @messages_thread,
+                                                                        accounts_cache_light: @accounts_cache_light
+                                                                } %>
 <% end %>

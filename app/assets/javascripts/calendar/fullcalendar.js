@@ -956,13 +956,13 @@ function Calendar(element, instanceOptions) {
 	
 	
 	function prevYear() {
-		date.add('years', -1);
+		date.add('months', -1);
 		renderView();
 	}
 	
 	
 	function nextYear() {
-		date.add('years', 1);
+		date.add('months', 1);
 		renderView();
 	}
 	

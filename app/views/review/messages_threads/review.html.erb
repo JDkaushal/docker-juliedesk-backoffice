@@ -52,6 +52,19 @@
 <div class="fixed-columns">
   <div class="left-column review">
 
+    <div class="messages-thread-status-for-review">
+      Status:
+      <%= form_tag change_messages_thread_status_review_messages_thread_path(id: @messages_thread.id) do %>
+          <select class="thread-status-select-for-review" name="thread_status">
+            <option value="">No status</option>
+            <% MessageClassification.all_thread_statuses.each do |thread_status| %>
+                <option value="<%= thread_status %>" <%= (thread_status == @messages_thread.current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
+            <% end %>
+          </select>
+          <%= submit_tag "Change status" %>
+      <% end %>
+    </div>
+
     <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
     <%= render template: "calendar/calendar" %>
 
@@ -85,7 +98,16 @@
 
       <% items.each do |item| %>
           <% if item.class == Message %>
-            <%= render partial: "messages_threads/email", locals: {message: item, actions_available: false, expend: false, last: false, no_account: @messages_thread.account_email.nil?, reviewing_status: "review", operator_actions_groups: operator_actions_groups} %>
+            <%= render partial: "messages_threads/email", locals: {
+                                                                message: item,
+                                                                timezone: @messages_thread.computed_data[:timezone],
+                                                                actions_available: false,
+                                                                expend: false,
+                                                                last: false,
+                                                                no_account: @messages_thread.account_email.nil?,
+                                                                reviewing_status: "review",
+                                                                operator_actions_groups: operator_actions_groups
+                                                        } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {reviewing_status: "review", operator_actions_group: item} %>
           <% end %>

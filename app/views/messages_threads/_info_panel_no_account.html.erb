@@ -6,19 +6,66 @@
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 $(function() {
-    <%
-    prioritary = MessagesThread.find_account_emails(messages_thread.server_thread) + ["julien@wepopp.com"]
-    source = Account.get_active_account_emails.sort_by{|contact|
-        (prioritary.include?(contact))?"aaa#{contact.downcase}":"zzz#{contact.downcase}"
-    }.to_json
-    %>
+    var accountsAutocompleteSource = <%==
+        (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
+            [{
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}"
+            }] +
+            (contact['email_aliases'] || []).map do |email_alias|
+            {
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}",
+                email_alias: email_alias
+            }
+            end
+        end.flatten.to_json
+        %>;
+
     $("#account-email-input").autocomplete({
-        source: <%== source %>,
+        source: function(request, callback) {
+            callback(
+                    _.union(
+                            _.filter(accountsAutocompleteSource, function (contact) {
+                                return (
+                                                contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
+                                        ) &&
+                                        contact.email_alias == null;
+                            }),
+                            _.filter(accountsAutocompleteSource, function (contact) {
+                                return contact.email_alias &&
+                                        contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                        contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                        contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                        contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
+                            })
+                    )
+            );
+        },
+        focus: function (event, ui) {
+            $("#account-email-input").val(ui.item.email);
+            return false;
+        },
+        select: function (event, ui) {
+            $("#account-email-input").val(ui.item.email);
+            return false;
+        },
         delay: 0,
         minLength: 0
-    }).focus(function(){
-                $(this).trigger($.Event("keydown"));
-            });
+    }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        return $("<li>")
+                .addClass("contact-autocomplete-item")
+                .data("item.autocomplete", item)
+                .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
+                .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
+                .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
+                .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
+                .appendTo(ul);
+    };
 
     $(".ui-autocomplete").css({
         maxHeight: 200,

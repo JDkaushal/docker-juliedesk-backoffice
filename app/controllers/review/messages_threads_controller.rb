@@ -52,7 +52,7 @@ class Review::MessagesThreadsController < ReviewController
           review_status: (data_entry[:notation] == 5)?(OperatorActionsGroup::REVIEW_STATUS_REVIEWED):(OperatorActionsGroup::REVIEW_STATUS_TO_LEARN),
           review_notation: data_entry[:notation],
           group_review_status: (data_entry[:should_review_in_group])?(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN):(OperatorActionsGroup::GROUP_REVIEW_STATUS_UNSET),
-          review_comment: data_entry[:comment],
+          review_comment: (data_entry[:comment].blank?)?nil:("#{data_entry[:comment]}\n\n#{session[:user_name]}"),
           reviewed_by_operator_id: session[:operator_id]
          })
       else
@@ -86,6 +86,16 @@ class Review::MessagesThreadsController < ReviewController
 
   def learn_next
     learn_next_messages_thread
+  end
+
+  def change_messages_thread_status
+    messages_thread = MessagesThread.includes(messages: :message_classifications).find(params[:id])
+
+    last_message = messages_thread.messages.sort_by(&:updated_at).last
+    message_classification = last_message.message_classifications.create_from_params classification: MessageClassification::NOTHING_TO_DO, operator: session[:user_username], thread_status: params[:thread_status]
+    message_classification.julie_action.update_attribute :done, true
+
+    redirect_to action: :review
   end
 
   private

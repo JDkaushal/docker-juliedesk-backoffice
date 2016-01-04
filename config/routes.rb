@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       post "archive", action: :archive, as: :archive
       post "split", action: :split, as: :split
       post "associate_to_account", action: :associate_to_account
+      post "remove_data", action: :remove_data
       get "remove_event_link", action: :remove_event_link
       get "unlock", action: :unlock
       get "history", action: :history
@@ -76,6 +77,8 @@ Rails.application.routes.draw do
 
         get "learn", action: :learn
         post "learnt", action: :learnt
+
+        post "change_messages_thread_status", action: :change_messages_thread_status
       end
 
       collection do
@@ -92,6 +95,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "operators_count_at_time", controller: :operators_presences, action: :operators_count_at_time
       get "inbox_count", controller: :messages_threads, action: :inbox_count
+      get "weekly_recap_data", controller: :messages_threads, action: :weekly_recap_data
+      post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
     end
   end
 

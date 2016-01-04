@@ -152,7 +152,7 @@
       </div>
       <div class="thread-client-and-status">
         <span class="thread-client">{{ messagesThread.account.full_name }}</span>
-        <span class="thread-status">{{ (messagesThread.event_data.calendar_id)?"Scheduled":"Scheduling" }}</span>
+        <span class="thread-status">{{ messagesThread.current_status }}</span>
       </div>
       <div class="thread-event" ng-show="messagesThread.event_data.date">
         <div class="thread-event-summary">{{ messagesThread.event_data.summary }}</div>

@@ -31,18 +31,32 @@
 
 
         var clientEmails = <%== (local_assigns[:client_emails] || []).to_json %>;
-        var highlightEmails = function($div) {
+        var highlightClientEmails = function($div) {
             $.each(clientEmails, function() {
                 var clientEmail = this;
-                $div.html($div.html().replace(clientEmail, function(ma) {
+                $div.html($div.html().replace(new RegExp(clientEmail, "gi"), function(ma) {
                     return "<span class='highlighted'>" + ma + "</span>";
                 }));
             });
         };
-        highlightEmails($email.find(".retracted .from"));
-        highlightEmails($email.find(".extended .from"));
-        highlightEmails($email.find(".extended .to"));
-        highlightEmails($email.find(".extended .cc"));
+        highlightClientEmails($email.find(".retracted .from"));
+        highlightClientEmails($email.find(".extended .from"));
+        highlightClientEmails($email.find(".extended .to"));
+        highlightClientEmails($email.find(".extended .cc"));
+
+        var julieEmails = <%== (local_assigns[:julie_emails] || []).to_json %>;
+        var highlightJulieEmails = function($div) {
+            $.each(julieEmails, function() {
+                var julieEmail = this;
+                $div.html($div.html().replace(new RegExp(julieEmail, "gi"), function(ma) {
+                    return "<span class='julie-highlighted'>" + ma + "</span>";
+                }));
+            });
+        };
+        highlightJulieEmails($email.find(".retracted .from"));
+        highlightJulieEmails($email.find(".extended .from"));
+        highlightJulieEmails($email.find(".extended .to"));
+        highlightJulieEmails($email.find(".extended .cc"));
 
 
         $email.find(".email-flag").click(function(e) {
@@ -105,6 +119,36 @@
             }
         });
 
+        $email.find(".suggested-action-by-julie").click(function(e) {
+            if($(this).hasClass("enabled")) {
+                $email.find(".suggested-action-by-julie").html("Thinking...");
+                var serverMessageId = <%= email['id'] %>;
+
+//                setTimeout(function() {
+//                    response = {"algo_duration": [13, 2, 0, 11], "request_classif": "ask_date_suggestions", "language_detected": "fr", "appointment_classif": "lunch", "appointment_threshold": 0.4, "appointment_proba": 0.44, "email_id": 103847, "request_threshold": 0.71, "request_proba": 0.97, "body": "Salut \u00c9ric\n\nOn parlait de se faire un dej tous les 3 ? Mon assistante Juliette va te\nproposer des dates fin juin d\u00e9but juillet si \u00e7a te va !\n\nA+"};
+//                    var classif = response.request_classif;
+//                    var locale = response.language_detected;
+//                    var appointmentType = response.appointment_classif;
+//                    $email.find(".suggested-action-by-julie").html("Classif: " + classif + "<br>Locale: " + locale + "<br>Appointment: " + appointmentType);
+//                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+//                }, 500);
+//                serverMessageId = 103847;
+                $.get("https://juliedesk-conscience.herokuapp.com/conscience/?id=" + serverMessageId + "&token=pA6rVsU04o9J").success(function(response) {
+                    console.log(response);
+                    var classif = response.request_classif;
+                    var locale = response.language_detected;
+                    var appointmentType = response.appointment_classif;
+                    $email.find(".suggested-action-by-julie").html("Classif: " + classif + "<br>Locale: " + locale + "<br>Appointment: " + appointmentType);
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                }).error(function() {
+                    $email.find(".suggested-action-by-julie").html("I don't know...");
+                    $email.find(".suggested-action-by-julie").removeClass("enabled");
+                });
+                e.stopPropagation();
+            }
+        });
+
 
         <% if local_assigns[:expend] %>
             $email.find("blockquote, .gmail_quote").addClass("expanded");
@@ -146,24 +190,34 @@
             var comp = new ICAL.Component(ICAL.parse(icsString));
             var vevent = comp.getFirstSubcomponent("vevent");
             var event = new ICAL.Event(vevent);
+
+            var mStartDate = moment(event.startDate.toString()).utc();
+            var mEndDate = moment(event.endDate.toString()).utc();
+
+
+
+            var dates = mStartDate.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd DD MMMM YYYY HH:mm") + " (UTC)";
+            <% if local_assigns[:timezone] %>
+            var timezone = "<%= local_assigns[:timezone] %>";
+             dates += "<br>" + mStartDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " (" + timezone + ")";
+            <% end %>
+
             return {
                 summary: event.summary,
                 description: event.description,
                 location: event.location,
-                startDate: moment(event.startDate.toString()).format("LLL"),
-                endDate: moment(event.endDate.toString()).format("LLL"),
+                dates: dates,
                 attendees: _.map(event.attendees, function(attendee) {
                     return attendee.getFirstValue().toLowerCase().replace("mailto:", "");
                 }),
                 organizer: event.organizer.toLowerCase().replace("mailto:", ""),
                 raw: vevent
-            }
+            };
         }
 
         function generateIcsPreview (icsData) {
             $email.find(".ics-preview-container .ics-preview .summary").html(icsData.summary);
-            $email.find(".ics-preview-container .ics-preview .ics-date .start-date").html(icsData.startDate);
-            $email.find(".ics-preview-container .ics-preview .ics-date .end-date").html(icsData.endDate);
+            $email.find(".ics-preview-container .ics-preview .ics-date .dates").html(icsData.dates);
             $email.find(".ics-preview-container .ics-preview .location span").html(icsData.location);
             $email.find(".ics-preview-container .ics-preview .attendees .organizer span").html(icsData.organizer);
             $email.find(icsData.attendees).each(function() {
@@ -264,6 +318,9 @@
       </div>
 
       <% if local_assigns[:actions_available] %>
+          <% if session[:privilege] == Operator::PRIVILEGE_ADMIN %>
+            <div class="suggested-action-by-julie enabled">Give me your opinion, Julie.</div>
+          <% end %>
           <div class="actions-menu-button"></div>
 
           <div class="actions-menu-positioner">
@@ -300,7 +357,7 @@
         <div class="summary"></div>
         <div class="ics-date ics-preview-field">
           <div class="ics-preview-label">When</div>
-          <span class="start-date"></span> - <span class="end-date"></span>
+          <span class="dates"></span>
         </div>
 
         <div class="location ics-preview-field">

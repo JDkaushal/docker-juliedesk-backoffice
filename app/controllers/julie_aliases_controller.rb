@@ -11,8 +11,8 @@ class JulieAliasesController < ApplicationController
   def new
     @julie_alias = JulieAlias.new({
         name: "Julie Desk",
-        footer_en: "\n\nBest regards,\n\nJulie",
-        footer_fr: "\n\nCordialement,\n\nJulie"
+        footer_en: "\n\nBest regards,\n\nJulie\nArtificial Intelligence @",
+        footer_fr: "\n\nCordialement,\n\nJulie\nIntelligence Artificielle @",
     })
   end
 

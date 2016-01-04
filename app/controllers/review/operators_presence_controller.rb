@@ -7,7 +7,7 @@ class Review::OperatorsPresenceController < ReviewController
     respond_to do |format|
       format.html {
         if params[:start]
-          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences)
+          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level)
           render "index.csv"
           return
         end
@@ -17,11 +17,14 @@ class Review::OperatorsPresenceController < ReviewController
             status: "success",
             data: {
                 operators: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level).map{|o|
+                  presences = o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days)
                   {
                       name: o.name,
                       id: o.id,
                       stars: o.stars,
-                      presences: o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days).map{|op| op.date.strftime("%Y%m%dT%H0000")}
+                      privilege: o.privilege,
+                      presences: presences.where(is_review: false).map{|op| op.date.strftime("%Y%m%dT%H%M00")},
+                      review_presences: presences.where(is_review: true).map{|op| op.date.strftime("%Y%m%dT%H%M00")}
                   }
                 }
             }
@@ -36,7 +39,7 @@ class Review::OperatorsPresenceController < ReviewController
   def add
     OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}).delete_all
     params[:presences].map{|p| DateTime.parse(p)}.each do |p|
-      OperatorPresence.create operator_id: params[:operator_id], date: p
+      OperatorPresence.create operator_id: params[:operator_id], date: p, is_review: params[:is_review].present?
     end
 
     render json: {}
@@ -59,7 +62,7 @@ class Review::OperatorsPresenceController < ReviewController
   end
 
   def remove
-    OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}).delete_all
+    OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}, is_review: params[:is_review].present?).delete_all
 
     render json: {}
   end
