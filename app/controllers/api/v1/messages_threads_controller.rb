@@ -201,7 +201,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
-                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" && att['isPresent'] == "true"}.map { |att|
                         company = att['company']
                         if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
                           company = ""
@@ -224,7 +224,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
-                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" }.map { |att|
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" && att['isPresent'] == "true"}.map { |att|
                         company = att['company']
                         if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
                           company = ""
@@ -245,7 +245,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                       id: mt.id,
                       last_message_received_at: mt.messages.select{|m| !m.from_me}.map(&:received_at).max,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
-                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true"}.map { |att|
+                      attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" && att['isPresent'] == "true"}.map { |att|
                         company = att['company']
                         if company == mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
                           company = ""
