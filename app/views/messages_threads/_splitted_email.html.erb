@@ -1,0 +1,64 @@
+<script>
+    $(function () {
+        var $email = $(".email-<%= email['id'] %>");
+        $email.find(".retracted, .extended .retractable").click(function (e) {
+            $(this).closest(".email").toggleClass("extended");
+        });
+
+        var $expandQuotes = $("<div>").html("...").addClass("expand-quotes-button");
+        $email.find("blockquote, .gmail_quote").first().before($expandQuotes);
+
+        $email.find(".expand-quotes-button").click(function(e) {
+            if($email.find("blockquote.expanded, .gmail_quote.expanded").length > 0) {
+                $email.find("blockquote, .gmail_quote").removeClass("expanded");
+            }
+            else {
+                $email.find("blockquote, .gmail_quote").addClass("expanded");
+            }
+        });
+
+    });
+
+
+
+
+</script>
+
+
+<div class="email splitted retracted email-<%= email['id'] %>">
+  <div class="email-container">
+  <div class="retracted">
+    <div class="retracted-container">
+      <div class="date-and-from">
+        <div class="from"><%= email['from'] %></div>
+        <%= link_to "S", review_review_messages_thread_path(MessagesThread.find_by_server_thread_id email['messages_thread_id']), class: "email-was-split", target: "_blank" %>
+        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
+        <div class="clear"></div>
+      </div>
+      <div class="snippet">
+        <%= email['snippet'] %>
+      </div>
+    </div>
+  </div>
+  <div class="extended">
+    <div class="retractable">
+      <div class="date-and-from">
+        <div class="from"><%= email['from'] %></div>
+        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
+        <div class="clear"></div>
+      </div>
+
+      <div class="to">
+        <span class="email-label"><%= I18n.t("common.to")%></span>
+        <%= email['to'] %>
+      </div>
+      <div class="cc">
+        <span class="email-label"><%= I18n.t("common.cc")%></span>
+        <%= email['cc'] %>
+      </div>
+    </div>
+
+    <div class="body"><%== email['parsed_html'] %></div>
+  </div>
+  </div>
+</div>

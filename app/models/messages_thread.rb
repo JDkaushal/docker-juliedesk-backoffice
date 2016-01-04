@@ -24,7 +24,7 @@ class MessagesThread < ActiveRecord::Base
 
   def server_thread params={}
     if @server_thread.nil? || params[:force_refresh]
-      @server_thread = EmailServer.get_messages_thread(messages_thread_id: self.server_thread_id)
+      @server_thread = EmailServer.get_messages_thread(messages_thread_id: self.server_thread_id, show_split: params[:show_split])
     end
     @server_thread
   end
@@ -293,7 +293,11 @@ class MessagesThread < ActiveRecord::Base
 
   def re_import
     existing_messages = []
-    self.server_thread['messages'].each do |server_message|
+    all_messages = self.server_thread(force_refresh: true, show_split: true)['messages']
+
+    all_messages.select do |server_message|
+      server_message['messages_thread_id'] == self.server_thread_id
+    end.each do |server_message|
 
       message = self.messages.select{|m| m.server_message_id == server_message['id']}.first
       unless message
@@ -310,7 +314,15 @@ class MessagesThread < ActiveRecord::Base
       message.clean_delete
     end
 
+    @splitted_server_messages = all_messages.select do |server_message|
+      server_message['messages_thread_id'] != self.server_thread_id
+    end
+
     self.messages = self.messages && existing_messages
+  end
+
+  def splitted_server_messages
+    @splitted_server_messages || []
   end
 
   def split message_ids

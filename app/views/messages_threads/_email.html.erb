@@ -288,7 +288,12 @@
             <div class="email-was-merged">M</div>
         <% end %>
         <% if email['was_split'] %>
-            <div class="email-was-split">S</div>
+            <% if local_assigns[:reviewing_status] == "review" %>
+                <%= link_to "S", review_review_messages_thread_path(MessagesThread.find_by_server_thread_id email['original_messages_thread_id']), class: "email-was-split", target: "_blank" %>
+            <% else %>
+                <div class="email-was-split">S</div>
+            <% end %>
+
         <% end %>
         <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
         <div class="clear"></div>
