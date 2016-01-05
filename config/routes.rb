@@ -39,6 +39,7 @@ Rails.application.routes.draw do
 
       post "reply", action: :reply, as: :reply
       post "generate_threads", action: :generate_threads, as: :generate_threads
+      post "generate_threads_for_follow_up", action: :generate_threads_for_follow_up, as: :generate_threads_for_follow_up
     end
   end
 

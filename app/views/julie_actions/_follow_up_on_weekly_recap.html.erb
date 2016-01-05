@@ -1,0 +1,43 @@
+<script>
+  $(function() {
+    $("#show-calendar-button").hide();
+    $(".calendar-container").addClass("minimized");
+
+    window.followUpData = <%== @julie_action.message_classification.follow_up_data %>;
+    window.setReplyMessage(window.generateEmailTemplate({
+      action: "follow_up_confirmation",
+      locale: window.threadAccount.locale,
+      followUpData: window.followUpData
+    }), "only_client");
+  });
+
+  window.clickReplyButton = function() {
+    $(".reply-box #callback-message").html("Creating threads...");
+    $.ajax({
+      url: "/messages/<%= @julie_action.message_classification.message_id %>/generate_threads_for_follow_up",
+      method: "post",
+      data: {
+        follow_up_data: _.map(window.followUpData, function (followUpItem) {
+          return {
+            message: followUpItem.message,
+            messages_thread_id: followUpItem.messagesThreadId
+          }
+        })
+      },
+      success: function () {
+        $.ajax({
+          url: "/julie_actions/<%= @julie_action.id %>/update",
+          method: "post",
+          data: {
+            text: $("textarea#reply-text").val(),
+            to: window.currentRecipients().to,
+            cc: window.currentRecipients().cc,
+            done: true,
+            processed_in: Date.now() - window.startedAt
+          }
+        });
+        window.sendReply();
+      }
+    });
+  };
+</script>

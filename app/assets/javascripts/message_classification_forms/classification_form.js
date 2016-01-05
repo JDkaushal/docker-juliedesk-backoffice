@@ -26,6 +26,9 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "wait_for_contact") {
         return new window.classificationForms.waitForContactForm(params);
     }
+    else if (params.classification == "follow_up_on_weekly_recap") {
+        return new window.classificationForms.followUpOnWeeklyRecapForm(params);
+    }
     throw "No classification form defined for classification: '" + params.classification + "'";
 };
 

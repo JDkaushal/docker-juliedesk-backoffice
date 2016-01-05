@@ -188,6 +188,10 @@ window.wordings['en'] = {
                     nonassisted: "Could you let me know your Skype Id?"
                 }
             }
+        },
+        follow_up_confirmation: {
+            header: "Got it, I'm going to follow-up on:\n",
+            item: "- %{label}\n"
         }
     },
     common: {

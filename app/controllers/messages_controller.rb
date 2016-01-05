@@ -87,16 +87,40 @@ class MessagesController < ApplicationController
   end
 
   def generate_threads
-    p "*" * 50
-    p "Generating threads..."
     @message = Message.find params[:id]
-    p "Found message. genrates threads"
     @message.generate_threads((params[:julie_messages] || {}).values)
-    p "Done."
-    p "*" * 50
+
     render json: {
         status: "success",
         message: "",
+        data: {}
+    }
+  end
+
+  def generate_threads_for_follow_up
+    (params[:follow_up_data] || {}).values.each do |follow_up_item|
+      messages_thread = MessagesThread.find follow_up_item['messages_thread_id']
+      messages_thread.update_attributes(should_follow_up: true, follow_up_instruction: follow_up_item['message'])
+
+      OperatorAction.create({
+                                      initiated_at: DateTime.now,
+                                      target: messages_thread,
+                                      nature: OperatorAction::NATURE_OPEN,
+                                      operator_id: session[:operator_id],
+                                      messages_thread_id: messages_thread.id
+                                  })
+      OperatorAction.create_and_verify({
+                                           initiated_at: DateTime.now,
+                                           target: messages_thread,
+                                           nature: OperatorAction::NATURE_SEND_TO_SUPPORT,
+                                           operator_id: session[:operator_id],
+                                           messages_thread_id: messages_thread.id,
+                                           message: "#FollowUp #{follow_up_item['message']}"
+                                       })
+    end
+
+    render json: {
+        status: "success",
         data: {}
     }
   end

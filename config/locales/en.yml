@@ -87,6 +87,8 @@ en:
             action: "I can't decide"
           give_preference:
             action: "Note preference"
+          follow_up_on_weekly_recap:
+            action: "Relancer des threads"
 
   forbidden_classifications:
     associate_event: "Only admin can perform event linking. Please send to admin."
@@ -159,6 +161,7 @@ en:
     nothing_to_do: "Everything is processed for now!"
     to_process_later: "To process later"
     waiting_for_preference_change: "Waiting for preference change"
+    to_follow_up: "To follow-up"
 
   show:
     x_unread_emails:

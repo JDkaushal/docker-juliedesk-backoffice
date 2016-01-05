@@ -25,6 +25,8 @@ class MessageClassification < ActiveRecord::Base
   FORWARD_TO_CLIENT        = "forward_to_client"
   WAIT_FOR_CONTACT         = "wait_for_contact"
 
+  FOLLOWUP_ON_WEEKLY_RECAP = "follow_up_on_weekly_recap"
+
   NOTHING_TO_DO            = "nothing_to_do"
 
 
@@ -62,6 +64,11 @@ class MessageClassification < ActiveRecord::Base
     end
     attendees = MessageClassification.clean_and_categorize_clients attendees
 
+    follow_up_data = nil
+    if params[:follow_up_data]
+      follow_up_data = params[:follow_up_data].values.to_json
+    end
+
     result = self.new(
         locale: params[:locale],
         timezone: params[:timezone],
@@ -85,7 +92,8 @@ class MessageClassification < ActiveRecord::Base
         processed_in: params[:processed_in],
 
         date_times: (params[:date_times].try(:values) || []).to_json,
-        thread_status: params[:thread_status]
+        thread_status: params[:thread_status],
+        follow_up_data: follow_up_data
     )
     result.save!
 
@@ -158,6 +166,8 @@ class MessageClassification < ActiveRecord::Base
       create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_CLIENT
     elsif self.classification == MessageClassification::WAIT_FOR_CONTACT
       create_julie_action action_nature: JulieAction::JD_ACTION_WAIT_FOR_CONTACT
+    elsif self.classification == MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
+      create_julie_action action_nature: JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP
     end
   end
 
@@ -234,6 +244,8 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == ASK_CANCEL_EVENTS
       THREAD_STATUS_HANDLED_IN_OTHER_THREADS
     elsif self.classification == ASK_POSTPONE_EVENTS
+      THREAD_STATUS_HANDLED_IN_OTHER_THREADS
+    elsif self.classification == FOLLOWUP_ON_WEEKLY_RECAP
       THREAD_STATUS_HANDLED_IN_OTHER_THREADS
     elsif self.classification == CANCEL_TO_FOUNDERS
       nil

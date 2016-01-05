@@ -482,6 +482,14 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def available_classifications
+    if self.server_thread['labels'].include? "WeeklyRecap"
+      return {
+          other: [
+            MessageClassification::UNKNOWN,
+            MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
+        ]
+      }
+    end
     if account_email
       s_status = scheduling_status
       if s_status == EVENTS_CREATED

@@ -511,6 +511,12 @@ window.generateEmailTemplate = function (params) {
         }
 
     }
+    else if(params.action == "follow_up_confirmation") {
+        message += localize("email_templates.follow_up_confirmation.header");
+        _.each(params.followUpData, function(followUpItem) {
+            message += localize("email_templates.follow_up_confirmation.item", {label: followUpItem.label});
+        });
+    }
 
     window.setCurrentLocale(previousLocale);
     return message;

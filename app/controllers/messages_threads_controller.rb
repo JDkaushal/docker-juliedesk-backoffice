@@ -83,6 +83,7 @@ class MessagesThreadsController < ApplicationController
     EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
 
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
+    messages_thread.update_attribute :should_follow_up, false
 
     if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
       EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
@@ -206,7 +207,7 @@ class MessagesThreadsController < ApplicationController
 
       }
       format.json {
-        @messages_thread = MessagesThread.where(in_inbox: true).includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
+        @messages_thread = MessagesThread.where("in_inbox = TRUE OR should_follow_up = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
           mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
               mt.messages.map{|m| m.received_at}.max ||
               DateTime.parse("2500-01-01")
