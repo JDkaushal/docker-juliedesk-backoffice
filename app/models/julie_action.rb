@@ -21,6 +21,7 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_NOTHING_TO_DO            = "nothing_to_do"
   JD_ACTION_FORWARD_TO_CLIENT        = "forward_to_client"
   JD_ACTION_WAIT_FOR_CONTACT         = "wait_for_contact"
+  JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP = "follow_up_on_weekly_recap"
 
 
   def event_data

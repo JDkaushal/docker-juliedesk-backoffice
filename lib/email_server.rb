@@ -21,8 +21,12 @@ module EmailServer
   end
 
   def self.get_messages_thread opts={}
-    self.make_request :get,
-                      "/messages_threads/#{opts[:messages_thread_id]}?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    url = "/messages_threads/#{opts[:messages_thread_id]}?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    if opts[:show_split].present?
+      url += "&show_split=true"
+    end
+    self.make_request :get, url
+
   end
 
   def self.add_and_remove_labels opts={}

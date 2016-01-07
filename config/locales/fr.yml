@@ -259,6 +259,8 @@ fr:
             action: "Je ne peux pas décider"
           give_preference:
             action: "Noter une préférence"
+          follow_up_on_weekly_recap:
+            action: "Relancer des threads"
 
   forbidden_classifications:
     associate_event: "Seule l'équipe de support peut lier un évènement. Veuillez envoyer à l'équipe de support."
@@ -326,6 +328,7 @@ fr:
     nothing_to_do: "Tout est traité pour le moment !"
     to_process_later: "A traiter plus tard"
     waiting_for_preference_change: "En attente de changement de préférence"
+    to_follow_up: "A relancer"
 
   show:
     x_unread_emails:

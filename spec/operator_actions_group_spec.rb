@@ -84,4 +84,28 @@ describe OperatorActionsGroup do
      end
   end
 
+  describe "label_to_display" do
+    context "label archive" do
+      it "should return archive" do
+        operator_actions_group = FactoryGirl.create(:operator_actions_group, label: OperatorActionsGroup::LABEL_ARCHIVE)
+        expect(operator_actions_group.label_to_display).to eq("archive")
+      end
+    end
+    context "label send_to_support" do
+      context "no follow-up" do
+        it "should return send_to_support" do
+          operator_actions_group = FactoryGirl.create(:operator_actions_group, label: OperatorActionsGroup::LABEL_SEND_TO_SUPPORT)
+          expect(operator_actions_group.label_to_display).to eq("send_to_support")
+        end
+      end
+      context "follow-up" do
+        it "should return follow up" do
+          operator_actions_group = FactoryGirl.create(:operator_actions_group, label: OperatorActionsGroup::LABEL_SEND_TO_SUPPORT)
+          FactoryGirl.create(:operator_action, operator_actions_group: operator_actions_group, message: "#FollowUp Hello")
+          expect(operator_actions_group.label_to_display).to eq("Follow-up")
+        end
+      end
+    end
+  end
+
 end

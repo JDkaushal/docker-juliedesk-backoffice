@@ -184,7 +184,7 @@ describe MessagesController, :type => :controller do
       end
     end
 
-    describe 'Generate Threads' do
+    describe "generate_threads" do
       it 'should populate the correct instance variables' do
         mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
         m1 = FactoryGirl.create(:message_complete)
@@ -219,104 +219,134 @@ describe MessagesController, :type => :controller do
 
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
       end
+    end
 
-      describe 'Reply' do
-        it 'should populate the correct instance variables' do
-          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
-          mc1 = FactoryGirl.create(:message_classification_complete)
-          m1 = FactoryGirl.create(:message_complete)
+    describe "generate_threads_for_follow_up" do
+      it 'should populate the correct instance variables' do
+        mt1 = FactoryGirl.create(:messages_thread)
+        m1 = FactoryGirl.create(:message, messages_thread: mt1)
+        mt2 = FactoryGirl.create(:messages_thread)
 
-          mc1.timezone = "Europe/Paris"
-          mc1.message = m1
-          mc1.save
+        post :generate_threads_for_follow_up, id: m1.id, follow_up_data: {
+            "0" => {
+                'messages_thread_id' => "#{mt1.id}",
+                'message' => "A relancer vite"
+            }
+        }
 
-          ja1 = FactoryGirl.create(:julie_alias_random)
-          jac1 = JulieAction.create(message_classification_id: mc1.id)
+        expect(MessagesThread.find(mt1.id).should_follow_up).to eq(true)
+        expect(MessagesThread.find(mt1.id).follow_up_instruction).to eq("A relancer vite")
 
-          mt1.messages << m1
+        expect(MessagesThread.find(mt2.id).should_follow_up).to eq(false)
+        expect(MessagesThread.find(mt2.id).follow_up_instruction).to eq(nil)
 
-          allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
+        operator_action_groups = MessagesThread.find(mt1.id).operator_actions_groups
+        expect(operator_action_groups.length).to eq(1)
+        expect(operator_action_groups.first.label).to eq(OperatorActionsGroup::LABEL_SEND_TO_SUPPORT)
+        expect(operator_action_groups.first.operator_actions.select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message)).to eq("#FollowUp A relancer vite")
 
-          post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+        expect(JSON.parse(response.body)).to eq({
+            "status" => "success",
+            "data" => {}
+                                                })
+      end
+    end
 
-          expect(assigns(:message)).to eq(m1)
-          expect(assigns(:julie_alias)).to eq (ja1)
-          expect(assigns(:new_server_message_id)).to eq(2)
-          expect(assigns(:julie_action)).to eq(jac1)
-        end
+    describe 'Reply' do
+      it 'should populate the correct instance variables' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
 
-        it 'should call the deliver_message method on the EmailServer with the correct params' do
-          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
-          mc1 = FactoryGirl.create(:message_classification_complete)
-          m1 = FactoryGirl.create(:message_complete)
-          m1.update(server_message_id: 1)
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
 
-          mc1.timezone = "Europe/Paris"
-          mc1.message = m1
-          mc1.save
+        ja1 = FactoryGirl.create(:julie_alias_random)
+        jac1 = JulieAction.create(message_classification_id: mc1.id)
 
-          ja1 = FactoryGirl.create(:julie_alias_random)
-          jac1 = JulieAction.create(message_classification_id: mc1.id)
+        mt1.messages << m1
 
-          mt1.messages << m1
+        allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
 
-          expect(EmailServer).to receive(:deliver_message).with({
-                                                                    subject: 'New Subject',
-                                                                    from: "#{ja1.name} <#{ja1.email}>",
-                                                                    to: "test@test.com",
-                                                                    cc: "test2@test.com, test3@test.com, test4@test.com",
-                                                                    text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfreferSignature",
-                                                                    html: "<div>blablabla</div>\n<div>fezfzefzef</div>\n<div>ferfzefezf</div>\n<div><br></div>\n<div>ferfrefer</div> <div>Signature</div>",
-                                                                    quote_replied_message: false,
-                                                                    quote_forward_message: false,
-                                                                    reply_to_message_id:  m1.server_message_id
-                                                                }).and_return({'id' => 2})
+        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
 
-          post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com'], subject: 'New Subject'
-        end
-
-        it 'should update the specified Julie Action with the new server message id' do
-          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
-          mc1 = FactoryGirl.create(:message_classification_complete)
-          m1 = FactoryGirl.create(:message_complete)
-
-          mc1.timezone = "Europe/Paris"
-          mc1.message = m1
-          mc1.save
-
-          ja1 = FactoryGirl.create(:julie_alias_random)
-          jac1 = JulieAction.create(message_classification_id: mc1.id)
-
-          mt1.messages << m1
-
-          allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
-          expect_any_instance_of(JulieAction).to receive(:update_attribute).with(:server_message_id, 2)
-
-          post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
-        end
-
-        it 'should render the correct JSON' do
-          mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
-          mc1 = FactoryGirl.create(:message_classification_complete)
-          m1 = FactoryGirl.create(:message_complete)
-
-          mc1.timezone = "Europe/Paris"
-          mc1.message = m1
-          mc1.save
-
-          ja1 = FactoryGirl.create(:julie_alias_random)
-          jac1 = JulieAction.create(message_classification_id: mc1.id)
-
-          mt1.messages << m1
-
-          allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
-
-          post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
-
-          expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
-        end
+        expect(assigns(:message)).to eq(m1)
+        expect(assigns(:julie_alias)).to eq (ja1)
+        expect(assigns(:new_server_message_id)).to eq(2)
+        expect(assigns(:julie_action)).to eq(jac1)
       end
 
+      it 'should call the deliver_message method on the EmailServer with the correct params' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
+        m1.update(server_message_id: 1)
+
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
+
+        ja1 = FactoryGirl.create(:julie_alias_random)
+        jac1 = JulieAction.create(message_classification_id: mc1.id)
+
+        mt1.messages << m1
+
+        expect(EmailServer).to receive(:deliver_message).with({
+                                                                  subject: 'New Subject',
+                                                                  from: "#{ja1.name} <#{ja1.email}>",
+                                                                  to: "test@test.com",
+                                                                  cc: "test2@test.com, test3@test.com, test4@test.com",
+                                                                  text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfreferSignature",
+                                                                  html: "<div>blablabla</div>\n<div>fezfzefzef</div>\n<div>ferfzefezf</div>\n<div><br></div>\n<div>ferfrefer</div> <div>Signature</div>",
+                                                                  quote_replied_message: false,
+                                                                  quote_forward_message: false,
+                                                                  reply_to_message_id: m1.server_message_id
+                                                              }).and_return({'id' => 2})
+
+        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com'], subject: 'New Subject'
+      end
+
+      it 'should update the specified Julie Action with the new server message id' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
+
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
+
+        ja1 = FactoryGirl.create(:julie_alias_random)
+        jac1 = JulieAction.create(message_classification_id: mc1.id)
+
+        mt1.messages << m1
+
+        allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
+        expect_any_instance_of(JulieAction).to receive(:update_attribute).with(:server_message_id, 2)
+
+        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+      end
+
+      it 'should render the correct JSON' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
+
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
+
+        ja1 = FactoryGirl.create(:julie_alias_random)
+        jac1 = JulieAction.create(message_classification_id: mc1.id)
+
+        mt1.messages << m1
+
+        allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
+
+        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+
+        expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
+      end
     end
   end
 

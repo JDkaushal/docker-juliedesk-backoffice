@@ -189,6 +189,10 @@ window.wordings['fr'] = {
                     nonassisted: "Pourriez de me faire parvenir votre identifiant ?"
                 }
             }
+        },
+        follow_up_confirmation: {
+            header: "C'est noté, je vais relancer :\n",
+            item: "- %{label}\n"
         }
     },
     common: {

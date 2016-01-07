@@ -93,4 +93,16 @@ class OperatorActionsGroup < ActiveRecord::Base
   def is_action?
     label != LABEL_ARCHIVE && label != LABEL_SEND_TO_SUPPORT
   end
+
+  def label_to_display
+    if label == LABEL_SEND_TO_SUPPORT
+      if self.operator_actions.map(&:message).join.include? "#FollowUp"
+        "Follow-up"
+      else
+        label
+      end
+    else
+      label
+    end
+  end
 end

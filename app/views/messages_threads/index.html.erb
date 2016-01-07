@@ -54,14 +54,26 @@
 
         $scope.toProcessLaterMessagesThreads = function() {
             return _.filter($scope.messagesThreads, function(messagesThread) {
-               return $scope.shouldProcessLater(messagesThread);
+               return !$scope.shouldFollowUp(messagesThread) && $scope.shouldProcessLater(messagesThread);
             });
         };
 
         $scope.toProcessNowMessagesThreads = function() {
             return _.filter($scope.messagesThreads, function(messagesThread) {
-                return !$scope.shouldProcessLater(messagesThread);
+                return !$scope.shouldFollowUp(messagesThread) && !$scope.shouldProcessLater(messagesThread);
             });
+        };
+
+        $scope.toFollowUpMessagesThreads = function() {
+          return _.filter($scope.messagesThreads, function(messagesThread) {
+            return $scope.shouldFollowUp(messagesThread);
+          })
+        };
+
+        $scope.shouldFollowUp = function(messagesThread) {
+          return (messagesThread.should_follow_up && !messagesThread.in_inbox) ||
+              ((new RegExp("Récapitulatif hebdomadaire de la semaine du")).test(messagesThread.subject)) ||
+              ((new RegExp("weekly recap")).test(messagesThread.subject));
         };
 
         $scope.lockedMessagesThreads = function() {
@@ -190,6 +202,15 @@
         <div class="category-title"><%= I18n.t("index.to_process_later") %></div>
         <div class="messages-threads-container bordered">
           <div ng-repeat="messagesThread in toProcessLaterMessagesThreads()">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="toFollowUpMessagesThreads().length > 0">
+        <div class="category-title"><%= I18n.t("index.to_follow_up") %></div>
+        <div class="messages-threads-container bordered">
+          <div ng-repeat="messagesThread in toFollowUpMessagesThreads()">
             <%= render "row_in_list" %>
           </div>
         </div>

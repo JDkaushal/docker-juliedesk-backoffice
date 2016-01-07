@@ -414,16 +414,22 @@ EventTile.prototype.getEditedEvent = function() {
             name: name
         };
     }).get();
+    
+    var description = '';
+    var location = '';
+    if(eventTile.mode != 'free_calendar'){
+        description = eventTile.$selector.find("textarea.notes").val();
+        location = eventTile.$selector.find("input.location").val();
 
+        var currentAppointment = window.getCurrentAppointment();
 
-    var description = eventTile.$selector.find("textarea.notes").val();
-    var location = eventTile.$selector.find("input.location").val();
-
-    var currentAppointment = window.getCurrentAppointment();
-
-    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-        if(window.threadComputedData.call_instructions.event_instructions || window.threadComputedData.call_instructions.event_instructions == '')
-            location = window.threadComputedData.call_instructions.event_instructions;
+        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+            if(window.threadComputedData.call_instructions.event_instructions || window.threadComputedData.call_instructions.event_instructions == '')
+                location = window.threadComputedData.call_instructions.event_instructions;
+        }
+    }else{
+        description = $(eventTile.$selector[0].childNodes[0]).find("textarea.notes").val();
+        location = $(eventTile.$selector[0].childNodes[0]).find("input.location").val();
     }
 
     return {

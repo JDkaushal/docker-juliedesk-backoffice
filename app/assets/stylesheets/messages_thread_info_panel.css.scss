@@ -451,6 +451,31 @@
     }
   }
 
+  .follow-up-select-threads-panel {
+    .messages-thread-entry {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 0 0 15px;
+      background: #fafafa;
+
+      input[type=checkbox] {
+        margin: 0 5px 0 0;
+      }
+      .messages-thread-label {
+        font-size: 15px;
+      }
+
+      textarea {
+        height: 50px;
+        width: 100%;
+        resize: none;
+        outline: none;
+        border: 1px solid #ccc;
+        margin: 10px 0 0 0;
+      }
+    }
+  }
+
 }
 
 li.contact-autocomplete-item {

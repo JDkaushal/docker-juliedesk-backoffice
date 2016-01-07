@@ -88,11 +88,13 @@
       }
       %>
 
-      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
+      <% items = (@messages_thread.messages + operator_actions_groups_without_emails + @messages_thread.splitted_server_messages).sort_by do |item|
         if item.class == Message
           item.received_at
-        else
+        elsif item.class == OperatorActionsGroup
           item.initiated_at
+        else item.class == Hash
+          DateTime.parse(item['date'])
         end
       end %>
 
@@ -110,6 +112,8 @@
                                                         } %>
           <% elsif item.class == OperatorActionsGroup %>
               <%= render partial: "messages_threads/fake_email", locals: {reviewing_status: "review", operator_actions_group: item} %>
+          <% elsif item.class == Hash %>
+              <%= render partial: "messages_threads/splitted_email", locals: {email: item} %>
           <% end %>
       <% end %>
     </div>

@@ -153,12 +153,19 @@
     <div class="messages-thread-emails">
       <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
 
+      <% if @messages_thread.should_follow_up %>
+          <br/>
+          <div class="follow-up-instruction">Follow-up: <%= @messages_thread.follow_up_instruction %></div>
+      <% end %>
+
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
         <% (@messages_thread.server_thread['labels'] || []).each do |label| %>
             <span class="messages-thread-label"><%= label %></span>
         <% end %>
       </div>
+
+
 
       <div class="split-buttons-container">
         <div class="btn btn-default cancel-split-button"><%= I18n.t("common.cancel") %></div>

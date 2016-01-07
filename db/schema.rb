@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151211111113) do
+ActiveRecord::Schema.define(version: 20160105162300) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -131,6 +131,7 @@ ActiveRecord::Schema.define(version: 20151211111113) do
     t.string   "review_status"
     t.text     "call_instructions",     default: "[]"
     t.string   "thread_status"
+    t.text     "follow_up_data"
   end
 
   create_table "messages", force: true do |t|
@@ -160,6 +161,8 @@ ActiveRecord::Schema.define(version: 20151211111113) do
     t.integer  "server_thread_id"
     t.string   "server_version"
     t.boolean  "delegated_to_support",  default: false
+    t.boolean  "should_follow_up",      default: false
+    t.text     "follow_up_instruction"
   end
 
   create_table "operator_actions", force: true do |t|
