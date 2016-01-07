@@ -223,7 +223,7 @@
 
         $("input[name='locale']").change(function () {
             window.setCurrentLocale($(this).val());
-            setNotes();
+            //setNotes();
             updateNotesCallingInfos();
             reProcessTitle();
         });
@@ -821,7 +821,7 @@
             $("input#location").val("").removeAttr('disabled');
         }
 
-        setNotes();
+        //setNotes();
     }
 
     function setNotes() {
