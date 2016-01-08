@@ -219,11 +219,8 @@
             })
         });
 
-
-
         $("input[name='locale']").change(function () {
             window.setCurrentLocale($(this).val());
-            //setNotes();
             updateNotesCallingInfos();
             reProcessTitle();
         });
@@ -241,16 +238,19 @@
             reProcessTitle();
         });
 
-        $("body").on("change", "select#location_nature", function () {
+        $("body").on("change", "select#location_nature", function (e) {
             setAddressValues();
+            updateCurrentEventNotes();
         });
 
+        $('body').on('keyup', ".event-tile-container input.location", function(e){
+            setAddressDetails('');
+            updateCurrentEventNotes();
+        });
 
         if($("#current_notes").length > 0) {
             $("#current_notes").height($("#current_notes")[0].scrollHeight);
         }
-
-
 
         $(".submit-classification").click(function () {
             $(this).attr('disabled', true);
@@ -273,6 +273,7 @@
         $("body").on("change", "input[type=checkbox]#attendee", function() {
             processAppointmentType();
         });
+
         $(".data #add-attendee-button").click(function (e) {
             var email = $(".data #add_attendee").val();
             $(".data #add_attendee").val("");
@@ -288,7 +289,6 @@
         });
 
         <% if messages_thread.event_data[:event_id] %>
-
 
         var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
         $eventDoesNotExist.append($("<div>").html(localize("info_panel.event_does_not_exist_anymore")));
@@ -391,40 +391,42 @@
     function updateNotesCallingInfos() {
         if(window.threadDataIsEditable){
             $('#notes').val('');
-//            if(['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1){
 
-                angular.element($('#attendeesCtrl')).scope().updateNotes();
-                var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+            angular.element($('#attendeesCtrl')).scope().updateNotes();
+            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
 
-                if(vmHelper){
-                    if(vmHelper.configLoaded)
-                        vmHelper.setEventNotes();
-                    else
-                        refreshVirtualAppointmentsHelper();
-                }
-                var notes = $('#notes').val().trim().replace(/\n/g, '__n');
-                $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
-
-                if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
-                    var currentEventNotesNode = $('.created-event-panel .notes');
-                    var currentEventNotes = currentEventNotesNode.val();
-                    var newEventDescription = '';
-                    if(vmHelper){
-                        var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
-                        var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
-                        if(regExResult != null){
-                            newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
-                            currentEventNotesNode.val(newEventDescription);
-                        }else{
-                            currentEventNotesNode.val($('.classic-info-panel #notes').val());
-                        }
-                    }
-                }
-//            }
+            if(vmHelper){
+                if(vmHelper.configLoaded)
+                    vmHelper.setEventNotes();
+                else
+                    refreshVirtualAppointmentsHelper();
+            }
         }
-
         var notes = $('#notes').val().trim().replace(/\n/g, '__n');
         $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
+        setNotes();
+
+        updateCurrentEventNotes();
+    }
+
+    function updateCurrentEventNotes() {
+        if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
+            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+            var currentEventNotesNode = $('.created-event-panel .notes');
+            var currentEventNotes = currentEventNotesNode.val();
+            var newEventDescription = '';
+            if(vmHelper){
+                var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+                var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
+                if(regExResult != null){
+                    newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
+                    currentEventNotesNode.val(newEventDescription);
+                }else{
+                    currentEventNotesNode.val($('.classic-info-panel #notes').val());
+                }
+            }
+        }
     }
 
     function newConstraintTile(data, expand) {
@@ -817,33 +819,61 @@
             $("input#location").val(address.address).attr('disabled', true);
         }
         else {
-
             $("input#location").val("").removeAttr('disabled');
         }
 
-        //setNotes();
+        setNotes();
     }
 
     function setNotes() {
-        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
-            return appointmentObject.label == $("#appointment_nature").val();
-        });
-
         var address = _.find(window.threadAccount.addresses, function (addressObject) {
             return addressObject.label == $("select#location_nature").val();
         });
 
-        var notes = appointment.note[$("input[name='locale']:checked").val()];
         if (address) {
             var addressComplement = address.address_complement;
             if(addressComplement && addressComplement.length > 0) {
-                notes = addressComplement + "\n" + notes;
+                setAddressDetails(addressComplement);
+            }else{
+                setAddressDetails('');
             }
-            $("textarea#notes").val(notes);
+        }else{
+            setAddressDetails('');
         }
-        else {
-            $("textarea#notes").val(notes);
+    }
+
+    function setAddressDetails(addressDetails) {
+        var addressDetailsReFr = new RegExp("-" + localize("events.notes.address_details_boundary", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
+        var addressDetailsReEn = new RegExp("-" + localize("events.notes.address_details_boundary", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
+        var wrappedAddressDetails = '';
+        var usedRegex = '';
+
+        var notes = $("textarea#notes").val();
+
+        var tmpNotes = notes.replace(/\n/g,'');
+
+        var regexFrResult = addressDetailsReFr.exec(tmpNotes);
+        var regexEnResult = addressDetailsReEn.exec(tmpNotes);
+
+        if(addressDetails && addressDetails.length > 0) {
+            wrappedAddressDetails += "-" + localize("events.notes.address_details_boundary", {locale: window.currentLocale}) + "-------------------";
+            wrappedAddressDetails += '\n' + addressDetails;
+            wrappedAddressDetails += "\n----------------------------------------";
+
+            if(regexFrResult == null && regexEnResult == null){
+                notes = wrappedAddressDetails + '\n\n' + notes;
+            }else{
+                usedRegex = regexFrResult != null ? addressDetailsReFr : addressDetailsReEn;
+                notes = notes.replace(/\n/g,'__n').replace(usedRegex, wrappedAddressDetails).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
+            }
+        }else{
+            if(regexFrResult != null || regexEnResult != null){
+                usedRegex = regexFrResult != null ? addressDetailsReFr : addressDetailsReEn;
+                notes = notes.replace(/\n/g,'__n').replace(usedRegex, '').replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
+            }
         }
+
+        $("textarea#notes").val(notes.trim());
     }
 
     window.getCallInstructions = function(){
@@ -1063,8 +1093,6 @@
         </div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
-
-
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>

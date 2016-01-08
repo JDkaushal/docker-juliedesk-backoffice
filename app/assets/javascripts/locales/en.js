@@ -218,6 +218,9 @@ window.wordings['en'] = {
             instructions_in_notes: "Call instructions in the notes",
             give_confcall: "%{details}",
             give_target_number: "Reach %{target_name} at %{details}"
+        },
+        notes: {
+            address_details_boundary: 'Address-Details'
         }
     },
     constraints: {

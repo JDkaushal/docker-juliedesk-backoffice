@@ -467,14 +467,15 @@
             }
 
             var tmpNotes = notes.replace(/\n/g,'');
-            var regexFrResult = contactInfosReEn.exec(tmpNotes);
-            var regexEnResult = contactInfosReFr.exec(tmpNotes);
+            var regexFrResult = contactInfosReFr.exec(tmpNotes);
+            var regexEnResult = contactInfosReEn.exec(tmpNotes);
 
             if(regexFrResult == null && regexEnResult == null){
                 if(notes.replace(/\n/g,'').length > 0)
                     notes += "\n\n";
                 notes += wrappedContactInfos;
             }else{
+                // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
                 var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
                 notes = notes.replace(/\n/g,'__n').replace(usedRegex, wrappedContactInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
             }

@@ -219,6 +219,9 @@ window.wordings['fr'] = {
             instructions_in_notes: "Instructions d'appel dans les notes",
             give_target_number: "Appeler %{target_name} au %{details}",
             give_confcall: "%{details}"
+        },
+        notes: {
+            address_details_boundary: 'Complément-Adresse'
         }
     },
     constraints: {
