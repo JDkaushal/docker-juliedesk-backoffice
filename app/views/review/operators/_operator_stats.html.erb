@@ -1,5 +1,6 @@
 <% operator_actions_groups = @operator.operator_actions_groups
-   team_operators = Operator.where(privilege: nil)
+   team_operators = Operator.where.not(privilege: Operator::PRIVILEGE_ADMIN)
+   level_1_operators = Operator.where(privilege: nil)
 %>
 
 <% max_duration = 30*60 %>
@@ -31,6 +32,25 @@
         <th><%== key %></th>
     <% end %>
   </tr>
+  <tr>
+    <td>Nombre d'emails que je traite par heure</td>
+    <% dates.each do |key, dates_hash| %>
+        <td><%= number_with_precision(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: @operator.id, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% end %>
+  </tr>
+  <tr>
+    <td>Nombre d'emails traités par heure par les niveaux 1</td>
+    <% dates.each do |key, dates_hash| %>
+        <td><%= number_with_precision(OperatorActionsGroup.where(operator_id: level_1_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: level_1_operators.map(&:id), is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% end %>
+  </tr>
+  <tr>
+    <td>Nombre d'emails traités par heure par l'ensemble de l'équipe</td>
+    <% dates.each do |key, dates_hash| %>
+        <td><%= number_with_precision(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: team_operators.map(&:id), is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% end %>
+  </tr>
+
   <tr>
     <td>Nombre d'emails que j'ai traité</td>
     <% dates.each do |key, dates_hash| %>
