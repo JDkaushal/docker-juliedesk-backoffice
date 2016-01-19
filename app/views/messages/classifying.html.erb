@@ -75,9 +75,6 @@
       </div>
       <% operator_actions_groups = @messages_thread.operator_actions_groups %>
 
-
-
-
       <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
         operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
                 !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.server_message_id.present?)

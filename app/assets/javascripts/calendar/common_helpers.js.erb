@@ -24,14 +24,101 @@ window.CommonHelpers.filterEvents = function(events) {
     });
 };
 
+// Staging Utility methods *******************************
+
+function isStagingEnv(){
+    var stagingEnvNode;
+
+    var stagingMode = false;
+    stagingEnvNode = $('#staging_mode');
+
+    if(stagingEnvNode.length > 0){
+        stagingMode = stagingEnvNode.val();
+    }
+
+    return stagingMode;
+};
+
+function getStagingTargetEmail(){
+    var stagingTargetEmailNode;
+
+    var stagingTargetEmail = '';
+
+    stagingTargetEmailNode = $('#staging_target_email');
+
+    if(stagingTargetEmailNode.length > 0){
+        stagingTargetEmail = stagingTargetEmailNode.val();
+    }
+
+    return stagingTargetEmail;
+};
+
+function getStagingEventApiEndpoint(){
+    var stagingEventApiEndpointNode;
+
+    var stagingEventApiEndpoint = '';
+
+    stagingEventApiEndpointNode = $('#staging_event_api_endpoint');
+
+    if(stagingEventApiEndpointNode.length > 0){
+        stagingEventApiEndpoint = stagingEventApiEndpointNode.val();
+    }
+
+    return stagingEventApiEndpoint;
+};
+
+function saveAttendeesStaging(event_id, attendees){
+    $.ajax({
+        url: "/staging/save_attendees",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            event_id: event_id,
+            attendees: attendees
+        }),
+        success: function(e) {
+            console.log(e);
+            if(!e.success){
+                alert('error saving attendees in staging mode');
+            }
+        },
+        error: function(e) {
+            console.log(e);
+            alert('error saving attendees in staging mode');
+        }
+    });
+};
+// ***************************************************************
+
 window.CommonHelpers.externalRequest = function (request, callback, error_callback) {
-    <% if Rails.env == 'production' %>
-        var host = "<%= "https://juliedesk-app.herokuapp.com" %>";
-    <% elsif Rails.env == 'staging' %>
-        var host = "<%= "https://juliedesk-release.herokuapp.com" %>";
-    <% else %>
-        var host = "<%= ENV['CALENDAR_API_URL'] %>";
-    <% end %>
+    var host = '';
+
+    var staging_mode = isStagingEnv();
+    console.log('staging_mode', staging_mode);
+    if(staging_mode){
+        console.log('STAGING');
+        host = getStagingEventApiEndpoint();
+        var email = getStagingTargetEmail();
+        console.log('host',host);
+
+        if(request.hasOwnProperty('email') && request.action != "show_account"){
+            request['email'] = email;
+        }
+
+        if(request.hasOwnProperty('calendar_login_username')){
+            request['calendar_login_username'] = email;
+        }
+
+        if(request.action == "create_event" || request.action == "update_event"){
+            console.log('attendees', request.attendees);
+            var realAttendees = request.attendees;
+            request.attendees = [];
+        }
+    }
+    else{
+        host = "<%= "https://juliedesk-app.herokuapp.com" %>";
+    }
+
 
     var access_key = "gho67FBDJKdbhfj890oPm56VUdfhq8";
     //console.log("Receiving request: ", request);
@@ -122,7 +209,12 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }),
             success: function(e) {
                 if(e.status == "success") {
-                    callback(e);
+                    if(staging_mode){
+                        saveAttendeesStaging(e.data.event_id, realAttendees);
+                        callback(e);
+                    }else{
+                        callback(e);
+                    }
                 }
                 else {
                     error_callback(e);
@@ -134,6 +226,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         });
     }
     else if(request.action == "update_event") {
+        if(staging_mode){
+            saveAttendeesStaging(request.event_id, realAttendees);
+        }
+
         $.ajax({
             url: host + "/api/v1/calendar_proxy/event_update",
             type: "POST",
@@ -202,7 +298,35 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 calendar_id: request.calendar_id
             },
             success: function(e) {
-                callback(e);
+                if(staging_mode){
+                    var getEventResponse = e;
+                    $.ajax({
+                        url: "/staging/get_attendees",
+                        type: "GET",
+                        contentType: "application/json",
+                        data: {
+                            event_id: request.event_id
+                        },
+                        success: function(e) {
+                            console.log(e);
+                            getEventResponse.data['attendees'] = e.data;
+                            console.log(getEventResponse);
+                            if(e.success) {
+                                callback(getEventResponse);
+                            }else{
+                                alert('error getting attendees in staging mode');
+                            }
+                        },
+                        error: function(e) {
+                            console.log(e);
+                            alert('error getting attendees in staging mode');
+                        }
+                    });
+                    console.log('get_event', e);
+                }
+                else{
+                    callback(e);
+                }
             },
             error: function(e) {
                 console.log(e);

@@ -21,12 +21,18 @@ module EmailServer
   end
 
   def self.get_messages_thread opts={}
-    url = "/messages_threads/#{opts[:messages_thread_id]}?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    url = "/messages_threads/#{opts[:server_thread_id]}?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
     if opts[:show_split].present?
       url += "&show_split=true"
     end
-    self.make_request :get, url
+    result = self.make_request :get, url
 
+    if ENV['STAGING_APP']
+      result['messages'] << StagingHelpers::MessagesThreadsHelper.get_messages_server(opts[:messages_thread_id])
+      result['messages'].flatten!
+    end
+
+    result
   end
 
   def self.add_and_remove_labels opts={}
@@ -40,23 +46,45 @@ module EmailServer
   end
 
   def self.deliver_message opts={}
-    res = self.make_request :post,
-                      "/messages/send_message?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
-                      {
-                          message: {
-                            subject: opts[:subject],
-                            from: opts[:from],
-                            to: opts[:to],
-                            cc: opts[:cc],
-                            text: opts[:text],
-                            html: opts[:html],
-                            quote_replied_message: opts[:quote_replied_message],
-                            quote_forward_message: opts[:quote_forward_message],
-                            reply_to_message_id: opts[:reply_to_message_id]
-                        }
-                      }
+    params = {
+        message: {
+            subject: opts[:subject],
+            from: opts[:from],
+            to: opts[:to],
+            cc: opts[:cc],
+            text: opts[:text],
+            html: opts[:html],
+            quote_replied_message: opts[:quote_replied_message],
+            quote_forward_message: opts[:quote_forward_message],
+            reply_to_message_id: opts[:reply_to_message_id]
+        }
+    }
 
-    res['message']
+    if ENV['STAGING_APP']
+      params[:message][:reply_to_message_id] = ''
+      params[:message][:cc] = ''
+      params[:message][:to] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
+      params[:message][:subject] = 'Staging: ' + opts[:subject]
+    end
+
+    res = self.make_request :post,
+                      "/messages/send_message?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh", params
+
+    message = res['message']
+
+    if ENV['STAGING_APP']
+      cloned_message = message.clone
+      puts '*' * 50
+      puts message.inspect
+      puts '*' * 50
+      cloned_message['to'] = opts[:to]
+      cloned_message['cc'] = opts[:cc]
+      cloned_message['messages_thread_id'] = opts[:server_thread_id]
+
+      StagingHelpers::MessagesThreadsHelper.save_message_server(opts[:message_thread_id], cloned_message)
+    end
+
+    message
   end
 
   def self.copy_message_to_new_thread opts={}

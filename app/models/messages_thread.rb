@@ -24,7 +24,14 @@ class MessagesThread < ActiveRecord::Base
 
   def server_thread params={}
     if @server_thread.nil? || params[:force_refresh]
-      @server_thread = EmailServer.get_messages_thread(messages_thread_id: self.server_thread_id, show_split: params[:show_split])
+      params = {
+          server_thread_id: self.server_thread_id,
+          show_split: params[:show_split]
+      }
+
+      params.merge!(messages_thread_id: self.id) if ENV['STAGING_APP']
+
+      @server_thread = EmailServer.get_messages_thread(params)
     end
     @server_thread
   end

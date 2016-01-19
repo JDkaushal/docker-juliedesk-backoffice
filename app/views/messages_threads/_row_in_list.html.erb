@@ -24,4 +24,14 @@
         <div ng-show="!messagesThread.delegated_to_founders && !messagesThread.delegated_to_support && messagesThread.account &&!messagesTread.account.office_365_refresh_token_expired && messagesThread.account.only_admin_can_process" class="delegated-to-founders">admin only</div>
     </a>
 
+  <% if ENV['STAGING_APP'] %>
+
+    <%= link_to "#{staging_import_context_from_production_path}?server_thread_id={{messagesThread.server_thread_id}}", style: 'position: relative;
+                            top: -33px;
+                            right: 125px;
+                            float: right;
+                            z-index: 1;' do %>
+        <button type="button">Import context from prod</button>
+    <% end %>
+  <% end %>
 </div>

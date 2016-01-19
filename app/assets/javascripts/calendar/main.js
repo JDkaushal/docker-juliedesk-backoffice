@@ -2,6 +2,7 @@ function Calendar($selector, params) {
 
     // Set initial parameters
     this.$selector = $selector;
+
     this.initialData = {
         email: null,
         mode: "suggest_dates",
@@ -14,7 +15,7 @@ function Calendar($selector, params) {
     }
 
 
-    this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints", "juliedesk-public-holidays"]
+    this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints", "juliedesk-public-holidays"];
 
     // Init variables
     this.accountPreferences = {};

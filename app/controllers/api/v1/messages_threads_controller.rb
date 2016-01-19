@@ -269,4 +269,17 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
     }
   end
+
+  def messages_thread_context
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find_by_server_thread_id(params[:id])
+
+    render json: {
+            thread: @messages_thread,
+            messages: @messages_thread.messages,
+            messages_classifications: @messages_thread.messages.map{ |m| {m.id => m.message_classifications} },
+            julie_actions: @messages_thread.messages.map{|m| m.message_classifications.map{ |mc| {mc.id => mc.julie_action} }}.flatten,
+            current_event: @messages_thread.event_data
+           }
+
+  end
 end

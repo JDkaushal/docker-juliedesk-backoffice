@@ -108,25 +108,25 @@
                 isClient: "true",
                 isThreadOwner: "false"
             },
-                {
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    name: "fname2",
-                    usageName: "fname2",
-                    gender: 'F',
-                    isAssistant: "false",
-                    assisted: "true",
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: '',
-                    isPresent: "true",
-                    isClient: "false",
-                    isThreadOwner: "false"
-                }];
+            {
+                email: "test@test2.com",
+                firstName: "fname2",
+                lastName: "",
+                name: "fname2",
+                usageName: "fname2",
+                gender: 'F',
+                isAssistant: "false",
+                assisted: "true",
+                assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                company: '',
+                landline: "",
+                mobile: "617-216-2881",
+                skypeId: "",
+                confCallInstructions: '',
+                isPresent: "true",
+                isClient: "false",
+                isThreadOwner: "false"
+            }];
         };
 
         describe('Watchers', function(){

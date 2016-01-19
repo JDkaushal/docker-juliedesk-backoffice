@@ -58,6 +58,20 @@
         }
     };
 
+    function beginMerging(){
+        $(".messages-thread-emails").addClass("merging");
+        $(".messages-thread-emails .email").removeClass("extended");
+        $(".merging-panel").addClass("merging");
+        if($(".email .checkbox-container input[type=checkbox]").length < 2) {
+            $(".email .checkbox-container input[type=checkbox]").prop('checked', true);
+        }
+        window.launchMergingFetch();
+    };
+
+    function beginSplitting(){
+        $(".messages-thread-emails").addClass("splitting");
+        $(".messages-thread-emails .email").removeClass("extended");
+    };
 
     $(function () {
 
@@ -87,18 +101,23 @@
         <% end %>
 
         $(".split-thread-button").click(function () {
-            $(".messages-thread-emails").addClass("splitting");
-            $(".messages-thread-emails .email").removeClass("extended");
+            <% if ENV['STAGING_APP'] %>
+                if(confirm('You are in a STAGING APP, are you sure you want to continue? It will affect the current thread even in production')){
+                    beginSplitting();
+                }
+            <% else %>
+                beginSplitting();
+            <% end %>
         });
 
         $(".merge-into-thread-button").click(function () {
-            $(".messages-thread-emails").addClass("merging");
-            $(".messages-thread-emails .email").removeClass("extended");
-            $(".merging-panel").addClass("merging");
-            if($(".email .checkbox-container input[type=checkbox]").length < 2) {
-                $(".email .checkbox-container input[type=checkbox]").prop('checked', true);
-            }
-            window.launchMergingFetch();
+            <% if ENV['STAGING_APP'] %>
+                if(confirm('You are in a STAGING APP, are you sure you want to continue? It will affect the current thread even in production')){
+                    beginMerging();
+                }
+            <% else %>
+                beginMerging();
+            <% end %>
         });
 
         $(".cancel-split-button").click(function () {
@@ -141,8 +160,6 @@
   <div class="left-column">
 
     <div class="header jd-global-header"></div>
-
-
 
     <div class="calendar-in-thread-details-container">
         <%= render template: "calendar/calendar" %>

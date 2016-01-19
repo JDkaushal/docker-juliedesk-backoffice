@@ -5,100 +5,103 @@
     var currentSender;
 
     var myName = "<%= session[:user_name] %>";
-    var pusher = new Pusher('<%= Pusher.key %>');
 
+    <% if Rails.env.production? %>
+        var pusher = new Pusher('<%= Pusher.key %>');
+    <% end %>
 //    function getMembersOnThread(threadId) {
 //        pusher.channel('presence-thread-' + window.processingMessageThreadId);
 //    }
     $(function () {
 
-
-        var presenceChannel = pusher.subscribe('presence-global');
-        presenceChannel.bind('pusher:subscription_succeeded', function (members) {
-            connectedMembers = members.members;
-            redrawConnectedMembers();
-        });
-        presenceChannel.bind('pusher:member_removed', function (member) {
-            delete connectedMembers[member.id];
-            redrawConnectedMembers()
-        });
-        presenceChannel.bind('pusher:member_added', function (member) {
-            connectedMembers[member.id] = member.info;
-            redrawConnectedMembers();
-        });
-
-
-        var channel = pusher.subscribe('private-global-chat');
-        channel.bind('client-chat-message', function (data) {
-            newMessage();
-            appendMessage({
-                message: data.message,
-                sender: data.sender
+        <% if Rails.env.production? %>
+            var presenceChannel = pusher.subscribe('presence-global');
+            presenceChannel.bind('pusher:subscription_succeeded', function (members) {
+                connectedMembers = members.members;
+                redrawConnectedMembers();
             });
-        });
-        channel.bind('locks-changed', function (data) {
-            if(window.redrawLocksStatuses) {
-                window.redrawLocksStatuses(data.locks_statuses);
-            }
-        });
-        channel.bind('archive', function(data) {
-            if(window.archiveMessageThread) {
-                window.archiveMessageThread(data.message_thread_id);
-            }
-        });
-        channel.bind('new-email', function (data) {
-            if($("audio#tada-sound").length > 0 && $(".sound-activator.activated").length > 0) {
-                $("audio#tada-sound")[0].play();
-            }
-
-            $(".header .global-todo-count").animate({
-                opacity: 0,
-                top: 20
-            }, 300, function() {
-                $(".header .global-todo-count").html(data.messages_threads_count).css({
-                    top: -20
-                }).animate({
-                            opacity: 1,
-                            top: 0
-                        }, 300);
+            presenceChannel.bind('pusher:member_removed', function (member) {
+                delete connectedMembers[member.id];
+                redrawConnectedMembers()
+            });
+            presenceChannel.bind('pusher:member_added', function (member) {
+                connectedMembers[member.id] = member.info;
+                redrawConnectedMembers();
             });
 
-            if(window.processingMessageThreadId && data.updated_messages_thread_ids.indexOf(window.processingMessageThreadId) > -1) {
-                alert("A new email has been received in this thread. Reload the page to see it.");
-            }
 
-            if(window.newEmailCallback) {
-                window.newEmailCallback();
-            }
-        });
-
-        if(window.processingMessageThreadId) {
-            var threadChannel = pusher.subscribe('presence-thread-' + window.processingMessageThreadId);
-
-            threadChannel.bind('pusher:subscription_succeeded', function(members) {
-//                console.log("Locked Ok");
-            });
-            threadChannel.bind('pusher:subscription_error', function(status) {
-                $(".lock-container .unlock-btn").attr("href", "/messages_threads/" + window.processingMessageThreadId + "/unlock");
-                $(".lock-container").fadeIn(200);
-            });
-        }
-
-
-        $("#chat_input").keyup(function (e) {
-            if (e.which == 13) {
-                var message = $("#chat_input").val();
-                channel.trigger('client-chat-message', {
-                    message: message,
-                    sender: myName
-                });
+            var channel = pusher.subscribe('private-global-chat');
+            channel.bind('client-chat-message', function (data) {
+                newMessage();
                 appendMessage({
-                    message: message,
-                    sender: myName
+                    message: data.message,
+                    sender: data.sender
                 });
-                $("#chat_input").val("");
+            });
+            channel.bind('locks-changed', function (data) {
+                if(window.redrawLocksStatuses) {
+                    window.redrawLocksStatuses(data.locks_statuses);
+                }
+            });
+            channel.bind('archive', function(data) {
+                if(window.archiveMessageThread) {
+                    window.archiveMessageThread(data.message_thread_id);
+                }
+            });
+            channel.bind('new-email', function (data) {
+                if($("audio#tada-sound").length > 0 && $(".sound-activator.activated").length > 0) {
+                    $("audio#tada-sound")[0].play();
+                }
+
+                $(".header .global-todo-count").animate({
+                    opacity: 0,
+                    top: 20
+                }, 300, function() {
+                    $(".header .global-todo-count").html(data.messages_threads_count).css({
+                        top: -20
+                    }).animate({
+                                opacity: 1,
+                                top: 0
+                            }, 300);
+                });
+
+                if(window.processingMessageThreadId && data.updated_messages_thread_ids.indexOf(window.processingMessageThreadId) > -1) {
+                    alert("A new email has been received in this thread. Reload the page to see it.");
+                }
+
+                if(window.newEmailCallback) {
+                    window.newEmailCallback();
+                }
+            });
+
+            if(window.processingMessageThreadId) {
+                var threadChannel = pusher.subscribe('presence-thread-' + window.processingMessageThreadId);
+
+                threadChannel.bind('pusher:subscription_succeeded', function(members) {
+    //                console.log("Locked Ok");
+                });
+                threadChannel.bind('pusher:subscription_error', function(status) {
+                    $(".lock-container .unlock-btn").attr("href", "/messages_threads/" + window.processingMessageThreadId + "/unlock");
+                    $(".lock-container").fadeIn(200);
+                });
             }
-        });
+
+
+            $("#chat_input").keyup(function (e) {
+                if (e.which == 13) {
+                    var message = $("#chat_input").val();
+                    channel.trigger('client-chat-message', {
+                        message: message,
+                        sender: myName
+                    });
+                    appendMessage({
+                        message: message,
+                        sender: myName
+                    });
+                    $("#chat_input").val("");
+                }
+            });
+        <% end %>
 
         $("#chat_input").focus(function(e) {
             newMessageInChat = false;

@@ -3,6 +3,8 @@ class MessagesThreadsController < ApplicationController
   layout "dashboard", only: [:index]
   before_filter :only_admin, only: [:history]
 
+  before_action :check_staging_mode
+
   def index
     render_messages_threads
   end
@@ -96,8 +98,6 @@ class MessagesThreadsController < ApplicationController
       })
     end
 
-
-
     redirect_to action: :index
   end
 
@@ -165,7 +165,7 @@ class MessagesThreadsController < ApplicationController
         :message => 'locks_changed',
         :locks_statuses => MessagesThread.get_locks_statuses_hash
     })
-    
+
     redirect_to messages_thread
   end
 

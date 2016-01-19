@@ -97,6 +97,8 @@ Rails.application.routes.draw do
       get "operators_count_at_time", controller: :operators_presences, action: :operators_count_at_time
       get "inbox_count", controller: :messages_threads, action: :inbox_count
       get "weekly_recap_data", controller: :messages_threads, action: :weekly_recap_data
+      get "messages_thread_context", controller: :messages_threads, action: :messages_thread_context
+
       post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
     end
   end
@@ -117,4 +119,15 @@ Rails.application.routes.draw do
   post "change_sound" => "application#change_sound"
 
   get "logout" => "application#logout", as: :logout
+
+  if ENV['STAGING_APP']
+    namespace :staging do
+      get "import_context_from_production", to: "messages_threads#import_context_from_production"
+
+      get "get_attendees", to: "events#get_attendees"
+
+      post "save_attendees", to: "events#save_attendees"
+    end
+  end
+
 end

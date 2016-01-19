@@ -1,5 +1,7 @@
 class JulieActionsController < ApplicationController
 
+  before_action :check_staging_mode
+
   def show
     @julie_action = JulieAction.find params[:id]
     @message = @julie_action.message_classification.message

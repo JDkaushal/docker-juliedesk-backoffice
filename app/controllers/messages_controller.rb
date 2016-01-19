@@ -3,6 +3,8 @@ class MessagesController < ApplicationController
   include ActionView::Helpers::TextHelper
   include ERB::Util
 
+  before_action :check_staging_mode
+
   def classifying
     @message = Message.find params[:id]
     @classification = params[:classification]
@@ -138,17 +140,23 @@ class MessagesController < ApplicationController
       quote_replied_message = true
     end
 
-    @new_server_message_id = EmailServer.deliver_message({
-      subject: params[:subject],
-      from: @julie_alias.generate_from,
-      to: (params[:to] || []).join(", "),
-      cc: (params[:cc] || []).join(", "),
-      text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
-      html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
-      quote_replied_message: quote_replied_message,
-      quote_forward_message: quote_forward_message,
-      reply_to_message_id:  @message.server_message_id
-    })['id']
+    email_params = {
+        subject: params[:subject],
+        from: @julie_alias.generate_from,
+        to: (params[:to] || []).join(", "),
+        cc: (params[:cc] || []).join(", "),
+        text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
+        html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
+        quote_replied_message: quote_replied_message,
+        quote_forward_message: quote_forward_message,
+        reply_to_message_id:  @message.server_message_id
+    }
+
+    if ENV['STAGING_APP']
+      email_params.merge!(message_thread_id: @message.messages_thread_id, server_thread_id: @message.messages_thread.server_thread_id)
+    end
+
+    @new_server_message_id = EmailServer.deliver_message(email_params)['id']
 
     @julie_action = JulieAction.find params[:julie_action_id]
     @julie_action.update_attribute :server_message_id, @new_server_message_id
