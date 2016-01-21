@@ -1,4 +1,4 @@
-Semaine <%= DateTime.parse(params[:start]).strftime("%W").to_i + 1 %>;<%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 7.days)).map do
+Semaine <%= DateTime.parse(params[:start]).strftime("%W").to_i %>;<%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 7.days)).map do
 |day| day.strftime("%A")
 end.join(";") %>;Count
 <% @operators.each do |operator| %>
