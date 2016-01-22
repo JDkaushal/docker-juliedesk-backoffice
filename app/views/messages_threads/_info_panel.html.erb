@@ -329,7 +329,6 @@
 
 
             var alreadyCreatedEvents = <%== @messages_thread.created_events_data.to_json %>;
-
             _.each(alreadyCreatedEvents, function(eventData) {
                 $(".messages-thread-info-panel .created-event-panel").append($("<div>").addClass("new-event-tile-container"));
                 var eventTile = new EventTile($(".messages-thread-info-panel .created-event-panel").find(".new-event-tile-container").last(), {

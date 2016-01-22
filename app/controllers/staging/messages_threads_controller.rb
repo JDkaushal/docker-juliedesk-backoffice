@@ -23,18 +23,30 @@ if ENV['STAGING_APP']
         last_julie_action = nil
 
         context['messages'].each do |message|
-          messages_classifications = context['messages_classifications'].first[message['id'].to_s]
+          #messages_classifications = context['messages_classifications'].first[message['id'].to_s]
+          messages_classifications = context['messages_classifications']
 
           new_message = message_thread.messages.create(message.except("id", "messages_thread_id"))
 
-          messages_classifications.present? && messages_classifications.each do |mc|
-            new_mc = MessageClassification.new(mc.except("id", "message_id"))
-            new_message.message_classifications << new_mc
+          messages_classifications.present? && messages_classifications.each do |mcs_hash|
+            mcs = messages_classifications.select{|hash| hash.keys.include?(message['id'].to_s)}
 
-            julie_actions = context['julie_actions'].first[mc['id'].to_s]
+            if mcs.present?
 
-            last_julie_action = new_mc.create_julie_action(julie_actions.except("id", "message_classification_id", "event_id", "calendar_id"))
+              mcs = mcs.first[message['id'].to_s]
 
+              mcs.each do |mc|
+                new_mc = MessageClassification.new(mc.except("id", "message_id"))
+                new_message.message_classifications << new_mc
+
+                #julie_actions = context['julie_actions'].first[mc['id'].to_s]
+                julie_action = context['julie_actions'].select{|hash| hash.keys.include?(mc['id'].to_s)}
+                if julie_action.present?
+                  julie_action = julie_action.first[mc['id'].to_s]
+                  last_julie_action = new_mc.create_julie_action(julie_action.except("id", "message_classification_id", "event_id", "calendar_id"))
+                end
+              end
+            end
           end
         end
 
@@ -98,7 +110,9 @@ if ENV['STAGING_APP']
 
         event_id = event_data["data"]["event_id"]
 
-        last_julie_action.update(event_id: event_id, calendar_login_username: ENV['STAGING_TARGET_EMAIL_ADDRESS'], calendar_id: event_data["data"]["calendar_id"])
+        if last_julie_action.present?
+          last_julie_action.update(event_id: event_id, calendar_login_username: ENV['STAGING_TARGET_EMAIL_ADDRESS'], calendar_id: event_data["data"]["calendar_id"])
+        end
 
         save_real_attendees(event_id, real_attendees)
       end
