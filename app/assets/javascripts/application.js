@@ -67,3 +67,5 @@
 //= require message_classification_forms/give_preference
 //= require message_classification_forms/wait_for_contact
 //= require message_classification_forms/follow_up_on_weekly_recap
+
+//= require tracking

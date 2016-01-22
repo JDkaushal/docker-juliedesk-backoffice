@@ -2,6 +2,22 @@
     var app = angular.module("backofficeApp", []);
     app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
 
+        $("body").on("click", ".messages-thread-item", function(e) {
+            var target = $(this).attr("href");
+            var messagesThreadId = $(this).data("id");
+            var messagesThread = _.find($scope.messagesThreads, function(thread) {
+                return thread.id == messagesThreadId
+            });
+            e.preventDefault();
+            trackEvent("Click_on_thread", {
+                distinct_id: "<%= session[:operator_id]%>-" + messagesThread.id,
+                thread_id: messagesThread.id,
+                thread_messages_count: messagesThread.messages.length
+            }, function() {
+                window.location = target;
+            });
+        });
+
         var serverTimestamp = <%= Time.now.to_i %>;
         var localTimestamp = parseInt(moment().format("X"));
 
@@ -157,8 +173,6 @@
 
         $scope.refreshInbox(false);
     });
-
-        console.log("h");
 </script>
 
 <div class="fixed-columns full">

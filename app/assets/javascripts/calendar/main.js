@@ -54,7 +54,16 @@ function Calendar($selector, params) {
     });
 
 
+    var allEmailsForTracking = calendar.initialData.other_emails.slice();
+    allEmailsForTracking.unshift(calendar.initialData.email);
+
+    calendar.distinctIdForTracking = "" + Date.now() + "-" + allEmailsForTracking.join("|");
     // Init fetching
+    trackEvent("Click_on_open_calendar", {
+        distinct_id: calendar.distinctIdForTracking,
+        client_emails: allEmailsForTracking,
+        initial_action: "Open calendar"
+    });
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
@@ -80,6 +89,7 @@ function Calendar($selector, params) {
             }
 
             calendar.fullCalendarInit();
+
             calendar.$selector.find(".global-loading").fadeOut();
         });
     });
@@ -319,7 +329,7 @@ Calendar.prototype.getEventsToCheck = function() {
     });
     return result;
 
-}
+};
 
 Calendar.prototype.addEventsToCheckIfNeeded = function() {
     var calendar = this;
@@ -334,6 +344,14 @@ Calendar.prototype.addEventsToCheckIfNeeded = function() {
 Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
     var calendar = this;
     var localWaitingAccounts = 0;
+
+    var allEmailsForTracking = calendar.initialData.other_emails.slice();
+    allEmailsForTracking.unshift(calendar.initialData.email);
+    trackEvent("Click_on_open_calendar", {
+        distinct_id: calendar.distinctIdForTracking,
+        client_emails: allEmailsForTracking,
+        initial_action: "Fetching events"
+    });
 
     calendar.showLoadingSpinner("Loading events...");
 
@@ -350,6 +368,12 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
                     calendar.initialData.calendarandEventsLoadedFirstTimeCallback = null;
                 }
             }
+
+
+            trackEvent("Calendar_is_opened", {
+                distinct_id: calendar.distinctIdForTracking,
+                client_emails: allEmailsForTracking
+            });
         });
     }
 };

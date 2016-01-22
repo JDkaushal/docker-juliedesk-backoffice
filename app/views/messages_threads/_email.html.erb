@@ -99,6 +99,14 @@
 
         $email.find("a.action").click(function(e) {
             e.preventDefault();
+            var actionNature = $(this).data("actionNature");
+            trackEvent("Click_on_julie_action", {
+                distinct_id: "<%= session[:operator_id]%>-<%= message.messages_thread_id %>",
+                thread_id: <%= message.messages_thread_id %>,
+                thread_messages_count: <%= message.messages_thread.messages.length %>,
+                bo_message_id: <%= message.id %>,
+                action_nature: actionNature
+            });
             if(!$(this).attr('disabled')) {
                 $email.find(".actions-menu .spinner").show();
                 window.location = $(this).attr('href') + "?started_at=" + window.startedAt;
@@ -337,7 +345,7 @@
                   <div class="classification-category">
                     <div class="classification-title"><%= I18n.t("classification_categories.#{category}.title") %></div>
                     <% classifications.each do |classification| %>
-                        <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action" %>
+                        <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", data: {"action-nature" => classification} %>
                     <% end %>
                   </div>
                   <%= image_tag "ajax-loader.gif", class: "spinner" %>
