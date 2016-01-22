@@ -69,7 +69,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
-Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
 #{@normal.name};;;;;;;;0.0
 #{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
 #{@op2.name};;15h00 - 15h30;;;;;;0.5
@@ -116,7 +116,7 @@ END
 
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
         expect(response.body).to eq(<<END
-Semaine 37;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
 #{@normal.name};;;;;;;;0.0
 #{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
 #{@op2.name};;15h00 - 15h30;;;;;;0.5
