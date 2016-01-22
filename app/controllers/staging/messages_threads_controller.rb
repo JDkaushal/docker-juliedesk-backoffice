@@ -63,11 +63,14 @@ if ENV['STAGING_APP']
       def clone_event_to_staging(event_params)
         event_data = retrieve_event_data(event_params)
 
-        insert_event_in_staging_calendar(event_params['email'], event_params['last_julie_action'], event_data['data'])
+        unless event_data['status'] == 'error'
+          puts event_data['message']
+          insert_event_in_staging_calendar(event_params['email'], event_params['last_julie_action'], event_data['data'])
+        end
       end
 
       def retrieve_event_data(event_params)
-        uri = URI.parse("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&access_key=gho67FBDJKdbhfj890oPm56VUdfhq8&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{event_params['event_id']}&event_url=#{event_params['event_url']}&calendar_id=#{event_params['calendar_id']}")
+        uri = URI.parse("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&access_key=gho67FBDJKdbhfj890oPm56VUdfhq8&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
 
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
