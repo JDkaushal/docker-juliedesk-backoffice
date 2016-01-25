@@ -35,7 +35,7 @@ class Account
     #account_email = self.find_account_email email
     #return nil unless account_email
 
-    cache = params[:accounts_cache] || self.accounts_cache
+    cache = params[:accounts_cache]# || self.accounts_cache
     return nil unless email
     data = get_account_details(email, {accounts_cache: cache})
     return nil unless data
@@ -107,7 +107,7 @@ class Account
     cache = if params[:accounts_cache]
       params[:accounts_cache]
     else
-      self.accounts_cache
+      Account.accounts_cache(mode: "light")
     end
 
     self.contacts_from_same_company = cache.values.select{|account|
@@ -166,6 +166,10 @@ class Account
     else
       JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
     end
+  end
+
+  def self.accounts_cache_for_email email
+    JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(email) || "{}")
   end
 
   def find_calendar_login_with_rule_data rule_data
@@ -234,7 +238,7 @@ class Account
     if params[:accounts_cache]
       params[:accounts_cache][account_email]
     else
-      self.accounts_cache[account_email]
+      Account.accounts_cache_for_email account_email
     end
   end
 end

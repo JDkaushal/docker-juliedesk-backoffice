@@ -5,6 +5,8 @@ class MessagesThreadsController < ApplicationController
 
   before_action :check_staging_mode
 
+  helper_method :print_time
+
   def index
     render_messages_threads
   end
@@ -39,7 +41,10 @@ class MessagesThreadsController < ApplicationController
   end
 
   def show
+    print_time "init"
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
+
+    print_time "DB"
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
                                          target: @messages_thread,
@@ -47,15 +52,33 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @messages_thread.id
                                      })
+    print_time "OA"
+
     @messages_thread.re_import
+
+    print_time "Reimport"
     @messages_thread.account
+    print_time "Account"
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
-    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
+    print_time "Account cache"
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    print_time "Julie aliases"
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    print_time "Client emails"
 
     @messages_thread.create_event_title_review_if_needed
+
+    print_time "Event title review"
+
+
+
+    render :show
+
+    print_time "Render"
+
+    print_all_times
   end
 
   def archive
@@ -239,10 +262,57 @@ class MessagesThreadsController < ApplicationController
     end
   end
 
-  def print_time reference
-    @i ||= 0
-    @i+= 1
-    p @i, Time.now - reference
+  def print_time tag
+    @time_reference ||= Time.now
+    @times ||= []
+    @times << {
+        index: @times.length,
+        tag: tag,
+        time: Time.now,
+        delay: Time.now - (@times.last.try(:[], :time) || @time_reference),
+        total_delay: Time.now - @time_reference
+    }
+  end
+
+  def print_all_times
+    if Rails.env.production?
+      print({
+        route: "#{params[:controller]}##{params[:action]}",
+        times: @times
+      }.to_json)
+      print "\n"
+    else
+      print "-" * 50
+      print "\n\n"
+      print_arrays @times.map { |time|
+        [
+            time[:index],
+            time[:tag],
+            "#{time[:delay]}s",
+            "#{time[:total_delay]}s"
+        ]
+                   }
+
+      print "\n\n"
+      print "-" * 50
+      print "\n"
+    end
+  end
+
+  def print_arrays arrays
+    (0..arrays.first.length - 1).each do |i|
+      max_length = arrays.map{|array| "#{array[i]}".length}.max + 5
+      arrays.each do |array|
+        array[i] = "#{array[i]}#{" " * (max_length - "#{array[i]}".length)}"
+      end
+    end
+
+
+    arrays.each do |array|
+      print array.join
+      print "\n"
+    end
+
   end
 
 
