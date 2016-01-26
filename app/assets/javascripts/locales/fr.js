@@ -186,7 +186,7 @@ window.wordings['fr'] = {
                 },
                 skype:{
                     assisted: "Pourriez-vous de me faire parvenir l'identifiant de %{attendees_names} ?",
-                    nonassisted: "Pourriez de me faire parvenir votre identifiant ?"
+                    nonassisted: "Pourriez-vous me faire parvenir votre identifiant ?"
                 }
             }
         },

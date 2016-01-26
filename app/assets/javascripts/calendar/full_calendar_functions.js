@@ -55,6 +55,8 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         calendar_login_username: calendar.initialData.default_calendar_login_username,
         calendar_login_type: calendar.initialData.default_calendar_login_type
     });
+
+
     if(calendar.getMode() == "create_events") {
         if(calendar.initialData.pickEventCallback) {
             calendar.initialData.pickEventCallback({
@@ -69,6 +71,8 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         calendar.drawEventList();
 
         if(calendar.getMode() == "free_calendar") {
+            console.log('event', eventData);
+
             calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
         }
     }

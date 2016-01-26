@@ -27,5 +27,25 @@
         };
     });
 
+    app.directive('sanitizeWhitespaces', function() {
+        return {
+            require: 'ngModel',
+            link: function(scope, element, attrs, modelCtrl) {
+                var sanitize = function(inputValue) {
+                    if(inputValue == undefined) inputValue = '';
+                    var sanitized = inputValue.trim();
+
+                    if(sanitized !== inputValue) {
+                        modelCtrl.$setViewValue(sanitized);
+                        modelCtrl.$render();
+                    }
+                    return sanitized;
+                };
+                modelCtrl.$parsers.push(sanitize);
+                sanitize(scope[attrs.ngModel]);  // sanitize initial value
+            }
+        };
+    });
+
 
 })();

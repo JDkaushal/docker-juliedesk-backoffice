@@ -77,7 +77,9 @@
     };
 
     var suggestDatesSetReplyMessage = function() {
-        window.setReplyMessage(window.generateEmailTemplate({
+        var message = '';
+
+        message += window.generateEmailTemplate({
             action: "suggest_dates",
             client_agreement: true,
             isPostpone: isPostpone,
@@ -99,21 +101,35 @@
                 return name;
             }),
             attendees: _.filter(_.map(attendees(), function(attendee) {
-                    if(attendee.usageName)
-                        {
-                            var names = attendee.usageName.split(" ");
-                            if(names.length > 0) {
-                                return window.helpers.capitalize(names[0]);
-                            }
-                        }
-                    return null;
-                    }), function(name) {
-                        return name;
-                    }),
+                if(attendee.usageName)
+                {
+                    var names = attendee.usageName.split(" ");
+                    if(names.length > 0) {
+                        return window.helpers.capitalize(names[0]);
+                    }
+                }
+                return null;
+            }), function(name) {
+                return name;
+            }),
             timezoneId: window.threadComputedData.timezone,
             defaultTimezoneId: window.threadAccount.default_timezone_id,
             callInstructions: window.threadComputedData.call_instructions
-        }), "all", window.otherEmails);
+        });
+
+        var currentAppointment = window.getCurrentAppointment();
+        var firstDateSuggestion = <%= @first_date_suggestion %>;
+        console.log('firstDateSuggestion', firstDateSuggestion);
+
+        if(firstDateSuggestion && currentAppointment && (currentAppointment.kind == 'skype' || currentAppointment.kind == 'call') && window.presentAttendees().length == 2){
+            console.log('inside');
+            var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: true, sticky: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.kind == 'call'});
+            if(missingInfosMessage != ''){
+                message += missingInfosMessage;
+            }
+        }
+
+        window.setReplyMessage(message, "all", window.otherEmails);
     };
 
     var suggestDateReplyFunction = function() {

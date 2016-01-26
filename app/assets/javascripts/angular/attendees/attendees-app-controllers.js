@@ -45,6 +45,10 @@
                     $('.messages-thread-info-panel').removeClass('scrollable').addClass('frozen');
                 });
 
+                this.sanitizeContent = function(attribute){
+                    this.attendeeInForm[attribute] = this.attendeeInForm[attribute].trim();
+                };
+
                 this.cancelAttendeeForm = function(){
                     Object.assign(attendeesFormCtrl.attendeeInForm, originalAttendee);
                     attendeesFormCtrl.isVisible = false;
@@ -58,12 +62,32 @@
                     if(this.attendeeInForm.company === undefined)
                         this.attendeeInForm.company = '';
 
+                    if(this.attendeeInForm.firstName)
+                        this.sanitizeContent('firstName');
+
+                    if(this.attendeeInForm.lastName)
+                        this.sanitizeContent('lastName');
+
+                    if(this.attendeeInForm.usageName)
+                        this.sanitizeContent('usageName');
+
                     this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
                         sharedProperties.notifyAttendeeAdded(new Attendee(this.attendeeInForm));
                         console.log("Added" + attendeesFormCtrl.isVisible);
+
+                        // Sometime when a new attendee is added a display bug occure, hiding/showing the attendees seems to fix it
+                        setTimeout(function(){
+                            console.log('test');
+                            $('.contact').hide().show(0);
+
+
+                        }, 10);
+
+
+
                     }else{
                         console.log("Updated");
                         if(this.attendeeInForm.isAssistant){
@@ -503,6 +527,13 @@
         //--------------------------------------------------------------------------------
 
         //Helpers-------------------------------------------------------------------------
+
+        $scope.displayAttendeesInformations = function(){
+            var currentAppointment = window.getCurrentAppointment();
+
+            return (currentAppointment && currentAppointment.required_additional_informations != 'empty');
+        };
+
         $scope.getAttendeeByGuid = function(guid) {
             return _.find($scope.attendees, function (a) {
                 return a.guid == guid;
@@ -597,9 +628,18 @@
         };
 
         // We use that on the input blur event when setting the missing informations from the attendees details thumbnail to avoid having the input disappear after the first character is entered
+        // Currently not used anymore but maybe in future who knows...
         $scope.setAttendeeProperty = function(attendee, property, value){
             attendee[property] = attendee.missingInformationsTemp[property];
             attendee.missingInformationsTemp[property] = '';
+        };
+
+        $scope.missingInformationAttendeesFilter = function(attendee){
+            var attendeeFromSameCompanyWithInfos = _.find($scope.getAttendeesOnPresence(true), function(a){
+                return a.company != '' && a.guid != attendee.guid && a.company == attendee.company && !a.hasMissingInformations;
+            });
+
+            return (attendee.usageName.length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
         };
 
         $scope.checkMissingInformations = function(params){
@@ -627,9 +667,18 @@
                             break;
                     }
 
-                    if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target == 'interlocutor')
-                        check = false;
+                    if(params.ask_early_call){
+                        if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target != 'interlocutor')
+                            check = false;
+                    }else if(params.ask_early_skype) {
+                        // let check at true
+                    }
+                    else{
+                        if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target == 'interlocutor')
+                            check = false;
+                    }
 
+                    console.log(check);
                     if(check){
                         presentAttendees = $scope.getAttendeesWithoutAssistant();
                         presentAttendeesLength = presentAttendees.length;
@@ -647,27 +696,16 @@
                             }
 
                             _.each(attendeesWithMissingInfos, function(a){
-                                if(a.usageName){
+                                if($scope.missingInformationAttendeesFilter(a, attendeesWithMissingInfos)){
                                     var names = a.usageName.split(" ");
                                     if(names.length > 0) {
                                         result.attendeesNames.push(window.helpers.capitalize(names[0]));
                                     }
                                 }
                             });
+
+                            console.log(result);
                         }
-
-                        //_.each($scope.getAttendeesFromOtherCompanies(), function(a){
-                        //    if(!a[methodToCheck]()){
-                        //        result.missingInfos = true;
-                        //        if(a.usageName){
-                        //            var names = a.usageName.split(" ");
-                        //            if(names.length > 0) {
-                        //                result.attendeesNames.push(window.helpers.capitalize(names[0]));
-                        //            }
-                        //        }
-                        //    }
-                        //});
-
                     }
                 }
             }

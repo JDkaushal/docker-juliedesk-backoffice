@@ -2017,6 +2017,75 @@ window.testsData.templatesData = [
             action: "invites_sent",
             client_agreement: true,
             client: "Nicolas Marlier",
+            timeSlotToCreate: moment().hour(12).minute(0).second(0).add(1, 'd'),
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address: "",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                },
+                type: "ask_interlocuter"
+            },
+            attendeesWithMissingInfos: [
+                {guid: 1},
+                {guid: 2}
+            ],
+            expectedResults: {
+                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM\n\nPlease let me know the location to add it to the event.",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: moment().hour(12).minute(0).second(0).add(1, 'd'),
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address: "",
+                address_in_template: {
+                    fr: "",
+                    en: ""
+                },
+                type: "ask_interlocuter"
+            },
+            attendeesWithMissingInfos: [
+                {guid: 1},
+                {guid: 2},
+                {guid: 3}
+            ],
+            expectedResults: {
+                en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00 PM",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
             timeSlotToCreate: "2015-01-01T12:00:00",
             defaultTimezoneId: "Europe/Paris",
             allTimezoneIds: ["Europe/Paris"],

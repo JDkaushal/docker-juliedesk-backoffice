@@ -135,7 +135,7 @@
             fetchClientsGET = $httpBackend.when('GET', '/client_contacts/fetch?client_email=blake@aceable.com&contacts_emails%5B%5D=test@test1.com&contacts_emails%5B%5D=test@test2.com');
             fetchClientsGET.respond({userId: 'userX', aliases: {}, companies: {}}, {'A-Token': 'xxx'});
 
-            spyOn( $scope, 'guid' ).and.returnValue(0);
+            //spyOn( $scope, 'guid' ).and.returnValue(0);
 
         }));
 
@@ -177,16 +177,18 @@
 
                 describe('should generate the correct message when no additional informations are required', function(){
                     beforeEach(function(){
-                        spyOn( window, 'updateNotesCallingInfos' );
 
-                        $httpBackend.flush();
-                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
                     });
 
                     it('when no required additional informations are specified', function(){
                         window.getCurrentAppointment = function(){
                             return {required_additional_informations: 'empty'}
                         };
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         expect($scope.checkMissingInformations()).toEqual('');
                     });
@@ -198,9 +200,61 @@
                         $scope.virtualAppointmentsHelper = {
                             currentConf:{target: "interlocutor"}
                         };
+                        spyOn( window, 'updateNotesCallingInfos' );
 
+                        $httpBackend.flush();
+
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         expect($scope.checkMissingInformations()).toEqual('');
+                    });
+
+                    it('when the current virtual appointment configuration is targeting a client and we want to ask early', function(){
+                        window.currentAttendees.push({
+                            email: "test@test3.com",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'mobile_only'}
+                        };
+                        $scope.virtualAppointmentsHelper = {
+                            currentConf:{target: "client"}
+                        };
+
+                        window.presentAttendees = function(){
+                            return _.filter($scope.attendees, function(attendee) {
+                                return attendee.isPresent;
+                            });
+                        };
+
+                        window.threadComputedData.locale = 'fr';
+                        spyOn( window, 'generateEmailTemplate' );
+
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({ask_early_call: true});
+                        expect( window.generateEmailTemplate ).not.toHaveBeenCalled();
                     });
 
                 });
@@ -229,7 +283,7 @@
                             isAssistant: "false",
                             assisted: "false",
                             assistedBy: null,
-                            company: 'Test Company',
+                            company: 'Test Company 2',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -267,7 +321,7 @@
                             isAssistant: "false",
                             assisted: "false",
                             assistedBy: null,
-                            company: 'Test Company',
+                            company: 'Test Company 2',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -286,7 +340,7 @@
                             isAssistant: "false",
                             assisted: "false",
                             assistedBy: null,
-                            company: 'Test Company',
+                            company: 'Test Company 3',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -305,7 +359,7 @@
                             isAssistant: "false",
                             assisted: "false",
                             assistedBy: null,
-                            company: 'Test Company',
+                            company: 'Test Company 4',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -339,7 +393,7 @@
                             isAssistant: "false",
                             assisted: "false",
                             assistedBy: null,
-                            company: 'Test Company',
+                            company: 'Test Company 2',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -374,7 +428,7 @@
                             assisted: "true",
                             assistedBy: {email: "test@test2.com", name: "fname2 lname2", guid: 3},
                             id: 2,
-                            company: 'Test Company',
+                            company: 'Test Company 2',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -395,7 +449,7 @@
                             assisted: "false",
                             assistedBy: null,
                             id: 3,
-                            company: 'Test Company',
+                            company: 'Test Company 3',
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
@@ -419,6 +473,284 @@
                     });
 
                     it('skype_only informations are missing on one attendee with no other attendees on a non virtual appointment with redundant courtesy used', function(){
+                        window.currentAttendees.push({
+                            email: "test@test3.com",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test4.com",
+                            firstName: "fname4",
+                            lastName: "lname4",
+                            name: "fname4 lname4",
+                            usageName: "fname4",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 3',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test5.com",
+                            firstName: "fname5",
+                            lastName: "lname5",
+                            name: "fname5 lname5",
+                            usageName: "fname5",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 4',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test6.com",
+                            firstName: "fname6",
+                            lastName: "lname6",
+                            name: "fname6 lname6",
+                            usageName: "fname6",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 5',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'skype_only'}
+                        };
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({redundantCourtesy: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                    });
+
+                    it('skype is missing on multiple attendees but some of them have no emails and are not assisted', function(){
+
+                        window.currentAttendees.push({
+                            email: "",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "",
+                            firstName: "fname4",
+                            lastName: "lname4",
+                            name: "fname4 lname4",
+                            usageName: "fname4",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 3',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "",
+                            firstName: "fname5",
+                            lastName: "lname5",
+                            name: "fname5 lname5",
+                            usageName: "fname5",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 4',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test6.com",
+                            firstName: "fname6",
+                            lastName: "lname6",
+                            name: "fname6 lname6",
+                            usageName: "fname6",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 5',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'skype_only'}
+                        };
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({redundantCourtesy: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                    });
+                    it('skype is missing on multiple attendees but some of them have no emails but they are assisted', function(){
+
+                        window.currentAttendees.push({
+                            email: "",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "true",
+                            assistedBy: {test: '123'},
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "",
+                            firstName: "fname4",
+                            lastName: "lname4",
+                            name: "fname4 lname4",
+                            usageName: "fname4",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "true",
+                            assistedBy: {guid: '123'},
+                            company: 'Test Company 3',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "",
+                            firstName: "fname5",
+                            lastName: "lname5",
+                            name: "fname5 lname5",
+                            usageName: "fname5",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 4',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test6.com",
+                            firstName: "fname6",
+                            lastName: "lname6",
+                            name: "fname6 lname6",
+                            usageName: "fname6",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 5',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        console.log(window.currentAttendees);
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'skype_only'}
+                        };
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+                        console.log(window.currentAttendees);
+
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({redundantCourtesy: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                    });
+
+                    it('skype is missing on multiple attendees but one of them from the same company has its informations', function(){
+
                         window.currentAttendees.push({
                             email: "test@test3.com",
                             firstName: "fname3",
@@ -490,7 +822,7 @@
                             timezone: "America/Chicago",
                             landline: "",
                             mobile: "",
-                            skypeId: "",
+                            skypeId: "skypeid",
                             confCallInstructions: '',
                             isPresent: "true",
                             isClient: "false",
@@ -503,18 +835,301 @@
                         spyOn( window, 'updateNotesCallingInfos' );
 
                         $httpBackend.flush();
+
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations({redundantCourtesy: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: [], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                    });
+
+                    it('when the current virtual appointment configuration is targeting an interlocutor and we want to ask early', function(){
+                        window.currentAttendees.push({
+                            email: "test@test3.com",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test4.com",
+                            firstName: "fname4",
+                            lastName: "lname4",
+                            name: "fname4 lname4",
+                            usageName: "fname4",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 3',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test5.com",
+                            firstName: "fname5",
+                            lastName: "lname5",
+                            name: "fname5 lname5",
+                            usageName: "fname5",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 4',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test6.com",
+                            firstName: "fname6",
+                            lastName: "lname6",
+                            name: "fname6 lname6",
+                            usageName: "fname6",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 5',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'mobile_only'}
+                        };
+                        $scope.virtualAppointmentsHelper = {
+                            currentConf:{target: "interlocutor"}
+                        };
+
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({redundantCourtesy: true, ask_early_skype: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'mobile_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                    });
+
+                });
+
+            });
+
+            describe('missingInformationAttendeesFilter', function(){
+
+                describe('attendee has an email', function(){
+                    it('should return true', function(){
+                        var attendee = new Attendee({
+                            email: "test@test2.com",
+                            firstName: "fname2",
+                            lastName: "",
+                            usageName: "fname2",
+                            name: "fname2",
+                            gender: 'F',
+                            guid: 0,
+                            hasMissingInformations: false,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: true,
+                            assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                            company: '',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+
+                        spyOn($scope, 'getAttendeesOnPresence' ).and.returnValue([attendee]);
+
+                        expect($scope.missingInformationAttendeesFilter(attendee)).toBe(true);
+                    });
+
+                    it('should return false', function(){
+                        var attendee = new Attendee({
+                            email: "",
+                            firstName: "fname2",
+                            lastName: "",
+                            usageName: "fname2",
+                            name: "fname2",
+                            gender: 'F',
+                            guid: 0,
+                            hasMissingInformations: false,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: true,
+                            assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                            company: '',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+                        spyOn($scope, 'getAttendeesOnPresence' ).and.returnValue([attendee]);
+
+                        expect($scope.missingInformationAttendeesFilter(attendee)).toBe(false);
                     });
                 });
 
+                describe('attendee has no email and is not assisted', function(){
+                    it('it should return false', function(){
+                        var attendee = new Attendee({
+                            email: "",
+                            firstName: "fname2",
+                            lastName: "",
+                            usageName: "fname2",
+                            name: "fname2",
+                            gender: 'F',
+                            guid: 0,
+                            hasMissingInformations: false,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: false,
+                            assistedBy: null,
+                            company: '',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+                        spyOn($scope, 'getAttendeesOnPresence' ).and.returnValue([attendee]);
+
+                        expect($scope.missingInformationAttendeesFilter(attendee)).toBe(false);
+                    });
+                });
+
+                describe('attendee has no email but is assisted', function(){
+                    it('it should return true', function(){
+                        var attendee = new Attendee({
+                            email: "",
+                            firstName: "fname2",
+                            lastName: "",
+                            usageName: "fname2",
+                            name: "fname2",
+                            gender: 'F',
+                            guid: 0,
+                            hasMissingInformations: false,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: true,
+                            assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk', guid: '123'},
+                            company: '',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+                        spyOn($scope, 'getAttendeesOnPresence' ).and.returnValue([attendee]);
+
+                        expect($scope.missingInformationAttendeesFilter(attendee)).toBe(true);
+                    });
+                });
+
+                describe('attendee has an email but another attendee from same company has its informations', function(){
+                    it('should return false', function(){
+                        var attendee1 = new Attendee({
+                            email: "email2@gmail.com",
+                            firstName: "fname2",
+                            lastName: "",
+                            usageName: "fname2",
+                            name: "fname2",
+                            gender: 'F',
+                            guid: 1,
+                            hasMissingInformations: true,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: false,
+                            assistedBy: null,
+                            company: 'company1',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+
+                        var attendee2 = new Attendee({
+                            email: "email3@gmail.com",
+                            firstName: "fname3",
+                            lastName: "",
+                            usageName: "fname3",
+                            name: "fname3",
+                            gender: 'F',
+                            guid: 2,
+                            hasMissingInformations: false,
+                            missingInformationsTemp: {},
+                            isAssistant: false,
+                            assisted: false,
+                            assistedBy: null,
+                            company: 'company1',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "617-216-2881",
+                            skypeId: "skypous",
+                            confCallInstructions: "",
+                            isPresent: undefined,
+                            isClient: false,
+                            isThreadOwner: false
+                        });
+
+                        spyOn($scope, 'getAttendeesOnPresence' ).and.returnValue([attendee1, attendee2]);
+
+                        expect($scope.missingInformationAttendeesFilter(attendee1)).toBe(false);
+                    });
+                });
             });
 
         });
 
         describe('Attendees', function(){
+            beforeEach(function(){
+                spyOn( $scope, 'guid' ).and.returnValue(0);
+            });
+
 
             it('should have a method to format its informations', function(){
                 spyOn( window, 'updateNotesCallingInfos' );
@@ -676,682 +1291,525 @@
                 expect($scope.attendees[0].assistantDisplayText()).toEqual("Julie Desk (julie@juliedesk.com)");
             });
 
-        });
+            it('should have an attendee variable set to the correct attendees', function(){
 
-        it('should have an attendee variable set to the correct attendees', function(){
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test1.com",
+                        firstName: "fname1",
+                        lastName: "lname1",
+                        usageName: "fname1",
+                        name: "fname1 lname1",
+                        gender: 'M',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    })
+                ];
 
-            var expectedAttendees = [
-                new Attendee({
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+
+                // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+            });
+
+            it('should return the correct assistant', function(){
+                window.currentAttendees = [{
                     email: "test@test1.com",
                     firstName: "fname1",
                     lastName: "lname1",
-                    usageName: "fname1",
                     name: "fname1 lname1",
+                    usageName: "fname1",
                     gender: 'M',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: false,
-                    assistedBy: null,
+                    isAssistant: "false",
+                    assisted: "false",
+                    assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
                     company: 'Test Company',
                     timezone: "America/Chicago",
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: true,
-                    isClient: true,
-                    isThreadOwner: false
-                }),
-                new Attendee({
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    usageName: "fname2",
-                    name: "fname2",
-                    gender: 'F',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
+                    confCallInstructions: '',
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                },
+                    {
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        name: "fname2",
+                        usageName: "fname2",
+                        gender: 'F',
+                        id: 3,
+                        isAssistant: "false",
+                        assisted: "true",
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        landline: "000-8765-321",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "false",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    }];
+
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                expect(angular.equals($scope.getAssistant($scope.attendees[0]), $scope.attendees[1])).toBe(true);
+            });
+
+            it('should return the correct Assistant by email', function(){
+                window.currentAttendees = [{
+                    email: "test@test1.com",
+                    firstName: "fname1",
+                    lastName: "lname1",
+                    name: "fname1 lname1",
+                    usageName: "fname1",
+                    gender: 'M',
+                    isAssistant: "false",
+                    assisted: "false",
+                    assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
+                    company: 'Test Company',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: '',
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                },
+                    {
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        name: "fname2",
+                        usageName: "fname2",
+                        gender: 'F',
+                        id: 3,
+                        isAssistant: "false",
+                        assisted: "true",
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        landline: "000-8765-321",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "false",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    }];
+
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                expect(angular.equals($scope.getAssistedByEmail($scope.attendees[1]), $scope.attendees[0])).toBe(true);
+            });
+
+            it('should return the correct Assisted', function(){
+                window.currentAttendees = [{
+                    email: "test@test1.com",
+                    firstName: "fname1",
+                    lastName: "lname1",
+                    name: "fname1 lname1",
+                    usageName: "fname1",
+                    gender: 'M',
+                    isAssistant: "false",
+                    assisted: "false",
+                    assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
+                    company: 'Test Company',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: '',
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                },
+                    {
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        name: "fname2",
+                        usageName: "fname2",
+                        gender: 'F',
+                        id: 3,
+                        isAssistant: "false",
+                        assisted: "true",
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        landline: "000-8765-321",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "false",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    }];
+
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                expect(angular.equals($scope.getAssisted($scope.attendees[1]), $scope.attendees[0])).toBe(true);
+            });
+
+            it('should return the correct companies names', function(){
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(AttendeesCtrl.getCompaniesNames()).toEqual(['Test Company']);
+            });
+
+            it('should call the displayAttendeeForm Method of the sharedProperties Service when opening a new form', function(){
+                AttendeesCtrl.displayAttendeeNewForm();
+                expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: { timezone: 'America/Chicago', isPresent: true }, action: 'new'});
+            });
+
+            it('should call the displayAttendeeForm Method of the sharedProperties Service when opening an update form', function(){
+                var attendee = new Attendee({email: 'test'});
+                AttendeesCtrl.displayAttendeeUpdateForm(attendee);
+                expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: attendee, action: 'update'});
+            });
+
+            it('should send the currentThreadOwner to the sharedProperties service', function(){
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
                     isAssistant: false,
                     assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
                     company: '',
                     timezone: "America/Chicago",
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: undefined,
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals(SharedProperties.setThreadOwner.calls.mostRecent().args[0], threadOwner)).toBe(true);
+            });
+
+            it('should listen to the attendeeAdded event', function(){
+
+                var attendee = new Attendee({
+                    email: "test@testfff.com",
+                    firstName: "fname2",
+                    lastName: "lname2",
+                    name: "fname2 lname2",
+                    usageName: "fname2",
+                    gender: 'F',
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie2@juliedesk.com', usageName: 'Julie2 Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: '',
+                    isPresent: false,
                     isClient: false,
                     isThreadOwner: false
-                })
-            ];
-
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
+                });
+                var attendeesLength = $scope.attendees.length;
+                $rootScope.$broadcast('attendeeAdded', {attendee: attendee});
+                expect($scope.attendees.length).toEqual(attendeesLength + 1);
             });
 
-            // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
-            spyOn( window, 'updateNotesCallingInfos' );
-            expectedAttendees.push(threadOwner);
-            $httpBackend.flush();
-
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
-        });
-
-        it('should return the correct assistant', function(){
-            window.currentAttendees = [{
-                email: "test@test1.com",
-                firstName: "fname1",
-                lastName: "lname1",
-                name: "fname1 lname1",
-                usageName: "fname1",
-                gender: 'M',
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            },
-                {
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    name: "fname2",
-                    usageName: "fname2",
-                    gender: 'F',
-                    id: 3,
-                    isAssistant: "false",
-                    assisted: "true",
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+            it('should return the current Thread Owner', function(){
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
                     company: '',
-                    landline: "000-8765-321",
+                    timezone: "America/Chicago",
+                    landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: '',
-                    isPresent: "false",
-                    isClient: "false",
-                    isThreadOwner: "false"
-                }];
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-
-            expect(angular.equals($scope.getAssistant($scope.attendees[0]), $scope.attendees[1])).toBe(true);
-        });
-
-        it('should return the correct Assistant by email', function(){
-            window.currentAttendees = [{
-                email: "test@test1.com",
-                firstName: "fname1",
-                lastName: "lname1",
-                name: "fname1 lname1",
-                usageName: "fname1",
-                gender: 'M',
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            },
-                {
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    name: "fname2",
-                    usageName: "fname2",
-                    gender: 'F',
-                    id: 3,
-                    isAssistant: "false",
-                    assisted: "true",
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    landline: "000-8765-321",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: '',
-                    isPresent: "false",
-                    isClient: "false",
-                    isThreadOwner: "false"
-                }];
-
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-
-            expect(angular.equals($scope.getAssistedByEmail($scope.attendees[1]), $scope.attendees[0])).toBe(true);
-        });
-
-        it('should return the correct Assisted', function(){
-            window.currentAttendees = [{
-                email: "test@test1.com",
-                firstName: "fname1",
-                lastName: "lname1",
-                name: "fname1 lname1",
-                usageName: "fname1",
-                gender: 'M',
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: {displayName: "fname2", email:"test@test2.com", guid:3},
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            },
-                {
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    name: "fname2",
-                    usageName: "fname2",
-                    gender: 'F',
-                    id: 3,
-                    isAssistant: "false",
-                    assisted: "true",
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    landline: "000-8765-321",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: '',
-                    isPresent: "false",
-                    isClient: "false",
-                    isThreadOwner: "false"
-                }];
-
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-
-            expect(angular.equals($scope.getAssisted($scope.attendees[1]), $scope.attendees[0])).toBe(true);
-        });
-
-        it('should return the correct companies names', function(){
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(AttendeesCtrl.getCompaniesNames()).toEqual(['Test Company']);
-        });
-
-        it('should call the displayAttendeeForm Method of the sharedProperties Service when opening a new form', function(){
-            AttendeesCtrl.displayAttendeeNewForm();
-            expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: { timezone: 'America/Chicago', isPresent: true }, action: 'new'});
-        });
-
-        it('should call the displayAttendeeForm Method of the sharedProperties Service when opening an update form', function(){
-            var attendee = new Attendee({email: 'test'});
-            AttendeesCtrl.displayAttendeeUpdateForm(attendee);
-            expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: attendee, action: 'update'});
-        });
-
-        it('should send the currentThreadOwner to the sharedProperties service', function(){
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
+                expect(angular.equals($scope.getThreadOwner(), threadOwner)).toBe(true);
             });
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(angular.equals(SharedProperties.setThreadOwner.calls.mostRecent().args[0], threadOwner)).toBe(true);
-        });
 
-        it('should listen to the attendeeAdded event', function(){
-
-            var attendee = new Attendee({
-                email: "test@testfff.com",
-                firstName: "fname2",
-                lastName: "lname2",
-                name: "fname2 lname2",
-                usageName: "fname2",
-                gender: 'F',
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie2@juliedesk.com', usageName: 'Julie2 Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: false,
-                isClient: false,
-                isThreadOwner: false
+            it('should get the current ThreadOwner emails', function(){
+                expect($scope.getThreadOwnerEmails()).toEqual([ 'blake@aceable.com', 'threadOwnerAlias1@alias.com' ]);
             });
-            var attendeesLength = $scope.attendees.length;
-            $rootScope.$broadcast('attendeeAdded', {attendee: attendee});
-            expect($scope.attendees.length).toEqual(attendeesLength + 1);
-        });
 
-        it('should return the current Thread Owner', function(){
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
+            it('should get the current contacts infos from the notes in EN', function(){
+                var notes = '';
+
+                notes += '-Contacts-Infos-------------------';
+                notes += 'Blablalblrfrefrefe';
+                notes += "\n----------------------------------------";
+
+                expect(AttendeesCtrl.getCurrentContactsInfosEn(notes.replace(/\n/g, ''))[0]).toEqual('-Contacts-Infos-------------------Blablalblrfrefrefe----------------------------------------');
             });
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
-            expect(angular.equals($scope.getThreadOwner(), threadOwner)).toBe(true);
-        });
+            it('should get the current contacts infos from the notes in FR', function(){
+                var notes = '';
 
-        it('should get the current ThreadOwner emails', function(){
-            expect($scope.getThreadOwnerEmails()).toEqual([ 'blake@aceable.com', 'threadOwnerAlias1@alias.com' ]);
-        });
+                notes += '-Informations-de-contacts-------------------';
+                notes += 'Blablalblrfrefrefe';
+                notes += "\n----------------------------------------";
 
-        it('should get the current contacts infos from the notes in EN', function(){
-            var notes = '';
+                expect(AttendeesCtrl.getCurrentContactsInfosFr(notes.replace(/\n/g, ''))[0]).toEqual('-Informations-de-contacts-------------------Blablalblrfrefrefe----------------------------------------');
+            });
 
-            notes += '-Contacts-Infos-------------------';
-            notes += 'Blablalblrfrefrefe';
-            notes += "\n----------------------------------------";
+            it('should call updateNotes every time the attendees are updated', function(){
+                spyOn( window, 'updateNotesCallingInfos' );
+                $httpBackend.flush();
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
-            expect(AttendeesCtrl.getCurrentContactsInfosEn(notes.replace(/\n/g, ''))[0]).toEqual('-Contacts-Infos-------------------Blablalblrfrefrefe----------------------------------------');
-        });
+                $scope.attendees[0].email = 'newEmail@frefe.com';
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalledWith();
+            });
 
-        it('should get the current contacts infos from the notes in FR', function(){
-            var notes = '';
+            it('should trigger the attendeesRefreshed event when an attendee is updated', function(){
+                spyOn( window, 'updateNotesCallingInfos' );
+                spyOn( $rootScope, '$broadcast').and.callThrough();
 
-            notes += '-Informations-de-contacts-------------------';
-            notes += 'Blablalblrfrefrefe';
-            notes += "\n----------------------------------------";
+                $httpBackend.flush();
 
-            expect(AttendeesCtrl.getCurrentContactsInfosFr(notes.replace(/\n/g, ''))[0]).toEqual('-Informations-de-contacts-------------------Blablalblrfrefrefe----------------------------------------');
-        });
+                $scope.attendees[0].email = 'newEmail@frefe.com';
+                expect($rootScope.$broadcast).toHaveBeenCalled();
+                expect(angular.equals($rootScope.$broadcast.calls.mostRecent().args[1].attendees, $scope.attendees)).toBe(true);
 
-        it('should call updateNotes every time the attendees are updated', function(){
-            spyOn( window, 'updateNotesCallingInfos' );
-            $httpBackend.flush();
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+            });
 
-            $scope.attendees[0].email = 'newEmail@frefe.com';
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalledWith();
-        });
-
-        it('should trigger the attendeesRefreshed event when an attendee is updated', function(){
-            spyOn( window, 'updateNotesCallingInfos' );
-            spyOn( $rootScope, '$broadcast').and.callThrough();
-
-            $httpBackend.flush();
-
-            $scope.attendees[0].email = 'newEmail@frefe.com';
-            expect($rootScope.$broadcast).toHaveBeenCalled();
-            expect(angular.equals($rootScope.$broadcast.calls.mostRecent().args[1].attendees, $scope.attendees)).toBe(true);
-
-        });
-
-        it('should update correctly the notes in EN', function(){
-            window.currentLocale = 'en';
-            var html = '<textarea class="data-entry form-control" id="notes" name="notes" disabled="">-Contacts-Infos-------------------\
+            it('should update correctly the notes in EN', function(){
+                window.currentLocale = 'en';
+                var html = '<textarea class="data-entry form-control" id="notes" name="notes" disabled="">-Contacts-Infos-------------------\
                 Frederic GRAIS\
             Téléphone: hythtyhy / hythtyhhyhtyhty\
             ----------------------------------------</textarea>';
-            angular.element(document.body).append(html);
+                angular.element(document.body).append(html);
 
-            $httpBackend.flush();
-            $scope.updateNotes();
+                $httpBackend.flush();
+                $scope.updateNotes();
 
-            var expectedNotes = '-Contacts-Infos-------------------fname1 lname1Téléphone : 617-216-2881----------------------------------------';
+                var expectedNotes = '-Contacts-Infos-------------------fname1 lname1Téléphone : 617-216-2881----------------------------------------';
 
-            expect($('#notes').val().replace(/\n/g, '')).toEqual(expectedNotes);
+                expect($('#notes').val().replace(/\n/g, '')).toEqual(expectedNotes);
 
-            $('#notes').remove();
-        });
+                $('#notes').remove();
+            });
 
-        it('should update correctly the notes in FR', function(){
-            window.currentLocale = 'en';
-            var html = '<textarea class="data-entry form-control" id="notes" name="notes" disabled="">-Contacts-Infos-------------------\
+            it('should update correctly the notes in FR', function(){
+                window.currentLocale = 'en';
+                var html = '<textarea class="data-entry form-control" id="notes" name="notes" disabled="">-Contacts-Infos-------------------\
                 Frederic GRAIS\
             Téléphone: hythtyhy / hythtyhhyhtyhty\
             ----------------------------------------</textarea>';
-            angular.element(document.body).append(html);
+                angular.element(document.body).append(html);
 
-            $httpBackend.flush();
-            $scope.updateNotes();
+                $httpBackend.flush();
+                $scope.updateNotes();
 
-            var expectedNotes = '-Contacts-Infos-------------------fname1 lname1Téléphone : 617-216-2881----------------------------------------';
+                var expectedNotes = '-Contacts-Infos-------------------fname1 lname1Téléphone : 617-216-2881----------------------------------------';
 
-            expect($('#notes').val().replace(/\n/g, '')).toEqual(expectedNotes);
+                expect($('#notes').val().replace(/\n/g, '')).toEqual(expectedNotes);
 
-            $('#notes').remove();
-        });
+                $('#notes').remove();
+            });
 
-        it('should override the attendees details with the ones retrieved from the contact network', function(){
-            fetchClientsGET.respond({contacts: [{
-                email: "test@test1.com",
-                firstName: "overriden firstName",
-                lastName: "overriden lastName",
-                name: "fname1 lname1",
-                usageName: "fname1",
-                gender: 'M',
-                id: 1,
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: null,
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            }], aliases: {}, companies: {}}, {'A-Token': 'xxx'});
-
-            var expectedAttendees = [
-                new Attendee({
+            it('should override the attendees details with the ones retrieved from the contact network', function(){
+                fetchClientsGET.respond({contacts: [{
                     email: "test@test1.com",
                     firstName: "overriden firstName",
                     lastName: "overriden lastName",
-                    usageName: "fname1",
-                    name: "overriden firstName overriden lastName",
-                    gender: 'M',
-                    guid: 1,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: false,
-                    assistedBy: null,
-                    company: 'Test Company',
-                    timezone: "America/Chicago",
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: true,
-                    isClient: true,
-                    isThreadOwner: false
-                }),
-                new Attendee({
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    usageName: "fname2",
-                    name: "fname2",
-                    gender: 'F',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    timezone: "America/Chicago",
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: undefined,
-                    isClient: false,
-                    isThreadOwner: false
-                })
-            ];
-
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
-            });
-
-            // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
-            spyOn( window, 'updateNotesCallingInfos' );
-            expectedAttendees.push(threadOwner);
-            $httpBackend.flush();
-
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
-        });
-
-        it('should only keep the main email when it is in the current recipient even if there is an alias present', function(){
-            fetchClientsGET.respond({contacts: [], aliases: {"test@test1.com": ["testalias@test1.com"]}, companies: {'test@test1.com': 'Test Company'}}, {'A-Token': 'xxx'});
-
-            window.currentAttendees.push({
-                email: "testalias@test1.com",
-                firstName: "aliasfname1",
-                lastName: "aliaslname1",
-                name: "aliasfname1 aliaslname1",
-                usageName: "aliasfname1",
-                gender: 'M',
-                guid: 0,
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: null,
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            });
-
-            var expectedAttendees = [
-                new Attendee({
-                    email: "test@test1.com",
-                    firstName: "fname1",
-                    lastName: "lname1",
-                    usageName: "fname1",
                     name: "fname1 lname1",
+                    usageName: "fname1",
                     gender: 'M',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: false,
+                    id: 1,
+                    isAssistant: "false",
+                    assisted: "false",
                     assistedBy: null,
                     company: 'Test Company',
                     timezone: "America/Chicago",
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: "",
+                    confCallInstructions: '',
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                }], aliases: {}, companies: {}}, {'A-Token': 'xxx'});
+
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test1.com",
+                        firstName: "overriden firstName",
+                        lastName: "overriden lastName",
+                        usageName: "fname1",
+                        name: "overriden firstName overriden lastName",
+                        gender: 'M',
+                        guid: 1,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    })
+                ];
+
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: false
-                }),
-                new Attendee({
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    usageName: "fname2",
-                    name: "fname2",
-                    gender: 'F',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    timezone: "America/Chicago",
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: undefined,
-                    isClient: false,
-                    isThreadOwner: false
-                })
-            ];
+                    isThreadOwner: true
+                });
 
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
+                // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
             });
 
-            spyOn( window, 'updateNotesCallingInfos' );
-            expectedAttendees.push(threadOwner);
-            $httpBackend.flush();
+            it('should only keep the main email when it is in the current recipient even if there is an alias present', function(){
+                fetchClientsGET.respond({contacts: [], aliases: {"test@test1.com": ["testalias@test1.com"]}, companies: {'test@test1.com': 'Test Company'}}, {'A-Token': 'xxx'});
 
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-
-            expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
-
-        });
-
-        it('should keep the alias if it is in the recipient and the main email is not', function(){
-
-            fetchClientsGET.respond({contacts: [], aliases: {"test@test1.com": ["testalias@test1.com"]}, companies: {'test@test1.com': 'Test Company'}}, {'A-Token': 'xxx'});
-
-            window.currentToCC = ["test@test2.com", "testalias@test1.com"];
-
-            window.currentAttendees.push({
-                email: "testalias@test1.com",
-                firstName: "aliasfname1",
-                lastName: "aliaslname1",
-                name: "aliasfname1 aliaslname1",
-                usageName: "aliasfname1",
-                gender: 'M',
-                guid: 0,
-                isAssistant: "false",
-                assisted: "false",
-                assistedBy: null,
-                company: 'Test Company',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: '',
-                isPresent: "true",
-                isClient: "true",
-                isThreadOwner: "false"
-            });
-
-            var expectedAttendees = [
-                new Attendee({
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    usageName: "fname2",
-                    name: "fname2",
-                    gender: 'F',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
-                    company: '',
-                    timezone: "America/Chicago",
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: undefined,
-                    isClient: false,
-                    isThreadOwner: false
-                }),
-                new Attendee({
+                window.currentAttendees.push({
                     email: "testalias@test1.com",
                     firstName: "aliasfname1",
                     lastName: "aliaslname1",
@@ -1359,10 +1817,8 @@
                     usageName: "aliasfname1",
                     gender: 'M',
                     guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: false,
+                    isAssistant: "false",
+                    assisted: "false",
                     assistedBy: null,
                     company: 'Test Company',
                     timezone: "America/Chicago",
@@ -1370,129 +1826,287 @@
                     mobile: "617-216-2881",
                     skypeId: "",
                     confCallInstructions: '',
-                    isPresent: true,
-                    isClient: true,
-                    isThreadOwner: false
-                })
-            ];
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                });
 
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
-            });
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test1.com",
+                        firstName: "fname1",
+                        lastName: "lname1",
+                        usageName: "fname1",
+                        name: "fname1 lname1",
+                        gender: 'M',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    })
+                ];
 
-            spyOn( window, 'updateNotesCallingInfos' );
-            expectedAttendees.push(threadOwner);
-            $httpBackend.flush();
-
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
-        });
-
-        it('should set the correct company when retrieved from the contact network', function(){
-            fetchClientsGET.respond({contacts: [], aliases: {}, companies: {"test@test1.com": "Retrieved Company"}}, {'A-Token': 'xxx'});
-
-            var expectedAttendees = [
-                new Attendee({
-                    email: "test@test1.com",
-                    firstName: "fname1",
-                    lastName: "lname1",
-                    usageName: "fname1",
-                    name: "fname1 lname1",
-                    gender: 'M',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
-                    isAssistant: false,
-                    assisted: false,
-                    assistedBy: null,
-                    company: 'Retrieved Company',
-                    timezone: "America/Chicago",
-                    landline: "",
-                    mobile: "617-216-2881",
-                    skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: true,
-                    isClient: true,
-                    isThreadOwner: false
-                }),
-                new Attendee({
-                    email: "test@test2.com",
-                    firstName: "fname2",
-                    lastName: "",
-                    usageName: "fname2",
-                    name: "fname2",
-                    gender: 'F',
-                    guid: 0,
-                    hasMissingInformations: false,
-                    missingInformationsTemp: {},
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
                     isAssistant: false,
                     assisted: true,
-                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
                     company: '',
                     timezone: "America/Chicago",
                     landline: "",
                     mobile: "617-216-2881",
                     skypeId: "",
-                    confCallInstructions: "",
-                    isPresent: undefined,
-                    isClient: false,
-                    isThreadOwner: false
-                })
-            ];
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
 
-            var threadOwner = new Attendee({
-                email: "blake@aceable.com",
-                firstName: "Blake",
-                lastName: "Garrett",
-                usageName: "Blake",
-                name: "Blake Garrett",
-                gender: '?',
-                guid: -1,
-                isAssistant: false,
-                assisted: true,
-                assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
-                company: '',
-                timezone: "America/Chicago",
-                landline: "",
-                mobile: "617-216-2881",
-                skypeId: "",
-                confCallInstructions: undefined,
-                isPresent: true,
-                isClient: true,
-                isThreadOwner: true
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+
             });
 
-            spyOn( window, 'updateNotesCallingInfos' );
-            expectedAttendees.push(threadOwner);
-            $httpBackend.flush();
+            it('should keep the alias if it is in the recipient and the main email is not', function(){
 
-            expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-            expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+                fetchClientsGET.respond({contacts: [], aliases: {"test@test1.com": ["testalias@test1.com"]}, companies: {'test@test1.com': 'Test Company'}}, {'A-Token': 'xxx'});
 
-        });
+                window.currentToCC = ["test@test2.com", "testalias@test1.com"];
 
-        it('should fetch the contacts emails besed beginning with a substring', function(){
-            spyOn($http, 'get').and.callThrough();
-            AttendeesCtrl.getEmailsSuggestions('test');
-            expect($http.get).toHaveBeenCalledWith("/client_contacts/emails_suggestions?sub_string=test");
+                window.currentAttendees.push({
+                    email: "testalias@test1.com",
+                    firstName: "aliasfname1",
+                    lastName: "aliaslname1",
+                    name: "aliasfname1 aliaslname1",
+                    usageName: "aliasfname1",
+                    gender: 'M',
+                    guid: 0,
+                    isAssistant: "false",
+                    assisted: "false",
+                    assistedBy: null,
+                    company: 'Test Company',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: '',
+                    isPresent: "true",
+                    isClient: "true",
+                    isThreadOwner: "false"
+                });
+
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "testalias@test1.com",
+                        firstName: "aliasfname1",
+                        lastName: "aliaslname1",
+                        name: "aliasfname1 aliaslname1",
+                        usageName: "aliasfname1",
+                        gender: 'M',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    })
+                ];
+
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+            });
+
+            it('should set the correct company when retrieved from the contact network', function(){
+                fetchClientsGET.respond({contacts: [], aliases: {}, companies: {"test@test1.com": "Retrieved Company"}}, {'A-Token': 'xxx'});
+
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test1.com",
+                        firstName: "fname1",
+                        lastName: "lname1",
+                        usageName: "fname1",
+                        name: "fname1 lname1",
+                        gender: 'M',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Retrieved Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    })
+                ];
+
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+
+            });
+
+            it('should fetch the contacts emails besed beginning with a substring', function(){
+                spyOn($http, 'get').and.callThrough();
+                AttendeesCtrl.getEmailsSuggestions('test');
+                expect($http.get).toHaveBeenCalledWith("/client_contacts/emails_suggestions?sub_string=test");
+            });
         });
     });
 

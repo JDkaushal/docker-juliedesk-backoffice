@@ -348,6 +348,23 @@ class MessagesThread < ActiveRecord::Base
     })
   end
 
+  def has_already_processed_action_once(action_type)
+    has_already_processed_once = false
+    occurences_count = 0
+
+    messages.each do |m|
+
+      occurences_count += m.message_classifications.where(classification: action_type).size
+
+      if occurences_count > 1
+        has_already_processed_once = true
+        break
+      end
+    end
+
+    has_already_processed_once
+  end
+
   def sorted_message_classifications
     messages.map(&:message_classifications).flatten.sort_by(&:updated_at)
   end

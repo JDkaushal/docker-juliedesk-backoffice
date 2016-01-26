@@ -44,13 +44,18 @@ EventTile.prototype.displayCallingInfosForm = function(){
     var eventTile = this;
     // We display the form in the edit event window when the event is owned by someone (we are editing it)
     var currentAppointment = window.getCurrentAppointment();
+
     if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual)
     {
         var locationContainerNode = $('.location-container');
-        locationContainerNode.append('<div id="event_update_virtual_meetings_helper" style="margin-top: 10px;width:270px;"><virtual-meetings-helper id="event_update_vm_ctrl"/></div>');
+
+        if($('#event_update_virtual_meetings_helper').length == 0){
+            locationContainerNode.append('<div id="event_update_virtual_meetings_helper" style="margin-top: 10px;width:270px;"><virtual-meetings-helper id="event_update_vm_ctrl"/></div>');
+            angular.bootstrap(document.getElementById("event_update_virtual_meetings_helper"),['virtual-meetings-helper']);
+        }
+
         var vmHelperNode = $('#event_update_vm_ctrl');
 
-        angular.bootstrap(document.getElementById("event_update_virtual_meetings_helper"),['virtual-meetings-helper']);
         var scope = angular.element(vmHelperNode).scope();
         scope.setEditMode(true);
         scope.forceCurrentConfig = true;
@@ -72,75 +77,41 @@ EventTile.prototype.displayCallingInfosForm = function(){
 
         var call_instructions = eventTile.event.call_instructions || window.threadComputedData.call_instructions;
 
-        if(!!!call_instructions.details && eventTile.event.location == '' && eventTile.event.owned)
+        if((currentAppointment.kind != 'hangout' && currentAppointment.kind != 'skype') && !!!call_instructions.details && eventTile.event.location == '' && eventTile.event.owned)
         {
             locationContainerNode.find('.location').hide();
 
-            locationContainerNode.prepend('<div class="missing-call-informations"></div> <span style="display: inline-block; margin-top: 6px;margin-left: 27px;color: #F6BB67;">Instructions d\'appels manquantes</span>');
+            if($('#calling-infos-missing').length > 0){
+                $('#calling-infos-missing').show();
+            }else{
+                locationContainerNode.prepend('<div id="calling-infos-missing"><div class="missing-call-informations"></div> <span style="display: inline-block; margin-top: 6px;margin-left: 27px;color: #F6BB67;">Instructions d\'appels manquantes</span></div>');
+            }
         }else if(eventTile.event.owned && eventTile.event.location){
             $('input.location').change(function(){
                 var $that = $(this);
                 scope.$apply(function(){Object.assign(scope.currentConf, {target: 'custom', event_instructions: $that.val(), details: $that.val()});});
 
             });
-            //if(call_instructions.support == "mobile" || call_instructions.support == "landline"){
-            //    locationContainerNode.find('.location').remove();
-            //
-            //    var attendees = window.getInfoPanelAttendeesWithoutAssistants();
-            //    if(attendees.length == 2){
-            //        var guid = parseInt(call_instructions.targetInfos.guid);
-            //        if(isNaN(guid)){
-            //            var called = _.find(attendees, function(a){
-            //                return a.displayNormalizedName() == (call_instructions.targetInfos.name || call_instructions.targetInfos.email)
-            //            });
-            //            if(called)
-            //                guid = called.guid;
-            //        }
-            //
-            //
-            //        var caller = _.without(attendees, _.findWhere(attendees,{guid: guid}))[0];
-            //
-            //        message = localize("events.call_instructions.display_single_attendee", {
-            //            target_name: call_instructions.targetInfos.name,
-            //            caller_name: caller.displayNormalizedName(),
-            //            details: call_instructions.details,
-            //            locale: window.threadComputedData.locale
-            //        });
-            //    }
-            //    else
-            //        message = localize("events.call_instructions.display", {
-            //            target_name: call_instructions.targetInfos.name,
-            //            details: call_instructions.details,
-            //            locale: window.threadComputedData.locale
-            //        });
-            //}else if(call_instructions.support == "confcall"){
-            //    locationContainerNode.find('.location').remove();
-            //
-            //    message = localize("events.call_instructions.instructions_in_notes", {
-            //        locale: window.threadComputedData.locale
-            //    });
-            //}
-
-            //if(message != '')
-            //locationContainerNode.prepend('<span style="margin-top: 10px;">' + message + '</span>');
         }
 
-        eventTile.$selector.find("#event-edit-button").click(function() {
-            scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+        // These 2 functions were moved to the initActions() method below
 
-            $('.event-tile-container .location').hide();
+        //eventTile.$selector.find("#event-edit-button").click(function() {
+        //    scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+        //
+        //    $('.event-tile-container .location').hide();
+        //
+        //    vmHelperNode.closest('.event-tile-container').css('height', '810px');
+        //    vmHelperNode.closest('.created-event-panel').css('height', '790px');
+        //});
 
-            vmHelperNode.closest('.event-tile-container').css('height', '810px');
-            vmHelperNode.closest('.created-event-panel').css('height', '790px');
-        });
-
-        eventTile.$selector.find("#event-cancel-button").click(function() {
-            scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
-
-            $('.event-tile-container .location').show();
-            vmHelperNode.closest('.event-tile-container').css('height', '545px');
-            vmHelperNode.closest('.created-event-panel').css('height', '515px');
-        });
+        //eventTile.$selector.find("#event-cancel-button").click(function() {
+        //    scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
+        //
+        //    $('.event-tile-container .location').show();
+        //    vmHelperNode.closest('.event-tile-container').css('height', '545px');
+        //    vmHelperNode.closest('.created-event-panel').css('height', '515px');
+        //});
 
     }
 };
@@ -828,6 +799,8 @@ EventTile.prototype.initActions = function() {
     var eventTile = this;
 
     eventTile.$selector.find("#event-edit-button").click(function() {
+        var currentAppointment = window.getCurrentAppointment();
+
         eventTile.enableAll();
         eventTile.$selector.find("#event-delete-button").hide();
         eventTile.$selector.find("#event-edit-button").hide();
@@ -840,10 +813,46 @@ EventTile.prototype.initActions = function() {
 
         eventTile.redrawDatePicker();
 
+        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual){
+            var vmHelperNode = $('#event_update_vm_ctrl');
+            var scope = angular.element(vmHelperNode).scope();
+
+            if(!!scope)
+                scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+
+            $('.event-tile-container .location').hide();
+
+            vmHelperNode.closest('.event-tile-container').css('height', '810px');
+            vmHelperNode.closest('.created-event-panel').css('height', '790px');
+
+        }else{
+            $('.event-tile-container .location').show();
+        }
+
+        reProcessTitle();
+        updateCurrentEventNotes();
+
         if(eventTile.afterRedrawCallback) eventTile.afterRedrawCallback();
     });
 
     eventTile.$selector.find("#event-cancel-button").click(function() {
+        var currentAppointment = window.getCurrentAppointment();
+
+        var vmHelperNode = $('#event_update_vm_ctrl');
+        var scope = angular.element(vmHelperNode).scope();
+
+        if(!!scope)
+            scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
+
+        vmHelperNode.closest('.event-tile-container').css('height', '545px');
+        vmHelperNode.closest('.created-event-panel').css('height', '515px');
+
+        $('.event-tile-container .location').show();
+
+        if(window.threadComputedData && !window.threadComputedData.is_virtual_appointment){
+            $('#calling-infos-missing').hide();
+        }
+
         if(eventTile.event.beingAdded) {
             if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
                 action: "cancel_event_creation"

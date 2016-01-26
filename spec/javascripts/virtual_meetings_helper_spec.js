@@ -334,8 +334,10 @@
                         behaviour: 'ask_interlocutor'
                     }
                 ];
+                spyOn($scopeVM, 'setDefaultSupportManually');
 
                 $httpBackend.flush();
+                expect($scopeVM.setDefaultSupportManually).toHaveBeenCalled();
                 expect(angular.equals($scopeVM.getCurrentAppointment(), window.threadAccount.appointments[0])).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentVAConfig(), window.threadAccount.appointments[0].support_config_hash)).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);
@@ -343,8 +345,8 @@
                 expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"interlocutor","targetInfos":{},"support":"","details":""}')).toBe(true);
             });
 
-            it('confcall config ask interlocutor with one attendee', function(){
-                var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call">call</option><option value="hangout">hangout</option><option value="confcall" selected>confcall</option></select>';
+            it('call config ask interlocutor with one attendee', function(){
+                var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call" selected>call</option><option value="hangout">hangout</option><option value="confcall">confcall</option></select>';
                 angular.element(document.body).append(html);
 
                 window.currentAttendees = [{
@@ -368,14 +370,14 @@
                     isThreadOwner: "false"
                 }];
 
-                window.threadComputedData.appointment_nature = 'confcall';
+                window.threadComputedData.appointment_nature = null;
 
                 window.threadAccount.appointments = [
                     {
-                        kind: 'confcall',
+                        kind: 'call',
                         support_config_hash: {
                             confcall_in_note: true,
-                            label: "Confcall",
+                            label: "Mobile",
                             landline_in_note: true,
                             mobile_in_note: false,
                             rescue_with_confcall: false,
@@ -388,12 +390,16 @@
                     }
                 ];
 
+                spyOn($scopeVM, 'setDefaultSupportManually');
+
                 $httpBackend.flush();
+
+                expect($scopeVM.setDefaultSupportManually).toHaveBeenCalled();
                 expect(angular.equals($scopeVM.getCurrentAppointment(), window.threadAccount.appointments[0])).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentVAConfig(), window.threadAccount.appointments[0].support_config_hash)).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);
 
-                expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"interlocutor","targetInfos":{"name":"fname1 lname1","email":"test@test1.com","guid":"' + $scopeAM.attendees[0].guid + '"},"support":"","details":""}')).toBe(true);
+                expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"interlocutor","targetInfos":' + JSON.stringify({email: $scopeVM.callTargetsInfos[0].email, name: $scopeVM.callTargetsInfos[0].name, guid: $scopeVM.callTargetsInfos[0].guid, displayName: $scopeVM.callTargetsInfos[0].displayName}) + ',"support":"mobile","details":"617-216-2881"}')).toBe(true);
             });
 
             it('hangout config later', function(){
@@ -426,6 +432,126 @@
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);
 
                 expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"later","targetInfos":{},"support":"","details":""}')).toBe(true);
+            });
+        });
+
+        describe('determineDefaultSupport', function(){
+            it('should determine the correct default support for the provided target: mobile', function(){
+                var target = {
+                    mobile: '123',
+                    landline: '456'
+                };
+
+                expect($scopeVM.determineDefaultSupport(target)).toEqual('mobile');
+            });
+
+            it('should determine the correct default support for the provided target: landline', function(){
+                var target = {
+                    mobile: '',
+                    landline: '456'
+                };
+
+                expect($scopeVM.determineDefaultSupport(target)).toEqual('landline');
+            });
+
+            it('should determine the correct default support for the provided target: empty', function(){
+                var target = {
+                    mobile: '',
+                    landline: ''
+                };
+
+                expect($scopeVM.determineDefaultSupport(target)).toEqual('');
+            });
+        });
+
+        describe('setDefaultSupportManually', function(){
+            describe('confcall', function(){
+                it('should determine the correct default support for the provided target: confcall', function(){
+                    var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call">call</option><option value="hangout">hangout</option><option value="confcall" selected>confcall</option></select>';
+                    angular.element(document.body).append(html);
+
+                    var target = {
+                        confCallInstructions: 'ok',
+                        mobile: '123',
+                        landline: '345'
+                    };
+
+                    spyOn($scopeVM, 'computeCallDetails');
+
+                    $scopeVM.setDefaultSupportManually(target);
+                    expect($scopeVM.computeCallDetails).toHaveBeenCalled();
+                    expect($scopeVM.currentConf.support).toEqual('confcall');
+                });
+
+                it('should determine the correct default support for the provided target: mobile', function(){
+                    var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call">call</option><option value="hangout">hangout</option><option value="confcall" selected>confcall</option></select>';
+                    angular.element(document.body).append(html);
+
+                    var target = {
+                        confCallInstructions: '',
+                        mobile: '123',
+                        landline: '345'
+                    };
+
+                    spyOn($scopeVM, 'computeCallDetails');
+
+                    $scopeVM.setDefaultSupportManually(target);
+                    expect($scopeVM.computeCallDetails).toHaveBeenCalled();
+                    expect($scopeVM.currentConf.support).toEqual('mobile');
+                });
+
+                it('should determine the correct default support for the provided target: landline', function(){
+                    var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call">call</option><option value="hangout">hangout</option><option value="confcall" selected>confcall</option></select>';
+                    angular.element(document.body).append(html);
+
+                    var target = {
+                        confCallInstructions: '',
+                        mobile: '',
+                        landline: '345'
+                    };
+
+                    spyOn($scopeVM, 'computeCallDetails');
+
+                    $scopeVM.setDefaultSupportManually(target);
+                    expect($scopeVM.computeCallDetails).toHaveBeenCalled();
+                    expect($scopeVM.currentConf.support).toEqual('landline');
+                });
+            });
+
+            describe('call', function(){
+                it('should determine the correct default support for the provided target: mobile', function(){
+                    var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call" selected>call</option><option value="hangout">hangout</option><option value="confcall">confcall</option></select>';
+                    angular.element(document.body).append(html);
+
+                    var target = {
+                        confCallInstructions: '',
+                        mobile: '123',
+                        landline: '345'
+                    };
+
+                    spyOn($scopeVM, 'computeCallDetails');
+
+                    $scopeVM.setDefaultSupportManually(target);
+                    expect($scopeVM.computeCallDetails).toHaveBeenCalled();
+                    expect($scopeVM.currentConf.support).toEqual('mobile');
+                });
+
+                it('should determine the correct default support for the provided target: landline', function(){
+                    var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call" selected>call</option><option value="hangout">hangout</option><option value="confcall">confcall</option></select>';
+                    angular.element(document.body).append(html);
+
+                    var target = {
+                        confCallInstructions: '',
+                        mobile: '',
+                        landline: '345'
+                    };
+
+                    spyOn($scopeVM, 'computeCallDetails');
+
+                    $scopeVM.setDefaultSupportManually(target);
+                    expect($scopeVM.computeCallDetails).toHaveBeenCalled();
+                    expect($scopeVM.currentConf.support).toEqual('landline');
+                });
             });
         });
 

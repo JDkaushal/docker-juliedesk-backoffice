@@ -418,7 +418,9 @@
 
                 if(assistant && assisted){
                     $("#recipients-to-input").tokenInput("add", {name: assistant.email});
-                    $("#recipients-cc-input").tokenInput("add", {name: assisted.email});
+                    if(!!assisted.email)
+                        $("#recipients-cc-input").tokenInput("add", {name: assisted.email});
+                    $("#recipients-cc-input").tokenInput("add", clientRecipient());
                 }else{
                     setDefaultRecipients(otherRecipients);
                 }

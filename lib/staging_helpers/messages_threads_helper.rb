@@ -27,7 +27,12 @@ module StagingHelpers
       query_result = ActiveRecord::Base.connection.execute(sql)
 
       if query_result.num_tuples > 0
-        result = JSON.parse(query_result.first['attendees'])
+        result = begin
+          JSON.parse(query_result.first['attendees'])
+        rescue JSON::ParserError
+          []
+        end
+
       end
 
       {result: result, success: query_result.result_error_message.size == 0}

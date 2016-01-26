@@ -139,8 +139,14 @@
 
             if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
                 if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
+                    if($('#event-cancel-button').css('display') == 'block'){
+                        $('.event-tile-panel .location-container input.location').hide();
+                    }
+
                     if($('#event_update_vm_ctrl').length == 0){
+
                         window.currentEventTile.displayCallingInfosForm();
+
                         // If we can see the edit button, it means we have not clicked it so the event is not editable => the form is disabled
                         if($('#event-edit-button').css('display') == 'block'){
                             $('#event_update_vm_ctrl').find('input').prop('disabled', true);
@@ -148,6 +154,11 @@
                         }
                     }
                 }else{
+                    if($('#event-cancel-button').css('display') == 'block'){
+                        // In case we hide it with some previous calling instructions
+                        $('.event-tile-panel .location-container input.location').show();
+                        $('.event-tile-panel #calling-infos-missing').hide();
+                    }
                     var eventUpdateNode = $('#event_update_virtual_meetings_helper');
                     if(eventUpdateNode.length > 0){
                         eventUpdateNode.remove();
@@ -392,7 +403,9 @@
             $('#notes').val('');
 
             angular.element($('#attendeesCtrl')).scope().updateNotes();
-            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+            var node = $('#virtual-meetings-helper');
+
+            var vmHelper = angular.element(node).scope();
 
             if(vmHelper){
                 if(vmHelper.configLoaded)
@@ -405,12 +418,13 @@
         $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
         setNotes();
 
-        updateCurrentEventNotes();
+        if($('#event-cancel-button').css('display') == 'block')
+            updateCurrentEventNotes();
     }
 
     function updateCurrentEventNotes() {
         if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
-            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+            var vmHelper = angular.element($('#event_update_vm_ctrl')).scope();
 
             var currentEventNotesNode = $('.created-event-panel .notes');
             var currentEventNotes = currentEventNotesNode.val();
@@ -429,7 +443,7 @@
     }
 
     function newConstraintTile(data, expand) {
-        var possibleAttendees = window.getInfoPanelAttendees();
+        var possibleAttendees = window.presentAttendees();
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
         new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
@@ -577,7 +591,7 @@
 
                 var newTitle = appointment.title_in_calendar[$("input[name='locale']:checked").val()] + " " + attendeesDisplay;
                 $("input#summary").val(newTitle);
-                if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only')
+                if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
                     $('.event-tile-panel .title').val(newTitle);
             }
         }
@@ -665,7 +679,7 @@
             processAppointmentType();
 
             updateNotesCallingInfos();
-            refreshVirtualAppointmentsHelper();
+            //refreshVirtualAppointmentsHelper();
         });
 
         $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
@@ -700,8 +714,6 @@
                 || $("select#appointment_family_nature").val() == 'call' && window.lastAppointmentType != ''){
             virtualMeetingsHelper.loadDefaultConfig(true);
         }
-//        var virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
-//        virtualAppointmentsHelper.refresh();
     }
 
     function redrawLinearForm() {
@@ -927,6 +939,17 @@
         return _.filter(window.getInfoPanelAttendees(), function(attendee) {
             return attendee.isPresent;
         });
+    };
+
+    window.getPresentAttendeesWithMissingInfos = function() {
+        var scope = $('#attendeesCtrl').scope();
+        var attendees = [];
+
+        if(scope){
+            attendees = scope.getAttendeesWithMissingInfos(scope.getAttendeesOnPresence(true));
+        }
+
+        return attendees;
     };
 </script>
 

@@ -88,6 +88,11 @@ function saveAttendeesStaging(event_id, attendees){
         }
     });
 };
+
+window.CommonHelpers.replaceCurrentCalendarAccountStaging = function(){
+    window.threadComputedData.default_calendar_login_type = 'GoogleLogin';
+    window.threadComputedData.default_calendar_login_username = getStagingTargetEmail();
+};
 // ***************************************************************
 
 window.CommonHelpers.externalRequest = function (request, callback, error_callback) {

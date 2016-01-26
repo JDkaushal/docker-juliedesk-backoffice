@@ -205,6 +205,7 @@
                         timezoneId: window.threadComputedData.timezone,
                         defaultTimezoneId: window.threadAccount.default_timezone_id,
                         allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+                        attendeesWithMissingInfos: window.getPresentAttendeesWithMissingInfos(),
                         locale: window.threadComputedData.locale
                     });
 

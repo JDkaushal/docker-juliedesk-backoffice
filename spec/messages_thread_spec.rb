@@ -463,4 +463,30 @@ describe MessagesThread, :type => :model do
       end
     end
   end
+
+  describe 'has_already_processed_action_once' do
+    context 'first time' do
+      before(:each) do
+        message = @messages_thread.messages.create
+        message.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+      end
+
+      it 'should return true' do
+        expect(@messages_thread.has_already_processed_action_once(MessageClassification::ASK_AVAILABILITIES)).to be(false)
+      end
+    end
+
+    context 'second time' do
+      before(:each) do
+        message = @messages_thread.messages.create
+        message.message_classifications.create(@message_classification_params[:ask_availabilities_1])
+        message2 = @messages_thread.messages.create
+        message2.message_classifications.create(@message_classification_params[:ask_availabilities_2])
+      end
+
+      it 'should return true' do
+        expect(@messages_thread.has_already_processed_action_once(MessageClassification::ASK_AVAILABILITIES)).to be(true)
+      end
+    end
+  end
 end

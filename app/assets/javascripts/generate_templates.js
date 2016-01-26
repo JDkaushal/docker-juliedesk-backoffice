@@ -35,8 +35,9 @@ window.generateEmailTemplate = function (params) {
         }
     }
 
-
     var isVirtualAppointment = false;
+    var attendeesWithMissingInfos = [];
+
     if(params.appointment) {
         if(!params.appointment.appointment_kind_hash) {
             console.log('Oups', params);
@@ -47,6 +48,10 @@ window.generateEmailTemplate = function (params) {
     if(isVirtualAppointment) {
         locationInTemplate = "";
         addressInTemplate = "";
+    }
+
+    if(params.attendeesWithMissingInfos && params.attendeesWithMissingInfos.length > 0){
+        attendeesWithMissingInfos = params.attendeesWithMissingInfos;
     }
 
     if (params.action == "suggest_dates") {
@@ -169,14 +174,6 @@ window.generateEmailTemplate = function (params) {
 
                     message += "\n - " + dateString + " " + localize("email_templates.common.date_time_separator") + " " + timesString;
                 });
-//                _.each(params.timeSlotsToSuggest, function (timeSlot) {
-//                    message += "\n - " + window.helpers.capitalize(moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
-//                });
-
-//                _.each(params.timeSlotsToSuggest, function (timeSlot) {
-//                    message += "\n - " + window.helpers.capitalize(moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.full_date_format")));
-//                });
-
 
                 var timeSlotsPlural = "plural";
                 if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
@@ -191,12 +188,6 @@ window.generateEmailTemplate = function (params) {
                 message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesKey, {
                     attendees: attendeesString
                 });
-//                if (params.appointment.label == "call") {
-//                    message += localize("email_templates.suggest_dates.ask_number.call");
-//                }
-//                else if (params.appointment.label == "skype") {
-//                    message += localize("email_templates.suggest_dates.ask_number.skype");
-//                }
             }
         }
         else {
@@ -266,17 +257,18 @@ window.generateEmailTemplate = function (params) {
             date: dateString
         });
 
-        if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
-            if(isAskInterlocutor) {
-                message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
-            }
-            else if(isClientWillDefine) {
+        if(attendeesWithMissingInfos.length <= 2){
+            if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
+                if (isAskInterlocutor) {
+                    message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
+                }
+                else if (isClientWillDefine) {
 
+                }
+                else {
+                    message += localize("email_templates.invites_sent.ask_for_location");
+                }
             }
-            else {
-                message += localize("email_templates.invites_sent.ask_for_location");
-            }
-
         }
     }
     else if(params.action == "cancel_event") {
