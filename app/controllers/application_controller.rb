@@ -49,9 +49,13 @@ class ApplicationController < ActionController::Base
   def authenticate
     sound_is_activated = session[:sound_is_activated]
     reset_session
+
     authenticate_or_request_with_http_basic do |username, password|
       operator = Operator.find_by_email(username)
-      if operator && operator.password_correct?(password)
+      if operator &&
+          operator.password_correct?(password) &&
+      (!operator.ips_whitelist_enabled || (ENV['IPS_WHITELIST'] || "").split(",").include?(request.remote_ip))
+
         session[:operator_id] = operator.id
         session[:user_username] = operator.email
         session[:user_name] = operator.name

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160121111006) do
+ActiveRecord::Schema.define(version: 20160129145146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -213,7 +213,8 @@ ActiveRecord::Schema.define(version: 20160121111006) do
     t.string   "privilege"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "active",             default: false
+    t.boolean  "active",                default: false
+    t.boolean  "ips_whitelist_enabled", default: true
   end
 
 end
