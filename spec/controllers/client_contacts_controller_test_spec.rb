@@ -3,7 +3,7 @@ require_relative "../rails_helper"
 describe ClientContactsController, :type => :controller do
 
   before(:each) do
-    op = Operator.new(email: 'op@op')
+    op = Operator.new(email: 'op@op', ips_whitelist_enabled: false)
     op.password= 'op'
     op.save
 

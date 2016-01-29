@@ -3,11 +3,11 @@ require_relative "../../rails_helper"
 describe Review::MessagesThreadsController, :type => :controller do
 
   before(:each) do
-    @admin = Operator.new(email: 'admin@op.com', privilege: 'admin')
+    @admin = Operator.new(email: 'admin@op.com', privilege: 'admin', ips_whitelist_enabled: false)
     @admin.password= 'op'
     @admin.save
 
-    @normal = Operator.new(email: 'normal@op.com')
+    @normal = Operator.new(email: 'normal@op.com', ips_whitelist_enabled: false)
     @normal.password= 'op'
     @normal.save
 

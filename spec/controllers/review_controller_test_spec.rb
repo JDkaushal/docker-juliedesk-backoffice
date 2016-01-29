@@ -16,11 +16,11 @@ describe ReviewController, :type => :controller do
   end
 
   before(:each) do
-    non_admin = Operator.new(email: 'nonAdmin@op.com')
+    non_admin = Operator.new(email: 'nonAdmin@op.com', ips_whitelist_enabled: false)
     non_admin.password= 'op'
     non_admin.save
 
-    admin = Operator.new(email: 'admin@op.com', privilege: 'admin')
+    admin = Operator.new(email: 'admin@op.com', privilege: 'admin', ips_whitelist_enabled: false)
     admin.password= 'op'
     admin.save
 

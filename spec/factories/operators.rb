@@ -9,6 +9,7 @@ FactoryGirl.define do
     name
     salt 'abc'
     encrypted_password { Digest::SHA2.hexdigest('abc' + 'password') }
+    ips_whitelist_enabled false
 
     trait :admin do
       privilege 'admin'
