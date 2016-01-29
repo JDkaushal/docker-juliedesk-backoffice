@@ -76,20 +76,11 @@
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
                         sharedProperties.notifyAttendeeAdded(new Attendee(this.attendeeInForm));
-                        console.log("Added" + attendeesFormCtrl.isVisible);
-
                         // Sometime when a new attendee is added a display bug occure, hiding/showing the attendees seems to fix it
                         setTimeout(function(){
-                            console.log('test');
                             $('.contact').hide().show(0);
-
-
                         }, 10);
-
-
-
                     }else{
-                        console.log("Updated");
                         if(this.attendeeInForm.isAssistant){
                             var assisted = attendeesManager.getAssisted(this.attendeeInForm);
 
@@ -678,7 +669,6 @@
                             check = false;
                     }
 
-                    console.log(check);
                     if(check){
                         presentAttendees = $scope.getAttendeesWithoutAssistant();
                         presentAttendeesLength = presentAttendees.length;
@@ -703,8 +693,6 @@
                                     }
                                 }
                             });
-
-                            console.log(result);
                         }
                     }
                 }

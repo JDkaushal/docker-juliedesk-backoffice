@@ -99,7 +99,6 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     var host = '';
 
     var staging_mode = isStagingEnv();
-    console.log('staging_mode', staging_mode);
     if(staging_mode){
         console.log('STAGING');
         host = getStagingEventApiEndpoint();

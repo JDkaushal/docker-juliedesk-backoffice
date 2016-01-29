@@ -41,13 +41,7 @@
                     }
                 }, true);
 
-                $scope.test = function(event){
-                    console.log('targetInfos changed', event);
-                };
-
                 $scope.$watch('currentConf.targetInfos', function(newVal, oldVal){
-                    console.log('watch');
-
                     if(!!newVal){
                         var newValEmpty = $.isEmptyObject(newVal);
 
@@ -58,7 +52,6 @@
                         if($scope.currentConf.target == 'interlocutor' && !newValEmpty)
                             $scope.setDefaultSupportManually(findTargetAttendee(newVal));
                     }
-                    console.log(oldVal, newVal);
                     $scope.computeCallDetails(true);
                 }, true);
 
@@ -67,7 +60,6 @@
                 });
 
                 $scope.$watch('currentConf.support', function(newVal, oldVal){
-                    console.log(newVal, oldVal);
                     if($scope.currentConf.target == 'client')
                         $scope.changeCurrentVAConfig(newVal);
                 });
@@ -114,8 +106,6 @@
                 });
 
                 $scope.refresh = function(attendees) {
-                    console.log('refresh');
-
                     if(attendees){
                         var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
                             return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
@@ -123,14 +113,9 @@
 
                         if(attendeesWithoutThreadOwner.length > 0){
 
-                            //var previousConf = $.extend({}, $scope.currentConf);
-                            console.log(1, $scope.currentConf.targetInfos);
                             $scope.callTargetsInfos = _.map(attendeesWithoutThreadOwner, function (a) {
                                 return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
                             });
-                            console.log(2, $scope.currentConf.targetInfos);
-
-                            //$scope.currentConf = previousConf;
                             $scope.computeCallDetails();
                         }else{
                             $scope.callTargetsInfos = [];
@@ -176,8 +161,6 @@
                 };
 
                 $scope.loadCurrentConfig = function(){
-                    console.log('load current');
-
                     if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
                         $scope.changeCurrentVAConfig("demander à l'interlocuteur");
 
@@ -252,7 +235,6 @@
                 };
 
                 $scope.loadDefaultConfig = function(refreshCallDetails){
-                    console.log('load default');
                     if((!!!$('#appointment_nature option:selected').val() && !!!window.threadComputedData.appointment_nature) || ($scope.callTargetsInfos == undefined))
                         return;
                     virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
@@ -384,7 +366,6 @@
                                 selectedSupport = 'landline';
                         }
                         $scope.currentConf.support = selectedSupport;
-                        console.log('set default manually');
                         $scope.computeCallDetails();
                     }
 
@@ -409,8 +390,6 @@
                             if(!notUseLastTarget && $scope.lastTargetInfos != '' && $scope.lastTargetInfos.guid && $scope.lastTargetInfos.guid != -1){
                                 $scope.currentConf.targetInfos = $scope.lastTargetInfos;
                             }
-
-                            //console.log($scope.$id, $scope.currentConf);
 
                             if($scope.currentConf.targetInfos){
                                 attendee = findTargetAttendee($scope.currentConf.targetInfos);
@@ -440,8 +419,6 @@
                                 $scope.detailsFrozenBecauseClient = true;
                         }
                     }
-
-                    console.log($scope.$id,$scope.currentConf.targetInfos);
 
                     if($scope.currentConf.target){
                         $scope.currentConf.details = details;
@@ -490,9 +467,6 @@
                 };
 
                 $scope.setEventNotes = function(){
-                    //console.log($scope.$id, $scope.otherForm);
-                    //console.log($scope.$id,$scope.currentConf.targetInfos);
-
                     var notes = $('#notes').val();
                     var message = '';
                     var callingInfos = '';
@@ -568,14 +542,11 @@
 
                         $("#notes").val(notes);
                     }
-                    //console.log($scope.$id,$scope.currentConf.targetInfos);
 
                     if(isVirtual){
                         $scope.setCallingInstructionsInNotes();
 
                     }
-                    //console.log($scope.$id,$scope.currentConf.targetInfos);
-
                 };
 
                 $scope.setCallingInstructionsInNotes = function(){
@@ -698,7 +669,6 @@
                 $scope.restoreCachedInterlocutor = function(){
                     if(!$.isEmptyObject($scope.cachedInterlocutor)){
                         Object.assign($scope.attendeesManagerCtrl.getAttendeeByGuid($scope.cachedInterlocutor.guid), $scope.cachedInterlocutor);
-                        console.log('restore cached');
                         $scope.computeCallDetails();
                     }
                 };
