@@ -308,21 +308,21 @@ window.generateEmailTemplate = function (params) {
         if(params.createdEvents.length > 0) {
             message += localize("email_templates.create_events.before_dates.created");
             _.each(params.createdEvents, function(event) {
-                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+                message += "- " + event.title + (window.getCurrentLocale() == 'en' ? '-' : ' ') + ": " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
             });
             message += "\n";
         }
         if(params.updatedEvents.length > 0) {
             message += localize("email_templates.create_events.before_dates.updated");
             _.each(params.updatedEvents, function(event) {
-                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+                message += "- " + event.title + (window.getCurrentLocale() == 'en' ? '-' : ' ') + ": " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
             });
             message += "\n";
         }
         if(params.deletedEvents.length > 0) {
             message += localize("email_templates.create_events.before_dates.deleted");
             _.each(params.deletedEvents, function(event) {
-                message += "- " + event.title + " : " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
+                message += "- " + event.title + (window.getCurrentLocale() == 'en' ? '-' : ' ') + ": " + CommonHelpers.formatDateTimeRangeInText(event.start, event.end, params.locale, event.timezoneId, event.allDay) + "\n";
             });
             message += "\n";
         }
@@ -523,14 +523,20 @@ window.getScheduledEventDateString = function(params) {
     var formatted_date = date.locale(params.locale).format(localize("email_templates.common.only_date_format"));
     var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(formatted_date) : window.helpers.lowerize(formatted_date);
 
-
     if(date.isSame(today, "day"))
         dateString = localize("dates.today") + ", " + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + window.helpers.lowerize(date.format(localize("email_templates.common.full_time_format")));
     else if(date.isSame(tomorrow, "day"))
         dateString = localize("dates.tomorrow") + ", " + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + window.helpers.lowerize(date.format(localize("email_templates.common.full_time_format")));
     else{
         dateString = date.locale(params.locale).format(localize("email_templates.common.full_date_format"));
-        dateString = localize("constraints.before_days") + (window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString));
+        var beforeDays = '';
+        if(params.attendeesAreNoticed || !params.clientAgreement){
+            beforeDays = localize("constraints.before_days_for");
+        }else{
+            beforeDays = localize("constraints.before_days_on");
+        }
+
+        dateString = beforeDays + (window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString));
     }
 
     if(params.timezoneId != params.defaultTimezoneId) {

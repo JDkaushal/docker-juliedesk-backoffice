@@ -237,7 +237,9 @@ window.wordings['fr'] = {
         starting_on: "du",
         ending_on: "au",
         invalid_constraint: "Contrainte non-valide",
-        before_days: ""
+        before_days: "",
+        before_days_for: "",
+        before_days_on: ""
     },
     actions: {
         to_do: {

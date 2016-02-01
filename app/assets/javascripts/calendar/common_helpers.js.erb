@@ -451,10 +451,10 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
             formattedEndDate = localize("dates.tomorrow") + ', ' + formattedEndDate;
 
         if(mStartDate.format("YYYY-MM-DD") == mEndDate.format("YYYY-MM-DD")) {
-            return formattedStartDate + ", " + mStartDate.format("LT") + " - " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
+            return formattedStartDate + ", " + mStartDate.format(localize("email_templates.common.full_time_format")) + " - " + mEndDate.format(localize("email_templates.common.full_time_format")) + " (" + timezone.replace(/_/g, " ") + ")";
         }
         else {
-            return formattedStartDate + " " + localize("email_templates.common.date_time_separator") + " " + mStartDate.format("LT") + " - " + formattedEndDate + " " + localize("email_templates.common.date_time_separator") + " " + mEndDate.format("LT") + " (" + timezone.replace(/_/g, " ") + ")";
+            return formattedStartDate + " " + localize("email_templates.common.date_time_separator") + " " + mStartDate.format(localize("email_templates.common.full_time_format")) + " - " + formattedEndDate + " " + localize("email_templates.common.date_time_separator") + " " + mEndDate.format(localize("email_templates.common.full_time_format")) + " (" + timezone.replace(/_/g, " ") + ")";
         }
     }
 
