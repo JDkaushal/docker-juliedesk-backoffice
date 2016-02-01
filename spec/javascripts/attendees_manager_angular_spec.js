@@ -839,7 +839,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations({redundantCourtesy: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: [], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).not.toHaveBeenCalled();
                     });
 
                     it('when the current virtual appointment configuration is targeting an interlocutor and we want to ask early', function(){

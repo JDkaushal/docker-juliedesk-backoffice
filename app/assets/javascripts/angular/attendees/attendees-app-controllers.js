@@ -676,8 +676,6 @@
                         var attendeesWithMissingInfos = $scope.getAttendeesWithMissingInfos(presentAttendees);
 
                         if(attendeesWithMissingInfos.length > 0){
-                            result.missingInfos = true;
-
                             if(presentAttendeesLength == 2){
                                 // We can assess that if there is only one attendee (not counting assistants) plus the threadOwner and the attendeesMissingInfos array is not empty that the first item in this array is our only attendee
                                 // So we can access it to check whether it is assited by someone
@@ -693,6 +691,9 @@
                                     }
                                 }
                             });
+
+                            if(result.attendeesNames.length > 0)
+                                result.missingInfos = true;
                         }
                     }
                 }
