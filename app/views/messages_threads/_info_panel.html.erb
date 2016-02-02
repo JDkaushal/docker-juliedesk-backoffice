@@ -635,33 +635,39 @@
             setAppointmentNatureAndChangeIfNeeded(possibleAppointmentsTypes[0].kind);
         }
         else if(possibleAppointmentsTypes.length > 1) {
-            var presentAttendees = window.getInfoPanelAttendeesWithoutAssistants();
 
-            var possibleAppointment = _.find(possibleAppointmentsTypes, function(appointment) {
-                var rule = appointment.appointment_kind_hash.rule;
-                // We used presentAttendees.length - 1 because the rules seems 0-based in the attendees calculation
-                return _.filter(rule.split("&"), function(rule_item) {
-                    if(rule_item.indexOf("ATTENDEES") > -1) {
-                        if(rule_item.split(">").length == 2) {
-                            return presentAttendees.length - 1 > rule_item.split(">")[1];
-                        }
-                        else if (rule_item.split("=").length == 2) {
-                            return presentAttendees.length - 1 == rule_item.split("=")[1];
-                        }
-                        else if (rule_item.split("<").length == 2) {
-                            return presentAttendees.length - 1< rule_item.split("<")[1];
-                        }
-                        else {
-                            return false;
-                        }
-                    }
-                }).length == rule.split("&").length;
-            });
+            var possibleAppointment = determineAppointmentType(possibleAppointmentsTypes);
             if(possibleAppointment) {
                 setAppointmentNatureAndChangeIfNeeded(possibleAppointment.kind)
             }
         }
     }
+
+    function determineAppointmentType(possibleAppointmentsTypes){
+        var presentAttendees = window.getInfoPanelAttendeesWithoutAssistants();
+
+        return _.find(possibleAppointmentsTypes, function(appointment) {
+            var rule = appointment.appointment_kind_hash.rule;
+            // We used presentAttendees.length - 1 because the rules seems 0-based in the attendees calculation
+            return _.filter(rule.split("&"), function(rule_item) {
+                        if(rule_item.indexOf("ATTENDEES") > -1) {
+                            if(rule_item.split(">").length == 2) {
+                                return presentAttendees.length - 1 > rule_item.split(">")[1];
+                            }
+                            else if (rule_item.split("=").length == 2) {
+                                return presentAttendees.length - 1 == rule_item.split("=")[1];
+                            }
+                            else if (rule_item.split("<").length == 2) {
+                                return presentAttendees.length - 1< rule_item.split("<")[1];
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                    }).length == rule.split("&").length;
+        });
+    }
+
 
     function initAppointments() {
         $("select#appointment_nature").html("");

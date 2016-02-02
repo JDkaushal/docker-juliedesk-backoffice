@@ -207,7 +207,14 @@
 
                     // If the appointment nature has not been saved, it means it is the first time we are filling the calling infos form
                     //if(window.threadComputedData.appointment_nature == null){
-                        if($scope.callTargetsInfos.length == 1){
+                    var possibleAppointmentsTypes = _.filter(window.threadAccount.appointments, function(appointment) {
+                        return appointment.appointment_kind_hash.family_kind == $("select#appointment_family_nature").val();
+                    });
+
+                    var currentAppointmentType = determineAppointmentType(possibleAppointmentsTypes);
+
+
+                        if(currentAppointmentType == 'call' && $scope.currentConf.target == 'interlocutor' && $scope.callTargetsInfos.length == 1){
                             var defaultTargetInfos = $scope.callTargetsInfos[0];
                             var defaultConfSupport = $scope.determineDefaultSupport(findTargetAttendee(defaultTargetInfos));
 
@@ -215,6 +222,7 @@
                             $scope.computeCallDetails(true);
                         }
                     //}
+
 
                     if($scope.currentConf.details == '' && window.threadComputedData.location == '')
                     {
@@ -277,7 +285,7 @@
                             break;
                         case 'ask_interlocutor':
                             initialConfTarget = 'interlocutor';
-                            initialTargetInfos = (window.threadComputedData.appointment_nature == null && $scope.callTargetsInfos.length == 1) ? $scope.callTargetsInfos[0] : '';
+                            initialTargetInfos = $scope.callTargetsInfos.length == 1 ? $scope.callTargetsInfos[0] : '';
                             break;
                         case 'later':
                             initialConfTarget = 'later';
@@ -323,7 +331,7 @@
                     $scope.configLoaded = true;
 
                     if(refreshCallDetails){
-                        $scope.computeCallDetails();
+                        $scope.computeCallDetails(true);
                     }
                     else{
                         updateWindowCallInstructions();
@@ -385,7 +393,6 @@
                         }
 
                         if ($scope.currentConf.target == 'interlocutor'){
-
 
                             if(!notUseLastTarget && $scope.lastTargetInfos != '' && $scope.lastTargetInfos.guid && $scope.lastTargetInfos.guid != -1){
                                 $scope.currentConf.targetInfos = $scope.lastTargetInfos;

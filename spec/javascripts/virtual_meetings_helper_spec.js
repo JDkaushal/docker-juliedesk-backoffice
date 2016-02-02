@@ -267,7 +267,10 @@
                             rescue_with_skype: false,
                             skype_in_note: false
                         },
-                        behaviour: 'propose'
+                        behaviour: 'propose',
+                        appointment_kind_hash: {
+                            family_kind: 'test'
+                        }
                     }
                 ];
 
@@ -299,7 +302,10 @@
                             rescue_with_skype: false,
                             skype_in_note: false
                         },
-                        behaviour: 'propose'
+                        behaviour: 'propose',
+                        appointment_kind_hash: {
+                            family_kind: 'test'
+                        }
                     }
                 ];
 
@@ -331,7 +337,10 @@
                             rescue_with_skype: false,
                             skype_in_note: false
                         },
-                        behaviour: 'ask_interlocutor'
+                        behaviour: 'ask_interlocutor',
+                        appointment_kind_hash: {
+                            family_kind: 'test'
+                        }
                     }
                 ];
                 spyOn($scopeVM, 'setDefaultSupportManually');
@@ -347,6 +356,9 @@
 
             it('call config ask interlocutor with one attendee', function(){
                 var html = '<select class="data-entry form-control" id="appointment_nature" name="appointment_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call" selected>call</option><option value="hangout">hangout</option><option value="confcall">confcall</option></select>';
+                angular.element(document.body).append(html);
+
+                html = '<select class="data-entry form-control" id="appointment_family_nature" name="appointment_family_nature" disabled=""><option value="lunch">lunch</option><option value="meeting">meeting</option><option value="webex">webex</option><option value="breakfast">breakfast</option><option value="skype">skype</option><option value="coffee">coffee</option><option value="dinner">dinner</option><option value="drink">drink</option><option value="appointment">appointment</option><option value="work_session">work_session</option><option value="call" selected>call</option><option value="hangout">hangout</option><option value="confcall">confcall</option></select>';
                 angular.element(document.body).append(html);
 
                 window.currentAttendees = [{
@@ -386,11 +398,16 @@
                             rescue_with_skype: false,
                             skype_in_note: false
                         },
-                        behaviour: 'ask_interlocutor'
+                        behaviour: 'ask_interlocutor',
+                        appointment_kind_hash: {
+                            family_kind: 'call'
+                        }
                     }
                 ];
 
                 spyOn($scopeVM, 'setDefaultSupportManually');
+
+                spyOn(window, 'determineAppointmentType').and.returnValue('call');
 
                 $httpBackend.flush();
 
@@ -422,7 +439,10 @@
                             rescue_with_skype: false,
                             skype_in_note: true
                         },
-                        behaviour: 'later'
+                        behaviour: 'later',
+                        appointment_kind_hash: {
+                            family_kind: 'test'
+                        }
                     }
                 ];
 

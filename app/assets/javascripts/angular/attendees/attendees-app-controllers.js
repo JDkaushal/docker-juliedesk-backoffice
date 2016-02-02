@@ -630,7 +630,7 @@
                 return a.company != '' && a.guid != attendee.guid && a.company == attendee.company && !a.hasMissingInformations;
             });
 
-            return (attendee.usageName.length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
+            return (attendee.usageName && attendee.usageName.length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
         };
 
         $scope.checkMissingInformations = function(params){

@@ -19,3 +19,6 @@ function processAppointmentType(){
 
 function updateNotesCallingInfos(){
 };
+
+function determineAppointmentType(){
+};
