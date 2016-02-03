@@ -49,8 +49,8 @@
                         $scope.lastTargetInfos = newVal;
                         $scope.cacheCurrentInterlocutor();
 
-                        if($scope.currentConf.target == 'interlocutor' && !newValEmpty)
-                            $scope.setDefaultSupportManually(findTargetAttendee(newVal));
+                        //if($scope.currentConf.target == 'interlocutor' && !newValEmpty)
+                        //    $scope.setDefaultSupportManually(findTargetAttendee(newVal));
                     }
                     $scope.computeCallDetails(true);
                 }, true);
@@ -84,6 +84,10 @@
                     }
                 }, true);
 
+                $scope.targetInfosChanged = function(){
+                    $scope.setDefaultSupportManually(findTargetAttendee($scope.currentConf.targetInfos));
+                };
+
                 $scope.computeOptionText = function(args){
                     var text = '';
 
@@ -116,7 +120,9 @@
                             $scope.callTargetsInfos = _.map(attendeesWithoutThreadOwner, function (a) {
                                 return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
                             });
+
                             $scope.computeCallDetails();
+
                         }else{
                             $scope.callTargetsInfos = [];
                             Object.assign($scope.currentConf, {targetInfos: {}, support: '', details: ''});
@@ -139,8 +145,8 @@
                     //    }
                     //}
 
-                    if($scope.currentConf.target == 'interlocutor')
-                        $scope.setDefaultSupportManually(findTargetAttendee($scope.currentConf.targetInfos));
+                    //if($scope.currentConf.target == 'interlocutor' )
+                    //    $scope.setDefaultSupportManually(findTargetAttendee($scope.currentConf.targetInfos));
 
                 };
 
@@ -161,8 +167,10 @@
                 };
 
                 $scope.loadCurrentConfig = function(){
+
                     if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
                         $scope.changeCurrentVAConfig("demander à l'interlocuteur");
+
 
                     virtualMeetingsHelperCtrl.currentAppointment = virtualMeetingsHelperCtrl.currentAppointment || _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
                     virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig || (virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash);
@@ -211,35 +219,36 @@
                         return appointment.appointment_kind_hash.family_kind == $("select#appointment_family_nature").val();
                     });
 
-                    var currentAppointmentType = determineAppointmentType(possibleAppointmentsTypes);
+                    if(possibleAppointmentsTypes.length > 1){
+                        var currentAppointmentType = determineAppointmentType(possibleAppointmentsTypes);
 
-
-                        if(currentAppointmentType == 'call' && $scope.currentConf.target == 'interlocutor' && $scope.callTargetsInfos.length == 1){
+                            // window.getCurrentAppointment() return in this case the last appointment type selected, so we use it to prevent overriding the call_instructions when arriving on a thread organizing a call (the previous appointment type will be call
+                        if(currentAppointmentType.kind == 'call' && window.getCurrentAppointment().kind != 'call'  && $scope.currentConf.target == 'interlocutor' && $scope.callTargetsInfos.length == 1){
                             var defaultTargetInfos = $scope.callTargetsInfos[0];
                             var defaultConfSupport = $scope.determineDefaultSupport(findTargetAttendee(defaultTargetInfos));
 
                             Object.assign($scope.currentConf, {target: 'interlocutor', targetInfos: defaultTargetInfos, support: defaultConfSupport});
                             $scope.computeCallDetails(true);
                         }
-                    //}
-
+                        //}
+                        }
 
                     if($scope.currentConf.details == '' && window.threadComputedData.location == '')
                     {
                         $scope.call_instructions_missing = true;
                     }
-                    // Angular uses Object references to deal with select options values when they are set to an object
-                    // so when the page is loaded and the data are fetched the saved assistedBy object have a different
-                    // reference than those in the select options
-                    // You must then update the selected option manually based on the option's text value for example
 
                     $scope.updateTargetInfosSelect();
+
                     if(!$scope.$$phase){
                         $scope.$apply();
                     }
+
                     $scope.configLoaded =  true;
 
                     updateNotesCallingInfos();
+
+
                 };
 
                 $scope.loadDefaultConfig = function(refreshCallDetails){
@@ -374,7 +383,9 @@
                                 selectedSupport = 'landline';
                         }
                         $scope.currentConf.support = selectedSupport;
-                        $scope.computeCallDetails();
+
+                        $scope.computeCallDetails(true);
+
                     }
 
                 };
@@ -394,6 +405,7 @@
 
                         if ($scope.currentConf.target == 'interlocutor'){
 
+
                             if(!notUseLastTarget && $scope.lastTargetInfos != '' && $scope.lastTargetInfos.guid && $scope.lastTargetInfos.guid != -1){
                                 $scope.currentConf.targetInfos = $scope.lastTargetInfos;
                             }
@@ -403,6 +415,7 @@
                                 //if(attendee != undefined)
                                 //    setAttendeeSelected(attendee);
                             }
+
                         }
 
                         if(attendee != undefined)
@@ -425,6 +438,7 @@
                             if(attendee.isClient)
                                 $scope.detailsFrozenBecauseClient = true;
                         }
+
                     }
 
                     if($scope.currentConf.target){
@@ -436,6 +450,7 @@
                             $scope.$apply();
                         }
                     }
+
                     updateWindowCallInstructions();
                 };
 
@@ -712,6 +727,7 @@
                 };
 
                 findTargetAttendee = function(targetInfos){
+
                     if(!!targetInfos){
                         return _.find($scope.attendeesManagerCtrl.attendees, function (a) {
                             var found = false;
@@ -724,6 +740,7 @@
                             return found;
                         });
                     }
+
                 };
 
                 setAttendeeSelected = function(attendee){

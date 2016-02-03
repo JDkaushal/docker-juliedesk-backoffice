@@ -39,17 +39,17 @@
     <div ng-if="missingInformationLookedFor == 'landline_or_mobile'">
       <div class="col-xs-6" style="padding-right: 6px; padding-left:0;">
         <%= label_tag :landline, 'Tel Fix.' %>
-        <%= text_field_tag :landline, "",{'ng-model' => 'attendee.landline', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+        <%= text_field_tag :landline, "",{'ng-model' => 'attendee.landline', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', 'ng-keyup' => 'attendees_manager.callingInformationsChanged()', class: 'form-control'} %>
       </div>
       <div class="col-xs-6" style="padding-left: 6px; padding-right:0;">
         <%= label_tag :mobile, 'Tel Mob.' %>
-        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.mobile', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.mobile', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', 'ng-keyup' => 'attendees_manager.callingInformationsChanged()', class: 'form-control'} %>
       </div>
     </div>
     <div ng-if="missingInformationLookedFor == 'mobile_only'">
       <div class="col-xs-12" style="padding-left: 0; padding-right:0;">
         <%= label_tag :mobile, 'Tel Mob.' %>
-        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.mobile', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+        <%= text_field_tag :mobile, "",{'ng-model' => 'attendee.mobile', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', 'ng-keyup' => 'attendees_manager.callingInformationsChanged()', class: 'form-control'} %>
       </div>
     </div>
     <div ng-if="missingInformationLookedFor == 'skype_only'">

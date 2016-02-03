@@ -101,7 +101,8 @@ if ENV['STAGING_APP']
 
         creation_params['end'] = creation_params['end']['dateTime']
         creation_params['start'] = creation_params['start']['dateTime']
-        creation_params['call_instructions'] = JSON.parse(creation_params['call_instructions'])
+        call_instructions = creation_params['call_instructions'].present? ? JSON.parse(creation_params['call_instructions']) : nil
+        creation_params['call_instructions'] = call_instructions
         creation_params['calendar_login_username'] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
         creation_params['email'] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
 

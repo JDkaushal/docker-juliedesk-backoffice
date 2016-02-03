@@ -233,6 +233,13 @@
         //--------------------------------------------------------------------------------
 
         //Attendees-----------------------------------------------------------------------
+        this.callingInformationsChanged = function(){
+            var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+            if(virtualMeetingsHelper)
+                virtualMeetingsHelper.targetInfosChanged();
+        };
+
+
         this.populateAttendeesDetails = function(attendeesDetails){
             // We filter the attendees to not include the threadOwner as we will add him after
             var companies = attendeesDetails.companies;

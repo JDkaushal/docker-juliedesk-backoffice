@@ -5,7 +5,7 @@
       <%= select_tag :call_target, options_for_select([]),{'ng-options' => 'callTarget.value as callTarget.name for callTarget in callTargets', 'ng-change' => 'computeCallDetails(true); targetChanged()', 'ng-model' => 'currentConf.target', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
 
       <div ng-show="currentConf.target == 'interlocutor'">
-        <%= select_tag :call_target_infos, options_for_select([]),{'ng-options' => '{email: callTargetsInfo.email, name: callTargetsInfo.name, guid: callTargetsInfo.guid} as callTargetsInfo.displayName for callTargetsInfo in callTargetsInfos track by callTargetsInfo.guid', 'ng-model' => 'currentConf.targetInfos', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
+        <%= select_tag :call_target_infos, options_for_select([]),{'ng-options' => '{email: callTargetsInfo.email, name: callTargetsInfo.name, guid: callTargetsInfo.guid} as callTargetsInfo.displayName for callTargetsInfo in callTargetsInfos track by callTargetsInfo.guid', 'ng-change' => 'targetInfosChanged()', 'ng-model' => 'currentConf.targetInfos', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
       </div>
 
       <div ng-hide="currentConf.target == 'later' || currentConf.target == 'custom'">
