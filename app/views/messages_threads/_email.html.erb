@@ -141,7 +141,7 @@
 //                    $email.find(".suggested-action-by-julie").removeClass("enabled");
 //                }, 500);
 //                serverMessageId = 103847;
-                $.get("https://juliedesk-conscience.herokuapp.com/conscience/?id=" + serverMessageId + "&token=pA6rVsU04o9J").success(function(response) {
+                $.get("<%= ENV['CONSCIENCE_API_BASE_PATH'] %>/conscience/?id=" + serverMessageId + "&token=pA6rVsU04o9J").success(function(response) {
                     console.log(response);
                     var classif = response.request_classif;
                     var locale = response.language_detected;
