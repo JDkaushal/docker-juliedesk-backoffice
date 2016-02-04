@@ -210,7 +210,8 @@
                         }
                     }
                     else {
-                        Object.assign($scope.currentConf, {targetInfos: {}, support: '', details: ''});
+                        if($scope.currentConf.target != 'custom')
+                            Object.assign($scope.currentConf, {targetInfos: {}, support: '', details: ''});
                     }
 
                     // If the appointment nature has not been saved, it means it is the first time we are filling the calling infos form
