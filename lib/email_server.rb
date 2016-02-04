@@ -9,12 +9,17 @@ module EmailServer
 
   def self.list_messages_threads opts={}
     url_params = {
-        filter: opts[:filter] || "INBOX",
+        filter: opts[:filter],
         offset: opts[:offset] || 0,
         limit: opts[:limit] || 10,
+        specific_ids: opts[:specific_ids],
         full: opts[:full].present?,
         access_key: API_ACCESS_KEY
     }
+
+    if opts[:only_version]
+      url_params.merge!({only_version: true})
+    end
 
     self.make_request :get, "/messages_threads?#{url_params.to_param}"
 

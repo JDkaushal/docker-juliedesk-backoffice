@@ -142,11 +142,38 @@ class Message < ActiveRecord::Base
   end
 
   def self.import_emails
-    # Get server threads in inbox
-    server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 100, full: true)
 
-    # Put by default all previous messages_thread out of inbox
-    MessagesThread.update_all(in_inbox: false)
+    # Get server threads in inbox, only versions (quick call)
+    server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 1000, only_version: true)
+    inbox_server_thread_ids = server_threads.map{|st| st['id']}
+    inbox_messages_threads = MessagesThread.where(server_thread_id: inbox_server_thread_ids)
+
+    #First, remove from inbox all messages_thread that should not be in inbox anymore
+    MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
+    #Then, put in inbox the others
+    MessagesThread.where(in_inbox: false).where(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true)
+
+    server_thread_ids_to_update = []
+    server_thread_ids_to_create = []
+
+    server_threads.each do |server_thread|
+      messages_thread = inbox_messages_threads.select{|mt| mt.server_thread_id == server_thread['id']}.first
+      if messages_thread
+        if "#{messages_thread.server_version}" == "#{server_thread['version']}"
+          # Nothing to do
+        else
+          server_thread_ids_to_update << server_thread['id']
+        end
+      else
+        server_thread_ids_to_create << server_thread['id']
+      end
+    end
+
+    if (server_thread_ids_to_update + server_thread_ids_to_create).empty?
+      return []
+    end
+
+    server_threads = EmailServer.list_messages_threads(specific_ids: server_thread_ids_to_update + server_thread_ids_to_create, limit: 1000, full: true)
 
     # Julie aliases in cache
     julie_aliases = JulieAlias.all
@@ -163,7 +190,7 @@ class Message < ActiveRecord::Base
 
       messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
       if messages_thread
-        should_update_thread = (messages_thread.server_version != server_thread['version'] || messages_thread.account_email.nil?)
+        should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
         messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
       end
 
