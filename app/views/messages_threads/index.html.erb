@@ -118,6 +118,40 @@
             }
         };
 
+        $scope.labelInRow = function(messagesThread) {
+            if(messagesThread.delegated_to_founders) {
+                return "founders";
+            }
+            else {
+                if(messagesThread.delegated_to_support) {
+                    return "support";
+                }
+                else {
+                    if(messagesThread.account) {
+                        if(messagesThread.account.office_365_refresh_token_expired) {
+                            return "tkn expird";
+                        }
+                        else {
+                            if(messagesThread.account.only_admin_can_process) {
+                                return "admin only";
+                            }
+                            else {
+                                if(messagesThread.account.only_support_can_process) {
+                                    return "VIP";
+                                }
+                                else {
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        return "support only";
+                    }
+                }
+            }
+        };
+
         $scope.shouldProcessLater = function(messagesThread) {
             if(messagesThread.account && messagesThread.account.company_hash) {
                 var workingHours = messagesThread.account.company_hash.working_hours;

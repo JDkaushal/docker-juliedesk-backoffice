@@ -12,6 +12,7 @@ class Account
                 :default_timezone_id,
                 :locale,
                 :only_admin_can_process,
+                :only_support_can_process,
                 :block_until_preferences_change,
                 :mobile_number,
                 :landline_number,
@@ -59,6 +60,7 @@ class Account
     account.skype = data['skype']
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
+    account.only_support_can_process = data['only_support_can_process']
     account.block_until_preferences_change = data['block_until_preferences_change']
     account.office_365_refresh_token_expired = data['office_365_refresh_token_expired']
     account.calendar_logins = data['calendar_logins']

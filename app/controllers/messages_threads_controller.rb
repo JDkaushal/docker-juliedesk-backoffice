@@ -243,7 +243,9 @@ class MessagesThreadsController < ApplicationController
             !mt.delegated_to_founders &&
                 !mt.delegated_to_support &&
                 mt.account &&
-                !mt.account.only_admin_can_process
+                !mt.account.only_admin_can_process &&
+                !mt.account.only_support_can_process
+
           }
         elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
           @messages_thread.select!{ |mt|
