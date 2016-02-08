@@ -42,7 +42,7 @@ class MessagesThreadsController < ApplicationController
 
   def show
     print_time "init"
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
+    @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
 
     print_time "DB"
     OperatorAction.create_and_verify({

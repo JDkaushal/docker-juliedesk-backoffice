@@ -5,6 +5,7 @@ class Message < ActiveRecord::Base
 
   belongs_to :messages_thread
   has_many :message_classifications
+  has_many :message_interpretations
 
   attr_accessor :server_message
 
@@ -221,10 +222,15 @@ class Message < ActiveRecord::Base
           message = Message.find_by_server_message_id server_message['id']
 
           unless message
-            messages_thread.messages.create server_message_id: server_message['id'],
-                                            received_at: DateTime.parse(server_message['date']),
-                                            reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
-                                            from_me: server_message['from_me']
+            m = messages_thread.messages.create server_message_id: server_message['id'],
+                                                received_at: DateTime.parse(server_message['date']),
+                                                reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
+                                                from_me: server_message['from_me']
+
+            # Added by Nico to interprete
+            unless m.from_me
+              m.delay.interprete
+            end
 
             updated_messages_thread_ids << messages_thread.id
           end
@@ -365,9 +371,35 @@ class Message < ActiveRecord::Base
     messages_thread.classification_category_for_classification(classification)
   end
 
+  def interprete
+    if self.message_interpretations.empty?
+      MessageInterpretation.questions.each do |question|
+        self.message_interpretations << MessageInterpretation.new(question: question)
+      end
+
+      self.message_interpretations.each do |message_interpretation|
+        message_interpretation.process
+      end
+    end
+  end
+
+  def interpretations
+    main_answer = JSON.parse(self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_MAIN}.first.try(:raw_response) || "{}")
+    entities_answer = JSON.parse(self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_ENTITIES}.first.try(:raw_response) || "{}")
+    {
+        classification: main_answer['request_classif'],
+        appointment: main_answer['appointment_classif'],
+        locale: main_answer['language_detected'],
+        entities: {
+            phone_numbers: (entities_answer['annotated'] || "").match(/<ENTITY_type=PHONE>(.*)<\/ENTITY>/).captures
+        }
+    }
+  end
+
   def self.expand_parts parts
     parts.map{|part|
       if part['mimeType'].include? "multipart"
+        self.expand_parts part['parts']
         self.expand_parts part['parts']
       else
         part
@@ -376,6 +408,10 @@ class Message < ActiveRecord::Base
   end
 
   def self.format_email_body message
-    message.server_message['parsed_html']
+    body = message.server_message['parsed_html']
+    message.interpretations[:entities][:phone_numbers].each do |phone_number|
+        body.gsub!(Regexp.new("(#{Regexp.quote(phone_number)})"), '<span class="juliedesk-phone-number">\1</span>')
+    end
+    body
   end
 end
