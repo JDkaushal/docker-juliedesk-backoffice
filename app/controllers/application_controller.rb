@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
     reset_session
 
     authenticate_or_request_with_http_basic do |username, password|
-      operator = Operator.find_by_email(username)
+      operator = Operator.find_by_email_and_enabled(username, true)
       if operator &&
           operator.password_correct?(password) &&
       (!operator.ips_whitelist_enabled || (ENV['IPS_WHITELIST'] || "").split(",").include?(request.remote_ip))

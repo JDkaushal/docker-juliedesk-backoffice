@@ -1,0 +1,12 @@
+<div class="col-md-8 col-md-offset-3">
+  <br>
+  <br>
+
+  <h1><%= @operator.name %></h1>
+  <br>
+  <br>
+
+  <%= render partial: "form" %>
+
+  <%= button_to "Disable", disable_admin_operator_path(@operator), class: "btn btn-danger" %>
+</div>

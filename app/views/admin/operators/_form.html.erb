@@ -1,0 +1,49 @@
+<%= form_for [:admin, @operator], class: "form" do |f| %>
+    <div class="form-group">
+      <%= f.label :email %>
+      <%= f.text_field(:email, class: "form-control") %>
+    </div>
+    <div class="form-group">
+
+      <%= f.label :name %>
+      <%= f.text_field(:name, class: "form-control") %>
+    </div>
+
+    <% if @operator.new_record? %>
+        <div class="form-group">
+
+          <%= f.label :password %>
+          <%= text_field_tag("operator[password]", "", class: "form-control") %>
+        </div>
+    <% end %>
+    <div class="form-group">
+
+      <%= f.label :privilege %>
+      <%= f.select(:privilege, [
+                                     ["Operator level 1", Operator::PRIVILEGE_OPERATOR],
+                                     ["Operator level 2", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1],
+                                     ["Operator support", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2],
+                                     ["Admin", Operator::PRIVILEGE_ADMIN]
+                             ], {}, class: "form-control") %>
+    </div>
+    <div class="form-group">
+
+      <%= f.label :madagascar_ip_restriction %>
+      <div class="form-control">
+        <%= f.check_box :ips_whitelist_enabled %> restriction enabled
+      </div>
+    </div>
+
+    <div class="form-group">
+
+      <%= f.label :plannings %>
+      <div class="form-control">
+        <%= f.check_box :active %> should appear in plannings
+      </div>
+    </div>
+    <div class="form-group">
+
+      <%= f.submit "Save", class: "btn btn-success" %>
+    </div>
+
+<% end %>

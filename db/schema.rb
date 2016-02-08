@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160129145146) do
+ActiveRecord::Schema.define(version: 20160208094103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -215,20 +215,7 @@ ActiveRecord::Schema.define(version: 20160129145146) do
     t.datetime "updated_at"
     t.boolean  "active",                default: false
     t.boolean  "ips_whitelist_enabled", default: true
-  end
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.boolean  "enabled",               default: true
   end
 
 end

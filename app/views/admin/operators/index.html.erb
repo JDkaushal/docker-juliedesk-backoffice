@@ -1,0 +1,44 @@
+<% active_operators = @operators.select { |o| o.enabled && o.privilege != Operator::PRIVILEGE_ADMIN } %>
+<% active_admins = @operators.select { |o| o.enabled && o.privilege == Operator::PRIVILEGE_ADMIN } %>
+
+<div class="col-md-8 col-md-offset-3">
+  <h1>Operators</h1>
+
+
+  <%= link_to "New operator", {action: :new}, class: "btn btn-success" %>
+  <h3>Active (<%= active_operators.length %>)</h3>
+
+  <table class="table">
+    <tr>
+      <th>Email</th>
+      <th>Name</th>
+      <th>Privilege</th>
+    </tr>
+
+    <% active_operators.sort_by { |o| -o.level }.each do |operator| %>
+        <tr>
+          <td><%= link_to operator.email, edit_admin_operator_path(operator) %></td>
+          <td><%= operator.name %></td>
+          <td><%= Operator.privilege_descriptions[operator.privilege] %></td>
+        </tr>
+    <% end %>
+  </table>
+
+  <h3>Admins  (<%= active_admins.length %>)</h3>
+
+  <table class="table">
+    <tr>
+      <th>Email</th>
+      <th>Name</th>
+      <th>Privilege</th>
+    </tr>
+
+    <% active_admins.sort_by { |o| [!o.active].to_json }.each do |operator| %>
+        <tr>
+          <td><%= link_to operator.email, edit_admin_operator_path(operator) %></td>
+          <td><%= operator.name %></td>
+          <td><%= Operator.privilege_descriptions[operator.privilege] %></td>
+        </tr>
+    <% end %>
+  </table>
+</div>

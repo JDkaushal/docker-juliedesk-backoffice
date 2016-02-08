@@ -20,6 +20,15 @@ class Operator < ActiveRecord::Base
     self.encrypted_password == Digest::SHA2.hexdigest(self.salt + password)
   end
 
+  def self.privilege_descriptions
+    {
+        PRIVILEGE_OPERATOR => "Operator level 1",
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => "Operator level 2",
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => "Operator level support",
+        PRIVILEGE_ADMIN => "Admin"
+    }
+  end
+
   def stars
     if privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_1
       "*"
