@@ -391,7 +391,7 @@ class Message < ActiveRecord::Base
         appointment: main_answer['appointment_classif'],
         locale: main_answer['language_detected'],
         entities: {
-            phone_numbers: (entities_answer['annotated'] || "").match(/<ENTITY_type=PHONE>(.*)<\/ENTITY>/).captures
+            phone_numbers: (entities_answer['annotated'] || "").match(/<ENTITY_type=PHONE>(.*)<\/ENTITY>/).try(:captures) || []
         }
     }
   end
