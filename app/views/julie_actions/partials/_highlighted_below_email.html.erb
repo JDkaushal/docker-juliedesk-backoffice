@@ -1,0 +1,36 @@
+<div class="highlighted-below-email">
+  <div class="reply-box">
+    <div class="from">
+      <%= I18n.t("common.from") %>
+      <select id="julie-alias-select">
+        <% @messages_thread.julie_aliases.each do |julie_alias| %>
+            <option><%= julie_alias.email %></option>
+        <% end %>
+      </select>
+      <% if @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
+          <div class="reply-to-buttons">
+            <div class="reply-to-client-button btn btn-xs btn-default">Reply to client only</div>
+            <div class="reply-to-all-button btn btn-xs btn-default">Reply to all</div>
+          </div>
+      <% end %>
+    </div>
+    <div class="to">
+      <span><%= I18n.t("common.to") %></span>
+      <input id="recipients-to-input"/>
+    </div>
+    <div class="cc">
+      <span><%= I18n.t("common.cc") %></span>
+      <input id="recipients-cc-input"/>
+    </div>
+    <textarea id="reply-text"></textarea>
+
+    <div id="reply-text-signature"></div>
+    <div class="quote-message-container">
+      <%= check_box_tag :quote_message, "", !@is_discussion_client_julie_only %>
+      <%= I18n.t "common.quote_message" %>
+    </div>
+    <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
+    <button class="btn btn-success" id="forward-button"><%= I18n.t("common.forward") %></button>
+    <div id="callback-message"></div>
+  </div>
+</div>

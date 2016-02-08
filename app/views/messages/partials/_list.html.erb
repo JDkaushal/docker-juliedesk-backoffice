@@ -1,0 +1,137 @@
+<% operator_actions_groups = @messages_thread.operator_actions_groups %>
+
+<% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
+  operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
+          !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target.try(:server_message_id).present?)
+}
+%>
+
+<%
+  if locals[:type] == :messages_threads_review
+    items = (@messages_thread.messages + operator_actions_groups_without_emails + @messages_thread.splitted_server_messages).sort_by do |item|
+      if item.class == Message
+        item.received_at
+      elsif item.class == OperatorActionsGroup
+        item.initiated_at
+      else item.class == Hash
+        DateTime.parse(item['date'])
+      end
+    end
+  else
+    items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
+        if item.class == Message
+        item.received_at
+        else
+        item.initiated_at
+        end
+    end
+  end
+%>
+
+<div id="messages_container" data-messages-thread-id="<%= @messages_thread.id %>" data-messages-count="<%= items.size %>" data-operator-id="<%= session[:operator_id] %>" data-timezone="<%= @messages_thread.computed_data[:timezone] %>">
+  <% items.each do |item| %>
+      <% if item.class == Message %>
+          <% emails_locals = case locals[:type]
+                       when :messages_threads_show
+                         {
+                             message: item,
+                             timezone: @messages_thread.computed_data[:timezone],
+                             actions_available: true,
+                             expend: item.received_at == @messages_thread.messages.map(&:received_at).min,
+                             last: item == items.select{|i| i.class == Message}.last,
+                             no_account: @messages_thread.account_email.nil?,
+                             operator_actions_groups: operator_actions_groups_without_emails,
+                             client_emails: @client_emails,
+                             julie_emails: @julie_emails
+                         }
+                       when :julie_action_show
+                         {
+                             message: item,
+                             timezone: @messages_thread.computed_data[:timezone],
+                             highlight: item.id == @message.id,
+                             highlight_message: I18n.t("classification_categories.#{item.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action"),
+                             operator_actions_groups: operator_actions_groups,
+                             client_emails: @client_emails,
+                             julie_emails: @julie_emails
+                         }
+                       when :messages_classifying
+                         {
+                             message: item,
+                             timezone: @messages_thread.computed_data[:timezone],
+                             highlight: item.id == @message.id,
+                             expend: item.id == @message.id && item.received_at == @messages_thread.messages.map(&:received_at).min,
+                             highlight_message: I18n.t("classification_categories.#{item.classification_category_for_classification @classification}.classifications.#{@classification}.action"),
+                             operator_actions_groups: operator_actions_groups,
+                             client_emails: @client_emails,
+                             julie_emails: @julie_emails
+                         }
+                       when :messages_threads_preview
+                         {
+                            message: item,
+                            actions_available: false,
+                            expend: item.received_at == @messages_thread.messages.map(&:received_at).min,
+                            last: item == items.select{|i| i.class == Message}.last,
+                            no_account: @messages_thread.account_email.nil?,
+                            operator_actions_groups: operator_actions_groups
+                         }
+                       when :messages_threads_group_review
+                         {
+                            message: item,
+                            actions_available: false,
+                            expend: false,
+                            last: false,
+                            no_account: @messages_thread.account_email.nil?,
+                            reviewing_status: "learn",
+                            operator_actions_groups: operator_actions_groups
+                         }
+                       when :messages_threads_learn
+                          {
+                            message: item,
+                            actions_available: false,
+                            expend: false,
+                            last: false,
+                            no_account: @messages_thread.account_email.nil?,
+                            reviewing_status: "learn",
+                            operator_actions_groups: operator_actions_groups
+                          }
+                       when :messages_threads_review
+                         {
+                            message: item,
+                            timezone: @messages_thread.computed_data[:timezone],
+                            actions_available: false,
+                            expend: false,
+                            last: false,
+                            no_account: @messages_thread.account_email.nil?,
+                            reviewing_status: "review",
+                            operator_actions_groups: operator_actions_groups
+                         }
+                     end
+          %>
+
+          <%= render partial: "messages_threads/email", locals: emails_locals %>
+
+          <% if locals[:type] == :julie_action_show && item.id == @message.id %>
+            <%= render'julie_actions/partials/highlighted_below_email' %>
+          <% end %>
+      <% elsif item.class == OperatorActionsGroup %>
+          <%
+             fake_email_locals = {operator_actions_group: item}
+
+            if locals[:type] == :messages_threads_group_review || locals[:type] == :messages_threads_learn
+              fake_email_locals.merge!(reviewing_status: "learn")
+            end
+
+             if locals[:type] == :messages_threads_review
+               fake_email_locals.merge!(reviewing_status: "review")
+             end
+          %>
+
+          <%= render partial: "messages_threads/fake_email", locals: fake_email_locals %>
+
+      <% elsif locals[:type] == :messages_threads_review && item.class == Hash %>
+          <%= render partial: "messages_threads/splitted_email", locals: {email: item} %>
+      <% end %>
+  <% end %>
+</div>
+
+<%=javascript_include_tag('thread_messages/actions')%>

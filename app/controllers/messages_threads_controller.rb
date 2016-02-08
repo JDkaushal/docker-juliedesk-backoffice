@@ -54,12 +54,13 @@ class MessagesThreadsController < ApplicationController
                                      })
     print_time "OA"
 
+    # TODO Find way to reduce this time (3secs to timeout)
     @messages_thread.re_import
 
     print_time "Reimport"
     @messages_thread.account
-    print_time "Account"
 
+    print_time "Account"
     @accounts_cache_light = Account.accounts_cache(mode: "light")
 
     print_time "Account cache"
@@ -68,11 +69,10 @@ class MessagesThreadsController < ApplicationController
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
     print_time "Client emails"
 
+    # TODO Don't forget to check if "account_email" is usable in calendar_login when calling computed_data method in place of "client_email"
     @messages_thread.create_event_title_review_if_needed
 
     print_time "Event title review"
-
-
 
     render :show
 

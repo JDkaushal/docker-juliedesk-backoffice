@@ -1,29 +1,29 @@
-<script>
-  $(function() {
-      $(".already-suggested-dates-container .already-suggested-date").each(function() {
-          var date = $(this).data("date");
-          var timezone = $(this).data("timezone");
-          var mDate = moment(date).tz(timezone);
-          var dateString = mDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
-          $(this).find(".date").html(dateString);
-          $(this).find(".timezone").html("(" + timezone + ")");
-      });
-  });
-</script>
+
 <div class="dates-identification-panel">
   <div class="already-suggested-dates-container">
     <div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>
 
     <div class="already-suggested-dates">
-      <%  messages_thread.suggested_date_times.sort_by do |dt|
-            DateTime.parse(dt['date']).in_time_zone(dt['timezone'])
-        end.select do |dt|
-            DateTime.parse(dt['date']) > DateTime.now
+      <%
+         thread_locale = messages_thread.computed_data[:locale]
+         now = DateTime.now
+         messages_thread.suggested_date_times.uniq.map do |dt|
+            date = DateTime.parse(dt['date'])
+            if date > now
+              {'timezone' => dt['timezone'], 'date' => date, 'date_with_timezone' => date.in_time_zone(dt['timezone'])}
+            else
+              nil
+            end
+        end.compact.sort_by do |dt|
+          dt['date_with_timezone']
         end.each_with_index do |dt, i| %>
           <div class="already-suggested-date" data-date="<%= dt['date'].to_s %>" data-timezone="<%= dt['timezone'] %>">
             <%= check_box_tag "already_suggested_date_#{i}", "" %>
-            <span class="date"></span>
-            <div class="timezone"></div>
+            <% localized_date = I18n.l(dt['date_with_timezone'], format: :full_date, locale: thread_locale)
+                localized_date[0] = localized_date[0].capitalize
+            %>
+            <span class="date"><%= localized_date %></span>
+            <div class="timezone"><%= dt['timezone']%></div>
             <label for="<%= "already_suggested_date_#{i}" %>"></label>
           </div>
       <% end %>

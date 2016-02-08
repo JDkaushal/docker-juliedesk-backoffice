@@ -186,51 +186,58 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def computed_data
-    message_classifications = messages.map{|m|
-      m.message_classifications
-    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
-    last_message_classification = message_classifications.last
-    appointment_nature = last_message_classification.try(:appointment_nature)
 
-    begin
-      computed_calendar_login_username = self.calendar_login.try(:[], 'username')
-      computed_calendar_login_type = self.calendar_login.try(:[], 'type')
-    rescue
-      computed_calendar_login_username = nil
-      computed_calendar_login_type = nil
+    if @computed_data.blank?
+
+      message_classifications = messages.map{|m|
+        m.message_classifications
+      }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+      last_message_classification = message_classifications.last
+      appointment_nature = last_message_classification.try(:appointment_nature)
+
+      begin
+        computed_calendar_login_username = self.calendar_login.try(:[], 'username')
+
+        computed_calendar_login_type = self.calendar_login.try(:[], 'type')
+      rescue
+        computed_calendar_login_username = nil
+        computed_calendar_login_type = nil
+      end
+      @computed_data = {
+          locale: last_message_classification.try(:locale) || self.account.try(:locale),
+          timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
+          appointment_nature: appointment_nature,
+          summary: last_message_classification.try(:summary),
+          duration: last_message_classification.try(:duration) || 60,
+          location_nature: last_message_classification.try(:location_nature),
+          location: last_message_classification.try(:location),
+          call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
+          attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
+          notes: last_message_classification.try(:notes),
+          other_notes: last_message_classification.try(:other_notes),
+
+          is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
+
+          private: last_message_classification.try(:private),
+
+          client_agreement: last_message_classification.try(:client_agreement),
+          attendees_are_noticed: last_message_classification.try(:attendees_are_noticed),
+
+          constraints: last_message_classification.try(:constraints),
+          constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
+
+          number_to_call: last_message_classification.try(:number_to_call),
+
+          date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
+            dt['date'] || "ZZZ"
+          },
+          last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
+          calendar_login_username: computed_calendar_login_username,
+          calendar_login_type: computed_calendar_login_type
+      }
     end
-    {
-        locale: last_message_classification.try(:locale) || self.account.try(:locale),
-        timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
-        appointment_nature: appointment_nature,
-        summary: last_message_classification.try(:summary),
-        duration: last_message_classification.try(:duration) || 60,
-        location_nature: last_message_classification.try(:location_nature),
-        location: last_message_classification.try(:location),
-        call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
-        attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
-        notes: last_message_classification.try(:notes),
-        other_notes: last_message_classification.try(:other_notes),
 
-        is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
-
-        private: last_message_classification.try(:private),
-
-        client_agreement: last_message_classification.try(:client_agreement),
-        attendees_are_noticed: last_message_classification.try(:attendees_are_noticed),
-
-        constraints: last_message_classification.try(:constraints),
-        constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
-
-        number_to_call: last_message_classification.try(:number_to_call),
-
-        date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
-          dt['date'] || "ZZZ"
-        },
-        last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
-        calendar_login_username: computed_calendar_login_username,
-        calendar_login_type: computed_calendar_login_type
-    }
+    @computed_data
   end
 
   def self.virtual_appointment_natures
@@ -428,6 +435,7 @@ class MessagesThread < ActiveRecord::Base
 
   def calendar_login
     if account
+      # TODO Why not use self.account_email instead of self.client_email producing a 3 secondes request
       account.find_calendar_login_with_rule_data({
                                                      email_alias: self.client_email
                                                  })

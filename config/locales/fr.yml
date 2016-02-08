@@ -203,6 +203,7 @@ fr:
       default: "%d %B %Y %Hh %Mmin %Ss"
       long: "%A %d %B %Y %Hh%M"
       short: "%d %b %Hh%M"
+      full_date: "%A %-d %B %Y à %kh%M"
     pm: 'pm'
 
   classification_categories:

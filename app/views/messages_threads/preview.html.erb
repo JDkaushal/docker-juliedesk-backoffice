@@ -29,29 +29,7 @@
         <%= @messages_thread.subject %>
       </div>
 
-      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
-
-      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
-        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
-                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.server_message_id.present?)
-      }
-      %>
-      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
-        if item.class == Message
-          item.received_at
-        else
-          item.initiated_at
-        end
-      end %>
-
-      <% items.each do |item| %>
-          <% if item.class == Message %>
-              <% message = item %>
-              <%= render partial: "messages_threads/email", locals: {message: message, actions_available: false, expend: message.received_at == @messages_thread.messages.map(&:received_at).min, last: message == items.select{|i| i.class == Message}.last, no_account: @messages_thread.account_email.nil?, operator_actions_groups: operator_actions_groups} %>
-          <% elsif item.class == OperatorActionsGroup %>
-              <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
-          <% end %>
-      <% end %>
+      <%= render 'messages/partials/list', locals: {type: :messages_threads_preview} %>
     </div>
 
     <% unread_emails_count = @messages_thread.messages.select{|m| !m.server_message['read']}.length %>

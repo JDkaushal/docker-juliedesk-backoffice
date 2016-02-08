@@ -81,41 +81,7 @@
         <%= link_to @messages_thread.subject, @messages_thread, target: "_blank" %>
       </div>
 
-      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
-      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
-        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
-        !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target.try(:server_message_id).present?)
-      }
-      %>
-
-      <% items = (@messages_thread.messages + operator_actions_groups_without_emails + @messages_thread.splitted_server_messages).sort_by do |item|
-        if item.class == Message
-          item.received_at
-        elsif item.class == OperatorActionsGroup
-          item.initiated_at
-        else item.class == Hash
-          DateTime.parse(item['date'])
-        end
-      end %>
-
-      <% items.each do |item| %>
-          <% if item.class == Message %>
-            <%= render partial: "messages_threads/email", locals: {
-                                                                message: item,
-                                                                timezone: @messages_thread.computed_data[:timezone],
-                                                                actions_available: false,
-                                                                expend: false,
-                                                                last: false,
-                                                                no_account: @messages_thread.account_email.nil?,
-                                                                reviewing_status: "review",
-                                                                operator_actions_groups: operator_actions_groups
-                                                        } %>
-          <% elsif item.class == OperatorActionsGroup %>
-              <%= render partial: "messages_threads/fake_email", locals: {reviewing_status: "review", operator_actions_group: item} %>
-          <% elsif item.class == Hash %>
-              <%= render partial: "messages_threads/splitted_email", locals: {email: item} %>
-          <% end %>
-      <% end %>
+      <%= render 'messages/partials/list', locals: {type: :messages_threads_review} %>
     </div>
   </div>
 

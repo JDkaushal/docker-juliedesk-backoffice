@@ -57,66 +57,6 @@
 
     $(document).ready(function() {
 
-        var accountsAutocompleteSource = <%==
-        (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
-            [{
-                email: contact['email'],
-                name: contact['full_name'],
-                company: "#{contact['company_hash'].try(:[], 'name')}"
-            }] +
-            (contact['email_aliases'] || []).map do |email_alias|
-            {
-                email: contact['email'],
-                name: contact['full_name'],
-                company: "#{contact['company_hash'].try(:[], 'name')}",
-                email_alias: email_alias
-            }
-            end
-        end.flatten.to_json
-        %>;
-
-        $("#change-account-input").autocomplete({
-            source: function(request, callback) {
-                callback(
-                        _.union(
-                                _.filter(accountsAutocompleteSource, function (contact) {
-                                    return (
-                                                    contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                    contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                    contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
-                                            ) &&
-                                            contact.email_alias == null;
-                                }),
-                                _.filter(accountsAutocompleteSource, function (contact) {
-                                    return contact.email_alias &&
-                                            contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
-                                })
-                        )
-                );
-            },
-            focus: function (event, ui) {
-                $("#change-account-input").val(ui.item.email);
-                return false;
-            },
-            select: function (event, ui) {
-                $("#change-account-input").val(ui.item.email);
-                return false;
-            },
-            delay: 0,
-            minLength: 0
-        }).data("ui-autocomplete")._renderItem = function (ul, item) {
-            return $("<li>")
-                    .addClass("contact-autocomplete-item")
-                    .data("item.autocomplete", item)
-                    .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
-                    .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
-                    .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
-                    .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
-                    .appendTo(ul);
-        };
         if(window.threadComputedData.locale)
             window.currentLocale = window.threadComputedData.locale;
     //$(function () {
@@ -208,6 +148,7 @@
 
         $(".change-account-init-button").click(function() {
             $(this).hide();
+            setupAutocompleteAssociateAccount();
             $(".change-account-container").show();
         });
 
@@ -389,6 +330,70 @@
         }
         return null;
     };
+
+    function setupAutocompleteAssociateAccount() {
+        var accountsAutocompleteSource = <%==
+        (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
+            [{
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}"
+            }] +
+            (contact['email_aliases'] || []).map do |email_alias|
+            {
+                email: contact['email'],
+                name: contact['full_name'],
+                company: "#{contact['company_hash'].try(:[], 'name')}",
+                email_alias: email_alias
+            }
+            end
+        end.flatten.to_json
+        %>;
+
+        $("#change-account-input").autocomplete({
+            source: function(request, callback) {
+                callback(
+                        _.union(
+                                _.filter(accountsAutocompleteSource, function (contact) {
+                                    return (
+                                                    contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                    contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
+                                                    contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
+                                            ) &&
+                                            contact.email_alias == null;
+                                }),
+                                _.filter(accountsAutocompleteSource, function (contact) {
+                                    return contact.email_alias &&
+                                            contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
+                                            contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
+                                })
+                        )
+                );
+            },
+            focus: function (event, ui) {
+                $("#change-account-input").val(ui.item.email);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#change-account-input").val(ui.item.email);
+                return false;
+            },
+            delay: 0,
+            minLength: 0
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li>")
+                    .addClass("contact-autocomplete-item")
+                    .data("item.autocomplete", item)
+                    .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
+                    .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
+                    .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
+                    .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
+                    .appendTo(ul);
+        };
+    }
+
     function refreshAttendeesMissingInformations(){
         var attendeesManager = angular.element($('#attendeesCtrl')).scope();
         if(!attendeesManager.$$phase){
@@ -674,31 +679,34 @@
 
 
     function initAppointments() {
-        $("select#appointment_nature").html("");
-        _.each(window.threadAccount.appointments, function(appointment) {
-            $("select#appointment_nature").append($("<option>").val(appointment.label).html(appointment.label));
-        });
+        var $selectNatureNode = $("select#appointment_nature");
+        var $selectFamilyNatureNode = $("select#appointment_family_nature");
 
-        _(_(_.map(window.threadAccount.appointments, function(appointment) {
-            return appointment.appointment_kind_hash.family_kind;
-        })).uniq()).each(function(familyKind) {
-            $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
-        });
+//        $selectNatureNode.html("");
+//        _.each(window.threadAccount.appointments, function(appointment) {
+//            $selectNatureNode.append($("<option>").val(appointment.label).html(appointment.label));
+//        });
 
-        $("select#appointment_family_nature").change(function() {
+//        _(_(_.map(window.threadAccount.appointments, function(appointment) {
+//            return appointment.appointment_kind_hash.family_kind;
+//        })).uniq()).each(function(familyKind) {
+//            $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
+//        });
+
+        $selectFamilyNatureNode.change(function() {
             processAppointmentType();
 
             updateNotesCallingInfos();
             //refreshVirtualAppointmentsHelper();
         });
 
-        $("select#appointment_nature").val(window.threadComputedData.appointment_nature);
+        $selectNatureNode.val(window.threadComputedData.appointment_nature);
         var currentAppointment = window.getCurrentAppointment();
         if(currentAppointment) {
-            $("select#appointment_family_nature").val(currentAppointment.appointment_kind_hash.family_kind);
+            $selectFamilyNatureNode.val(currentAppointment.appointment_kind_hash.family_kind);
         }
         else {
-            $("select#appointment_family_nature").val(null);
+            $selectFamilyNatureNode.val(null);
         }
         if (window.threadComputedData.appointment_nature) {
             initAddresses();
@@ -1062,10 +1070,14 @@
 
 
       <div class="data-entry linear-form-entry">
+        <% messages_thread_account_appointments = @messages_thread.account.appointments %>
+        <% selectOption = Struct.new(:id, :name)%>
+        <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['label']) } %>
+        <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.map{|app| app['appointment_kind_hash']['family_kind']}.uniq.map{|family_kind| selectOption.new(family_kind, family_kind) } %>
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
-        <%= select_tag :appointment_family_nature, "", class: "data-entry form-control" %>
+        <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
         <div class="data-entry-name"><%= I18n.t("info_box.computed_appointment_type") %></div>
-        <%= select_tag :appointment_nature, "", class: "data-entry form-control" %>
+        <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control" %>
       </div>
 
       <div class="data-entry linear-form-entry" data-entry-name="timezone">

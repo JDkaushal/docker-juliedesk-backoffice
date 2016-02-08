@@ -1,232 +1,7 @@
 <% email = message.server_message %>
-
 <% operator_actions_group = (message.from_me)?message.generator_operator_actions_group(local_assigns[:operator_actions_groups]):nil %>
-<script>
-    $(function () {
-        var $email = $(".email-<%= message.server_message_id %>");
-        $email.find(".retracted, .checkbox-container").click(function (e) {
-            e.stopPropagation();
-        });
-        $email.find(".retracted, .extended .retractable").click(function (e) {
-            $(this).closest(".email").toggleClass("extended");
-        });
 
-        $email.find(".actions-menu-button").click(function (e) {
-            $email.find(".actions-menu-positioner").toggleClass("visible");
-            e.stopPropagation();
-        });
-
-        $email.find(".actions-menu").click(function (e) {
-            e.stopPropagation();
-        });
-
-        $email.find(".notation-container .notation-option").click(function() {
-            var notation = $(this).closest(".notation-container").find(".notation-option").index(this) + 1;
-            setNotation(notation);
-        });
-
-        $email.find(".to-learn-button").click(function() {
-            setNotation(4);
-        });
-
-
-        var clientEmails = <%== (local_assigns[:client_emails] || []).to_json %>;
-        var highlightClientEmails = function($div) {
-            $.each(clientEmails, function() {
-                var clientEmail = this;
-                $div.html($div.html().replace(new RegExp(clientEmail, "gi"), function(ma) {
-                    return "<span class='highlighted'>" + ma + "</span>";
-                }));
-            });
-        };
-        highlightClientEmails($email.find(".retracted .from"));
-        highlightClientEmails($email.find(".extended .from"));
-        highlightClientEmails($email.find(".extended .to"));
-        highlightClientEmails($email.find(".extended .cc"));
-
-        var julieEmails = <%== (local_assigns[:julie_emails] || []).to_json %>;
-        var highlightJulieEmails = function($div) {
-            $.each(julieEmails, function() {
-                var julieEmail = this;
-                $div.html($div.html().replace(new RegExp(julieEmail, "gi"), function(ma) {
-                    return "<span class='julie-highlighted'>" + ma + "</span>";
-                }));
-            });
-        };
-        highlightJulieEmails($email.find(".retracted .from"));
-        highlightJulieEmails($email.find(".extended .from"));
-        highlightJulieEmails($email.find(".extended .to"));
-        highlightJulieEmails($email.find(".extended .cc"));
-
-
-        $email.find(".email-flag").click(function(e) {
-            var basePath = "<%= EmailServer::API_BASE_PATH %>";
-            var accessKey = "<%= EmailServer::API_ACCESS_KEY %>";
-            var url = basePath + "/messages/update_labels?access_key=" + accessKey;
-
-            var labelsToAdd = [];
-            var labelsToRemove = [];
-            if($(this).hasClass("flagged")) {
-                $email.find(".email-flag").removeClass("flagged");
-                labelsToRemove.push("flag");
-            }
-            else {
-                $email.find(".email-flag").addClass("flagged");
-                labelsToAdd.push("flag");
-            }
-
-            var messageId = "<%= message.server_message_id %>";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    message_ids: [messageId],
-                    labels_to_add: labelsToAdd,
-                    labels_to_remove: labelsToRemove
-                },
-                success: function(response) {
-
-                }
-            });
-            e.stopPropagation();
-        });
-
-        $email.click(function () {
-            if ($(this).closest(".actions-menu").length == 0) {
-                $email.find(".actions-menu-positioner").removeClass("visible");
-            }
-        });
-
-        $email.find("a.action").click(function(e) {
-            e.preventDefault();
-            var actionNature = $(this).data("actionNature");
-            trackEvent("Click_on_julie_action", {
-                distinct_id: "<%= session[:operator_id]%>-<%= message.messages_thread_id %>",
-                thread_id: <%= message.messages_thread_id %>,
-                thread_messages_count: <%= message.messages_thread.messages.length %>,
-                bo_message_id: <%= message.id %>,
-                action_nature: actionNature
-            });
-            if(!$(this).attr('disabled')) {
-                $email.find(".actions-menu .spinner").show();
-                window.location = $(this).attr('href') + "?started_at=" + window.startedAt;
-            }
-        });
-
-
-
-        var $expandQuotes = $("<div>").html("...").addClass("expand-quotes-button");
-        $email.find("blockquote, .gmail_quote").first().before($expandQuotes);
-
-        $email.find(".expand-quotes-button").click(function(e) {
-            if($email.find("blockquote.expanded, .gmail_quote.expanded").length > 0) {
-                $email.find("blockquote, .gmail_quote").removeClass("expanded");
-            }
-            else {
-                $email.find("blockquote, .gmail_quote").addClass("expanded");
-            }
-        });
-
-        $email.find(".suggested-action-by-julie").click(function(e) {
-            if($(this).hasClass("enabled")) {
-                $email.find(".suggested-action-by-julie .button").hide();
-                $email.find(".suggested-action-by-julie .result").show();
-                $(this).removeClass("enabled");
-                e.stopPropagation();
-            }
-        });
-
-
-        <% if local_assigns[:expend] %>
-            $email.find("blockquote, .gmail_quote").addClass("expanded");
-        <% end %>
-
-        function setNotation(notation) {
-            if(!$email.find(".full-review-container").hasClass("enabled")) {
-                return;
-            }
-            $email.find(".notation-container").removeClass("notation-1 notation-2 notation-3 notation-4 notation-5 notation-6");
-            $email.find(".notation-container").addClass("notation-" + notation);
-            $email.find(".notation-container").data("value", notation);
-
-            $email.find(".full-review-container").removeClass("already-set");
-
-            if(notation==5) {
-                $email.find(".full-review-container").removeClass("expanded");
-            }
-            else {
-                $email.find(".full-review-container").addClass("expanded");
-                $email.find(".full-review-container textarea").focus();
-            }
-        }
-
-        function getIcsAttachments(message, callback) {
-            message.icsAttachments = [];
-            icsAttachments = _.filter(message.attachments_data, function(attachment) {
-                return attachment.type == "application/ics" || attachment.type == "text/calendar";
-            });
-            if(icsAttachments.length > 0) {
-                $.get("https://jd-email-server.herokuapp.com/messages/" + message.id + "/get_attachment?attachment_id=" + icsAttachments[0].attachment_id + "&access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh")
-                        .success(function(response) {
-                            callback(response);
-                        });
-            }
-        }
-
-        function parseIcs(icsString) {
-            var comp = new ICAL.Component(ICAL.parse(icsString));
-            var vevent = comp.getFirstSubcomponent("vevent");
-            var event = new ICAL.Event(vevent);
-
-            var mStartDate = moment(event.startDate.toString()).utc();
-            var mEndDate = moment(event.endDate.toString()).utc();
-
-
-
-            var dates = mStartDate.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd DD MMMM YYYY HH:mm") + " (UTC)";
-            <% if local_assigns[:timezone] %>
-            var timezone = "<%= local_assigns[:timezone] %>";
-             dates += "<br>" + mStartDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " (" + timezone + ")";
-            <% end %>
-
-            return {
-                summary: event.summary,
-                description: event.description,
-                location: event.location,
-                dates: dates,
-                attendees: _.map(event.attendees, function(attendee) {
-                    return attendee.getFirstValue().toLowerCase().replace("mailto:", "");
-                }),
-                organizer: event.organizer.toLowerCase().replace("mailto:", ""),
-                raw: vevent
-            };
-        }
-
-        function generateIcsPreview (icsData) {
-            $email.find(".ics-preview-container .ics-preview .summary").html(icsData.summary);
-            $email.find(".ics-preview-container .ics-preview .ics-date .dates").html(icsData.dates);
-            $email.find(".ics-preview-container .ics-preview .location span").html(icsData.location);
-            $email.find(".ics-preview-container .ics-preview .attendees .organizer span").html(icsData.organizer);
-            $email.find(icsData.attendees).each(function() {
-                var attendee = this;
-                $email.find(".ics-preview-container .ics-preview .attendees").append($("<div>").addClass("attendee").html(attendee));
-            });
-            $email.find(".ics-preview-container .ics-preview .notes .notes-div").html(icsData.notes);
-            $email.find(".ics-preview-container").show();
-        }
-
-        getIcsAttachments(<%== email.to_json %>, function(icsData) {
-            generateIcsPreview(parseIcs(icsData));
-        })
-    });
-
-
-
-
-</script>
-
-
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %>">
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %>" id="<%= message.server_message_id %>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
       <div class="full-review-container <%= (notation != 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">
@@ -248,153 +23,164 @@
         <div class="to-learn-label">To learn</div>
       </div>
   <% end %>
+
+  <% filtered_email_data = email.select{|key, _| key == 'id' || key == 'attachments_data' }%>
+  <%= hidden_field_tag :email_data, filtered_email_data.to_json%>
+  <%= hidden_field_tag :has_attachment, filtered_email_data['attachments_data'].present?, class: 'attachments-detector' %>
+
   <div class="email-container">
-  <div class="retracted">
-    <div class="checkbox-container">
-      <%= check_box_tag "checkbox-message-#{message.id}", message.id %>
-      <label for="checkbox-message-<%= message.id %>"></label>
-    </div>
+    <%
+        from_email = check_highlighting_in_recipients(email['from'].strip)
 
-    <div class="retracted-container">
-      <div class="date-and-from">
-        <div class="from"><%= email['from'] %></div>
+        to_emails = email['to'].split(',').map{|email| check_highlighting_in_recipients(email.strip)}.join(', ')
+        cc_emails = email['cc'].present? ? email['cc'].split(',').map{|email| check_highlighting_in_recipients(email.strip)}.join(', ') : ''
+    %>
 
-        <% if message.from_me %>
-            <% if operator_actions_group %>
-                <div class="operator-and-action-container">
-                    <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
-                        <div class="operator"><%= operator_actions_group.operator.name %></div>
-                    <% end %>
-                    <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
-                </div>
-            <% end %>
-        <% end %>
 
-        <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
-        <% if email['was_merged'] %>
-            <div class="email-was-merged">M</div>
-        <% end %>
-        <% if email['was_split'] %>
-            <% if local_assigns[:reviewing_status] == "review" %>
-                <%= link_to "S", review_review_messages_thread_path(MessagesThread.find_by_server_thread_id email['original_messages_thread_id']), class: "email-was-split", target: "_blank" %>
-            <% else %>
-                <div class="email-was-split">S</div>
+      <div class="retracted">
+        <div class="checkbox-container">
+          <%= check_box_tag "checkbox-message-#{message.id}", message.id %>
+          <label for="checkbox-message-<%= message.id %>"></label>
+        </div>
+
+        <div class="retracted-container">
+          <div class="date-and-from">
+            <div class="from"><%== from_email %></div>
+
+            <% if message.from_me %>
+                <% if operator_actions_group %>
+                    <div class="operator-and-action-container">
+                        <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
+                            <div class="operator"><%= operator_actions_group.operator.name %></div>
+                        <% end %>
+                        <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+                    </div>
+                <% end %>
             <% end %>
 
-        <% end %>
-        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
-        <div class="clear"></div>
-      </div>
-      <div class="snippet">
-        <%= email['snippet'] %>
-      </div>
-    </div>
-  </div>
-  <div class="extended">
-    <div class="retractable">
-      <div class="date-and-from">
-        <div class="from"><%= email['from'] %></div>
+            <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
+            <% if email['was_merged'] %>
+                <div class="email-was-merged">M</div>
+            <% end %>
+            <% if email['was_split'] %>
+                <% if local_assigns[:reviewing_status] == "review" %>
+                    <%= link_to "S", review_review_messages_thread_path(MessagesThread.find_by_server_thread_id email['original_messages_thread_id']), class: "email-was-split", target: "_blank" %>
+                <% else %>
+                    <div class="email-was-split">S</div>
+                <% end %>
 
-        <% if message.from_me %>
-            <% if operator_actions_group %>
-                <div class="operator-and-action-container">
-                  <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
-                      <div class="operator"><%= operator_actions_group.operator.name %></div>
+            <% end %>
+            <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
+            <div class="clear"></div>
+          </div>
+          <div class="snippet">
+            <%= email['snippet'] %>
+          </div>
+        </div>
+      </div>
+      <div class="extended">
+        <div class="retractable">
+          <div class="date-and-from">
+            <div class="from"><%== from_email %></div>
+
+            <% if message.from_me %>
+                <% if operator_actions_group %>
+                    <div class="operator-and-action-container">
+                      <% unless local_assigns[:reviewing_status] == "learn" && operator_actions_group.operator.id != session[:operator_id] %>
+                          <div class="operator"><%= operator_actions_group.operator.name %></div>
+                      <% end %>
+                      <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+                    </div>
+                <% end %>
+            <% end %>
+
+
+            <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
+            <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
+            <div class="clear"></div>
+          </div>
+
+          <% if local_assigns[:actions_available] %>
+              <% if session[:privilege] == Operator::PRIVILEGE_ADMIN && !message.from_me %>
+                  <div class="suggested-action-by-julie enabled">
+                    <div class="button">Give me your opinion, Julie.</div>
+                    <div class="result" style="display: none">
+                      Classif: <%= message.interpretations[:classification] %><br>
+                      Locale: <%= message.interpretations[:locale] %><br>
+                      Appointment: <%= message.interpretations[:appointment] %>
+                    </div>
+                  </div>
+              <% end %>
+              <div class="actions-menu-button"></div>
+              <div class="actions-menu-positioner">
+                <div class="actions-menu">
+                  <% message.messages_thread.available_classifications.each do |category, classifications| %>
+                      <div class="classification-category">
+                        <div class="classification-title"><%= I18n.t("classification_categories.#{category}.title") %></div>
+                        <% classifications.each do |classification| %>
+                            <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", data: {"action-nature" => classification} %>
+                        <% end %>
+                      </div>
+                      <%= image_tag "ajax-loader.gif", class: "spinner" %>
                   <% end %>
-                  <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
                 </div>
-            <% end %>
+              </div>
+          <% end %>
+
+          <div class="to">
+            <span class="email-label"><%= I18n.t("common.to")%></span>
+            <%== to_emails %>
+          </div>
+          <div class="cc">
+            <span class="email-label"><%= I18n.t("common.cc")%></span>
+            <%== cc_emails %>
+          </div>
+        </div>
+
+        <% if local_assigns[:highlight] && local_assigns[:highlight_message] %>
+            <div class="current-action-message"><%= local_assigns[:highlight_message] %></div>
         <% end %>
 
-
-        <div class="email-flag <%= (email['labels'].include? "flag")?"flagged":"" %>"></div>
-        <div class="date"><%= I18n.l(DateTime.parse(email['date']).to_time.utc, format: "%-d %b %H:%M") %> UTC (<%= I18n.t("time_ago", time: distance_of_time_in_words_to_now(DateTime.parse(email['date']))) %>)</div>
-        <div class="clear"></div>
-      </div>
-
-      <% if local_assigns[:actions_available] %>
-          <% if session[:privilege] == Operator::PRIVILEGE_ADMIN && !message.from_me %>
-            <div class="suggested-action-by-julie enabled">
-              <div class="button">Give me your opinion, Julie.</div>
-              <div class="result" style="display: none">
-                Classif: <%= message.interpretations[:classification] %><br>
-                Locale: <%= message.interpretations[:locale] %><br>
-                Appointment: <%= message.interpretations[:appointment] %>
-                </div>
+        <div class="ics-preview-container">
+          <div class="ics-preview">
+            <div class="summary"></div>
+            <div class="ics-date ics-preview-field">
+              <div class="ics-preview-label">When</div>
+              <span class="dates"></span>
             </div>
 
-          <% end %>
-          <div class="actions-menu-button"></div>
+            <div class="location ics-preview-field">
+              <div class="ics-preview-label">Where</div>
+              <span></span>
+            </div>
 
-          <div class="actions-menu-positioner">
-            <div class="actions-menu">
-              <% message.messages_thread.available_classifications.each do |category, classifications| %>
-                  <div class="classification-category">
-                    <div class="classification-title"><%= I18n.t("classification_categories.#{category}.title") %></div>
-                    <% classifications.each do |classification| %>
-                        <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", data: {"action-nature" => classification} %>
-                    <% end %>
-                  </div>
-                  <%= image_tag "ajax-loader.gif", class: "spinner" %>
-              <% end %>
+            <div class="attendees ics-preview-field">
+              <div class="ics-preview-label">Who</div>
+              <div class="organizer"><span></span> (organizer)</div>
+            </div>
+            <div class="notes ics-preview-field">
+              <div class="ics-preview-label">Notes</div>
+              <div class="notes-div"></div>
             </div>
           </div>
-      <% end %>
-
-      <div class="to">
-        <span class="email-label"><%= I18n.t("common.to")%></span>
-        <%= email['to'] %>
-      </div>
-      <div class="cc">
-        <span class="email-label"><%= I18n.t("common.cc")%></span>
-        <%= email['cc'] %>
-      </div>
-    </div>
-
-    <% if local_assigns[:highlight] && local_assigns[:highlight_message] %>
-        <div class="current-action-message"><%= local_assigns[:highlight_message] %></div>
-    <% end %>
-
-    <div class="ics-preview-container">
-      <div class="ics-preview">
-        <div class="summary"></div>
-        <div class="ics-date ics-preview-field">
-          <div class="ics-preview-label">When</div>
-          <span class="dates"></span>
         </div>
 
-        <div class="location ics-preview-field">
-          <div class="ics-preview-label">Where</div>
-          <span></span>
-        </div>
-
-        <div class="attendees ics-preview-field">
-          <div class="ics-preview-label">Who</div>
-          <div class="organizer"><span></span> (organizer)</div>
-        </div>
-        <div class="notes ics-preview-field">
-          <div class="ics-preview-label">Notes</div>
-          <div class="notes-div"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="body"><%== Message.format_email_body(message) %></div>
+        <div class="body"><%== Message.format_email_body(message) %></div>
 
 
-    <div class="attachments-container">
-      <% (email['attachments_data'] || []).each do |attachment| %>
-          <% src = EmailServer.attachment_inline_path(message: email, attachment: attachment) %>
-          <%= link_to src, class: "attachment-box", target: "_blank" do %>
-              <% if attachment['type'].include? "image" %>
-                  <%= image_tag src, class: "attachment-preview" %>
-              <% else %>
-                  <div class="attachment-preview"><%= attachment['type'].split("/").last %></div>
+        <div class="attachments-container">
+          <% (email['attachments_data'] || []).each do |attachment| %>
+              <% src = EmailServer.attachment_inline_path(message: email, attachment: attachment) %>
+              <%= link_to src, class: "attachment-box", target: "_blank" do %>
+                  <% if attachment['type'].include? "image" %>
+                      <%= image_tag src, class: "attachment-preview" %>
+                  <% else %>
+                      <div class="attachment-preview"><%= attachment['type'].split("/").last %></div>
+                  <% end %>
+                  <div class="attachment-name"><%= attachment['filename'] %></div>
               <% end %>
-              <div class="attachment-name"><%= attachment['filename'] %></div>
           <% end %>
-      <% end %>
-    </div>
-  </div>
+        </div>
+      </div>
   </div>
 </div>

@@ -7,4 +7,4 @@ Rails.application.config.assets.version = '1.0'
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
 
 Rails.application.config.assets.precompile += %w( stats.css dashboard.css )
-Rails.application.config.assets.precompile += %w( stats.js test.js dashboard.js angular_attendees_app.js angular_dependencies.js angular_virtual_meetings_helper_app.js )
+Rails.application.config.assets.precompile += %w( stats.js test.js dashboard.js angular_attendees_app.js angular_dependencies.js angular_virtual_meetings_helper_app.js thread_messages/actions.js )

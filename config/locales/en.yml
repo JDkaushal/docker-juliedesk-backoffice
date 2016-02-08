@@ -20,6 +20,11 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  time:
+    formats:
+      short: "d"
+      full_date: "%A %-d %B %Y%l:%M%P"
+
   emails_to_handle:
     zero: "No email to handle"
     one: "1 email to handle"

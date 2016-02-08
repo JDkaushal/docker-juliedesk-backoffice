@@ -53,4 +53,31 @@ module ApplicationHelper
 
     "#{(hours > 0)?"#{hours}h ":nil}#{minutes}' #{(seconds < 10)?"0#{seconds}":seconds}''"
   end
+
+  def check_highlighting_in_recipients(string)
+    sanitized_email = sanitize_email_address(string)
+
+    if @client_emails.include?(sanitized_email)
+      #we gsub the < for its html unicode equivalent to prevent it from beeing interpreted as a balise
+      "<span class='highlighted'>#{string.gsub('<', '&#60;')}</span>"
+    elsif @julie_emails.include?(sanitized_email)
+      "<span class='julie-highlighted'>#{string.gsub('<', '&#60;')}</span>"
+    else
+      sanitized_email
+    end
+
+  end
+
+  def sanitize_email_address(string)
+    tmp = string.dup
+
+    if tmp.include?('<')
+      # Removing trailing > with the -2
+      tmp = tmp[(tmp.index('<') + 1)..-2]
+    end
+
+    tmp.gsub!('>', '')
+
+    tmp
+  end
 end

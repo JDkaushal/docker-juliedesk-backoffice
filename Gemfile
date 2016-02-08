@@ -24,7 +24,7 @@ gem "pusher"
 
 gem "mail", '2.6.3'
 
-gem "stringex"
+gem "stringex", :git => 'git://github.com/Fred-JulieDesk/stringex.git'
 
 gem 'delayed_job_active_record'
 
@@ -67,4 +67,8 @@ group :test do
   gem 'simplecov', :require => false
 end
 
-gem 'rack-mini-profiler'
+# We will load it manually in an initializer because we are using Rack::Deflater Middleware https://github.com/MiniProfiler/rack-mini-profiler#custom-middleware-ordering-required-if-using-rackdeflate-with-rails
+gem 'rack-mini-profiler', require: false
+gem 'flamegraph'
+gem 'stackprof' # ruby 2.1+ only
+gem 'memory_profiler'

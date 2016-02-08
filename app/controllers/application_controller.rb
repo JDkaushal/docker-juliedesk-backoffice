@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
 
   before_filter :authenticate, :set_locale
+  before_action :check_rack_mini_profiler
 
   skip_before_action :verify_authenticity_token, only: :change_sound
 
@@ -92,5 +93,11 @@ class ApplicationController < ActionController::Base
     @staging_env = ENV['STAGING_APP'] == 'TRUE'
     @staging_target_email = ENV['STAGING_TARGET_EMAIL_ADDRESS']
     @staging_event_api_endpoint = ENV['STAGING_EVENT_API_ENDPOINT']
+  end
+
+  def check_rack_mini_profiler
+    if session[:privilege] == Operator::PRIVILEGE_ADMIN
+      Rack::MiniProfiler.authorize_request
+    end
   end
 end

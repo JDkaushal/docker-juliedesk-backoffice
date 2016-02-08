@@ -1,0 +1,234 @@
+function ownClass(element, classes){
+    return element.is(classes);
+}
+
+function setNotation($email, notation) {
+    if(!$email.find(".full-review-container").hasClass("enabled")) {
+        return;
+    }
+
+    var notationContainerNode = $email.find(".notation-container");
+    var fullReviewContainerNode = $email.find(".full-review-container");
+
+    notationContainerNode.removeClass("notation-1 notation-2 notation-3 notation-4 notation-5 notation-6");
+    notationContainerNode.addClass("notation-" + notation);
+    notationContainerNode.data("value", notation);
+
+    fullReviewContainerNode.removeClass("already-set");
+
+    if(notation==5) {
+        fullReviewContainerNode.removeClass("expanded");
+    }
+    else {
+        fullReviewContainerNode.addClass("expanded");
+        $email.find(".full-review-container textarea").focus();
+    }
+}
+
+function flagMessage($element, $email) {
+    var basePath = "<%= EmailServer::API_BASE_PATH %>";
+    var accessKey = "<%= EmailServer::API_ACCESS_KEY %>";
+    var url = basePath + "/messages/update_labels?access_key=" + accessKey;
+    var data = {
+        message_ids: $email.attr('id')
+    };
+    var toFlag = false;
+
+    if($element.hasClass("flagged")) {
+        toFlag = false;
+        data['labels_to_add'] = [];
+        data['labels_to_remove'] = ['flag'];
+    }
+    else {
+        toFlag = true;
+        data['labels_to_add'] = ['flag'];
+        data['labels_to_remove'] = [];
+    }
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        success: function(response) {
+            console.log(response);
+            if(response.status == "success") {
+                if(toFlag)
+                    $element.addClass("flagged");
+                else
+                    $element.removeClass("flagged");
+            }
+        }
+    });
+}
+
+function trackAction($element, $email) {
+    var actionNature = $element.data('actionNature');
+    var messageContainerNode = $('#messages_container');
+    var messagesThreadId = messageContainerNode.data('messagesThreadId');
+
+    trackEvent("Click_on_julie_action", {
+        distinct_id: messageContainerNode.data('operatorId') + '-' + messagesThreadId,
+        thread_id: messagesThreadId,
+        thread_messages_count: messageContainerNode.data('messagesCount'),
+        bo_message_id: $email.data('messageId'),
+        action_nature: actionNature
+    });
+
+    if(!$element.attr('disabled')){
+        $email.find(".actions-menu .spinner").show();
+
+        window.location = $element.attr('href') + "?started_at=" + window.startedAt;
+    }
+}
+
+function paintExpandQuoteButtons() {
+    var emailsNodes = $('.email');
+
+    $.each(emailsNodes, function() {
+        var $emailNode = $(this);
+        var $foundNodes = $emailNode.find("blockquote, .gmail_quote");
+        $foundNodes.first().before($("<div>").html("...").addClass("expand-quotes-button"));
+
+        if($emailNode.is('[expanded]')) {
+            $foundNodes.addClass("expanded");
+        }
+    })
+}
+
+function toggleEmailQuote($email) {
+    var $quoteNodes = $email.find("blockquote, .gmail_quote");
+
+    if($email.find("blockquote.expanded, .gmail_quote.expanded").length > 0) {
+        $quoteNodes.removeClass("expanded");
+    }
+    else {
+        $quoteNodes.addClass("expanded");
+    }
+}
+
+function julieSuggestionClickHandler($element, $email) {
+    if($element.closest('.suggested-action-by-julie').hasClass("enabled")) {
+        $email.find(".suggested-action-by-julie .button").hide();
+        $email.find(".suggested-action-by-julie .result").show();
+        $element.removeClass("enabled");
+    }
+}
+
+function IcsManager() {
+    this.perform = function() {
+        var that = this;
+        var $nodesWithAttachments = $('.attachments-detector[value="true"]');
+
+        $.each($nodesWithAttachments, function() {
+            var $node = this;
+            var $email = $($node.closest('.email'));
+            var emailData = JSON.parse($email.find('#email_data').val());
+
+            that.fetchAttachments(emailData, function(icsData) {
+                that.generatePreview($email, that.parse(icsData));
+            });
+        });
+    };
+
+    this.fetchAttachments = function(emailData, callback) {
+        var icsAttachments = _.filter(emailData.attachments_data, function(attachment) {
+            return attachment.type == "application/ics" || attachment.type == "text/calendar";
+        });
+
+        if(icsAttachments.length > 0) {
+            $.get("https://jd-email-server.herokuapp.com/messages/" + emailData.id + "/get_attachment?attachment_id=" + icsAttachments[0].attachment_id + "&access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh")
+                    .success(function(response) {
+                        callback(response);
+                    });
+        }
+    };
+
+    this.parse = function(icsString) {
+        var comp = new ICAL.Component(ICAL.parse(icsString));
+        var vevent = comp.getFirstSubcomponent("vevent");
+        var event = new ICAL.Event(vevent);
+        var mStartDate = moment(event.startDate.toString()).utc();
+        var mEndDate = moment(event.endDate.toString()).utc();
+
+        var dates = mStartDate.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd DD MMMM YYYY HH:mm") + " (UTC)";
+        var timezone = $('#messages_container').data('timezone');
+
+        if(!!timezone) {
+            dates += "<br>" + mStartDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " (" + timezone + ")";
+        }
+
+        return {
+            summary: event.summary,
+            description: event.description,
+            location: event.location,
+            dates: dates,
+            attendees: _.map(event.attendees, function(attendee) {
+                return attendee.getFirstValue().toLowerCase().replace("mailto:", "");
+            }),
+            organizer: event.organizer.toLowerCase().replace("mailto:", ""),
+            raw: vevent
+        };
+    };
+
+    this.generatePreview = function($email, icsData) {
+        $email.find(".ics-preview-container .ics-preview .summary").html(icsData.summary);
+        $email.find(".ics-preview-container .ics-preview .ics-date .dates").html(icsData.dates);
+        $email.find(".ics-preview-container .ics-preview .location span").html(icsData.location);
+        $email.find(".ics-preview-container .ics-preview .attendees .organizer span").html(icsData.organizer);
+        $email.find(icsData.attendees).each(function() {
+            var attendee = this;
+            $email.find(".ics-preview-container .ics-preview .attendees").append($("<div>").addClass("attendee").html(attendee));
+        });
+        $email.find(".ics-preview-container .ics-preview .notes .notes-div").html(icsData.notes);
+        $email.find(".ics-preview-container").show();
+    }
+
+}
+
+$(function () {
+    var $messagesContainerNode = $('#messages_container');
+
+    $messagesContainerNode.click(function(e){
+        if(e.target !== e.currentTarget) {
+            var target = e.target;
+            var $target = $(target);
+            var $email = $target.closest('.email');
+
+            if(ownClass($target, '.actions-menu-button')) {
+                $email.find(".actions-menu-positioner").toggleClass("visible");
+            }else if(ownClass($target, '.notation-option')) {
+                var notation = $target.data('value');
+                setNotation($email, notation);
+            }else if(ownClass($target, '.to-learn-button')) {
+                setNotation($email, 4);
+            }else if(ownClass($target, '.action')){
+                e.preventDefault();
+                trackAction($target, $email);
+            }else if(ownClass($target, '.actions-menu')){
+                // We do nothing, so we don't trigger the default action (toggle the message)
+            }else if(ownClass($target, '.email-flag')){
+                flagMessage($target, $email);
+            }else if(ownClass($target, '.expand-quotes-button')){
+                toggleEmailQuote($email);
+            }else if($target.parents('.suggested-action-by-julie').length > 0){
+                julieSuggestionClickHandler($target, $email);
+            }else if($target.parents('.actions-menu').length > 0){
+                // We do nothing, so we don't trigger the default action (toggle the message)
+            }else{
+                if($target.parents('.retracted,.retractable').length > 0) {
+                    $email.toggleClass("extended");
+                }
+
+                $email.find(".actions-menu-positioner").removeClass("visible");
+            }
+        }
+
+        e.stopPropagation();
+    });
+
+});
+
+$(window).load(function() {
+    paintExpandQuoteButtons();
+    new IcsManager().perform();
+});

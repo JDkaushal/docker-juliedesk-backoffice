@@ -531,74 +531,9 @@
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
       </div>
-      <% operator_actions_groups = @messages_thread.operator_actions_groups %>
-      <% operator_actions_groups_without_emails = operator_actions_groups.select{|operator_actions_group|
-        operator_actions_group.label == OperatorActionsGroup::LABEL_ARCHIVE ||
-                !(operator_actions_group.target_type == JulieAction.to_s && operator_actions_group.target && operator_actions_group.target.server_message_id.present?)
-      }
-      %>
-      <% items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
-        if item.class == Message
-          item.received_at
-        else
-          item.initiated_at
-        end
-      end %>
 
-      <% items.each do |item| %>
-          <% if item.class == Message %>
-              <% message = item %>
-              <%= render partial: "messages_threads/email", locals: {
-                      message: message,
-                      timezone: @messages_thread.computed_data[:timezone],
-                      highlight: message.id == @message.id,
-                      highlight_message: I18n.t("classification_categories.#{message.classification_category_for_classification @julie_action.message_classification.classification}.classifications.#{@julie_action.message_classification.classification}.action"),
-                      operator_actions_groups: operator_actions_groups,
-                      client_emails: @client_emails,
-                      julie_emails: @julie_emails
-                  } %>
-              <% if message.id == @message.id %>
-                  <div class="highlighted-below-email">
-                    <div class="reply-box">
-                      <div class="from">
-                        <%= I18n.t("common.from") %>
-                        <select id="julie-alias-select">
-                            <% @messages_thread.julie_aliases.each do |julie_alias| %>
-                                <option><%= julie_alias.email %></option>
-                            <% end %>
-                        </select>
-                        <% if @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
-                            <div class="reply-to-buttons">
-                              <div class="reply-to-client-button btn btn-xs btn-default">Reply to client only</div>
-                              <div class="reply-to-all-button btn btn-xs btn-default">Reply to all</div>
-                            </div>
-                        <% end %>
-                      </div>
-                      <div class="to">
-                        <span><%= I18n.t("common.to") %></span>
-                        <input id="recipients-to-input"/>
-                      </div>
-                      <div class="cc">
-                        <span><%= I18n.t("common.cc") %></span>
-                        <input id="recipients-cc-input"/>
-                      </div>
-                      <textarea id="reply-text"></textarea>
+      <%= render 'messages/partials/list', locals: {type: :julie_action_show} %>
 
-                      <div id="reply-text-signature"></div>
-                      <div class="quote-message-container">
-                        <%= check_box_tag :quote_message, "", !@is_discussion_client_julie_only %>
-                        <%= I18n.t "common.quote_message" %>
-                      </div>
-                      <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
-                      <button class="btn btn-success" id="forward-button"><%= I18n.t("common.forward") %></button>
-                      <div id="callback-message"></div>
-                    </div>
-                  </div>
-              <% end %>
-          <% elsif item.class == OperatorActionsGroup %>
-              <%= render partial: "messages_threads/fake_email", locals: {operator_actions_group: item} %>
-          <% end %>
-      <% end %>
     </div>
 
 
