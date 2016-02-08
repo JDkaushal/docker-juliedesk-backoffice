@@ -110,6 +110,7 @@
                 });
 
                 $scope.refresh = function(attendees) {
+
                     if(attendees){
                         var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
                             return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
@@ -167,7 +168,6 @@
                 };
 
                 $scope.loadCurrentConfig = function(){
-
                     if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
                         $scope.changeCurrentVAConfig("demander à l'interlocuteur");
 
@@ -183,6 +183,9 @@
                         {name:"Custom", value:'custom'}
                     ];
 
+                    if($scope.otherForm)
+                        $scope.otherForm.callTargets = $scope.callTargets;
+
                     $scope.callSupports = [
                         {name:"Téléphone portable", value:'mobile'},
                         {name:"Téléphone fixe", value:'landline'},
@@ -191,6 +194,8 @@
                     ];
 
                     $scope.currentConf = window.threadComputedData.call_instructions;
+                    if($scope.otherForm)
+                        $scope.otherForm.callSupports = $scope.callSupports;
 
                     if(!!$scope.currentConf.targetInfos && !!$scope.currentConf.targetInfos.guid && !!$scope.currentConf.targetInfos.name) {
                         //var guid = $scope.currentConf.targetInfos.guid;
@@ -253,6 +258,7 @@
                 };
 
                 $scope.loadDefaultConfig = function(refreshCallDetails){
+
                     if((!!!$('#appointment_nature option:selected').val() && !!!window.threadComputedData.appointment_nature) || ($scope.callTargetsInfos == undefined))
                         return;
                     virtualMeetingsHelperCtrl.currentAppointment = _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
