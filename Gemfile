@@ -66,3 +66,5 @@ group :test do
   #Code test coverage tool https://github.com/colszowka/simplecov
   gem 'simplecov', :require => false
 end
+
+gem 'rack-mini-profiler'
