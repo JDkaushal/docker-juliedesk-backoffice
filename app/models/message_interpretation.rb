@@ -16,4 +16,16 @@ class MessageInterpretation < ActiveRecord::Base
     response = client.get(url)
     self.update_attribute :raw_response, response.body
   end
+
+  def json_response
+    if raw_response
+      begin
+        JSON.parse(self.raw_response)
+      rescue
+        {}
+      end
+    else
+      nil
+    end
+  end
 end

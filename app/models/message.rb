@@ -384,16 +384,8 @@ class Message < ActiveRecord::Base
   end
 
   def interpretations
-    main_answer = begin
-      JSON.parse(self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_MAIN}.first.try(:raw_response) || "{}")
-    rescue
-      {}
-    end
-    entities_answer = begin
-      JSON.parse(self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_ENTITIES}.first.try(:raw_response) || "{}")
-    rescue
-      {}
-    end
+    main_answer = self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_MAIN}.first.try(:json_response) || {}
+    entities_answer = self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_ENTITIES}.first.try(:json_response) || {}
     {
         classification: main_answer['request_classif'],
         appointment: main_answer['appointment_classif'],
@@ -455,7 +447,7 @@ class Message < ActiveRecord::Base
       message_interpretation = message_interpretations.select{|mc| mc.message_id == message_id}.last
 
       if mc && message_interpretation.raw_response
-        ai_response = JSON.parse(message_interpretation.raw_response)
+        ai_response = message_interpretation.json_response
         {
             message_id: message_id,
             messages_thread_id: messages.select{|m| m.id == message_id}.first.messages_thread_id,
