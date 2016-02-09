@@ -1,0 +1,33 @@
+<div class="col-md-8 col-md-offset-3">
+  <h1>Parallel run recap</h1>
+  <table class="table">
+    <tr>
+    <th>Message id</th>
+    <% @data[:fields].each do |field| %>
+        <th><%= field %></th>
+    <% end %>
+    </tr>
+
+    <tr>
+      <td></td>
+      <% @data[:fields].each do |field| %>
+          <th>
+            P: <%= number_to_percentage(@data[:stats][field][:precision] * 100, precision: 2) %>
+            R: <%= number_to_percentage(@data[:stats][field][:recall] * 100, precision: 2) %>
+          </th>
+      <% end %>
+    </tr>
+    <tr></tr>
+    <% @data[:data].each do |data| %>
+        <tr>
+          <td><%= link_to data[:message_id], "https://juliedesk-backoffice.herokuapp.com/messages_threads/#{data[:messages_thread_id]}", target: "_blank" %></td>
+
+          <% @data[:fields].each do |field| %>
+              <td class="<%= {"correct" => "success", "incorrect" => :danger}[data[:comparison][field]] %>">
+                <%= data[:comparison][field] == "correct" ? data[:ai][field] : "#{data[:ai][field]} <> #{data[:human][field]}" %>
+              </td>
+          <% end %>
+        </tr>
+    <% end %>
+  </table>
+</div>

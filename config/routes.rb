@@ -56,6 +56,8 @@ Rails.application.routes.draw do
       end
     end
 
+    get "parallel_run", controller: :parallel_run, action: :recap
+
     root to: "operators#index"
   end
 
