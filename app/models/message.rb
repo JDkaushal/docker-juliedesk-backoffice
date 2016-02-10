@@ -248,8 +248,8 @@ class Message < ActiveRecord::Base
 
 
   def self.generate_reply_all_recipients(server_message)
-    from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses
-    to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses
+    from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses.select{|address| address.address.include? "@"}
+    to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address.include? "@"}
     {
         to: (from_addresses + to_addresses).uniq.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
           {
