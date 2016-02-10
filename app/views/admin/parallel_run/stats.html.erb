@@ -1,0 +1,45 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+<script>
+  $(function() {
+      var data = {
+          labels: <%== @data[:days].to_json %>,
+          datasets: [
+              {
+                  label: "My First dataset",
+                  fillColor: "rgba(220,220,220,0.2)",
+                  strokeColor: "rgba(220,220,220,1)",
+                  pointColor: "rgba(220,220,220,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(220,220,220,1)",
+                  data: <%== @data[:message_counts].to_json %>
+              },
+              {
+                  label: "My Second dataset",
+                  fillColor: "rgba(151,187,205,0.2)",
+                  strokeColor: "rgba(151,187,205,1)",
+                  pointColor: "rgba(151,187,205,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(151,187,205,1)",
+                  data: <%== @data[:message_interpretation_counts].to_json %>
+              }
+          ]
+      };
+
+      var options = {};
+      var ctx = $("#chart").get(0).getContext("2d");
+      var chart = new Chart(ctx).Line(data, options);
+  })
+</script>
+<div class="col-md-8 col-md-offset-3">
+  <h1>Parallel run stats</h1>
+
+  <h5>Emails per day and emails processed by AI</h5>
+  <canvas id="chart" width="800" height="400"></canvas>
+
+  <h4>Overall AI API errors: <%= MessageInterpretation.where(error: true).select("COUNT(DISTINCT(message_id))")[0]['count'] %></h4>
+  <% @data[:stats].each do |algo, v| %>
+  <h4><%= algo %>: Precision: <%= number_to_percentage(v[:precision]*100, precision: 2) %>, Recall: <%= number_to_percentage(v[:recall]*100, precision: 2) %></h4>
+  <% end %>
+</div>
