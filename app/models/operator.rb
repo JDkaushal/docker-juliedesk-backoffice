@@ -45,6 +45,15 @@ class Operator < ActiveRecord::Base
     }[privilege] || 0
   end
 
+  def level_string
+    {
+        PRIVILEGE_OPERATOR => 1,
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => 2,
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 3,
+        PRIVILEGE_ADMIN => "Admin"
+    }[privilege]
+  end
+
   def formatted_presences_for_day day
     day_presences = presences_for_day(day)
     day_presences.group_by(&:is_review).map do |is_review, mode_day_presences|

@@ -44,6 +44,62 @@ class Review::OperatorsController < ReviewController
     redirect_to action: :events_review_list
   end
 
+  def review_dashboard
+    operator_actions = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days)
+    reviewed_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
+    total_count = operator_actions.count
+
+    operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days)
+    reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
+    total_count_week = operator_actions_week.count
+
+    counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
+    counts_by_operator_reviewed = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).group(:operator_id).select("COUNT(*), operator_id")
+    counts_by_operator_errors = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"], review_notation: [0, 1, 2, 3, 4]).group(:operator_id).select("COUNT(*), operator_id")
+
+    result = EmailServer.search_messages({
+                                    after: (DateTime.now - 30.days).to_s,
+                                    labels: "flag",
+                                    limit: 1000
+                                })
+
+    flag_server_message_ids = result['messages']['ids']
+    flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id)
+
+    flag_count = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
+
+    @data = {
+        main_coverage: reviewed_count * 1.0 / total_count,
+        review_count: reviewed_count,
+        review_messages_thread_ids: operator_actions.where("initiated_at < ?", DateTime.now - 1.days).order(initiated_at: :desc).limit(10).select(:messages_thread_id).map(&:messages_thread_id),
+        main_coverage_week: reviewed_count_week * 1.0 / total_count_week,
+        review_count_week: reviewed_count_week,
+        flag_to_review_count: flag_count,
+        flag_to_review_messages_thread_ids: flag_messages_thread_ids.first(10),
+        operators: Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
+
+          {
+              id: operator.id,
+              name: operator.name,
+              level: operator.level_string,
+              coverage: counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first['count'] * 1.0 / counts_by_operator.select{|c| c['operator_id'] == operator.id}.first['count'],
+              errors_percentage: (counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first['count'],
+          }
+        }
+    }
+  end
+
+  def messages_thread_ids_to_review_for_operator
+    messages_thread_ids = OperatorActionsGroup.where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, operator_id: params[:operator_id]).order(initiated_at: :desc).limit(3).select(:messages_thread_id).map(&:messages_thread_id)
+
+    render json: {
+               status: "success",
+               data: {
+                   messages_thread_ids: messages_thread_ids
+               }
+           }
+  end
+
   private
   def compute_counts
     @operators = Operator.all

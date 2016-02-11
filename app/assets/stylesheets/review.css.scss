@@ -118,3 +118,43 @@
 .messages-thread-status-for-review {
   margin: 50px 0 -50px 0;
 }
+
+.review-dashboard {
+  h1 {
+    color: $darkBlue;
+    font-weight: 100;
+    font-size: 30px;
+  }
+  .main-coverage {
+    font-size: 30px;
+    font-weight: 100;
+  }
+  .main-reviews-count {
+    font-size: 20px;
+    font-weight: 100;
+  }
+  .main-actions {
+    padding: 30px 0 100px 0;
+
+    .flag-actions {
+      padding: 10px 0;
+
+      span {
+        font-size: 18px;
+        font-weight: 100;
+        padding: 0 0 0 10px;
+      }
+    }
+  }
+  
+  table {
+    th {
+      font-size: 20px;
+      font-weight: 100;
+    }
+    td {
+      font-size: 16px;
+      line-height: 33px !important;
+    }
+  }
+}

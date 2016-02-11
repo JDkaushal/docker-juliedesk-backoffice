@@ -70,7 +70,9 @@ Rails.application.routes.draw do
       collection do
         get "my_stats", action: :my_stats, as: :my_stats
         get "review_list", action: :review_list
+        get "review_dashboard", action: :review_dashboard
         get "events_review_list", action: :events_review_list
+        get "messages_thread_ids_to_review_for_operator", action: :messages_thread_ids_to_review_for_operator
         post "review_event_titles", action: :review_event_titles
       end
     end

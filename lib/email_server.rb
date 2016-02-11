@@ -40,6 +40,13 @@ module EmailServer
     result
   end
 
+  def self.search_messages opts={}
+    url = "/messages/search?limit=#{opts[:limit] || 1000}&labels=#{opts[:labels] || ""}&after=#{opts[:after] || (DateTime.now - 30.days).to_s}&access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    result = self.make_request :get, url
+
+    result
+  end
+
   def self.add_and_remove_labels opts={}
     self.make_request :post,
                       "/messages_threads/update_labels?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
