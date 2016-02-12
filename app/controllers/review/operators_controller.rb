@@ -53,8 +53,8 @@ class Review::OperatorsController < ReviewController
               id: operator.id,
               name: operator.name,
               level: operator.level_string,
-              coverage: counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first['count'] * 1.0 / counts_by_operator.select{|c| c['operator_id'] == operator.id}.first['count'],
-              errors_percentage: (counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first['count'],
+              coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 1),
+              errors_percentage: (counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 1),
           }
         }
     }
