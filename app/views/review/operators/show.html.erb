@@ -1,31 +1,6 @@
-<div class="fixed-columns full">
-  <div class="left-column">
-
-    <%= render partial: "review/header" %>
-
-    <%= if @operator
-      operator_actions_groups = @operator.operator_actions_groups
-    else
-      operator_actions_groups = OperatorActionsGroup
-    end
-    %>
-
-
-
-
-
-    <div class="messages-threads-page">
-      <div class="operators-page">
-        <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
-
-        <div class='operators-container'>
-          <%= render "operator_stats" %>
-        </div>
-      </div>
-
-      <%= render partial: "common/footer" %>
-    </div>
-  </div>
+<div class="review-dashboard col-md-8 col-md-offset-2">
+  <h1 class="title"><%= link_to "Review", action: :index %></h1>
+  <%= render "operator_stats" %>
 </div>
 
 

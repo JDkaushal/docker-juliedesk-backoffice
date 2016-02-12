@@ -1,42 +1,66 @@
 <script>
-    $(function () {
-        $(".operators-list .operator").click(function () {
-            var id = $(this).data("id");
-            $(".operator-container").each(function () {
-                if ($(this).data("id") == id) {
-                    $(this).show();
-                }
-                else {
-                    $(this).hide();
-                }
-            })
+    $(function() {
+        $(".open-links").click(function() {
+            _.each($(this).data("messages-thread-ids"), function(k) {
+                window.open("/review/messages_threads/" + k + "/review");
+            });
         });
-    })
+
+        $(".open-links-operator").click(function() {
+            console.log("Click");
+            var $button = $(this);
+            $button.prop("disabled", true);
+            $.get("/review/operators/messages_thread_ids_to_review_for_operator?operator_id=" + $(this).data("operator-id")).success(function(data) {
+                var messageThreadIds = data.data.messages_thread_ids;
+
+                _.each(messageThreadIds, function(k) {
+                    window.open("/review/messages_threads/" + k + "/review");
+                });
+                $button.prop("disabled", false);
+            });
+        })
+    });
 </script>
 
+<div class="review-dashboard col-md-8 col-md-offset-2">
+  <h1 class="title">Review</h1>
+  <div class="main-coverage"><%= number_to_percentage @data[:main_coverage] * 100, precision: 0 %> (<%= @data[:review_count] %>) actions reviewed in the last 30 days</div>
+  <div class="main-reviews-count"><%= number_to_percentage @data[:main_coverage_week] * 100, precision: 0 %> (<%= @data[:review_count_week] %>) actions reviewed in the last 7 days</div>
 
-<div class="fixed-columns full">
-  <div class="left-column">
-
-    <%= render partial: "review/header" %>
-
-
-
-    <div class="messages-threads-page">
-      <div class="operators-page">
-        <%= render "index_menu", locals: {operators: @operators, to_review_count: @to_review_count, oags_to_learn_counts: @oags_to_learn_counts} %>
-
-        <div class='operators-container'>
-
-        </div>
-      </div>
-
-      <%= render partial: "common/footer" %>
+  <div class="main-actions">
+    <div class="flag-actions">
+      <div class="btn btn-success open-links" data-messages-thread-ids="<%== @data[:flag_to_review_messages_thread_ids].to_json %>">Flag email review</div>
+      <span>(<%= @data[:flag_to_review_count] %> to review)</span>
+    </div>
+    <div class="random-actions">
+      <div class="btn btn-success open-links" data-messages-thread-ids="<%== @data[:review_messages_thread_ids].to_json %>">Random review</div>
+    </div>
+    <div class="group-review-actions">
+      <%= link_to "Group review threads", "/review/messages_threads/group_review_next", class: "btn btn-info" %>
+      <span>(<%= @data[:to_group_review_count] %> to group review)</span>
     </div>
   </div>
+
+  <table class="table table-striped">
+    <tr>
+      <th>Operator</th>
+      <th>Level</th>
+      <th>% reviewed</th>
+      <th></th>
+      <th>% errors</th>
+      <th></th>
+    </tr>
+    <% @data[:operators].each do |operator_hash| %>
+        <tr>
+          <td><%= operator_hash[:name] %></td>
+          <td><%= operator_hash[:level] %></td>
+          <td><%= number_to_percentage operator_hash[:coverage] * 100, precision: 0 %></td>
+          <td>
+            <div class="btn btn-success open-links-operator" data-operator-id="<%= operator_hash[:id] %>">Review</div>
+          </td>
+          <td><%= number_to_percentage operator_hash[:errors_percentage] * 100, precision: 2 %></td>
+          <td><%= link_to "Stats details", review_operator_path(id: operator_hash[:id]), class: "btn-link" %></td>
+        </tr>
+    <% end %>
+  </table>
 </div>
-
-
-
-
-
