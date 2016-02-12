@@ -114,13 +114,13 @@
   <tr></tr>
 
   <tr>
-    <td>Mon taux d'erreur (3/5)</td>
+    <td>Mon taux d'erreur (<4/5)</td>
 
     <% dates.each do |key, dates_hash| %>
-        <% total_count = operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count %>
+        <% total_count = operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: [0, 1, 2, 3, 4, 5]).count %>
         <td>
           <% if total_count > 0 %>
-              <%= number_to_percentage(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: 3).count * 100.0 / total_count, precision: 2) %>
+              <%= number_to_percentage(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: [0, 1, 2, 3]).count * 100.0 / total_count, precision: 2) %>
           <% else %>
               <%= number_to_percentage(0, precision: 2) %>
           <% end %>
@@ -129,12 +129,12 @@
   </tr>
 
   <tr>
-    <td>Taux d'erreur (3/5) de l'équipe</td>
+    <td>Taux d'erreur (<4/5) de l'équipe</td>
     <% dates.each do |key, dates_hash| %>
-        <% total_count = OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count %>
+        <% total_count = OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: [0, 1, 2, 3, 4, 5]).count %>
         <td>
           <% if total_count > 0 %>
-              <%= number_to_percentage(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: 3).count * 100.0 / total_count, precision: 2) %>
+              <%= number_to_percentage(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: [0, 1, 2, 3]).count * 100.0 / total_count, precision: 2) %>
           <% else %>
               <%= number_to_percentage(0, precision: 2) %>
           <% end %>
