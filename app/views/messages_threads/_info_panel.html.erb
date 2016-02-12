@@ -408,10 +408,14 @@
             var vmHelper = angular.element(node).scope();
 
             if(vmHelper){
-                if(vmHelper.configLoaded)
+                if(!window.getCurrentAppointment().appointment_kind_hash.is_virtual) {
                     vmHelper.setEventNotes();
-                else
-                    refreshVirtualAppointmentsHelper();
+                }else {
+                    if(vmHelper.configLoaded)
+                        vmHelper.setEventNotes();
+                    else
+                        refreshVirtualAppointmentsHelper();
+                }
             }
         }
         var notes = $('#notes').val().trim().replace(/\n/g, '__n');
@@ -866,7 +870,6 @@
         var usedRegex = '';
 
         var notes = $("textarea#notes").val();
-
         var tmpNotes = notes.replace(/\n/g,'');
 
         var regexFrResult = addressDetailsReFr.exec(tmpNotes);
@@ -891,6 +894,7 @@
         }
 
         $("textarea#notes").val(notes.trim());
+
     }
 
     window.getCallInstructions = function(){
