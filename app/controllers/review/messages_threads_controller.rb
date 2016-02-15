@@ -10,6 +10,11 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread.account
     operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
     @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id).uniq.length
+
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
   end
 
   def learn
@@ -19,6 +24,10 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread.account
 
     @to_learn_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, operator_id: params[:operator_id]).map(&:messages_thread_id).uniq.length
+
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
   end
 
   def group_review
@@ -28,6 +37,10 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread.account
 
     @to_group_review_count = OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).map(&:messages_thread_id).uniq.length
+
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
   end
 
   def learnt
