@@ -1,25 +1,33 @@
 <script>
     $(function() {
-        $(".open-links").click(function() {
-            _.each($(this).data("messages-thread-ids"), function(k) {
-                window.open("/review/messages_threads/" + k + "/review");
-            });
+        $(".open-links-flag").click(function() {
+
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=flag");
+        });
+
+        $(".open-links-random").click(function() {
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=random");
         });
 
         $(".open-links-operator").click(function() {
-            console.log("Click");
             var $button = $(this);
-            $button.prop("disabled", true);
-            $.get("/review/operators/messages_thread_ids_to_review_for_operator?operator_id=" + $(this).data("operator-id")).success(function(data) {
-                var messageThreadIds = data.data.messages_thread_ids;
-
-                _.each(messageThreadIds, function(k) {
-                    window.open("/review/messages_threads/" + k + "/review");
-                });
-                $button.prop("disabled", false);
-            });
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=operator&operator_id=" + $(this).data("operator-id"));
         })
     });
+    function reviewMessagesThreads($button, url) {
+        if($button.hasClass("disabled")) return;
+        $button.addClass("disabled");
+        $.get(url).success(function(data) {
+            var messageThreadIds = data.data.messages_thread_ids;
+
+            _.each(messageThreadIds, function(k) {
+                window.open("/review/messages_threads/" + k + "/review");
+            });
+            $button.removeClass("disabled");
+        });
+    }
 </script>
 
 <div class="review-dashboard col-md-8 col-md-offset-2">
@@ -29,11 +37,11 @@
 
   <div class="main-actions">
     <div class="flag-actions">
-      <div class="btn btn-success open-links" data-messages-thread-ids="<%== @data[:flag_to_review_messages_thread_ids].to_json %>">Flag email review</div>
+      <div class="btn btn-success open-links-flag" data-messages-thread-ids="<%== @data[:flag_to_review_messages_thread_ids].to_json %>">Flag email review</div>
       <span>(<%= @data[:flag_to_review_count] %> to review)</span>
     </div>
     <div class="random-actions">
-      <div class="btn btn-success open-links" data-messages-thread-ids="<%== @data[:review_messages_thread_ids].to_json %>">Random review</div>
+      <div class="btn btn-success open-links-random" data-messages-thread-ids="<%== @data[:review_messages_thread_ids].to_json %>">Random review</div>
     </div>
     <div class="group-review-actions">
       <%= link_to "Group review threads", "/review/messages_threads/group_review_next", class: "btn btn-info" %>
