@@ -45,6 +45,54 @@ module ApplicationHelper
     end
   end
 
+  def self.messages_and_delay_stats date
+    start_date = date.utc.beginning_of_month
+    end_date = start_date + 1.month
+
+    all_messages = Message
+                       .where(from_me: false)
+                       .where("received_at >= ? AND received_at < ?", start_date, end_date)
+
+    messages = all_messages
+                   .where.not(processed_at: nil)
+
+
+    delays = messages
+                 .select("EXTRACT(EPOCH FROM (processed_at - received_at)) AS delay")
+                 .map{|m| m['delay'] / 60.0}
+
+    missing_server_message_ids = all_messages
+                                     .where(processed_at: nil)
+                                     .select(:server_message_id)
+                                     .map(&:server_message_id)
+
+
+    present_messages_server_ids_count = Message
+                                            .where(server_message_id: missing_server_message_ids)
+                                            .where.not(processed_at: nil)
+                                            .count
+
+    missing_messages_count = missing_server_message_ids.length - present_messages_server_ids_count
+    {
+        missing_messages_count: missing_messages_count,
+        messages_count: messages.count,
+        messages_threads_count: messages.select(:messages_thread_id).distinct.count,
+        average_delay: messages.select("AVG(EXTRACT(EPOCH FROM (processed_at - received_at))) AS avg_delay")[0]['avg_delay'] / 60.0,
+        percentile_25: self.percentile(delays, 0.25),
+        median: self.percentile(delays, 0.5),
+        percentile_75: self.percentile(delays, 0.75),
+        percentile_90: self.percentile(delays, 0.9),
+    }
+  end
+
+  def self.percentile(values, percentile)
+    values_sorted = values.sort
+    k = (percentile*(values_sorted.length-1)+1).floor - 1
+    f = (percentile*(values_sorted.length-1)+1).modulo(1)
+
+    values_sorted[k] + (f * (values_sorted[k+1] - values_sorted[k]))
+  end
+
   def display_duration duration_in_seconds
     duration_in_seconds = duration_in_seconds.to_i
     hours = (duration_in_seconds/60)/60

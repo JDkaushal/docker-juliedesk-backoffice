@@ -35,8 +35,6 @@ class MessagesController < ApplicationController
                                            message: delegation_message
                                        })
 
-      @message.messages_thread.delay.compute_messages_processed_at
-
       redirect_to messages_threads_path
       return
     end
@@ -159,6 +157,9 @@ class MessagesController < ApplicationController
     end
 
     @new_server_message_id = EmailServer.deliver_message(email_params)['id']
+
+    #TODO: Uncomment
+    #@message.messages_thread.delay.compute_messages_request_at
 
     @julie_action = JulieAction.find params[:julie_action_id]
     @julie_action.update_attribute :server_message_id, @new_server_message_id

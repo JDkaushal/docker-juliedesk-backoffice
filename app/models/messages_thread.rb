@@ -135,15 +135,21 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def compute_messages_processed_at
-    oas = self.mt_operator_actions.select{|oa| oa.nature == "archive" || oa.nature == "send_to_support"}
+  def compute_messages_request_at
+    archives_at = self.mt_operator_actions.select{|oa| oa.nature == "archive"}.map(&:initiated_at)
 
-    self.messages.where(from_me: false, processed_at: nil).each do |m|
-      oa = oas.select{|oa| oa.initiated_at > m.received_at}.sort_by(&:initiated_at).first
-      if oa
-        m.processed_at = oa.initiated_at
-        m.save
-      end
+    incoming_messages_received_at = self.messages.select{|m| !m.from_me}.map(&:received_at)
+
+    self.messages.select{|m| m.from_me && m.request_at.nil?}.each do |m|
+      before_this_message_archives_at = archives_at.select{|dt| dt < m.received_at}.max
+      request_at = incoming_messages_received_at.select{|dt|
+        dt < m.received_at &&
+            (
+            before_this_message_archives_at.nil? ||
+                dt > before_this_message_archives_at
+            )
+      }.min
+      m.update_attribute :request_at, request_at
     end
   end
 
