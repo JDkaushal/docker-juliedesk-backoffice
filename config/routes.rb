@@ -60,6 +60,8 @@ Rails.application.routes.draw do
     get "parallel_run", controller: :parallel_run, action: :recap
     get "parallel_run/stats", controller: :parallel_run, action: :stats
 
+    get "stats", controller: :stats, action: :main
+
 
     root to: "operators#index"
   end
