@@ -40,7 +40,7 @@
                              expend: item.received_at == @messages_thread.messages.map(&:received_at).min,
                              last: item == items.select{|i| i.class == Message}.last,
                              no_account: @messages_thread.account_email.nil?,
-                             operator_actions_groups: operator_actions_groups_without_emails,
+                             operator_actions_groups: operator_actions_groups,
                              client_emails: @client_emails,
                              julie_emails: @julie_emails
                          }
