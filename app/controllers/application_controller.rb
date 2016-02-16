@@ -96,7 +96,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_rack_mini_profiler
-    if session[:privilege] == Operator::PRIVILEGE_ADMIN
+    if session[:privilege] == Operator::PRIVILEGE_ADMIN && ENV['PERFORMANCES_PROFILERS'].split(',').include?(session[:user_username])
       Rack::MiniProfiler.authorize_request
     end
   end
