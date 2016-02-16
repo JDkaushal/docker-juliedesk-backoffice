@@ -72,3 +72,6 @@ gem 'rack-mini-profiler', require: false
 gem 'flamegraph'
 gem 'stackprof' # ruby 2.1+ only
 gem 'memory_profiler'
+
+#Color picker for rails
+gem 'jquery-minicolors-rails'

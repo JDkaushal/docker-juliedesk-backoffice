@@ -33,7 +33,8 @@
             to: window.currentRecipients().to,
             cc: window.currentRecipients().cc,
             done: true,
-            processed_in: Date.now() - window.startedAt
+            processed_in: Date.now() - window.startedAt,
+            messages_thread_id: "<%= @messages_thread.id %>"
           }
         });
         window.sendReply();

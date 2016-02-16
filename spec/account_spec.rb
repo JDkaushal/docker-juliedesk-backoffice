@@ -2,6 +2,71 @@ require "rails_helper"
 
 describe Account do
 
+  describe 'create_from_email' do
+    context 'account cache is set' do
+      before(:each) do
+        @accounts_cache = {
+            "email"=>"gabriel.cian@captainleads.com",
+              "company_hash"=>
+                {
+                 "name"=>"CaptainLeads",
+                 "timezone"=>"Europe/Paris",
+                 "working_hours"=>
+                     {
+                         "mon"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "tue"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "wed"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "thu"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "fri"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "sat"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             },
+                         "sun"=>
+                             {
+                                 "0"=>["0", "2400"]
+                             }
+                     }
+                 },
+              "usage_name"=>"Gabriel",
+              "full_name"=>"Gabriel Cian",
+              "email_aliases"=>["gabriel.cian@progonline.com"],
+              "office_365_refresh_token_expired"=>false,
+              "only_admin_can_process"=>false,
+              "only_support_can_process"=>false,
+              "block_until_preferences_change"=>false,
+              "is_pro"=>false
+        }
+
+
+
+      end
+
+
+
+
+    end
+
+
+
+
+  end
+
   describe "compute_rule" do
     it "should compute rule" do
       expect(Account.compute_rule nil, {

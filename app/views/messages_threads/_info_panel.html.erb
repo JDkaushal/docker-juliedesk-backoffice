@@ -413,7 +413,7 @@
             var vmHelper = angular.element(node).scope();
 
             if(vmHelper){
-                if(!window.getCurrentAppointment().appointment_kind_hash.is_virtual) {
+                if(window.getCurrentAppointment() && !window.getCurrentAppointment().appointment_kind_hash.is_virtual) {
                     vmHelper.setEventNotes();
                 }else {
                     if(vmHelper.configLoaded)

@@ -1,3 +1,13 @@
+@mixin thread-label {
+    color: white;
+    display: inline-block;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 5px;
+    line-height: 22px;
+    font-size: 14px;
+}
+
 .wrong-clock {
     position: fixed;
     z-index: 10;
@@ -58,17 +68,23 @@
         }
         .messages-thread-item {
             text-align: left;
-            height: 40px;
-            line-height: 40px;
+            height: 65px;
+            line-height: 30px;
             border-bottom: 1px solid #ccc;
             background: #f5f5f5;
-            padding: 0 20px;
+            padding: 5px 10px;
             display: block;
-            //overflow: hidden;
             color: black;
             text-decoration: none;
             font-size: 13px;
             position: relative;
+
+            .first-row {
+                position: relative;
+                top: 2px;
+                display: inline-block;
+
+            }
 
             .messages-thread-lock-container {
                 display: block;
@@ -81,25 +97,136 @@
                 text-align: center;
                 z-index: 2;
                 color: rgb(255, 136, 0);
-                line-height: 40px;
+                line-height: 60px;
                 font-size: 14px;
                 font-weight: 600;
             }
 
+            .scheduled-for-today {
+                display: inline-block;
+                margin-right: 5px;
+                font-size: 16px;
+                color: red;
+                font-style: italic;
+                .sprite {
+                    margin-right: 5px;
+                    position: absolute;
+                    top: 5px;
+                    display: inline-block;
+                    height: 27px;
+                    width: 25px;
+                    background: url(<%= asset_path 'scheduled-for-today.png' %>);
+                    background-size: 25px 27px;
+                    background-repeat: no-repeat;
+                }
+                .text {
+                    margin-left: 30px;
+                    line-height: 30px;
+                    position: relative;
+                    top: 1px;
+                }
+
+            }
+
             .account-email {
                 display: inline-block;
-                width: 200px;
-                overflow: hidden;
                 height: 40px;
+                font-size: 16px;
+                color: #4A4A4A;
+                font-weight: bold;
+            }
+
+            .priority1 {
+                background-color: #FA5555;
+            }
+
+            .priority2 {
+                background-color: #FF712F;
+            }
+
+            .priority3 {
+                background-color: #0099CC;
+            }
+
+            .priority4 {
+                background-color: #B4B4B4;
+            }
+
+            .account-life-duration {
+                margin-left: 2px;
+                @include thread-label;
+            }
+
+            .requests-count-for-today {
+                @include thread-label;
+            }
+
+            .thread-status {
+                @include thread-label;
+
+                &.scheduling-waiting-for-client {
+                   background-color: #C49D5D;
+                }
+
+                &.scheduling-waiting-for-contact {
+                    background-color: #C49D5D;
+                }
+
+                &.scheduled {
+                    background-color: #49C9A9;
+                }
+
+                &.scheduling-aborted {
+                    background-color: #C86E6E;
+                }
+
+                &.does-not-concern-client {
+                    background-color: #B4B4B4;
+                }
+
+                &.handled-in-other-threads {
+                    background-color: #806D90;
+                }
+
+                &.events-creation {
+                    background-color: #7A6E63;
+                }
+
+                &.new-request {
+                    background-color: #F5A623;
+                }
+
+                &.other {
+                    background-color: #B4B4B4;
+                }
+            }
+
+            .thread-operator {
+                display: inline-block;
+                margin-left: 5px;
+                font-style: italic;
+                .operator-color {
+                    width: 6px;
+                    height: 6px;
+                    display: inline-block;
+                    border-radius: 10px;
+                    margin-right: 5px;
+                    vertical-align: middle;
+                }
+                .operator-name {
+                    vertical-align: middle;
+                    font-size: 16px;
+                }
             }
 
             .subject-and-snippet {
                 position: absolute;
                 overflow: hidden;
-                height: 40px;
-                top: 0;
-                left: 200px;
-                right: 190px;
+                height: 30px;
+                top: 32px;
+                left: 76px;
+                font-size: 16px;
+                font-weight: 400;
 
                 .subject {
                     display: inline;
@@ -107,20 +234,36 @@
 
                 .snippet {
                     display: inline;
-                    color: #999;
+                    font-size: 16px;
+                    font-weight: 200;
                 }
             }
 
             .delegated-to-founders {
                 position: absolute;
-                top: 8px;
-                left: -75px;
+                top: 20px;
+                left: -87px;
                 height: 26px;
-                line-height: 20px;
+                line-height: 16px;
                 background: #f60;
                 color: white;
-                padding: 3px 5px;
+                padding: 5px 10px;
                 border-radius: 4px;
+                font-size: 16px;
+
+                &.vip {
+                    left: -68px;
+                    height: 36px;
+                    width: 36px;
+                    border-radius: 20px;
+
+                    .delegation-text {
+                        position: relative;
+                        top: 6px;
+                        left: -5px;
+                        letter-spacing: 1px;
+                    }
+                }
             }
 
             .received-at {
@@ -131,6 +274,18 @@
                 position: absolute;
                 top: 0;
                 right: 20px;
+                font-size: 16px;
+                font-weight: 400;
+            }
+
+            .emails-count {
+                display: inline-block;
+                position: absolute;
+                top: 32px;
+                left: 10px;
+                font-style: italic;
+                font-size: 16px;
+                color: #4A4A4A;
             }
 
             &:hover {

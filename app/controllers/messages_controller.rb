@@ -80,6 +80,10 @@ class MessagesController < ApplicationController
                      })
     end
 
+    messages_thread_params = {last_operator_id: session[:operator_id]}
+    messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
+    @message.messages_thread.update(messages_thread_params)
+
     render json: {
         status: "success",
         message: "",

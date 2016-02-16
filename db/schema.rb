@@ -173,6 +173,9 @@ ActiveRecord::Schema.define(version: 20160216153437) do
     t.boolean  "delegated_to_support",  default: false
     t.boolean  "should_follow_up",      default: false
     t.text     "follow_up_instruction"
+    t.integer  "last_operator_id"
+    t.datetime "event_booked_date"
+    t.string   "status"
   end
 
   create_table "operator_actions", force: true do |t|
@@ -226,6 +229,7 @@ ActiveRecord::Schema.define(version: 20160216153437) do
     t.boolean  "active",                default: false
     t.boolean  "ips_whitelist_enabled", default: true
     t.boolean  "enabled",               default: true
+    t.string   "color",                 default: "#ffffff"
   end
 
 end

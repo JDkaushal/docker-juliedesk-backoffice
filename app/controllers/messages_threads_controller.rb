@@ -108,7 +108,7 @@ class MessagesThreadsController < ApplicationController
     EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
 
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
-    messages_thread.update_attribute :should_follow_up, false
+    messages_thread.update(should_follow_up: false, status: params[:thread_status])
 
     if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
       EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
@@ -234,13 +234,17 @@ class MessagesThreadsController < ApplicationController
 
       }
       format.json {
+        now = Time.now
+
+        @operators_on_planning = Operator.select('operators.id, operators.name, operators.color').joins(:operator_presences).where('operator_presences.date >= ? AND operator_presences.date <= ?', now.beginning_of_hour, now.end_of_hour)
+        @messages_threads_from_today = MessagesThread.select('messages_threads.id, messages_threads.account_email').distinct.joins(:messages).where('date(messages.received_at) = ?', now.to_date)
         @messages_thread = MessagesThread.where("in_inbox = TRUE OR should_follow_up = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
           mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
               mt.messages.map{|m| m.received_at}.max ||
               DateTime.parse("2500-01-01")
         }.reverse
         accounts_cache = Account.accounts_cache(mode: "light")
-        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache)}
+        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today)}
 
         if session[:privilege] == Operator::PRIVILEGE_OPERATOR
           @messages_thread.select!{ |mt|
@@ -257,12 +261,14 @@ class MessagesThreadsController < ApplicationController
                 (!mt.account || !mt.account.only_admin_can_process)
           }
         end
+        data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_name, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email])
+        operators_data = @operators_on_planning.as_json
 
-        data = @messages_thread.as_json(include: [:messages], methods: [:received_at, :account, :locked_by_operator_name])
         render json: {
             status: "success",
             message: "",
-            data: data
+            data: data,
+            operators_data: operators_data
         }
       }
     end

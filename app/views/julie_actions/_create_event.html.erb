@@ -149,7 +149,8 @@
                                 };
                             }),
                             done: true,
-                            processed_in: Date.now() - window.startedAt
+                            processed_in: Date.now() - window.startedAt,
+                            messages_thread_id: "<%= @messages_thread.id %>"
                         }
                     });
                 }
@@ -197,7 +198,7 @@
         else {
             window.currentCalendar.addEvent(null);
         }
-    }
+    };
 
     function redrawNewEventEventTiles() {
         var $container = $("#thread-header-other-entries-container");
@@ -242,7 +243,8 @@
                 to: window.currentRecipients().to,
                 cc: window.currentRecipients().cc,
                 done: true,
-                processed_in: Date.now() - window.startedAt
+                processed_in: Date.now() - window.startedAt,
+                messages_thread_id: "<%= @messages_thread.id %>"
             }
         });
         window.sendReply();

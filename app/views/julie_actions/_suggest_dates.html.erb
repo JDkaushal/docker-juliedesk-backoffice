@@ -143,7 +143,8 @@
                 date_times: window.timeSlotsToSuggest,
                 deleted_event: window.actionDeletedEvent,
                 done: true,
-                processed_in: Date.now() - window.startedAt
+                processed_in: Date.now() - window.startedAt,
+                messages_thread_id: "<%= @messages_thread.id %>"
             }
         });
         window.sendReply();

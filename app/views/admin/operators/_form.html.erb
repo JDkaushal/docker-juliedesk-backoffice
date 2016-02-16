@@ -1,3 +1,6 @@
+<%= javascript_include_tag 'operators/sources'%>
+<%= stylesheet_link_tag 'operators/sources'%>
+
 <%= form_for [:admin, @operator], class: "form" do |f| %>
     <div class="form-group">
       <%= f.label :email %>
@@ -41,6 +44,13 @@
         <%= f.check_box :active %> should appear in plannings
       </div>
     </div>
+
+    <div class="form-group">
+
+      <%= f.label :color %>
+      <%= f.text_field(:color, class: "form-control") %>
+    </div>
+
     <div class="form-group">
 
       <%= f.submit "Save", class: "btn btn-success" %>

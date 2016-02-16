@@ -131,7 +131,10 @@ describe MessagesController, :type => :controller do
       end
 
       it 'should populate the correct instance variables' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
         m1 = FactoryGirl.create(:message_complete)
+
+        mt1.messages << m1
 
         expect(OperatorAction).to receive(:create_and_verify).and_return(true)
 
@@ -145,7 +148,10 @@ describe MessagesController, :type => :controller do
       end
 
       it 'should create an new Operator Action' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
         m1 = FactoryGirl.create(:message_complete)
+
+        mt1.messages << m1
 
         expect{
           # 300 000 ms == 5min

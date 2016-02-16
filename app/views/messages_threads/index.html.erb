@@ -20,9 +20,12 @@
 
         var serverTimestamp = <%= Time.now.to_i %>;
         var localTimestamp = parseInt(moment().format("X"));
+        $scope.todayInUTC = moment().tz('UTC').format();
 
         $scope.showWrongClock = serverTimestamp > localTimestamp + 5 * 60 || serverTimestamp < localTimestamp - 5 * 60;
         $scope.isAdmin = <%= (session[:privilege] == "admin")?"true":"false" %>;
+        $scope.todayRequestCountForClients = {};
+
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
             $(".refresh-inbox-button").attr("disabled", true);
@@ -35,7 +38,9 @@
                     .success(function(e) {
                         $scope.loading = false;
                         $scope.messagesThreads = e.data;
+                        $scope.operatorsOnPlanning = e.operators_data;
                         $(".header .global-todo-count").html($scope.messagesThreads.length);
+                        //$scope.getTodayRequestsCountsForClients();
                     })
                     .error(function(e) {
                         $scope.loading = false;
@@ -44,6 +49,21 @@
                             alert("There was an error.");
                         }
                     });
+        };
+
+        $scope.getTodayRequestsCountsForClients = function() {
+            _.each($scope.messagesThreads, function(messagesThread) {
+                if(messagesThread.account_email != null) {
+                    var firstMessage = messagesThread.messages[0];
+
+                    if(moment(firstMessage.received_at).isSame($scope.todayInUTC, 'd')) {
+                        if($scope.todayRequestCountForClients[messagesThread.account_email])
+                            $scope.todayRequestCountForClients[messagesThread.account_email] += 1;
+                        else
+                            $scope.todayRequestCountForClients[messagesThread.account_email] = 1;
+                    }
+                }
+            });
         };
 
         $scope.formatDate = function(messageThread) {
@@ -119,37 +139,42 @@
         };
 
         $scope.labelInRow = function(messagesThread) {
+            var infos = {cssClass: ''};
+
             if(messagesThread.delegated_to_founders) {
-                return "founders";
+                infos.text = "Founders";
             }
             else {
                 if(messagesThread.delegated_to_support) {
-                    return "support";
+                    infos.text = "Support";
                 }
                 else {
                     if(messagesThread.account) {
                         if(messagesThread.account.office_365_refresh_token_expired) {
-                            return "tkn expird";
+                            infos.text = "Tkn expird";
                         }
                         else {
                             if(messagesThread.account.only_admin_can_process) {
-                                return "admin only";
+                                infos.text = "Admin only";
                             }
                             else {
                                 if(messagesThread.account.only_support_can_process) {
-                                    return "VIP";
+                                    infos.text = "VIP";
+                                    infos.cssClass = 'vip';
                                 }
                                 else {
-                                    return null;
+                                    infos.text = null;
                                 }
                             }
                         }
                     }
                     else {
-                        return "support only";
+                        infos.text = "Support";
                     }
                 }
             }
+
+            return infos;
         };
 
         $scope.shouldProcessLater = function(messagesThread) {
@@ -177,6 +202,123 @@
             }
 
             return false;
+        };
+
+        $scope.scheduledForToday = function(messagesThread) {
+            var isScheduledForToday = false;
+
+            if(messagesThread.status == 'scheduled') {
+
+                if(messagesThread.event_booked_date && moment(messagesThread.event_booked_date).isSame($scope.todayInUTC, 'd')) {
+                    isScheduledForToday = true;
+                }
+            }
+
+            return isScheduledForToday;
+        };
+
+        $scope.formatAccountLifeDuration = function(accountLifeDurationInDays) {
+            if(accountLifeDurationInDays > 0) {
+                var timeUnit = 'days';
+                var duration = accountLifeDurationInDays;
+
+                if(accountLifeDurationInDays == 1) {
+                    timeUnit = 'day';
+                }else {
+                    var durationInMonths = parseInt(accountLifeDurationInDays / 31);
+                    if(durationInMonths > 0) {
+                        duration = durationInMonths;
+
+                        if(durationInMonths == 1) {
+                            timeUnit = 'month';
+                        }else {
+                            timeUnit = 'months';
+                        }
+                    }
+                }
+
+                return duration + ' ' + timeUnit;
+            }
+        };
+
+        $scope.formatThreadsCountToday = function(threadsCountToday) {
+            if(threadsCountToday > 0) {
+                return threadsCountToday + ' ' + (threadsCountToday > 1 ? 'requests' : 'request') + ' today';
+            }
+        };
+
+        $scope.formatThreadStatus = function(threadStatus) {
+
+          var cssClass = threadStatus ? threadStatus.replace(/_/g, '-') : '';
+          var output = {cssClass: cssClass};
+
+          switch(threadStatus) {
+              case 'scheduling_waiting_for_client':
+                  output.text = 'Scheduling waiting for client';
+                break;
+              case 'scheduling_waiting_for_contact':
+                  output.text = 'Scheduling waiting for contact';
+                break;
+              case 'scheduled':
+                  output.text = 'Scheduled';
+                break;
+              case 'scheduling_aborted':
+                  output.text = 'Scheduling aborted';
+                break;
+              case 'does_not_concern_client':
+                  output.text = 'Does not concern client';
+                break;
+              case 'handled_in_other_threads':
+                  output.text = 'Handled in other threads';
+                break;
+              case 'events_creation':
+                  output.text = 'Events creation';
+                break;
+              case 'other':
+                  output.text = 'Other';
+                break;
+              default:
+                  output.text = 'New request';
+                  output.cssClass = 'new-request';
+                break;
+          }
+
+            return output;
+        };
+
+        $scope.getPriorityClassFromAccountLife = function(accountLifeInDays) {
+            var priorityClass = 'priority4';
+
+            if(accountLifeInDays <= 2) {
+                priorityClass = 'priority1';
+            }else {
+               var durationInMonths = parseInt(accountLifeInDays / 31);
+                if(durationInMonths <= 1) {
+                    priorityClass = 'priority2';
+                }else if(durationInMonths <= 2) {
+                    priorityClass = 'priority3';
+                }
+            }
+
+            return priorityClass;
+        };
+
+        $scope.getPriorityClassFromTodayRequestsCount = function(requestsCount) {
+            var priorityClass = 'priority4';
+
+            if(requestsCount == 1) {
+                priorityClass = 'priority2';
+            }else if(requestsCount == 2) {
+                priorityClass = 'priority3';
+            }
+
+            return priorityClass;
+        };
+
+        $scope.determineOperatorPresence = function(operatorId) {
+            return _.find($scope.operatorsOnPlanning, function(o) {
+                return o.id == operatorId;
+            });
         };
 
         window.newEmailCallback = function() {

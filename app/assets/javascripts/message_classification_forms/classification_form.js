@@ -138,6 +138,10 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         processed_in: Date.now() - classificationForm.startedAt
     };
 
+    if(window.currentEventTile) {
+        data.event_booked_date = window.currentEventTile.getEditedEvent().start.format();
+    }
+
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
         type: "POST",

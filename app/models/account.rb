@@ -22,11 +22,13 @@ class Account
                 :awaiting_current_notes,
                 :contacts_from_same_company,
                 :created_at,
+                :current_life_duration_in_days,
                 :complaints_count,
                 :calendar_logins,
                 :office_365_refresh_token_expired,
                 :is_pro,
-                :virtual_appointments_support_config
+                :virtual_appointments_support_config,
+                :threads_count_today
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -66,17 +68,21 @@ class Account
     account.calendar_logins = data['calendar_logins']
     account.is_pro = data['is_pro']
 
-
     begin
       account.created_at = DateTime.parse(data['created_at'])
     rescue
       account.created_at = DateTime.parse("1989-05-03")
     end
 
+    account.current_life_duration_in_days = (Time.zone.now - account.created_at).to_i / 1.days
 
     account.complaints_count = data['complaints_count']
 
     account.build_contacts_from_same_company({accounts_cache: cache})
+
+    if params[:messages_threads_from_today].present?
+      account.compute_threads_count_today(params[:messages_threads_from_today])
+    end
 
     account
   end
@@ -95,6 +101,23 @@ class Account
     end
 
     nil
+  end
+
+  # Maybe not the correct way
+  def compute_threads_count_today(messages_threads_from_today)
+    today = Date.today
+    emails = self.email_aliases.present? ? (self.email_aliases << self.email) : [self.email]
+    today_threads_count = 0
+
+    user_threads = messages_threads_from_today.select{|t| emails.include?(t.account_email)}
+
+    user_threads.each do |t|
+      if t.messages.first.received_at.to_date == today
+        today_threads_count += 1
+      end
+    end
+
+    self.threads_count_today = today_threads_count
   end
 
   def number_to_call

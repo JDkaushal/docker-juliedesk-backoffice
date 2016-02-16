@@ -33,6 +33,20 @@ class JulieActionsController < ApplicationController
   def update
     julie_action = JulieAction.find params[:id]
 
+    if params[:messages_thread_id].present?
+      data = {last_operator_id: session[:operator_id]}
+
+      if params[:deleted_event] == 'true'
+        data.merge!(event_booked_date: nil)
+      else
+        if params[:event_booked_date].present?
+          data.merge!(event_booked_date: DateTime.parse(params[:event_booked_date]))
+        end
+      end
+
+      messages_thread = MessagesThread.find(params[:messages_thread_id])
+      messages_thread.update(data)
+    end
 
     date_times = []
     if params[:date_times]
