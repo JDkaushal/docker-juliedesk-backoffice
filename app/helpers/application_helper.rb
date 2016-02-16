@@ -45,7 +45,7 @@ module ApplicationHelper
     end
   end
 
-  def self.messages_and_delay_stats date
+  def self.messages_and_delay_stats date, exclude_waiting_accounts_emails=false
     start_date = date.utc.beginning_of_month
     end_date = start_date + 1.month
 
@@ -60,7 +60,13 @@ module ApplicationHelper
                             .where(from_me: false)
                             .where("received_at >= ? AND received_at < ?", start_date, end_date)
 
-
+    if exclude_waiting_accounts_emails
+      accounts = Account.accounts_cache(mode: "light")
+      account_emails_to_exclude = accounts.select{|k, v| v["company_hash"] && v["company_hash"]["working_hours"].values.uniq != [{"0" => ["0", "2400"]}]}.keys
+      all_messages_thread_ids = messages.select(:messages_thread_id).map(&:messages_thread_id)
+      messages_thread_ids_to_exclude = MessagesThread.where(account_email: account_emails_to_exclude, id: all_messages_thread_ids).select(:id).map(&:id)
+      messages = messages.where.not(messages_thread_id: messages_thread_ids_to_exclude)
+    end
     delays = messages
                  .select("EXTRACT(EPOCH FROM (received_at - request_at)) AS delay")
                  .map{|m| m['delay'] / 60.0}
