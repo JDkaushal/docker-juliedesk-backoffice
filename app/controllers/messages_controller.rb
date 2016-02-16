@@ -35,6 +35,8 @@ class MessagesController < ApplicationController
                                            message: delegation_message
                                        })
 
+      @message.messages_thread.delay.compute_messages_processed_at
+
       redirect_to messages_threads_path
       return
     end

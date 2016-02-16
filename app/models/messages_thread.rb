@@ -135,6 +135,18 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def compute_messages_processed_at
+    oas = self.mt_operator_actions.select{|oa| oa.nature == "archive" || oa.nature == "send_to_support"}
+
+    self.messages.where(from_me: false, processed_at: nil).each do |m|
+      oa = oas.select{|oa| oa.initiated_at > m.received_at}.sort_by(&:initiated_at).first
+      if oa
+        m.processed_at = oa.initiated_at
+        m.save
+      end
+    end
+  end
+
   def self.contacts params = {}
     to_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['to']).addresses}.flatten
     from_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['from']).addresses}.flatten

@@ -105,6 +105,8 @@ class MessagesThreadsController < ApplicationController
                                          messages_thread_id: messages_thread.id
                                      })
 
+    messages_thread.delay.compute_messages_processed_at
+
     EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
 
     Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
