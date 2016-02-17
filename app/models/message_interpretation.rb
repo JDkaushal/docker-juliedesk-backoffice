@@ -10,9 +10,11 @@ class MessageInterpretation < ActiveRecord::Base
   end
 
   def process
-    client = HTTPClient.new
+    client = HTTPClient.new(default_header: {
+                                "Authorization" => ENV['CONSCIENCE_API_KEY']
+                            })
     client.ssl_config.verify_mode = 0
-    url = "#{ENV['CONSCIENCE_API_BASE_PATH']}/#{self.question}/?id=#{self.message.server_message_id}&token=#{ENV['CONSCIENCE_API_KEY']}"
+    url = "#{ENV['CONSCIENCE_API_BASE_PATH']}/#{self.question}/?id=#{self.message.server_message_id}"
     response = client.get(url)
     self.raw_response = response.body
     begin
