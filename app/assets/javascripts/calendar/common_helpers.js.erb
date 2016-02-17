@@ -126,12 +126,15 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
 
 
-    var access_key = "gho67FBDJKdbhfj890oPm56VUdfhq8";
+    var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
     //console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
         $.ajax({
-            url: host + "/api/v1/accounts/show?email=" + request.email + "&access_key=" + access_key,
+            url: host + "/api/v1/accounts/show?email=" + request.email,
             type: "GET",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             contentType: "application/json",
             error: function(e) {
                 console.log("Error: ", e);
@@ -144,9 +147,12 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
     else if(request.action == "calendars"){
         $.ajax({
-            url: host + "/api/v1/calendar_proxy/calendars_list?access_key=gho67FBDJKdbhfj890oPm56VUdfhq8",
+            url: host + "/api/v1/calendar_proxy/calendars_list",
             data: {
                 email: request.email
+            },
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
             },
             success: function(data) {
                 callback({
@@ -158,7 +164,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
     else if(request.action == "events") {
         $.ajax({
-            url: host + "/api/v1/calendar_proxy/events_list?access_key=" + access_key,
+            url: host + "/api/v1/calendar_proxy/events_list",
             tryCount : 0,
             retryLimit : 20,
             data: {
@@ -166,6 +172,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 end: request.end,
                 email: request.email,
                 calendar_ids: request.calendar_ids
+            },
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
             },
             success: function(data) {
                 if(data.status == "error" && data.code == "AccessExpired") {
@@ -195,9 +204,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             url: host + "/api/v1/calendar_proxy/event_create",
             type: "POST",
             contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             data: JSON.stringify({
                 email: request.email,
-                access_key: access_key,
                 calendar_login_username: request.calendar_login_username,
                 summary: request.summary,
                 description: request.description,
@@ -240,9 +251,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             url: host + "/api/v1/calendar_proxy/event_update",
             type: "POST",
             contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             data: JSON.stringify({
                 email: request.email,
-                access_key: access_key,
                 calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
@@ -274,9 +287,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             url: host + "/api/v1/calendar_proxy/event_delete",
             type: "POST",
             contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             data: JSON.stringify({
                 email: request.email,
-                access_key: access_key,
                 calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
@@ -295,9 +310,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             url: host + "/api/v1/calendar_proxy/event_get",
             type: "GET",
             contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             data: {
                 email: request.email,
-                access_key: access_key,
                 calendar_login_username: request.calendar_login_username,
                 event_id: request.event_id,
                 event_url: request.event_url,
@@ -346,8 +363,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             url: host + "/api/v1/accounts/show/",
             type: "GET",
             contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
             data: {
-                access_key: access_key,
                 email: request.email
             },
             success: function(e) {

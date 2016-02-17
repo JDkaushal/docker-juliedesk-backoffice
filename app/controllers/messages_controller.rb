@@ -71,13 +71,13 @@ class MessagesController < ApplicationController
                                      })
 
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
-      url = "https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"
-
-      Net::HTTP.post_form(URI.parse(url), {
-          email: @message.messages_thread.account_email,
-          awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})",
-          access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"
-      })
+      client = HTTPClient.new(default_header: {
+                                  "Authorization" => ENV['JULIEDESK_APP_API_KEY']
+                              })
+      client.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", {
+                         email: @message.messages_thread.account_email,
+                         awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
+                     })
     end
 
     render json: {

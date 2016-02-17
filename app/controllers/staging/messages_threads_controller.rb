@@ -70,14 +70,10 @@ if ENV['STAGING_APP']
       end
 
       def retrieve_event_data(event_params)
-        uri = URI.parse("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&access_key=gho67FBDJKdbhfj890oPm56VUdfhq8&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
-
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-
-        new_request = Net::HTTP::Get.new(uri, {'Content-Type' =>'application/json'})
-
-        response = http.request(new_request)
+        client = HTTPClient.new(default_header: {
+                                    "Authorization" => ENV['JULIEDESK_APP_API_KEY']
+                                })
+        response = client.get("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
 
         JSON.parse(response.body)
       end
@@ -91,13 +87,12 @@ if ENV['STAGING_APP']
           http.use_ssl = true
         end
         new_request = Net::HTTP::Post.new(uri.path, {'Content-Type' =>'application/json'})
+        new_request["Authorization"] = ENV['JULIEDESK_APP_API_KEY']
 
         real_attendees = event_params['attendees']
 
         event_params['attendees'] = []
         creation_params = event_params.select{|k, _| ['all_day', 'attendees', 'calendar_login_username', 'call_instructions', 'description', 'end', 'start', 'location', 'private', 'summary'].include?(k) }
-
-        creation_params.merge!('access_key' => "gho67FBDJKdbhfj890oPm56VUdfhq8")
 
         creation_params['end'] = creation_params['end']['dateTime']
         creation_params['start'] = creation_params['start']['dateTime']

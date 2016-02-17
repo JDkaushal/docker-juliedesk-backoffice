@@ -162,10 +162,10 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect(MessageClassification).to receive(:create_from_params).and_call_original
-        expect(Net::HTTP).to receive(:post_form).with(URI.parse("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"),{
+        expect_any_instance_of(HTTPClient).to receive(:post).with("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes",{
                                                                                                                                                       email: mt1.account_email,
-                                                                                                                                                      awaiting_current_notes: "Awaiting Current notes (message_thread id: #{mt1.id})",
-                                                                                                                                                      access_key: "gho67FBDJKdbhfj890oPm56VUdfhq8"})
+                                                                                                                                                      awaiting_current_notes: "Awaiting Current notes (message_thread id: #{mt1.id})"
+                                                                                                                                                  })
         # 300 000 ms == 5min
         post :classify, id: m1.id, classification: MessageClassification::GIVE_PREFERENCE, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes'
       end
