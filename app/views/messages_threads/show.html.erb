@@ -34,23 +34,33 @@
         else {
             if(confirm("This action is irreversible. Are you sure you want to merge?")) {
                 $(".merging-global-spinner").show();
-                $.post("<%= EmailServer::API_BASE_PATH %>/messages/merge?access_key=<%= EmailServer::API_ACCESS_KEY %>", {
-                    message_ids: messageIdsToSplit,
-                    messages_thread_id: serverThreadId
-                }).success(function(response) {
-                    $(".merging-global-spinner").hide();
-                    if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
-                        $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
-                            window.location = "/messages_threads/" + messagesThreadId;
-                        });
-                    }
-                    else {
-                        window.location = window.location.href;
-                    }
 
-                }).error(function(response) {
-                    alert("Error while merging thread");
-                    $(".merging-global-spinner").hide();
+                $.ajax({
+                    type: "POST",
+                    url: "<%= EmailServer::API_BASE_PATH %>/messages/merge",
+                    data: {
+                        message_ids: messageIdsToSplit,
+                        messages_thread_id: serverThreadId
+                    },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("Authorization", "<%= ENV['EMAIL_SERVER_API_KEY']%>");
+                    },
+                    success: function(response) {
+                        $(".merging-global-spinner").hide();
+                        if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
+                            $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
+                                window.location = "/messages_threads/" + messagesThreadId;
+                            });
+                        }
+                        else {
+                            window.location = window.location.href;
+                        }
+
+                    },
+                    error: function(response) {
+                        alert("Error while merging thread");
+                        $(".merging-global-spinner").hide();
+                    }
                 });
             }
 

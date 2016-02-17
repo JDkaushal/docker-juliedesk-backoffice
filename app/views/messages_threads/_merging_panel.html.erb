@@ -37,8 +37,14 @@
                 return tag.text
             }).join("%20");
 
-            var url = "<%= EmailServer::API_BASE_PATH %>/messages_threads?query=" + query + "&offset=" + $scope.offset + "&limit=" + $scope.limit + "&access_key=<%= EmailServer::API_ACCESS_KEY %>";
-            $http.get(url)
+            var url = "<%= EmailServer::API_BASE_PATH %>/messages_threads?query=" + query + "&offset=" + $scope.offset + "&limit=" + $scope.limit;
+                    $http({
+                        method: "GET",
+                        url: url,
+                        headers: {
+                            'Authorization': "<%= ENV['EMAIL_SERVER_API_KEY'] %>"
+                        }
+                    })
                     .success(function(e) {
                         $scope.messagesThreadsTotalCount = e.total_count;
 

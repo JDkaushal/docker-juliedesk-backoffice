@@ -27,8 +27,7 @@ function setNotation($email, notation) {
 
 function flagMessage($element, $email) {
     var basePath = "<%= EmailServer::API_BASE_PATH %>";
-    var accessKey = "<%= EmailServer::API_ACCESS_KEY %>";
-    var url = basePath + "/messages/update_labels?access_key=" + accessKey;
+    var url = basePath + "/messages/update_labels";
     var data = {
         message_ids: $email.attr('id')
     };
@@ -49,8 +48,10 @@ function flagMessage($element, $email) {
         type: "POST",
         url: url,
         data: data,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", "<%= ENV['EMAIL_SERVER_API_KEY'] %>");
+        },
         success: function(response) {
-            console.log(response);
             if(response.status == "success") {
                 if(toFlag)
                     $element.addClass("flagged");
@@ -136,10 +137,16 @@ function IcsManager() {
         });
 
         if(icsAttachments.length > 0) {
-            $.get("https://jd-email-server.herokuapp.com/messages/" + emailData.id + "/get_attachment?attachment_id=" + icsAttachments[0].attachment_id + "&access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh")
-                    .success(function(response) {
-                        callback(response);
-                    });
+            $.ajax({
+                type: "GET",
+                url: "<%= EmailServer::SERVER_PATH %>/messages/" + emailData.id + "/get_attachment?attachment_id=" + icsAttachments[0].attachment_id,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("Authorization", "<%= ENV['EMAIL_SERVER_API_KEY'] %>");
+                },
+                success: function(response) {
+                    callback(response);
+                }
+            });
         }
     };
 

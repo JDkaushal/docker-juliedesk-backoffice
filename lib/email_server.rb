@@ -5,7 +5,6 @@ module EmailServer
   API_BASE_PATH = "https://jd-email-server.herokuapp.com/api/v1"
 
   #API_BASE_PATH = "http://localhost:3000/api/v1"
-  API_ACCESS_KEY = "wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
 
   def self.list_messages_threads opts={}
     url_params = {
@@ -14,7 +13,6 @@ module EmailServer
         limit: opts[:limit] || 10,
         specific_ids: opts[:specific_ids],
         full: opts[:full].present?,
-        access_key: API_ACCESS_KEY
     }
 
     if opts[:only_version]
@@ -26,7 +24,7 @@ module EmailServer
   end
 
   def self.get_messages_thread opts={}
-    url = "/messages_threads/#{opts[:server_thread_id]}?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    url = "/messages_threads/#{opts[:server_thread_id]}"
     if opts[:show_split].present?
       url += "&show_split=true"
     end
@@ -41,7 +39,7 @@ module EmailServer
   end
 
   def self.search_messages opts={}
-    url = "/messages/search?limit=#{opts[:limit] || 1000}&labels=#{opts[:labels] || ""}&after=#{opts[:after] || (DateTime.now - 30.days).to_s}&access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh"
+    url = "/messages/search?limit=#{opts[:limit] || 1000}&labels=#{opts[:labels] || ""}&after=#{opts[:after] || (DateTime.now - 30.days).to_s}"
     result = self.make_request :get, url
 
     result
@@ -49,7 +47,7 @@ module EmailServer
 
   def self.add_and_remove_labels opts={}
     self.make_request :post,
-                      "/messages_threads/update_labels?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                      "/messages_threads/update_labels",
                       {
                           messages_thread_ids: opts[:messages_thread_ids],
                           labels_to_add: opts[:labels_to_add],
@@ -80,7 +78,7 @@ module EmailServer
     end
 
     res = self.make_request :post,
-                      "/messages/send_message?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh", params
+                      "/messages/send_message", params
 
     message = res['message']
 
@@ -107,7 +105,7 @@ module EmailServer
     end
 
     res = self.make_request :post,
-                            "/messages/#{opts[:server_message_id]}/copy_to_new_thread?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                            "/messages/#{opts[:server_message_id]}/copy_to_new_thread",
                             copy_options
     res
   end
@@ -118,7 +116,7 @@ module EmailServer
 
 
     res = self.make_request :post,
-                            "/messages/#{opts[:server_message_id]}/copy_to_existing_thread?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                            "/messages/#{opts[:server_message_id]}/copy_to_existing_thread",
                             {
                                 messages_thread_id: opts[:server_thread_id]
                             }
@@ -143,7 +141,7 @@ module EmailServer
 
   def self.split_messages opts={}
     self.make_request :post,
-                      "/messages_threads/#{opts[:messages_thread_id]}/split?access_key=wpyrynfrgbtphqhhufqeobnmzulcvczscfidsnwfkljfgwpseh",
+                      "/messages_threads/#{opts[:messages_thread_id]}/split",
                       {
                           message_ids: opts[:message_ids]
                       }
@@ -155,7 +153,10 @@ module EmailServer
 
   private
   def self.make_request method, path, post_params={}
-    client = HTTPClient.new
+    client = HTTPClient.new(default_header: {
+                                "Authorization" => ENV['EMAIL_SERVER_API_KEY']
+                            })
+
 
     url = "#{API_BASE_PATH}#{path}"
     if method == :get
