@@ -107,11 +107,11 @@ module ApplicationHelper
 
     if @client_emails.include?(sanitized_email)
       #we gsub the < for its html unicode equivalent to prevent it from beeing interpreted as a balise
-      "<span class='highlighted'>#{string.gsub('<', '&#60;')}</span>"
+      "<span class='highlighted'>#{CGI::escapeHTML(string)}</span>"
     elsif @julie_emails.include?(sanitized_email)
-      "<span class='julie-highlighted'>#{string.gsub('<', '&#60;')}</span>"
+      "<span class='julie-highlighted'>#{CGI::escapeHTML(string)}</span>"
     else
-      sanitized_email
+      CGI::escapeHTML(string)
     end
 
   end
