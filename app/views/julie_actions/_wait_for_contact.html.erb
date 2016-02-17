@@ -4,6 +4,17 @@
         return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
     })[0];
 
+    window.drawCalendarCallback = function(){
+        window.activateCalendarWithParams({
+            mode: "select_events",
+            date_times: [],
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration
+        });
+        // We don't want to directly show the calendar when forwarding to a client
+        $(".calendar-container").addClass("minimized");
+    };
+
     $(function() {
         function setWaitingForContactReplyMesssage() {
             window.setReplyMessage(window.generateEmailTemplate({

@@ -2758,7 +2758,7 @@ window.testsData.templatesData = [
         },
         expectedResults: {
             en: "You are not available for a Skype appointment on this date:\n- Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould you like me to suggest a few other availabilities?",
-            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
         }
     }],
     [{
@@ -2779,7 +2779,7 @@ window.testsData.templatesData = [
         },
         expectedResults: {
             en: "You are not available for a Skype appointment on this date:\n- Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould you like me to suggest a few other availabilities?",
-            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
         }
     }],
     [{
@@ -2800,7 +2800,7 @@ window.testsData.templatesData = [
         },
         expectedResults: {
             en: "You are not available for a Skype appointment on this date:\n- Thursday 1 January 2015 at 12:00pm\n\nWould you like me to suggest a few other availabilities?",
-            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Jeudi 1 janvier 2015 à 12h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+            fr: "Vous n'êtes pas disponible pour un skype à cette date :\n- Jeudi 1 janvier 2015 à 12h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
         }
     },
         {
@@ -2947,7 +2947,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "You are not available for a Skype appointment on any of those dates:\n- Thursday 1 January 2015 at 12:00pm\n- Monday 2 February 2015 at 1:00pm\n\nWould you like me to suggest a few other availabilities?",
-                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Lundi 2 février 2015 à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Lundi 2 février 2015 à 13h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
             }
         },
         {
@@ -2968,7 +2968,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "You are not available for a Skype appointment on any of those dates:\n- Thursday 1 January 2015 at 12:00pm\n- Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 1:00pm\n\nWould you like me to suggest a few other availabilities?",
-                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 13h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
             }
         },
         {
@@ -2989,7 +2989,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "You are not available for a Skype appointment on any of those dates:\n- Thursday 1 January 2015 at 12:00pm\n- Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 1:00pm\n\nWould you like me to suggest a few other availabilities?",
-                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 13h00\n\nVoulez-vous que propose d'autres disponibilités ?"
+                fr: "Vous n'êtes disponible pour un skype à aucune de ces dates :\n- Jeudi 1 janvier 2015 à 12h00\n- Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 13h00\n\nVoulez-vous que je propose d'autres disponibilités ?"
             }
         }],
     [
@@ -3812,6 +3812,18 @@ window.testsData.templatesData = [
             expectedResults: {
                 en: "Attendee1, Attendee2, Attendee3, please also provide your phone number, just in case!",
                 fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            multipleAttendees: true,
+            redundantCourtesy: true,
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide the number you are reachable at.",
+                fr: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase."
             }
         },
         {

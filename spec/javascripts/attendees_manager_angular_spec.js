@@ -307,7 +307,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations();
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'mobile_only', assisted: false, attendees: [ 'Fname3' ], multipleAttendees: true, redundantCourtesy: false, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'mobile_only', assisted: false, attendees: [ 'Fname3' ], multipleAttendees: true, redundantCourtesy: false, askingEarly: false, locale: 'fr' });
                     });
 
                     it('landline_or_mobile informations are missing on multiple attendees with multiple other attendees on a virtual appointment', function(){
@@ -379,7 +379,79 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations();
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'landline_or_mobile', assisted: false, attendees: ["Fname3", "Fname4", "Fname5"], multipleAttendees: true, redundantCourtesy: false, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'landline_or_mobile', assisted: false, attendees: ["Fname3", "Fname4", "Fname5"], multipleAttendees: true, redundantCourtesy: false, askingEarly: false, locale: 'fr' });
+                    });
+
+                    it('landline_or_mobile informations are missing on multiple attendees with multiple other attendees on a virtual appointment when asking early', function(){
+                        window.currentAttendees.push({
+                            email: "test@test3.com",
+                            firstName: "fname3",
+                            lastName: "lname3",
+                            name: "fname3 lname3",
+                            usageName: "fname3",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 2',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test4.com",
+                            firstName: "fname4",
+                            lastName: "lname4",
+                            name: "fname4 lname4",
+                            usageName: "fname4",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 3',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        },{
+                            email: "test@test5.com",
+                            firstName: "fname5",
+                            lastName: "lname5",
+                            name: "fname5 lname5",
+                            usageName: "fname5",
+                            gender: 'M',
+                            isAssistant: "false",
+                            assisted: "false",
+                            assistedBy: null,
+                            company: 'Test Company 4',
+                            timezone: "America/Chicago",
+                            landline: "",
+                            mobile: "",
+                            skypeId: "",
+                            confCallInstructions: '',
+                            isPresent: "true",
+                            isClient: "false",
+                            isThreadOwner: "false"
+                        });
+
+                        window.getCurrentAppointment = function(){
+                            return {required_additional_informations: 'landline_or_mobile'}
+                        };
+                        spyOn( window, 'updateNotesCallingInfos' );
+
+                        $httpBackend.flush();
+                        expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+
+                        $scope.checkMissingInformations({askingEarly: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'landline_or_mobile', assisted: false, attendees: ["Fname3", "Fname4", "Fname5"], multipleAttendees: true, redundantCourtesy: false, askingEarly: true, locale: 'fr' });
                     });
 
                     it('skype_only informations are missing on one attendee with no other attendees on a non virtual appointment', function(){
@@ -413,7 +485,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations();
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: [ 'Fname3' ], multipleAttendees: false, redundantCourtesy: false, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: [ 'Fname3' ], multipleAttendees: false, redundantCourtesy: false, askingEarly: false, locale: 'fr' });
                     });
 
                     it('skype_only informations are missing on one attendee who is assisted with no other attendees on a non virtual appointment', function(){
@@ -469,7 +541,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations();
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: true, attendees: [ 'Fname1' ], multipleAttendees: false, redundantCourtesy: false, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: true, attendees: [ 'Fname1' ], multipleAttendees: false, redundantCourtesy: false, askingEarly: false, locale: 'fr' });
                     });
 
                     it('skype_only informations are missing on one attendee with no other attendees on a non virtual appointment with redundant courtesy used', function(){
@@ -560,7 +632,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations({redundantCourtesy: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, askingEarly: false, locale: 'fr' });
                     });
 
                     it('skype is missing on multiple attendees but some of them have no emails and are not assisted', function(){
@@ -652,7 +724,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations({redundantCourtesy: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname6"], multipleAttendees: true, redundantCourtesy: true, askingEarly: false, locale: 'fr' });
                     });
                     it('skype is missing on multiple attendees but some of them have no emails but they are assisted', function(){
 
@@ -746,7 +818,7 @@
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
                         $scope.checkMissingInformations({redundantCourtesy: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'skype_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname6"], multipleAttendees: true, redundantCourtesy: true, askingEarly: false, locale: 'fr' });
                     });
 
                     it('skype is missing on multiple attendees but one of them from the same company has its informations', function(){
@@ -933,8 +1005,8 @@
                         $httpBackend.flush();
                         expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
 
-                        $scope.checkMissingInformations({redundantCourtesy: true, ask_early_skype: true});
-                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'mobile_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, locale: 'fr' });
+                        $scope.checkMissingInformations({redundantCourtesy: true, ask_early_skype: true, askingEarly: true});
+                        expect( window.generateEmailTemplate ).toHaveBeenCalledWith({ action: 'ask_additional_informations', requiredAdditionalInformations: 'mobile_only', assisted: false, attendees: ["Fname3", "Fname4", "Fname5", "Fname6"], multipleAttendees: true, redundantCourtesy: true, askingEarly: true, locale: 'fr' });
                     });
 
                 });
@@ -1292,6 +1364,108 @@
             });
 
             it('should have an attendee variable set to the correct attendees', function(){
+
+                var expectedAttendees = [
+                    new Attendee({
+                        email: "test@test1.com",
+                        firstName: "fname1",
+                        lastName: "lname1",
+                        usageName: "fname1",
+                        name: "fname1 lname1",
+                        gender: 'M',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: false,
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: true,
+                        isClient: true,
+                        isThreadOwner: false
+                    }),
+                    new Attendee({
+                        email: "test@test2.com",
+                        firstName: "fname2",
+                        lastName: "",
+                        usageName: "fname2",
+                        name: "fname2",
+                        gender: 'F',
+                        guid: 0,
+                        hasMissingInformations: false,
+                        missingInformationsTemp: {},
+                        isAssistant: false,
+                        assisted: true,
+                        assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                        company: '',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "617-216-2881",
+                        skypeId: "",
+                        confCallInstructions: "",
+                        isPresent: undefined,
+                        isClient: false,
+                        isThreadOwner: false
+                    })
+                ];
+
+                var threadOwner = new Attendee({
+                    email: "blake@aceable.com",
+                    firstName: "Blake",
+                    lastName: "Garrett",
+                    usageName: "Blake",
+                    name: "Blake Garrett",
+                    gender: '?',
+                    guid: -1,
+                    isAssistant: false,
+                    assisted: true,
+                    assistedBy: {email: 'Julie@juliedesk.com', displayName: 'Julie Desk'},
+                    company: '',
+                    timezone: "America/Chicago",
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: undefined,
+                    isPresent: true,
+                    isClient: true,
+                    isThreadOwner: true
+                });
+
+                // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
+                spyOn( window, 'updateNotesCallingInfos' );
+                expectedAttendees.push(threadOwner);
+                $httpBackend.flush();
+
+                expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
+                expect(angular.equals($scope.attendees, expectedAttendees)).toBe(true);
+            });
+
+            it('should have an attendee variable set to the correct attendees (an attendee as an invalid email)', function(){
+
+                window.currentAttendees.push({
+                    email: "htyhty",
+                    firstName: "fname2",
+                    lastName: "",
+                    name: "fname2",
+                    usageName: "fname2",
+                    gender: 'F',
+                    isAssistant: "false",
+                    assisted: "true",
+                    assistedBy: {email: 'Julie2@juliedesk.com', displayName: 'Julie2 Desk'},
+                    company: '',
+                    landline: "",
+                    mobile: "617-216-2881",
+                    skypeId: "",
+                    confCallInstructions: '',
+                    isPresent: "false",
+                    isClient: "false",
+                    isThreadOwner: "false"
+                });
 
                 var expectedAttendees = [
                     new Attendee({

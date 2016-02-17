@@ -38,19 +38,21 @@
       window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
       $(".calendar-container").addClass("visible");
   };
-  $(function() {
+
+  window.drawCalendarCallback = function(){
       <% if @classification == MessageClassification::GIVE_INFO %>
-          $("#show-calendar-button").click(function () {
-              window.activateCalendarWithParams({
-                  mode: "free_calendar",
-                  date_times: [],
-                  email: "<%= @message.messages_thread.account_email %>",
-                  duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
-              });
-              $(".calendar-container").removeClass("minimized");
+      $("#show-calendar-button").click(function () {
+          window.activateCalendarWithParams({
+              mode: "free_calendar",
+              date_times: [],
+              email: "<%= @message.messages_thread.account_email %>",
+              duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
           });
+          $(".calendar-container").removeClass("minimized");
+      });
       <% end %>
-  });
+  };
+
 </script>
 
 <div class="fixed-columns">

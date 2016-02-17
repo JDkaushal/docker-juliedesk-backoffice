@@ -20,32 +20,7 @@
         end
         %>";
 
-    $(function () {
-        window.setReplyMessage("");
-
-        $(".messages-thread-info-panel .create-event-panel").show();
-        if(window.threadComputedData.client_agreement) {
-            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Create event");
-            if(isPostpone) {
-                $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Update event");
-                window.afterEventFetched = function() {
-//                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
-//                        return attendee.email;
-//                    });
-                    window.otherEmails = [];
-                }
-            }
-            $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").hide();
-        }
-        else {
-            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Select");
-        }
-
-        var currentAppointment = window.getCurrentAppointment();
-        if(currentAppointment && currentAppointment.include_email_in_notes) {
-            $("input[type=checkbox]#include-email-in-notes").attr("checked", true);
-        }
-
+    window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "create_event",
             date_times: <%== (JSON.parse(
@@ -73,6 +48,33 @@
                 }
             }
         });
+    };
+
+    $(function () {
+        window.setReplyMessage("");
+
+        $(".messages-thread-info-panel .create-event-panel").show();
+        if(window.threadComputedData.client_agreement) {
+            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Create event");
+            if(isPostpone) {
+                $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Update event");
+                window.afterEventFetched = function() {
+//                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
+//                        return attendee.email;
+//                    });
+                    window.otherEmails = [];
+                }
+            }
+            $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").hide();
+        }
+        else {
+            $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Select");
+        }
+
+        var currentAppointment = window.getCurrentAppointment();
+        if(currentAppointment && currentAppointment.include_email_in_notes) {
+            $("input[type=checkbox]#include-email-in-notes").attr("checked", true);
+        }
 
         $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").change(function() {
             if($(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']:checked").length > 0) {

@@ -83,22 +83,7 @@
         $(".messages-thread-emails .email").removeClass("extended");
     };
 
-    $(function () {
-
-        trackEvent("Thread_is_open", {
-            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-            thread_id: <%= @messages_thread.id %>,
-            thread_messages_count: <%= @messages_thread.messages.length %>,
-            thread_status: "<%= @messages_thread.current_status %>"
-        });
-
-        trackFormSubmit("#archive-form", "Click_on_archive", {
-            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-            thread_id: <%= @messages_thread.id %>,
-            thread_messages_count: <%= @messages_thread.messages.length %>,
-            thread_status: $("select[name='thread_status']").val()
-        });
-
+    window.drawCalendarCallback = function(){
         if(window.threadAccount) {
             window.activateCalendarWithParams({
                 mode: "read_only",
@@ -115,6 +100,23 @@
         else {
             $("#show-calendar-button").hide();
         }
+    };
+
+    $(function () {
+
+        trackEvent("Thread_is_open", {
+            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
+            thread_id: <%= @messages_thread.id %>,
+            thread_messages_count: <%= @messages_thread.messages.length %>,
+            thread_status: "<%= @messages_thread.current_status %>"
+        });
+
+        trackFormSubmit("#archive-form", "Click_on_archive", {
+            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
+            thread_id: <%= @messages_thread.id %>,
+            thread_messages_count: <%= @messages_thread.messages.length %>,
+            thread_status: $("select[name='thread_status']").val()
+        });
 
         window.startedAt = Date.now();
 

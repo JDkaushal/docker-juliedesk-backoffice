@@ -1,5 +1,5 @@
 <script>
-    $(function() {
+    window.drawCalendarCallback = function(){
         if(window.threadAccount) {
             window.activateCalendarWithParams({
                 mode: "free_calendar",
@@ -13,7 +13,9 @@
         }
 
         $(".calendar-container").addClass("minimized");
+    };
 
+    $(function() {
         window.setReplyMessage("", "only_client");
 
         var $languageSelector = $("<div>").addClass("language-selector-container");

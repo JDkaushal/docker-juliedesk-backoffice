@@ -6,8 +6,7 @@
       return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
     })[0];
 
-    $(function() {
-        window.setReplyMessage("");
+    window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "suggest_dates",
             date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
@@ -19,7 +18,10 @@
             email: window.threadAccount.email,
             duration: window.threadComputedData.duration
         });
+    };
 
+    $(function() {
+        window.setReplyMessage("");
         if(window.threadComputedData.client_agreement) {
             if(isPostpone) {
                 $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
@@ -119,11 +121,9 @@
 
         var currentAppointment = window.getCurrentAppointment();
         var firstDateSuggestion = <%= @first_date_suggestion %>;
-        console.log('firstDateSuggestion', firstDateSuggestion);
 
         if(firstDateSuggestion && currentAppointment && (currentAppointment.kind == 'skype' || currentAppointment.kind == 'call') && window.presentAttendees().length == 2){
-            console.log('inside');
-            var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: true, sticky: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.kind == 'call'});
+            var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.kind == 'call'});
             if(missingInfosMessage != ''){
                 message += missingInfosMessage;
             }

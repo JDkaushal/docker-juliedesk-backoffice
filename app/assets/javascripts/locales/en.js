@@ -187,6 +187,10 @@ window.wordings['en'] = {
                     assisted: "Could you let me know %{attendees_names}'s Skype ID?",
                     nonassisted: "Could you let me know your Skype ID?"
                 }
+            },
+            early: {
+                phone: "Please also provide the number you are reachable at.",
+                skype: "Please also provide the number you are reachable at."
             }
         },
         follow_up_confirmation: {

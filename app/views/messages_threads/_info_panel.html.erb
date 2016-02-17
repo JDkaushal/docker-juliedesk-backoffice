@@ -38,13 +38,6 @@
 
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 
-    window.otherAttendeesWithAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
-        return attendee.isPresent == 'true' && attendee.account_email && attendee.account_email != "<%= @messages_thread.account_email %>";
-    });
-    window.otherAccountEmails = _.map(otherAttendeesWithAccount, function (attendee) {
-        return attendee.account_email;
-    });
-
     window.otherAttendeesWithoutAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
         return !attendee.account_email;
     });
@@ -302,8 +295,6 @@
 
             $(".messages-thread-info-panel .created-event-panel").addClass("several-events").show();
         <% end %>
-
-        fetchOtherAccounts();
     });
 
     window.getCurrentAppointment = function() {
@@ -609,6 +600,7 @@
     function fetchOtherAccounts() {
         $(".other-accounts").hide();
         $(".other-accounts-list").html("");
+        console.log('fetch', window.otherAccountEmails);
         for (var i in window.otherAccountEmails) {
             var otherAccountEmail = window.otherAccountEmails[i];
             CommonHelpers.externalRequest({
@@ -717,7 +709,7 @@
                     return addressObject.label == $("select#location_nature").val();
                 });
 
-                if (address) {
+                if (address && address.kind != 'ask_interlocuter') {
                     $("input#location").val(address.address).attr('disabled', true);
                 }
             }
@@ -927,8 +919,9 @@
         var contacts = angular.element($('#attendeesCtrl')).scope();
         var attendees = contacts.attendees.slice();
         // We save every contact on the thread even those who will not attend
-        var filteredAttendees = attendees.map(function(attendee) {
+        return attendees.map(function(attendee) {
             return{
+                accountEmail: attendee.accountEmail,
                 guid: attendee.guid,
                 email: attendee.email,
                 firstName: attendee.firstName,
@@ -950,7 +943,6 @@
                 isThreadOwner: attendee.isThreadOwner
             }
         });
-        return filteredAttendees;
     };
 
     window.presentAttendees = function() {

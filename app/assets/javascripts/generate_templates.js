@@ -466,20 +466,25 @@ window.generateEmailTemplate = function (params) {
         var requiredAdditionalInformations = params.requiredAdditionalInformations;
         var redundantCourtesy = params.redundantCourtesy;
 
-        var templateName = "email_templates.ask_additional_informations" + (multipleAttendees ? '.multiple_attendees' : '.single_attendee') + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
+        if(params.askingEarly) {
+            var templateName = "email_templates.ask_additional_informations.early" + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
 
-        if(!multipleAttendees)
-            templateName += assisted ? ".assisted" : ".nonassisted";
-        else
-            templateName += attendees.length > 1 ? ".multiple_recipients" : ".single_recipient";
+            message += localize(templateName);
+        }else {
+            var templateName = "email_templates.ask_additional_informations" + (multipleAttendees ? '.multiple_attendees' : '.single_attendee') + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
 
-        var courtesyString = redundantCourtesy ? ' ' + localize('common.egalement'): '';
+            if(!multipleAttendees)
+                templateName += assisted ? ".assisted" : ".nonassisted";
+            else
+                templateName += attendees.length > 1 ? ".multiple_recipients" : ".single_recipient";
 
-        message += localize(templateName, {
-            attendees_names: attendees.join(', '),
-            courtesyString: courtesyString
-        });
+            var courtesyString = redundantCourtesy ? ' ' + localize('common.egalement'): '';
 
+            message += localize(templateName, {
+                attendees_names: attendees.join(', '),
+                courtesyString: courtesyString
+            });
+        }
     }
     else if(params.action == "forward_to_client") {
         message += localize("email_templates.forward_to_client");

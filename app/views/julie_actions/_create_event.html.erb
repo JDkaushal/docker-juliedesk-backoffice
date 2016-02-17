@@ -6,9 +6,7 @@
     window.updatedEvents = [];
     window.deletedEvents = [];
 
-    $(function() {
-        window.setReplyMessage("");
-
+    window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "create_events",
             date_times: [],
@@ -33,6 +31,11 @@
         });
 
         $(".calendar-container").addClass("minimized");
+    };
+
+    $(function() {
+        window.setReplyMessage("");
+
         var $container = $("#thread-header-other-entries-container");
         $container.html($("<div>").addClass("new-events-container"));
         $container.find(".new-events-container").append($("<div>").addClass("btn btn-success create-new-event-tile-button").html("Create new event"));

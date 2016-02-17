@@ -1,14 +1,16 @@
 <script>
     $(function () {
         window.setReplyMessage("");
+    });
 
+    window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "select_events",
             date_times: [],
             email: window.threadAccount.email,
             duration: window.threadComputedData.duration
         });
-    });
+    };
 
     window.clickReplyButton = function() {
         $(".reply-box #callback-message").html("Creating threads...");

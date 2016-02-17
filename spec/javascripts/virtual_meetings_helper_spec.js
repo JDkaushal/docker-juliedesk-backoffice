@@ -346,7 +346,6 @@
                 spyOn($scopeVM, 'setDefaultSupportManually');
 
                 $httpBackend.flush();
-                expect($scopeVM.setDefaultSupportManually).toHaveBeenCalled();
                 expect(angular.equals($scopeVM.getCurrentAppointment(), window.threadAccount.appointments[0])).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentVAConfig(), window.threadAccount.appointments[0].support_config_hash)).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);
@@ -411,12 +410,11 @@
 
                 $httpBackend.flush();
 
-                expect($scopeVM.setDefaultSupportManually).toHaveBeenCalled();
                 expect(angular.equals($scopeVM.getCurrentAppointment(), window.threadAccount.appointments[0])).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentVAConfig(), window.threadAccount.appointments[0].support_config_hash)).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);
 
-                expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"interlocutor","targetInfos":' + JSON.stringify({email: $scopeVM.callTargetsInfos[0].email, name: $scopeVM.callTargetsInfos[0].name, guid: $scopeVM.callTargetsInfos[0].guid, displayName: $scopeVM.callTargetsInfos[0].displayName}) + ',"support":"mobile","details":"617-216-2881"}')).toBe(true);
+                expect(angular.equals(angular.toJson($scopeVM.currentConf), '{"target":"interlocutor","targetInfos":' + JSON.stringify({name: $scopeVM.callTargetsInfos[0].name, email: $scopeVM.callTargetsInfos[0].email, guid: $scopeVM.callTargetsInfos[0].guid}) + ',"support":"mobile","details":"617-216-2881"}')).toBe(true);
             });
 
             it('hangout config later', function(){

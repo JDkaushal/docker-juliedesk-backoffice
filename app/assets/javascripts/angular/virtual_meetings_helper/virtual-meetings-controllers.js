@@ -168,13 +168,13 @@
                 };
 
                 $scope.loadCurrentConfig = function(){
+
                     if(window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == 'interlocutor')
                         $scope.changeCurrentVAConfig("demander à l'interlocuteur");
 
                     virtualMeetingsHelperCtrl.currentAppointment = virtualMeetingsHelperCtrl.currentAppointment || _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
                     virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig || (virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash);
                     virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentBehaviour || virtualMeetingsHelperCtrl.currentAppointment.behaviour;
-
                     $scope.callTargets = [
                         {name:"L'interlocuteur", value:'interlocutor'},
                         {name:"Décidé plus tard", value:'later'},
@@ -197,11 +197,8 @@
                         $scope.otherForm.callSupports = $scope.callSupports;
 
                     if(!!$scope.currentConf.targetInfos && !!$scope.currentConf.targetInfos.guid && !!$scope.currentConf.targetInfos.name) {
-                        //var guid = $scope.currentConf.targetInfos.guid;
+
                         var selectedAttendee = findTargetAttendee($scope.currentConf.targetInfos);
-                        // If the currently thread-saved targetInfos guid is the temporary one, we find the real one and use it to generate the correct message XX to call YY
-                        //if($scope.currentConf.targetInfos.guid.length == 36)
-                        //    guid = selectedAttendee.guid;
 
                         if(selectedAttendee){
                             $scope.currentConf.targetInfos = {

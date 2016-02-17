@@ -252,23 +252,17 @@
             var threadOwnerEmailAliasesDowncase = _.map(window.threadAccount.email_aliases, function(email){return email.toLowerCase()});
 
             angular.forEach(window.currentAttendees.filter(function(attendee){
+                var emailValid = true;
                 var emailLowCase = attendee.email ? attendee.email.toLowerCase() : undefined;
-                return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase)) == -1 && (emailLowCase != window.threadAccount.email.toLowerCase())
+
+                // Very simplistic test to discard false emails (which doesn't contains an '@')
+                if(attendee.email && attendee.email.indexOf('@') === -1)
+                    emailValid = false;
+
+                return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase)) == -1 && (emailLowCase != window.threadAccount.email.toLowerCase()) && emailValid
             }), function(attendee) {
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
                     var searchedEmail = attendee.email;
-                    //
-                    //var clientMainEmail;
-                    //_.each(aliases, function (aliases, aliased) {
-                    //    if (aliases.indexOf(attendee.email) > -1)
-                    //        clientMainEmail = aliased;
-                    //});
-                    //
-                    //console.log(searchedEmail);
-                    //console.log(clientMainEmail);
-                    //
-                    //if(clientMainEmail)
-                    //    searchedEmail = clientMainEmail;
 
                     if(searchedEmail != undefined && searchedEmail != ''){
                         return a.email == searchedEmail;
@@ -281,10 +275,6 @@
                 var informations = (attendeeDetails || attendee);
                 var assistant = (typeof(informations.assistedBy) == "string" && informations.assistedBy.length > 0) ? JSON.parse(informations.assistedBy) : informations.assistedBy;
                 informations.assistedBy = assistant;
-
-                //if(aliasedEmails.indexOf(informations.email) > -1)
-                //    // If the current attendee was in the aliases response from the server, it means it is in the accounts cache => he is client
-                //    informations.isClient = "true";
 
                 if(Object.keys(companies).indexOf(informations.email) > -1)
                     informations.company = companies[informations.email];
@@ -408,6 +398,7 @@
 
         this.createAttendee = function(informations, attendee){
             var a = new Attendee({
+                accountEmail: attendee.account_email,
                 guid: informations.id || $scope.guid(),
                 email: informations.email ? informations.email.toLowerCase() : undefined,
                 firstName: informations.firstName,
@@ -449,11 +440,26 @@
                 $('.submit-classification').attr('disabled', false);
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
+                $scope.exposeAttendeesToGlobalScope();
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
             });
+        };
 
+        $scope.exposeAttendeesToGlobalScope = function() {
+            var threadAccountEmail = window.threadAccount.email;
+            window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
+                return attendee.isPresent && attendee.isClient && attendee.accountEmail && attendee.accountEmail != threadAccountEmail;
+            });
+            window.otherAccountEmails = _.map(window.otherAttendeesWithAccount, function (attendee) {
+                return attendee.accountEmail;
+            });
+
+            window.fetchOtherAccounts();
+
+            if(window.drawCalendarCallback)
+                window.drawCalendarCallback();
         };
         //--------------------------------------------------------------------------------
 
@@ -707,7 +713,7 @@
             }
 
             if(result.missingInfos){
-                var message = params.sticky ? "\n" : "\n\n";
+                message = params.sticky ? "\n" : "\n\n";
                 message += window.generateEmailTemplate({
                     action: 'ask_additional_informations',
                     requiredAdditionalInformations: result.infoScope,
@@ -716,6 +722,7 @@
                     // More than one attendee including the threadOwner
                     multipleAttendees: presentAttendeesLength > 2,
                     redundantCourtesy: params.redundantCourtesy || false,
+                    askingEarly: params.askingEarly || false,
                     locale: window.threadComputedData.locale
                 });
             }

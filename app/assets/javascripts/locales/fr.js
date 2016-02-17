@@ -127,7 +127,7 @@ window.wordings['fr'] = {
                     postpone: "\nVoulez-vous que je reporte l'évènement?"
                 },
                 not_available: {
-                    new_appointment: "\nVoulez-vous que propose d'autres disponibilités ?",
+                    new_appointment: "\nVoulez-vous que je propose d'autres disponibilités ?",
                     postpone: "\nVoulez-vous que je propose d'autres disponibilités pour reporter l'évènement ?"
                 }
             }
@@ -188,6 +188,10 @@ window.wordings['fr'] = {
                     assisted: "Pourriez-vous de me faire parvenir l'identifiant de %{attendees_names} ?",
                     nonassisted: "Pourriez-vous me faire parvenir votre identifiant ?"
                 }
+            },
+            early: {
+                phone: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase.",
+                skype: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase."
             }
         },
         follow_up_confirmation: {

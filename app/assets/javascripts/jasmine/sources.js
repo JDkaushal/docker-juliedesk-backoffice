@@ -22,3 +22,6 @@ function updateNotesCallingInfos(){
 
 function determineAppointmentType(){
 };
+
+function fetchOtherAccounts(){
+};
