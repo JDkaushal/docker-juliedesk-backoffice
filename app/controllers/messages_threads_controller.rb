@@ -237,7 +237,8 @@ class MessagesThreadsController < ApplicationController
         now = Time.now
 
         @operators_on_planning = Operator.select('operators.id, operators.name, operators.color').joins(:operator_presences).where('operator_presences.date >= ? AND operator_presences.date <= ?', now.beginning_of_hour, now.end_of_hour)
-        @messages_threads_from_today = MessagesThread.select('messages_threads.id, messages_threads.account_email').distinct.joins(:messages).where('date(messages.received_at) = ?', now.to_date)
+        @messages_threads_from_today = MessagesThread.distinct.where('date(created_at) = ?', now.to_date).group('account_email').count
+
         @messages_thread = MessagesThread.where("in_inbox = TRUE OR should_follow_up = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
           mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
               mt.messages.map{|m| m.received_at}.max ||

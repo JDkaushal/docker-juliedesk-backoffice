@@ -106,16 +106,7 @@ class Account
   # Maybe not the correct way
   def compute_threads_count_today(messages_threads_from_today)
     today = Date.today
-    emails = self.email_aliases.present? ? (self.email_aliases << self.email) : [self.email]
-    today_threads_count = 0
-
-    user_threads = messages_threads_from_today.select{|t| emails.include?(t.account_email)}
-
-    user_threads.each do |t|
-      if t.messages.first.received_at.to_date == today
-        today_threads_count += 1
-      end
-    end
+    today_threads_count = messages_threads_from_today[self.email]
 
     self.threads_count_today = today_threads_count
   end
