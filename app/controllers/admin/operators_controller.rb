@@ -14,7 +14,10 @@ class Admin::OperatorsController < AdminController
 
   def update
     @operator = Operator.find(params[:id])
-    @operator.update_attributes operators_params
+    # Seems like http params nil is passed as an empty string
+    op_params = operators_params
+    op_params[:privilege] = op_params[:privilege] == '' ? nil : op_params[:privilege]
+    @operator.update_attributes op_params
     redirect_to action: :index
   end
 
