@@ -321,6 +321,18 @@
             });
         };
 
+        $scope.manageLabelsDisplay = function(accountLifeLabelClass, threadsCountLabelClass) {
+            var result = [accountLifeLabelClass, threadsCountLabelClass];
+            var classes = [parseInt(accountLifeLabelClass.replace('priority', '')), parseInt(threadsCountLabelClass.replace('priority', ''))];
+
+            if(classes[0] > classes[1])
+                result[0] += ' lesser-priority';
+            else if(classes[1] > classes[0])
+                result[1] += ' lesser-priority';
+
+            return result;
+        };
+
         window.newEmailCallback = function() {
             $scope.refreshInbox(false);
             $scope.$apply();

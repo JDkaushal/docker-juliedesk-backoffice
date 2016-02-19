@@ -133,7 +133,7 @@
             .account-email {
                 display: inline-block;
                 height: 40px;
-                font-size: 16px;
+                font-size: 14px;
                 color: #797979;
                 font-weight: bold;
             }
@@ -144,14 +144,23 @@
 
             .priority2 {
                 background-color: #FF712F;
+
+                &.lesser-priority {
+                    display: none !important;
+                }
             }
 
             .priority3 {
                 background-color: #0099CC;
+
+                &.lesser-priority {
+                    display: none !important;
+                }
             }
 
             .priority4 {
                 background-color: #B4B4B4;
+                display: none !important;
             }
 
             .account-life-duration {
@@ -167,39 +176,39 @@
                 @include thread-label;
 
                 &.scheduling-waiting-for-client {
-                   background-color: #C49D5D;
+                   background-color: rgba(196, 157, 93, 0.65);
                 }
 
                 &.scheduling-waiting-for-contact {
-                    background-color: #C49D5D;
+                    background-color: rgba(196, 157, 93, 0.65);
                 }
 
                 &.scheduled {
-                    background-color: #49C9A9;
+                    background-color: rgba(73, 201, 169, 0.66);
                 }
 
                 &.scheduling-aborted {
-                    background-color: #C86E6E;
+                    background-color: rgba(200, 110, 110, 0.65);
                 }
 
                 &.does-not-concern-client {
-                    background-color: #B4B4B4;
+                    background-color: rgba(180, 180, 180, 0.65);
                 }
 
                 &.handled-in-other-threads {
-                    background-color: #806D90;
+                    background-color: rgba(128, 109, 144, 0.66);
                 }
 
                 &.events-creation {
-                    background-color: #7A6E63;
+                    background-color: rgba(122, 110, 99, 0.65);
                 }
 
                 &.new-request {
-                    background-color: #F5A623;
+                    background-color: rgba(245, 166, 35, 0.65);
                 }
 
                 &.other {
-                    background-color: #B4B4B4;
+                    background-color: rgba(180, 180, 180, 0.66);
                 }
             }
 
@@ -207,6 +216,8 @@
                 display: inline-block;
                 margin-left: 5px;
                 font-style: italic;
+                position: relative;
+                top: -2px;
                 .operator-color {
                     width: 6px;
                     height: 6px;
@@ -217,7 +228,7 @@
                 }
                 .operator-name {
                     vertical-align: middle;
-                    font-size: 16px;
+                    font-size: 14px;
                 }
             }
 
@@ -226,7 +237,7 @@
                 overflow: hidden;
                 height: 30px;
                 top: 20px;
-                left: 85px;
+                left: 40px;
                 font-size: 14px;
                 font-weight: 400;
 

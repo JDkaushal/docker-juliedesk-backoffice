@@ -1,6 +1,6 @@
 <div class="messages-thread-container">
 
-    <a href="/messages_threads/{{ messagesThread.id}} " class="messages-thread-item" data-id="{{ messagesThread.id}}" ng-init="threadStatusInfos = formatThreadStatus(messagesThread.status); operatorInfos = determineOperatorPresence(messagesThread.last_operator_id); labelInRowInfos = labelInRow(messagesThread);">
+    <a href="/messages_threads/{{ messagesThread.id}} " class="messages-thread-item" data-id="{{ messagesThread.id}}" ng-init="threadStatusInfos = formatThreadStatus(messagesThread.status); operatorInfos = determineOperatorPresence(messagesThread.last_operator_id); labelInRowInfos = labelInRow(messagesThread);accountLifeDurationPriorityClass = getPriorityClassFromAccountLife(messagesThread.account.current_life_duration_in_days); todayRequestsCountPriorityClass = getPriorityClassFromTodayRequestsCount(messagesThread.account.threads_count_today); labelsClasses =  manageLabelsDisplay(accountLifeDurationPriorityClass, todayRequestsCountPriorityClass)">
         <div class="messages-thread-lock-container" ng-show="messagesThread.locked_by_operator_id"><span class="locked-by-name">Being processed by {{ messagesThread.locked_by_operator_name }}</span></div>
 
       <div class="scheduled-for-today" ng-if="scheduledForToday(messagesThread)"><span class="sprite"></span><span class="text">Today</span></div>
@@ -12,9 +12,9 @@
           <span ng-hide="messagesThread.account"><%= I18n.t("info_box.no_account_found") %></span>
         </div>
 
-        <div class="account-life-duration {{ getPriorityClassFromAccountLife(messagesThread.account.current_life_duration_in_days) }}" ng-if="messagesThread.account.current_life_duration_in_days">{{ formatAccountLifeDuration(messagesThread.account.current_life_duration_in_days) }}</div>
+        <div class="account-life-duration {{ labelsClasses[0] }}" ng-if="messagesThread.account.current_life_duration_in_days">{{ formatAccountLifeDuration(messagesThread.account.current_life_duration_in_days) }}</div>
 
-        <div class="requests-count-for-today {{ getPriorityClassFromTodayRequestsCount(messagesThread.account.threads_count_today) }}" ng-if="messagesThread.account.threads_count_today">{{ formatThreadsCountToday(messagesThread.account.threads_count_today) }}</div>
+        <div class="requests-count-for-today {{ labelsClasses[1] }}" ng-if="messagesThread.account.threads_count_today">{{ formatThreadsCountToday(messagesThread.account.threads_count_today) }}</div>
 
         <div class="thread-status {{ threadStatusInfos.cssClass }}">{{ threadStatusInfos.text }}</div>
 
@@ -28,7 +28,7 @@
             <div class="snippet"> - {{ messagesThread.snippet}}</div>
           </div>
 
-        <div class="emails-count">({{ messagesThread.messages.length }} mails)</div>
+        <div class="emails-count">({{ messagesThread.messages.length }})</div>
 
         <div ng-show="labelInRowInfos.text" class="delegated-to-founders {{labelInRowInfos.cssClass}}"><span class="delegation-text">{{ labelInRowInfos.text }}</span></div>
     </a>
