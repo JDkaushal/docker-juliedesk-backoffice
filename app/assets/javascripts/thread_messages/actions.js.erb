@@ -152,10 +152,18 @@ function IcsManager() {
 
     this.parse = function(icsString) {
         var comp = new ICAL.Component(ICAL.parse(icsString));
+        var vtimezones = comp.getAllSubcomponents("vtimezone");
+        _.each(vtimezones, function (vtimezone) {
+            if (!(ICAL.TimezoneService.has(
+                            vtimezone.getFirstPropertyValue("tzid")))) {
+                ICAL.TimezoneService.register(vtimezone);
+            }
+        });
+
         var vevent = comp.getFirstSubcomponent("vevent");
         var event = new ICAL.Event(vevent);
-        var mStartDate = moment(event.startDate.toString()).utc();
-        var mEndDate = moment(event.endDate.toString()).utc();
+        var mStartDate = moment(event.startDate.toJSDate()).utc();
+        var mEndDate = moment(event.endDate.toJSDate()).utc();
 
         var dates = mStartDate.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd DD MMMM YYYY HH:mm") + " (UTC)";
         var timezone = $('#messages_container').data('timezone');
