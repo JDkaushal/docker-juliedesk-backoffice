@@ -386,7 +386,7 @@
                     error: function (e) {
                         console.log("error", e);
                         $("#reply-button").removeProp('disabled');
-                        $(".reply-box #callback-message").html("Error: " + e);
+                        $(".reply-box #callback-message").html("Error: " + e.responseJSON.message);
                     }
                 });
             });

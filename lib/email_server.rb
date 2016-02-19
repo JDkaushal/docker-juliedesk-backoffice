@@ -77,8 +77,18 @@ module EmailServer
       params[:message][:subject] = 'Staging: ' + opts[:subject]
     end
 
-    res = self.make_request :post,
-                      "/messages/send_message", params
+    response = self.make_request_raw :post, "/messages/send_message", params
+
+    if response
+      if response.status == 200
+        res = JSON.parse(response.body)['data']
+      else
+        raise "Can't deliver message: #{JSON.parse(response.body)['message']}"
+      end
+    else
+      raise "Can't deliver message: EmailServer error"
+    end
+
 
     message = res['message']
 
@@ -153,6 +163,16 @@ module EmailServer
 
   private
   def self.make_request method, path, post_params={}
+    response = self.make_request_raw method, path, post_params
+
+    if response
+      JSON.parse(response.body)['data']
+    else
+      nil
+    end
+  end
+
+  def self.make_request_raw method, path, post_params={}
     client = HTTPClient.new(default_header: {
                                 "Authorization" => ENV['EMAIL_SERVER_API_KEY']
                             })
@@ -165,10 +185,6 @@ module EmailServer
       response = client.post(url, post_params.to_param)
     end
 
-    if response
-      JSON.parse(response.body)['data']
-    else
-      nil
-    end
+    response
   end
 end

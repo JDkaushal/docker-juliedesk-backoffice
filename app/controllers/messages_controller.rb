@@ -160,7 +160,14 @@ class MessagesController < ApplicationController
       email_params.merge!(message_thread_id: @message.messages_thread_id, server_thread_id: @message.messages_thread.server_thread_id)
     end
 
-    @new_server_message_id = EmailServer.deliver_message(email_params)['id']
+    begin
+      @new_server_message_id = EmailServer.deliver_message(email_params)['id']
+    rescue Exception => e
+      render json: {
+                 status: "error",
+                 message: e.message,
+             }, status: 400 and return
+    end
 
     #TODO: Uncomment
     @message.messages_thread.delay.compute_messages_request_at
