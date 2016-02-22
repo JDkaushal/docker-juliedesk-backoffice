@@ -1,11 +1,11 @@
 class MessagesThreadsController < ApplicationController
 
+  include ProfilerHelper
+
   layout "dashboard", only: [:index]
   before_filter :only_admin, only: [:history]
 
   before_action :check_staging_mode
-
-  helper_method :print_time
 
   def index
     render_messages_threads
@@ -82,8 +82,14 @@ class MessagesThreadsController < ApplicationController
   end
 
   def archive
+    print_time "init"
     messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
-    last_email_status = messages_thread.last_email_status
+    messages = messages_thread.messages
+    print_time "Find messages thread"
+
+    last_email_status = messages_thread.last_email_status({messages: messages})
+    print_time "get last email status"
+
     if last_email_status == "from_me"
       last_message_classification = messages_thread.last_message_classification
       last_message_classification.update_attribute :thread_status, params[:thread_status]
@@ -91,10 +97,11 @@ class MessagesThreadsController < ApplicationController
       last_message_classification = messages_thread.last_message_classification
       last_message_classification.update_attribute :thread_status, params[:thread_status]
     else
-      last_message = messages_thread.messages.sort_by(&:updated_at).last
+      last_message = messages.sort_by(&:updated_at).last
       message_classification = last_message.message_classifications.create_from_params classification: MessageClassification::NOTHING_TO_DO, operator: session[:user_username], thread_status: params[:thread_status]
       message_classification.julie_action.update_attribute :done, true
     end
+    print_time "Set New thread status"
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
@@ -104,12 +111,16 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: messages_thread.id
                                      })
+    print_time "Create and verify OperatorAction"
 
     EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
+    print_time "Email server archive thread"
 
-    Message.where(messages_thread_id: messages_thread.id).update_all(archived: true)
+    messages.update_all(archived: true)
     messages_thread.update(should_follow_up: false, status: params[:thread_status])
+    print_time "Update messages and messages thread"
 
+    # Voir pertinence à ce moment, on le fait sur l'index déjà normalement
     if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
       EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
     else
@@ -120,7 +131,8 @@ class MessagesThreadsController < ApplicationController
           :message_thread_id => messages_thread.id
       })
     end
-
+    print_time "Check if unarchive or not"
+    print_all_times
     redirect_to action: :index
   end
 
@@ -274,59 +286,4 @@ class MessagesThreadsController < ApplicationController
       }
     end
   end
-
-  def print_time tag
-    @time_reference ||= Time.now
-    @times ||= []
-    @times << {
-        index: @times.length,
-        tag: tag,
-        time: Time.now,
-        delay: Time.now - (@times.last.try(:[], :time) || @time_reference),
-        total_delay: Time.now - @time_reference
-    }
-  end
-
-  def print_all_times
-    if Rails.env.production?
-      print({
-        route: "#{params[:controller]}##{params[:action]}",
-        times: @times
-      }.to_json)
-      print "\n"
-    else
-      print "-" * 50
-      print "\n\n"
-      print_arrays @times.map { |time|
-        [
-            time[:index],
-            time[:tag],
-            "#{time[:delay]}s",
-            "#{time[:total_delay]}s"
-        ]
-                   }
-
-      print "\n\n"
-      print "-" * 50
-      print "\n"
-    end
-  end
-
-  def print_arrays arrays
-    (0..arrays.first.length - 1).each do |i|
-      max_length = arrays.map{|array| "#{array[i]}".length}.max + 5
-      arrays.each do |array|
-        array[i] = "#{array[i]}#{" " * (max_length - "#{array[i]}".length)}"
-      end
-    end
-
-
-    arrays.each do |array|
-      print array.join
-      print "\n"
-    end
-
-  end
-
-
 end

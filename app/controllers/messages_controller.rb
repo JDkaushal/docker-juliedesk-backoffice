@@ -2,8 +2,10 @@ class MessagesController < ApplicationController
 
   include ActionView::Helpers::TextHelper
   include ERB::Util
+  include ProfilerHelper
 
   before_action :check_staging_mode
+
 
   def classifying
     @message = Message.find params[:id]
@@ -58,10 +60,12 @@ class MessagesController < ApplicationController
   end
 
   def classify
+    print_time "init"
     @message = Message.find(params[:id])
+    print_time "Find message"
     params[:operator] = session[:user_username]
     @message_classification = @message.message_classifications.create_from_params params
-
+    print_time "create message classification"
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
                                          target: @message_classification,
@@ -69,7 +73,7 @@ class MessagesController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @message.messages_thread_id
                                      })
-
+    print_time "create and verify operator action"
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
       client = HTTPClient.new(default_header: {
                                   "Authorization" => ENV['JULIEDESK_APP_API_KEY']
@@ -79,17 +83,20 @@ class MessagesController < ApplicationController
                          awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
                      })
     end
-
+    print_time "send set awaiting current notes"
     messages_thread_params = {last_operator_id: session[:operator_id]}
     messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
     @message.messages_thread.update(messages_thread_params)
-
+    print_time "update message thread"
     render json: {
         status: "success",
         message: "",
         redirect_url: julie_action_path(@message_classification.julie_action),
         data: {}
     }
+    print_time "render view"
+
+    print_all_times
   end
 
   def generate_threads
@@ -169,7 +176,6 @@ class MessagesController < ApplicationController
              }, status: 400 and return
     end
 
-    #TODO: Uncomment
     @message.messages_thread.delay.compute_messages_request_at
 
     @julie_action = JulieAction.find params[:julie_action_id]

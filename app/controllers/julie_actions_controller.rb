@@ -1,5 +1,7 @@
 class JulieActionsController < ApplicationController
 
+  include ProfilerHelper
+
   before_action :check_staging_mode
 
   def show
@@ -9,7 +11,6 @@ class JulieActionsController < ApplicationController
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
-
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
@@ -31,7 +32,9 @@ class JulieActionsController < ApplicationController
   end
 
   def update
+    print_time "init"
     julie_action = JulieAction.find params[:id]
+    print_time "Find Julie Action"
 
     if params[:messages_thread_id].present?
       data = {last_operator_id: session[:operator_id]}
@@ -47,16 +50,21 @@ class JulieActionsController < ApplicationController
       messages_thread = MessagesThread.find(params[:messages_thread_id])
       messages_thread.update(data)
     end
+    print_time "Update messages thread"
 
     date_times = []
     if params[:date_times]
+      message_classification_timezone = julie_action.message_classification.timezone
+
       date_times = params[:date_times].map{|dt|
         {
-            timezone: julie_action.message_classification.timezone,
+            timezone: message_classification_timezone,
             date: DateTime.parse(dt).utc.to_s
         }
       }
     end
+    print_time "Computing date times"
+
     julie_action.update_attributes({
         text: params[:text],
         date_times: date_times.to_json,
@@ -69,10 +77,12 @@ class JulieActionsController < ApplicationController
         processed_in: params[:processed_in],
         deleted_event: params[:deleted_event]
      })
+    print_time "Updating julie action"
 
     if params[:call_instructions].present?
       julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
     end
+    print_time "Updating message classification"
 
     render json: {
         status: "success",
@@ -81,5 +91,9 @@ class JulieActionsController < ApplicationController
 
         }
     }
+
+    print_time "Rendering view"
+
+    print_all_times
   end
 end

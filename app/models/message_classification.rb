@@ -105,15 +105,16 @@ class MessageClassification < ActiveRecord::Base
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
     attendees.map do |attendee|
-      if attendee['email']
+      attendee_email = attendee['email']
+      if attendee_email
         accounts.select do |account|
           all_emails = [account['email']] + account['email_aliases']
-          if all_emails.include?(attendee['email'])
+          if all_emails.include?(attendee_email)
             attendee['account_email'] = account['email']
             attendee['usage_name'] = account['usage_name']
           end
         end
-        attendee['email'] = attendee['email'].gsub(" ", "")
+        attendee['email'] = attendee_email.gsub(" ", "")
       end
       attendee
     end

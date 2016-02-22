@@ -101,19 +101,19 @@ class Message < ActiveRecord::Base
     return nil if self.generator_message_classification.nil?
     @generator_operator_actions_group ||= if operator_actions_groups
 
-      operator_actions_groups.select{|operator_actions_group|
+      operator_actions_groups.find{|operator_actions_group|
         operator_actions_group.is_action? &&
             operator_actions_group.target_id == self.generator_message_classification.julie_action.id
-      }.first
+      }
                                           else
                                             nil
                                           end
   end
 
   def generator_message_classification
-    messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+    messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).find{|ja|
       ja.server_message_id && ja.server_message_id == self.server_message_id
-    }.first.try(:message_classification)
+    }.try(:message_classification)
   end
 
   def julie_alias
@@ -127,16 +127,16 @@ class Message < ActiveRecord::Base
   end
 
   def destined_to_julie? params={}
-    (params[:julie_aliases] || JulieAlias.all).select{|julie_alias|
+    (params[:julie_aliases] || JulieAlias.all).find{|julie_alias|
       "#{server_message['to']}".downcase.include? julie_alias.email
-    }.any?
+    }.present?
   end
 
   def is_discussion_client_julie_only
     result = false
     if destined_to_julie?
       # If the message is destined to Julie only
-      message_tos = server_message['to'].split(',');
+      message_tos = server_message['to'].split(',')
       result = message_tos.size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0) && ApplicationHelper.find_addresses(server_message['from']).addresses.first.address == messages_thread.account_email
     end
     result
@@ -152,13 +152,13 @@ class Message < ActiveRecord::Base
     #First, remove from inbox all messages_thread that should not be in inbox anymore
     MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
     #Then, put in inbox the others
-    MessagesThread.where(in_inbox: false).where(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true)
+    MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true)
 
     server_thread_ids_to_update = []
     server_thread_ids_to_create = []
 
     server_threads.each do |server_thread|
-      messages_thread = inbox_messages_threads.select{|mt| mt.server_thread_id == server_thread['id']}.first
+      messages_thread = inbox_messages_threads.find{|mt| mt.server_thread_id == server_thread['id']}
       if messages_thread
         if "#{messages_thread.server_version}" == "#{server_thread['version']}"
           # Nothing to do
@@ -184,10 +184,8 @@ class Message < ActiveRecord::Base
     # Store the messages_thread_ids that will be updated by this method
     updated_messages_thread_ids = []
 
-
     server_threads.each do |server_thread|
       should_update_thread = true
-
 
       messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
       if messages_thread
@@ -248,16 +246,18 @@ class Message < ActiveRecord::Base
 
 
   def self.generate_reply_all_recipients(server_message)
+    julie_aliases = JulieAlias.all.map(&:email)
     from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses.select{|address| address.address.include? "@"}
     to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address.include? "@"}
+
     {
-        to: (from_addresses + to_addresses).uniq.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+        to: (from_addresses + to_addresses).uniq.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
           }
         },
-        cc: ApplicationHelper.find_addresses(server_message['cc']).addresses.select{|dest| !JulieAlias.all.map(&:email).include?(dest.address.try(:downcase))}.map{|dest|
+        cc: ApplicationHelper.find_addresses(server_message['cc']).addresses.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
@@ -268,24 +268,27 @@ class Message < ActiveRecord::Base
 
   def generate_threads julie_messages
     # Get from field
+    message_thread = self.messages_thread
 
-    self.messages_thread.re_import
-    cache_server_message = self.messages_thread.messages.select{|m| m.id == self.id}.first.server_message
+    message_thread.re_import
+    #cache_server_message = message_thread.messages.find{|m| m.id == self.id}.server_message
+    # Same as the following?
+    cache_server_message = self.server_message
 
-    julie_alias = self.messages_thread.julie_alias
+    julie_alias = message_thread.julie_alias
+    julie_alias_from = julie_alias.generate_from
 
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
       # Try to find an existing thread which would have resulted in the given event
       existing_message = JulieAction.where(event_id: julie_message_hash['event_id'], calendar_id: julie_message_hash['calendar_id']).first.try(:message_classification).try(:message)
 
-
       if existing_message.try(:messages_thread)
         copy_response = EmailServer.copy_message_to_existing_thread server_message_id: self.server_message_id, server_thread_id: existing_message.messages_thread.server_thread_id
         EmailServer.deliver_message({
                                         subject: julie_message_hash['subject'],
-                                        from: julie_alias.generate_from,
-                                        to: julie_alias.generate_from,
+                                        from: julie_alias_from,
+                                        to: julie_alias_from,
                                         text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
                                         html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
                                         quote: false,
@@ -295,8 +298,8 @@ class Message < ActiveRecord::Base
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
         server_message = EmailServer.deliver_message({
                                         subject: julie_message_hash['subject'],
-                                        from: julie_alias.generate_from,
-                                        to: julie_alias.generate_from,
+                                        from: julie_alias_from,
+                                        to: julie_alias_from,
                                         text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
                                         html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
                                         quote: false,
@@ -315,7 +318,7 @@ class Message < ActiveRecord::Base
                                                     'duration' => julie_message_hash['duration'],
                                                     'notes' => julie_message_hash['notes'],
                                                 },
-                                                self.messages_thread
+                                                message_thread
       end
     end
   end
@@ -335,8 +338,10 @@ class Message < ActiveRecord::Base
                                               reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
                                               from_me: server_message['from_me']
 
+    original_thread_account_all_emails = original_messages_thread.account.all_emails
+
     attendees = (event['attendees'] || {}).select{|k, attendee|
-      !original_messages_thread.account.all_emails.include? attendee['email']
+      !original_thread_account_all_emails.include? attendee['email']
     }.map{|k, attendee|
       {
         k => {
@@ -355,7 +360,6 @@ class Message < ActiveRecord::Base
                                                                                 duration: event['duration'],
                                                                                 location: event['location'],
                                                                                 notes: event['notes']
-
 
     # Create the julie_action in DB to finally store event data
     message_classification.julie_action.update_attributes done: true,

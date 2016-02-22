@@ -139,8 +139,9 @@ class MessagesThread < ActiveRecord::Base
     archives_at = self.mt_operator_actions.select{|oa| oa.nature == "archive"}.map(&:initiated_at)
 
     incoming_messages_received_at = self.messages.select{|m| !m.from_me}.map(&:received_at)
+    messages_from_me = self.messages.select{|m| m.from_me && m.request_at.nil?}
 
-    self.messages.select{|m| m.from_me && m.request_at.nil?}.each do |m|
+    messages_from_me.each do |m|
       before_this_message_archives_at = archives_at.select{|dt| dt < m.received_at}.max
       request_at = incoming_messages_received_at.select{|dt|
         dt < m.received_at &&
@@ -271,7 +272,6 @@ class MessagesThread < ActiveRecord::Base
     other_emails = contacts.map{|contact| contact[:email]}
     account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
 
-    p account_emails
     accounts = account_emails.map{|account_email|
       Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
     }
@@ -326,14 +326,15 @@ class MessagesThread < ActiveRecord::Base
   def re_import
     existing_messages = []
     all_messages = self.server_thread(force_refresh: true, show_split: true)['messages']
+    messages_thread_messages = self.messages
 
     all_messages.select do |server_message|
       server_message['messages_thread_id'] == self.server_thread_id
     end.each do |server_message|
 
-      message = self.messages.select{|m| m.server_message_id == server_message['id']}.first
+      message = messages_thread_messages.find{|m| m.server_message_id == server_message['id']}
       unless message
-        message = self.messages.create server_message_id: server_message['id'],
+        message = messages_thread_messages.create server_message_id: server_message['id'],
                                        received_at: DateTime.parse(server_message['date']),
                                        reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
                                        from_me: server_message['from_me']
@@ -342,7 +343,7 @@ class MessagesThread < ActiveRecord::Base
       existing_messages << message
     end
 
-    (self.messages - existing_messages).each do |message|
+    (messages_thread_messages - existing_messages).each do |message|
       message.clean_delete
     end
 
@@ -359,7 +360,7 @@ class MessagesThread < ActiveRecord::Base
 
   def split message_ids
 
-    server_message_ids = self.messages.select{|m| message_ids.include? m.id}.map(&:server_message_id)
+    server_message_ids = self.messages.where(id: message_ids).map(&:server_message_id)
     EmailServer.split_messages({
         messages_thread_id: self.server_thread_id,
         message_ids: server_message_ids
@@ -611,11 +612,11 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def last_message_classification
-    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).last
+    @last_message_classification ||= self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).last
   end
 
-  def last_email_status
-    if self.messages.sort_by(&:received_at).last.from_me
+  def last_email_status(params = {})
+    if (params[:messages] || self.messages).sort_by(&:received_at).last.from_me
       lmc = self.last_message_classification
       if lmc.nil?
         "not_from_me"
@@ -638,7 +639,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def current_status
-    self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:thread_status).compact.last
+    self.status || self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:thread_status).compact.last
   end
 
   def self.julie_aliases_from_server_thread server_thread, params={}

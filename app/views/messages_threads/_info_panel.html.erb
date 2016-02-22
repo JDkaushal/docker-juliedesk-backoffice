@@ -27,9 +27,6 @@
 
     // Add the attendees without an email at the end, so they won't be removed by a uniq email operation (This would cause to remove every attendee without an email except the first)
     <%  currentAttendees.push(attendees.select{|a| a['email'].blank? }).flatten!  %>
-    <% if possible_contacts_for_cache.size > 0 %>
-
-    <% end %>
 
     window.currentAttendees = <%== currentAttendees.to_json %>;
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;

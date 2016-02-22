@@ -35,8 +35,6 @@ class Account
   RULE_DEFAULT = "rule_default"
 
   def self.create_from_email email, params={}
-    #account_email = self.find_account_email email
-    #return nil unless account_email
 
     cache = params[:accounts_cache]# || self.accounts_cache
     return nil unless email
@@ -105,7 +103,6 @@ class Account
 
   # Maybe not the correct way
   def compute_threads_count_today(messages_threads_from_today)
-    today = Date.today
     today_threads_count = messages_threads_from_today[self.email]
 
     self.threads_count_today = today_threads_count
