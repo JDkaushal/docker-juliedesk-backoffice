@@ -18,7 +18,7 @@ class OperatorActionsGroup < ActiveRecord::Base
 
   def self.group_actions params
     # Find all operator actions for this thread and operator
-    operator_actions = OperatorAction.where(messages_thread_id: params[:messages_thread_id], operator_id: params[:operator_id], nature: [NATURE_ARCHIVE, NATURE_OPEN, NATURE_SEND_TO_SUPPORT])
+    operator_actions = OperatorAction.where(messages_thread_id: params[:messages_thread_id], operator_id: params[:operator_id], nature: [OperatorAction::NATURE_ARCHIVE, OperatorAction::NATURE_OPEN, OperatorAction::NATURE_SEND_TO_SUPPORT])
 
     return nil if operator_actions.empty?
     operator_actions_sorted = operator_actions.sort_by(&:initiated_at)
@@ -82,7 +82,7 @@ class OperatorActionsGroup < ActiveRecord::Base
           duration: archive_thread_oa.initiated_at - open_thread_oa_initiated_at
                                                            })
 
-      to_group_operator_actions.update_all(operator_actions_group_id: operator_actions_group.id)
+      OperatorAction.where(id: to_group_operator_actions.map(&:id)).update_all(operator_actions_group_id: operator_actions_group.id)
 
       operator_actions_group
     else
