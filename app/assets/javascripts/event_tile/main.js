@@ -77,7 +77,7 @@ EventTile.prototype.displayCallingInfosForm = function(){
 
         var call_instructions = eventTile.event.call_instructions || window.threadComputedData.call_instructions;
 
-        if((currentAppointment.kind != 'hangout' && currentAppointment.kind != 'skype') && !!!call_instructions.details && eventTile.event.location == '' && eventTile.event.owned)
+        if((currentAppointment.kind != 'hangout' && currentAppointment.kind != 'skype') && !!!call_instructions.details && eventTile.event.location == '')// && eventTile.event.owned)
         {
             locationContainerNode.find('.location').hide();
 
@@ -86,7 +86,7 @@ EventTile.prototype.displayCallingInfosForm = function(){
             }else{
                 locationContainerNode.prepend('<div id="calling-infos-missing"><div class="missing-call-informations"></div> <span style="display: inline-block; margin-top: 6px;margin-left: 27px;color: #F6BB67;">Instructions d\'appels manquantes</span></div>');
             }
-        }else if(eventTile.event.owned && eventTile.event.location){
+        }else if(eventTile.event.location){//&& eventTile.event.owned){
             $('input.location').change(function(){
                 var $that = $(this);
                 scope.$apply(function(){Object.assign(scope.currentConf, {target: 'custom', event_instructions: $that.val(), details: $that.val()});});
@@ -318,18 +318,19 @@ EventTile.prototype.redraw = function() {
             eventTile.$selector.find("#event-save-button").show();
             eventTile.$selector.find("#event-cancel-button").show();
         }
-        else if(eventTile.event.owned) {
-            eventTile.$selector.find("#event-edit-button").show();
-            eventTile.$selector.find("#event-delete-button").show();
+        else {
+         //if(eventTile.event.owned)
+        eventTile.$selector.find("#event-edit-button").show();
+        eventTile.$selector.find("#event-delete-button").show();
         }
     }
     if(eventTile.getMode() == "read_only") {
 
     }
     if(eventTile.getMode() == "edit_only") {
-        if(eventTile.event.owned) {
+        //if(eventTile.event.owned) {
             eventTile.$selector.find("#event-edit-button").show();
-        }
+        //}
         angular.element($('#virtual-meetings-helper')).scope().forcedDetailsFrozen = true;
 
         $('#virtual-meetings-helper input').prop('disabled', true);
