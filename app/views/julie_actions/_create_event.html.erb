@@ -31,9 +31,9 @@
         });
 
         $(".calendar-container").addClass("minimized");
-    };
 
-    $(function() {
+
+
         window.setReplyMessage("");
 
         var $container = $("#thread-header-other-entries-container");
@@ -60,7 +60,7 @@
             window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container:eq(0)")));
             redrawNewEventEventTiles();
         });
-    });
+    };
 
     function generateNewEventEventTile($selector, params) {
         if(!params) params = {};
