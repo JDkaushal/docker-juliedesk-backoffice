@@ -351,7 +351,7 @@ class MessagesThread < ActiveRecord::Base
       server_message['messages_thread_id'] != self.server_thread_id
     end
 
-    self.messages = self.messages && existing_messages
+    self.messages = messages_thread_messages && existing_messages
   end
 
   def splitted_server_messages
