@@ -271,9 +271,10 @@ class Message < ActiveRecord::Base
     message_thread = self.messages_thread
 
     message_thread.re_import
+
     #cache_server_message = message_thread.messages.find{|m| m.id == self.id}.server_message
     # Same as the following?
-    cache_server_message = self.server_message
+    cache_server_message = message_thread.messages.find{|m| m.id == self.id}.server_message
 
     julie_alias = message_thread.julie_alias
     julie_alias_from = julie_alias.generate_from
