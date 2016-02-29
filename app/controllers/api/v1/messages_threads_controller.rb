@@ -198,7 +198,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   other: {
                       id: mt.id,
                       waiting_for: "contact",
-                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt|
+                        begin
+                          DateTime.parse(dt['date']) > DateTime.now
+                          rescue
+                            false
+                        end
+                      }.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" && att['isPresent'] == "true"}.map { |att|
@@ -221,7 +227,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                   other: {
                       id: mt.id,
                       waiting_for: "client",
-                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt| DateTime.parse(dt['date']) > DateTime.now}.length,
+                      valid_suggestions_count: mt.computed_data_light[:date_times].select{|dt|
+                        begin
+                          DateTime.parse(dt['date']) > DateTime.now
+                        rescue
+                          false
+                        end
+                      }.length,
                       suggestions_count: mt.computed_data_light[:date_times].length,
                       appointment_nature: mt.computed_data_light[:appointment_nature],
                       attendees: mt.computed_data_light[:attendees].select{|att| att['isThreadOwner'] != "true" && att['isPresent'] == "true"}.map { |att|
