@@ -118,10 +118,18 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                                     }).
         includes(messages: {message_classifications: :julie_action}).
         select {|mt|
+          julie_action = mt.messages.map(&:message_classifications).
+              flatten.
+              map(&:julie_action).
+              select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
+              sort_by(&:updated_at).
+              last
+
           status_before_this_week = mt.messages.map(&:message_classifications).flatten.select{|mc| mc.created_at < start_of_week}.sort_by(&:created_at).map(&:thread_status).last
           [MessageClassification::THREAD_STATUS_EVENTS_CREATION].include?(mt.current_status) &&
             (status_before_this_week.nil? || status_before_this_week != mt.current_status) &&
-              mt.messages.select{|m| !m.from_me}.length > 0
+              mt.messages.select{|m| !m.from_me}.length > 0 &&
+              julie_action
         }
 
     aborted_mts = MessagesThread.were_statused_as({
