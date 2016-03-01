@@ -4,12 +4,17 @@
     $(".calendar-container").addClass("minimized");
 
     window.followUpData = <%== @julie_action.message_classification.follow_up_data %>;
-    window.setReplyMessage(window.generateEmailTemplate({
-      action: "follow_up_confirmation",
-      locale: window.threadAccount.locale,
-      followUpData: window.followUpData
-    }), "only_client");
   });
+
+  window.afterReplyBoxInitCallback = function(){
+      var messageBuilder = $('#reply-area').scope();
+
+      window.setReplyMessage(messageBuilder.generateReply({
+          action: "follow_up_confirmation",
+          locale: window.threadAccount.locale,
+          followUpData: window.followUpData
+      }), "only_client");
+  };
 
   window.clickReplyButton = function() {
     $(".reply-box #callback-message").html("Creating threads...");

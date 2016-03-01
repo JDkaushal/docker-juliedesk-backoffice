@@ -10,10 +10,13 @@
         $(".calendar-container").addClass("minimized");
     };
 
-    $(function() {
-        window.setReplyMessage(window.generateEmailTemplate({
+    window.afterReplyBoxInitCallback = function(){
+        var messageBuilder = $('#reply-area').scope();
+
+        window.setReplyMessage(messageBuilder.generateReply({
             action: "send_confirmation",
             locale: window.threadComputedData.locale
         }), "all");
-    })
+    };
+
 </script>

@@ -15,9 +15,11 @@
         $(".calendar-container").addClass("minimized");
     };
 
-    $(function() {
+    window.afterReplyBoxInitCallback = function(){
         function setWaitingForContactReplyMesssage() {
-            window.setReplyMessage(window.generateEmailTemplate({
+            var messageBuilder = $('#reply-area').scope();
+
+            window.setReplyMessage(messageBuilder.generateReply({
                 action: "wait_for_contact",
                 isPostpone: isPostpone,
                 previousAppointment: previousAppointment,
@@ -36,7 +38,7 @@
         else {
             setWaitingForContactReplyMesssage();
         }
-    });
+    };
 
     var waitingForContactReplyFunction = function() {
         $.ajax({

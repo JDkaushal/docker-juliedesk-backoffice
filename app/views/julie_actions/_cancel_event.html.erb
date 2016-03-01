@@ -1,11 +1,15 @@
 <script>
-    $(function() {
+
+    window.afterReplyBoxInitCallback = function(){
         window.setReplyMessage("");
-    });
+    };
+
     window.afterEventFetched = function () {
 //        var otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
 //            return attendee.email;
 //        });
+
+        var messageBuilder = $('#reply-area').scope();
         var otherEmails = [];
 
         if(window.threadComputedData.client_agreement) {
@@ -14,7 +18,7 @@
                 $("input#include-email-in-notes").removeAttr("checked");
             }
 
-            window.setReplyMessage(window.generateEmailTemplate({
+            window.setReplyMessage(messageBuilder.generateReply({
                 action: "cancel_event",
                 clientAgreement: true,
                 attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,

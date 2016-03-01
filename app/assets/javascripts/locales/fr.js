@@ -35,19 +35,25 @@ window.wordings['fr'] = {
             },
             before_dates: {
                 new_appointment: {
-                    one_client: "%{client} serait disponible pour %{appointment_nature} avec vous%{location} :",
-                    many_clients: "%{other_clients} et %{client} seraient disponibles pour %{appointment_nature} avec vous%{location} :",
+                    one_client: "%{client} serait disponible pour %{appointment_nature}%{location} :",
+                    many_clients: "%{other_clients} et %{client} seraient disponibles pour %{appointment_nature}%{location} :",
                 },
                 postpone: "Voici de nouvelles disponibilités pour %{appointment_nature}%{location} :"
             },
             after_dates: {
                 singular: {
-                    one_attendee: "\n\nCela vous conviendrait-il ?",
-                    many_attendees: "\n\n%{attendees}, cela vous conviendrait-il ?"
+                    single_attendee_unassisted: "\n\nCela vous conviendrait-il ?",
+                    multiple_attendees_unassisted: "\n\n%{attendees}, cela vous conviendrait-il ?",
+                    single_attendee_assisted: "\n\nCela conviendrait-il à %{assisted_attendee} ?",
+                    multiple_attendees_assisted: "\n\nCela conviendrait-il à %{assisted_attendees} ?",
+                    multiple_attendees_mix: "\n\nCela conviendrait-il à chacun de vous ?"
                 },
                 plural: {
-                    one_attendee: "\n\nQuel horaire vous conviendrait le mieux ?",
-                    many_attendees: "\n\n%{attendees}, quel horaire vous conviendrait le mieux ?"
+                    single_attendee_unassisted: "\n\nQuel horaire vous conviendrait le mieux ?",
+                    multiple_attendees_unassisted: "\n\n%{attendees}, quel horaire vous conviendrait le mieux ?",
+                    single_attendee_assisted: "\n\nQuel horaire conviendrait le mieux à %{assisted_attendee} ?",
+                    multiple_attendees_assisted: "\n\nQuel horaire conviendrait le mieux à %{assisted_attendees} ?",
+                    multiple_attendees_mix: "\n\nQuel horaire conviendrait le mieux ?"
                 }
             },
             ask_number: {
@@ -107,7 +113,7 @@ window.wordings['fr'] = {
         confirmation: "Très bien, c'est noté.",
         cancel: {
             attendees_noticed: "J'ai annulé %{appointment_nature} prévu %{date}.",
-            attendees_not_noticed: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} avec vous %{date}."
+            attendees_not_noticed: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} %{date}."
         },
         cancel_client_agreement: "Ai-je votre approbation pour annuler %{appointment_nature} prévu %{date} ?",
         client_agreement: {
@@ -140,6 +146,9 @@ window.wordings['fr'] = {
         common: {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
+            hello_only: "Bonjour,\n\n",
+            hello_all: "Bonjour à tous,\n\n",
+            hello_named: "Bonjour %{name},\n\n",
             before: "Bonjour,\n\n",
             before_only_client: "Bonjour %{client_name},\n\n",
             full_date_format: "dddd D MMMM YYYY à H[h]mm",
@@ -166,32 +175,53 @@ window.wordings['fr'] = {
             give_target_number: "Instructions d’appel : appeler %{target_name} au %{details}",
             give_target_confcall: "Numéro de conférence : \n%{details}",
             give_target_skype: "L’identifiant Skype de %{target_name} a été joint à l’invitation : %{details}",
-            missing_infos: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
-        },
-        ask_additional_informations:{
-            multiple_attendees:{
+            missing_infos: {
                 phone: {
-                    multiple_recipients: "%{attendees_names}, merci%{courtesyString} de me faire parvenir vos numéros de téléphone au cas où.",
-                    single_recipient: "%{attendees_names}, merci%{courtesyString} de me faire parvenir votre numéro de téléphone au cas où."
+                    single_attendee_unassisted: "Merci de me faire parvenir le numéro sur lequel vous serez joignable.",
+                    multiple_attendees_unassisted: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu.",
+                    single_attendee_assisted: "Merci de me faire parvenir le numéro sur lequel %{assisted_attendee} sera joignable.",
+                    multiple_attendees_assisted: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu.",
+                    multiple_attendees_mix: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
                 },
                 skype: {
-                    multiple_recipients: "%{attendees_names}, pourriez-vous de me faire parvenir vos identifiants ?",
-                    single_recipient: "%{attendees_names}, pourriez-vous de me faire parvenir votre identifiant ?"
-                }
-            },
-            single_attendee:{
-                phone:{
-                    assisted: "Merci%{courtesyString} de me faire parvenir le numéro de téléphone de %{attendees_names} au cas où.",
-                    nonassisted: "Merci%{courtesyString} de me faire parvenir votre numéro de téléphone au cas où."
+                    single_attendee_unassisted: "Merci de me faire parvenir votre identifiant Skype.",
+                    multiple_attendees_unassisted: "Merci de me faire parvenir vos identifiants Skype.",
+                    single_attendee_assisted: "Merci de me faire parvenir l'identifiant Skype de %{assisted_attendee}.",
+                    multiple_attendees_assisted: "Merci de me faire parvenir les identifiants Skype.",
+                    multiple_attendees_mix: "Merci de me faire parvenir les identifiants Skype."
                 },
-                skype:{
-                    assisted: "Pourriez-vous de me faire parvenir l'identifiant de %{attendees_names} ?",
-                    nonassisted: "Pourriez-vous me faire parvenir votre identifiant ?"
+                early: {
+                    phone: {
+                        single_attendee_unassisted: "Merci également de me faire parvenir le numéro sur lequel vous serez joignable.",
+                        multiple_attendees_unassisted: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu.",
+                        single_attendee_assisted: "Merci aussi de me faire parvenir le numéro sur lequel %{assisted_attendee} sera joignable.",
+                        multiple_attendees_assisted: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu.",
+                        multiple_attendees_mix: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+                    },
+                    skype: {
+                        single_attendee_unassisted: "Merci également de me faire parvenir votre identifiant Skype.",
+                        multiple_attendees_unassisted: "Merci également de me faire parvenir vos identifiants Skype.",
+                        single_attendee_assisted: "Merci également de me faire parvenir l'identifiant Skype de %{assisted_attendee}.",
+                        multiple_attendees_assisted: "Merci également de me faire parvenir les identifiants Skype.",
+                        multiple_attendees_mix: "Merci également de me faire parvenir les identifiants Skype."
+                    }
                 }
+            }
+        },
+        ask_additional_informations:{
+            phone: {
+                single_attendee_unassisted: "%{attendee}, merci%{courtesyString} de me faire parvenir le numéro sur lequel vous serez joignable.",
+                multiple_attendees_unassisted: "%{attendees}, merci%{courtesyString} de me faire parvenir le numéro sur lequel vous serez joignable.",
+                single_attendee_assisted: "Merci%{courtesyString} de me faire parvenir le numéro sur lequel %{assisted_attendee} sera joignable, au cas où.",
+                multiple_attendees_assisted: "Merci%{courtesyString} de me faire parvenir un numéro sur lequel %{attendees} seront joignables, au cas où.",
+                multiple_attendees_mix: "Merci%{courtesyString} de me faire parvenir un numéro à joindre au cas où."
             },
-            early: {
-                phone: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase.",
-                skype: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase."
+            skype: {
+                single_attendee_unassisted: "%{attendee}, merci%{courtesyString} de me faire parvenir votre identifiant Skype.",
+                multiple_attendees_unassisted: "%{attendees}, merci%{courtesyString} de me faire parvenir vos identifiants Skype.",
+                single_attendee_assisted: "Merci%{courtesyString} de me faire parvenir l'identifiant Skype de %{assisted_attendee}.",
+                multiple_attendees_assisted: "Merci%{courtesyString} de me faire parvenir les identifiants Skype de %{attendees}.",
+                multiple_attendees_mix: "Merci%{courtesyString} de me faire parvenir les identifiants Skype."
             }
         },
         follow_up_confirmation: {

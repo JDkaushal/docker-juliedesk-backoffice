@@ -1,7 +1,7 @@
 <script>
-    $(function () {
+    window.afterReplyBoxInitCallback = function(){
         window.setReplyMessage("");
-    });
+    };
 
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
@@ -70,7 +70,9 @@
     }
 
     function setCancelPostponeMultipleReplyText() {
-        window.setReplyMessage(window.generateEmailTemplate({
+        var messageBuilder = $('#reply-area').scope();
+
+        window.setReplyMessage(messageBuilder.generateReply({
             action: "cancel_postpone_multiple_events",
             kind: window.actionKind,
             defaultTimezoneId: window.threadAccount.default_timezone_id,

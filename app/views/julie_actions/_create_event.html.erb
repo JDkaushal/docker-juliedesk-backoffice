@@ -6,6 +6,10 @@
     window.updatedEvents = [];
     window.deletedEvents = [];
 
+    window.afterReplyBoxInitCallback = function(){
+        window.setReplyMessage("");
+    };
+
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "create_events",
@@ -31,10 +35,6 @@
         });
 
         $(".calendar-container").addClass("minimized");
-
-
-
-        window.setReplyMessage("");
 
         var $container = $("#thread-header-other-entries-container");
         $container.html($("<div>").addClass("new-events-container"));
@@ -217,7 +217,9 @@
     }
 
     function refreshReplyText() {
-        window.setReplyMessage(window.generateEmailTemplate({
+        var messageBuilder = $('#reply-area').scope();
+
+        window.setReplyMessage(messageBuilder.generateReply({
             action: "create_event",
             createdEvents: window.createdEvents,
             updatedEvents: window.updatedEvents,

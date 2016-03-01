@@ -22,6 +22,7 @@ class JulieActionsController < ApplicationController
 
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action, message_interpretations: {}}).find(@message.messages_thread_id)
     @messages_thread.re_import
+
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
     if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES

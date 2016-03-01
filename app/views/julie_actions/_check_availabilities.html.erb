@@ -50,9 +50,12 @@
         });
     };
 
-    $(function () {
+    window.afterReplyBoxInitCallback = function() {
         window.setReplyMessage("");
+    };
 
+
+    $(function () {
         $(".messages-thread-info-panel .create-event-panel").show();
         if(window.threadComputedData.client_agreement) {
             $(".messages-thread-info-panel .create-event-panel #create-event-button").html("Create event");
@@ -97,8 +100,10 @@
                     var $suggestedDateTime = $(this);
                     return moment.tz($suggestedDateTime.data("date"), $suggestedDateTime.data("timezone")).format();
                 }).get();
+                var messageBuilder = $('#reply-area').scope();
+
                 $(".calendar-container").addClass("minimized");
-                window.setReplyMessage(window.generateEmailTemplate({
+                window.setReplyMessage(messageBuilder.generateReply({
                     action: "client_agreement",
                     isPostpone: isPostpone,
                     dateTimesToCheck: timeSlotsToCheck,
@@ -198,7 +203,10 @@
                     var message = '';
                     var callInstructionsMessage = '';
 
-                    message += window.generateEmailTemplate({
+                    var messageBuilder = $('#reply-area').scope();
+                    var attendeesMng = $('#attendeesCtrl').scope();
+
+                    message += messageBuilder.generateReply({
                         action: "invites_sent",
                         isPostpone: isPostpone,
                         timeSlotToCreate: window.timeSlotToCreate,
@@ -245,24 +253,29 @@
                                 }
                             });
                         }
-
-                        callInstructionsMessage = window.generateEmailTemplate({
+                        var messageParams = {
                             action: 'send_call_instructions',
                             callInstructions: call_instructions,
                             locale: window.threadComputedData.locale
-                        });
+                        };
+                        var currentAppointmentKind = window.getCurrentAppointment().appointment_kind_hash.family_kind;
+
+                        if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
+                            messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
+                        }
+
+                        callInstructionsMessage = messageBuilder.generateReply(messageParams);
 
                         if(callInstructionsMessage != ''){
                             message += "\n\n";
 
                             message += callInstructionsMessage;
                         }
-
                     }
 
                     var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
                     var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
-                    var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+                    var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
                     if(missingInfosMessage != ''){
                         message += missingInfosMessage;
                     }
@@ -330,8 +343,9 @@
                     var $suggestedDateTime = $(this).closest(".suggested-date-time-container").find(".suggested-date-time");
                     return moment.tz($suggestedDateTime.data("date"), $suggestedDateTime.data("timezone")).format();
                 }).get();
+                var messageBuilder = $('#reply-area').scope();
                 $(".calendar-container").addClass("minimized");
-                window.setReplyMessage(window.generateEmailTemplate({
+                window.setReplyMessage(messageBuilder.generateReply({
                     action: "client_agreement",
                     isPostpone: isPostpone,
                     dateTimesToCheck: availableTimeSlots,
@@ -389,8 +403,9 @@
     window.addEventListener("message", function (event) {
         if (event.data.message == "drawExternalEventsList") {
             window.timeSlotsToSuggest = event.data.date_times;
+            var messageBuilder = $('#reply-area').scope();
 
-            window.setReplyMessage(window.generateEmailTemplate({
+            window.setReplyMessage(messageBuilder.generateReply({
                 action: "suggest_dates",
                 client_agreement: true,
                 attendeesAreNoticed: true,

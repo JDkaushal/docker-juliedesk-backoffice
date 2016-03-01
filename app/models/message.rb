@@ -251,6 +251,12 @@ class Message < ActiveRecord::Base
     to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address.include? "@"}
 
     {
+        from: from_addresses.uniq.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
+          {
+              email: dest.address,
+              name: dest.name
+          }
+        },
         to: (from_addresses + to_addresses).uniq.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,

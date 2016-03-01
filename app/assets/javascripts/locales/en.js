@@ -42,12 +42,18 @@ window.wordings['en'] = {
             },
             after_dates: {
                 singular: {
-                    one_attendee: "\n\nWould that work for you?",
-                    many_attendees: "\n\n%{attendees}, would that work for you?",
+                    single_attendee_unassisted: "\n\nWould that work for you?",
+                    multiple_attendees_unassisted: "\n\n%{attendees}, would that work for you?",
+                    single_attendee_assisted: "\n\nWould that work for %{assisted_attendee}?",
+                    multiple_attendees_assisted: "\n\nWould that work for %{assisted_attendees}?",
+                    multiple_attendees_mix: "\n\nWould that work for all of you?"
                 },
                 plural: {
-                    one_attendee: "\n\nWhich time works best for you?",
-                    many_attendees: "\n\n%{attendees}, which time works best for you?",
+                    single_attendee_unassisted: "\n\nWhich time works best for you?",
+                    multiple_attendees_unassisted: "\n\n%{attendees}, which time works best for you?",
+                    single_attendee_assisted: "\n\nWhich time works best for %{assisted_attendee}?",
+                    multiple_attendees_assisted: "\n\nWhich time works best for %{assisted_attendees}?",
+                    multiple_attendees_mix: "\n\nWhich time would work best?"
                 }
             },
             ask_number: {
@@ -139,6 +145,9 @@ window.wordings['en'] = {
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
+            hello_only: "Hi,\n\n",
+            hello_all: "Hi all,\n\n",
+            hello_named: "Hi %{name},\n\n",
             before: "Hi,\n\n",
             before_only_client: "Hi %{client_name},\n\n",
             full_date_format: "dddd D MMMM YYYY h:mma",
@@ -165,32 +174,53 @@ window.wordings['en'] = {
             give_target_number: "Call instructions: Reach %{target_name} at %{details}",
             give_target_confcall: "Conference Dialing: \n%{details}",
             give_target_skype: "%{target_name}’s Skype ID was included in the invite: %{details}",
-            missing_infos: "Could you please provide a number on which you will be reachable?"
-        },
-        ask_additional_informations:{
-            multiple_attendees:{
+            missing_infos: {
                 phone: {
-                    multiple_recipients: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!",
-                    single_recipient: "%{attendees_names}, please%{courtesyString} provide your phone number, just in case!"
+                    single_attendee_unassisted: "Please provide the number on which you will be reachable.",
+                    multiple_attendees_unassisted: "Please provide a number on which the conference call can be made.",
+                    single_attendee_assisted: "Please provide the number on which %{assisted_attendee} will be reachable.",
+                    multiple_attendees_assisted: "Please provide a number on which the conference call can be made.",
+                    multiple_attendees_mix: "Please provide a number on which the conference call can be made."
                 },
                 skype: {
-                    multiple_recipients: "%{attendees_names}, could you let me know your Skype IDs?",
-                    single_recipient: "%{attendees_names}, could you let me know your Skype ID?"
-                }
-            },
-            single_attendee:{
-                phone:{
-                    assisted: "Please%{courtesyString} provide %{attendees_names} phone number, just in case!",
-                    nonassisted: "Please%{courtesyString} provide your phone number, just in case!"
+                    single_attendee_unassisted: "Please provide your Skype ID.",
+                    multiple_attendees_unassisted: "Please provide your Skype IDs.",
+                    single_attendee_assisted: "Please provide %{assisted_attendee}’s Skype ID.",
+                    multiple_attendees_assisted: "Please provide Skype IDs accordingly.",
+                    multiple_attendees_mix: "Please provide Skype IDs accordingly."
                 },
-                skype:{
-                    assisted: "Could you let me know %{attendees_names}'s Skype ID?",
-                    nonassisted: "Could you let me know your Skype ID?"
+                early: {
+                    phone: {
+                        single_attendee_unassisted: "Please also provide a number on which you will be reachable.",
+                        multiple_attendees_unassisted: "Please also provide a number on which the conference call can be made.",
+                        single_attendee_assisted: "Please also provide a number on which %{assisted_attendee} will be reachable.",
+                        multiple_attendees_assisted: "Please also provide a number on which the conference call can be made.",
+                        multiple_attendees_mix: "Please also provide a number on which the conference call can be made."
+                    },
+                    skype: {
+                        single_attendee_unassisted: "Please also provide your Skype ID.",
+                        multiple_attendees_unassisted: "Please also provide your Skype IDs.",
+                        single_attendee_assisted: "Please also provide %{assisted_attendee}’s Skype ID.",
+                        multiple_attendees_assisted: "Please also provide Skype IDs accordingly.",
+                        multiple_attendees_mix: "Please also provide Skype IDs accordingly."
+                    }
                 }
+            }
+        },
+        ask_additional_informations:{
+            phone: {
+                single_attendee_unassisted: "%{attendee}, please%{courtesyString} provide your phone number, just in case!",
+                multiple_attendees_unassisted: "%{attendees}, please%{courtesyString} provide the number on which you will be reachable.",
+                single_attendee_assisted: "Please%{courtesyString} provide the number on which %{assisted_attendee} will be reachable, just in case!",
+                multiple_attendees_assisted: "Please%{courtesyString} provide a number on which %{attendees} will be reachable, just in case!",
+                multiple_attendees_mix: "Please%{courtesyString} provide a number to reach, just in case!"
             },
-            early: {
-                phone: "Please also provide the number you are reachable at.",
-                skype: "Please also provide the number you are reachable at."
+            skype: {
+                single_attendee_unassisted: "%{attendee}, please%{courtesyString} provide your Skype ID.",
+                multiple_attendees_unassisted: "%{attendees}, please%{courtesyString} provide your Skype IDs.",
+                single_attendee_assisted: "Please%{courtesyString} provide %{assisted_attendee}’s Skype ID.",
+                multiple_attendees_assisted: "Please%{courtesyString} provide %{attendees} Skype IDs.",
+                multiple_attendees_mix: "Please%{courtesyString} provide Skype IDs accordingly."
             }
         },
         follow_up_confirmation: {

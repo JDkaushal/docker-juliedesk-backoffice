@@ -127,6 +127,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
 
     var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+
     //console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
         $.ajax({

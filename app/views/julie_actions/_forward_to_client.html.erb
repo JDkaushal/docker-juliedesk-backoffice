@@ -15,9 +15,14 @@
       $("#forward-button").show();
 
       $("input#quote_message").prop("checked", true).prop("disabled", true);
-      window.setReplyMessage(window.generateEmailTemplate({
-          action: "forward_to_client",
-          locale: window.threadAccount.locale
-      }), "only_client", []);
   });
+
+    window.afterReplyBoxInitCallback = function(){
+        var messageBuilder = $('#reply-area').scope();
+
+        window.setReplyMessage(messageBuilder.generateReply({
+            action: "forward_to_client",
+            locale: window.threadAccount.locale
+        }), "only_client", []);
+    };
 </script>

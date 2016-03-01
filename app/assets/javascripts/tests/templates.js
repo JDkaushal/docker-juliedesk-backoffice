@@ -46,9 +46,11 @@ window.testsData.templatesData = [
                 en: "at the office"
             }
         },
+        assistedAttendees: [],
+        unassistedAttendees: ['singleAttendee'],
         expectedResults: {
             en: "Nicolas Marlier is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-            fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
         }
     },
         {
@@ -73,9 +75,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -100,10 +104,12 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
-            }
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            },
         },
         {
             action: "suggest_dates",
@@ -127,10 +133,12 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
-            }
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+            },
         },
         {
             action: "suggest_dates",
@@ -154,9 +162,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -181,9 +191,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -203,9 +215,11 @@ window.testsData.templatesData = [
                 }
             },
             address: "9 rue Dareau",
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment:\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous :\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -225,9 +239,11 @@ window.testsData.templatesData = [
                 }
             },
             address: "9 rue Dareau",
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment:\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -247,9 +263,11 @@ window.testsData.templatesData = [
                 }
             },
             address: "9 rue Dareau",
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment:\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -274,9 +292,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Thursday 1 January 2015 at 3:00am\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Jeudi 1 janvier 2015 à 3h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Jeudi 1 janvier 2015 à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -301,9 +321,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 3:00am\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -328,9 +350,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for an appointment at the office:\n(Timezone: America/Los Angeles)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 3:00am\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous avec vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous au bureau :\n(Fuseau horaire : America/Los Angeles)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -350,9 +374,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -372,9 +398,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -394,9 +422,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -416,9 +446,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a Skype appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un skype :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -438,9 +470,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a Skype appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un skype :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -460,9 +494,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas Marlier is available for a Skype appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Nicolas Marlier serait disponible pour un skype avec vous :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Nicolas Marlier serait disponible pour un skype :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         }],
 
@@ -489,9 +525,11 @@ window.testsData.templatesData = [
                 en: "at the office"
             }
         },
+        assistedAttendees: [],
+        unassistedAttendees: ['singleAttendee'],
         expectedResults: {
             en: "Julien, Guillaume and Nicolas are available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-            fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+            fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
         }
     },
         {
@@ -517,9 +555,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Julien, Guillaume and Nicolas are available for an appointment at the office:\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -545,9 +585,11 @@ window.testsData.templatesData = [
                     en: "at the office"
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Julien, Guillaume and Nicolas are available for an appointment at the office:\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous avec vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Julien, Guillaume et Nicolas seraient disponibles pour un rendez-vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -574,9 +616,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John"],
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -603,9 +647,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John"],
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -632,9 +678,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John"],
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -661,9 +709,104 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nJohn, Jack, which time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+            }
+        },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John", "Jack"],
+            assistedAttendees: ['Pierre'],
+            unassistedAttendees: ['John', 'Jack'],
+            expectedResults: {
+                en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time would work best?",
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire conviendrait le mieux ?"
+            }
+        },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John", "Jack"],
+            assistedAttendees: ['Pierre'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for Pierre?",
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire conviendrait le mieux à Pierre ?"
+            }
+        },
+        {
+            action: "suggest_dates",
+            client_agreement: true,
+            client: "Nicolas",
+            other_clients: [],
+            timeSlotsToSuggest: ["2015-01-01T12:00:00", "2015-01-01T14:00:00", "2015-01-04T12:00:00", "2015-01-06T12:00:00"],
+            timezoneId: "Europe/Paris",
+            defaultTimezoneId: "Europe/Paris",
+            appointment: {
+                title_in_email: {
+                    fr: "un rendez-vous",
+                    en: "an appointment"
+                },
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            attendees: ["John", "Jack"],
+            assistedAttendees: ['Pierre', 'Jean'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tuesday 6 January 2015 at 12:00pm\n\nWhich time works best for Pierre, Jean?",
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Mardi 6 janvier 2015 à 12h00\n\nQuel horaire conviendrait le mieux à Pierre, Jean ?"
             }
         },
         {
@@ -690,9 +833,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nJohn, Jack, which time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -719,9 +864,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm or 2:00pm\n - Sunday 4 January 2015 at 12:00pm\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nJohn, Jack, which time works best for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00 ou 14h00\n - Dimanche 4 janvier 2015 à 12h00\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, quel horaire vous conviendrait le mieux ?"
             }
         },
         {
@@ -748,9 +895,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Thursday 1 January 2015 at 12:00pm\n\nJohn, Jack, would that work for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Jeudi 1 janvier 2015 à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         },
         {
@@ -777,9 +926,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nJohn, Jack, would that work for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         },
         {
@@ -806,9 +957,11 @@ window.testsData.templatesData = [
                 }
             },
             attendees: ["John", "Jack"],
+            assistedAttendees: [],
+            unassistedAttendees: ['John', 'Jack'],
             expectedResults: {
                 en: "Nicolas is available for an appointment at the office:\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nJohn, Jack, would that work for you?",
-                fr: "Nicolas serait disponible pour un rendez-vous avec vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
+                fr: "Nicolas serait disponible pour un rendez-vous au bureau :\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nJohn, Jack, cela vous conviendrait-il ?"
             }
         }],
 
@@ -831,6 +984,8 @@ window.testsData.templatesData = [
                 is_virtual: true
             }
         },
+        assistedAttendees: [],
+        unassistedAttendees: ['singleAttendee'],
         expectedResults: {
             en: "Sorry, Nicolas Marlier is no longer available at these times, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
             fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
@@ -854,6 +1009,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at these times, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -877,6 +1034,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at these times, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à ces horaires, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -900,6 +1059,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry none of these timeslots are open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
@@ -923,6 +1084,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry none of these timeslots are open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -946,6 +1109,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry none of these timeslots are open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, aucun de ces horaires ne convient, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -969,6 +1134,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
@@ -992,6 +1159,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -1015,6 +1184,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -1038,6 +1209,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry this timeslot is not open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
@@ -1061,6 +1234,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry this timeslot is not open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -1084,6 +1259,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry this timeslot is not open, but Nicolas Marlier would be available for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, cet horaire ne convient pas, mais Nicolas Marlier serait disponible pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -1114,9 +1291,11 @@ window.testsData.templatesData = [
                 is_virtual: true
             }
         },
+        assistedAttendees: [],
+        unassistedAttendees: ['singleAttendee'],
         expectedResults: {
             en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you on Thursday 1 January 2015 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
         }
     },
         {
@@ -1142,9 +1321,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1170,9 +1351,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1199,9 +1382,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you on Thursday 1 January 2015 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous jeudi 1 janvier 2015 à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1228,9 +1413,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1257,9 +1444,11 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.\n\nHere are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00.\n\nVoici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
             }
         },
         {
@@ -1282,6 +1471,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but here are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Thursday 1 January 2015 at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Jeudi 1 janvier 2015 à 12h00\n\nCela vous conviendrait-il ?"
@@ -1307,6 +1498,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but here are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -1332,6 +1525,8 @@ window.testsData.templatesData = [
                     is_virtual: true
                 }
             },
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
                 en: "Sorry, Nicolas Marlier is no longer available at this time, but here are some new availabilities for a telephone appointment:\n(Timezone: Europe/Paris)\n - Tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm\n\nWould that work for you?",
                 fr: "Désolée, Nicolas Marlier n'est plus disponible à cet horaire, mais voici de nouvelles disponibilités pour un rendez-vous téléphonique :\n(Fuseau horaire : Europe/Paris)\n - Demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00\n\nCela vous conviendrait-il ?"
@@ -2185,7 +2380,7 @@ window.testsData.templatesData = [
         attendeesAreNoticed: false,
         expectedResults: {
             en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you on Thursday 1 January 2015 8:00am.",
-            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous jeudi 1 janvier 2015 à 8h00."
+            fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous jeudi 1 janvier 2015 à 8h00."
         }
     },
         {
@@ -2202,7 +2397,7 @@ window.testsData.templatesData = [
             attendeesAreNoticed: false,
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
         {
@@ -2219,7 +2414,7 @@ window.testsData.templatesData = [
             attendeesAreNoticed: false,
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", "+ window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous demain" + ", "+ window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
         {
@@ -2236,7 +2431,7 @@ window.testsData.templatesData = [
             attendeesAreNoticed: false,
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you on Wednesday 31 December 2014 11:00pm (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous mercredi 31 décembre 2014 à 23h00 (Fuseau horaire : America/Los Angeles)."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous mercredi 31 décembre 2014 à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
@@ -2253,7 +2448,7 @@ window.testsData.templatesData = [
             attendeesAreNoticed: false,
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00pm (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
@@ -2270,7 +2465,7 @@ window.testsData.templatesData = [
             attendeesAreNoticed: false,
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the meeting with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 11:00pm (Timezone: America/Los Angeles).",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le rendez-vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 23h00 (Fuseau horaire : America/Los Angeles)."
             }
         },
         {
@@ -2297,7 +2492,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the dinner appointment with you on Thursday 1 January 2015 8:00am.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous jeudi 1 janvier 2015 à 8h00."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner jeudi 1 janvier 2015 à 8h00."
             }
         },
         {
@@ -2324,7 +2519,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the dinner appointment with you today" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner aujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
         {
@@ -2351,7 +2546,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Very sorry for the inconvenience, but something has come up and Nicolas Marlier won't be able to make the dinner appointment with you tomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 8:00am.",
-                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner avec vous demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
+                fr: "Désolée, mais suite à un contretemps, Nicolas Marlier ne pourra malheureusement pas assurer le diner demain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 8h00."
             }
         },
         {
@@ -3518,59 +3713,6 @@ window.testsData.templatesData = [
             fr: "Très bien, c'est noté."
         }
     }],
-    //[
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'client',
-        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
-        //        support: 'mobile',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'interlocutor',
-        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
-        //        support: 'mobile',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'client',
-        //        targetInfos: {email: 'client@gmail.com', name: 'John Doe'},
-        //        support: 'landline',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach John Doe at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler John Doe au 06 02 02 02 02"
-        //    }
-        //},
-        //{
-        //    action: "send_call_instructions",
-        //    callInstructions:{
-        //        target: 'interlocutor',
-        //        targetInfos: {email: 'interlocutor@gmail.com', name: 'Samy Johnny'},
-        //        support: 'landline',
-        //        details: '06 02 02 02 02'
-        //    },
-        //    expectedResults: {
-        //        en: "Call instructions: Reach Samy Johnny at 06 02 02 02 02",
-        //        fr: "Instructions d’appel: appeler Samy Johnny au 06 02 02 02 02"
-        //    }
-        //},
     [
         {
             action: "send_call_instructions",
@@ -3698,9 +3840,340 @@ window.testsData.templatesData = [
                 support: 'mobile',
                 details: ''
             },
+            askCallInstructions: false,
             expectedResults: {
-                en: "Could you please provide a number on which you will be reachable?",
-                fr: "Pourriez-vous me communiquer le numéro sur lequel vous serez joignable ?"
+                en: "",
+                fr: ""
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            expectedResults: {
+                en: "Please provide the number on which you will be reachable at.",
+                fr: "Merci de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide the number on which you will be reachable at.",
+                fr: "Merci également de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            expectedResults: {
+                en: "Please provide your Skype ID.",
+                fr: "Merci de me faire parvenir votre identifiant Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide your Skype ID.",
+                fr: "Merci également de me faire parvenir votre identifiant Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            expectedResults: {
+                en: "Please provide a number on which the conference call can be made.",
+                fr: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide a number on which the conference call can be made.",
+                fr: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            expectedResults: {
+                en: "Please provide your Skype IDs.",
+                fr: "Merci de me faire parvenir vos identifiants Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide your Skype IDs.",
+                fr: "Merci également de me faire parvenir vos identifiants Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide the number on which attendee1 will be reachable at.",
+                fr: "Merci de me faire parvenir le numéro sur lequel attendee1 sera joignable."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: [],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide the number on which attendee1 will be reachable at.",
+                fr: "Merci aussi de me faire parvenir le numéro sur lequel attendee1 sera joignable."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide attendee1’s Skype ID.",
+                fr: "Merci de me faire parvenir l'identifiant Skype de attendee1."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: [],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide attendee1’s Skype ID.",
+                fr: "Merci également de me faire parvenir l'identifiant Skype de attendee1."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide a number on which the conference call can be made.",
+                fr: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: [],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide a number on which the conference call can be made.",
+                fr: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide Skype IDs accordingly.",
+                fr: "Merci de me faire parvenir les identifiants Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: [],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide Skype IDs accordingly.",
+                fr: "Merci également de me faire parvenir les identifiants Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: ['attendee3'],
+            expectedResults: {
+                en: "Please provide a number on which the conference call can be made.",
+                fr: "Merci de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'mobile',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: ['attendee3'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide a number on which the conference call can be made.",
+                fr: "Merci également de me faire parvenir un numéro sur lequel la conférence téléphonique pourra avoir lieu."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: ['attendee3'],
+            expectedResults: {
+                en: "Please provide Skype IDs accordingly.",
+                fr: "Merci de me faire parvenir les identifiants Skype."
+            }
+        },
+        {
+            action: "send_call_instructions",
+            callInstructions:{
+                target: 'interlocutor',
+                targetInfos: '',
+                support: 'skype',
+                details: ''
+            },
+            askCallInstructions: true,
+            assistedAttendees: ['attendee1', 'attendee2'],
+            unassistedAttendees: ['attendee3'],
+            askingEarly: true,
+            expectedResults: {
+                en: "Please also provide Skype IDs accordingly.",
+                fr: "Merci également de me faire parvenir les identifiants Skype."
             }
         },
         {
@@ -3724,9 +4197,50 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             multipleAttendees: true,
             redundantCourtesy: false,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
             expectedResults: {
-                en: "Attendee1, please provide your phone number, just in case!",
-                fr: "Attendee1, merci de me faire parvenir votre numéro de téléphone au cas où."
+                en: "singleAttendee, please provide your phone number, just in case!",
+                fr: "singleAttendee, merci de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "landline_or_mobile",
+            attendees: ["Attendee1"],
+            multipleAttendees: true,
+            redundantCourtesy: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            expectedResults: {
+                en: "singleAttendee, please also provide your phone number, just in case!",
+                fr: "singleAttendee, merci aussi de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            multipleAttendees: true,
+            redundantCourtesy: false,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            expectedResults: {
+                en: "singleAttendee, please provide your Skype ID.",
+                fr: "singleAttendee, merci de me faire parvenir votre identifiant Skype."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            multipleAttendees: true,
+            redundantCourtesy: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['singleAttendee'],
+            expectedResults: {
+                en: "singleAttendee, please also provide your Skype ID.",
+                fr: "singleAttendee, merci aussi de me faire parvenir votre identifiant Skype."
             }
         },
         {
@@ -3734,9 +4248,47 @@ window.testsData.templatesData = [
             requiredAdditionalInformations: "mobile_only",
             attendees: ["Attendee1"],
             redundantCourtesy: false,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
             expectedResults: {
-                en: "Please provide your phone number, just in case!",
-                fr: "Merci de me faire parvenir votre numéro de téléphone au cas où."
+                en: "attendee1, attendee2, please provide the number on which you will be reachable at.",
+                fr: "attendee1, attendee2, merci de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            expectedResults: {
+                en: "attendee1, attendee2, please also provide the number on which you will be reachable at.",
+                fr: "attendee1, attendee2, merci aussi de me faire parvenir le numéro sur lequel vous serez joignable."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: false,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            expectedResults: {
+                en: "attendee1, attendee2, please provide your Skype IDs.",
+                fr: "attendee1, attendee2, merci de me faire parvenir vos identifiants Skype."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: true,
+            assistedAttendees: [],
+            unassistedAttendees: ['attendee1', 'attendee2'],
+            expectedResults: {
+                en: "attendee1, attendee2, please also provide your Skype IDs.",
+                fr: "attendee1, attendee2, merci aussi de me faire parvenir vos identifiants Skype."
             }
         },
         {
@@ -3745,9 +4297,24 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             assisted: true,
             redundantCourtesy: false,
+            assistedAttendees: ['assistedAttendee'],
+            unassistedAttendees: [],
             expectedResults: {
-                en: "Please provide Attendee1 phone number, just in case!",
-                fr: "Merci de me faire parvenir le numéro de téléphone de Attendee1 au cas où."
+                en: "Please provide the number on which assistedAttendee will be reachable at, just in case!",
+                fr: "Merci de me faire parvenir le numéro sur lequel assistedAttendee sera joignable, au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: true,
+            assistedAttendees: ['assistedAttendee'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please also provide the number on which assistedAttendee will be reachable at, just in case!",
+                fr: "Merci aussi de me faire parvenir le numéro sur lequel assistedAttendee sera joignable, au cas où."
             }
         },
         {
@@ -3756,9 +4323,88 @@ window.testsData.templatesData = [
             attendees: ["Attendee1"],
             assisted: true,
             redundantCourtesy: false,
+            assistedAttendees: ['assistedAttendee'],
+            unassistedAttendees: [],
             expectedResults: {
-                en: "Could you let me know Attendee1's Skype ID?",
-                fr: "Pourriez-vous de me faire parvenir l'identifiant de Attendee1 ?"
+                en: "Please provide assistedAttendee’s Skype ID.",
+                fr: "Merci de me faire parvenir l'identifiant Skype de assistedAttendee."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: true,
+            assistedAttendees: ['assistedAttendee'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please also provide assistedAttendee’s Skype ID.",
+                fr: "Merci aussi de me faire parvenir l'identifiant Skype de assistedAttendee."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: false,
+            assistedAttendees: ['assistedAttendee1', 'assistedAttendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide a number on which assistedAttendee1, assistedAttendee2 will be reachable at, just in case!",
+                fr: "Merci de me faire parvenir un numéro sur lequel assistedAttendee1, assistedAttendee2 seront joignables, au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: true,
+            assistedAttendees: ['assistedAttendee1', 'assistedAttendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please also provide a number on which assistedAttendee1, assistedAttendee2 will be reachable at, just in case!",
+                fr: "Merci aussi de me faire parvenir un numéro sur lequel assistedAttendee1, assistedAttendee2 seront joignables, au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: false,
+            assistedAttendees: ['assistedAttendee1', 'assistedAttendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please provide assistedAttendee1, assistedAttendee2 Skype IDs.",
+                fr: "Merci de me faire parvenir les identifiants Skype de assistedAttendee1, assistedAttendee2."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            assisted: true,
+            redundantCourtesy: true,
+            assistedAttendees: ['assistedAttendee1', 'assistedAttendee2'],
+            unassistedAttendees: [],
+            expectedResults: {
+                en: "Please also provide assistedAttendee1, assistedAttendee2 Skype IDs.",
+                fr: "Merci aussi de me faire parvenir les identifiants Skype de assistedAttendee1, assistedAttendee2."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "mobile_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: false,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: ['attendee2'],
+            expectedResults: {
+                en: "Please provide a number on which to reach, just in case!",
+                fr: "Merci de me faire parvenir un numéro à joindre au cas où."
             }
         },
         {
@@ -3766,9 +4412,23 @@ window.testsData.templatesData = [
             requiredAdditionalInformations: "mobile_only",
             attendees: ["Attendee1"],
             redundantCourtesy: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: ['attendee2'],
             expectedResults: {
-                en: "Please also provide your phone number, just in case!",
-                fr: "Merci aussi de me faire parvenir votre numéro de téléphone au cas où."
+                en: "Please also provide a number on which to reach, just in case!",
+                fr: "Merci aussi de me faire parvenir un numéro à joindre au cas où."
+            }
+        },
+        {
+            action: "ask_additional_informations",
+            requiredAdditionalInformations: "skype_only",
+            attendees: ["Attendee1"],
+            redundantCourtesy: false,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: ['attendee2'],
+            expectedResults: {
+                en: "Please provide Skype IDs accordingly.",
+                fr: "Merci de me faire parvenir les identifiants Skype."
             }
         },
         {
@@ -3776,54 +4436,11 @@ window.testsData.templatesData = [
             requiredAdditionalInformations: "skype_only",
             attendees: ["Attendee1"],
             redundantCourtesy: true,
+            assistedAttendees: ['attendee1'],
+            unassistedAttendees: ['attendee2'],
             expectedResults: {
-                en: "Could you let me know your Skype ID?",
-                fr: "Pourriez-vous me faire parvenir votre identifiant ?"
-            }
-        },
-        {
-            action: "ask_additional_informations",
-            requiredAdditionalInformations: "mobile_only",
-            attendees: ["Attendee1", "Attendee2", "Attendee3"],
-            multipleAttendees: true,
-            redundantCourtesy: false,
-            expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please provide your phone number, just in case!",
-                fr: "Attendee1, Attendee2, Attendee3, merci de me faire parvenir vos numéros de téléphone au cas où."
-            }
-        },
-        {
-            action: "ask_additional_informations",
-            requiredAdditionalInformations: "skype_only",
-            attendees: ["Attendee1", "Attendee2", "Attendee3"],
-            multipleAttendees: true,
-            redundantCourtesy: false,
-            expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, could you let me know your Skype IDs?",
-                fr: "Attendee1, Attendee2, Attendee3, pourriez-vous de me faire parvenir vos identifiants ?"
-            }
-        },
-        {
-            action: "ask_additional_informations",
-            requiredAdditionalInformations: "mobile_only",
-            attendees: ["Attendee1", "Attendee2", "Attendee3"],
-            multipleAttendees: true,
-            redundantCourtesy: true,
-            expectedResults: {
-                en: "Attendee1, Attendee2, Attendee3, please also provide your phone number, just in case!",
-                fr: "Attendee1, Attendee2, Attendee3, merci aussi de me faire parvenir vos numéros de téléphone au cas où."
-            }
-        },
-        {
-            action: "ask_additional_informations",
-            requiredAdditionalInformations: "mobile_only",
-            attendees: ["Attendee1"],
-            multipleAttendees: true,
-            redundantCourtesy: true,
-            askingEarly: true,
-            expectedResults: {
-                en: "Please also provide the number you are reachable at.",
-                fr: "Merci aussi de me faire parvenir sur quel numéro vous serez joignable en avance de phase."
+                en: "Please also provide Skype IDs accordingly.",
+                fr: "Merci aussi de me faire parvenir les identifiants Skype."
             }
         },
         {

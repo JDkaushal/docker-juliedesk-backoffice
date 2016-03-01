@@ -15,9 +15,11 @@
         $(".calendar-container").addClass("minimized");
     };
 
-    $(function() {
+    window.afterReplyBoxInitCallback = function(){
         window.setReplyMessage("", "only_client");
+    };
 
+    $(function() {
         var $languageSelector = $("<div>").addClass("language-selector-container");
         $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
         $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));

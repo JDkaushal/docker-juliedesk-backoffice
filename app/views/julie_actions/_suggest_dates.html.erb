@@ -20,15 +20,12 @@
         });
     };
 
-    $(function() {
+    window.afterReplyBoxInitCallback = function() {
         window.setReplyMessage("");
         if(window.threadComputedData.client_agreement) {
             if(isPostpone) {
                 $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
                 window.afterEventFetched = function() {
-//                    window.otherEmails = _.map(window.currentEventTile.event.attendees, function (attendee) {
-//                        return attendee.email;
-//                    });
                     window.otherEmails = [];
                     if(!window.threadComputedData.attendees_are_noticed) {
                         $("input#quote_message").removeAttr("checked");
@@ -54,8 +51,10 @@
             $("#show-calendar-button").hide();
             $(".julie-action-title .title").html(localize("actions.to_do.ask_agreement"));
 
+            var messageBuilder = $('#reply-area').scope();
+
             window.setReplyMessage(
-                    window.generateEmailTemplate({
+                    messageBuilder.generateReply({
                         action: "suggest_dates",
                         client_agreement: false,
                         isPostpone: isPostpone,
@@ -64,7 +63,7 @@
                     "only_client"
             );
         }
-    });
+    };
 
     var otherClients = function(){
         return _.filter(window.getInfoPanelAttendees(), function(attendee) {
@@ -80,15 +79,17 @@
 
     var suggestDatesSetReplyMessage = function() {
         var message = '';
+        var messageBuilder = $('#reply-area').scope();
+        var threadComputedData = window.threadComputedData;
 
-        message += window.generateEmailTemplate({
+        message += messageBuilder.generateReply({
             action: "suggest_dates",
             client_agreement: true,
             isPostpone: isPostpone,
-            attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
+            attendeesAreNoticed: threadComputedData.attendees_are_noticed,
             previousAppointment: previousAppointment,
             currentEventData: window.currentEventData,
-            locale: window.threadComputedData.locale,
+            locale: threadComputedData.locale,
             appointment: window.getCurrentAppointment(),
             address: window.getCurrentAddress(),
             timeSlotsToSuggest: window.timeSlotsToSuggest,
@@ -114,16 +115,33 @@
             }), function(name) {
                 return name;
             }),
-            timezoneId: window.threadComputedData.timezone,
+            timezoneId: threadComputedData.timezone,
             defaultTimezoneId: window.threadAccount.default_timezone_id,
-            callInstructions: window.threadComputedData.call_instructions
+            callInstructions: threadComputedData.call_instructions
         });
 
         var currentAppointment = window.getCurrentAppointment();
         var firstDateSuggestion = <%= @first_date_suggestion %>;
+        var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
+        var attendeesMng = $('#attendeesCtrl').scope();
 
-        if(firstDateSuggestion && currentAppointment && (currentAppointment.kind == 'skype' || currentAppointment.kind == 'call') && window.presentAttendees().length == 2){
-            var missingInfosMessage = angular.element($('#attendeesCtrl')).scope().checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.kind == 'call'});
+        if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !threadComputedData.call_instructions.details){
+            var messageParams = {
+                action: 'send_call_instructions',
+                callInstructions: threadComputedData.call_instructions,
+                locale: threadComputedData.locale,
+                askCallInstructions: attendeesMng.mustAskCallInstructions(currentAppointmentKind),
+                askingEarly: true
+            };
+
+            if(messageParams.askCallInstructions) {
+                message += "\n";
+                message += messageBuilder.generateReply(messageParams);
+            }
+        }
+
+        if(firstDateSuggestion && currentAppointment && (currentAppointmentKind == 'skype' || currentAppointmentKind == 'call')) {
+            var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.appointment_kind_hash.family_kind == 'call'});
             if(missingInfosMessage != ''){
                 message += missingInfosMessage;
             }

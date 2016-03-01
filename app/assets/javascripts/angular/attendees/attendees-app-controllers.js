@@ -208,6 +208,8 @@
 
         angular.element(document).ready(function () {
             $scope.virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
+            $scope.messageBuilder = $scope.messageBuilder || $('#reply-area').scope();
+
         });
 
         this.loaded = false;
@@ -441,6 +443,7 @@
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
                 $scope.exposeAttendeesToGlobalScope();
+                $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
@@ -541,6 +544,24 @@
         $scope.getAttendeeByGuid = function(guid) {
             return _.find($scope.attendees, function (a) {
                 return a.guid == guid;
+            });
+        };
+
+        $scope.getAttendeeByEmail = function(email) {
+            return _.find($scope.attendees, function (a) {
+                return a.email == email;
+            });
+        };
+
+        $scope.getNonClientAndNonAssistantAttendees = function() {
+            return _.filter($scope.attendees, function (a) {
+                return a.isPresent && !a.isClient && !a.isAssistant;
+            });
+        };
+
+        $scope.getNonClientAndNonAssistantWithMissingInfosAttendees = function() {
+            return _.filter($scope.attendees, function (a) {
+                return a.hasMissingInformations && a.isPresent && !a.isClient && !a.isAssistant;
             });
         };
 
@@ -646,13 +667,33 @@
             return (attendee.usageName && attendee.usageName.length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
         };
 
+        $scope.mustAskCallInstructions = function(type){
+            var result = false;
+            var presentAttendees = $scope.getAttendeesWithoutAssistant();
+
+            if(type == 'call'){
+                // Ask if call instructions empty
+                if($scope.virtualAppointmentsHelper && !$scope.virtualAppointmentsHelper.currentConf.details)
+                    result = true;
+            }else if(type == 'skype') {
+                var attendeeNotClientWithASkype = _.find(presentAttendees, function(a) {
+                    return !a.isClient && !a.hasMissingInformations;
+                });
+                // Don't ask skype informations early if any present attendee not being a client has already a skype
+                if(!attendeeNotClientWithASkype)
+                    result = true;
+            }
+
+            return result;
+        };
+
         $scope.checkMissingInformations = function(params){
             params = params || {};
             var check = true;
             var result = {missingInfos: false, attendeesNames: [], assisted: false};
             var methodToCheck;
             var message = '';
-            var presentAttendees;
+            var presentAttendees = $scope.getAttendeesWithoutAssistant();
             var presentAttendeesLength = 0;
 
             if($("select#appointment_nature").val()){
@@ -671,31 +712,15 @@
                             break;
                     }
 
-                    if(params.ask_early_call){
-                        if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target != 'interlocutor')
-                            check = false;
-                    }else if(params.ask_early_skype) {
-                        // let check at true
-                    }
-                    else{
-                        if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target == 'interlocutor')
-                            check = false;
-                    }
+                    if($scope.virtualAppointmentsHelper && $scope.virtualAppointmentsHelper.currentConf.target == 'interlocutor')
+                        check = false;
 
                     if(check){
-                        presentAttendees = $scope.getAttendeesWithoutAssistant();
                         presentAttendeesLength = presentAttendees.length;
 
                         var attendeesWithMissingInfos = $scope.getAttendeesWithMissingInfos(presentAttendees);
 
                         if(attendeesWithMissingInfos.length > 0){
-                            if(presentAttendeesLength == 2){
-                                // We can assess that if there is only one attendee (not counting assistants) plus the threadOwner and the attendeesMissingInfos array is not empty that the first item in this array is our only attendee
-                                // So we can access it to check whether it is assited by someone
-
-                                result.assisted = !!attendeesWithMissingInfos[0].assistedBy && !!attendeesWithMissingInfos[0].assistedBy.guid;
-                            }
-
                             _.each(attendeesWithMissingInfos, function(a){
                                 if($scope.missingInformationAttendeesFilter(a, attendeesWithMissingInfos)){
                                     var names = a.usageName.split(" ");
@@ -714,7 +739,7 @@
 
             if(result.missingInfos){
                 message = params.sticky ? "\n" : "\n\n";
-                message += window.generateEmailTemplate({
+                message += $scope.messageBuilder.generateReply({
                     action: 'ask_additional_informations',
                     requiredAdditionalInformations: result.infoScope,
                     assisted: result.assisted,
@@ -722,7 +747,7 @@
                     // More than one attendee including the threadOwner
                     multipleAttendees: presentAttendeesLength > 2,
                     redundantCourtesy: params.redundantCourtesy || false,
-                    askingEarly: params.askingEarly || false,
+                    //askingEarly: params.askingEarly || false,
                     locale: window.threadComputedData.locale
                 });
             }
@@ -792,7 +817,6 @@
         //Initializers--------------------------------------------------------------------
         this.fetchAttendeeFromClientContactNetwork();
         //--------------------------------------------------------------------------------
-
     }]);
 
     function generateGuid() {

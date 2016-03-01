@@ -178,16 +178,15 @@ window.generateEmailTemplate = function (params) {
                 var timeSlotsPlural = "plural";
                 if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
 
-                var attendeesString = "";
-                var attendeesKey = ".one_attendee";
-                if(params.attendees && params.attendees.length > 1) {
-                    attendeesString = params.attendees.join(", ");
-                    var attendeesKey = ".many_attendees";
-                }
+                //var attendeesString = "";
+                var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.suggest_dates.after_dates', params.assistedAttendees, params.unassistedAttendees);
+                //var attendeesKey = ".one_attendee";
+                //if(params.attendees && params.attendees.length > 1) {
+                //    attendeesString = params.attendees.join(", ");
+                //    var attendeesKey = ".many_attendees";
+                //}
 
-                message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesKey, {
-                    attendees: attendeesString
-                });
+                message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesSpecificConf[0], attendeesSpecificConf[1]);
             }
         }
         else {
@@ -433,12 +432,8 @@ window.generateEmailTemplate = function (params) {
         if(callInstructions.target == 'later')
             message += '';
         else if(callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
-            if (callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall')) {
+            if(callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall')) {
 
-                //callInstructionsMessage = localize("email_templates.send_call_instructions.give_target_number", {
-                //    target_name: callInstructions.targetInfos.name,
-                //    details: callInstructions.details
-                //});
                 callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
             } else if (callInstructions.support == 'skype') {
                 var names = callInstructions.targetInfos.name.split(" ");
@@ -453,37 +448,33 @@ window.generateEmailTemplate = function (params) {
                 callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
             }
         }else{
-            if(callInstructions.target != 'client')
-                callInstructionsMessage = localize("email_templates.send_call_instructions.missing_infos");
+            if(callInstructions.target != 'client' && params.askCallInstructions){
+                var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.send_call_instructions.missing_infos', params.assistedAttendees, params.unassistedAttendees);
+                callInstructionsMessage = localize("email_templates.send_call_instructions.missing_infos" + (params.askingEarly ? '.early' : '') + ( callInstructions.support == 'skype' ? '.skype' : '.phone' ) + attendeesSpecificConf[0], attendeesSpecificConf[1]);
+            }
         }
 
         message += callInstructionsMessage;
     }
     else if(params.action == "ask_additional_informations"){
-        var attendees = params.attendees;
-        var multipleAttendees = params.multipleAttendees;
-        var assisted = params.assisted;
         var requiredAdditionalInformations = params.requiredAdditionalInformations;
         var redundantCourtesy = params.redundantCourtesy;
+        var attendeesSpecificConf = [];
+        var templateName = '';
 
         if(params.askingEarly) {
-            var templateName = "email_templates.ask_additional_informations.early" + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
+            attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.ask_additional_informations.early', params.assistedAttendees, params.unassistedAttendees);
+            templateName = "email_templates.ask_additional_informations.early" + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone') + attendeesSpecificConf[0];
 
-            message += localize(templateName);
+            message += localize(templateName, attendeesSpecificConf[1]);
         }else {
-            var templateName = "email_templates.ask_additional_informations" + (multipleAttendees ? '.multiple_attendees' : '.single_attendee') + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone');
-
-            if(!multipleAttendees)
-                templateName += assisted ? ".assisted" : ".nonassisted";
-            else
-                templateName += attendees.length > 1 ? ".multiple_recipients" : ".single_recipient";
+            attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.ask_additional_informations', params.assistedAttendees, params.unassistedAttendees);
+            templateName = "email_templates.ask_additional_informations" + (requiredAdditionalInformations == 'skype_only' ? '.skype' : '.phone') + attendeesSpecificConf[0];
 
             var courtesyString = redundantCourtesy ? ' ' + localize('common.egalement'): '';
+            attendeesSpecificConf[1]['courtesyString'] = courtesyString;
 
-            message += localize(templateName, {
-                attendees_names: attendees.join(', '),
-                courtesyString: courtesyString
-            });
+            message += localize(templateName, attendeesSpecificConf[1]);
         }
     }
     else if(params.action == "forward_to_client") {
@@ -517,6 +508,67 @@ window.generateEmailTemplate = function (params) {
 
     window.setCurrentLocale(previousLocale);
     return message;
+};
+
+function determineAttendeesSpecificConf(root, assistedAttendees, unassistedAttendees) {
+
+    if(assistedAttendees && unassistedAttendees) {
+        var attendeesKey = ".single_attendee_unassisted";
+        var params = {};
+
+        var assistedLength = assistedAttendees.length;
+        var unassistedLength = unassistedAttendees.length;
+
+        var assistedAttendeesNames = assistedAttendees.join(', ');
+
+        var unassistedAttendeesNames = unassistedAttendees.join(', ');
+
+        if(assistedLength == 0 && unassistedLength > 1) {
+            attendeesKey = '.multiple_attendees_unassisted';
+        }else if(assistedLength == 1 && unassistedLength == 0) {
+            attendeesKey = '.single_attendee_assisted';
+        }else if(assistedLength > 1 && unassistedLength == 0) {
+            attendeesKey = '.multiple_attendees_assisted';
+        }else if(assistedLength > 0 && unassistedLength > 0) {
+            attendeesKey = '.multiple_attendees_mix';
+        }
+
+        switch(root) {
+            case 'email_templates.suggest_dates.after_dates':
+                switch(attendeesKey){
+                    case '.multiple_attendees_unassisted':
+                        params = {attendees: unassistedAttendeesNames};
+                        break;
+                    case '.single_attendee_assisted':
+                        params = {assisted_attendee: assistedAttendeesNames};
+                        break;
+                    case '.multiple_attendees_assisted':
+                        params = {assisted_attendees: assistedAttendeesNames};
+                        break;
+                };
+                break;
+            case 'email_templates.ask_additional_informations.early':
+                if(attendeesKey == '.single_attendee_assisted')
+                    params = {assisted_attendee: assistedAttendeesNames};
+                break;
+            case 'email_templates.ask_additional_informations':
+                if(attendeesKey == '.single_attendee_unassisted')
+                    params = {attendee: unassistedAttendeesNames};
+                else if(attendeesKey == '.single_attendee_assisted')
+                    params = {assisted_attendee: assistedAttendeesNames};
+                else if(attendeesKey == '.multiple_attendees_unassisted')
+                    params = {attendees: unassistedAttendeesNames};
+                else if(attendeesKey == '.multiple_attendees_assisted')
+                    params = {attendees: assistedAttendeesNames};
+                break;
+            case 'email_templates.send_call_instructions.missing_infos':
+                if(attendeesKey == '.single_attendee_assisted')
+                    params = {assisted_attendee: assistedAttendeesNames};
+                break;
+        };
+
+        return [attendeesKey, params];
+    }
 };
 
 window.getScheduledEventDateString = function(params) {

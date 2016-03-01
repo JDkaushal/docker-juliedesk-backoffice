@@ -17,6 +17,7 @@
                     var $template = $("<div>").addClass("template");
                     var strTemplate = template.replace(/\n/g, "<br>");
                     $template.append($("<div>").addClass("template-text").html(strTemplate));
+
                     if(template == expectedResults[locale]) {
                         $template.addClass("correct");
                     }

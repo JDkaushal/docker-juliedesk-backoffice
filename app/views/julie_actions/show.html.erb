@@ -87,7 +87,11 @@
 */
 
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
+    <% parsed_reply_all_recipients = JSON.parse(@message.reply_all_recipients)%>
 
+    function emailSender() {
+        return <%== {name: parsed_reply_all_recipients['to'][0]['email']}.to_json %>;
+    }
     function initialToRecipients() {
         return <%== initial_recipients[:to].map{|c| {name: c}}.to_json %>;
     }
@@ -115,57 +119,58 @@
     };
 
     function initTokenInputs() {
-        trackEvent("Julie_action_is_open", {
-            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-            thread_id: <%= @messages_thread.id %>,
-            thread_messages_count: <%= @messages_thread.messages.length %>,
-            bo_message_id: <%= @julie_action.message_classification.message_id %>,
-            action_nature: "<%= @julie_action.message_classification.classification %>"
-        });
 
-        if (window.tokenInputsInitialized) {
-            return;
-        }
-        window.tokenInputsInitialized = true;
-        $("#recipients-to-input").tokenInput(
-                possibleRecipients(),
-                {
-                    searchDelay: 0,
-                    enableFreeInput: true,
-                    hintText: '',
-                    noResultsText: '',
-                    searchingText: '',
-                    animateDropdown: false,
-                    prePopulate: initialToRecipients(),
-                    preventDuplicates: true,
-                    theme: 'facebook',
-                    onAdd: function (item) {
-                        toRecipientAdded(item);
-                    },
-                    onDelete: function (item) {
-                        toRecipientDeleted(item);
-                    }
-                });
-        $("#recipients-cc-input").tokenInput(
-                possibleRecipients(),
-                {
-                    searchDelay: 0,
-                    enableFreeInput: true,
-                    hintText: '',
-                    noResultsText: '',
-                    searchingText: '',
-                    animateDropdown: false,
-                    prePopulate: initialCcRecipients(),
-                    preventDuplicates: true,
-                    theme: 'facebook',
-                    onAdd: function (item) {
-                        ccRecipientAdded(item);
-                    },
-                    onDelete: function (item) {
-                        ccRecipientDeleted(item);
-                    }
-
-                });
+//        trackEvent("Julie_action_is_open", {
+//            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
+//            thread_id: <%= @messages_thread.id %>,
+//            thread_messages_count: <%= @messages_thread.messages.length %>,
+//            bo_message_id: <%= @julie_action.message_classification.message_id %>,
+//            action_nature: "<%= @julie_action.message_classification.classification %>"
+//        });
+//
+//        if (window.tokenInputsInitialized) {
+//            return;
+//        }
+//        window.tokenInputsInitialized = true;
+//        $("#recipients-to-input").tokenInput(
+//                possibleRecipients(),
+//                {
+//                    searchDelay: 0,
+//                    enableFreeInput: true,
+//                    hintText: '',
+//                    noResultsText: '',
+//                    searchingText: '',
+//                    animateDropdown: false,
+//                    prePopulate: initialToRecipients(),
+//                    preventDuplicates: true,
+//                    theme: 'facebook',
+//                    onAdd: function (item) {
+//                        toRecipientAdded(item);
+//                    },
+//                    onDelete: function (item) {
+//                        toRecipientDeleted(item);
+//                    }
+//                });
+//        $("#recipients-cc-input").tokenInput(
+//                possibleRecipients(),
+//                {
+//                    searchDelay: 0,
+//                    enableFreeInput: true,
+//                    hintText: '',
+//                    noResultsText: '',
+//                    searchingText: '',
+//                    animateDropdown: false,
+//                    prePopulate: initialCcRecipients(),
+//                    preventDuplicates: true,
+//                    theme: 'facebook',
+//                    onAdd: function (item) {
+//                        ccRecipientAdded(item);
+//                    },
+//                    onDelete: function (item) {
+//                        ccRecipientDeleted(item);
+//                    }
+//
+//                });
     }
 
     function toRecipientAdded(item) {
@@ -396,63 +401,66 @@
     });
 
     window.setReplyRecipients = function(recipients, otherRecipients) {
-        initTokenInputs();
-        $("#recipients-to-input").tokenInput("clear");
-        $("#recipients-cc-input").tokenInput("clear");
-        if (recipients == "only_client") {
-            $("#recipients-to-input").tokenInput("add", clientRecipient());
-        }
-        else {
-            var attendeesManager = angular.element($('#attendeesCtrl')).scope();
-            var presentAttendees = attendeesManager.getAttendeesWithoutThreadOwner();
-
-            // When there are 2 attendees, we will check if it is an assistant and its assisted
-            if(presentAttendees.length == 2){
-                var assistant;
-                var assisted;
-                assisted = _.find(presentAttendees, function(a){
-                   return a.assistedBy && a.assistedBy.guid;
-                });
-
-                if(assisted){
-                    assistant = attendeesManager.getAssistant(assisted);
-                }
-
-                if(assistant && assisted){
-                    $("#recipients-to-input").tokenInput("add", {name: assistant.email});
-                    if(!!assisted.email)
-                        $("#recipients-cc-input").tokenInput("add", {name: assisted.email});
-                    $("#recipients-cc-input").tokenInput("add", clientRecipient());
-                }else{
-                    setDefaultRecipients(otherRecipients);
-                }
-            }else{
-                setDefaultRecipients(otherRecipients);
-            }
-        }
+        var replyBox = angular.element($('#recipients-manager')).scope();
+        if(replyBox)
+            replyBox.setReplyRecipients(recipients, otherRecipients);
+//        initTokenInputs();
+//        $("#recipients-to-input").tokenInput("clear");
+//        $("#recipients-cc-input").tokenInput("clear");
+//        if (recipients == "only_client") {
+//            $("#recipients-to-input").tokenInput("add", clientRecipient());
+//        }
+//        else {
+//            var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+//            var presentAttendees = attendeesManager.getAttendeesWithoutThreadOwner();
+//
+//            // When there are 2 attendees, we will check if it is an assistant and its assisted
+//            if(presentAttendees.length == 2){
+//                var assistant;
+//                var assisted;
+//                assisted = _.find(presentAttendees, function(a){
+//                   return a.assistedBy && a.assistedBy.guid;
+//                });
+//
+//                if(assisted){
+//                    assistant = attendeesManager.getAssistant(assisted);
+//                }
+//
+//                if(assistant && assisted){
+//                    $("#recipients-to-input").tokenInput("add", {name: assistant.email});
+//                    if(!!assisted.email)
+//                        $("#recipients-cc-input").tokenInput("add", {name: assisted.email});
+//                    $("#recipients-cc-input").tokenInput("add", clientRecipient());
+//                }else{
+//                    setDefaultRecipients(otherRecipients);
+//                }
+//            }else{
+//                setDefaultRecipients(otherRecipients);
+//            }
+//        }
     };
 
-    setDefaultRecipients = function(otherRecipients){
-        _.each(initialToRecipients(), function (recipient) {
-            $("#recipients-to-input").tokenInput("add", recipient);
-        });
-        _.each(initialCcRecipients(), function (recipient) {
-            $("#recipients-cc-input").tokenInput("add", recipient);
-        });
-        if(otherRecipients) {
-            var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
-                return elt.name.toLowerCase();
-            });
-            var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
-                return elt.name.toLowerCase();
-            });
-            _(otherRecipients).each(function(email) {
-                if (toRecipients.indexOf(email.toLowerCase()) == -1 && ccRecipients.indexOf(email.toLowerCase()) == -1) {
-                    $("#recipients-to-input").tokenInput("add", {name: email.toLowerCase()});
-                }
-            });
-        }
-    };
+//    setDefaultRecipients = function(otherRecipients){
+//        _.each(initialToRecipients(), function (recipient) {
+//            $("#recipients-to-input").tokenInput("add", recipient);
+//        });
+//        _.each(initialCcRecipients(), function (recipient) {
+//            $("#recipients-cc-input").tokenInput("add", recipient);
+//        });
+//        if(otherRecipients) {
+//            var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
+//                return elt.name.toLowerCase();
+//            });
+//            var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
+//                return elt.name.toLowerCase();
+//            });
+//            _(otherRecipients).each(function(email) {
+//                if (toRecipients.indexOf(email.toLowerCase()) == -1 && ccRecipients.indexOf(email.toLowerCase()) == -1) {
+//                    $("#recipients-to-input").tokenInput("add", {name: email.toLowerCase()});
+//                }
+//            });
+//        }
+//    };
 
     window.processSignature = function(signature) {
         if(signature) {
@@ -476,13 +484,18 @@
         var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
         var fullMessage = "";
         if(shouldSayHi) {
-            if(recipients == "only_client") {
-                fullMessage += localize("email_templates.common.before_only_client", {client_name: window.threadAccount.usage_name});
+            var recipientsTos = $('#recipients-to-input').tokenInput('get');
+
+            if(recipientsTos.length == 1) {
+                var attendee = $('#attendeesCtrl').scope().getAttendeeByEmail(recipientsTos[0].name);
+                if(attendee && attendee.usageName)
+                    fullMessage += localize("email_templates.common.hello_named", {name: attendee.usageName});
+                else
+                    fullMessage += localize("email_templates.common.hello_only");
             }
             else {
-                fullMessage += localize("email_templates.common.before");
+                fullMessage += localize("email_templates.common.hello_all");
             }
-
         }
         fullMessage += message;
 
