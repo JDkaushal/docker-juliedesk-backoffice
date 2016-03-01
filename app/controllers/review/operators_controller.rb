@@ -35,7 +35,7 @@ class Review::OperatorsController < ReviewController
 
     flag_server_message_ids = result['messages']['ids']
     flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id).uniq
-    flag_count = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
+    flag_count = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
 
     @data = {
         main_coverage: reviewed_count * 1.0 / total_count,
