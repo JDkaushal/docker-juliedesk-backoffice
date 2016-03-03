@@ -71,17 +71,39 @@ module ApplicationHelper
                  .select("EXTRACT(EPOCH FROM (received_at - request_at)) AS delay")
                  .map{|m| m['delay'] / 60.0}
 
+    operator_hours_count = OperatorPresence.where("date >= ? AND date < ?", start_date, [end_date, DateTime.now].min).count / 2.0
+    active_clients_count = MessagesThread.where("created_at >= ? AND created_at < ?", start_date, end_date).select(:account_email).distinct.count
+
+    incoming_messages_count = incoming_messages.select(:server_message_id).distinct.count
+    real_threads_count = messages.select(:messages_thread_id).distinct.count
     {
-        "Missing request_at count": all_messages.count - messages.count,
-        "Incoming messages count": incoming_messages.select(:server_message_id).distinct.count,
-        "Outgoing messages count": messages.count,
-        "Threads with outgoing messages count": messages.select(:messages_thread_id).distinct.count,
-        "Average delay": delays.inject{ |sum, el| sum + el } / delays.length,
-        "Delays - p10": self.percentile(delays, 0.10),
-        "Delays - p25": self.percentile(delays, 0.25),
-        "Delays - median": self.percentile(delays, 0.5),
-        "Delays - p75": self.percentile(delays, 0.75),
-        "Delays - p90": self.percentile(delays, 0.9),
+        "Messages and threads": {
+            "Incoming messages": incoming_messages_count,
+            "Outgoing messages": messages.count,
+            "Threads with outgoing messages": real_threads_count,
+            "Incoming messages per outgoing thread": (incoming_messages_count * 1.0 / real_threads_count).round(2),
+            "Active clients": active_clients_count,
+            "Outgoing threads per client": (real_threads_count * 1.0 / active_clients_count).round(2)
+        },
+        "Delays": {
+            "Average delay": "#{(delays.inject{ |sum, el| sum + el } / delays.length).round(2)}'",
+            "Delays - p10": "#{self.percentile(delays, 0.10).round(2)}'",
+            "Delays - p25": "#{self.percentile(delays, 0.25).round(2)}'",
+            "Delays - median": "#{self.percentile(delays, 0.5).round(2)}'",
+            "Delays - p75": "#{self.percentile(delays, 0.75).round(2)}'",
+            "Delays - p90": "#{self.percentile(delays, 0.9).round(2)}'"
+        },
+        "Performance": {
+            "Operator hours": operator_hours_count,
+            "Messages per operator hour": (incoming_messages_count / operator_hours_count).round(2),
+            "Operator time per incoming message": "#{(operator_hours_count / incoming_messages_count * 60.0).round(2)}'",
+            "Operator time per outgoing thread": "#{(operator_hours_count / real_threads_count * 60.0).round(2)}'",
+            "Cost per client": "#{(operator_hours_count / active_clients_count * 4.6).round(2)}€"
+        },
+        "Other": {
+          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where.not(privilege: Operator::PRIVILEGE_ADMIN).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
+          "Missing request_at count": all_messages.count - messages.count,
+        }
     }
   end
 
