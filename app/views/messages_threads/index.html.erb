@@ -361,15 +361,14 @@
 
         $scope.refreshInbox(false);
     });
+
+    trackActionV2('Home_is_open', {});
 </script>
 
 <div class="fixed-columns full">
   <div class="left-column">
 
     <%= render partial: "common/header" %>
-
-
-
 
     <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
       <div class="wrong-clock" ng-show="showWrongClock">

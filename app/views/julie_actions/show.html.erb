@@ -240,6 +240,7 @@
         });
 
         $("#reply-button").click(function () {
+            trackActionV2('Click_on_sent', {});
             $("#reply-button").prop('disabled', true);
             if(window.clickReplyButton) {
                 window.clickReplyButton();
@@ -259,6 +260,7 @@
                 });
                 window.sendReply();
             }
+            trackActionV2('Email_is_sent', {});
         });
 
         $("#forward-button").click(function () {

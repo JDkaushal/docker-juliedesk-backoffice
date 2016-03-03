@@ -7,10 +7,11 @@
 <script src="/javascripts/chrono.min.js"></script>
 <script>
   window.processingMessageThreadId = <%= @messages_thread.id %>;
+  window.classification = "<%= @classification %>";
 
   var isPostpone = <%= (@messages_thread.event_data[:event_id].present?)?"true":"false" %>;
   var classificationForm = window.classificationForms.createClassificationForm({
-      classification:  "<%= @classification %>",
+      classification:  window.classification,
       startedAt: <%= params[:started_at] || (DateTime.now.to_i * 1000) %>,
       locale: "<%= I18n.locale %>",
       threadLocale:"<%= @messages_thread.computed_data[:locale] %>",

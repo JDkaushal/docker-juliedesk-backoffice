@@ -95,6 +95,7 @@ class MessageClassification < ActiveRecord::Base
         thread_status: params[:thread_status],
         follow_up_data: follow_up_data
     )
+
     result.save!
 
     result.append_julie_action
