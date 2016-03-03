@@ -218,11 +218,11 @@ window.generateEmailTemplate = function (params) {
             var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString);
 
             if(date.isSame(today, "day"))
-                dateString = window.helpers.capitalize(localize("dates.today")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = window.helpers.capitalize(localize("dates.today")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
             else if(date.isSame(tomorrow, "day"))
-                dateString = window.helpers.capitalize(localize("dates.tomorrow")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = window.helpers.capitalize(localize("dates.tomorrow")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
             else
-                dateString = dateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+                dateString = dateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
         }
         else {
             for (var i = 0; i < timezoneIds.length; i++) {

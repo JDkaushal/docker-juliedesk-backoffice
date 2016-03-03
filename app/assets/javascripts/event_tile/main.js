@@ -821,7 +821,9 @@ EventTile.prototype.initActions = function() {
             if(!!scope)
                 scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
 
-            $('.event-tile-container .location').hide();
+            if(eventTile.mode != 'free_calendar') {
+                $('.event-tile-container .location').hide();
+            }
 
             vmHelperNode.closest('.event-tile-container').css('height', '810px');
             vmHelperNode.closest('.created-event-panel').css('height', '790px');

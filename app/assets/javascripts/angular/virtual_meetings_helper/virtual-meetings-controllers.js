@@ -111,34 +111,33 @@
 
                 $scope.refresh = function(attendees) {
 
-                    if(window.getCurrentAppointment()) {
+                    if(attendees){
+                        var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
+                            return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
+                        });
 
-                        if(attendees){
-                            var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
-                                return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
+                        if(attendeesWithoutThreadOwner.length > 0){
+
+                            $scope.callTargetsInfos = _.map(attendeesWithoutThreadOwner, function (a) {
+                                return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
                             });
 
-                            if(attendeesWithoutThreadOwner.length > 0){
+                            $scope.computeCallDetails();
 
-                                $scope.callTargetsInfos = _.map(attendeesWithoutThreadOwner, function (a) {
-                                    return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
-                                });
-
-                                $scope.computeCallDetails();
-
-                            }else{
-                                $scope.callTargetsInfos = [];
+                        }else{
+                            $scope.callTargetsInfos = [];
+                            if($scope.currentConf.target != 'client')
                                 Object.assign($scope.currentConf, {targetInfos: {}, support: '', details: ''});
-                            }
-                        }
-
-                        if ((!$scope.formEditMode) || $scope.forceCurrentConfig || (!$.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode)){
-                            $scope.loadCurrentConfig();
-                        }else if($.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode && !!$('#appointment_nature').val() && $.isEmptyObject($scope.currentConf)) {
-                            $scope.loadDefaultConfig(true);
-                            updateNotesCallingInfos();
                         }
                     }
+
+                    if ((checkIfThreadDataOk() && !$scope.formEditMode) || $scope.forceCurrentConfig || ( checkIfThreadDataOk() && !$.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode)){
+                        $scope.loadCurrentConfig();
+                    }else if($.isEmptyObject(window.threadComputedData.call_instructions) && $scope.formEditMode && !!$('#appointment_nature').val() && $.isEmptyObject($scope.currentConf)) {
+                        $scope.loadDefaultConfig(true);
+                        updateNotesCallingInfos();
+                    }
+
                     //if($scope.lastTargetInfos != null)
                     //{
                     //    var attendee = findTargetAttendee($scope.currentConf);
@@ -213,6 +212,11 @@
                         }
                     }
                     else {
+                        if($scope.currentConf.target == 'client') {
+                            var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
+                            Object.assign($scope.currentConf, {targetInfos: {email: threadOwner.email, name: threadOwner.displayNormalizedName(), guid: threadOwner.guid}});
+                        }
+
                         if($scope.currentConf.target != 'custom')
                             Object.assign($scope.currentConf, {targetInfos: {}, support: '', details: ''});
                     }

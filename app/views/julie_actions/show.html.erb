@@ -58,8 +58,6 @@
         $(".calendar-container").addClass("visible");
     };
 
-
-
     /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
     window.afterEventFetched = function () {
         // Add attendees as recipients if not present already
@@ -354,6 +352,7 @@
 
             $(".time-slots-to-suggest-list-container .suggest-dates-next-button").click(function() {
                 $(".calendar-container").addClass("minimized");
+                $('.email.extended').removeClass('extended');
                 $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
             });
         };
@@ -396,7 +395,7 @@
                     success: function (e) {
                         $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
                         $("#reply-button").removeProp('disabled');
-                        window.location = "<%= messages_thread_path(@messages_thread) %>"
+                        window.location = "<%= messages_thread_path(@messages_thread, scroll_to_bottom: true) %>"
                     },
                     error: function (e) {
                         console.log("error", e);

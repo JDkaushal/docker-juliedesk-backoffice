@@ -125,7 +125,7 @@ module ApplicationHelper
   end
 
   def check_highlighting_in_recipients(string)
-    sanitized_email = sanitize_email_address(string)
+    sanitized_email = sanitize_email_address(string).downcase
 
     if @client_emails.include?(sanitized_email)
       #we gsub the < for its html unicode equivalent to prevent it from beeing interpreted as a balise
