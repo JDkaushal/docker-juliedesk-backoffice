@@ -30,7 +30,7 @@ class OperatorActionsGroup < ActiveRecord::Base
     if last_grouped_operator_action
       start_time = last_grouped_operator_action.initiated_at
     else
-      start_time = operator_actions.first.initiated_at - 1.minute
+      start_time = operator_actions_sorted.first.initiated_at - 1.minute
     end
 
     # Find the first 'open thread' operator action which was not followed by another 'open thread'
