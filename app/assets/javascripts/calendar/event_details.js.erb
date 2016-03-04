@@ -67,14 +67,17 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         }
     });
     calendar.$selector.find("#event-details-container").fadeIn(200);
-    calendar.currentEventTile.fetchRecurringEventIfNeeded(function() {
 
-    });
     if(calendar.currentEvent.preview) {
         calendar.currentEventTile.fetchEvent(function() {
             calendar.currentEventTile.redraw();
         });
     }
+
+    calendar.currentEventTile.fetchRecurringEventIfNeeded(function() {
+
+    });
+
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {

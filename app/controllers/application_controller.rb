@@ -96,6 +96,7 @@ class ApplicationController < ActionController::Base
     @staging_env = ENV['STAGING_APP'] == 'TRUE'
     @staging_target_email = ENV['STAGING_TARGET_EMAIL_ADDRESS']
     @staging_event_api_endpoint = ENV['STAGING_EVENT_API_ENDPOINT']
+    @staging_calendar_login_email = ENV['STAGING_CALENDAR_LOGIN_EMAIL_ADDRESS']
   end
 
   def check_rack_mini_profiler

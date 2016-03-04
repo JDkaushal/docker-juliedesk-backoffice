@@ -188,7 +188,6 @@ EventTile.prototype.disableAll = function() {
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
-    console.log(eventTile.event);
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
@@ -436,15 +435,23 @@ EventTile.prototype.getEditedEvent = function() {
 };
 EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
     var eventTile = this;
+
     if(eventTile.event && eventTile.event.recurringEventId) {
-        eventTile.showSpinner();
-        CommonHelpers.externalRequest({
+        var params = {
             action: "get_event",
             email: eventTile.accountEmail,
             event_id: eventTile.event.recurringEventId,
             calendar_id: eventTile.calendarId,
-            calendar_login_username: eventTile.calendarLoginUsername
-        }, function(response) {
+            calendar_login_username: eventTile.calendarLoginUsername,
+            fetching_recurring_master: true
+        };
+
+        if(eventTile.event.url) {
+            params['event_url'] = eventTile.event.url;
+        }
+
+        eventTile.showSpinner();
+        CommonHelpers.externalRequest(params, function(response) {
             if(response.status == "error") {
                 if(response.code == "EventNotFound") {
                     alert("Event not found: " + response.message)
@@ -515,13 +522,14 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
 
     var sstartTime, sendTime;
     if(ev.allDay) {
-        sstartTime = moment(startTime).format();
-        sendTime = moment(endTime).format();
+        sstartTime = moment(startTime);
+        sendTime = moment(endTime);
     }
     else {
-        sstartTime = moment(startTime).tz(eventTile.getTimezoneId()).format();
-        sendTime = moment(endTime).tz(eventTile.getTimezoneId()).format();
+        sstartTime = moment(startTime).tz(eventTile.getTimezoneId());
+        sendTime = moment(endTime).tz(eventTile.getTimezoneId());
     }
+
 
     eventData = {
         id: ev.id,
@@ -544,6 +552,9 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         calendar_login_username: ev.calendar_login_username,
         calendar_login_type: ev.calendar_login_type
     };
+
+    if(ev.occurrences)
+        eventData.occurrences = ev.occurrences;
 
     if(ev.call_instructions)
         eventData.call_instructions = JSON.parse(ev.call_instructions);
@@ -597,7 +608,10 @@ EventTile.prototype.saveRecurringEvent = function() {
         recurringEndTime = recurringEndTime.format();
     }
 
-    CommonHelpers.externalRequest({
+    var recurrence = eventTile.recurringEvent.recurrence;
+    recurrence[0] = editedEvent.recurrence[0];
+
+    var params = {
         action: "update_event",
         email: eventTile.accountEmail,
         calendar_login_username: eventTile.event.calendar_login_username,
@@ -615,8 +629,18 @@ EventTile.prototype.saveRecurringEvent = function() {
         end: recurringEndTime,
         start_timezone: editedEvent.start_timezone,
         end_timezone: editedEvent.end_timezone,
-        recurrence: editedEvent.recurrence
-    }, function(response) {
+        recurrence: recurrence
+    };
+
+    if(["IcloudLogin", "CaldavLogin"].indexOf(eventTile.event.calendar_login_type) >= 0) {
+        params['occurrences'] = eventTile.recurringEvent.occurrences;
+    }
+
+    if(eventTile.event.url) {
+        params['event_url'] = eventTile.event.url;
+    }
+
+    CommonHelpers.externalRequest(params, function(response) {
         if(response.status == "success") {
             if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
                 action: "update_event"
@@ -633,31 +657,37 @@ EventTile.prototype.saveRecurringEvent = function() {
         console.log(response);
     });
 };
-EventTile.prototype.saveEvent = function() {
+EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
+    saving_recurring_occurrence = saving_recurring_occurrence || false;
+
     var eventTile = this;
     var editedEvent = eventTile.getEditedEvent();
 
+    var params = {
+        email: eventTile.accountEmail,
+        calendar_login_username: eventTile.event.calendar_login_username,
+
+        summary: editedEvent.title,
+        description: editedEvent.description,
+        attendees: editedEvent.attendees,
+        location: editedEvent.location,
+        all_day: editedEvent.all_day,
+        private: editedEvent.private,
+        start: editedEvent.start.format(),
+        end: editedEvent.end.format(),
+        start_timezone: editedEvent.start_timezone,
+        end_timezone: editedEvent.end_timezone,
+        utc_offset: editedEvent.utc_offset
+    };
+
+    if(!saving_recurring_occurrence) {
+        params['recurrence'] = editedEvent.recurrence;
+    }
 
     if(eventTile.event.beingAdded) {
+        params['action'] = "create_event";
         eventTile.showSpinner();
-        CommonHelpers.externalRequest({
-            action: "create_event",
-            email: eventTile.accountEmail,
-            calendar_login_username: eventTile.event.calendar_login_username,
-
-            summary: editedEvent.title,
-            description: editedEvent.description,
-            attendees: editedEvent.attendees,
-            location: editedEvent.location,
-            all_day: editedEvent.all_day,
-            private: editedEvent.private,
-            start: editedEvent.start.format(),
-            end: editedEvent.end.format(),
-            start_timezone: editedEvent.start_timezone,
-            end_timezone: editedEvent.end_timezone,
-            utc_offset: editedEvent.utc_offset,
-            recurrence: editedEvent.recurrence
-        }, function(response) {
+        CommonHelpers.externalRequest(params, function(response) {
             if(response.status == "success") {
                 eventTile.eventId = response.data.event_id;
                 eventTile.eventUrl = response.data.event_url;
@@ -682,28 +712,35 @@ EventTile.prototype.saveEvent = function() {
     }
     else {
         eventTile.showSpinner();
-        console.log("Update event");
-        CommonHelpers.externalRequest({
-            action: "update_event",
-            email: eventTile.accountEmail,
-            calendar_login_username: eventTile.event.calendar_login_username,
+        params['action'] = "update_event";
+        params['event_id'] = eventTile.eventId;
+        params['event_url'] = eventTile.eventUrl;
+        params['calendar_id'] = eventTile.calendarId;
 
-            event_id: eventTile.eventId,
-            event_url: eventTile.eventUrl,
-            calendar_id: eventTile.calendarId,
+        if(saving_recurring_occurrence) {
+            params['saving_occurrence'] = true;
+            params['event_id'] = eventTile.event.id;
 
-            summary: editedEvent.title,
-            description: editedEvent.description,
-            attendees: editedEvent.attendees,
-            location: editedEvent.location,
-            all_day: editedEvent.all_day,
-            private: editedEvent.private,
-            start: editedEvent.start.format(),
-            end: editedEvent.end.format(),
-            start_timezone: editedEvent.start_timezone,
-            end_timezone: editedEvent.end_timezone,
-            utc_offset: editedEvent.utc_offset
-        }, function(response) {
+            if(["IcloudLogin", "CaldavLogin"].indexOf(eventTile.event.calendar_login_type) >= 0) {
+                //var occurenceEventId = eventTile.recurringEvent.id + '__' + eventTile.event.start.tz('UTC').format("YYYYMMDD[T]HHmmss[Z]");
+                //var occurenceEventId = eventTile.recurringEvent.id;
+                //params['event_id'] = occurenceEventId;
+                if(eventTile.recurringEvent) {
+                    params['recurringEvent'] = eventTile.recurringEvent;
+                    params['original_start'] = eventTile.event.start.tz(eventTile.getTimezoneId()).format();
+                    params['event_id'] = eventTile.recurringEvent.id;
+                }
+
+            }else if(eventTile.event.calendar_login_type == "ActivesyncLogin") {
+                params['original_start'] = eventTile.event.start.tz(eventTile.getTimezoneId()).format();
+                params['original_end'] = eventTile.event.end.tz(eventTile.getTimezoneIdForEndDate()).format();
+                params['original_summary'] = eventTile.event.title;
+                params['original_location'] = eventTile.event.location;
+                params['event_id'] = eventTile.recurringEvent.id;
+            }
+        }
+
+        CommonHelpers.externalRequest(params, function(response) {
             if(response.status == "success") {
                 eventTile.fetchEvent(function() {
                     eventTile.redraw();
@@ -762,27 +799,73 @@ EventTile.prototype.deleteEvent = function(params) {
     eventTile.showSpinner();
     if(!params)  params = {};
     var eventIdToDelete = eventTile.eventId;
-    if(params.recurring) {
-        if(eventTile.recurringEvent) {
-            eventIdToDelete = eventTile.recurringEvent.id;
+
+    if(params.deletingOccurrences && ['IcloudLogin', 'CaldavLogin', 'ActivesyncLogin'].indexOf(eventTile.event.calendar_login_type) >= 0) {
+        if(["IcloudLogin", "CaldavLogin"].indexOf(eventTile.event.calendar_login_type) >= 0) {
+            var editedEvent = eventTile.getEditedEvent();
+            params = {
+                action: "update_event",
+                email: eventTile.accountEmail,
+                calendar_login_username: eventTile.event.calendar_login_username,
+
+                event_id: eventTile.eventId,
+                event_url: eventTile.eventUrl,
+                calendar_id: eventTile.calendarId,
+
+                summary: eventTile.event.title,
+                description: eventTile.event.description,
+                attendees: eventTile.event.attendees,
+                location: eventTile.event.location,
+                all_day: eventTile.event.all_day,
+                private: eventTile.event.private,
+                start: eventTile.event.start.format(),
+                end: eventTile.event.end.format(),
+                start_timezone: editedEvent.start_timezone,
+                end_timezone: editedEvent.end_timezone,
+                utc_offset: eventTile.event.utc_offset,
+                saving_occurrence: true,
+                deletingOccurrence: true,
+                recurringEvent: eventTile.recurringEvent,
+                original_start: eventTile.event.start.tz(eventTile.getTimezoneId()).format()
+            };
+        }else if(eventTile.event.calendar_login_type == 'ActivesyncLogin') {
+            params = {
+                action: "delete_event",
+                email: eventTile.accountEmail,
+                calendar_login_username: eventTile.event.calendar_login_username,
+                event_id: eventIdToDelete,
+                instance_id: eventTile.event.start.format(),
+                calendar_id: eventTile.calendarId
+            };
         }
-        else {
-            alert("Trying to delete the recurring event, but no recurring event for this event");
-            return;
+    } else {
+        if(params.recurring) {
+            if(eventTile.recurringEvent) {
+                eventIdToDelete = eventTile.recurringEvent.id;
+            }
+            else {
+                alert("Trying to delete the recurring event, but no recurring event for this event");
+                return;
+            }
+        }
+
+        params = {
+            action: "delete_event",
+            email: eventTile.accountEmail,
+            calendar_login_username: eventTile.event.calendar_login_username,
+            event_id: eventIdToDelete,
+            calendar_id: eventTile.calendarId
+        };
+
+        if(eventTile.eventUrl || eventTile.event.url) {
+            params['event_url'] = eventTile.eventUrl || eventTile.event.url;
         }
     }
-    CommonHelpers.externalRequest({
-        action: "delete_event",
-        email: eventTile.accountEmail,
-        calendar_login_username: eventTile.event.calendar_login_username,
 
-        event_id: eventIdToDelete,
-        event_url: eventTile.eventUrl,
-        calendar_id: eventTile.calendarId
-    }, function(response) {
+    CommonHelpers.externalRequest(params, function(response) {
         if(response.status == "success") {
             if(eventTile.doneEditingCallback) eventTile.doneEditingCallback({
-                action: "delete_event"
+                action: params.action
             });
         }
         else {
@@ -880,6 +963,7 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-save-button").click(function() {
+
         if(eventTile.recurringEvent) {
             if(eventTile.getEditedEvent().recurrence.length == 0) {
                 eventTile.saveRecurringEvent();
@@ -887,7 +971,7 @@ EventTile.prototype.initActions = function() {
             else {
                 eventTile.confirmRecurringEventUpdate({
                     thisOccurrenceCallback: function() {
-                        eventTile.saveEvent();
+                        eventTile.saveEvent(true);
                     },
                     allOccurrencesCallback: function() {
                         eventTile.saveRecurringEvent();
@@ -904,7 +988,7 @@ EventTile.prototype.initActions = function() {
             eventTile.confirmRecurringEventUpdate({
                 mode: "delete",
                 thisOccurrenceCallback: function() {
-                    eventTile.deleteEvent();
+                    eventTile.deleteEvent({deletingOccurrences: true});
                 },
                 allOccurrencesCallback: function() {
                     eventTile.deleteEvent({
@@ -975,7 +1059,11 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
-            if(eventTile.event.calendar_login_type != "GoogleLogin") {
+            // Change this to enable recurrence features:
+            var calendarLoginTypeActivatedForRecurrence =  ["GoogleLogin"];
+            //var calendarLoginTypeActivatedForRecurrence =  ["GoogleLogin", "IcloudLogin", "CaldavLogin", "ExchangeLogin", "EwsLogin", 'ActivesyncLogin'];
+
+            if(calendarLoginTypeActivatedForRecurrence.indexOf(eventTile.event.calendar_login_type) == -1 ) {
                 alert("Recurring events are not supported for this account. Please send to admin.")
             }
             else {

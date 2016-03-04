@@ -15,6 +15,10 @@ function RecurrenceForm($selector, params) {
     recurrenceForm.$selector.find(".form-entry input[name='until']").val(mOneMonth.format("YYYY-MM-DD"));
 
     if(params.rrule) {
+        // ActiveSync return a recurrence rule of the form : 'RRULE:FREQ=X;UNTIL=X...'
+        // So in order for RRule to parse it from the string we need to stripe the 'RRULE:' tag from the string
+        params.rrule = params.rrule.replace('RRULE:', '');
+
         recurrenceForm.rule = RRule.fromString(params.rrule);
         var ruleOptions = recurrenceForm.rule.options;
 
@@ -43,19 +47,14 @@ function RecurrenceForm($selector, params) {
             if(ruleOptions.byweekday) {
                 recurrenceForm.$selector.find(".form-entry.week-freq-on input[type=checkbox]").each(function() {
                     var $checkBox = $(this);
-                    var result = _.find(ruleOptions.byweekday,  function(weekday) {
-                        return recurrenceForm.weekDays.indexOf(weekday) == parseInt($checkBox.val());
-                    });
-                    if(result) {
-                        $checkBox.prop("checked", true);
-                    }
+
+                    $checkBox.prop("checked", ruleOptions.byweekday.indexOf(parseInt($checkBox.val())) >= 0);
                 });
             }
         }
         else if(ruleOptions.freq == RRule.MONTHLY) {
             recurrenceForm.$selector.find("select[name='freq']").val("monthly");
 
-            console.log("ruleOptions", ruleOptions);
             if(ruleOptions.bynweekday && ruleOptions.bynweekday.length > 0) {
                 recurrenceForm.$selector.find(".form-entry input[name='recurrence-form-month-freq-repeat-on'][value='day-of-week']").prop("checked", true);
             }
@@ -66,8 +65,12 @@ function RecurrenceForm($selector, params) {
         else {
 
         }
-    }
 
+        if(ruleOptions.until) {
+            var until = ruleOptions.until;
+            recurrenceForm.$selector.find("input[name='until']").val(moment(until).format("YYYY-MM-DD"));
+        }
+    }
     recurrenceForm.changeFrequence();
     recurrenceForm.initActions();
 
@@ -144,11 +147,18 @@ RecurrenceForm.prototype.ruleChanged = function() {
         ruleOptions.freq = RRule.MONTHLY;
 
         if(recurrenceForm.$selector.find(".form-entry input[name='recurrence-form-month-freq-repeat-on'][value='day-of-week']:checked").length > 0) {
-            ruleOptions.byweekday = [recurrenceForm.weekDays[recurrenceForm.rstart.isoWeekday() - 1].nth(Math.floor((recurrenceForm.rstart.date()-1)/7))];
+            var nth = Math.floor((recurrenceForm.rstart.date()-1)/7) + 1;
+            if(nth > 4) nth = -1;
+            ruleOptions.byweekday = [recurrenceForm.weekDays[recurrenceForm.rstart.isoWeekday() - 1].nth(nth)];
+        }else{
+            ruleOptions.bymonthday = recurrenceForm.rstart.date();
         }
+
     }
     else if(recurrenceForm.getFrequence() == "yearly") {
         ruleOptions.freq = RRule.YEARLY;
+        ruleOptions.bymonth = recurrenceForm.rstart.month() + 1;
+        ruleOptions.bymonthday = recurrenceForm.rstart.date();
     }
 
     if(recurrenceForm.getFrequence() == "daily" ||
@@ -171,7 +181,6 @@ RecurrenceForm.prototype.ruleChanged = function() {
             var mUntil = moment(recurrenceForm.$selector.find("input[name='until']").val());
             mUntil.add('d', 1);
             ruleOptions.until = mUntil.toDate();
-
         }
 
         recurrenceForm.rule = new RRule(ruleOptions);

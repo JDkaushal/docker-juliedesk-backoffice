@@ -2,5 +2,6 @@
     <span style="color: red;font-weight: bold;">STAGING MODE (emails sortants redirigés vers <%= @staging_target_email %>)</span>
     <%= hidden_field_tag :staging_mode, @staging_env %>
     <%= hidden_field_tag :staging_target_email, @staging_target_email %>
+    <%= hidden_field_tag :staging_calendar_login_email, @staging_calendar_login_email %>
     <%= hidden_field_tag :staging_event_api_endpoint, @staging_event_api_endpoint %>
 <% end %>

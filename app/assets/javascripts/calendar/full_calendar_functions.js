@@ -71,7 +71,6 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         calendar.drawEventList();
 
         if(calendar.getMode() == "free_calendar") {
-            console.log('event', eventData);
 
             calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
         }
