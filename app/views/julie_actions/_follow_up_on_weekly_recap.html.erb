@@ -35,6 +35,7 @@
           method: "post",
           data: {
             text: $("textarea#reply-text").val(),
+            generated_text: window.currentFullMessageWithFooter,
             to: window.currentRecipients().to,
             cc: window.currentRecipients().cc,
             done: true,

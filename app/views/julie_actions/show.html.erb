@@ -24,6 +24,7 @@
 <% end %>
 
 <script>
+    window.currentFullMessageWithFooter = "";
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
     window.timeSlotsToSuggest = [];
@@ -255,6 +256,7 @@
                     method: "post",
                     data: {
                         text: $("textarea#reply-text").val(),
+                        generated_text: window.currentFullMessageWithFooter,
                         to: window.currentRecipients().to,
                         cc: window.currentRecipients().cc,
                         done: true,
@@ -277,6 +279,7 @@
                     method: "post",
                     data: {
                         text: $("textarea#reply-text").val(),
+                        generated_text: window.currentFullMessageWithFooter,
                         to: window.currentRecipients().to,
                         cc: window.currentRecipients().cc,
                         done: true,
@@ -519,6 +522,8 @@
         $("textarea#reply-text").val(window.currentFullMessage + footer);
         $("textarea#reply-text").elastic();
         $("div#reply-text-signature").html(signature);
+
+        window.currentFullMessageWithFooter = window.currentFullMessage + footer;
 
         setCurrentLocale("<%= I18n.locale %>");
     };
