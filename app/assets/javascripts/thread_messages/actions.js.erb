@@ -32,6 +32,8 @@ function flagMessage($element, $email) {
         message_ids: $email.attr('id')
     };
     var toFlag = false;
+    var $container = $element.closest('.email');
+    //var $extendedContainer = $element.find('.')
 
     if($element.hasClass("flagged")) {
         toFlag = false;
@@ -54,9 +56,9 @@ function flagMessage($element, $email) {
         success: function(response) {
             if(response.status == "success") {
                 if(toFlag)
-                    $element.addClass("flagged");
+                    $container.find('.email-flag').addClass("flagged");
                 else
-                    $element.removeClass("flagged");
+                    $container.find('.email-flag').removeClass("flagged");
             }
         }
     });
