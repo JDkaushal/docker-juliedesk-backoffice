@@ -126,6 +126,7 @@ describe JulieActionsController, :type => :controller do
 
         expect_any_instance_of(JulieAction).to receive(:update_attributes).with({
             text: 'New Text',
+            generated_text: 'New Text generated',
             date_times: "[{\"timezone\":\"Europe/Paris\",\"date\":\"2015-11-27T14:00:01+00:00\"},{\"timezone\":\"Europe/Paris\",\"date\":\"2015-11-28T15:00:01+00:00\"},{\"timezone\":\"Europe/Paris\",\"date\":\"2015-11-29T14:20:01+00:00\"}]",
             event_id: "2",
             event_url: 'test@url.com',
@@ -136,7 +137,7 @@ describe JulieActionsController, :type => :controller do
             processed_in: "3",
             deleted_event: false
         })
-        put :update, id: ja1.id, text: 'New Text', date_times: ["2015-11-27T15:00:01+01:00", "2015-11-28T16:00:01+01:00", "2015-11-29T15:20:01+01:00"], event_id: 2, event_url: 'test@url.com', calendar_id: 2, calendar_login_username: 'username', done: true, events: {1 => {name: 'event 1'}, 2 => {name: 'event 2'}}, processed_in: 3, deleted_event: false
+        put :update, id: ja1.id, text: 'New Text', generated_text: 'New Text generated', date_times: ["2015-11-27T15:00:01+01:00", "2015-11-28T16:00:01+01:00", "2015-11-29T15:20:01+01:00"], event_id: 2, event_url: 'test@url.com', calendar_id: 2, calendar_login_username: 'username', done: true, events: {1 => {name: 'event 1'}, 2 => {name: 'event 2'}}, processed_in: 3, deleted_event: false
       end
 
       it 'should update the calling instructions if present of the julie action message classification' do

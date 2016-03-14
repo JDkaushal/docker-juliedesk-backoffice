@@ -101,7 +101,113 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
     it 'should return the correct context for the messages_thread' do
       get :messages_thread_context, id: 666
 
-      expect(JSON.parse(response.body)).to eq({"thread"=>{"id"=>@mt1.id, "account_email"=>@mt1.account_email, "in_inbox"=>@mt1.in_inbox, "locale"=>@mt1.locale, "created_at"=>@mt1.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "updated_at"=>@mt1.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "subject"=>@mt1.subject, "snippet"=>@mt1.snippet, "account_name"=>@mt1.account_name, "delegated_to_founders"=>@mt1.delegated_to_founders, "to_founders_message"=>@mt1.to_founders_message, "locked_by_operator_id"=>@mt1.locked_by_operator_id, "locked_at"=>@mt1.locked_at, "server_thread_id"=>@mt1.server_thread_id, "server_version"=>@mt1.server_version, "delegated_to_support"=>@mt1.delegated_to_support, "should_follow_up"=>@mt1.should_follow_up, "follow_up_instruction"=>@mt1.follow_up_instruction, "last_operator_id"=>nil, "event_booked_date"=>nil, "status"=>nil}, "messages"=> @mt1.messages.map{ |m| {"id"=>m.id, "messages_thread_id"=>m.messages_thread_id, "received_at"=>nil, "created_at"=>m.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "updated_at"=>m.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "archived"=>m.archived, "reply_all_recipients"=>m.reply_all_recipients, "from_me"=>m.from_me, "server_message_id"=>m.server_message_id, "request_at"=>nil}}, "messages_classifications"=> @mt1.messages.map{ |m| {m.id.to_s => m.message_classifications.map{ |mc| {"id"=>mc.id, "classification"=>mc.classification, "message_id"=>mc.message_id, "operator"=>mc.operator, "validated"=>mc.validated, "appointment_nature"=>mc.appointment_nature, "summary"=>mc.summary, "duration"=>mc.duration, "location"=>mc.location, "attendees"=>mc.attendees, "notes"=>mc.notes, "constraints"=>mc.constraints, "date_times"=>mc.date_times, "created_at"=>mc.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "updated_at"=>mc.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "locale"=>mc.locale, "timezone"=>mc.timezone, "processed_in"=>mc.processed_in, "location_nature"=>mc.location_nature, "private"=>mc.private, "other_notes"=>mc.other_notes, "constraints_data"=>mc.constraints_data, "client_agreement"=>mc.client_agreement, "attendees_are_noticed"=>mc.attendees_are_noticed, "number_to_call"=>mc.number_to_call, "review_status"=>mc.review_status, "call_instructions"=>mc.call_instructions, "thread_status"=>mc.thread_status, "follow_up_data"=>mc.follow_up_data}}}}, "julie_actions"=>@mt1.messages.map{|m| m.message_classifications.map{|mc| {mc.id.to_s => {"id"=>mc.julie_action.id, "message_classification_id"=>mc.julie_action.message_classification_id, "action_nature"=>mc.julie_action.action_nature, "date_times"=>mc.julie_action.date_times, "text"=>mc.julie_action.text, "done"=>mc.julie_action.done, "pending"=>mc.julie_action.pending, "created_at"=>mc.julie_action.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "updated_at"=>mc.julie_action.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'), "processed_in"=>mc.julie_action.processed_in, "calendar_id"=>mc.julie_action.calendar_id, "event_id"=>mc.julie_action.event_id, "events"=>mc.julie_action.events, "deleted_event"=>mc.julie_action.deleted_event, "event_url"=>mc.julie_action.event_url, "calendar_login_username"=>mc.julie_action.calendar_login_username, "server_message_id"=>mc.julie_action.server_message_id}}}}.flatten, "current_event"=>{"event_id"=>nil, "calendar_id"=>nil, "event_url"=>nil, "appointment_nature"=>nil, "calendar_login_username"=>nil}})
+      expect(JSON.parse(response.body)).to eq({
+                                                  "thread" => {
+                                                      "id" => @mt1.id,
+                                                      "account_email" => @mt1.account_email,
+                                                      "in_inbox" => @mt1.in_inbox,
+                                                      "locale" => @mt1.locale,
+                                                      "created_at" => @mt1.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                      "updated_at" => @mt1.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                      "subject" => @mt1.subject,
+                                                      "snippet" => @mt1.snippet,
+                                                      "account_name" => @mt1.account_name,
+                                                      "delegated_to_founders" => @mt1.delegated_to_founders,
+                                                      "to_founders_message" => @mt1.to_founders_message,
+                                                      "locked_by_operator_id" => @mt1.locked_by_operator_id,
+                                                      "locked_at" => @mt1.locked_at,
+                                                      "server_thread_id" => @mt1.server_thread_id,
+                                                      "server_version" => @mt1.server_version,
+                                                      "delegated_to_support" => @mt1.delegated_to_support,
+                                                      "should_follow_up" => @mt1.should_follow_up,
+                                                      "follow_up_instruction" => @mt1.follow_up_instruction,
+                                                      "last_operator_id" => nil,
+                                                      "event_booked_date" => nil,
+                                                      "status" => nil
+                                                  },
+                                                  "messages" => @mt1.messages.map { |m|
+                                                    {
+                                                        "id" => m.id,
+                                                        "messages_thread_id" => m.messages_thread_id,
+                                                        "received_at" => nil,
+                                                        "created_at" => m.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                        "updated_at" => m.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                        "archived" => m.archived,
+                                                        "reply_all_recipients" => m.reply_all_recipients,
+                                                        "from_me" => m.from_me,
+                                                        "server_message_id" => m.server_message_id,
+                                                        "request_at" => nil
+                                                    }
+                                                  },
+                                                  "messages_classifications" => @mt1.messages.map { |m|
+                                                    {
+                                                        m.id.to_s => m.message_classifications.map { |mc|
+                                                          {
+                                                              "id" => mc.id,
+                                                              "classification" => mc.classification,
+                                                              "message_id" => mc.message_id,
+                                                              "operator" => mc.operator,
+                                                              "validated" => mc.validated,
+                                                              "appointment_nature" => mc.appointment_nature,
+                                                              "summary" => mc.summary,
+                                                              "duration" => mc.duration,
+                                                              "location" => mc.location,
+                                                              "attendees" => mc.attendees,
+                                                              "notes" => mc.notes,
+                                                              "constraints" => mc.constraints,
+                                                              "date_times" => mc.date_times,
+                                                              "created_at" => mc.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                              "updated_at" => mc.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                              "locale" => mc.locale,
+                                                              "timezone" => mc.timezone,
+                                                              "processed_in" => mc.processed_in,
+                                                              "location_nature" => mc.location_nature,
+                                                              "private" => mc.private,
+                                                              "other_notes" => mc.other_notes,
+                                                              "constraints_data" => mc.constraints_data,
+                                                              "client_agreement" => mc.client_agreement,
+                                                              "attendees_are_noticed" => mc.attendees_are_noticed,
+                                                              "number_to_call" => mc.number_to_call,
+                                                              "review_status" => mc.review_status,
+                                                              "call_instructions" => mc.call_instructions,
+                                                              "thread_status" => mc.thread_status,
+                                                              "follow_up_data" => mc.follow_up_data
+                                                          }
+                                                        }
+                                                    }
+                                                  },
+                                                  "julie_actions" => @mt1.messages.map { |m| m.message_classifications.map { |mc|
+                                                    {
+                                                        mc.id.to_s => {
+                                                            "id" => mc.julie_action.id,
+                                                            "message_classification_id" => mc.julie_action.message_classification_id,
+                                                            "action_nature" => mc.julie_action.action_nature,
+                                                            "date_times" => mc.julie_action.date_times,
+                                                            "text" => mc.julie_action.text,
+                                                            "generated_text" => mc.julie_action.generated_text,
+                                                            "done" => mc.julie_action.done,
+                                                            "pending" => mc.julie_action.pending,
+                                                            "created_at" => mc.julie_action.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                            "updated_at" => mc.julie_action.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
+                                                            "processed_in" => mc.julie_action.processed_in,
+                                                            "calendar_id" => mc.julie_action.calendar_id,
+                                                            "event_id" => mc.julie_action.event_id,
+                                                            "events" => mc.julie_action.events,
+                                                            "deleted_event" => mc.julie_action.deleted_event,
+                                                            "event_url" => mc.julie_action.event_url,
+                                                            "calendar_login_username" => mc.julie_action.calendar_login_username,
+                                                            "server_message_id" => mc.julie_action.server_message_id}
+                                                    }
+                                                  }
+                                                  }.flatten,
+                                                  "current_event" => {
+                                                      "event_id" => nil,
+                                                      "calendar_id" => nil,
+                                                      "event_url" => nil,
+                                                      "appointment_nature" => nil,
+                                                      "calendar_login_username" => nil
+                                                  }
+                                              })
     end
   end
 end
