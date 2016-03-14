@@ -3,11 +3,11 @@ require_relative "../../rails_helper"
 describe Review::OperatorsPresenceController, :type => :controller do
 
   before(:each) do
-    @admin = Operator.new(email: 'admin@op.com', privilege: 'admin', active: true, ips_whitelist_enabled: false)
+    @admin = Operator.new(email: 'admin@op.com', privilege: 'admin', active: true, ips_whitelist_enabled: false, planning_access: true)
     @admin.password= 'op'
     @admin.save
 
-    @normal = Operator.new(email: 'normal@op.com', active: true, name: 'normal op', ips_whitelist_enabled: false)
+    @normal = Operator.new(email: 'normal@op.com', active: true, name: 'normal op', ips_whitelist_enabled: false, planning_access: false)
     @normal.password= 'op'
     @normal.save
 

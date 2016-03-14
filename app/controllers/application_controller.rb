@@ -61,6 +61,7 @@ class ApplicationController < ActionController::Base
         session[:user_username] = operator.email
         session[:user_name] = operator.name
         session[:privilege] = operator.privilege
+        session[:planning_access] = operator.planning_access
 
         session[:sound_is_activated] = sound_is_activated
         return true

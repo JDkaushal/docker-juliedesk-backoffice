@@ -1,7 +1,7 @@
 class Review::OperatorsPresenceController < ReviewController
 
   skip_before_filter :verify_authenticity_token
-  before_filter :only_admin
+  before_filter :only_planning_access
 
   def index
     respond_to do |format|
@@ -65,5 +65,16 @@ class Review::OperatorsPresenceController < ReviewController
     OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}, is_review: params[:is_review].present?).delete_all
 
     render json: {}
+  end
+
+  private
+
+  def only_planning_access
+    if session[:planning_access]
+      true
+    else
+      redirect_to "/"
+      false
+    end
   end
 end

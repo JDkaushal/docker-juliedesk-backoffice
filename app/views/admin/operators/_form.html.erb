@@ -29,6 +29,15 @@
                                      ["Admin", Operator::PRIVILEGE_ADMIN]
                              ], {}, class: "form-control") %>
     </div>
+
+    <div class="form-group">
+
+      <%= f.label :planning_access %>
+      <div class="form-control">
+        <%= f.check_box :planning_access %> has access to planning
+      </div>
+    </div>
+
     <div class="form-group">
 
       <%= f.label :madagascar_ip_restriction %>
@@ -36,6 +45,8 @@
         <%= f.check_box :ips_whitelist_enabled %> restriction enabled
       </div>
     </div>
+
+
 
     <div class="form-group">
 
