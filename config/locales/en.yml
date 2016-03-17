@@ -88,6 +88,9 @@ en:
             action: "Forward to client"
           unknown:
             action: "Free reply"
+          forward_to_support:
+            action: "Forward to support"
+
           to_founders:
             action: "I can't decide"
           give_preference:

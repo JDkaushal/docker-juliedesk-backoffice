@@ -533,7 +533,8 @@ class MessagesThread < ActiveRecord::Base
       return {
           other: [
             MessageClassification::UNKNOWN,
-            MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
+            MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP,
+            MessageClassification::FORWARD_TO_SUPPORT
         ]
       }
     end
@@ -547,7 +548,8 @@ class MessagesThread < ActiveRecord::Base
             other: [
                 MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
-                MessageClassification::UNKNOWN
+                MessageClassification::UNKNOWN,
+                MessageClassification::FORWARD_TO_SUPPORT
             ]
         }
       elsif s_status == SCHEDULING_EVENT
@@ -562,7 +564,8 @@ class MessagesThread < ActiveRecord::Base
             other: [
                 MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
-                MessageClassification::UNKNOWN
+                MessageClassification::UNKNOWN,
+                MessageClassification::FORWARD_TO_SUPPORT
             ]
         }
       elsif s_status == EVENT_SCHEDULED
@@ -580,7 +583,8 @@ class MessagesThread < ActiveRecord::Base
             other: [
                 MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
-                MessageClassification::UNKNOWN
+                MessageClassification::UNKNOWN,
+                MessageClassification::FORWARD_TO_SUPPORT
             ]
         }
       elsif s_status == nil
@@ -596,7 +600,8 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_CANCEL_EVENTS,
                 MessageClassification::ASK_POSTPONE_EVENTS,
                 MessageClassification::FORWARD_TO_CLIENT,
-                MessageClassification::UNKNOWN
+                MessageClassification::UNKNOWN,
+                MessageClassification::FORWARD_TO_SUPPORT
             ]
         }
       end
@@ -604,7 +609,8 @@ class MessagesThread < ActiveRecord::Base
       {
           other: [
               MessageClassification::FORWARD_TO_CLIENT,
-              MessageClassification::UNKNOWN
+              MessageClassification::UNKNOWN,
+              MessageClassification::FORWARD_TO_SUPPORT
           ]
       }
     end

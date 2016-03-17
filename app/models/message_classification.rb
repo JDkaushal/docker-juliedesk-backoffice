@@ -15,6 +15,8 @@ class MessageClassification < ActiveRecord::Base
   ASK_CANCEL_EVENTS        = "ask_cancel_events"
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
+  FORWARD_TO_SUPPORT       = "forward_to_support"
+
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
   CANCEL_TO_SUPPORT        = "cancel_to_support"
@@ -160,6 +162,8 @@ class MessageClassification < ActiveRecord::Base
 
     elsif self.classification == MessageClassification::UNKNOWN
       create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
+    elsif self.classification == MessageClassification::FORWARD_TO_SUPPORT
+      create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
 
     elsif self.classification == MessageClassification::NOTHING_TO_DO
       create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
@@ -215,6 +219,8 @@ class MessageClassification < ActiveRecord::Base
     if self.classification == NOTHING_TO_DO
       self.thread_status
     elsif self.classification == UNKNOWN
+      self.thread_status
+    elsif self.classification == FORWARD_TO_SUPPORT
       self.thread_status
     elsif self.classification == ASK_DATE_SUGGESTIONS
       if self.client_agreement

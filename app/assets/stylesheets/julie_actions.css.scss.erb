@@ -43,3 +43,39 @@
         }
     }
 }
+
+.forward-to-support-container {
+    position: absolute;
+    top: 128px;
+    right: 10px;
+
+    .forward-to-support-menu-button {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 33px;
+        height: 37px;
+        text-align: center;
+        @include common-sprite(forward-to-client-template-menu);
+        cursor: pointer;
+    }
+    .forward-to-support-menu {
+        position: relative;
+        top: 37px;
+        background: white;
+        border-top: 1px solid #ddd;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+
+        .forward-to-support-menu-item {
+            border-bottom: 1px solid #ddd;
+            width: 300px;
+            padding: 5px 20px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #fafafa;
+            }
+        }
+    }
+}

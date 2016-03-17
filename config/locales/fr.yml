@@ -256,6 +256,9 @@ fr:
             action: "Transférer au client"
           unknown:
             action: "Réponse libre"
+          forward_to_support:
+            action: "Transférer au support"
+
           to_founders:
             action: "Je ne peux pas décider"
           give_preference:

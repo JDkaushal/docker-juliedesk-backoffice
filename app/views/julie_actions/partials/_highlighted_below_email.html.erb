@@ -16,6 +16,15 @@
               <div class="reply-to-all-button btn btn-xs btn-default">Reply to all</div>
             </div>
         <% end %>
+
+        <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT %>
+            <div class="forward-to-support-container">
+              <div class="forward-to-support-menu-button"></div>
+              <div class="forward-to-support-menu">
+
+              </div>
+            </div>
+        <% end %>
       </div>
       <div id="recipients-manager" ng-controller="recipientsManager as recipientsMng">
         <div class="to">

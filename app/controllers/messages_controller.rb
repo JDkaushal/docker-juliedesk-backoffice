@@ -17,6 +17,7 @@ class MessagesController < ApplicationController
 
     if @classification == MessageClassification::FORWARD_TO_CLIENT ||
         @classification == MessageClassification::UNKNOWN ||
+        @classification == MessageClassification::FORWARD_TO_SUPPORT ||
         @classification == MessageClassification::ASK_INFO ||
         @classification == MessageClassification::ASK_CREATE_EVENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)

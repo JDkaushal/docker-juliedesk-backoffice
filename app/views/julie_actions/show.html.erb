@@ -18,6 +18,7 @@
        JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
        JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS,
        JulieAction::JD_ACTION_FORWARD_TO_CLIENT,
+       JulieAction::JD_ACTION_FORWARD_TO_SUPPORT,
        JulieAction::JD_ACTION_WAIT_FOR_CONTACT,
        JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP].include? @julie_action.action_nature %>
     <%= render partial: @julie_action.action_nature, locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>
@@ -89,6 +90,10 @@
 
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
     <% parsed_reply_all_recipients = JSON.parse(@message.reply_all_recipients)%>
+
+    <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
+        initial_recipients[:cc] << "support@juliedesk.com"
+    end %>
 
     function emailSender() {
         return <%== {name: parsed_reply_all_recipients['to'][0]['email']}.to_json %>;
