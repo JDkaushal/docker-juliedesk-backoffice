@@ -106,7 +106,7 @@ class MessageClassification < ActiveRecord::Base
     accounts = Account.get_active_account_emails(detailed: true)
     attendees.map do |attendee|
       attendee_email = attendee['email']
-      if attendee_email
+      if attendee_email.present?
         accounts.select do |account|
           all_emails = [account['email']] + account['email_aliases']
           if all_emails.include?(attendee_email)
