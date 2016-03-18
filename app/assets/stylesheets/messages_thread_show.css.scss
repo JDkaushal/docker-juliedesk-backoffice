@@ -32,6 +32,22 @@
     right: 0px;
     text-align: right;
 
+    .to-be-merged-button {
+      cursor: pointer;
+      position: relative;
+      top: 5px;
+      width: 130px;
+      text-align: left;
+      display: inline-block;
+
+      .to-be-merged-sprite {
+        background-image: url('merge_blackx2.png');
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+      }
+
+    }
+
     .thread-button {
       position: static;
       display: inline-block;

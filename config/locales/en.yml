@@ -160,7 +160,7 @@ en:
     associate_to_event: "Link an event"
     add_attendee: "Add Attendee"
     merge: "Merge into another thread"
-
+    to_be_merged: "Send for merging"
   classification:
     please_fill_info_in: "Please fill info in"
     dates_identification: "Dates identification"

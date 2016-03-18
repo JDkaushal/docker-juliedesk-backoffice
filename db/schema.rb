@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160314135410) do
+ActiveRecord::Schema.define(version: 20160318163901) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -177,6 +177,7 @@ ActiveRecord::Schema.define(version: 20160314135410) do
     t.integer  "last_operator_id"
     t.datetime "event_booked_date"
     t.string   "status"
+    t.boolean  "to_be_merged",          default: false
   end
 
   create_table "operator_actions", force: true do |t|
@@ -232,6 +233,20 @@ ActiveRecord::Schema.define(version: 20160314135410) do
     t.boolean  "enabled",               default: true
     t.string   "color",                 default: "#ffffff"
     t.boolean  "planning_access",       default: false
+  end
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end

@@ -323,7 +323,7 @@ fr:
     associate_to_event: "Lier un évènement"
     add_attendee: "Ajouter participant"
     merge: "Associer à un autre thread"
-
+    to_be_merged: "Send for merging"
   classification:
       please_fill_info_in: "Remplissez les infos"
       dates_identification: "Identification des dates"

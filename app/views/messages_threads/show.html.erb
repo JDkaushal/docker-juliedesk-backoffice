@@ -222,6 +222,10 @@
       </div>
 
       <div class="thread-buttons">
+        <div class="to-be-merged-button"><%= I18n.t("common.to_be_merged") %><span class="to-be-merged-sprite"></span></div>
+            <% if session[:privilege] == Operator::PRIVILEGE_OPERATOR %>
+                <div class="to-be-merged-button thread-button"><%= I18n.t("common.to_be_merged") %></div>
+            <% end %>
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
           <% if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
                   session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
