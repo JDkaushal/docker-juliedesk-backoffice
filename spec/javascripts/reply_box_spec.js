@@ -127,6 +127,50 @@
 
         describe('Recipients', function() {
 
+            describe("setReplyRecipients", function() {
+                describe("only_client", function() {
+                    it("should set client if no other_emails present", function() {
+
+
+                        window.clientRecipient = function() {
+                            return {name: "client@client.com"};
+                        };
+                        $httpBackend.flush();
+                        $scope.setReplyRecipients("only_client");
+
+                        var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                            return r.name;
+                        });
+
+                        var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                            return r.name;
+                        });
+
+                        expect(tos).toEqual(["client@client.com"]);
+                        expect(ccs).toEqual([]);
+                    });
+
+                    it("should set client and other emails if other_emails present", function() {
+                        window.clientRecipient = function() {
+                            return {name: "client@client.com"};
+                        };
+                        $httpBackend.flush();
+                        $scope.setReplyRecipients("only_client", ["other@email.com"]);
+
+                        var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                            return r.name;
+                        });
+
+                        var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                            return r.name;
+                        });
+                        expect(tos).toEqual(["client@client.com"]);
+                        expect(ccs).toEqual(["other@email.com"]);
+                    });
+                });
+
+            });
+
             describe('Other action than ask_availabilities or ask_date_suggestions', function() {
 
                 it('should populate the right ccs and tos fields', function() {

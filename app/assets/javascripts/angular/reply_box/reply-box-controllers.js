@@ -29,6 +29,11 @@
 
             if (recipients == "only_client") {
                 $scope.tos.push(window.clientRecipient());
+                if(otherRecipients) {
+                    _.each(otherRecipients, function(otherRecipient) {
+                        $scope.ccs.push({name: otherRecipient});
+                    });
+                }
             }else {
                 var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
                 // When there are 2 attendees, we will check if it is an assistant and its assisted
