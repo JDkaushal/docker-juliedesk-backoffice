@@ -49,10 +49,13 @@
                     success: function(response) {
                         $(".merging-global-spinner").hide();
                         if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
+                            setToBeMergedOnMessagesThread(messagesThreadId, false);
+
                             $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
                                 window.location = "/messages_threads/" + messagesThreadId;
                             });
                         }
+
                         else {
                             window.location = window.location.href;
                         }
@@ -101,6 +104,22 @@
         else {
             $("#show-calendar-button").hide();
         }
+    };
+
+    function setToBeMergedOnMessagesThread(messagesThreadId, toBeMerged) {
+        $.ajax({
+            url: "/messages_threads/" + messagesThreadId + "/set_to_be_merged",
+            type: "post",
+            data: {
+                to_merge: toBeMerged
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            success: function (e) {
+                $('.cancel-to-merge-button').remove();
+            }
+        })
     };
 
     $(function () {
@@ -177,6 +196,10 @@
                 }
             });
         });
+
+        $('#cancel_to_be_merged_button').click(function() {
+            setToBeMergedOnMessagesThread(<%= @messages_thread.id %>, false);
+        });
     });
 </script>
 <%= render partial: "common/thread_header", locals: {messages_thread: @messages_thread} %>
@@ -222,10 +245,19 @@
       </div>
 
       <div class="thread-buttons">
-        <div class="to-be-merged-button"><%= I18n.t("common.to_be_merged") %><span class="to-be-merged-sprite"></span></div>
-            <% if session[:privilege] == Operator::PRIVILEGE_OPERATOR %>
-                <div class="to-be-merged-button thread-button"><%= I18n.t("common.to_be_merged") %></div>
+
+        <% if session[:privilege] == Operator::PRIVILEGE_OPERATOR && !@messages_thread.to_be_merged %>
+            <%= link_to set_to_be_merged_messages_thread_path(id: @messages_thread.id, to_merge: true), class: 'to-be-merged-link', method: :post do %>
+                <div class="to-be-merged-button"><%= I18n.t("common.to_be_merged") %><span class="to-be-merged-sprite"></span></div>
             <% end %>
+        <% end %>
+
+        <% if @messages_thread.to_be_merged && (session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+                session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
+                session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2) %>
+                <div class="cancel-to-merge-button"><span class="to-merge-text"><%= I18n.t("common.cancel_to_merge") %></span><span class="cancel-to-merge-sprite"></span><span class="cancel-to-be-merged-sprite" id="cancel_to_be_merged_button"></span></div>
+        <% end %>
+
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
           <% if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
                   session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||

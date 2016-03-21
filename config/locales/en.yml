@@ -161,6 +161,7 @@ en:
     add_attendee: "Add Attendee"
     merge: "Merge into another thread"
     to_be_merged: "Send for merging"
+    cancel_to_merge: "To merge"
   classification:
     please_fill_info_in: "Please fill info in"
     dates_identification: "Dates identification"

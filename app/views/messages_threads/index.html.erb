@@ -163,7 +163,12 @@
                                     infos.cssClass = 'vip';
                                 }
                                 else {
-                                    infos.text = null;
+                                    if(messagesThread.to_be_merged) {
+                                        infos.text = 'To merge';
+                                        infos.cssClass = 'to-be-merged';
+                                    }else {
+                                        infos.text = null;
+                                    }
                                 }
                             }
                         }

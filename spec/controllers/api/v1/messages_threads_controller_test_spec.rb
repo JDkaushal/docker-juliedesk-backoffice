@@ -123,7 +123,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "follow_up_instruction" => @mt1.follow_up_instruction,
                                                       "last_operator_id" => nil,
                                                       "event_booked_date" => nil,
-                                                      "status" => nil
+                                                      "status" => nil,
+                                                      "to_be_merged"=>false
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
