@@ -261,4 +261,46 @@ describe Message do
     end
 
   end
+
+  # Deprecated
+
+  # describe 'interpretations' do
+  #   before do
+  #     messages_thread = FactoryGirl.create(:messages_thread)
+  #
+  #     @message = FactoryGirl.create(
+  #         :message,
+  #         messages_thread: messages_thread
+  #     )
+  #
+  #     @message.message_interpretations.create(question: MessageInterpretation::QUESTION_MAIN, raw_response: "{\"body\": \"Merci !\\n\", \"email_id\": 278000, \"request_classif\": \"classif\", \"request_threshold\": 0.46, \"appointment_classif\": \"appointment\", \"dates_to_check\": {}, \"language_detected\": \"fr\", \"request_proba\": null, \"appointment_threshold\": 0.78, \"algo_duration\": [6, 3, 0, 3], \"appointment_proba\": 0.94}")
+  #     @message.message_interpretations.create(question: MessageInterpretation::QUESTION_ENTITIES, raw_response: "{\"annotated\": \"gegergergerg gregergreg gregreg <ENTITY type='TIME' value='2016-04-06T09:00'>Mercredi 6 avril 2016 à 9h00 </ENTITY>(Fuseau horaire : Europe/<ENTITY type='LOCATION'>Paris</ENTITY> frefer freferferfe frefer <ENTITY type='PHONE' owner='slegrand@kalidea.com'>+33 (0)6 85 31 11 11</ENTITY>\\r\\n rfferfe  <ENTITY type='PHONE' owner='None'>06 26 94 24 08</ENTITY>\"}")
+  #   end
+  #
+  #   it 'should return the correct hash' do
+  #     expect(@message.interpretations).to eq({:classification=>"classif", :appointment=>"appointment", :locale=>"fr", :entities=>{"time"=>[{"value"=>"'2016-04-06T09:00'", "entity_text"=>"Mercredi 6 avril 2016 à 9h00", "position-in-text"=>"'[32,115]'"}], "location"=>[{"entity_text"=>"Paris", "position-in-text"=>"'[140,178]'", "value"=>"'Paris'"}], "phone"=>[{"owner"=>"'slegrand@kalidea.com'", "entity_text"=>"+33 (0)6 85 31 11 11", "position-in-text"=>"'[205,284]'", "value"=>"'+33 (0)6 85 31 11 11'"}, {"owner"=>"'None'", "entity_text"=>"06 26 94 24 08", "position-in-text"=>"'[296,353]'", "value"=>"'06 26 94 24 08'"}]}})
+  #   end
+  # end
+
+  describe 'format_email_body' do
+    before do
+      messages_thread = FactoryGirl.create(:messages_thread)
+
+      @message = FactoryGirl.create(
+          :message,
+          messages_thread: messages_thread
+      )
+
+      @message.message_interpretations.create(question: MessageInterpretation::QUESTION_MAIN, raw_response: "{\"body\": \"Merci !\\n\", \"email_id\": 278000, \"request_classif\": \"classif\", \"request_threshold\": 0.46, \"appointment_classif\": \"appointment\", \"dates_to_check\": {}, \"language_detected\": \"fr\", \"request_proba\": null, \"appointment_threshold\": 0.78, \"algo_duration\": [6, 3, 0, 3], \"appointment_proba\": 0.94}")
+      @message.message_interpretations.create(question: MessageInterpretation::QUESTION_ENTITIES, raw_response: "{\"annotated\": \"annotated body\"}")
+    end
+
+    it 'should replace the message body with the annotated body returned by the AI' do
+      body = "gegergergerg gregergreg gregreg Mercredi 6 avril 2016 à 9h00 (Fuseau horaire : Europe/Paris frefer freferferfe frefer +33 (0)6 85 31 11 11 \r\n rfferfe  06 26 94 24 08"
+
+      expect(@message).to receive(:server_message).and_return({'parsed_html' => body})
+      expect(Message.format_email_body(@message)).to eq("annotated body")
+    end
+
+  end
 end

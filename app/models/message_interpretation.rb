@@ -10,21 +10,11 @@ class MessageInterpretation < ActiveRecord::Base
   end
 
   def process
-    client = HTTPClient.new(default_header: {
-                                "Authorization" => ENV['CONSCIENCE_API_KEY']
-                            })
-    client.ssl_config.verify_mode = 0
-    url = "#{ENV['CONSCIENCE_API_BASE_PATH']}/#{self.question}/?id=#{self.message.server_message_id}"
-    response = client.get(url)
-    self.raw_response = response.body
-    begin
-      JSON.parse(self.raw_response)
-      self.error = false
-    rescue
-      self.error = true
+    if self.question == QUESTION_MAIN
+      process_main_entity
+    elsif self.question == QUESTION_ENTITIES
+      process_entities_entity
     end
-
-    self.save
   end
 
   def json_response
@@ -134,5 +124,64 @@ class MessageInterpretation < ActiveRecord::Base
               })
     end
 
+  end
+
+  private
+
+
+  def process_main_entity
+    client = HTTPClient.new(default_header: {
+                                "Authorization" => ENV['CONSCIENCE_API_KEY']
+                            })
+    client.ssl_config.verify_mode = 0
+    url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
+    response = client.get(url)
+    self.raw_response = response.body
+    begin
+      JSON.parse(self.raw_response)
+      self.error = false
+    rescue
+      self.error = true
+    end
+
+    self.save
+  end
+
+  def process_entities_entity
+    mess = self.message
+    thread = mess.messages_thread
+
+    messages = thread.re_import
+
+    server_message = messages.find{|m| m.id == mess.id}.try(:server_message)
+
+    if server_message.present?
+
+      client = HTTPClient.new(default_header: {
+                                  "Authorization" => ENV['CONSCIENCE_API_KEY']
+                              })
+
+      client.ssl_config.verify_mode = 0
+      url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
+
+      body = {
+          'parsed_html' => server_message['parsed_html'],
+          'text' => server_message['text'],
+          'sender' => server_message['from'],
+          'date' => server_message['date']
+      }.to_json
+
+      response = client.post(url, body)
+
+      self.raw_response = response.body
+      begin
+        JSON.parse(self.raw_response)
+        self.error = false
+      rescue
+        self.error = true
+      end
+
+      self.save
+    end
   end
 end

@@ -56,8 +56,8 @@ class MessagesController < ApplicationController
 
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action, message_interpretations: {}}).find(@message.messages_thread_id)
     @messages_thread.re_import
-    @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
+    @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
   end
 
   def classify

@@ -147,22 +147,38 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitDetectedDates =
 
 window.classificationForms.askAvailabilitiesForm.prototype.processDateDetection = function() {
     var askAvailabilitiesForm = this;
-
-    if(detectedDates.length == 0) {
-        runDateDetection($(".email.highlighted .body")[0]);
-    }
-
+    var addedDates = [];
+    //if(detectedDates.length == 0) {
+    //    runDateDetection($(".email.highlighted .body")[0]);
+    //}
     $(".detected-dates").html("");
-    _.each(detectedDates, function(detectedDate) {
-        _.each(detectedDate.results, function(result) {
-            if(result.start.hour) {
-                askAvailabilitiesForm.appendDetectedDateRow({
-                    text: result.text,
-                    startDate: moment(result.startDate)
-                });
-            }
-        });
+    var timeEntities = $('.email.highlighted .body .juliedesk-entity.time');
+
+    detectedDates = _.each(timeEntities, function(node) {
+        var $node = $(node);
+        var date = $node.attr('value');
+
+        if(addedDates.indexOf(date) == -1) {
+            askAvailabilitiesForm.appendDetectedDateRow({
+                text: $node.text(),
+                startDate: moment(date)
+            });
+        }
+
+        addedDates.push(date);
     });
+
+    //
+    //_.each(detectedDates, function(detectedDate) {
+    //    _.each(detectedDate.results, function(result) {
+    //        if(result.start.hour) {
+    //            askAvailabilitiesForm.appendDetectedDateRow({
+    //                text: result.text,
+    //                startDate: moment(result.startDate)
+    //            });
+    //        }
+    //    });
+    //});
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.removeSuggestedDatesToHeader = function() {
