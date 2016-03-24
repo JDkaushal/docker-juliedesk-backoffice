@@ -143,7 +143,11 @@
             });
 
             $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
-            $scope.ccs.push({name: threadOwner.email});
+
+            // We don't add the client email if we are already responding to one of its aliases
+            if(_.intersection(_.map($scope.ccs, function(cc){return cc.name;}), window.threadAccount.email_aliases).length == 0) {
+                $scope.ccs.push({name: threadOwner.email});
+            }
 
             $scope.tos = _.flatten($scope.tos);
             $scope.ccs = _.flatten($scope.ccs);

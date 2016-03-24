@@ -209,7 +209,122 @@
                     $scope.actionNature = 'ask_date_suggestions';
                 });
 
-                it('should populate the ccs and tos fields right', function() {
+                it('should populate the ccs and tos fields right when a thread owner alias is used', function() {
+
+                    window.initialToRecipients =  function(){
+                        return [{name: 'recipientTo1'}, {name: 'recipientTo2'}, {name: 'tESt@TeSt6.com'}, {name: 'threadOwnerAlias1@alias.com'}];
+                    };
+
+                    window.initialCcRecipients = function(){
+                        return [{name: 'recipientCc1'}, {name: 'recipientCc2'}, {name: 'TEST@TeSt6.com'}];
+                    };
+
+                    window.emailSender = function(){
+                        return {name: 'emailSender'};
+                    };
+
+                    window.currentAttendees.push({
+                        email: "assistant1@gmail.com",
+                        firstName: "assistant1",
+                        lastName: "assistant1",
+                        name: "assistant1 assistant1",
+                        usageName: "assistant1",
+                        gender: 'M',
+                        isAssistant: "true",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test3.com",
+                        firstName: "fname3",
+                        lastName: "lname3",
+                        name: "fname3 lname3",
+                        usageName: "fname3",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "true",
+                        assistedBy: {email: 'assistant1@gmail.com'},
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test5.com",
+                        firstName: "fname5",
+                        lastName: "lname5",
+                        name: "fname5 lname5",
+                        usageName: "fname5",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "true",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test6.com",
+                        firstName: "fname6",
+                        lastName: "lname6",
+                        name: "fname6 lname6",
+                        usageName: "fname6",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    $httpBackend.flush();
+
+                    $scope.setReplyRecipients();
+
+                    var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    expect(tos).toEqual(['assistant1@gmail.com', 'test@test6.com', 'julie2@juliedesk.com']);
+                    expect(ccs).toEqual(['test@test1.com', 'test@test5.com', 'emailsender', 'recipientto1', 'recipientto2', 'threadowneralias1@alias.com', 'recipientcc1', 'recipientcc2']);
+
+                });
+
+                it('should populate the ccs and tos fields right when a thread owner alias is not used', function() {
 
                     window.initialToRecipients =  function(){
                         return [{name: 'recipientTo1'}, {name: 'recipientTo2'}, {name: 'tESt@TeSt6.com'}];
@@ -320,7 +435,7 @@
                     });
 
                     expect(tos).toEqual(['assistant1@gmail.com', 'test@test6.com', 'julie2@juliedesk.com']);
-                    expect(ccs).toEqual(['test@test1.com', 'test@test5.com', 'emailsender', 'recipientto1', 'recipientto2', 'recipientcc1', 'recipientcc2', window.threadAccount.email]);
+                    expect(ccs).toEqual(['test@test1.com', 'test@test5.com', 'emailsender', 'recipientto1', 'recipientto2', 'recipientcc1', 'recipientcc2', 'blake@aceable.com']);
 
                 });
 
