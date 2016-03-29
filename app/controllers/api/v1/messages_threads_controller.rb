@@ -50,6 +50,32 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     }
   end
 
+  def sent_messages_stats
+    start_date = (params[:start_date])? DateTime.parse(params[:start_date]) : (DateTime.now - 2.days)
+    precision = (params[:precision].try(:to_i) || 30).minutes
+    messages = Message.where(from_me: true).where("received_at > ?", start_date).where.not(request_at: nil)
+    current_start_date = start_date
+
+    data = {}
+    while current_start_date < DateTime.now
+
+      key = current_start_date.strftime("%Y%m%dT%H%M")
+      current_messages = messages.select{|message| message.created_at >= current_start_date && message.created_at < current_start_date + precision}
+
+      data[key] = {
+          count: current_messages.length,
+          median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0
+      }
+      current_start_date += precision
+    end
+
+    render json: {
+               status: "success",
+               data: data
+           }
+
+  end
+
   def weekly_recap_data
     account_email = params[:email]
     unless account_email.present?

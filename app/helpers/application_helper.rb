@@ -108,6 +108,9 @@ module ApplicationHelper
   end
 
   def self.percentile(values, percentile)
+    return nil if values.length == 0
+    return values[0] if values.length == 1
+
     values_sorted = values.sort
     k = (percentile*(values_sorted.length-1)+1).floor - 1
     f = (percentile*(values_sorted.length-1)+1).modulo(1)
