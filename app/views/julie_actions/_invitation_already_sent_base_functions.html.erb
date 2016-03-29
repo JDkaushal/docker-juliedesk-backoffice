@@ -1,0 +1,148 @@
+<script>
+
+    function associateInvitationToThread(suppress_event) {
+        var data = {
+            text: $("textarea#reply-text").val(),
+            generated_text: window.currentFullMessageWithFooter,
+            to: window.currentRecipients().to,
+            cc: window.currentRecipients().cc,
+            done: true,
+            processed_in: Date.now() - window.startedAt,
+            messages_thread_id: "<%= @messages_thread.id %>"
+        };
+
+        if(suppress_event)
+            data['deleted_event'] = true;
+
+        if(window.selectedEvents.length > 0) {
+            data['event_id'] = window.selectedEvents[0].id;
+            data['event_url'] = window.selectedEvents[0].url;
+            data['calendar_login_username'] = window.selectedEvents[0].calendar_login_username;
+            data['calendar_id'] = window.selectedEvents[0].calId;
+            data['event_from_invitation'] = true;
+            var attendees = window.selectedEvents[0].attendees;
+            data['event_from_invitation_organizer'] = attendees.length > 0 ? attendees[0].email : null;
+        }
+
+        $.ajax({
+            url: "/julie_actions/<%= @julie_action.id %>/update",
+            method: "post",
+            data: data
+        });
+        window.sendReply();
+    }
+
+    function invitationAlreadySentDeleteEvent(params, callback) {
+        CommonHelpers.externalRequest({
+            action: "delete_event",
+            email: window.threadAccount.email,
+            calendar_login_username: params.calendarLoginUsername,
+            event_id: params.eventId,
+            event_url: params.eventUrl,
+            calendar_id: params.calendarId
+        }, function(response) {
+            if(response.status == "success") {
+                callback();
+            }else {
+                alert("Error deleting event");
+                console.log("error", response);
+            }
+        }, function(e) {
+            alert("Error deleting event");
+            console.log("error", e);
+        });
+    }
+
+    function getSelectedEventsToCancel() {
+        return _(window.selectedEvents).filter(function (selectedEvent) {
+            return(selectedEvent.attendees && selectedEvent.attendees.length > 0) || window.forceCancelEventIds.indexOf(selectedEvent.id) > -1;
+        });
+
+    }
+
+    function getSelectedEventsNotToCancel() {
+        return _(window.selectedEvents).filter(function (selectedEvent) {
+            return(!selectedEvent.attendees || selectedEvent.attendees.length == 0) && window.forceCancelEventIds.indexOf(selectedEvent.id) == -1;
+        });
+    }
+
+    function setInvitationConfirmedReplyText() {
+        var messageBuilder = $('#reply-area').scope();
+
+        window.setReplyMessage(messageBuilder.generateReply({
+            action: "invitation_already_sent",
+            client: window.threadAccount.usage_name,
+            invitation_start_date: window.selectedEvents[0].start,
+            timezoneId: window.threadComputedData.timezone,
+            locale: window.threadComputedData.locale
+        }), "all", window.otherEmails);
+    }
+
+    function decliningAlreadySuggestedDate() {
+        var alreadySuggestedDates = <%== @messages_thread.suggested_date_times.to_json%>;
+        var currentDecliningEventDate = window.selectedEvents[0].start;
+
+        var foundDate =  _.find(alreadySuggestedDates, function(date) {
+            return moment(currentDecliningEventDate).isSame(moment(date.date).tz(date.timezone));
+        });
+
+        return !!foundDate;
+    }
+
+    function setInvitationDeclinedNewAvailabilitesReplyText() {
+        window.pickingNewAvailabilities = true;
+
+        var messageBuilder = $('#reply-area').scope();
+        window.setReplyMessage(messageBuilder.generateReply({
+            action: "suggest_dates",
+            noDateFits: 'external_invitation',
+            client_agreement: true,
+            declining_previously_suggested_date: decliningAlreadySuggestedDate(),
+            client: window.threadAccount.usage_name,
+            invitation_start_date: window.selectedEvents[0].start,
+            timezoneId: window.threadComputedData.timezone,
+            locale: window.threadComputedData.locale,
+            timeSlotsToSuggest: window.timeSlotsToSuggest
+        }), "all", window.otherEmails);
+    }
+
+    function redrawSelectedEventsContainer() {
+        var $container = $("#thread-header-other-entries-container");
+        $container.html("");
+        var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");
+        var $selectedEventsListDiv = $("<div>").addClass("selected-events-list");
+        $selectedEventsListDiv.append($("<div>").addClass("selected-events-title").html("Selected events"));
+
+        for (var i in window.selectedEvents) {
+            var selectedEvent = window.selectedEvents[i];
+            var $selectedEventDiv = $("<div>").addClass("selected-event").data("event-id", selectedEvent.id);
+            $selectedEventDiv.append($("<div>").addClass("selected-event-title").html(selectedEvent.title));
+            $selectedEventDiv.append($("<div>").addClass("selected-event-date").html(CommonHelpers.formatDateTimeRange(selectedEvent.start, selectedEvent.end, "<%= I18n.locale%>", window.threadAccount.default_timezone_id, selectedEvent.allDay)));
+            if (!selectedEvent.attendees || selectedEvent.attendees.length < 2) {
+                var $selectedEventNoAttendeesContainer = $("<div>").addClass("selected-event-no-attendees-container");
+                $selectedEventNoAttendeesContainer.append($("<div>").addClass("selected-event-no-attendees").html("No attendees"));
+
+                var $forceCancel = $("<div>").addClass("selected-event-force-cancel");
+                var $forceCancelCheckbox = $("<input type='checkbox'>");
+                if (window.forceCancelEventIds.indexOf(selectedEvent.id) > -1) {
+                    $forceCancelCheckbox.attr("checked", true);
+                }
+                $forceCancel.append($forceCancelCheckbox);
+                $forceCancel.append("Force");
+                $selectedEventNoAttendeesContainer.append($forceCancel);
+
+
+                $selectedEventDiv.append($selectedEventNoAttendeesContainer);
+            }
+            $selectedEventsListDiv.append($selectedEventDiv);
+        }
+        $selectedEventsListContainerDiv.append($selectedEventsListDiv);
+
+        if(window.selectedEvents.length > 0) {
+            $selectedEventsListDiv.append("<button id='confirm_invitation_noted' class='btn btn-block btn-success validate-locale-button'>Confirmer</button>");
+            $selectedEventsListDiv.append("<button id='invitation-sent-no-date-fits' class='btn btn btn-default btn-block'>Cette date ne convient pas </button>");
+        }
+
+        $container.append($selectedEventsListContainerDiv);
+    }
+</script>

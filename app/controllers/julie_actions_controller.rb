@@ -77,7 +77,9 @@ class JulieActionsController < ApplicationController
         done: params[:done].present?,
         events: (params[:events].try(:values) || []).to_json,
         processed_in: params[:processed_in],
-        deleted_event: params[:deleted_event]
+        deleted_event: params[:deleted_event],
+        event_from_invitation: params[:event_from_invitation],
+        event_from_invitation_organizer: params[:event_from_invitation_organizer],
      })
     print_time "Updating julie action"
 

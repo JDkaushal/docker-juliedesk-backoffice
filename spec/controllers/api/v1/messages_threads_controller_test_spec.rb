@@ -198,7 +198,10 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                             "deleted_event" => mc.julie_action.deleted_event,
                                                             "event_url" => mc.julie_action.event_url,
                                                             "calendar_login_username" => mc.julie_action.calendar_login_username,
-                                                            "server_message_id" => mc.julie_action.server_message_id}
+                                                            "server_message_id" => mc.julie_action.server_message_id,
+                                                            "event_from_invitation"=>false,
+                                                            "event_from_invitation_organizer"=>nil
+                                                        }
                                                     }
                                                   }
                                                   }.flatten,
@@ -207,7 +210,9 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "calendar_id" => nil,
                                                       "event_url" => nil,
                                                       "appointment_nature" => nil,
-                                                      "calendar_login_username" => nil
+                                                      "calendar_login_username" => nil,
+                                                      "event_from_invitation"=>false,
+                                                      "event_from_invitation_organizer"=>nil
                                                   }
                                               })
     end

@@ -91,6 +91,8 @@ ActiveRecord::Schema.define(version: 20160331132906) do
     t.string   "calendar_login_username"
     t.integer  "server_message_id"
     t.text     "generated_text"
+    t.boolean  "event_from_invitation",           default: false
+    t.string   "event_from_invitation_organizer"
   end
 
   create_table "julie_aliases", force: true do |t|

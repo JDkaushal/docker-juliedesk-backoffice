@@ -14,7 +14,6 @@ function Calendar($selector, params) {
         this.initialData[paramName] = params[paramName];
     }
 
-
     this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints", "juliedesk-public-holidays"];
 
     // Init variables
@@ -52,7 +51,6 @@ function Calendar($selector, params) {
     calendar.$selector.find("#minimize-button").click(function(e) {
         calendar.clickMinimizeButton(e);
     });
-
 
     var allEmailsForTracking = calendar.initialData.other_emails.slice();
     allEmailsForTracking.unshift(calendar.initialData.email);
@@ -105,8 +103,14 @@ Calendar.prototype.selectEvent = function (event) {
         event.isSelected = true;
         calendar.selectedEvents.push(event);
     }
+
     calendar.drawExternalEventSelection();
     calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
+};
+
+Calendar.prototype.registerCalendarCallback = function(type, callback) {
+    var calendar = this;
+    calendar.$selector.find('#calendar').fullCalendar(type, callback);
 };
 
 Calendar.prototype.getMode = function () {
@@ -130,7 +134,7 @@ Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
 Calendar.prototype.isFakeCalendarId = function(calendarId) {
     var calendar = this;
     return calendar.fakeCalendarIds.indexOf(calendarId) > -1;
-}
+};
 
 Calendar.prototype.updateCurrentEventDateFromInput = function ($container) {
     var calendar = this;
@@ -735,6 +739,17 @@ Calendar.prototype.changeWeekendsCheckbox = function () {
     Calendar.prototype.goToDateTime = function(dateTime) {
     var calendar = this;
     calendar.$selector.find("#calendar").fullCalendar('gotoDate', moment(dateTime));
+};
+
+Calendar.prototype.findAndSelectEvent = function(params) {
+    var calendar = this;
+    var matchingEvents = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+        return ev.start.isSame(moment(params.start)) && ev.end.isSame(moment(params.end)) && ev.title == params.title;
+    });
+
+    if(matchingEvents.length > 0) {
+        calendar.selectEvent(matchingEvents[0]);
+    }
 };
 
 Calendar.prototype.selectSuggestedEvent = function(dateTime) {

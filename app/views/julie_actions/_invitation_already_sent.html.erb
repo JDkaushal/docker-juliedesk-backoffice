@@ -1,0 +1,139 @@
+<%=render 'invitation_already_sent_base_functions'%>
+
+<script>
+
+    setCurrentLocale(window.threadComputedData.locale);
+    window.pickingNewAvailabilities = false;
+    var invitationAlreadyPresent = <%= (messages_thread.event_data[:event_id].present? && messages_thread.event_data[:event_from_invitation]) ? "true":"false" %>;
+
+    $("#thread-header-other-entries-container").on('click', '#confirm_invitation_noted', function(e) {
+        $(".calendar-container").addClass("minimized");
+        $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+    });
+
+    $("#thread-header-other-entries-container").on('click', '#invitation-sent-no-date-fits', function(e) {
+        window.timeSlotsToSuggest = null;
+        window.pickingNewAvailabilities = true;
+        $(".messages-thread-info-panel .selected-events-list-container").hide();
+        window.currentCalendar.initialData.mode = "suggest_dates";
+        $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
+    });
+
+    window.clickReplyButton = function() {
+
+        if(window.pickingNewAvailabilities) {
+            invitationAlreadySentDeleteEvent({
+                eventId: window.selectedEvents[0].id,
+                calendarLoginUsername: window.selectedEvents[0].calendar_login_username,
+                eventUrl: window.selectedEvents[0].url,
+                calendarId: window.selectedEvents[0].calId
+            }, function() {
+                associateInvitationToThread(true);
+            });
+            // When another invitation has been received we want to discard the current and link the new with the current thread
+        }else if(invitationAlreadyPresent) {
+            var currentEventId = window.currentEventTile.eventId;
+            // Don't
+            if(currentEventId == window.selectedEvents[0].id) {
+                var data = {
+                    text: $("textarea#reply-text").val(),
+                    generated_text: window.currentFullMessageWithFooter,
+                    to: window.currentRecipients().to,
+                    cc: window.currentRecipients().cc,
+                    done: true,
+                    processed_in: Date.now() - window.startedAt,
+                    messages_thread_id: "<%= @messages_thread.id %>"
+                };
+
+                $.ajax({
+                    url: "/julie_actions/<%= @julie_action.id %>/update",
+                    method: "post",
+                    data: data
+                });
+                window.sendReply();
+            }else {
+                invitationAlreadySentDeleteEvent({
+                    eventId: currentEventId,
+                    calendarLoginUsername: window.currentEventTile.calendarLoginUsername,
+                    eventUrl: window.currentEventTile.eventUrl,
+                    calendarId: window.currentEventTile.calendarId
+                }, function() {
+                    associateInvitationToThread(false);
+                });
+            }
+        }else{
+            associateInvitationToThread(false);
+        }
+    };
+
+    window.afterReplyBoxInitCallback = function(){
+        window.setReplyMessage("");
+    };
+
+    function preSelectEventIfPossible(icsData) {
+
+        var latestIcs = icsData[0];
+
+        if(icsData.length > 1) {
+            _.each(icsData, function(ics) {
+                if(moment(ics.receivedAt).isAfter(latestIcs.receivedAt)) {
+                    latestIcs = ics;
+                }
+            });
+        }
+
+
+        // If the latest ICS start date is in the future
+        if(latestIcs && moment(latestIcs.datesRaw[0]).isAfter(moment())) {
+            window.currentCalendar.findAndSelectEvent({
+                start: latestIcs.datesRaw[0],
+                end: latestIcs.datesRaw[1],
+                title: latestIcs.summary
+            });
+        }
+    }
+
+    window.drawCalendarCallback = function(){
+        window.activateCalendarWithParams({
+            mode: "select_events",
+            date_times: [],
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration,
+            calendarandEventsLoadedFirstTimeCallback: function() {
+                preSelectEventIfPossible(window.icsManager.icsEntities);
+            }
+        });
+    };
+
+    window.addEventListener("message", function (event) {
+        console.log(event);
+        window.setReplyMessage("");
+        if(event.data.message == "drawExternalEventSelection") {
+            var events = event.data.events;
+            var currentSelectedEvent = _.last(events);
+
+            _.each(currentCalendar.selectedEvents, function(e) {
+                if(e && e.id != currentSelectedEvent.id)
+                    currentCalendar.selectEvent(e);
+            });
+
+            window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+            if(currentSelectedEvent) {
+                setInvitationConfirmedReplyText();
+            }
+            redrawSelectedEventsContainer();
+        }else if(event.data.message == "drawExternalEventsList") {
+            window.timeSlotsToSuggest = event.data.date_times;
+            setInvitationDeclinedNewAvailabilitesReplyText();
+            window.redrawTimeSlotsToSuggestContainer();
+
+            $(".time-slots-to-suggest-list-container .suggest-dates-next-button").off('click');
+
+            $(".time-slots-to-suggest-list-container .suggest-dates-next-button").click(function(e) {
+                $(".calendar-container").addClass("minimized");
+                $('.email.extended').removeClass('extended');
+                $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+            })
+        }
+    }, false);
+</script>

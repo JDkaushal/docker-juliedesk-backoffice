@@ -7,6 +7,8 @@ function EventTile($selector, params) {
     this.$selector = $selector;
     this.locale = params.locale || "en";
     this.mode = params.mode;
+    this.fromInvitation = params.eventFromInvitation == 'true';
+    this.fromInvitationOrganizer = params.eventFromInvitationOrganizer;
 
     this.event = params.event;
     this.selectEventCallback = params.selectEventCallback;
@@ -35,6 +37,17 @@ EventTile.prototype.getMode = function() {
 EventTile.prototype.render = function() {
     var eventTile = this;
     eventTile.$selector.html(HandlebarsTemplates['event_tile/main']());
+
+    if(this.fromInvitation) {
+        var fromInvitationMessage = 'Invitation from undetermined email';
+
+        if(this.fromInvitationOrganizer) {
+            fromInvitationMessage = 'Invitation from ' + this.fromInvitationOrganizer;
+        }
+
+        eventTile.$selector.find('.event-from-invitation-container').show();
+        eventTile.$selector.find('.event-from-invitation-container .text').text(fromInvitationMessage);
+    }
 
     eventTile.initActions();
 };

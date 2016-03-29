@@ -18,6 +18,10 @@ window.wordings['en'] = {
                 not_suggested: {
                     singular: "Sorry this timeslot is not open, ",
                     plural: "Sorry none of these timeslots are open, "
+                },
+                external_invitation: {
+                    proposed_date: "Sorry but %{client} is no longer available %{date}.",
+                    not_proposed_date: "Unfortunately %{client} is not available %{date}."
                 }
             },
             before_dates_suffix: {
@@ -25,8 +29,12 @@ window.wordings['en'] = {
                 new_appointment: {
                     suggested: "but would be available for %{appointment_nature}%{location}:",
                     not_suggested: "but %{client} would be available for %{appointment_nature}%{location}:"
-                }
+                },
+                external_invitation: "\n\nMay I suggest you one of the following time slot :"
             }
+        },
+        invitation_already_sent: {
+            noted: "I take note of the invite in %{client}'s calendar for %{date}."
         },
         suggest_dates: {
             ask_agreement: {
@@ -54,7 +62,8 @@ window.wordings['en'] = {
                     single_attendee_assisted: "\n\nWhich time works best for %{assisted_attendee}?",
                     multiple_attendees_assisted: "\n\nWhich time works best for %{assisted_attendees}?",
                     multiple_attendees_mix: "\n\nWhich time would work best?"
-                }
+                },
+                external_invitation: "\n\nLet me know what would you prefer."
             },
             ask_number: {
                 call: "\nPlease let me know where you can be reached.",

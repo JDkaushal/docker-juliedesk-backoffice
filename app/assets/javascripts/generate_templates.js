@@ -79,6 +79,20 @@ window.generateEmailTemplate = function (params) {
                 if(params.noDateFits) {
                     var templateName;
                     var templateSuffixName;
+                    var templateNameParams = {
+                        client: params.client,
+                        location: locationInTemplate
+                    };
+                    var templateSuffixNameParams = {
+                        client: params.client,
+                        location: locationInTemplate
+                    };
+
+                    if(params.appointment) {
+                        templateNameParams['appointment_nature'] = params.appointment.title_in_email[params.locale];
+                        templateSuffixNameParams['appointment_nature'] = params.appointment.title_in_email[params.locale];
+                    }
+
 
                     if(params.noDateFits == "suggested_multiple") {
                         templateName = "email_templates.no_date_fits.before_dates.suggested.plural";
@@ -96,21 +110,31 @@ window.generateEmailTemplate = function (params) {
                         templateName = "email_templates.no_date_fits.before_dates.not_suggested.singular";
                         templateSuffixName = "email_templates.no_date_fits.before_dates_suffix.new_appointment.not_suggested";
                     }
+                    else if(params.noDateFits == "external_invitation"){
+                        templateName = "email_templates.no_date_fits.before_dates.external_invitation" + (params.declining_previously_suggested_date ? '.proposed_date' : '.not_proposed_date');
+                        templateSuffixName = "email_templates.no_date_fits.before_dates_suffix.external_invitation";
+
+                        date = moment(params.invitation_start_date).tz(params.timezoneId);
+                        var dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+                        var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString);
+                        var formattedDate = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
+                        if(date.isSame(today, "day"))
+                            dateString = localize("dates.today") + ', ' + localizedDateString + ' ' + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+                        else if(date.isSame(tomorrow, "day"))
+                            dateString = localize("dates.tomorrow") + ', ' + localizedDateString + ' ' + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+                        else
+                            dateString = (window.getCurrentLocale() == 'en' ? window.helpers.capitalize(formattedDate) : window.helpers.lowerize(formattedDate)) + ' ' + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+
+                        templateNameParams['date'] = dateString;
+                    }
                     if(params.isPostpone) {
                         templateSuffixName = "email_templates.no_date_fits.before_dates_suffix.postpone";
                     }
 
-                    message += localize(templateName, {
-                        client: params.client,
-                        appointment_nature: params.appointment.title_in_email[params.locale],
-                        location: locationInTemplate
-                    });
+                    message += localize(templateName, templateNameParams);
 
-                    message += localize(templateSuffixName, {
-                        client: params.client,
-                        appointment_nature: params.appointment.title_in_email[params.locale],
-                        location: locationInTemplate
-                    });
+                    message += localize(templateSuffixName, templateSuffixNameParams);
                 }
                 else {
                     if(params.isPostpone) {
@@ -175,18 +199,16 @@ window.generateEmailTemplate = function (params) {
                     message += "\n - " + dateString + " " + localize("email_templates.common.date_time_separator") + " " + timesString;
                 });
 
-                var timeSlotsPlural = "plural";
-                if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
+                if(params.noDateFits == "external_invitation"){
+                    message += localize("email_templates.suggest_dates.after_dates.external_invitation");
+                }else{
+                    var timeSlotsPlural = "plural";
+                    if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
 
-                //var attendeesString = "";
-                var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.suggest_dates.after_dates', params.assistedAttendees, params.unassistedAttendees);
-                //var attendeesKey = ".one_attendee";
-                //if(params.attendees && params.attendees.length > 1) {
-                //    attendeesString = params.attendees.join(", ");
-                //    var attendeesKey = ".many_attendees";
-                //}
+                    var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.suggest_dates.after_dates', params.assistedAttendees, params.unassistedAttendees);
 
-                message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesSpecificConf[0], attendeesSpecificConf[1]);
+                    message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesSpecificConf[0], attendeesSpecificConf[1]);
+                }
             }
         }
         else {
@@ -479,6 +501,14 @@ window.generateEmailTemplate = function (params) {
     }
     else if(params.action == "forward_to_client") {
         message += localize("email_templates.forward_to_client");
+    }
+    else if(params.action == "invitation_already_sent") {
+        var date = moment(params.invitation_start_date).tz(params.timezoneId);
+        var formattedDate = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+
+        var invitationStartDate = formattedDate + ' ' + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format"));
+
+        message += localize("email_templates.invitation_already_sent.noted", {date: invitationStartDate, client: params.client});
     }
     else if(params.action == "wait_for_contact") {
         if(params.isPostpone) {

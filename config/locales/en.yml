@@ -52,6 +52,8 @@ en:
               action: "Note an info"
             wait_for_contact:
               action: "Wait for contact suggestions"
+            invitation_already_sent:
+              action: "Invitation has been sent"
       manage_scheduled_event:
         title: "Manage scheduled appointment"
         classifications:
@@ -61,6 +63,8 @@ en:
               action: "Update event"
             ask_cancel_appointment:
               action: "Cancel appointment"
+            invitation_already_sent:
+              action: "Another invitation has been sent"
       event_rescheduling:
         title: "Reschedule appointment"
         classifications:
@@ -227,7 +231,7 @@ en:
       one_response: "Response from only one person is expected"
     are_we_waiting_for_other_answers: "Are we still waiting for other answers?"
     new_preferences: "New preferences:"
-
+    invitation_already_sent: "Invitation already sent"
 
 
   dates_identifications:

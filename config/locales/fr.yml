@@ -220,6 +220,8 @@ fr:
               action: "Noter une info"
             wait_for_contact:
               action: "Attendre des suggestions du contact"
+            invitation_already_sent:
+              action: "L'invitation a été envoyée"
       manage_scheduled_event:
         title: "Gérer le rendez-vous organisé"
         classifications:
@@ -229,6 +231,8 @@ fr:
               action: "Mettre à jour l'évènement"
             ask_cancel_appointment:
               action: "Annuler le rendez-vous"
+            invitation_already_sent:
+              action: "Une autre invitation a été envoyée"
       event_rescheduling:
         title: "Reporter le rendez-vous"
         classifications:
@@ -390,7 +394,7 @@ fr:
       one_response: "On attend la réponse d'une seule personne"
     are_we_waiting_for_other_answers: "Attend-on encore d'autres réponses ?"
     new_preferences: "Nouvelles préférences :"
-
+    invitation_already_sent: "L'invitation a déjà été envoyée"
   dates_identifications:
     add_a_date: "Ajouter une date"
     verify_detected_dates: "Vérifier les dates détectées"

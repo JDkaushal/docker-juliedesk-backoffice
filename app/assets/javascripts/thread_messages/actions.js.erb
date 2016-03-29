@@ -118,6 +118,9 @@ function julieSuggestionClickHandler($element, $email) {
 }
 
 function IcsManager() {
+
+    this.icsEntities = [];
+
     this.perform = function() {
         var that = this;
         var $nodesWithAttachments = $('.attachments-detector[value="true"]');
@@ -126,10 +129,16 @@ function IcsManager() {
             var $node = this;
             var $email = $($node.closest('.email'));
             var emailData = JSON.parse($email.find('#email_data').val());
+            var receivedAt = $email.data('received-at');
+            var parsedIcs = undefined;
 
             that.fetchAttachments(emailData, function(icsData) {
-                that.generatePreview($email, that.parse(icsData));
+                parsedIcs = that.parse(icsData);
+                parsedIcs['receivedAt'] = receivedAt;
+                that.icsEntities.push(parsedIcs);
+                that.generatePreview($email, parsedIcs);
             });
+
         });
     };
 
@@ -166,12 +175,16 @@ function IcsManager() {
         var event = new ICAL.Event(vevent);
         var mStartDate = moment(event.startDate.toJSDate()).utc();
         var mEndDate = moment(event.endDate.toJSDate()).utc();
+        var mStartDateRaw = mStartDate.clone();
+        var mEndDateRaw = mEndDate.clone();
 
         var dates = mStartDate.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.format("dddd DD MMMM YYYY HH:mm") + " (UTC)";
         var timezone = $('#messages_container').data('timezone');
 
         if(!!timezone) {
-            dates += "<br>" + mStartDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDate.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " (" + timezone + ")";
+            mStartDateRaw = mStartDate.tz(timezone);
+            mEndDateRaw = mEndDate.tz(timezone);
+            dates += "<br>" + mStartDateRaw.format("dddd DD MMMM YYYY HH:mm") + " - " + mEndDateRaw.tz(timezone).format("dddd DD MMMM YYYY HH:mm") + " (" + timezone + ")";
         }
 
         return {
@@ -179,6 +192,7 @@ function IcsManager() {
             description: event.description,
             location: event.location,
             dates: dates,
+            datesRaw: [mStartDateRaw, mEndDateRaw],
             attendees: _.map(event.attendees, function(attendee) {
                 return attendee.getFirstValue().toLowerCase().replace("mailto:", "");
             }),
@@ -247,5 +261,6 @@ $(function () {
 
 $(window).load(function() {
     paintExpandQuoteButtons();
-    new IcsManager().perform();
+    window.icsManager = new IcsManager();
+    window.icsManager.perform();
 });

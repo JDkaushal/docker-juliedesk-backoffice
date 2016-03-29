@@ -119,7 +119,6 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
         var end = calendar.dispEnd.format() + "T00:00:00Z";
 
         calendar.fetchAllAccountsEvents(start, end);
-
     }
     else {
         if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {

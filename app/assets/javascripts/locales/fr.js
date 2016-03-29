@@ -18,6 +18,10 @@ window.wordings['fr'] = {
                 not_suggested: {
                     singular: "Désolée, cet horaire ne convient pas, ",
                     plural: "Désolée, aucun de ces horaires ne convient, "
+                },
+                external_invitation: {
+                    proposed_date: "Désolée mais %{client} n'est finalement pas disponible %{date}.",
+                    not_proposed_date: "Malheureusement %{client} n'est pas disponible %{date}."
                 }
             },
             before_dates_suffix: {
@@ -25,8 +29,12 @@ window.wordings['fr'] = {
                 new_appointment: {
                     suggested: "mais serait disponible pour %{appointment_nature}%{location} :",
                     not_suggested: "mais %{client} serait disponible pour %{appointment_nature}%{location} :"
-                }
+                },
+                external_invitation: "\n\nPuis-je vous proposer l'une des dates suivantes :"
             }
+        },
+        invitation_already_sent: {
+            noted: "Je prends note de l'invitation dans le calendrier de %{client} pour le %{date}."
         },
         suggest_dates: {
             ask_agreement: {
@@ -54,7 +62,8 @@ window.wordings['fr'] = {
                     single_attendee_assisted: "\n\nQuel horaire conviendrait le mieux à %{assisted_attendee} ?",
                     multiple_attendees_assisted: "\n\nQuel horaire conviendrait le mieux à %{assisted_attendees} ?",
                     multiple_attendees_mix: "\n\nQuel horaire conviendrait le mieux ?"
-                }
+                },
+                external_invitation: "\n\nMerci de m'indiquer votre préférence."
             },
             ask_number: {
                 call: "\nMerci de me préciser à quel numéro vous êtes joignable.",
@@ -286,6 +295,7 @@ window.wordings['fr'] = {
     },
     info_panel: {
         event_does_not_exist_anymore: "Cet évènement n'existe plus.",
+        invitation_does_not_exist_anymore: "Le client a refusé l'invitation",
         remove_link: "Supprimer l'association"
     },
     classification_forms: {

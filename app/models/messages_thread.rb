@@ -211,6 +211,7 @@ class MessagesThread < ActiveRecord::Base
       message_classifications = messages.map{|m|
         m.message_classifications
       }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+
       last_message_classification = message_classifications.last
       appointment_nature = last_message_classification.try(:appointment_nature)
 
@@ -503,7 +504,9 @@ class MessagesThread < ActiveRecord::Base
           event_url: last_creation.event_url,
           calendar_id: last_creation.calendar_id,
           appointment_nature: last_creation.message_classification.appointment_nature,
-          calendar_login_username: last_creation.calendar_login_username
+          calendar_login_username: last_creation.calendar_login_username,
+          event_from_invitation: last_creation.event_from_invitation,
+          event_from_invitation_organizer: last_creation.event_from_invitation_organizer
       }
     else
       {
@@ -511,7 +514,9 @@ class MessagesThread < ActiveRecord::Base
           calendar_id: nil,
           event_url: nil,
           appointment_nature: nil,
-          calendar_login_username: nil
+          calendar_login_username: nil,
+          event_from_invitation: false,
+          event_from_invitation_organizer: nil
       }
     end
   end
@@ -561,6 +566,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::WAIT_FOR_CONTACT,
                 MessageClassification::GIVE_INFO,
                 MessageClassification::ASK_INFO,
+                MessageClassification::INVITATION_ALREADY_SENT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,
@@ -574,7 +580,8 @@ class MessagesThread < ActiveRecord::Base
             manage_scheduled_event: [
                 MessageClassification::GIVE_INFO,
                 MessageClassification::ASK_INFO,
-                MessageClassification::ASK_CANCEL_APPOINTMENT
+                MessageClassification::ASK_CANCEL_APPOINTMENT,
+                MessageClassification::INVITATION_ALREADY_SENT
             ],
             event_rescheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
@@ -593,7 +600,8 @@ class MessagesThread < ActiveRecord::Base
             event_scheduling: [
                 MessageClassification::ASK_DATE_SUGGESTIONS,
                 MessageClassification::ASK_AVAILABILITIES,
-                MessageClassification::WAIT_FOR_CONTACT
+                MessageClassification::WAIT_FOR_CONTACT,
+                MessageClassification::INVITATION_ALREADY_SENT
             ],
             other: [
                 MessageClassification::GIVE_PREFERENCE,

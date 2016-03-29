@@ -16,6 +16,7 @@ class MessageClassification < ActiveRecord::Base
   ASK_POSTPONE_EVENTS      = "ask_postpone_events"
   UNKNOWN                  = "unknown"
   FORWARD_TO_SUPPORT       = "forward_to_support"
+  INVITATION_ALREADY_SENT  = "invitation_already_sent"
 
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
@@ -174,6 +175,8 @@ class MessageClassification < ActiveRecord::Base
       create_julie_action action_nature: JulieAction::JD_ACTION_WAIT_FOR_CONTACT
     elsif self.classification == MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
       create_julie_action action_nature: JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP
+    elsif self.classification == MessageClassification::INVITATION_ALREADY_SENT
+      create_julie_action action_nature: JulieAction::JD_ACTION_INVITATION_ALREADY_SENT
     end
   end
 
@@ -185,7 +188,8 @@ class MessageClassification < ActiveRecord::Base
         ASK_CANCEL_APPOINTMENT,
         ASK_CANCEL_EVENTS,
         ASK_POSTPONE_EVENTS,
-        WAIT_FOR_CONTACT
+        WAIT_FOR_CONTACT,
+        INVITATION_ALREADY_SENT
     ].include? classification
   end
 

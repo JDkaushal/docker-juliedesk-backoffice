@@ -1,3 +1,5 @@
+<%=render 'invitation_already_sent_base_functions'%>
+
 <script>
     var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
     window.leftColumnMessage = "Create event";
@@ -117,8 +119,83 @@
 
         });
 
+        $("#invitation-already-sent-button").click(function () {
+            window.invitationAlreadySent = true;
+            window.currentCalendar.initialData.mode = "select_events";
+            $(".messages-thread-info-panel .message-container").html("Invitation already sent");
+            $('.create-event-panel').hide();
+            enableInvitationAlreadySentFlow();
+        });
+
+        function enableInvitationAlreadySentFlow() {
+
+            $("#thread-header-other-entries-container").on('click', '#confirm_invitation_noted', function(e) {
+                $(".calendar-container").addClass("minimized");
+                $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+            });
+
+            $("#thread-header-other-entries-container").on('click', '#invitation-sent-no-date-fits', function(e) {
+                window.timeSlotsToSuggest = null;
+                window.pickingNewAvailabilities = true;
+                $(".messages-thread-info-panel .selected-events-list-container").hide();
+                window.currentCalendar.initialData.mode = "suggest_dates";
+                $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
+            });
+
+            window.clickReplyButton = function() {
+                var invitationAlreadyPresent = <%= (messages_thread.event_data[:event_id].present? && messages_thread.event_data[:event_from_invitation]) ? "true":"false" %>;
+
+                if(window.pickingNewAvailabilities) {
+                    invitationAlreadySentDeleteEvent({
+                        eventId: window.selectedEvents[0].id,
+                        calendarLoginUsername: window.selectedEvents[0].calendar_login_username,
+                        eventUrl: window.selectedEvents[0].url,
+                        calendarId: window.selectedEvents[0].calId
+                    }, function() {
+                        associateInvitationToThread(true);
+                    });
+                    // When another invitation has been received we want to discard the current and link the new with the current thread
+                }else if(invitationAlreadyPresent) {
+                    var currentEventId = window.currentEventTile.eventId;
+                    // Don't
+                    if(currentEventId == window.selectedEvents[0].id) {
+                        var data = {
+                            text: $("textarea#reply-text").val(),
+                            generated_text: window.currentFullMessageWithFooter,
+                            to: window.currentRecipients().to,
+                            cc: window.currentRecipients().cc,
+                            done: true,
+                            processed_in: Date.now() - window.startedAt,
+                            messages_thread_id: "<%= @messages_thread.id %>"
+                        };
+
+                        $.ajax({
+                            url: "/julie_actions/<%= @julie_action.id %>/update",
+                            method: "post",
+                            data: data
+                        });
+                        window.sendReply();
+                    }else {
+                        invitationAlreadySentDeleteEvent({
+                            eventId: currentEventId,
+                            calendarLoginUsername: window.currentEventTile.calendarLoginUsername,
+                            eventUrl: window.currentEventTile.eventUrl,
+                            calendarId: window.currentEventTile.calendarId
+                        }, function() {
+                            associateInvitationToThread(false);
+                        });
+                    }
+                }else{
+                    associateInvitationToThread(false);
+                }
+            };
+        };
+
         $("#create-event-button").click(function () {
             if(window.threadComputedData.client_agreement) {
+                window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
+
+                console.log('window.currentEventFromInvitation', window.currentEventFromInvitation);
                 $("#create-event-button").attr('disabled', true);
                 $(".creating-event-message").html("Creating...");
                 var start = moment(window.timeSlotToCreate).tz(window.timeSlotToCreateTimezone);
@@ -173,7 +250,7 @@
                     end_timezone: window.timeSlotToCreateTimezone,
                     calendar_login_username: window.threadComputedData.calendar_login_username
                 };
-                if(isPostpone) {
+                if(isPostpone && !window.currentEventFromInvitation) {
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
@@ -189,154 +266,15 @@
                     });
                 }
 
-                CommonHelpers.externalRequest(requestParams, function (e) {
-
-                    window.currentCalendar.refreshEvents();
-
-                    if(!isPostpone) {
-                        window.currentEventId = e.data.event_id;
-                        window.currentEventUrl = e.data.event_url;
-                        window.currentCalendarId = e.data.calendar_id;
-                        window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
-                    }
-
-                    var message = '';
-                    var callInstructionsMessage = '';
-
-                    var messageBuilder = $('#reply-area').scope();
-                    var attendeesMng = $('#attendeesCtrl').scope();
-
-                    message += messageBuilder.generateReply({
-                        action: "invites_sent",
-                        isPostpone: isPostpone,
-                        timeSlotToCreate: window.timeSlotToCreate,
-                        appointment: window.getCurrentAppointment(),
-                        address: window.getCurrentAddress(),
-                        timezoneId: window.threadComputedData.timezone,
-                        defaultTimezoneId: window.threadAccount.default_timezone_id,
-                        allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
-                        attendeesWithMissingInfos: window.getPresentAttendeesWithMissingInfos(),
-                        locale: window.threadComputedData.locale
-                    });
-
-                    var data = {
-                        event_id: window.currentEventId,
-                        event_url: window.currentEventUrl,
-                        calendar_id: window.currentCalendarId,
-                        calendar_login_username: window.currentCalendarLoginUsername,
-                        done: true,
-                        messages_thread_id: "<%= @messages_thread.id %>",
-                        event_booked_date: start.format()
+                if(window.currentEventFromInvitation) {
+                    window.currentEventTile.doneEditingCallback = function() {
+                        window.actionDeletedEvent = true;
+                        createOrUpdateEvent(start, requestParams);
                     };
-
-                    if(window.threadComputedData.is_virtual_appointment){
-                        var call_instructions = window.threadComputedData.call_instructions;
-
-                        if(isPostpone){
-                            if($('#event_update_vm_ctrl').length > 0)
-                                call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
-                            else
-                                call_instructions = window.threadComputedData.call_instructions;
-
-                            data['call_instructions'] = call_instructions;
-
-                            // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
-                            $.ajax({
-                                url: "/client_contacts/synchronize",
-                                type: "POST",
-                                data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
-                                success: function (e) {
-                                    console.log('Contacts Synchronized');
-                                },
-                                error: function (e) {
-                                    console.log("Error: ", e);
-                                }
-                            });
-                        }
-                        var messageParams = {
-                            action: 'send_call_instructions',
-                            callInstructions: call_instructions,
-                            locale: window.threadComputedData.locale
-                        };
-                        var currentAppointmentKind = window.getCurrentAppointment().appointment_kind_hash.family_kind;
-
-                        if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
-                            messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
-                        }
-
-                        callInstructionsMessage = messageBuilder.generateReply(messageParams);
-
-                        if(callInstructionsMessage != ''){
-                            message += "\n\n";
-
-                            message += callInstructionsMessage;
-                        }
-                    }
-
-                    var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
-                    var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
-                    var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
-                    if(missingInfosMessage != ''){
-                        message += missingInfosMessage;
-                    }
-
-                    window.setReplyMessage(message, 'all', window.otherEmails);
-
-
-//                    window.setReplyMessage(window.generateEmailTemplate({
-//                        action: "invites_sent",
-//                        isPostpone: isPostpone,
-//                        timeSlotToCreate: window.timeSlotToCreate,
-//                        appointment: window.getCurrentAppointment(),
-//                        address: window.getCurrentAddress(),
-//                        timezoneId: window.threadComputedData.timezone,
-//                        defaultTimezoneId: window.threadAccount.default_timezone_id,
-//                        allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
-//                        locale: window.threadComputedData.locale
-//
-//                    }), "all", window.otherEmails);
-
-                    $(".messages-thread-info-panel .create-event-panel").hide();
-
-                    $(".messages-thread-info-panel .message-container").hide();
-                    $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
-
-                    window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
-                        timezoneId: window.threadComputedData.timezone,
-                        mode: "read_only",
-                        event: {},
-                        eventId: window.currentEventId,
-                        eventUrl: window.currentEventUrl,
-                        calendarId: window.currentCalendarId,
-                        calendarLoginUsername: window.currentCalendarLoginUsername,
-                        accountEmail: window.threadAccount.email,
-                        locale: window.threadComputedData.locale
-                    });
-
-                    $(".messages-thread-info-panel .created-event-panel").show();
-                    window.currentEventTile.redraw();
-                    window.currentEventTile.fetchEvent(function(data) {
-                        window.currentEventTile.displayCallingInfosForm();
-                        window.currentEventData = data;
-                        window.currentEventTile.redraw();
-                        setTimeout(function () {
-                            $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
-                        }, 1000);
-                    });
-
-                    $.ajax({
-                        type: "post",
-                        url: "/julie_actions/<%= @julie_action.id %>/update",
-                        data: data,
-                        success: function (e) {
-                            $(".creating-event-message").html("Created.");
-                        }
-                    });
-                }, function () {
-                    $(".creating-event-message").html("Problem while creating.");
-                    window.currentCalendar.refreshEvents();
-                    $("#create-event-button").removeAttr('disabled');
-                });
+                    window.currentEventTile.deleteEvent();
+                }else {
+                    createOrUpdateEvent(start, requestParams);
+                }
             }
             else {
                 var availableTimeSlots = $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']:checked").map(function() {
@@ -359,6 +297,145 @@
             $('.email.extended').removeClass('extended');
         });
     });
+
+    var createOrUpdateEvent = function(start, requestParams) {
+
+        CommonHelpers.externalRequest(requestParams, function (e) {
+
+            window.currentCalendar.refreshEvents();
+
+            if(!isPostpone || window.currentEventFromInvitation) {
+                window.currentEventId = e.data.event_id;
+                window.currentEventUrl = e.data.event_url;
+                window.currentCalendarId = e.data.calendar_id;
+                window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
+            }
+
+            var message = '';
+            var callInstructionsMessage = '';
+
+            var messageBuilder = $('#reply-area').scope();
+            var attendeesMng = $('#attendeesCtrl').scope();
+
+            message += messageBuilder.generateReply({
+                action: "invites_sent",
+                isPostpone: isPostpone && !window.currentEventFromInvitation,
+                timeSlotToCreate: window.timeSlotToCreate,
+                appointment: window.getCurrentAppointment(),
+                address: window.getCurrentAddress(),
+                timezoneId: window.threadComputedData.timezone,
+                defaultTimezoneId: window.threadAccount.default_timezone_id,
+                allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+                attendeesWithMissingInfos: window.getPresentAttendeesWithMissingInfos(),
+                locale: window.threadComputedData.locale
+            });
+
+            var data = {
+                event_id: window.currentEventId,
+                event_url: window.currentEventUrl,
+                calendar_id: window.currentCalendarId,
+                calendar_login_username: window.currentCalendarLoginUsername,
+                done: true,
+                messages_thread_id: "<%= @messages_thread.id %>",
+                event_booked_date: start.format()
+            };
+
+            if(window.threadComputedData.is_virtual_appointment){
+                var call_instructions = window.threadComputedData.call_instructions;
+
+                if(isPostpone){
+                    if($('#event_update_vm_ctrl').length > 0)
+                        call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
+                    else
+                        call_instructions = window.threadComputedData.call_instructions;
+
+                    data['call_instructions'] = call_instructions;
+
+                    // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
+                    $.ajax({
+                        url: "/client_contacts/synchronize",
+                        type: "POST",
+                        data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
+                        success: function (e) {
+                            console.log('Contacts Synchronized');
+                        },
+                        error: function (e) {
+                            console.log("Error: ", e);
+                        }
+                    });
+                }
+                var messageParams = {
+                    action: 'send_call_instructions',
+                    callInstructions: call_instructions,
+                    locale: window.threadComputedData.locale
+                };
+                var currentAppointmentKind = window.getCurrentAppointment().appointment_kind_hash.family_kind;
+
+                if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
+                    messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
+                }
+
+                callInstructionsMessage = messageBuilder.generateReply(messageParams);
+
+                if(callInstructionsMessage != ''){
+                    message += "\n\n";
+
+                    message += callInstructionsMessage;
+                }
+            }
+
+            var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+            var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
+            var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+            if(missingInfosMessage != ''){
+                message += missingInfosMessage;
+            }
+
+            window.setReplyMessage(message, 'all', window.otherEmails);
+
+            $(".messages-thread-info-panel .create-event-panel").hide();
+
+            $(".messages-thread-info-panel .message-container").hide();
+            $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
+
+            window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
+                timezoneId: window.threadComputedData.timezone,
+                mode: "read_only",
+                event: {},
+                eventId: window.currentEventId,
+                eventUrl: window.currentEventUrl,
+                calendarId: window.currentCalendarId,
+                calendarLoginUsername: window.currentCalendarLoginUsername,
+                accountEmail: window.threadAccount.email,
+                locale: window.threadComputedData.locale
+            });
+
+            $(".messages-thread-info-panel .created-event-panel").show();
+            window.currentEventTile.redraw();
+            window.currentEventTile.fetchEvent(function(data) {
+                window.currentEventTile.displayCallingInfosForm();
+                window.currentEventData = data;
+                window.currentEventTile.redraw();
+                setTimeout(function () {
+                    $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+                }, 1000);
+            });
+
+            $.ajax({
+                type: "post",
+                url: "/julie_actions/<%= @julie_action.id %>/update",
+                data: data,
+                success: function (e) {
+                    $(".creating-event-message").html("Created.");
+                }
+            });
+        }, function () {
+            $(".creating-event-message").html("Problem while creating.");
+            window.currentCalendar.refreshEvents();
+            $("#create-event-button").removeAttr('disabled');
+            $("#invitation-already-sent-button").removeAttr('disabled');
+        });
+    };
 
     var checkAvailabilitiesClassicReply = function() {
         var event_start_date = '';
@@ -403,25 +480,55 @@
 
 
     window.addEventListener("message", function (event) {
-        if (event.data.message == "drawExternalEventsList") {
-            window.timeSlotsToSuggest = event.data.date_times;
-            var messageBuilder = $('#reply-area').scope();
 
-            window.setReplyMessage(messageBuilder.generateReply({
-                action: "suggest_dates",
-                client_agreement: true,
-                attendeesAreNoticed: true,
-                isPostpone: isPostpone,
-                locale: window.threadComputedData.locale,
-                appointment: window.getCurrentAppointment(),
-                address: window.getCurrentAddress(),
-                timeSlotsToSuggest: event.data.date_times,
-                client: window.threadAccount.usage_name,
-                timezoneId: window.threadComputedData.timezone,
-                noDateFits: noDateFitsType,
-                defaultTimezoneId: window.threadAccount.default_timezone_id
-            }), "all", window.otherEmails);
-            window.redrawTimeSlotsToSuggestContainer();
+        if(event.data.message == "drawExternalEventSelection") {
+            var events = event.data.events;
+            var currentSelectedEvent = _.last(events);
+
+            _.each(currentCalendar.selectedEvents, function(e) {
+                if(e.id != currentSelectedEvent.id)
+                    currentCalendar.selectEvent(e);
+            });
+
+            window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+            if(currentSelectedEvent) {
+                setInvitationConfirmedReplyText();
+            }
+            redrawSelectedEventsContainer();
+
+        }else if (event.data.message == "drawExternalEventsList") {
+            window.timeSlotsToSuggest = event.data.date_times;
+
+            if(window.invitationAlreadySent){
+                setInvitationDeclinedNewAvailabilitesReplyText();
+                window.redrawTimeSlotsToSuggestContainer();
+
+                $(".time-slots-to-suggest-list-container .suggest-dates-next-button").off('click');
+
+                $(".time-slots-to-suggest-list-container .suggest-dates-next-button").click(function(e) {
+                    $(".calendar-container").addClass("minimized");
+                    $('.email.extended').removeClass('extended');
+                    $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
+                })
+            }else{
+                var messageBuilder = $('#reply-area').scope();
+
+                window.setReplyMessage(messageBuilder.generateReply({
+                    action: "suggest_dates",
+                    client_agreement: true,
+                    attendeesAreNoticed: true,
+                    isPostpone: isPostpone,
+                    locale: window.threadComputedData.locale,
+                    appointment: window.getCurrentAppointment(),
+                    address: window.getCurrentAddress(),
+                    timeSlotsToSuggest: event.data.date_times,
+                    client: window.threadAccount.usage_name,
+                    timezoneId: window.threadComputedData.timezone,
+                    noDateFits: noDateFitsType,
+                    defaultTimezoneId: window.threadAccount.default_timezone_id
+                }), "all", window.otherEmails);
+                window.redrawTimeSlotsToSuggestContainer();
+            }
         }
         else if (event.data.message == "drawExternalEventCreation") {
             window.timeSlotToCreate = event.data.eventStart;
@@ -443,6 +550,7 @@
                 );
             }
             $("#create-event-button").removeAttr('disabled');
+            $("#invitation-already-sent-button").removeAttr('disabled');
         }
     }, false);
 </script>

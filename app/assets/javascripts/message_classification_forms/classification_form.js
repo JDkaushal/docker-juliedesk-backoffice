@@ -29,6 +29,9 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "follow_up_on_weekly_recap") {
         return new window.classificationForms.followUpOnWeeklyRecapForm(params);
     }
+    else if (params.classification == "invitation_already_sent") {
+        return new window.classificationForms.invitationSentEvents(params);
+    }
     throw "No classification form defined for classification: '" + params.classification + "'";
 };
 
@@ -87,6 +90,7 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
         locale: $("input[name='locale_only']:checked").val(),
         processed_in: Date.now() - classificationForm.startedAt
     };
+    console.log(classificationForm);
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
         type: "POST",
