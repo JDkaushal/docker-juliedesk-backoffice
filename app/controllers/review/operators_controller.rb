@@ -27,6 +27,7 @@ class Review::OperatorsController < ReviewController
     counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
 
+
     result = EmailServer.search_messages({
                                     after: (DateTime.now - 30.days).to_s,
                                     labels: "flag",
@@ -44,12 +45,14 @@ class Review::OperatorsController < ReviewController
         review_count_week: reviewed_count_week,
         flag_to_review_count: flag_count,
         to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).count,
+        total_count: total_count,
         operators: Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
 
           {
               id: operator.id,
               name: operator.name,
               level: operator.level_string,
+              actions_count: counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count'),
               coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 1),
               errors_percentage: (counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 1),
           }
