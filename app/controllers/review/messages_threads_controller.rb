@@ -17,6 +17,13 @@ class Review::MessagesThreadsController < ReviewController
 
   end
 
+  def from_server_thread_id
+    messages_thread = MessagesThread.find_by server_thread_id: params[:server_thread_id]
+    raise "No thread with that id" unless messages_thread
+
+    redirect_to action: :review, id: messages_thread.id
+  end
+
   def learn
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
     @messages_thread.re_import

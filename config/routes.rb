@@ -100,6 +100,7 @@ Rails.application.routes.draw do
       end
 
       collection do
+        get "from_server_thread_id", action: :from_server_thread_id
         get "review_next", action: :review_next
         get "learn_next", action: :learn_next
         get "group_review_next", action: :group_review_next
