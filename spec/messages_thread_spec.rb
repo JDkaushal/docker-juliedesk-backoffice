@@ -121,7 +121,8 @@ describe MessagesThread, :type => :model do
                                                         :date_times => [],
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
-                                                        :calendar_login_type => nil
+                                                        :calendar_login_type => nil,
+                                                        :title_preference=>nil
                                                     })
       end
     end
@@ -153,7 +154,8 @@ describe MessagesThread, :type => :model do
                                                         :date_times => [],
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
-                                                        :calendar_login_type => nil
+                                                        :calendar_login_type => nil,
+                                                        :title_preference=>nil
                                                     })
       end
     end
@@ -188,7 +190,8 @@ describe MessagesThread, :type => :model do
                                                         ],
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
-                                                        :calendar_login_type => nil
+                                                        :calendar_login_type => nil,
+                                                        :title_preference=>nil
                                                     })
       end
     end
@@ -224,7 +227,8 @@ describe MessagesThread, :type => :model do
                                                         ],
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
-                                                        :calendar_login_type => nil
+                                                        :calendar_login_type => nil,
+                                                        :title_preference=>nil
                                                     })
       end
     end
@@ -261,7 +265,8 @@ describe MessagesThread, :type => :model do
                                                         ],
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
-                                                        :calendar_login_type => nil
+                                                        :calendar_login_type => nil,
+                                                        :title_preference=>nil
                                                     })
       end
     end

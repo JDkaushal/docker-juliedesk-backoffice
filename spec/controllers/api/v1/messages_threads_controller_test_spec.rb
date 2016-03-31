@@ -172,7 +172,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "review_status" => mc.review_status,
                                                               "call_instructions" => mc.call_instructions,
                                                               "thread_status" => mc.thread_status,
-                                                              "follow_up_data" => mc.follow_up_data
+                                                              "follow_up_data" => mc.follow_up_data,
+                                                              "title_preference"=>nil
                                                           }
                                                         }
                                                     }
