@@ -173,7 +173,7 @@
 
             describe('Other action than ask_availabilities or ask_date_suggestions', function() {
 
-                it('should populate the right ccs and tos fields', function() {
+                it('should populate the right ccs and tos fields when we are not responding to the client', function() {
                     window.initialToRecipients =  function(){
                         return [{name: 'recipientTo1'}, {name: 'recipientTo2'}];
                     };
@@ -199,7 +199,65 @@
                     });
 
                     expect(tos).toEqual(['emailSender']);
-                    expect(ccs).toEqual([window.threadAccount.email, 'recipientTo1', 'recipientTo2', 'recipientCc1', 'recipientCc2']);
+                    expect(ccs).toEqual(['recipientTo1', 'recipientTo2', 'recipientCc1', 'recipientCc2', window.threadAccount.email]);
+                });
+
+                it('should populate the right ccs and tos fields when we are responding to one of the client email aliases', function() {
+                    window.initialToRecipients =  function(){
+                        return [{name: 'recipientTo1'}, {name: 'recipientTo2'}];
+                    };
+
+                    window.initialCcRecipients = function(){
+                        return [{name: 'recipientCc1'}, {name: 'recipientCc2'}];
+                    };
+
+                    window.emailSender = function(){
+                        return {name: "threadOwnerAlias1@alias.com"};
+                    };
+
+                    $httpBackend.flush();
+
+                    $scope.setReplyRecipients();
+
+                    var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    expect(tos).toEqual(['threadOwnerAlias1@alias.com']);
+                    expect(ccs).toEqual(['recipientTo1', 'recipientTo2', 'recipientCc1', 'recipientCc2']);
+                });
+
+                it('should populate the right ccs and tos fields when we are responding to one of the client email aliases with a client email address in the initial recipients', function() {
+                    window.initialToRecipients =  function(){
+                        return [{name: 'recipientTo1'}, {name: 'recipientTo2'} , {name: "threadOwnerAlias1@alias.com"}];
+                    };
+
+                    window.initialCcRecipients = function(){
+                        return [{name: 'recipientCc1'}, {name: 'recipientCc2'}, {name: window.threadAccount.email}];
+                    };
+
+                    window.emailSender = function(){
+                        return {name: "threadOwnerAlias1@alias.com"};
+                    };
+
+                    $httpBackend.flush();
+
+                    $scope.setReplyRecipients();
+
+                    var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    expect(tos).toEqual(['threadOwnerAlias1@alias.com']);
+                    expect(ccs).toEqual(['recipientTo1', 'recipientTo2', 'recipientCc1', 'recipientCc2']);
                 });
 
             });
@@ -439,6 +497,120 @@
 
                 });
 
+                it('should populate the ccs and tos fields right when a thread owner alias is not used', function() {
+
+                    window.initialToRecipients =  function(){
+                        return [{name: 'recipientTo1'}, {name: 'recipientTo2'}, {name: 'tESt@TeSt6.com'}, {name: 'blake@aceable.com'}];
+                    };
+
+                    window.initialCcRecipients = function(){
+                        return [{name: 'recipientCc1'}, {name: 'recipientCc2'}, {name: 'TEST@TeSt6.com'}];
+                    };
+
+                    window.emailSender = function(){
+                        return {name: 'emailSender'};
+                    };
+
+                    window.currentAttendees.push({
+                        email: "assistant1@gmail.com",
+                        firstName: "assistant1",
+                        lastName: "assistant1",
+                        name: "assistant1 assistant1",
+                        usageName: "assistant1",
+                        gender: 'M',
+                        isAssistant: "true",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test3.com",
+                        firstName: "fname3",
+                        lastName: "lname3",
+                        name: "fname3 lname3",
+                        usageName: "fname3",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "true",
+                        assistedBy: {email: 'assistant1@gmail.com'},
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test5.com",
+                        firstName: "fname5",
+                        lastName: "lname5",
+                        name: "fname5 lname5",
+                        usageName: "fname5",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "true",
+                        isThreadOwner: "false"
+                    });
+
+                    window.currentAttendees.push({
+                        email: "test@test6.com",
+                        firstName: "fname6",
+                        lastName: "lname6",
+                        name: "fname6 lname6",
+                        usageName: "fname6",
+                        gender: 'M',
+                        isAssistant: "false",
+                        assisted: "false",
+                        assistedBy: null,
+                        company: 'Test Company',
+                        timezone: "America/Chicago",
+                        landline: "",
+                        mobile: "637-216-2881",
+                        skypeId: "",
+                        confCallInstructions: '',
+                        isPresent: "true",
+                        isClient: "false",
+                        isThreadOwner: "false"
+                    });
+
+                    $httpBackend.flush();
+
+                    $scope.setReplyRecipients();
+
+                    var tos = _.map($('#recipients-to-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    var ccs = _.map($('#recipients-cc-input').tokenInput('get'), function(r) {
+                        return r.name;
+                    });
+
+                    expect(tos).toEqual(['assistant1@gmail.com', 'test@test6.com', 'julie2@juliedesk.com']);
+                    expect(ccs).toEqual(['test@test1.com', 'test@test5.com', 'emailsender', 'recipientto1', 'recipientto2', 'blake@aceable.com', 'recipientcc1', 'recipientcc2']);
+
+                });
             });
 
         });

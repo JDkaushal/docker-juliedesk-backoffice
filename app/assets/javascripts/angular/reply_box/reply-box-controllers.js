@@ -161,8 +161,22 @@
         };
 
         function setDefaultRecipientsOther() {
+            var clientEmails = [window.threadAccount.email].concat(window.threadAccount.email_aliases);
+
             $scope.tos = [window.emailSender()];
-            $scope.ccs = [{name: window.threadAccount.email}].concat(window.initialToRecipients().concat(window.initialCcRecipients()));
+            $scope.ccs = window.initialToRecipients().concat(window.initialCcRecipients());
+
+            $scope.tos = _.compact($scope.tos);
+            $scope.ccs = _.compact($scope.ccs);
+
+            if(_.intersection(_.map($scope.tos, function(recipient) {return recipient.name;}), clientEmails).length == 0) {
+                $scope.ccs.push({name: window.threadAccount.email});
+            } else {
+                // If we are responding to the client, make sure we don't use one of its aliases in ccs
+                $scope.ccs = _.reject($scope.ccs, function(recipient) {
+                    return clientEmails.indexOf(recipient.name) >= 0;
+                });
+            }
         };
 
         function setAssistantAndAssistedInRecipients(assistant, assisted){
