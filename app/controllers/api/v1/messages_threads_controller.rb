@@ -62,8 +62,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     while current_start_date < end_date
 
       key = current_start_date.strftime("%Y%m%dT%H%M")
-      current_messages = messages.select{|message| message.created_at >= current_start_date && message.created_at < current_start_date + precision}
-      incoming_count = incoming_messages.select{|message| message.created_at >= current_start_date && message.created_at < current_start_date + precision}.length
+      current_messages = messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}
+      incoming_count = incoming_messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}.length
       data[key] = {
           count: incoming_count,
           median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0
