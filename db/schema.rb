@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160318163901) do
+ActiveRecord::Schema.define(version: 20160331132906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,21 +76,23 @@ ActiveRecord::Schema.define(version: 20160318163901) do
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
-    t.text     "date_times",                default: "[]"
+    t.text     "date_times",                      default: "[]"
     t.text     "text"
-    t.boolean  "done",                      default: false
-    t.boolean  "pending",                   default: false
+    t.boolean  "done",                            default: false
+    t.boolean  "pending",                         default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "processed_in"
     t.text     "calendar_id"
     t.text     "event_id"
-    t.text     "events",                    default: "[]"
-    t.boolean  "deleted_event",             default: false
+    t.text     "events",                          default: "[]"
+    t.boolean  "deleted_event",                   default: false
     t.string   "event_url"
     t.string   "calendar_login_username"
     t.integer  "server_message_id"
     t.text     "generated_text"
+    t.boolean  "event_from_invitation",           default: false
+    t.string   "event_from_invitation_organizer"
   end
 
   create_table "julie_aliases", force: true do |t|
@@ -133,6 +135,7 @@ ActiveRecord::Schema.define(version: 20160318163901) do
     t.text     "call_instructions",     default: "[]"
     t.string   "thread_status"
     t.text     "follow_up_data"
+    t.string   "title_preference"
   end
 
   create_table "message_interpretations", force: true do |t|

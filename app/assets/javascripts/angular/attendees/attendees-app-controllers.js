@@ -224,6 +224,7 @@
             if(newVal.length > 0){
                 $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
                 $scope.lookupAttendeesMissingInfos();
+                $scope.setTitlePreference();
             }
         }, true);
         //--------------------------------------------------------------------------------
@@ -463,6 +464,19 @@
 
             if(window.drawCalendarCallback)
                 window.drawCalendarCallback();
+        };
+
+        $scope.setTitlePreference = function() {
+            if(!window.threadComputedData.title_preference && !window.titlePreferenceOverridden && window.threadAccount.title_preferences) {
+                var onlyAttendeesFromSameCompany = $scope.getPresentAttendeesFromOtherCompanies().length == 0;
+                var titlePreference = window.threadAccount.title_preferences.general;
+
+                if(onlyAttendeesFromSameCompany) {
+                    titlePreference = window.threadAccount.title_preferences.internal_meetings;
+                }
+
+                titlePreferencesSelection(titlePreference)
+            }
         };
         //--------------------------------------------------------------------------------
 
@@ -759,6 +773,13 @@
             var threadOwner = $scope.getThreadOwner();
             return _($scope.attendees).filter(function(a) {
                 return a.company !== threadOwner.company;
+            });
+        };
+
+        $scope.getPresentAttendeesFromOtherCompanies = function(){
+            var threadOwner = $scope.getThreadOwner();
+            return _($scope.attendees).filter(function(a) {
+                return a.isPresent && a.company !== threadOwner.company;
             });
         };
 

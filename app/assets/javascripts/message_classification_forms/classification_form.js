@@ -135,7 +135,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         attendees_are_noticed: $(".attendees-are-noticed-panel").data("attendees-are-noticed"),
         number_to_call: $("#number_to_call").val(),
         date_times: classificationForm.getSuggestedDateTimes(),
-        processed_in: Date.now() - classificationForm.startedAt
+        processed_in: Date.now() - classificationForm.startedAt,
+        title_preference: $('.title-preferences-checkbox:checked').val()
     };
 
     if(window.currentEventTile) {

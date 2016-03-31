@@ -422,6 +422,15 @@
     }
   }
 
+    .title-preferences-checkboxes {
+        span {
+            margin-left: 10px;
+        }
+        span:first-child {
+            margin-left: 0px;
+        }
+    }
+
   .send-to-founders-container {
     background: #f0f0f0;
     margin: 10px -10px 0 -10px;

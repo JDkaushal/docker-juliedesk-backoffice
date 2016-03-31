@@ -55,3 +55,9 @@ function ccRecipientDeleted(){
 
 function emailSender(){
 };
+
+function askNextLinearFormEntry(){
+};
+
+function titlePreferencesSelection(){
+};

@@ -28,7 +28,8 @@ class Account
                 :office_365_refresh_token_expired,
                 :is_pro,
                 :virtual_appointments_support_config,
-                :threads_count_today
+                :threads_count_today,
+                :title_preferences
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -65,6 +66,7 @@ class Account
     account.office_365_refresh_token_expired = data['office_365_refresh_token_expired']
     account.calendar_logins = data['calendar_logins']
     account.is_pro = data['is_pro']
+    account.title_preferences = data['title_preferences']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

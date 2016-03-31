@@ -95,7 +95,8 @@ class MessageClassification < ActiveRecord::Base
 
         date_times: (params[:date_times].try(:values) || []).to_json,
         thread_status: params[:thread_status],
-        follow_up_data: follow_up_data
+        follow_up_data: follow_up_data,
+        title_preference: params[:title_preference]
     )
     result.save!
 

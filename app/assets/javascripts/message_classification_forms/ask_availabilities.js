@@ -16,18 +16,6 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         });
 
         askAvailabilitiesForm.checkClientAgreement();
-        //$(".waiting-for-others-panel .yes-button").click(function () {
-        //    $(".waiting-for-others-panel .waiting-for-others-warner").show();
-        //});
-        //$(".waiting-for-others-panel .no-button").click(function () {
-        //    $(".waiting-for-others-panel").hide();
-        //    askAvailabilitiesForm.checkClientAgreement();
-        //
-        //    askAvailabilitiesForm.clickBackButtonFunctions.push(function () {
-        //        $(".waiting-for-others-panel").show();
-        //        $(".client-agreement-panel").hide();
-        //    });
-        //});
 
         $("#submit-these-already-suggested-dates").click(function() {
             askAvailabilitiesForm.submitSuggestedDates(true);

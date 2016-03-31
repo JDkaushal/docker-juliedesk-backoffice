@@ -54,6 +54,25 @@
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
         }
 
+        $('.title-preferences-checkbox').click(function(e) {
+            var currentTarget = e.currentTarget;
+            var $currentTarget = $(currentTarget);
+            var selectValue = $currentTarget.val();
+
+            if(currentTarget.checked) {
+                titlePreferencesSelection(selectValue);
+            }else {
+                e.preventDefault();
+            }
+
+            window.titlePreferenceOverridden = true;
+        });
+
+        $('#summary').keyup(function(e) {
+            titlePreferencesSelection('custom');
+            window.titlePreferenceOverridden = true;
+        });
+
         $("#appointment_nature").change(function () {
             if(window.lastAppointmentType == '')
                 window.lastAppointmentType = $("#appointment_nature").val();
@@ -469,9 +488,17 @@
         }
     }
 
+    function setTitleToThreadSubject() {
+        var newTitle = '<%= @messages_thread.subject.gsub(/(re\s?:)|(fwd\s?:)|(fw\s?:)/i, '').strip %>';
+
+        $("input#summary").val(newTitle);
+        if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
+            $('.event-tile-panel .title').val(newTitle);
+    }
+
     function reProcessTitle() {
-        // We only update the title when the summary input is active (prevent the title to be overriden with the automatic one when the input is disabled)
-        if($("input#summary").attr('disabled') == undefined) {
+        // We only update the title when the summary input is active and the "Names" title preference checkbox is checked (prevent the title to be overriden with the automatic one when the input is disabled)
+        if($("input#summary").attr('disabled') == undefined && $('input[name="title_preferences[companies_and_names]"]').prop('checked')) {
             var appointment = $.grep(window.threadAccount.appointments, function (v) {
                 return v.label == $("#appointment_nature").val();
             })[0];
@@ -894,6 +921,32 @@
 
     }
 
+    function titlePreferencesSelection(type) {
+        var types = ['companies_and_names', 'email_subject', 'custom'];
+        var currentCheckbox;
+
+        _.each(types, function(t) {
+            currentCheckbox = $('input[name="title_preferences[' + t + ']"]');
+            if(currentCheckbox) {
+                if(t == type) {
+                    currentCheckbox.prop('checked', true);
+                } else {
+                    currentCheckbox.prop('checked', false);
+                }
+            }
+        });
+
+        switch(type) {
+
+            case 'companies_and_names':
+                reProcessTitle();
+                break;
+            case 'email_subject':
+                setTitleToThreadSubject();
+                break;
+        }
+    };
+
     window.getCallInstructions = function(){
         var instructions = '';
         if($('#virtual-meetings-helper').length > 0)
@@ -1103,6 +1156,23 @@
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
         <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
+        <div class="title-preferences-checkboxes">
+          <span>
+            <%= check_box_tag 'title_preferences[companies_and_names]', 'companies_and_names', messages_thread.computed_data[:title_preference] == 'companies_and_names', {class: 'title-preferences-checkbox'} %>
+            Names
+          </span>
+
+          <span>
+            <%= check_box_tag 'title_preferences[email_subject]', 'email_subject', messages_thread.computed_data[:title_preference] == 'email_subject', {class: 'title-preferences-checkbox'} %>
+            Subject
+          </span>
+
+          <span>
+            <%= check_box_tag 'title_preferences[custom]', 'custom', messages_thread.computed_data[:title_preference] == 'custom', {class: 'title-preferences-checkbox'} %>
+            Custom
+          </span>
+        </div>
+
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 

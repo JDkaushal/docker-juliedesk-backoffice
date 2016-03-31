@@ -1421,6 +1421,100 @@
                 spyOn( $scope, 'guid' ).and.returnValue(0);
             });
 
+            describe('setTitlePreference', function() {
+
+                describe('context invalid', function() {
+
+                    beforeEach(function() {
+                        spyOn($scope, 'getPresentAttendeesFromOtherCompanies');
+                        spyOn(window, 'titlePreferencesSelection');
+                    });
+
+                    it('should not do anything', function() {
+                        window.threadComputedData.title_preference = 'companies_and_names';
+                        window.threadAccount.title_preferences = {general: 'companies_and_names', internal_meetings: 'companies_and_names'}
+
+                        $scope.setTitlePreference();
+
+                        expect($scope.getPresentAttendeesFromOtherCompanies).not.toHaveBeenCalled();
+                        expect(window.titlePreferencesSelection).not.toHaveBeenCalled();
+                    });
+
+                    it('should not do anything bis', function() {
+                        window.threadComputedData.title_preference = null;
+                        window.threadAccount.title_preferences = undefined;
+
+                        $scope.setTitlePreference();
+
+                        expect($scope.getPresentAttendeesFromOtherCompanies).not.toHaveBeenCalled();
+                        expect(window.titlePreferencesSelection).not.toHaveBeenCalled();
+                    });
+
+                    it('should not do anything ter', function() {
+                        window.threadComputedData.title_preference = null;
+                        window.threadAccount.title_preferences = {general: 'companies_and_names', internal_meetings: 'email_subject'};
+                        window.titlePreferenceOverridden = true;
+
+                        $scope.setTitlePreference();
+
+                        expect($scope.getPresentAttendeesFromOtherCompanies).not.toHaveBeenCalled();
+                        expect(window.titlePreferencesSelection).not.toHaveBeenCalled();
+                    });
+
+                });
+
+                describe('context valid', function() {
+
+                    describe('No attendees from other companies', function() {
+
+                        beforeEach(function() {
+                            spyOn($scope, 'getPresentAttendeesFromOtherCompanies').and.returnValue([1, 2, 3]);
+                            spyOn(window, 'titlePreferencesSelection');
+
+                        });
+
+                        it('should call the right methods with the right parameters', function() {
+                            window.threadComputedData.title_preference = null;
+                            window.threadAccount.title_preferences = {general: 'companies_and_names', internal_meetings: 'email_subject'};
+                            window.titlePreferenceOverridden = false;
+
+                            $scope.setTitlePreference();
+
+                            expect($scope.getPresentAttendeesFromOtherCompanies).toHaveBeenCalled();
+                            expect(window.titlePreferencesSelection).toHaveBeenCalledWith('companies_and_names')
+                        });
+
+                    });
+
+                    describe('Some attendees from other companies', function() {
+
+                        beforeEach(function() {
+                            spyOn($scope, 'getPresentAttendeesFromOtherCompanies').and.returnValue([]);
+                            spyOn(window, 'titlePreferencesSelection');
+
+                        });
+
+                        it('should call the right methods with the right parameters', function() {
+                            window.threadComputedData.title_preference = null;
+                            window.threadAccount.title_preferences = {general: 'companies_and_names', internal_meetings: 'email_subject'};
+                            window.titlePreferenceOverridden = false;
+
+                            $scope.setTitlePreference();
+
+                            expect($scope.getPresentAttendeesFromOtherCompanies).toHaveBeenCalled();
+                            expect(window.titlePreferencesSelection).toHaveBeenCalledWith('email_subject')
+                        });
+                    });
+                });
+            });
+
+            it('getPresentAttendeesFromOtherCompanies should return the right attendees', function() {
+                spyOn($scope, 'getThreadOwner').and.returnValue({company: 'company'});
+               $scope.attendees = [{isPresent: true, company: 'company'}, {isPresent: true, company: 'company'}, {isPresent: false, company: 'company'}, {isPresent: true, company: 'companyOther'}]
+
+                expect($scope.getPresentAttendeesFromOtherCompanies()).toEqual([{ isPresent: true, company: 'companyOther' }]);
+            });
+
             it('should broadcast an event when the attendees have been fetched from the network', function() {
 
                 spyOn( window, 'updateNotesCallingInfos' );
