@@ -1,5 +1,13 @@
+$blue: rgb(0,153, 204);
+
 .operator-stats-container {
   padding: 50px 0 0 0;
+
+  .previous-errors-link {
+    color: $blue;
+    text-decoration: underline;
+  }
+
   table.review-stats-table {
     width: 100%;
     margin: 0 0 80px 0;
@@ -41,5 +49,67 @@
       }
     }
 
+  }
+
+  .title-errors {
+    margin: 40px 0px;
+    color: $blue;
+  }
+
+  table.review-errors-table {
+    width: 100%;
+    margin: 0 0 80px 0;
+
+    thead {
+      font-size: 16px;
+      border-bottom-style: solid;
+      border-bottom-width: 1px;
+      border-bottom-color: $blue;
+
+      th:nth-child(2) {
+        text-align: center;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+
+        td {
+          padding: 5px 0px;
+
+          &:nth-child(1) {
+            vertical-align: top;
+          }
+
+          &:nth-child(2) {
+            vertical-align: top;
+            text-align: center;
+            width: 10%;
+          }
+
+          &:nth-child(3) {
+            width: 70%;
+            padding-right: 5px;
+            word-break: break-word;
+          }
+
+          &:nth-child(4) {
+            vertical-align: top;
+            text-align: right;
+
+            a {
+              color: $blue;
+              text-decoration: underline;
+            }
+          }
+
+        }
+
+      }
+
+
+    }
   }
 }

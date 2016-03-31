@@ -7,7 +7,10 @@
 <div class="operator-stats-container">
 <h2><%= @operator.try(:name) || "All" %></h2>
 
-<br>
+<%= link_to "Voir mes erreurs passées (#{@previous_errors_count})", my_errors_review_operators_path, class: 'previous-errors-link'%>
+
+  <br>
+  <br>
 <% to_learn_count = OperatorActionsGroup.where(operator_id: @operator.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN).count %>
 <% if to_learn_count > 0 %>
     <%= link_to "Learn from #{to_learn_count} message threads", "/review/messages_threads/learn_next?operator_id=#{@operator.id}", class: "btn btn-success" %>

@@ -75,3 +75,6 @@ gem 'memory_profiler'
 
 #Color picker for rails
 gem 'jquery-minicolors-rails'
+
+# ALlow to make easy list presentation
+gem "smart_listing"

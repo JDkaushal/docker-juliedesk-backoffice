@@ -1,0 +1,28 @@
+<% if smart_listing.empty? %>
+
+    Pas d'erreurs !!
+
+<% else %>
+
+    <%= smart_listing.paginate %>
+    <%= smart_listing.pagination_per_page_links %>
+    <table class="review-errors-table">
+      <thead>
+      <th><%= smart_listing.sortable("Date", :created_at, sort_dirs: ['asc', 'desc']) %></th>
+      <th><%= smart_listing.sortable("Note", :review_notation, sort_dirs: ['asc', 'desc']) %></th>
+      <th>Remarque correcteur</th>
+      <th></th>
+      </thead>
+      <tbody>
+      <% smart_listing.collection.each do |op_error| %>
+          <tr>
+            <td><%= op_error.created_at.strftime('%d/%m/%Y') %></td>
+            <td><%="#{ op_error.review_notation}/5" %></td>
+            <td><%= op_error.review_comment %></td>
+            <td><%= link_to 'Accéder au thread', review_review_messages_thread_path(op_error.messages_thread_id, no_next: true), target: '_blank' %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+<% end %>

@@ -69,3 +69,5 @@
 //= require message_classification_forms/follow_up_on_weekly_recap
 
 //= require tracking
+
+//= require smart_listing

@@ -72,6 +72,7 @@ Rails.application.routes.draw do
     resources :operators, only: [:show, :index] do
       collection do
         get "my_stats", action: :my_stats, as: :my_stats
+        get :my_errors
         get "messages_thread_ids_to_review", action: :messages_thread_ids_to_review
       end
     end

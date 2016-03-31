@@ -1,0 +1,16 @@
+<div class="fixed-columns full">
+  <div class="left-column">
+
+    <%= render partial: "common/header" %>
+
+    <div class="operator-stats-container">
+      <h2><%= @operator.try(:name) || "All" %></h2>
+
+      <h3 class="title-errors">Liste de mes erreurs passées</h3>
+
+        <%= smart_listing_render(:operator_errors) %>
+
+    </div>
+
+  </div>
+</div>

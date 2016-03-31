@@ -3,7 +3,7 @@
       JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
   <% end %>
 
-  <% if params[:action] == "review" %>
+  <% if params[:action] == "review" && !params[:no_next].present?%>
       (<%= @to_review_count %>)
       <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :data %>

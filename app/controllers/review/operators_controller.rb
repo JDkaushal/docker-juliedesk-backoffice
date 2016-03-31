@@ -1,9 +1,20 @@
 class Review::OperatorsController < ReviewController
 
+  include SmartListing::Helper::ControllerExtensions
+  helper  SmartListing::Helper
+
   skip_before_filter :only_super_operator_level_2_or_admin, only: [:my_stats]
 
   def my_stats
     @operator = Operator.find session[:operator_id]
+    @previous_errors_count = @operator.operator_actions_groups.size
+  end
+
+  def my_errors
+    @operator = Operator.find session[:operator_id]
+    operator_errors = OperatorActionsGroup.where(operator_id: session[:operator_id]).where('review_notation < ?', 5)
+
+    smart_listing_create(:operator_errors, operator_errors, partial: "review/operators/listings/errors", default_sort: {created_at: "desc"}, page_sizes: [50])
   end
 
   def show
