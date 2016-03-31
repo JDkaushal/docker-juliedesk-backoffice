@@ -52,18 +52,20 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
 
   def sent_messages_stats
     start_date = (params[:start_date])? DateTime.parse(params[:start_date]) : (DateTime.now - 2.days)
+    end_date = (params[:end_date])? DateTime.parse(params[:end_date]) : (DateTime.now)
     precision = (params[:precision].try(:to_i) || 30).minutes
-    messages = Message.where(from_me: true).where("received_at > ?", start_date).where.not(request_at: nil)
+    incoming_messages = Message.where(from_me: false).where("received_at >= ? AND received_at <= ?", start_date, end_date).select(:received_at)
+    messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", start_date, end_date).where.not(request_at: nil)
     current_start_date = start_date
 
     data = {}
-    while current_start_date < DateTime.now
+    while current_start_date < end_date
 
       key = current_start_date.strftime("%Y%m%dT%H%M")
       current_messages = messages.select{|message| message.created_at >= current_start_date && message.created_at < current_start_date + precision}
-
+      incoming_count = incoming_messages.select{|message| message.created_at >= current_start_date && message.created_at < current_start_date + precision}.length
       data[key] = {
-          count: current_messages.length,
+          count: incoming_count,
           median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0
       }
       current_start_date += precision
