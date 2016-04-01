@@ -3,6 +3,7 @@
 <script>
     var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
     window.leftColumnMessage = "Create event";
+    window.suggestedDates = <%== @messages_thread.suggested_date_times.map{|d| d['date']}.to_json %>;
 
     var noDateFitsType = "<%=
         date_times_to_check = JSON.parse(@julie_action.message_classification.date_times)
@@ -25,6 +26,7 @@
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
             mode: "create_event",
+            // We do .uniq{|date_object| date_object['date']} so we will keep only the first occurrence of a date, aka the "to_check" version if there are several
             date_times: <%== (JSON.parse(
             @julie_action.message_classification.date_times || "[]").select{|dt|dt['date']}.map{|dt| dt['date']}.map{|date|
               {
@@ -36,7 +38,7 @@
                       mode: "already_suggested",
                       date: date
               }
-            }).to_json %>,
+            }).uniq{|date_object| date_object[:date]}.to_json %>,
             email: window.threadAccount.email,
             duration: window.threadComputedData.duration,
             calendarandEventsLoadedFirstTimeCallback: function() {

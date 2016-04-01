@@ -30,6 +30,8 @@ function Calendar($selector, params) {
     this.selectedEvents = [];
     this.publicHolidaysAdded = false;
 
+    this.suggestedEvents = [];
+
     var calendar = this;
 
     // Event handlers
@@ -75,6 +77,8 @@ function Calendar($selector, params) {
                 var title = "Suggested";
                 if(dateObject.mode == "to_check") {
                     title = calendar.generateDelayTitle();
+                }else {
+                    calendar.suggestedEvents.push(dateObject);
                 }
                 var eventData = calendar.generateEventData({
                     title: title,
@@ -83,6 +87,7 @@ function Calendar($selector, params) {
                 });
                 eventData.editable = false;
                 eventData.color = "#ccc";
+                console.log('events to check', eventData);
                 calendar.eventsToCheck.push(eventData);
             }
 

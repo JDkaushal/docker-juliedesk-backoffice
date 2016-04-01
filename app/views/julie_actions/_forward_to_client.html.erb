@@ -22,7 +22,7 @@
 
         window.setReplyMessage(messageBuilder.generateReply({
             action: "forward_to_client",
-            locale: window.threadAccount.locale
+            locale: window.threadComputedData.locale
         }), "only_client", []);
     };
 </script>

@@ -1610,9 +1610,66 @@ window.testsData.templatesData = [
         },
         expectedResults: {
             en: "Perfect. I've sent invites for a dinner at the office:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
-            fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
         }
-    },
+        },{
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            suggestedDates: ["2015-01-01T12:00:00", "2015-01-02T12:00:00", "2015-01-03T12:00:00"],
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            expectedResults: {
+                en: "Perfect. I've sent invites for a dinner at the office:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
+                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            }
+        },
+        {
+            action: "invites_sent",
+            client_agreement: true,
+            client: "Nicolas Marlier",
+            timeSlotToCreate: "2015-01-01T12:00:00",
+            suggestedDates: ["2015-01-05T12:00:00", "2015-01-02T12:00:00", "2015-01-03T12:00:00"],
+            defaultTimezoneId: "Europe/Paris",
+            allTimezoneIds: ["Europe/Paris"],
+            appointment: {
+                title_in_email: {
+                    fr: "un diner",
+                    en: "a dinner"
+                },
+                label: "dinner",
+                appointment_kind_hash: {
+                    is_virtual: false
+                }
+            },
+            address: {
+                address_in_template: {
+                    fr: "au bureau",
+                    en: "at the office"
+                }
+            },
+            expectedResults: {
+                en: "Perfect. I've sent invites for a dinner at the office:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+            }
+        },
         {
             action: "invites_sent",
             client_agreement: true,
@@ -1638,7 +1695,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner at the office:\nToday" + ", " + window.helpers.capitalize(moment().tz("Europe/Paris").hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().tz("Europe/Paris").hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().tz("Europe/Paris").hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1666,7 +1723,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner at the office:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1688,7 +1745,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1710,7 +1767,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1732,7 +1789,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1760,7 +1817,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1788,7 +1845,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1816,7 +1873,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a Skype appointment:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un skype :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un skype :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -1839,7 +1896,7 @@ window.testsData.templatesData = [
             address: "9 rue Dareau",
             expectedResults: {
                 en: "Perfect. I've sent invites for a meeting:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un meeting :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1862,7 +1919,7 @@ window.testsData.templatesData = [
             address: "9 rue Dareau",
             expectedResults: {
                 en: "Perfect. I've sent invites for a meeting:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un meeting :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1885,7 +1942,7 @@ window.testsData.templatesData = [
             address: "9 rue Dareau",
             expectedResults: {
                 en: "Perfect. I've sent invites for a meeting:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un meeting :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un meeting :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -1913,7 +1970,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner at the office:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)\nThursday 1 January 2015 at 3:00am (Timezone: America/Los Angeles)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nJeudi 1 janvier 2015 à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -1941,7 +1998,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner at the office:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 3:00am (Timezone: America/Los Angeles)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00 (Fuseau horaire : America/Los Angeles)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -1969,7 +2026,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner at the office:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 3:00am (Timezone: America/Los Angeles)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner au bureau :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00 (Fuseau horaire : America/Los Angeles)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner au bureau :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 3h00 (Fuseau horaire : America/Los Angeles)"
             }
         },
         {
@@ -1998,7 +2055,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -2027,7 +2084,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -2056,7 +2113,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\nLocation: 9 rue Dareau",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\nLieu : 9 rue Dareau"
             }
         },
         {
@@ -2086,7 +2143,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location if you want me to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2116,7 +2173,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location if you want me to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2146,7 +2203,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location if you want me to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2176,7 +2233,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2206,7 +2263,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2236,7 +2293,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2270,7 +2327,7 @@ window.testsData.templatesData = [
             ],
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)\n\nPlease let me know the location to add it to the event.",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?"
             }
         },
         {
@@ -2305,7 +2362,7 @@ window.testsData.templatesData = [
             ],
             expectedResults: {
                 en: "Perfect. I've sent invites for a dinner:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un diner :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -2334,7 +2391,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a telephone appointment:\nThursday 1 January 2015 at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un call :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un call :\nJeudi 1 janvier 2015 à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -2363,7 +2420,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a telephone appointment:\nToday" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un call :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un call :\nAujourd'hui" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         },
         {
@@ -2392,7 +2449,7 @@ window.testsData.templatesData = [
             },
             expectedResults: {
                 en: "Perfect. I've sent invites for a telephone appointment:\nTomorrow" + ", " + window.helpers.capitalize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('en').format(localize("email_templates.common.only_date_format", {locale: 'en'}))) + " at 12:00pm (Timezone: Europe/Paris)",
-                fr: "Parfait. J'ai envoyé les invitations pour un call :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
+                fr: "Très bien. J'ai envoyé les invitations pour un call :\nDemain" + ", " + window.helpers.lowerize(moment().hour(12).minute(0).second(0).add(1, 'd').locale('fr').format(localize("email_templates.common.only_date_format", {locale: 'fr'}))) + " à 12h00 (Fuseau horaire : Europe/Paris)"
             }
         }],
 

@@ -268,9 +268,24 @@ window.generateEmailTemplate = function (params) {
         }
 
         var postponeSuffix = "new_appointment";
+        var suggestedDateSuffix = "";
         if(params.isPostpone)  postponeSuffix = "postpone";
 
-        message = localize("email_templates.invites_sent." + postponeSuffix, {
+        if(postponeSuffix == "new_appointment") {
+            suggestedDateSuffix = ".date_not_suggested";
+
+            if(params.suggestedDates) {
+                var alreadySuggestedDate = _.find(params.suggestedDates, function(suggestedDate) {
+                    return date.isSame(moment(suggestedDate));
+                });
+
+                if(alreadySuggestedDate)
+                    suggestedDateSuffix = ".date_suggested";
+            }
+        }
+
+        console.log("email_templates.invites_sent." + postponeSuffix + suggestedDateSuffix);
+        message = localize("email_templates.invites_sent." + postponeSuffix + suggestedDateSuffix, {
             appointment_nature: params.appointment.title_in_email[params.locale],
             location: locationInTemplate,
             address: addressInTemplate,

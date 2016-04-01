@@ -110,7 +110,10 @@ window.wordings['fr'] = {
             }
         },
         invites_sent: {
-            new_appointment: "Parfait. J'ai envoyé les invitations pour %{appointment_nature}%{location} :\n%{date}%{address}",
+            new_appointment: {
+                date_suggested: "Parfait. J'ai envoyé les invitations pour %{appointment_nature}%{location} :\n%{date}%{address}",
+                date_not_suggested: "Très bien. J'ai envoyé les invitations pour %{appointment_nature}%{location} :\n%{date}%{address}"
+            },
             postpone: "Parfait. J'ai mis à jour l'évènement pour %{appointment_nature}%{location} :\n%{date}%{address}",
             location_in_template: "\nLieu : %{location}",
             ask_for_location: "\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?",
