@@ -88,14 +88,20 @@
 */
 
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
-    <% parsed_reply_all_recipients = JSON.parse(@message.reply_all_recipients)%>
+    <% parsed_reply_all_recipients = JSON.parse(@message.reply_all_recipients)
+        if parsed_reply_all_recipients['to'].present? && parsed_reply_all_recipients['to'].is_a?(Array)
+            email_sender_email = parsed_reply_all_recipients['to'][0]['email']
+        else
+            email_sender_email = ''
+        end
+    %>
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
         initial_recipients[:cc] << "support@juliedesk.com"
     end %>
 
     function emailSender() {
-        return <%== {name: parsed_reply_all_recipients['to'][0]['email']}.to_json %>;
+        return <%== {name: email_sender_email}.to_json %>;
     }
     function initialToRecipients() {
         return <%== initial_recipients[:to].map{|c| {name: c}}.to_json %>;
