@@ -19,7 +19,7 @@
             <td><%= op_error.created_at.strftime('%d/%m/%Y') %></td>
             <td><%="#{ op_error.review_notation}/5" %></td>
             <td><%= op_error.review_comment %></td>
-            <td><%= link_to 'Accéder au thread', review_review_messages_thread_path(op_error.messages_thread_id, no_next: true), target: '_blank' %></td>
+            <td><%= link_to 'Accéder au thread', learn_review_messages_thread_path(op_error.messages_thread_id, no_next: true), target: '_blank' %></td>
           </tr>
       <% end %>
       </tbody>
