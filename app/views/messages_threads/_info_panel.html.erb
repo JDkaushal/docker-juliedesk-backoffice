@@ -121,6 +121,7 @@
             }
             window.lastAppointmentType = $("#appointment_nature").val();
             refreshAttendeesMissingInformations();
+            refreshDisplayedAttendeesInfos();
         });
 
         initAppointments();
@@ -411,13 +412,25 @@
         };
     }
 
-    function refreshAttendeesMissingInformations(){
+    function refreshDisplayedAttendeesInfos() {
         var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+        attendeesManager.displayExtendedInfos();
         if(!attendeesManager.$$phase){
-            attendeesManager.$apply(function(){
-                attendeesManager.lookupAttendeesMissingInfos();
-            });
+            attendeesManager.$apply();
         }
+    }
+
+    function refreshAttendeesMissingInformations() {
+        var attendeesManager = angular.element($('#attendeesCtrl')).scope();
+        attendeesManager.lookupAttendeesMissingInfos();
+        if(!attendeesManager.$$phase){
+            attendeesManager.$apply();
+        }
+//        if(!attendeesManager.$$phase){
+//            attendeesManager.$apply(function(){
+//                attendeesManager.lookupAttendeesMissingInfos();
+//            });
+//        }
     }
 
     function updateNotesCallingInfos() {
@@ -483,7 +496,6 @@
             }
         });
     }
-
 
     function redrawDifferentTimezoneWarner() {
         $(".different-timezone-warner").hide();
@@ -1029,7 +1041,22 @@
 
   <div class="message-container"></div>
 
-  <div id="thread-header-other-entries-container"></div>
+  <!--<div id="thread-header-other-entries-container">-->
+    <!--<div class="time-slots-to-suggest-list-container" ng-controller="datesSuggestionsManager as datesSuggestionsMng">-->
+      <!--<div class="time-slots-to-suggest-list">-->
+        <!--<div class="time-slots-to-suggest-title">Dates sélectionnées</div>-->
+        <!--<div class="time-slots-to-suggest-timezone">(Europe/Paris)</div>-->
+        <!--<div class="btn btn-sm btn-block time-slot-to-suggest" ng-class="suggestion.isOutBound ? 'btn-danger' : 'btn-primary'" ng-repeat="suggestion in timeSlotsSuggestions">-->
+          <!--{{suggestion.date}}-->
+        <!--</div>-->
+      <!--</div>-->
+
+    <!--</div>-->
+  <!--</div>-->
+
+  <%= render "julie_actions/partials/dates_manager" %>
+
+  <div id='selected-suggested-dates'></div>
 
   <%= render partial: "messages_threads/waiting_for_others_panel", locals: {message: @message} %>
 
@@ -1136,7 +1163,7 @@
       </div>
 
       <div class="data-entry linear-form-entry" data-entry-name="timezone">
-        <div class="data-entry-name"><%= I18n.t("info_box.timezone") %></div>
+        <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
 
@@ -1163,8 +1190,6 @@
 
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
-
-
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
@@ -1243,5 +1268,4 @@
     <button class="btn btn-block btn-success submit-add-preference"><%= I18n.t("common.save") %></button>
   </div>
 
-  <%= render partial: "messages_threads/dates_identification_panel", locals: {messages_thread: messages_thread} %>
 </div>

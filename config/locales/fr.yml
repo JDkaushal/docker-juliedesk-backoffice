@@ -302,6 +302,8 @@ fr:
 
   common:
     save: "Enregistrer"
+    next: "Suivant"
+    select_other_dates: "Sélectionner autre(s) date(s)"
     syes: "Oui"
     sno: "Non"
     submit: "Envoyer"
@@ -350,7 +352,7 @@ fr:
     french: "Français"
     english: "Anglais"
     timezone: "Fuseau horaire"
-    timezone_for_virtual: "Fuseau horaire dans lequel communiquer"
+    timezone_for_virtual: "Fuseau horaire du client pour ce rendez-vous"
     timezone_for_physical: "Fuseau horaire du rendez-vous"
     ticket_notes: "Contraintes temporelles / notes libres"
     appointment_type: "Type de rendez-vous"

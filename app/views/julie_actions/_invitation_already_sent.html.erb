@@ -106,7 +106,6 @@
     };
 
     window.addEventListener("message", function (event) {
-        console.log(event);
         window.setReplyMessage("");
         if(event.data.message == "drawExternalEventSelection") {
             var events = event.data.events;
@@ -118,14 +117,16 @@
             });
 
             window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+
+            window.redrawSelectedEventsContainer();
+
             if(currentSelectedEvent) {
                 setInvitationConfirmedReplyText();
             }
-            redrawSelectedEventsContainer();
         }else if(event.data.message == "drawExternalEventsList") {
             window.timeSlotsToSuggest = event.data.date_times;
-            setInvitationDeclinedNewAvailabilitesReplyText();
             window.redrawTimeSlotsToSuggestContainer();
+            setInvitationDeclinedNewAvailabilitesReplyText();
 
             $(".time-slots-to-suggest-list-container .suggest-dates-next-button").off('click');
 

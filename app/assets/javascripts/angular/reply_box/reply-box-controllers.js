@@ -4,6 +4,7 @@
 
     app.controller('recipientsManager', ['$scope', '$filter', function($scope, $filter) {
         $scope.attendeesApp = $scope.attendeesApp || undefined;
+        $scope.initiated = false;
         $scope.ccs = [];
         $scope.tos = [];
 
@@ -24,6 +25,7 @@
             if(window.afterReplyBoxInitCallback){
                 window.afterReplyBoxInitCallback();
             }
+            $scope.initiated = true;
         };
 
         $scope.setReplyRecipients = function(recipients, otherRecipients) {
@@ -88,8 +90,13 @@
             $scope.ccs = [];
             $scope.tos = [];
 
-            $toTokenNode.tokenInput("clear");
-            $ccTokenNode.tokenInput("clear");
+            try {
+                $toTokenNode.tokenInput("clear");
+                $ccTokenNode.tokenInput("clear");
+            } catch(e) {
+                console.log(e);
+            }
+
         };
 
         function manageSingleAssistedWithAssistant(presentAttendees, otherRecipients) {
@@ -145,6 +152,7 @@
             $scope.ccs = _.map(clientsAttendees, function(a) {
                 return {name: a.email};
             });
+
 
             $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
 

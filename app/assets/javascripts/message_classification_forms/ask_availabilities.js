@@ -69,21 +69,27 @@ window.classificationForms.askAvailabilitiesForm.prototype.getSuggestedDateTimes
 
 window.classificationForms.askAvailabilitiesForm.prototype.checkAlreadySuggestedDates = function() {
     var askAvailabilitiesForm = this;
+    var datesmanager = $('#dates-identifications-manager').scope();
 
     $(".messages-thread-info-panel .classic-info-panel").hide();
     $(".messages-thread-info-panel .dates-identification-panel").show();
     if(askAvailabilitiesForm.alreadySuggestedDates.length > 0) {
         $(".messages-thread-info-panel .dates-identification-panel .already-suggested-dates-container").show();
         $(".messages-thread-info-panel .dates-identification-panel .detected-dates-container").hide();
+        datesmanager.showAlreadySuggestedDates();
     }
     else {
         $(".messages-thread-info-panel .dates-identification-panel .already-suggested-dates-container").hide();
         $(".messages-thread-info-panel .dates-identification-panel .detected-dates-container").show();
+        datesmanager.showDetectedDates();
     }
+
+    datesmanager.$apply();
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.submitSuggestedDates = function(answerToSuggestedDates) {
     var askAvailabilitiesForm = this;
+    var datesManager = $('#dates-identifications-manager').scope();
 
     if(answerToSuggestedDates) {
         askAvailabilitiesForm.suggestedDates = $(".already-suggested-dates-container .already-suggested-date input[type=checkbox]:checked").map(function() {
@@ -98,26 +104,37 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitSuggestedDates 
 
         askAvailabilitiesForm.addSuggestedDatesToHeader();
 
+        //datesManager.showDetectedDates();
+        //if(!datesManager.$$phase)
+        //    datesManager.$apply();
+
         askAvailabilitiesForm.clickBackButtonFunctions.push(function() {
-            askAvailabilitiesForm.removeSuggestedDatesToHeader();
+            console.log('here');
             $(".messages-thread-info-panel .dates-identification-panel").show();
             $(".messages-thread-info-panel .classic-info-panel").hide();
+            askAvailabilitiesForm.removeSuggestedDatesToHeader();
+            //datesManager.showDetectedDates();
+            //if(!datesManager.$$phase)
+            //    datesManager.$apply();
         });
     }
     else {
-        $(".already-suggested-dates-container").hide();
-        $(".detected-dates-container").show();
+        datesManager.showDetectedDates();
+        if(!datesManager.$$phase)
+            datesManager.$apply();
 
         askAvailabilitiesForm.clickBackButtonFunctions.push(function() {
             askAvailabilitiesForm.removeSuggestedDatesToHeader();
-            $(".already-suggested-dates-container").show();
-            $(".detected-dates-container").hide();
+            datesManager.showAlreadySuggestedDates();
+            if(!datesManager.$$phase)
+                datesManager.$apply();
         });
     }
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.submitDetectedDates = function() {
     var askAvailabilitiesForm = this;
+    var datesManager = $('#dates-identifications-manager').scope();
 
     askAvailabilitiesForm.suggestedDates = $(".detected-dates-container .detected-dates .detected-date").map(function() {
         var $radio = $(this).find(".detected-date-radios input[type=radio]:checked");
@@ -140,6 +157,9 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitDetectedDates =
 
     askAvailabilitiesForm.clickBackButtonFunctions.push(function() {
         askAvailabilitiesForm.removeSuggestedDatesToHeader();
+        datesManager.showDetectedDates();
+        if(!datesManager.$$phase)
+            datesManager.$apply();
         $(".messages-thread-info-panel .dates-identification-panel").show();
         $(".messages-thread-info-panel .classic-info-panel").hide();
     });
@@ -195,7 +215,7 @@ window.classificationForms.askAvailabilitiesForm.prototype.processDateDetection 
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.removeSuggestedDatesToHeader = function() {
-    $("#thread-header-other-entries-container").html("");
+    $("#selected-suggested-dates").html("");
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.addSuggestedDatesToHeader = function() {
@@ -221,9 +241,9 @@ window.classificationForms.askAvailabilitiesForm.prototype.addSuggestedDatesToHe
     });
     $dataEntry.append($dataEntryName);
     $dataEntry.append($dataEntryValue);
-    $("#thread-header-other-entries-container").append($dataEntry);
+    $("#selected-suggested-dates").append($dataEntry);
 
-    $("#thread-header-other-entries-container").append("<br/><br/>");
+    $("#selected-suggested-dates").append("<br/><br/>");
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.appendDetectedDateRow = function(params) {

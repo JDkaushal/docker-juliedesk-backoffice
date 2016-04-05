@@ -62,44 +62,77 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def self.create_from_params params
-    attendees = []
-    (params[:attendees] || {}).each do |k, att|
-      attendees << att
+    if params[:classification] == MessageClassification::INVITATION_ALREADY_SENT
+      message_thread = MessagesThread.find(params[:messages_thread_id])
+      last_classification_with_data = message_thread.last_message_classification_with_data || {}
+
+      result = self.new(
+          locale: params[:locale],
+          timezone: last_classification_with_data.try(:timezone),
+          classification: params[:classification],
+          appointment_nature: last_classification_with_data.try(:appointment_nature),
+          summary: last_classification_with_data.try(:summary),
+          duration: last_classification_with_data.try(:duration),
+          location_nature: last_classification_with_data.try(:location_nature),
+          location: last_classification_with_data.try(:location),
+          call_instructions: last_classification_with_data.try(:call_instructions),
+          attendees: last_classification_with_data.try(:attendees),
+          notes:last_classification_with_data.try(:notes),
+          other_notes: last_classification_with_data.try(:other_notes),
+          private: last_classification_with_data.try(:private),
+          constraints: last_classification_with_data.try(:constraints),
+          constraints_data: last_classification_with_data.try(:constraints_data),
+          client_agreement: last_classification_with_data.try(:client_agreement),
+          attendees_are_noticed: last_classification_with_data.try(:attendees_are_noticed),
+          number_to_call: last_classification_with_data.try(:number_to_call),
+          operator: last_classification_with_data.try(:operator),
+          processed_in: last_classification_with_data.try(:processed_in),
+          date_times: last_classification_with_data.try(:date_times),
+          thread_status: last_classification_with_data.try(:thread_status),
+          follow_up_data:last_classification_with_data.try(:follow_up_data),
+          title_preference: last_classification_with_data.try(:title_preference)
+      )
+    else
+      attendees = []
+      (params[:attendees] || {}).each do |k, att|
+        attendees << att
+      end
+      attendees = MessageClassification.clean_and_categorize_clients attendees
+
+      follow_up_data = nil
+      if params[:follow_up_data]
+        follow_up_data = params[:follow_up_data].values.to_json
+      end
+
+      result = self.new(
+          locale: params[:locale],
+          timezone: params[:timezone],
+          classification: params[:classification],
+          appointment_nature: params[:appointment_nature],
+          summary: params[:summary],
+          duration: params[:duration],
+          location_nature: params[:location_nature],
+          location: params[:location],
+          call_instructions: (params[:call_instructions].blank?)?({}.to_json):(params[:call_instructions].to_json),
+          attendees: attendees.to_json,
+          notes: params[:notes],
+          other_notes: params[:other_notes],
+          private: params[:private],
+          constraints: params[:constraints],
+          constraints_data: (params[:constraints_data].try(:values) || []).to_json,
+          client_agreement: params[:client_agreement],
+          attendees_are_noticed: params[:attendees_are_noticed],
+          number_to_call: params[:number_to_call],
+          operator: params[:operator],
+          processed_in: params[:processed_in],
+
+          date_times: (params[:date_times].try(:values) || []).to_json,
+          thread_status: params[:thread_status],
+          follow_up_data: follow_up_data,
+          title_preference: params[:title_preference]
+      )
     end
-    attendees = MessageClassification.clean_and_categorize_clients attendees
 
-    follow_up_data = nil
-    if params[:follow_up_data]
-      follow_up_data = params[:follow_up_data].values.to_json
-    end
-
-    result = self.new(
-        locale: params[:locale],
-        timezone: params[:timezone],
-        classification: params[:classification],
-        appointment_nature: params[:appointment_nature],
-        summary: params[:summary],
-        duration: params[:duration],
-        location_nature: params[:location_nature],
-        location: params[:location],
-        call_instructions: (params[:call_instructions].blank?)?({}.to_json):(params[:call_instructions].to_json),
-        attendees: attendees.to_json,
-        notes: params[:notes],
-        other_notes: params[:other_notes],
-        private: params[:private],
-        constraints: params[:constraints],
-        constraints_data: (params[:constraints_data].try(:values) || []).to_json,
-        client_agreement: params[:client_agreement],
-        attendees_are_noticed: params[:attendees_are_noticed],
-        number_to_call: params[:number_to_call],
-        operator: params[:operator],
-        processed_in: params[:processed_in],
-
-        date_times: (params[:date_times].try(:values) || []).to_json,
-        thread_status: params[:thread_status],
-        follow_up_data: follow_up_data,
-        title_preference: params[:title_preference]
-    )
     result.save!
 
     result.append_julie_action

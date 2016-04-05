@@ -45,10 +45,16 @@
     window.activateCalendarWithParams = function (calendarParams) {
         calendarParams.height = $(".calendar-container").height();
         calendarParams.other_emails = window.otherAccountEmails;
-        if(window.threadAccount) {
-            calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+
+        if(window.threadComputedData && window.threadComputedData.timezone) {
+            calendarParams.default_timezone_id = window.threadComputedData.timezone;
+            calendarParams.additional_timezone_ids = [window.threadAccount.default_timezone_id];
+        } else {
+            if(window.threadAccount) {
+                calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+            }
+            calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
         }
-        calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
 
         calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
             return data.attendee_email;
@@ -90,20 +96,13 @@
 */
 
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
-    <% parsed_reply_all_recipients = JSON.parse(@message.reply_all_recipients)
-        if parsed_reply_all_recipients['to'].present? && parsed_reply_all_recipients['to'].is_a?(Array)
-            email_sender_email = parsed_reply_all_recipients['to'][0]['email']
-        else
-            email_sender_email = ''
-        end
-    %>
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
         initial_recipients[:cc] << "support@juliedesk.com"
     end %>
 
     function emailSender() {
-        return <%== {name: email_sender_email}.to_json %>;
+        return <%== {name: @message.get_email_sender}.to_json %>;
     }
     function initialToRecipients() {
         return <%== initial_recipients[:to].map{|c| {name: c}}.to_json %>;
@@ -329,48 +328,9 @@
         };
 
         window.redrawTimeSlotsToSuggestContainer = function () {
-            var $container = $("#thread-header-other-entries-container");
-            $container.html("");
-            var $timeSlotsToSuggestDiv = $("<div>").addClass("time-slots-to-suggest-list-container");
-            var $timeSlotsToSuggestListDiv = $("<div>").addClass("time-slots-to-suggest-list");
-            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-title").html("Dates sélectionnées"));
-            $timeSlotsToSuggestListDiv.append($("<div>").addClass("time-slots-to-suggest-timezone").html("(" + window.threadComputedData.timezone + ")"));
-
-            _.each(window.timeSlotsToSuggest, function (timeSlot) {
-                var $timeSlotDiv = $("<div>").addClass("btn btn-sm btn-block time-slot-to-suggest").data("date-time", timeSlot).html(window.helpers.capitalize(moment(timeSlot).tz(window.threadComputedData.timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"))));
-                var hour = moment(timeSlot).tz(window.threadComputedData.timezone).hour();
-                if(hour < 8 || hour > 22) {
-                    $timeSlotDiv.addClass("btn-danger");
-                }
-                else {
-                    $timeSlotDiv.addClass("btn-primary");
-                }
-                $timeSlotsToSuggestListDiv.append($timeSlotDiv);
-            });
-
-
-            var $nextButton = $("<div>").addClass("btn btn-block btn-success suggest-dates-next-button").html("Next");
-            $timeSlotsToSuggestListDiv.append($nextButton);
-
-            $timeSlotsToSuggestDiv.append($timeSlotsToSuggestListDiv);
-            $container.append($timeSlotsToSuggestDiv);
-            var height = $(".time-slots-to-suggest-list").outerHeight();
-
-            $(".time-slots-to-suggest-list-container").css({height: height});
-            var $fakeDiv = $("<div>").css({
-                height: height,
-                width: '100%'
-            });
-            $container.append($fakeDiv);
-
-            $(".time-slots-to-suggest-list-container .suggest-dates-next-button").click(function() {
-                $(".calendar-container").addClass("minimized");
-                $('.email.extended').removeClass('extended');
-                $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
-            });
+            var suggestedDateScope = $("#dates-suggestion-manager").scope();
+            suggestedDateScope.setSuggestions();
         };
-
-
 
         window.sendReply = function (replyParams) {
             $(".reply-box #callback-message").html("<%= I18n.t("common.sending")%>");
@@ -424,7 +384,7 @@
 
     window.setReplyRecipients = function(recipients, otherRecipients) {
         var replyBox = angular.element($('#recipients-manager')).scope();
-        if(replyBox)
+        if(replyBox && replyBox.initiated)
             replyBox.setReplyRecipients(recipients, otherRecipients);
     };
 

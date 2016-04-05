@@ -1508,6 +1508,13 @@
                 });
             });
 
+            it('getUsedTimezones should return the timezones of the present attendees without the thread owner', function() {
+                spyOn($scope, 'getThreadOwner').and.returnValue({timezone: 'timezoneOwner'});
+
+                $scope.attendees = [{isPresent: true, timezone: 'timezone1'}, {isPresent: true, timezone: 'timezone1'}, {isPresent: false, timezone: 'company'}, {isPresent: true, timezone: 'timezone2'}]
+                expect($scope.getUsedTimezones()).toEqual([ 'timezone1', 'timezone2' ]);
+            });
+
             it('getPresentAttendeesFromOtherCompanies should return the right attendees', function() {
                 spyOn($scope, 'getThreadOwner').and.returnValue({company: 'company'});
                $scope.attendees = [{isPresent: true, company: 'company'}, {isPresent: true, company: 'company'}, {isPresent: false, company: 'company'}, {isPresent: true, company: 'companyOther'}]

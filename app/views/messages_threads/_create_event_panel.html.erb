@@ -1,73 +1,69 @@
 <script>
     $(function () {
-        $(".suggested-date-times .suggested-date-time").each(function () {
-            var date = $(this).data("date");
-            var timezone = $(this).data("timezone");
-            var text = $(this).data("text");
+//        $(".suggested-date-times .suggested-date-time").each(function () {
+//            var date = $(this).data("date");
+//            var timezone = $(this).data("timezone");
+//            var text = $(this).data("text");
+//
+//            if (date.length > 0) {
+//                var mDate = moment(date).tz(timezone);
+//                var dateString = mDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
+//                $(this).find(".date").html(dateString);
+//                $(this).find(".timezone").html("(" + timezone + ")");
+//            }
+//            else {
+//                $(this).find(".text").html(text);
+//            }
+//        });
 
-            if (date.length > 0) {
-                var mDate = moment(date).tz(timezone);
-                var dateString = mDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
-                $(this).find(".date").html(dateString);
-                $(this).find(".timezone").html("(" + timezone + ")");
-            }
-            else {
-                $(this).find(".text").html(text);
-            }
-        });
 
-        $(".suggested-date-times .suggested-date-time").click(function (e) {
-            var dateTime = $(this).data("date");
-            if (dateTime) {
-                window.currentCalendar.selectSuggestedEvent(dateTime);
-            }
-        });
     });
 </script>
 
 <% if local_assigns[:julie_action] %>
-    <div class="create-event-panel">
-      <div class="data-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.dates_to_check") %></div>
-        <div class="data-entry-value">
-          <div class="suggested-date-times">
+    <%= render partial: "/julie_actions/partials/event_creator", locals: {julie_action: local_assigns[:julie_action]} %>
+    <!--<div class="create-event-panel" id="create-event-panel">-->
+      <!--<div class="data-entry">-->
+        <!--<div class="data-entry-name"><%= I18n.t("info_box.dates_to_check") %></div>-->
+        <!--<div class="data-entry-value">-->
+          <!--<div class="suggested-date-times">-->
 
-            <% JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").each do |dt| %>
-                <div class="suggested-date-time-container">
-                  <div class="suggested-date-time btn btn-sm btn-default btn-block"
-                       data-date="<%= dt['date'] %>"
-                       data-timezone="<%= dt['timezone'] %>"
-                       data-text="<%= dt['text'] %>">
-                    <div class="date"></div>
-                    <div class="timezone"></div>
-                    <div class="text"></div>
-                  </div>
-                  <input type="checkbox"/>
-                </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
+            <!--<% JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").each do |dt| %>-->
+                <!--<div class="suggested-date-time-container">-->
+                  <!--<div class="suggested-date-time btn btn-sm btn-default btn-block"-->
+                       <!--data-date="<%= dt['date'] %>"-->
+                       <!--data-timezone="<%= dt['timezone'] %>"-->
+                       <!--data-text="<%= dt['text'] %>">-->
+                    <!--<div class="date"></div>-->
+                    <!--<div class="timezone"></div>-->
+                    <!--<div class="text"></div>-->
+                  <!--</div>-->
+                  <!--<input type="checkbox"/>-->
+                <!--</div>-->
+            <!--<% end %>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
 
-      <br>
+      <!--<br>-->
 
-      <div class="include-email-in-notes-container">
-        <input type="checkbox" id="include-email-in-notes"> Include email in notes
-      </div>
+      <!--&lt;!&ndash;<div class="include-email-in-notes-container">&ndash;&gt;-->
+        <!--&lt;!&ndash;<input type="checkbox" id="include-email-in-notes"> Include email in notes&ndash;&gt;-->
+      <!--&lt;!&ndash;</div>&ndash;&gt;-->
 
-      <br>
+      <!--<br>-->
 
-      <button id="create-event-button" class="btn btn-success btn-block" disabled="disabled">
-        <%= I18n.t("info_box.create_event") %>
-      </button>
+      <!--<button id="create-event-button" class="btn btn-success btn-block" disabled="disabled">-->
+        <!--<%= I18n.t("info_box.create_event") %>-->
+      <!--</button>-->
 
-      <button id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" disabled="disabled">
-        <%= I18n.t("info_box.invitation_already_sent") %>
-      </button>
+      <!--<button id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" disabled="disabled">-->
+        <!--<%= I18n.t("info_box.invitation_already_sent") %>-->
+      <!--</button>-->
 
-      <button id="no-date-fits" class="btn btn btn-default btn-block">
-        <%= I18n.t("info_box.no_date_fits", count: JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").length) %>
-      </button>
-      <div class="creating-event-message"></div>
-    </div>
+      <!--<button id="no-date-fits" class="btn btn btn-default btn-block">-->
+        <!--<%= I18n.t("info_box.no_date_fits", count: JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").length) %>-->
+      <!--</button>-->
+      <!--<div class="creating-event-message"></div>-->
+    <!--</div>-->
 <% end %>

@@ -92,7 +92,7 @@
             }
         });
 
-        $("#no-date-fits").click(function () {
+        $("#no-date-fits").click(function () {      
             window.timeSlotToCreate = null;
             $(".messages-thread-info-panel .create-event-panel").hide();
             if(window.threadComputedData.client_agreement) {
@@ -195,12 +195,14 @@
 
         $("#create-event-button").click(function () {
             if(window.threadComputedData.client_agreement) {
+                var eventCreatorManager = $('#datesVerificationsManager').scope();
+                var currentTimezone = window.currentCalendar.getCalendarTimezone();
+
                 window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
 
-                console.log('window.currentEventFromInvitation', window.currentEventFromInvitation);
                 $("#create-event-button").attr('disabled', true);
                 $(".creating-event-message").html("Creating...");
-                var start = moment(window.timeSlotToCreate).tz(window.timeSlotToCreateTimezone);
+                var start = moment(eventCreatorManager.selectedDateRaw).tz(currentTimezone);
                 var end = start.clone();
                 end.add('m', <%= @messages_thread.computed_data[:duration] %>);
 
@@ -248,8 +250,8 @@
                     private: window.threadComputedData.private,
                     start: start.format(),
                     end: end.format(),
-                    start_timezone: window.timeSlotToCreateTimezone,
-                    end_timezone: window.timeSlotToCreateTimezone,
+                    start_timezone: currentTimezone,
+                    end_timezone: currentTimezone,
                     calendar_login_username: window.threadComputedData.calendar_login_username
                 };
 
@@ -306,6 +308,8 @@
 
         CommonHelpers.externalRequest(requestParams, function (e) {
 
+            var eventCreatorManager = $('#datesVerificationsManager').scope();
+
             window.currentCalendar.refreshEvents();
 
             if(!isPostpone || window.currentEventFromInvitation) {
@@ -324,7 +328,8 @@
             message += messageBuilder.generateReply({
                 action: "invites_sent",
                 isPostpone: isPostpone && !window.currentEventFromInvitation,
-                timeSlotToCreate: window.timeSlotToCreate,
+                timeSlotToCreate: eventCreatorManager.selectedDateRaw,
+                usedTimezones: eventCreatorManager.getUsedTimezones(),
                 appointment: window.getCurrentAppointment(),
                 address: window.getCurrentAddress(),
                 timezoneId: window.threadComputedData.timezone,
@@ -453,6 +458,7 @@
             data: {
                 text: $("textarea#reply-text").val(),
                 generated_text: window.currentFullMessageWithFooter,
+                timezone: $('#dates_suggestion_timezone').val(),
                 to: window.currentRecipients().to,
                 cc: window.currentRecipients().cc,
                 date_times: window.timeSlotsToSuggest,
@@ -495,17 +501,18 @@
             });
 
             window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+
+            window.redrawSelectedEventsContainer();
+
             if(currentSelectedEvent) {
                 setInvitationConfirmedReplyText();
             }
-            redrawSelectedEventsContainer();
-
         }else if (event.data.message == "drawExternalEventsList") {
             window.timeSlotsToSuggest = event.data.date_times;
 
             if(window.invitationAlreadySent){
-                setInvitationDeclinedNewAvailabilitesReplyText();
                 window.redrawTimeSlotsToSuggestContainer();
+                setInvitationDeclinedNewAvailabilitesReplyText();
 
                 $(".time-slots-to-suggest-list-container .suggest-dates-next-button").off('click');
 
@@ -516,45 +523,57 @@
                 })
             }else{
                 var messageBuilder = $('#reply-area').scope();
+                var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
+                var threadComputedData = window.threadComputedData;
+
+                window.redrawTimeSlotsToSuggestContainer();
 
                 window.setReplyMessage(messageBuilder.generateReply({
                     action: "suggest_dates",
                     client_agreement: true,
                     attendeesAreNoticed: true,
                     isPostpone: isPostpone,
-                    locale: window.threadComputedData.locale,
+                    locale: threadComputedData.locale,
                     appointment: window.getCurrentAppointment(),
                     address: window.getCurrentAddress(),
-                    timeSlotsToSuggest: event.data.date_times,
+                    timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
+                    usedTimezones: datesSuggestionsManager.usedTimezones,
+                    threadMainTimezone: threadComputedData.timezone,
                     client: window.threadAccount.usage_name,
-                    timezoneId: window.threadComputedData.timezone,
+                    timezoneId: threadComputedData.timezone,
                     noDateFits: noDateFitsType,
                     defaultTimezoneId: window.threadAccount.default_timezone_id
                 }), "all", window.otherEmails);
-                window.redrawTimeSlotsToSuggestContainer();
             }
         }
         else if (event.data.message == "drawExternalEventCreation") {
-            window.timeSlotToCreate = event.data.eventStart;
-            $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
-            $(".suggested-date-times .suggested-date-time.other").remove();
-            $(".suggested-date-times .suggested-date-time").each(function () {
-                if (moment($(this).data("date")).isSame(moment(event.data.eventStart))) {
-                    $(this).addClass("btn-primary");
-                    window.timeSlotToCreateTimezone = $(this).data("timezone");
-                }
+            var eventCreatorApp = $('#datesVerificationsManager').scope();
+
+            eventCreatorApp.addNewDateToVerify({
+                date: moment(event.data.eventStart).utc().format(),
+                timezone: window.currentCalendar.getCalendarTimezone()
             });
-            if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
-                var dateString = moment(event.data.eventStart).tz(window.currentCalendar.getCalendarTimezone()).locale("<%= I18n.locale %>").format("dddd DD MMMM YYYY à HH:mm");
-                window.timeSlotToCreateTimezone = window.currentCalendar.getCalendarTimezone();
-                $(".suggested-date-times").append(
-                        $("<div>")
-                                .addClass("suggested-date-time other btn btn-sm btn-block btn-primary")
-                                .html(dateString + "<br>" + window.currentCalendar.getCalendarTimezone())
-                );
-            }
-            $("#create-event-button").removeAttr('disabled');
-            $("#invitation-already-sent-button").removeAttr('disabled');
+            eventCreatorApp.$apply();
+            window.timeSlotToCreate = event.data.eventStart;
+//            $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
+//            $(".suggested-date-times .suggested-date-time.other").remove();
+//            $(".suggested-date-times .suggested-date-time").each(function () {
+//                if (moment($(this).data("date")).isSame(moment(event.data.eventStart))) {
+//                    $(this).addClass("btn-primary");
+//                    window.timeSlotToCreateTimezone = $(this).data("timezone");
+//                }
+//            });
+//            if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
+//                var dateString = moment(event.data.eventStart).tz(window.currentCalendar.getCalendarTimezone()).locale("<%= I18n.locale %>").format("dddd DD MMMM YYYY à HH:mm");
+//                window.timeSlotToCreateTimezone = window.currentCalendar.getCalendarTimezone();
+//                $(".suggested-date-times").append(
+//                        $("<div>")
+//                                .addClass("suggested-date-time other btn btn-sm btn-block btn-primary")
+//                                .html(dateString + "<br>" + window.currentCalendar.getCalendarTimezone())
+//                );
+//            }
+//            $("#create-event-button").removeAttr('disabled');
+//            $("#invitation-already-sent-button").removeAttr('disabled');
         }
     }, false);
 </script>

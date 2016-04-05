@@ -1,0 +1,27 @@
+<%= javascript_include_tag 'angular_dates_manager_app'%>
+
+<div id="thread-header-other-entries-container">
+  <div id="dates-suggestion-manager" class="time-slots-to-suggest-list-container" ng-controller="datesSuggestionsManager as datesSuggestionsMng" ng-show="displayDatesSuggestionManager">
+    <div class="time-slots-to-suggest-list">
+      <%= label_tag :dates_suggestion_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
+      <%= text_field_tag :dates_suggestion_timezone, @messages_thread.computed_data[:timezone] %>
+      <div class="time-slots-to-suggest-title">Dates proposées</div>
+      <div class="time-slots-to-suggest-outbound-count" ng-show="displayOutBoundCount()">{{outBoundSuggestionsCount}} proposition(s) anormale(s) détectée(s)</div>
+      <div class="dates-suggestions-wrapper">
+        <div class="timezoned-suggestions-area" ng-repeat="(timezone, suggestions) in timeSlotsSuggestions">
+          <div class="timezone-title">{{timezone}}</div>
+
+          <div class="btn btn-sm btn-block time-slot-to-suggest" ng-class="suggestion.isOutBound ? 'btn-danger' : 'btn-primary'" ng-repeat="suggestion in suggestions">
+            {{suggestion.displayText}}
+          </div>
+        </div>
+      </div>
+      <div class="btn btn-block btn-success suggest-dates-next-button">Next</div>
+    </div>
+  </div>
+
+  <%= render partial: "messages_threads/dates_identification_panel", locals: {messages_thread: @messages_thread} %>
+
+</div>
+
+

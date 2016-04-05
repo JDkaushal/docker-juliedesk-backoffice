@@ -75,8 +75,6 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
             calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
         }
     }
-
-
 };
 
 Calendar.prototype.fullCalendarEventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
