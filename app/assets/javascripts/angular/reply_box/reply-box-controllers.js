@@ -183,7 +183,7 @@
                     });
                 }
             }
-            
+
         };
 
         function setAssistantAndAssistedInRecipients(assistant, assisted){
