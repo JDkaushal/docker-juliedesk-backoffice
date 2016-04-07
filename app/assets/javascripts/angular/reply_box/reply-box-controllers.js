@@ -144,9 +144,12 @@
 
             $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
 
-            // We don't add the client email if we are already responding to one of its aliases
-            if(_.intersection(_.map($scope.ccs, function(cc){return cc.name;}), window.threadAccount.email_aliases).length == 0) {
-                $scope.ccs.push({name: threadOwner.email});
+
+            if(threadOwner.email != 'pierre-louis@juliedesk.com') {
+                // We don't add the client email if we are already responding to one of its aliases
+                if(_.intersection(_.map($scope.ccs, function(cc){return cc.name;}), window.threadAccount.email_aliases).length == 0) {
+                    $scope.ccs.push({name: threadOwner.email});
+                }
             }
 
             $scope.tos = _.flatten($scope.tos);
@@ -169,14 +172,18 @@
             $scope.tos = _.compact($scope.tos);
             $scope.ccs = _.compact($scope.ccs);
 
-            if(_.intersection(_.map($scope.tos, function(recipient) {return recipient.name;}), clientEmails).length == 0) {
-                $scope.ccs.push({name: window.threadAccount.email});
-            } else {
-                // If we are responding to the client, make sure we don't use one of its aliases in ccs
-                $scope.ccs = _.reject($scope.ccs, function(recipient) {
-                    return clientEmails.indexOf(recipient.name) >= 0;
-                });
+            if(window.threadAccount.email != 'pierre-louis@juliedesk.com') {
+
+                if(_.intersection(_.map($scope.tos, function(recipient) {return recipient.name;}), clientEmails).length == 0) {
+                    $scope.ccs.push({name: window.threadAccount.email});
+                } else {
+                    // If we are responding to the client, make sure we don't use one of its aliases in ccs
+                    $scope.ccs = _.reject($scope.ccs, function(recipient) {
+                        return clientEmails.indexOf(recipient.name) >= 0;
+                    });
+                }
             }
+            
         };
 
         function setAssistantAndAssistedInRecipients(assistant, assisted){
