@@ -11,11 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160331132906) do
+ActiveRecord::Schema.define(version: 20160407150342) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
+
+  create_table "ai_email_flow_forecasts", force: true do |t|
+    t.datetime "datetime"
+    t.integer  "count"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "client_contacts", force: true do |t|
     t.string   "client_email",           null: false

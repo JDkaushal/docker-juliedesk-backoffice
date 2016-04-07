@@ -49,8 +49,6 @@
             } else {
                 var refreshDate = $scope.lastFetchedForecastDate.clone().add('d', aiForecastWindow - 7);
 
-                console.log($scope.startWeekDate.diff($scope.firstFetchedForecastDate, 'days'));
-
                 $scope.computeAIForecast();
 
                 if(refreshDate.diff($scope.endWeekDate, 'days') < 8 ) {
@@ -93,8 +91,8 @@
                 startDate = $scope.firstFetchedForecastDate.add('d', -30);
             }
 
-            $http.get("https://ai.juliedesk.com/api/v1/forecastemails/?date=" + startDate.format('YYYY-MM-DD') + "&duration=" + aiForecastWindow).success(function(response) {
-                $scope.aiForecast = $.extend($scope.aiForecast,response.forecast);
+            $http.get("/api/v1/emails_forecast?start_date=" + startDate.format('YYYY-MM-DD') + "&duration=" + aiForecastWindow, {headers: {'Authorization': 'EDx19D72bH7e5I64EXk1kwa4jXvynddS'}}).success(function(response) {
+                $scope.aiForecast = $.extend($scope.aiForecast,response);
                 $scope.computeAIForecast();
                 $scope.aiThinking = false;
             });

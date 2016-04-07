@@ -118,6 +118,7 @@ Rails.application.routes.draw do
       get "sent_messages_stats", controller: :messages_threads, action: :sent_messages_stats
       get "weekly_recap_data", controller: :messages_threads, action: :weekly_recap_data
       get "messages_thread_context", controller: :messages_threads, action: :messages_thread_context
+      get "emails_forecast", controller: :ai_forecast, action: :emails
 
       post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
     end
