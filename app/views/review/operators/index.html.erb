@@ -63,12 +63,12 @@
         <tr>
           <td><%= operator_hash[:name] %></td>
           <td><%= operator_hash[:level] %></td>
-          <td><%= operator_hash[:actions_count] %> (<%= number_to_percentage(operator_hash[:actions_count] * 100.0 / @data[:total_count], precision: 0) %>)</td>
-          <td><%= number_to_percentage operator_hash[:coverage] * 100, precision: 0 %></td>
+          <td><%= operator_hash[:actions_count] %> (<%= number_to_percentage((operator_hash[:actions_count] || 0) * 100.0 / @data[:total_count], precision: 0) %>)</td>
+          <td><%= number_to_percentage (operator_hash[:coverage] || 0) * 100, precision: 0 %></td>
           <td>
             <div class="btn btn-success open-links-operator" data-operator-id="<%= operator_hash[:id] %>">Review</div>
           </td>
-          <td><%= number_to_percentage operator_hash[:errors_percentage] * 100, precision: 2 %></td>
+          <td><%= number_to_percentage (operator_hash[:errors_percentage] || 0) * 100, precision: 2 %></td>
           <td><%= link_to "Stats details", review_operator_path(id: operator_hash[:id]), class: "btn-link" %></td>
         </tr>
     <% end %>
