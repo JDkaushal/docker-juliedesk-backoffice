@@ -397,6 +397,7 @@
 
             reProcessTitle();
             $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
+            $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
         };
 
         this.createAttendee = function(informations, attendee){
@@ -444,7 +445,6 @@
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
                 $scope.exposeAttendeesToGlobalScope();
-                $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
@@ -613,6 +613,18 @@
             return _.filter($scope.attendees, function(a) {
                 return a.isPresent == isPresent;
 
+            });
+        };
+
+        $scope.getAttendeesWithoutClients = function() {
+            return _.filter($scope.attendees, function(a) {
+                return !a.isClient;
+            });
+        };
+
+        $scope.getAttendeesOnlyClients = function() {
+            return _.filter($scope.attendees, function(a) {
+                return a.isClient;
             });
         };
 

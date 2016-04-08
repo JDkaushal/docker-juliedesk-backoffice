@@ -7,7 +7,7 @@ class Review::OperatorsController < ReviewController
 
   def my_stats
     @operator = Operator.find session[:operator_id]
-    @previous_errors_count = @operator.operator_actions_groups.size
+    @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).size
   end
 
   def my_errors

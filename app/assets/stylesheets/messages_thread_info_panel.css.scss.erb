@@ -513,3 +513,26 @@ li.contact-autocomplete-item {
     margin: 10px 0 20px 0;
   }
 }
+
+.locale-discrepancy-message {
+  height: 30px;
+  margin-top: 5px;
+  display: none;
+  #locale_discrepancy_sprite {
+    background-image: url(<%= asset_path 'warning2x.png' %>);
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    width: 30px;
+    display: inline-block;
+    height: 30px;
+  }
+  #locale_discrepancy_text {
+    font-size: 18px;
+    color: #E95B5D;
+    position: relative;
+    top: -8px;
+    left: 10px;
+  }
+
+
+}

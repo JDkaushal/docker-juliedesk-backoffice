@@ -1,0 +1,28 @@
+<div class="phone-skype-entities-form" ng-show="displayForm">
+    <div class="content">
+      <div class="edition-panel">
+        <div class="header">
+          <div class="text">Détecté</div>
+          <div><input type="text" id="entity_value" ng-model="value"></div>
+        </div>
+        <div class="add-to">Ajouter à</div>
+
+        <div class="interaction-area">
+          <div class="attendees-area">
+            <ul class="list">
+              <li class="attendee" ng-repeat="attendee in attendees track by $index" data-attendee-id="{{attendee.guid}}">{{attendee.displayNormalizedName()}}<span class="sprite"></span></li>
+            </ul>
+          </div>
+          <div class="attendee-edition">
+            <div class="attendee-name"><span class="sprite" id="go_to_attendees_list"></span>{{currentSelectedAttendee.displayNormalizedName() || 'Non sélectionné'}}</div>
+            <div class="entities">
+              <ul class="types">
+                <li class="type" ng-repeat="attribute in possibleAttributes" ng-class="{highlighted: attribute.value == attributeToModify}" data-attribute-value="{{attribute.value}}">{{attribute.name}}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+</div>

@@ -49,6 +49,9 @@
 
         if(window.threadComputedData.locale)
             window.currentLocale = window.threadComputedData.locale;
+
+        //if(window.messageInterpretations && window)
+
     //$(function () {
         if (window.leftColumnMessage) {
             $(".messages-thread-info-panel .message-container").html(window.leftColumnMessage).show();
@@ -751,7 +754,7 @@
         if(window.threadDataIsEditable && $.isEmptyObject(window.threadComputedData.call_instructions) && !window.currentEventTile
                 || ($("select#appointment_nature").val() == 'skype' || $("select#appointment_nature").val() == 'webex' || $("select#appointment_nature").val() == 'hangout') && window.lastAppointmentType != ''
                 || $("select#appointment_family_nature").val() == 'call' && window.lastAppointmentType != ''){
-            virtualMeetingsHelper.loadDefaultConfig(true);
+            if(virtualMeetingsHelper) virtualMeetingsHelper.loadDefaultConfig(true);
         }
     }
 
@@ -1018,6 +1021,8 @@
     };
 </script>
 
+<%= render partial: "AI/partials/manager" %>
+
 <div class="messages-thread-info-panel scrollable">
 
   <div class="message-container"></div>
@@ -1045,6 +1050,7 @@
         <%= radio_button_tag :locale_only, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
       </div>
       <br>
+      <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
       <br>
       <button class="btn btn-block btn-success validate-locale-button"><%= I18n.t("common.validate") %></button>
     </div>
@@ -1110,7 +1116,7 @@
         <div class="semi-data-entry">
           <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
         </div>
-
+        <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
       </div>
 

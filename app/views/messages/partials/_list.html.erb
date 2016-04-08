@@ -28,7 +28,7 @@
   end
 %>
 
-<div id="messages_container" data-messages-thread-id="<%= @messages_thread.id %>" data-messages-count="<%= items.size %>" data-operator-id="<%= session[:operator_id] %>" data-timezone="<%= @messages_thread.computed_data[:timezone] %>">
+<div id="messages_container" class="ai-entities" data-messages-thread-id="<%= @messages_thread.id %>" data-messages-count="<%= items.size %>" data-operator-id="<%= session[:operator_id] %>" data-timezone="<%= @messages_thread.computed_data[:timezone] %>">
   <% items.each do |item| %>
       <% if item.class == Message %>
           <% emails_locals = case locals[:type]

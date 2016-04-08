@@ -45,7 +45,7 @@
         display: inline-block;
 
         .to-be-merged-sprite {
-          background-image: url("merge_blackx2.png");
+          background-image: url(<%= asset_path 'merge_blackx2.png' %>);
           background-repeat: no-repeat;
           background-size: 17px 10px;
           width: 17px;
@@ -66,7 +66,7 @@
         display: inline-block;
         color: #F6B57F;
         .cancel-to-merge-sprite {
-          background-image: url("merge_orangex2.png");
+          background-image: url(<%= asset_path 'merge_orangex2.png' %>);
           background-repeat: no-repeat;
           background-size: 17px 10px;
           width: 17px;
@@ -78,7 +78,7 @@
         }
 
         .cancel-to-be-merged-sprite {
-          background-image: url("cross_orangex2.png");
+          background-image: url(<%= asset_path 'cross_orangex2.png' %>);
           background-repeat: no-repeat;
           background-size: 15px 15px;
           width: 15px;
@@ -90,7 +90,7 @@
           left: 30px;
 
           &:hover {
-            background-image: url("cross_orange_underlinex2.png");
+            background-image: url(<%= asset_path 'cross_orange_underlinex2.png' %>);
           }
         }
       }

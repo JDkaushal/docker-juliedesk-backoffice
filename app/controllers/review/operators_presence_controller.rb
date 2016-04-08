@@ -49,7 +49,9 @@ class Review::OperatorsPresenceController < ReviewController
   def copy_day
     raise "no day given" unless params[:day]
     OperatorPresence.where("date >= ? AND date < ?", DateTime.parse(params[:day]), DateTime.parse(params[:day]) + 1.day).to_a.each do |opp|
-      OperatorPresence.create date: opp.date + params[:days].to_i.days, operator_id: opp.operator_id
+      new_date = opp.date + params[:days].to_i.days
+      existing_presence = OperatorPresence.find_by(date: new_date, operator_id: opp.operator_id)
+      OperatorPresence.create date: new_date, operator_id: opp.operator_id unless existing_presence.present?
     end
 
     render json: {}

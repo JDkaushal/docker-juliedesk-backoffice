@@ -5,6 +5,7 @@
     'use strict';
 
     function setWindowVariables(){
+
         window.threadAccount = {
             addresses: [],
             appointments: [],
@@ -32,8 +33,6 @@
             skype: "",
             usage_name: "Blake"
         };
-
-        console.log(window.threadAccount.email_aliases.length);
 
         window.currentAttendees = [{
             email: "test@test1.com",
@@ -91,7 +90,6 @@
         beforeEach(module('attendees-manager-controllers'));
         beforeEach(module('attendees-manager-services'));
 
-
         beforeEach(inject(function($injector) {
             setWindowVariables();
 
@@ -116,6 +114,7 @@
         }));
 
         describe('Initialization', function() {
+
             it('should be initialized when the attendees have been fetched', function() {
                 spyOn($scope, 'init');
 
