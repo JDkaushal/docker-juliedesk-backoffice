@@ -144,7 +144,6 @@
 
             $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
 
-
             if(threadOwner.email != 'pierre-louis@juliedesk.com') {
                 // We don't add the client email if we are already responding to one of its aliases
                 if(_.intersection(_.map($scope.ccs, function(cc){return cc.name;}), window.threadAccount.email_aliases).length == 0) {
@@ -174,9 +173,12 @@
 
             if(window.threadAccount.email != 'pierre-louis@juliedesk.com') {
 
-                if(_.intersection(_.map($scope.tos, function(recipient) {return recipient.name;}), clientEmails).length == 0) {
+                var clientAliasInTos = _.intersection(_.map($scope.tos, function(recipient) {return recipient.name;}), clientEmails);
+                var clientAliasInCcs = _.intersection(_.map($scope.ccs, function(recipient) {return recipient.name;}), clientEmails);
+
+                if(clientAliasInTos.length == 0 && clientAliasInCcs.length == 0) {
                     $scope.ccs.push({name: window.threadAccount.email});
-                } else {
+                } else if($scope.tos.indexOf(clientEmails) > - 1) {
                     // If we are responding to the client, make sure we don't use one of its aliases in ccs
                     $scope.ccs = _.reject($scope.ccs, function(recipient) {
                         return clientEmails.indexOf(recipient.name) >= 0;
