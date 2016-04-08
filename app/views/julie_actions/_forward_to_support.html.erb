@@ -28,11 +28,12 @@
   });
 
     function clickOnTemplateItem($item) {
-        <% if @messages_thread.account.locale == "fr" %>
-        var template = $item.data("template-fr");
-        <% else %>
         var template = $item.data("template-en");
-        <% end %>
+
+        if(window.threadComputedData.locale == 'fr') {
+            template = $item.data("template-fr");
+        }
+
         window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
         $(".forward-to-support-menu").hide();
     }
@@ -42,7 +43,7 @@
 
         window.setReplyMessage("", "only_client", ["support@juliedesk.com"]);
 
-        host = "<%= "https://juliedesk-app.herokuapp.com" %>";
+        var host = "<%= "https://juliedesk-app.herokuapp.com" %>";
         var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
 
         $.ajax({

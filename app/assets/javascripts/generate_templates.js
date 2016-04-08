@@ -169,7 +169,6 @@ window.generateEmailTemplate = function (params) {
 
                 }
 
-
                 if (params.timezoneId != params.defaultTimezoneId || isVirtualAppointment) {
                     message += "\n" + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
                 }
