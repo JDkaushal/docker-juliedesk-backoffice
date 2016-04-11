@@ -152,7 +152,11 @@ class Account
   end
 
   def all_emails
-    [email] + email_aliases
+    if email.present?
+      [email] + email_aliases
+    else
+      []
+    end
   end
 
   def client_info
