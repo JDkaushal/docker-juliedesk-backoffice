@@ -250,11 +250,12 @@
                     end_timezone: window.timeSlotToCreateTimezone,
                     calendar_login_username: window.threadComputedData.calendar_login_username
                 };
+
                 if(isPostpone && !window.currentEventFromInvitation) {
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
-                    window.currentCalendarLoginUsername = decodeURI("<%= @messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\'));
+                    window.currentCalendarLoginUsername = decodeURIComponent("<%= @messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\'));
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,

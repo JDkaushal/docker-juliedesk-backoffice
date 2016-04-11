@@ -520,15 +520,7 @@ class MessagesThread < ActiveRecord::Base
       }
     end
 
-    {
-        event_id: "AAMkAGM3YzRkYTM4LTE0OWItNDM5NC05M2QyLTU5ZjVkNjRmNmRmYgBGAAAAAAACnG8HJtaWR6bQ3NIVEYBvBwCNgJD4Ts5HRKLAimJzLopBAAAAodxAAACNgJD4Ts5HRKLAimJzLopBAAEyob9lAAA=",
-        event_url: "",
-        calendar_id: "AQMkAGM3YzRkYTM4LTE0OWItNDM5NC05M2QyLTU5ZjVkNjRmNmRmYgAuAAADApxvBybWlkem0NzSFRGAbwEAjYCQ+E7OR0SiwIpicy6KQQAAAaHcQAAAAA==",
-        appointment_nature: "appointment",
-        calendar_login_username: CGI.escape("primaryzipcar\\ehermite"),
-        event_from_invitation: false,
-        event_from_invitation_organizer: nil
-    }
+    
   end
 
   def created_events_data

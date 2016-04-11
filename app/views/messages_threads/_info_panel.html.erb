@@ -268,7 +268,7 @@
             eventUrl: "<%= messages_thread.event_data[:event_url] %>",
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
             accountEmail: window.threadAccount.email,
-            calendarLoginUsername: decodeURI("<%= messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\')),
+            calendarLoginUsername: decodeURIComponent("<%= messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\')),
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",
