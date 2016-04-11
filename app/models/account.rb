@@ -198,7 +198,7 @@ class Account
   end
 
   def find_calendar_login_with_rule_data rule_data
-    computed_rules = self.calendar_logins.map{|calendar_login|
+    computed_rules = (self.calendar_logins || []).map{|calendar_login|
       {
           calendar_login: calendar_login,
           computed_rule: Account.compute_rule(calendar_login['rule'], rule_data)

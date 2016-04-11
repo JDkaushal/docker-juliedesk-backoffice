@@ -140,7 +140,7 @@
                 redrawDifferentTimezoneWarner();
             });
 
-            <% if messages_thread.calendar_login['type'] != "GoogleLogin" %>
+            <% if messages_thread.calendar_login && messages_thread.calendar_login['type'] != "GoogleLogin" %>
             $(".data input#private").prop('disabled', true);
             <% end %>
             $(".data textarea#notes").prop('disabled', true);

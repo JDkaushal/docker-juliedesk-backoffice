@@ -451,7 +451,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def calendar_login
-    if account
+    if account && account.calendar_logins.present
       # TODO Why not use self.account_email instead of self.client_email producing a 3 secondes request
       account.find_calendar_login_with_rule_data({
                                                      email_alias: self.client_email
