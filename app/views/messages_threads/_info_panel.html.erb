@@ -259,6 +259,9 @@
         var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
         $eventDoesNotExist.append($("<div>").html(localize(eventDoesNotExistAnymoreMessage)));
         $eventDoesNotExist.append($("<a href='/messages_threads/<%= messages_thread.id %>/remove_event_link'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
+
+
+
         window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
             timezoneId: window.threadComputedData.timezone,
             mode: "read_only",
@@ -267,7 +270,7 @@
             eventUrl: "<%= messages_thread.event_data[:event_url] %>",
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
             accountEmail: window.threadAccount.email,
-            calendarLoginUsername: "<%= messages_thread.event_data[:calendar_login_username] %>",
+            calendarLoginUsername: "<%= CGI.escape(messages_thread.event_data[:calendar_login_username]) %>".replace('%1B', '\\'),
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",

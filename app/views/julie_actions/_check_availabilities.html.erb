@@ -254,13 +254,13 @@
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
-                    window.currentCalendarLoginUsername = "<%= @messages_thread.event_data[:calendar_login_username] %>";
+                    window.currentCalendarLoginUsername = "<%= CGI.escape(@messages_thread.event_data[:calendar_login_username]) %>".replace('%1B', '\\');
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,
                         event_url: window.currentEventUrl,
                         calendar_id: window.currentCalendarId,
-                        calendar_login_username: window.currentCalendarLoginUsername,
+                        calendar_login_username: window.currentCalendarLoginUsername
                     }, function(v, k) {
                         requestParams[k] = v;
                     });
