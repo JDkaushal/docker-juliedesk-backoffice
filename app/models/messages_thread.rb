@@ -451,7 +451,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def calendar_login
-    if account && account.calendar_logins.present
+    if account && account.calendar_logins.present?
       # TODO Why not use self.account_email instead of self.client_email producing a 3 secondes request
       account.find_calendar_login_with_rule_data({
                                                      email_alias: self.client_email
@@ -519,6 +519,16 @@ class MessagesThread < ActiveRecord::Base
           event_from_invitation_organizer: nil
       }
     end
+
+    {
+        event_id: "AAMkAGM3YzRkYTM4LTE0OWItNDM5NC05M2QyLTU5ZjVkNjRmNmRmYgBGAAAAAAACnG8HJtaWR6bQ3NIVEYBvBwCNgJD4Ts5HRKLAimJzLopBAAAAodxAAACNgJD4Ts5HRKLAimJzLopBAAEyob9lAAA=",
+        event_url: "",
+        calendar_id: "AQMkAGM3YzRkYTM4LTE0OWItNDM5NC05M2QyLTU5ZjVkNjRmNmRmYgAuAAADApxvBybWlkem0NzSFRGAbwEAjYCQ+E7OR0SiwIpicy6KQQAAAaHcQAAAAA==",
+        appointment_nature: "appointment",
+        calendar_login_username: "primaryzipcar\ehermite",
+        event_from_invitation: false,
+        event_from_invitation_organizer: nil
+    }
   end
 
   def created_events_data
