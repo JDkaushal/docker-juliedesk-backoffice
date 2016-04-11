@@ -519,8 +519,6 @@ class MessagesThread < ActiveRecord::Base
           event_from_invitation_organizer: nil
       }
     end
-
-    
   end
 
   def created_events_data

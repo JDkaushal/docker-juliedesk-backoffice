@@ -38,9 +38,9 @@ class Account
   def self.create_from_email email, params={}
 
     cache = params[:accounts_cache]# || self.accounts_cache
-    return nil unless email
+    return nil unless email.present?
     data = get_account_details(email, {accounts_cache: cache})
-    return nil unless data
+    return nil unless data.present?
     account = self.new
     account.email = data['email']
     account.appointments = data['appointments']
