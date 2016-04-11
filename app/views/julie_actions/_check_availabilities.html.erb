@@ -254,7 +254,7 @@
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
-                    window.currentCalendarLoginUsername = "<%= CGI.escape(@messages_thread.event_data[:calendar_login_username]) %>".replace('%1B', '\\');
+                    window.currentCalendarLoginUsername = decodeURI("<%= @messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\'));
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,
