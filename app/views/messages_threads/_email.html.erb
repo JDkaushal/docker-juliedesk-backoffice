@@ -165,6 +165,7 @@
           </div>
         </div>
 
+        <% # WARNING: This is trusted as HTML Safe, there is a possible security breach here. %>
         <div class="body"><%== Message.format_email_body(message) %></div>
 
 

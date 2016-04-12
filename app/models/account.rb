@@ -229,7 +229,7 @@ class Account
 
   def self.migrate_account_email origin_email, target_email
     mts = MessagesThread.where(account_email: origin_email).includes(messages: :message_classifications)
-    other_mt_ids = MessageClassification.where("attendees LIKE '%#{origin_email}%'").includes(:message).map{|mc| mc.message.messages_thread_id}
+    other_mt_ids = MessageClassification.where("attendees LIKE ?", "%#{origin_email}%").includes(:message).map{|mc| mc.message.messages_thread_id}
     mts += MessagesThread.where(id: other_mt_ids)
 
     mts.each do |mt|

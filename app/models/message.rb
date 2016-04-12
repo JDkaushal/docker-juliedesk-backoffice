@@ -485,6 +485,7 @@ class Message < ActiveRecord::Base
     #     body.gsub!(Regexp.new("#{Regexp.quote(atts['entity_text'])}"), "<span class='juliedesk-entity #{entity_type}' #{attributes_without_entity_text}>#{atts['entity_text']}<span class='sprite-wrapper'><span class='sprite'></span></span></span>")
     #   end
     # end
+
     message.get_email_body
   end
 
