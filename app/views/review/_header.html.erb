@@ -3,7 +3,7 @@
       JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
   <% end %>
 
-  <% if params[:action] == "review" && !params[:no_next].present?%>
+  <% if params[:action] == "review"%>
       (<%= @to_review_count %>)
       <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :data %>
@@ -11,7 +11,7 @@
       <% end %>
   <% end %>
 
-  <% if params[:action] == "learn" %>
+  <% if params[:action] == "learn" && !params[:no_next].present? %>
       (<%= @to_learn_count %>)
       <%= form_tag({action: :learnt}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :operator_id, params[:operator_id] %>
