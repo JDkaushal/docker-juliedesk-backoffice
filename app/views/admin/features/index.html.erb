@@ -1,0 +1,27 @@
+<div class="col-md-8 col-md-offset-3">
+  <h1>Features</h1>
+
+  <br>
+  <%= link_to "New feature", new_admin_feature_path, class: "btn btn-success" %>
+  <br>
+  <br>
+  <br>
+
+
+  <table class="table table-striped">
+    <tr>
+      <th>Name</th>
+      <th>Created at</th>
+    </tr>
+    <% @features.each do |feature| %>
+        <tr>
+          <td>
+            <%= link_to feature.name, edit_admin_feature_path(feature) %>
+          </td>
+          <td>
+            <%= feature.created_at.strftime("%Y-%M-%d") %>
+          </td>
+        </tr>
+    <% end %>
+  </table>
+</div>

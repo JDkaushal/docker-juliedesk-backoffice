@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
 
   skip_before_action :verify_authenticity_token, only: :change_sound
 
+  include FeatureHelper
+
   def change_sound
     session[:sound_is_activated] = false
     if params[:activated] == "true"

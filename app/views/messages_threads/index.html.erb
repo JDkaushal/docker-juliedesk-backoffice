@@ -376,6 +376,8 @@
 
 
 
+
+
     <div class="messages-threads-page" ng-app="backofficeApp" ng-controller="MessagesThreadsListCtrl">
       <div class="wrong-clock" ng-show="showWrongClock">
         Your system time is not correct. Please fix it.<br>
@@ -395,6 +397,10 @@
             <div><%= I18n.t("index.nothing_to_do") %></div>
           </div>
       </div>
+
+      <% if feature_active? :test_feature, session[:operator_id], session[:privilege] %>
+          <div style="font-size: 30px; color: #f00;">I SEE THIS BECAUSE THE FEATURE test_feature is active for me.</div>
+      <% end %>
 
 
       <div ng-show="toProcessNowMessagesThreads().length > 0">

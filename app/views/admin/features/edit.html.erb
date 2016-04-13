@@ -1,0 +1,15 @@
+<div class="col-md-8 col-md-offset-3">
+<h1>Edit feature</h1>
+
+<%= link_to "Go back to index", admin_features_path %>
+
+<%= render partial: "form" %>
+<br>
+  <br>
+<%= button_to "Delete this feature", admin_feature_path(@feature), method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger" %>
+
+  <br>
+  <br>
+  <br>
+  <br>
+</div>

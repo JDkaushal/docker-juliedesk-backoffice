@@ -1,0 +1,93 @@
+<script>
+  $(function() {
+      $("input[type='checkbox'], #feature_active_mode").change(function() {
+          computeActiveData();
+      });
+      computeActiveData("from_data");
+  });
+
+    function computeActiveData(mode) {
+        var data = "";
+        if($("#feature_active_mode").val() == "<%= Feature::ACTIVE_MODE_SPECIFIC_OPERATOR_IDS %>") {
+            if(mode == "from_data") {
+                $.each(JSON.parse($("#feature_active_data").val()), function(k, operatorId) {
+                    $("input[type='checkbox'][name='operator_id'][value='" + operatorId + "']").prop("checked", true);
+                });
+            }
+            else {
+                data = JSON.stringify($("input[type='checkbox'][name='operator_id']:checked").map(function() {
+                    return $(this).val()
+                }).get());
+            }
+
+            $(".operators-selector").show();
+            $(".operators-privilege-selector").hide();
+        }
+        else if($("#feature_active_mode").val() == "<%= Feature::ACTIVE_MODE_SPECIFIC_OPERATOR_PRIVILEGES %>") {
+            if(mode == "from_data") {
+                $.each(JSON.parse($("#feature_active_data").val()), function(k, operatorPrivilege) {
+                    $("input[type='checkbox'][name='operator_privilege'][value='" + operatorPrivilege + "']").prop("checked", true);
+                });
+            }
+            else {
+                data = JSON.stringify($("input[type='checkbox'][name='operator_privilege']:checked").map(function () {
+                    return $(this).val()
+                }).get());
+            }
+            $(".operators-selector").hide();
+            $(".operators-privilege-selector").show();
+        }
+        else {
+            $(".operators-selector").hide();
+            $(".operators-privilege-selector").hide();
+        }
+        if(mode == "from_data") {
+
+        }
+        else {
+            $("#feature_active_data").val(data);
+        }
+    }
+</script>
+
+<%= form_for [:admin, @feature], class: "form" do |f| %>
+    <div class="form-group">
+      <%= f.label :name %>
+      <%= f.text_field :name, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :active_mode %>
+      <%= f.select(:active_mode, [
+                                       ["Not active", Feature::ACTIVE_MODE_NONE],
+                                       ["Active for specific operators", Feature::ACTIVE_MODE_SPECIFIC_OPERATOR_IDS],
+                                       ["Active for specific operator levels", Feature::ACTIVE_MODE_SPECIFIC_OPERATOR_PRIVILEGES],
+                                       ["Active for all", Feature::ACTIVE_MODE_ALL],
+                               ], {}, class: "form-control") %>
+
+      <div class="operators-selector" style="display:none;">
+        <h4>Please select applicable operators</h4>
+        <% Operator.where(enabled: true).each do |operator| %>
+            <div class="operator-line">
+              <input type="checkbox" value="<%= operator.id %>" name="operator_id"/> <%= operator.email %>
+            </div>
+        <% end %>
+      </div>
+
+      <div class="operators-privilege-selector" style="display:none;">
+        <h4>Please select applicable privileges</h4>
+        <% Operator.privilege_descriptions.each do |value, label| %>
+            <div class="operator-line">
+              <input type="checkbox" value="<%= value %>" name="operator_privilege"/> <%= label %>
+            </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%= f.hidden_field :active_data, class: "form-control" %>
+
+    <%= f.submit "Save", class: "btn btn-success" %>
+<% end %>

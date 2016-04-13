@@ -57,6 +57,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :features, only: [:new, :create, :edit, :update, :index, :destroy]
+
 
     get "parallel_run", controller: :parallel_run, action: :recap
     get "parallel_run/stats", controller: :parallel_run, action: :stats
