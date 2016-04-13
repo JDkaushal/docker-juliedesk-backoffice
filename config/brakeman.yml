@@ -1,0 +1,5 @@
+---
+:skip_files:
+- lib/staging_helpers/messages_threads_helper.rb
+- app/controllers/staging/events_controller.rb
+- app/controllers/staging/messages_threads_controller.rb

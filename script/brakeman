@@ -4,4 +4,4 @@
 # Brakeman is a security scanner https://github.com/presidentbeef/brakeman.
 
 gem install --no-rdoc --no-ri brakeman
-brakeman --exit-on-warn .
+brakeman --exit-on-warn -c config/brakeman.yml .
