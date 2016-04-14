@@ -640,6 +640,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         travelTimeIsWarning: ev.travelTimeIsWarning,
         travelTimeOriginalStartTime: travelTimeOriginalStartTime,
         travelTimeOriginalEndTime: travelTimeOriginalEndTime,
+        busy: ev.busy,
         start: sstartTime,
         end: sendTime,
         url: ev.htmlLink,
