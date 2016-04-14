@@ -116,6 +116,7 @@
                 $scope.currentPositionInText = undefined;
                 $scope.entityType = '';
                 $scope.value = '';
+                $scope.valueDetected = '';
                 $scope.attendees = [];
                 $scope.currentSelectedAttendee = undefined;
                 $scope.possibleAttributes = [];
@@ -249,8 +250,6 @@
                 };
 
                 $scope.saveCurrentSelectedAttendee = function() {
-                    $scope.trackSaveEvent();
-
                     if($scope.updateCurrentAttendeeAttribute()) {
                         $('.type').removeClass('highlighted');
                         $('.type[data-attribute-value="' + $scope.attributeToModify + '"]').addClass('highlighted');
@@ -258,6 +257,8 @@
                     editionPanelNode.removeClass('slide-to-right');
                     editionPanelNode.removeClass('slide-to-left');
                     $scope.$apply();
+
+                    $scope.trackSaveEvent();
                 };
 
                 $scope.setParametersExtractedFromEntity = function() {
@@ -367,8 +368,12 @@
                     if($scope.currentSelectedAttendee)
                         attendeeEmail = $scope.currentSelectedAttendee.email;
 
+                    console.log($scope.currentClickedEntityNode);
+
                     window.trackEvent("save_contact_recognition", {
                         distinct_id: trackingId,
+                        interpreted_text: $scope.currentClickedEntityNode.attr('value'),
+                        saved_text: $scope.value,
                         support_detected: $scope.currentDetectedSupport,
                         participant_detected: $scope.currentDetectedOwner,
                         support_saved: $scope.attributeToModify,

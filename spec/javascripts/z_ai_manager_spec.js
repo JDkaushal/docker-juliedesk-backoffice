@@ -1030,8 +1030,11 @@
                     var messagesThreadId = messagesContainerNode.data('messages-thread-id');
                     var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
 
-                    var node = $('<div class="email" data-message-id="messageId"><div class="juliedesk-entity phone validated" entity-id="1" value="1223455" new-value="newValue" owner="ownerEmail@email.com" new-owner="newOwnerEmail@email.com" attribute-to-modify="mobile" position-in-text="[10, 20]">1223455</div>');
-                    angular.element(document.body).append(node);
+                    var node = $('<div class="juliedesk-entity phone validated" entity-id="1" value="1223455" new-value="newValue" owner="ownerEmail@email.com" new-owner="newOwnerEmail@email.com" attribute-to-modify="mobile" position-in-text="[10, 20]">1223455</div>');
+                    var container = $('<div class="email" data-message-id="messageId"></div>');
+
+                    container.append(node);
+                    angular.element(document.body).append(container);
 
                     $scope.currentClickedEntityNode = node;
                     $scope.currentSelectedAttendee = {email: 'attendee@email.com'};
@@ -1047,6 +1050,8 @@
 
                     expect(window.trackEvent).toHaveBeenCalledWith("save_contact_recognition", {
                         distinct_id: trackingId,
+                        interpreted_text: '1223455',
+                        saved_text: 'value',
                         support_detected: 'phone',
                         participant_detected: 'owner@email.com',
                         support_saved: 'mobile',
