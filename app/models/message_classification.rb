@@ -17,6 +17,7 @@ class MessageClassification < ActiveRecord::Base
   UNKNOWN                  = "unknown"
   FORWARD_TO_SUPPORT       = "forward_to_support"
   INVITATION_ALREADY_SENT  = "invitation_already_sent"
+  UPDATE_EVENT             = "update_event"
 
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
@@ -138,7 +139,7 @@ class MessageClassification < ActiveRecord::Base
     elsif self.classification == MessageClassification::ASK_INFO
       create_julie_action action_nature: JulieAction::JD_ACTION_SEND_INFO
 
-    elsif self.classification == MessageClassification::GIVE_INFO
+    elsif self.classification == MessageClassification::GIVE_INFO || self.classification == MessageClassification::UPDATE_EVENT
       create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
 
     elsif self.classification == MessageClassification::GIVE_PREFERENCE

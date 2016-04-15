@@ -43,11 +43,11 @@
       }
 
       &:nth-child(4n+2), &:nth-child(4n+3) {
-        background: #fafafa !important;
+        background: #fafafa;
       }
 
       &.selected {
-        background: #0099cc !important;
+        background: #0099cc;
       }
 
     }
@@ -56,151 +56,6 @@
       left: -120px;
       width: 120px;
       border-right: 1px solid #eee;
-    }
-
-    tr:nth-child(2) td.selected {
-      background: #7FCAFF !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(2) td.selected.pre-selected {
-      background: #7FCAFF !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(2) td.pre-selected {
-      background: #7FCAFF !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(3) td.selected {
-      background: #A77FFF !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(3) td.selected.pre-selected {
-      background: #A77FFF !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(3) td.pre-selected {
-      background: #A77FFF !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(4) td.selected {
-      background: #7F97FF !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(4) td.selected.pre-selected {
-      background: #7F97FF !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(4) td.pre-selected {
-      background: #7F97FF !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(5) td.selected {
-      background: #E77FFF !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(5) td.selected.pre-selected {
-      background: #E77FFF !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(5) td.pre-selected {
-      background: #E77FFF !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(6) td.selected {
-      background: #FF7FB0 !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(6) td.selected.pre-selected {
-      background: #FF7FB0 !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(6) td.pre-selected {
-      background: #FF7FB0 !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(7) td.selected {
-      background: #FF9C7E !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(7) td.selected.pre-selected {
-      background: #FF9C7E !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(7) td.pre-selected {
-      background: #FF9C7E !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(8) td.selected {
-      background: #FFBD7E !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(8) td.selected.pre-selected {
-      background: #FFBD7E !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(8) td.pre-selected {
-      background: #FFBD7E !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(9) td.selected {
-      background: #FFD77E !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(9) td.selected.pre-selected {
-      background: #FFD77E !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(9) td.pre-selected {
-      background: #FFD77E !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(10) td.selected {
-      background: #FFF17E !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(10) td.selected.pre-selected {
-      background: #FFF17E !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(10) td.pre-selected {
-      background: #FFF17E !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(11) td.selected {
-      background: #F3FF7E !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(11) td.selected.pre-selected {
-      background: #F3FF7E !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(11) td.pre-selected {
-      background: #F3FF7E !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(12) td.selected {
-      background: #CAF562 !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(12) td.selected.pre-selected {
-      background: #CAF562 !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(12) td.pre-selected {
-      background: #CAF562 !important;
-      opacity: 0.5;
-    }
-    tr:nth-child(13) td.selected {
-      background: #62F5C8 !important;
-      opacity: 1 !important;
-    }
-    tr:nth-child(13) td.selected.pre-selected {
-      background: #62F5C8 !important;
-      opacity: 0.5 !important;
-    }
-    tr:nth-child(13) td.pre-selected {
-      background: #62F5C8 !important;
-      opacity: 0.5;
     }
 
     tr td.day-counts {

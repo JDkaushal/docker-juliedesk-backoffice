@@ -198,6 +198,7 @@ EventTile.prototype.redraw = function() {
     var rrule = "";
     var rstart = moment(eventTile.event.start);
     if(eventTile.recurringEvent) {
+        console.log(eventTile);
         eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
         if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(eventTile.recurringEvent.recurrence.join("\n"));
@@ -216,6 +217,7 @@ EventTile.prototype.redraw = function() {
         rrule: rrule,
         rstart: rstart,
         ruleChangedCallback: function(recurrenceForm) {
+            console.log(recurrenceForm);
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(recurrenceForm.rrule);
             eventTile.$selector.find(".recurrence-link-container .recurrence-text").html(recurrenceForm.getText());
         }

@@ -578,7 +578,7 @@ class MessagesThread < ActiveRecord::Base
       elsif s_status == EVENT_SCHEDULED
         {
             manage_scheduled_event: [
-                MessageClassification::GIVE_INFO,
+                MessageClassification::UPDATE_EVENT,
                 MessageClassification::ASK_INFO,
                 MessageClassification::ASK_CANCEL_APPOINTMENT,
                 MessageClassification::INVITATION_ALREADY_SENT

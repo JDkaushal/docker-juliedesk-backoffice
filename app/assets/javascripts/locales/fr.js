@@ -34,7 +34,7 @@ window.wordings['fr'] = {
             }
         },
         invitation_already_sent: {
-            noted: "Je prends note de l'invitation dans le calendrier de %{client} pour le %{date}."
+            noted: "Merci pour l'invitation.\nJe prends note que l'événement est bien dans le calendrier de %{client} à la date du %{date}."
         },
         suggest_dates: {
             ask_agreement: {
@@ -122,7 +122,12 @@ window.wordings['fr'] = {
             call_client_on: "Appeler %{client} au %{number_to_call}"
         },
         info_asked: "Voici l'information demandée :",
-        confirmation: "Très bien, c'est noté.",
+        confirmation: {
+            default: "Très bien, c'est noté.",
+            give_info: "Merci, cela est bien noté.",
+            give_preference: "Merci, vos préférences ont bien été mises à jour.",
+            update_event: "Merci, l'événement a bien été mis à jour."
+        },
         cancel: {
             attendees_noticed: "J'ai annulé %{appointment_nature} prévu %{date}.",
             attendees_not_noticed: "Désolée, mais suite à un contretemps, %{client} ne pourra malheureusement pas assurer %{appointment_nature} %{date}."

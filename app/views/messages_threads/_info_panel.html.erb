@@ -498,8 +498,8 @@
     }
 
     function setTitleToThreadSubject() {
-        var newTitle = '<%= @messages_thread.subject.gsub(/(re\s?:)|(fwd\s?:)|(fw\s?:)/i, '').strip %>';
-
+        // We are converting all html encoded characters back to their readable form + escaping any double quotes found in the title
+        var newTitle = "<%== CGI.unescapeHTML(@messages_thread.subject.gsub(/(re\s?:)|(fwd\s?:)|(fw\s?:)|(tr\s?:)/i, '').strip).gsub('"', "\\\"") %>";
         $("input#summary").val(newTitle);
         if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
             $('.event-tile-panel .title').val(newTitle);
@@ -870,10 +870,10 @@
         });
 
         if (address) {
-            $("input#location").val(address.address).attr('disabled', true);
+            $("input#location").val(address.address);
         }
         else {
-            $("input#location").val("").removeAttr('disabled');
+            $("input#location").val("");
         }
 
         setNotes();

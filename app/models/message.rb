@@ -33,7 +33,7 @@ class Message < ActiveRecord::Base
     contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
     attendee_emails = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' }.map{|a| a['email']}
 
-    all_client_emails = self.messages_thread.account.all_emails
+    all_client_emails = self.messages_thread.account.try(:all_emails) || []
     client_email = ((initial_to_emails + initial_cc_emails + attendee_emails) & all_client_emails).first || self.messages_thread.client_email
 
     possible_emails = (initial_to_emails +

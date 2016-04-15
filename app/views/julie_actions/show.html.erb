@@ -430,12 +430,16 @@
 
     window.processSignature = function(signature) {
         if(signature) {
-            signature = signature.replace("%USER_NAME%", window.threadAccount.full_name);
-            signature = signature.replace("%USER_EMAIL%", window.threadAccount.email);
-            if(window.threadAccount.is_pro) {
-                signature = signature.replace(/%REMOVE_IF_PRO%([\s\S]*)%REMOVE_IF_PRO%/m, "");
-            }
-            else {
+            if(window.threadAccount) {
+                signature = signature.replace("%USER_NAME%", window.threadAccount.full_name);
+                signature = signature.replace("%USER_EMAIL%", window.threadAccount.email);
+                if(window.threadAccount.is_pro) {
+                    signature = signature.replace(/%REMOVE_IF_PRO%([\s\S]*)%REMOVE_IF_PRO%/m, "");
+                }
+                else {
+                    signature = signature.replace(/%REMOVE_IF_PRO%/g, "");
+                }
+            } else {
                 signature = signature.replace(/%REMOVE_IF_PRO%/g, "");
             }
         }
@@ -453,11 +457,17 @@
             var recipientsTos = $('#recipients-to-input').tokenInput('get');
 
             if(recipientsTos.length == 1) {
-                var attendee = $('#attendeesCtrl').scope().getAttendeeByEmail(recipientsTos[0].name);
-                if(attendee && attendee.usageName)
-                    fullMessage += localize("email_templates.common.hello_named", {name: attendee.usageName});
-                else
+                var attendeesApp = $('#attendeesCtrl').scope();
+
+                if(attendeesApp) {
+                    var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+                    if(attendee && attendee.usageName)
+                        fullMessage += localize("email_templates.common.hello_named", {name: attendee.usageName});
+                    else
+                        fullMessage += localize("email_templates.common.hello_only");
+                } else {
                     fullMessage += localize("email_templates.common.hello_only");
+                }
             }
             else {
                 fullMessage += localize("email_templates.common.hello_all");

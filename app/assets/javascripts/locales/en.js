@@ -34,7 +34,7 @@ window.wordings['en'] = {
             }
         },
         invitation_already_sent: {
-            noted: "I take note of the invite in %{client}'s calendar for %{date}."
+            noted: "Thank you for the invite.\nI confirm you the event is in %{client}'s calendar for %{date}."
         },
         suggest_dates: {
             ask_agreement: {
@@ -121,7 +121,12 @@ window.wordings['en'] = {
             call_client_on: "Call %{client} at %{number_to_call}"
         },
         info_asked: "Here is the info you asked:",
-        confirmation: "Duly noted!",
+        confirmation: {
+            default: "Duly noted!",
+            give_info: "Thank you, I have made a note of that.",
+            give_preference: "Thank you, your preferences have been updated.",
+            update_event: "Thank you, the event was updated."
+        },
         cancel: {
             attendees_noticed: "I have cancelled %{appointment_nature} scheduled %{date}.",
             attendees_not_noticed: "Very sorry for the inconvenience, but something has come up and %{client} won't be able to make %{appointment_nature} with you %{date}.",

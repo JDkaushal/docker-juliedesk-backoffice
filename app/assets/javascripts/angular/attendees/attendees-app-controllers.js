@@ -661,7 +661,12 @@
         $scope.getAttendeesOnPresence = function(isPresent){
             return _.filter($scope.attendees, function(a) {
                 return a.isPresent == isPresent;
+            });
+        };
 
+        $scope.getAttendeesWithEmailOnPresence = function(isPresent){
+            return _.filter($scope.attendees, function(a) {
+                return a.email && a.isPresent == isPresent;
             });
         };
 

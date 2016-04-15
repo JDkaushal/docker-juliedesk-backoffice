@@ -3794,13 +3794,40 @@ window.testsData.templatesData = [
         }],
 
 
-    [{
-        action: "send_confirmation",
-        expectedResults: {
-            en: "Duly noted!",
-            fr: "Très bien, c'est noté."
+    [
+        {
+            action: "send_confirmation",
+            expectedResults: {
+                en: "Duly noted!",
+                fr: "Très bien, c'est noté."
+            }
+        },
+        {
+            action: "send_confirmation",
+            origin: 'give_info',
+            expectedResults: {
+                en: "Thank you, I have made a note of that.",
+                fr: "Merci, cela est bien noté."
+            }
+        },
+        {
+            action: "send_confirmation",
+            origin: 'give_preference',
+            expectedResults: {
+                en: "Thank you, your preferences have been updated.",
+                fr: "Merci, vos préférences ont bien été mises à jour."
+            }
+        },
+        {
+            action: "send_confirmation",
+            origin: 'update_event',
+            expectedResults: {
+                en: "Thank you, the event was updated.",
+                fr: "Merci, l'événement a bien été mis à jour."
+            }
         }
-    }],
+
+    ],
     [
         {
             action: "send_call_instructions",
@@ -4575,8 +4602,8 @@ window.testsData.templatesData = [
             invitation_start_date: "2016-03-31T13:00:00+02:00",
             timezoneId: "Europe/Paris",
             expectedResults: {
-                en: "I take note of the invite in Fname LName's calendar for Thursday 31 March 2016 at 1:00pm.",
-                fr: "Je prends note de l'invitation dans le calendrier de Fname LName pour le Jeudi 31 mars 2016 à 13h00."
+                en: "Thank you for the invite.\nI confirm you the event is in Fname LName's calendar for Thursday 31 March 2016 at 1:00pm.",
+                fr: "Merci pour l'invitation.\nJe prends note que l'événement est bien dans le calendrier de Fname LName à la date du Jeudi 31 mars 2016 à 13h00."
             }
         },
     ]

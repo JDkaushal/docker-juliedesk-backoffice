@@ -429,7 +429,6 @@
     });
 </script>
 
-
 <div ng-app="backofficeApp" ng-controller="OperatorsPresenceCtrl" class="operators-presence-container" data-start-date="<%= params[:start_date]%>">
   <h1>Operator presence times</h1>
 
@@ -462,7 +461,22 @@
           {{ displayHourHeader(hour) }}
         </th>
       </tr>
-      <tr ng-repeat="operator in operators track by $index">
+      <tr ng-repeat="operator in operators track by $index" class="operator-{{operator.id}}-{{weekday}}">
+        <style>
+            .operator-{{operator.id}}-{{weekday}} td.selected {
+                background: {{operator.color}} !important;
+                opacity: 1 !important;
+            }
+            .operator-{{operator.id}}-{{weekday}} td.selected.pre-selected {
+                background: {{operator.color}} !important;
+                opacity: 0.5 !important;
+            }
+            .operator-{{operator.id}}-{{weekday}} td.pre-selected {
+                background: {{operator.color}} !important;
+                opacity: 0.5;
+            }
+        </style>
+
         <td class="fixed">
           <span class="operator-name">{{ operator.stars }} {{ operator.name }} {{ operator.in_formation ? "(Form)" : ""}}</span>
           <span class="operator-working-hours">{{ operator.presences.length / 2.0 }}h</span>
@@ -477,7 +491,7 @@
         </td>
       </tr>
 
-      <tr ng-repeat="operator in levelTwo0perators() track by $index">
+      <tr ng-repeat="operator in levelTwo0perators() track by $index" class="operator-{{operator.id}}-{{weekday}}">
         <td class="fixed">
           <span class="operator-name">{{ operator.stars }} {{ operator.name }} (rv)</span>
           <span class="operator-working-hours">{{ operator.review_presences.length / 2.0 }}h</span>
@@ -487,7 +501,7 @@
             ng-mouseDown="initTogglePresences(operator, halfHour, $event)"
             ng-mouseUp="endTogglePresences(weekday, operator, halfHour, true, $event)"
             ng-class="(isOperatorPresent(operator, halfHour, true))?'selected':''"
-            id="{{weekday}}-{{operator.id}}-{{$index}}"
+            id="level2-{{weekday}}-{{operator.id}}-{{$index}}"
         >
         </td>
       </tr>

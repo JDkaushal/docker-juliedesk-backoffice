@@ -146,11 +146,19 @@
                     $scope.goToAttendeesListPanel();
                 });
 
+                // The e.preventDefault() below allow to ignore eventual <a></a> tags that could be wrapping the entity <span> tag
+                // causing to trigger the link when an operator click the entity
+                $('phone-skype-entities-manager').click(function(e) {
+                    e.preventDefault();
+                });
+
                 $('.juliedesk-entity.skype').click(function(e) {
+                    e.preventDefault();
                     $scope.displayFormAction('skype', $(e.currentTarget));
                 });
 
                 $('.juliedesk-entity.phone').click(function(e) {
+                    e.preventDefault();
                     $scope.displayFormAction('phone', $(e.currentTarget));
                 });
 
@@ -225,7 +233,12 @@
 
                     _.each(args.callNumbers, function(details, number) {
 
-                        existingNodes = $('.juliedesk-entity.phone[value="' + number + '"], .juliedesk-entity.skype[value="' + number + '"]');
+                        // ALlow to discard problems when a confcall is using complex instructions
+                        try{
+                            existingNodes = $('.juliedesk-entity.phone[value="' + number + '"], .juliedesk-entity.skype[value="' + number + '"]');
+                        }catch(e) {
+                            console.log(e);
+                        }
 
                         if(!!existingNodes) {
                             existingNodes.addClass('validated');
@@ -368,8 +381,6 @@
                     var attendeeEmail = null;
                     if($scope.currentSelectedAttendee)
                         attendeeEmail = $scope.currentSelectedAttendee.email;
-
-                    console.log($scope.currentClickedEntityNode);
 
                     window.trackEvent("save_contact_recognition", {
                         distinct_id: trackingId,

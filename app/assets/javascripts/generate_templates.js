@@ -205,7 +205,6 @@ window.generateEmailTemplate = function (params) {
                     if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
 
                     var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.suggest_dates.after_dates', params.assistedAttendees, params.unassistedAttendees);
-
                     message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesSpecificConf[0], attendeesSpecificConf[1]);
                 }
             }
@@ -459,7 +458,18 @@ window.generateEmailTemplate = function (params) {
         }
     }
     else if(params.action == "send_confirmation") {
-        message += localize("email_templates.confirmation");
+        var subMessage = '';
+        if(params.origin == "give_info") {
+            subMessage = localize("email_templates.confirmation.give_info");
+        } else if(params.origin == 'give_preference') {
+            subMessage = localize("email_templates.confirmation.give_preference");
+        } else if(params.origin == 'update_event') {
+            subMessage = localize("email_templates.confirmation.update_event");
+        } else {
+            subMessage = localize("email_templates.confirmation.default");
+        }
+
+        message += subMessage;
     }
     else if(params.action == "send_call_instructions") {
         var callInstructions = params.callInstructions;

@@ -7,7 +7,7 @@
 <div class="operator-stats-container">
 <h2><%= @operator.try(:name) || "All" %></h2>
 
-<%= link_to "Voir mes erreurs passées (#{@previous_errors_count})", my_errors_review_operators_path, class: 'previous-errors-link'%>
+<%= link_to "Voir mes erreurs passées (#{@previous_errors_count})", @errors_url, class: 'previous-errors-link'%>
 
   <br>
   <br>

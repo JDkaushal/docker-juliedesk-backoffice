@@ -8,7 +8,7 @@ window.classificationForms.createClassificationForm = function (params) {
     else if (params.classification == "ask_availabilities") {
         return new window.classificationForms.askAvailabilitiesForm(params);
     }
-    else if (params.classification == "give_info") {
+    else if (params.classification == "give_info" || params.classification == "update_event") {
         return new window.classificationForms.giveInfoForm(params);
     }
     else if (params.classification == "ask_cancel_appointment") {

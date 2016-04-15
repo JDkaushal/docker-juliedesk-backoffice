@@ -6,7 +6,8 @@ class JulieActionsController < ApplicationController
 
   def show
     @julie_action = JulieAction.find params[:id]
-    @message = @julie_action.message_classification.message
+    @message_classification = @julie_action.message_classification
+    @message = @message_classification.message
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)

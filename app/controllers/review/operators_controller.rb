@@ -8,6 +8,8 @@ class Review::OperatorsController < ReviewController
   def my_stats
     @operator = Operator.find session[:operator_id]
     @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).size
+
+    @errors_url = my_errors_review_operators_path
   end
 
   def my_errors
@@ -17,12 +19,24 @@ class Review::OperatorsController < ReviewController
     smart_listing_create(:operator_errors, operator_errors, partial: "review/operators/listings/errors", default_sort: {created_at: "desc"}, page_sizes: [50])
   end
 
+  def errors
+    @operator = Operator.find(params[:id])
+    operator_errors = OperatorActionsGroup.where(operator_id: @operator.id).where('review_notation < ?', 5)
+    @review_mode = true
+    smart_listing_create(:operator_errors, operator_errors, partial: "review/operators/listings/errors", default_sort: {created_at: "desc"}, page_sizes: [50])
+
+    render 'my_errors'
+  end
+
   def show
     if params[:id] == "all"
       @operator = nil
     else
       @operator = Operator.find params[:id]
+      @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).size
+      @errors_url = errors_review_operator_path(@operator)
     end
+
   end
 
   def index

@@ -80,6 +80,10 @@ Rails.application.routes.draw do
         get :my_errors
         get "messages_thread_ids_to_review", action: :messages_thread_ids_to_review
       end
+
+      member do
+        get :errors
+      end
     end
 
     resources :operators_presence, only: [:index] do

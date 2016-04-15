@@ -17,7 +17,9 @@
         $scope.init = function() {
             // Maybe define this function directly here
             initTokenInputs();
-            setDefaultRecipientsOther();
+
+            if(window.threadAccount)
+                setDefaultRecipientsOther();
 
             if(window.afterReplyBoxInitCallback){
                 window.afterReplyBoxInitCallback();
@@ -28,7 +30,13 @@
             $scope.clearRecipients();
 
             if (recipients == "only_client") {
-                $scope.tos.push(window.clientRecipient());
+                var client = window.clientRecipient();
+
+                if(client.name == '') {
+                    client = window.emailSender();
+                }
+
+                $scope.tos.push(client);
                 if(otherRecipients) {
                     _.each(otherRecipients, function(otherRecipient) {
                         $scope.ccs.push({name: otherRecipient});
@@ -60,6 +68,7 @@
         };
 
         $scope.sanitizeRecipients = function() {
+            // Ensure we have no emails duplicates in Tos and Ccs
             $scope.tos = _.uniq($scope.tos, function(r) {return r.name;});
             $scope.ccs = _.uniq($scope.ccs, function(r) {return r.name;});
 
@@ -110,14 +119,14 @@
 
         function setDefaultRecipientsAskOrVerifyAvailabilities() {
 
-            var attendees = $scope.attendeesApp.getAttendeesOnPresence(true);
+            var attendees = $scope.attendeesApp.getAttendeesWithEmailOnPresence(true);
             var partitionnedAttendeesWithThreadOwner = _.partition(attendees, function(a) {
                 return a.isThreadOwner;
             });
 
             var threadOwner = partitionnedAttendeesWithThreadOwner[0][0];
-            var attendeesWIthoutThreadOwner = partitionnedAttendeesWithThreadOwner[1];
-            var partitionnedAttendees = _.partition(attendeesWIthoutThreadOwner, function(a) {
+            var attendeesWithoutThreadOwner = partitionnedAttendeesWithThreadOwner[1];
+            var partitionnedAttendees = _.partition(attendeesWithoutThreadOwner, function(a) {
                return a.isClient;
             });
 
@@ -256,9 +265,14 @@
 
             $scope.attendeesApp = $scope.attendeesApp || angular.element($('#attendeesCtrl')).scope();
 
-            $scope.attendeesApp.$on('attendeesFetched', function(attendees) {
+            if(!!$scope.attendeesApp) {
+                $scope.attendeesApp.$on('attendeesFetched', function(attendees) {
+                    $scope.init();
+                });
+            } else {
                 $scope.init();
-            });
+            }
+
 
         });
     }]);

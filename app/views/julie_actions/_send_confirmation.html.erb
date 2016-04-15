@@ -15,6 +15,7 @@
 
         window.setReplyMessage(messageBuilder.generateReply({
             action: "send_confirmation",
+            origin: '<%= @message_classification.classification %>',
             locale: window.threadComputedData.locale
         }), "all");
     };

@@ -227,7 +227,7 @@ fr:
         classifications:
             ask_info:
               action: "Donner une info"
-            give_info:
+            update_event:
               action: "Mettre à jour l'évènement"
             ask_cancel_appointment:
               action: "Annuler le rendez-vous"
