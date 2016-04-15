@@ -223,7 +223,134 @@ describe WeeklyRecapHelper do
       end
     end
 
+    describe "scheduled not main account" do
+      before do
+        @scheduled_correct_mt = FactoryGirl.create(:messages_thread, {
+                                                                       account_email: "nicolas2@juliedesk.com",
+                                                                       messages: [
+                                                                           FactoryGirl.create(:message, {
+                                                                                                          received_at: "2016-01-10",
+                                                                                                          message_classifications: [
+                                                                                                              FactoryGirl.create(:message_classification, {
+                                                                                                                                                            classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                                                                                                                                                            created_at: "2016-01-10",
+                                                                                                                                                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT,
+                                                                                                                                                            julie_action: FactoryGirl.create(:julie_action, {
+                                                                                                                                                                                                              done: true
+                                                                                                                                                                                                          })
+                                                                                                                                                        })
+                                                                                                          ]
+                                                                                                      }),
+                                                                           FactoryGirl.create(:message, {
+                                                                                                          received_at: "2016-02-03",
+                                                                                                          message_classifications: [
+                                                                                                              FactoryGirl.create(:message_classification, {
+                                                                                                                                                            classification: MessageClassification::ASK_AVAILABILITIES,
+                                                                                                                                                            created_at: "2016-02-03",
+                                                                                                                                                            summary: "Skype scheduled on 2016-02-03",
+                                                                                                                                                            appointment_nature: "Skype",
+                                                                                                                                                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULED,
+                                                                                                                                                            attendees: [
+                                                                                                                                                                {
+                                                                                                                                                                    'email' => "nmarlier@gmail.com",
+                                                                                                                                                                    'account_email' => "nicolas@juliedesk.com",
+                                                                                                                                                                    'isPresent' => 'true',
+                                                                                                                                                                    'firstName' => "Nico",
+                                                                                                                                                                    'lastName' => "M",
+                                                                                                                                                                    'company' => "JD"
+                                                                                                                                                                }
+                                                                                                                                                            ].to_json,
+                                                                                                                                                            julie_action: FactoryGirl.create(:julie_action, {
+                                                                                                                                                                                                              done: true,
+                                                                                                                                                                                                              event_id: "event_id_1",
+                                                                                                                                                                                                              calendar_id: "calendar_id_1",
+                                                                                                                                                                                                              event_url: "event_url_1",
+                                                                                                                                                                                                              calendar_login_username: "calendar_login_username_1",
+                                                                                                                                                                                                          })
+                                                                                                                                                        })
+                                                                                                          ]
+                                                                                                      })
+                                                                       ]
+                                                                   })
 
+        scheduled_incorrect_mt = FactoryGirl.create(:messages_thread, {
+                                                                       account_email: "nicolas2@juliedesk.com",
+                                                                       messages: [
+                                                                           FactoryGirl.create(:message, {
+                                                                                                          received_at: "2016-01-10",
+                                                                                                          message_classifications: [
+                                                                                                              FactoryGirl.create(:message_classification, {
+                                                                                                                                                            classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                                                                                                                                                            created_at: "2016-01-10",
+                                                                                                                                                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT,
+                                                                                                                                                            julie_action: FactoryGirl.create(:julie_action, {
+                                                                                                                                                                                                              done: true
+                                                                                                                                                                                                          })
+                                                                                                                                                        })
+                                                                                                          ]
+                                                                                                      }),
+                                                                           FactoryGirl.create(:message, {
+                                                                                                          received_at: "2016-02-03",
+                                                                                                          message_classifications: [
+                                                                                                              FactoryGirl.create(:message_classification, {
+                                                                                                                                                            classification: MessageClassification::ASK_AVAILABILITIES,
+                                                                                                                                                            created_at: "2016-02-03",
+                                                                                                                                                            summary: "Skype scheduled on 2016-02-03 bis",
+                                                                                                                                                            appointment_nature: "Skype",
+                                                                                                                                                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULED,
+                                                                                                                                                            attendees: [
+                                                                                                                                                                {
+                                                                                                                                                                    'email' => "nmarlier@gmail.com",
+                                                                                                                                                                    'account_email' => "nicolas2@juliedesk.com",
+                                                                                                                                                                    'isPresent' => 'true',
+                                                                                                                                                                    'firstName' => "Nico",
+                                                                                                                                                                    'lastName' => "M",
+                                                                                                                                                                    'company' => "JD"
+                                                                                                                                                                }
+                                                                                                                                                            ].to_json,
+                                                                                                                                                            julie_action: FactoryGirl.create(:julie_action, {
+                                                                                                                                                                                                              done: true,
+                                                                                                                                                                                                              event_id: "event_id_1",
+                                                                                                                                                                                                              calendar_id: "calendar_id_1",
+                                                                                                                                                                                                              event_url: "event_url_1",
+                                                                                                                                                                                                              calendar_login_username: "calendar_login_username_1",
+                                                                                                                                                                                                          })
+                                                                                                                                                        })
+                                                                                                          ]
+                                                                                                      })
+                                                                       ]
+                                                                   })
+
+      end
+      it "should behave correctly" do
+        data = WeeklyRecapHelper.get_weekly_recap_data({
+                                                           account_email: "nicolas@juliedesk.com",
+                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                       })
+
+        expect(data).to eq([
+                               {
+                                   :status => "scheduled",
+                                   :subject => "Skype scheduled on 2016-02-03",
+                                   :other =>
+                                       {
+                                           :id => @scheduled_correct_mt.id,
+                                           :event =>
+                                               {
+                                                   :event_id => "event_id_1",
+                                                   :event_url => "event_url_1",
+                                                   :calendar_id => "calendar_id_1",
+                                                   :appointment_nature => "Skype",
+                                                   :calendar_login_username => "calendar_login_username_1",
+                                                   :event_from_invitation => false,
+                                                   :event_from_invitation_organizer => nil
+                                               },
+                                           :last_message_received_at => "2016-02-03 00:00:00 UTC"
+                                       }
+                               }
+                           ])
+      end
+    end
 
     describe "events_creation" do
       before do

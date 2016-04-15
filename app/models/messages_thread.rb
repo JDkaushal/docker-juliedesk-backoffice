@@ -673,20 +673,6 @@ class MessagesThread < ActiveRecord::Base
     self.locked_by_operator.try(:name)
   end
 
-  def self.were_statused_as params
-    raise "Missing param start_date" unless params[:start_date]
-    raise "Missing param thread_status" unless params[:thread_status]
-    raise "Missing param account_email" unless params[:account_email]
-
-
-    MessagesThread.
-        joins(messages: :message_classifications).
-        where(messages_threads: {account_email: params[:account_email]}).
-        where(message_classifications: {thread_status: params[:thread_status]}).
-        where("message_classifications.created_at >= ?", params[:start_date]).
-        distinct
-  end
-
   def self.get_locks_statuses_hash
     MessagesThread.where("locked_by_operator_id IS NOT NULL").map{|mt|
       {

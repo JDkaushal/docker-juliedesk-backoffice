@@ -8,13 +8,21 @@ module WeeklyRecapHelper
   #   dont_check_status_has_changed_this_week: if true,...
   #   dont_check_attendees_present: if true,...
   def self.get_messages_threads params
-    MessagesThread.were_statused_as({
-                                        start_date: params[:start_of_week],
-                                        account_email: params[:account_email],
-                                        thread_status: params[:thread_statuses]
-                                    }).
-        includes(messages: {message_classifications: :julie_action}).
-        select { |mt|
+    messages_threads = MessagesThread.
+        joins(messages: :message_classifications).
+        where("messages_threads.account_email = ? OR message_classifications.attendees LIKE ?", params[:account_email], "%#{params[:account_email]}%").
+        #where(messages_threads: {account_email: params[:account_email]}).
+        where(message_classifications: {thread_status: params[:thread_statuses]}).
+        where("message_classifications.created_at >= ?", params[:start_of_week]).
+        distinct.
+        includes(messages: {message_classifications: :julie_action})
+
+    messages_threads = messages_threads.select { |mt|
+      mt.account_email == params[:account_email] ||
+          mt.computed_data_only_attendees[:attendees].find{|att| att['account_email'] == params[:account_email]}
+    }
+
+    messages_threads.select { |mt|
       status_before_this_week = mt.messages.map(&:message_classifications).flatten.select { |mc| mc.created_at < params[:start_of_week] }.sort_by(&:created_at).map(&:thread_status).last
       params[:thread_statuses].include?(mt.current_status) &&
           (status_before_this_week.nil? || status_before_this_week != mt.current_status || params[:dont_check_status_has_changed_this_week]) &&
@@ -29,11 +37,11 @@ module WeeklyRecapHelper
   end
 
   # Returns the attendees in format {name: STRING, company: STRING}
-  # Ignores thread owner, set company to empty string if in the same company as thread owner.
-  def self.build_attendees_array mt
-    mt.computed_data_light[:attendees].select { |att| att['isThreadOwner'] != "true" && att['isPresent'] == "true" }.map { |att|
+  # Ignores the attendee which is account_email, set company to empty string if in the same company as account_email one's.
+  def self.build_attendees_array mt, account_email
+    mt.computed_data_light[:attendees].select { |att| att['account_email'] != account_email && att['isPresent'] == "true" }.map { |att|
       company = att['company']
-      if company == mt.computed_data_light[:attendees].select { |att| att['isThreadOwner'] == "true" }.first.try(:[], "company")
+      if company == mt.computed_data_light[:attendees].select { |att| att['account_email'] == account_email }.first.try(:[], "company")
         company = ""
       end
       {
@@ -155,7 +163,7 @@ module WeeklyRecapHelper
               }.length,
               suggestions_count: mt.computed_data_light[:date_times].length,
               appointment_nature: mt.computed_data_light[:appointment_nature],
-              attendees: self.build_attendees_array(mt),
+              attendees: self.build_attendees_array(mt, params[:account_email]),
               last_message_received_at: self.build_last_message_received_at(mt)
           }
       }
@@ -167,7 +175,7 @@ module WeeklyRecapHelper
               id: mt.id,
               last_message_received_at: self.build_last_message_received_at(mt),
               appointment_nature: mt.computed_data_light[:appointment_nature],
-              attendees: self.build_attendees_array(mt)
+              attendees: self.build_attendees_array(mt, params[:account_email])
           }
       }
     }
