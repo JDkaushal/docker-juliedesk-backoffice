@@ -19,7 +19,7 @@ module WeeklyRecapHelper
 
     messages_threads = messages_threads.select { |mt|
       mt.account_email == params[:account_email] ||
-          mt.computed_data_only_attendees[:attendees].find{|att| att['account_email'] == params[:account_email]}
+          mt.computed_data_only_attendees[:attendees].find{|att| att['account_email'] == params[:account_email] && att['isPresent'] == "true"}
     }
 
     messages_threads.select { |mt|
