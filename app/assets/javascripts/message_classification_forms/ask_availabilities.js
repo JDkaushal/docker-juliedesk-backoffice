@@ -148,10 +148,10 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitDetectedDates =
 window.classificationForms.askAvailabilitiesForm.prototype.processDateDetection = function() {
     var askAvailabilitiesForm = this;
     var addedDates = [];
-    //if(detectedDates.length == 0) {
-    //    runDateDetection($(".email.highlighted .body")[0]);
-    //}
+    var mainAiInterpretation = window.messageInterpretations[0];
+
     $(".detected-dates").html("");
+
     var timeEntities = $('.email.highlighted .body .juliedesk-entity.time');
 
     detectedDates = _.each(timeEntities, function(node) {
@@ -168,17 +168,31 @@ window.classificationForms.askAvailabilitiesForm.prototype.processDateDetection 
         addedDates.push(date);
     });
 
-    //
-    //_.each(detectedDates, function(detectedDate) {
-    //    _.each(detectedDate.results, function(result) {
-    //        if(result.start.hour) {
-    //            askAvailabilitiesForm.appendDetectedDateRow({
-    //                text: result.text,
-    //                startDate: moment(result.startDate)
-    //            });
-    //        }
-    //    });
-    //});
+    if(mainAiInterpretation && mainAiInterpretation.raw_response) {
+        var datesToCheck = JSON.parse(mainAiInterpretation.raw_response).dates_to_check;
+
+        if(datesToCheck.length > 0) {
+            var suggestedTimesNodes = $('.already-suggested-date');
+            var currentNodeDate;
+            var current$Node;
+            datesToCheck = _.map(datesToCheck, function(date) {
+               return moment(date);
+            });
+
+            _.each(suggestedTimesNodes, function(node) {
+                current$Node = $(node);
+                currentNodeDate = moment(current$Node.data('date'));
+                _.every(datesToCheck, function(date) {
+                    if(currentNodeDate.isSame(date)) {
+                        // We trigger the change event to undisable the "Oui" button in the suggestion date pannel
+                        current$Node.find('input[type="checkbox"]').prop('checked', true).trigger('change');
+                        return false;
+                    }
+                    return true;
+                });
+            });
+        }
+    }
 };
 
 window.classificationForms.askAvailabilitiesForm.prototype.removeSuggestedDatesToHeader = function() {

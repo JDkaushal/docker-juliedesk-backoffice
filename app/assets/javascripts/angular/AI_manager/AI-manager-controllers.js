@@ -112,6 +112,7 @@
 
                 $scope.currentDetectedOwner = undefined;
                 $scope.currentDetectedNewOwner = undefined;
+                $scope.currentDetectedSupportType = undefined;
                 $scope.currentDetectedSupport = undefined;
                 $scope.currentPositionInText = undefined;
                 $scope.entityType = '';
@@ -167,7 +168,7 @@
                 $scope.displayFormAction = function(entity_type, currentTargetNode) {
 
                     $scope.attendees = attendeesService.getAttendeesWithoutClients();
-                    $scope.currentDetectedSupport = entity_type;
+                    $scope.currentDetectedSupportType = entity_type;
                     $scope.currentClickedEntityNode = currentTargetNode;
                     $scope.currentSelectedAttendee = undefined;
                     $scope.displayForm = true;
@@ -265,6 +266,7 @@
                     $scope.currentDetectedOwner = $scope.currentClickedEntityNode.attr('owner');
                     $scope.attributeToModify = $scope.currentClickedEntityNode.attr('attribute-to-modify');
                     $scope.currentDetectedNewOwner = $scope.currentClickedEntityNode.attr('new-owner');
+                    $scope.currentDetectedSupport = $scope.currentClickedEntityNode.attr('type');
                     $scope.value = $scope.currentClickedEntityNode.attr('new-value') || $scope.currentClickedEntityNode.attr('value');
 
                     if(!!$scope.currentClickedEntityNode.attr('position-in-text'))
@@ -307,7 +309,7 @@
                 };
 
                 $scope.determinePossibleAttributes = function() {
-                    switch($scope.currentDetectedSupport) {
+                    switch($scope.currentDetectedSupportType) {
                         case 'phone':
                             $scope.possibleAttributes = [
                                 {name: 'Mobile', value: 'mobile'},
@@ -360,7 +362,6 @@
                         message_id: $scope.currentClickedEntityNode.closest('.email').data('message-id'),
                         thread_id: messagesThreadId
                     });
-
                 };
 
                 $scope.trackSaveEvent = function() {

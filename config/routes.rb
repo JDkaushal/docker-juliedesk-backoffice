@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   resources :client_contacts, param: :client_email, only: [] do
     collection do
       post :synchronize
+      post :ai_get_company_name
+
+      get :ai_parse_contact_civilities
       get :fetch
       get :emails_suggestions
       get :fetch_one

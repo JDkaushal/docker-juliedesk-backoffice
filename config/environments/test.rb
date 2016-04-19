@@ -36,4 +36,8 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  ENV['CONSCIENCE_API_BASE_PATH_V1'] = 'test_ai_conscience_path_v1'
+  ENV['CONSCIENCE_API_BASE_PATH_V2'] = 'test_ai_conscience_path_v2'
+  ENV['CONSCIENCE_API_KEY'] = 'conscience_api_key'
 end

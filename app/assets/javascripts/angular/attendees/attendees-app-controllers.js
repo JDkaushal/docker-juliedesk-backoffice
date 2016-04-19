@@ -430,6 +430,55 @@
                 a.firstName = a.usageName;
 
             $scope.attendees.push(a);
+
+            //We ask the AI only when we are classifying an email and if the attendee is not a client
+            if(window.isClassifying && !a.isClient) {
+
+                // If he has no lastName it means it is the first time this contact is processed. So we ask the AI to
+                // give us the civilities
+                if(!a.lastName) {
+                    var fullName = a.firstName.replace("'", "");
+                    $http({
+                        url: '/client_contacts/ai_parse_contact_civilities?fullname=' + fullName,
+                        method: "GET"
+                    }).then(function success(response) {
+                        console.log(response);
+                        if(response.data.status == "success") {
+                            a.firstName = response.data.first_name;
+                            a.lastName = response.data.last_name;
+                            switch(response.data.gender) {
+                                case 'male':
+                                    a.gender = 'M';
+                                    break;
+                                case 'female':
+                                    a.gender = 'F';
+                                    break;
+                                case 'unknown':
+                                    a.gender = '?';
+                                    break;
+                            }
+                        }
+                    }, function error(response) {
+                        console.log(response);
+                    })
+                }
+
+                // If we have no company for this contact, we will ask the AI to find it if possible
+                if(!a.company) {
+                    $http({
+                        url: '/client_contacts/ai_get_company_name',
+                        method: "POST",
+                        params: { contact_address: a.email, message_text: window.messageText }
+                    }).then(function success(response) {
+                        console.log(response);
+                        if(response.data.identification != "fail") {
+                            a.company = response.data.company;
+                        }
+                    }, function error(response) {
+                        console.log(response);
+                    })
+                }
+            }
         };
 
         this.fetchAttendeeFromClientContactNetwork = function(){

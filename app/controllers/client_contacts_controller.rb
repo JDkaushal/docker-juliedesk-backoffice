@@ -233,4 +233,25 @@ class ClientContactsController < ApplicationController
 
     render json: response
   end
+
+  def ai_parse_contact_civilities
+    render json: AiProxy.new.build_request(:parse_human_civilities, { fullname: params[:fullname]})
+  end
+
+  def ai_get_company_name
+    domain = params[:contact_address].split('@')[1].gsub('@', '')
+    record = CompanyDomainAssociation.find_by(domain: domain)
+
+    if record.present?
+      result = {identification: 'backoffice_database', company: record.company_name}
+
+    else
+      result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
+      if result['identification'] != 'fail'
+        CompanyDomainAssociation.create(domain: domain, company_name: result['company'])
+      end
+    end
+
+    render json: result
+  end
 end

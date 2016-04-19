@@ -482,8 +482,8 @@
 
                 angular.element(document.body).append(template);
 
-                angular.element(document.body).append('<div class="juliedesk-entity skype">skypeidss</div>');
-                angular.element(document.body).append('<div class="juliedesk-entity phone">9998888777</div>');
+                angular.element(document.body).append('<div class="juliedesk-entity skype" type="skype">skypeidss</div>');
+                angular.element(document.body).append('<div class="juliedesk-entity phone" type="landline">9998888777</div>');
 
                 $scope.$digest();
             }));
@@ -602,7 +602,8 @@
                     $scope.displayFormAction('phone', node);
 
                     expect($scope.attendees).toEqual([{guid: 1}, {guid: 2}]);
-                    expect($scope.currentDetectedSupport).toEqual('phone');
+                    expect($scope.currentDetectedSupport).toEqual('landline');
+                    expect($scope.currentDetectedSupportType).toEqual('phone');
                     expect($scope.currentClickedEntityNode).toEqual(node);
                     expect($scope.currentSelectedAttendee).toBe(undefined);
                     expect($scope.displayForm).toBe(true);
@@ -894,8 +895,8 @@
 
                 describe('Detected support is a Phone', function() {
 
-                    it('should return set the right attributes list in the right scope variable', function() {
-                        $scope.currentDetectedSupport = 'phone';
+                    it('should set the right attributes list in the right scope variable', function() {
+                        $scope.currentDetectedSupportType = 'phone';
 
                         $scope.determinePossibleAttributes();
 
@@ -911,8 +912,8 @@
 
                 describe('Detected support is a Skype', function() {
 
-                    it('should return set the right attributes list in the right scope variable', function() {
-                        $scope.currentDetectedSupport = 'skype';
+                    it('should set the right attributes list in the right scope variable', function() {
+                        $scope.currentDetectedSupportType = 'skype';
 
                         $scope.determinePossibleAttributes();
 
@@ -1003,7 +1004,7 @@
 
                     $scope.currentClickedEntityNode = node;
                     $scope.value = 'value';
-                    $scope.currentDetectedSupport = 'phone';
+                    $scope.currentDetectedSupport = 'landline';
                     $scope.currentDetectedOwner = 'owner@email.com';
                     $scope.currentPositionInText = [1, 2];
 
@@ -1014,7 +1015,7 @@
                     expect(window.trackEvent).toHaveBeenCalledWith("click_on_contact_recognition", {
                         distinct_id: trackingId,
                         interpreted_text: 'value',
-                        support_detected: 'phone',
+                        support_detected: 'landline',
                         participant_detected: 'owner@email.com',
                         index_in_text: [1, 2],
                         message_id: 'messageId',
@@ -1039,7 +1040,7 @@
                     $scope.currentClickedEntityNode = node;
                     $scope.currentSelectedAttendee = {email: 'attendee@email.com'};
                     $scope.value = 'value';
-                    $scope.currentDetectedSupport = 'phone';
+                    $scope.currentDetectedSupport = 'landline';
                     $scope.currentDetectedOwner = 'owner@email.com';
                     $scope.attributeToModify = 'mobile';
                     $scope.currentPositionInText = [1, 2];
@@ -1052,7 +1053,7 @@
                         distinct_id: trackingId,
                         interpreted_text: '1223455',
                         saved_text: 'value',
-                        support_detected: 'phone',
+                        support_detected: 'landline',
                         participant_detected: 'owner@email.com',
                         support_saved: 'mobile',
                         participant_saved: 'attendee@email.com',
