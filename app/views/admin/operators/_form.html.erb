@@ -19,6 +19,7 @@
           <%= text_field_tag("operator[password]", "", class: "form-control") %>
         </div>
     <% end %>
+
     <div class="form-group">
 
       <%= f.label :privilege %>
@@ -28,6 +29,14 @@
                                      ["Operator support", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2],
                                      ["Admin", Operator::PRIVILEGE_ADMIN]
                              ], {}, class: "form-control") %>
+    </div>
+
+    <div class="form-group">
+
+      <%= f.label :in_formation %>
+      <div class="form-control">
+        <%= f.check_box :in_formation %> is in formation
+      </div>
     </div>
 
     <div class="form-group">

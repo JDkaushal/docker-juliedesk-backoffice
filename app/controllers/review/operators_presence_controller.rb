@@ -24,6 +24,7 @@ class Review::OperatorsPresenceController < ReviewController
                       id: o.id,
                       stars: o.stars,
                       privilege: o.privilege,
+                      in_formation: o.in_formation,
                       presences: presences.where(is_review: false).map{|op| op.date.strftime("%Y%m%dT%H%M00")},
                       review_presences: presences.where(is_review: true).map{|op| op.date.strftime("%Y%m%dT%H%M00")}
                   }

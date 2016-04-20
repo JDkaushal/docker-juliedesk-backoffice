@@ -13,6 +13,7 @@
       <th>Email</th>
       <th>Name</th>
       <th>Privilege</th>
+      <th>In formation</th>
     </tr>
 
     <% active_operators.sort_by { |o| -o.level }.each do |operator| %>
@@ -20,6 +21,7 @@
           <td><%= link_to operator.email, edit_admin_operator_path(operator) %></td>
           <td><%= operator.name %></td>
           <td><%= Operator.privilege_descriptions[operator.privilege] %></td>
+          <td><%= operator.in_formation ? "In formation" : "" %></td>
         </tr>
     <% end %>
   </table>
@@ -31,6 +33,7 @@
       <th>Email</th>
       <th>Name</th>
       <th>Privilege</th>
+      <th>In formation</th>
     </tr>
 
     <% active_admins.sort_by { |o| [!o.active].to_json }.each do |operator| %>
@@ -38,6 +41,7 @@
           <td><%= link_to operator.email, edit_admin_operator_path(operator) %></td>
           <td><%= operator.name %></td>
           <td><%= Operator.privilege_descriptions[operator.privilege] %></td>
+          <td><%= operator.in_formation ? "In formation" : "" %></td>
         </tr>
     <% end %>
   </table>
