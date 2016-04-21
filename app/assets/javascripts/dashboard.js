@@ -22,3 +22,4 @@
 //= require jquery.cookie
 
 //= require tracking
+//= require features_helper

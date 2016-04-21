@@ -1,0 +1,5 @@
+<div id="active-features" style="display:none">
+  <% Feature.active_for_operator(session[:operator_id], session[:privilege]).each do |feature| %>
+      <div id="feature-<%= feature.name %>"></div>
+  <% end %>
+</div>

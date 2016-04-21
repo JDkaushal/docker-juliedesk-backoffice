@@ -1059,9 +1059,23 @@ EventTile.prototype.initActions = function() {
 
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
-            // Change this to enable recurrence features:
             var calendarLoginTypeActivatedForRecurrence =  ["GoogleLogin"];
-            //var calendarLoginTypeActivatedForRecurrence =  ["GoogleLogin", "IcloudLogin", "CaldavLogin", "ExchangeLogin", "EwsLogin", 'ActivesyncLogin'];
+
+            if(window.featuresHelper.isFeatureActive("recurrence_ews")) {
+                calendarLoginTypeActivatedForRecurrence.push("EwsLogin");
+            }
+            if(window.featuresHelper.isFeatureActive("recurrence_exchange")) {
+                calendarLoginTypeActivatedForRecurrence.push("ExchangeLogin");
+            }
+            if(window.featuresHelper.isFeatureActive("recurrence_icloud")) {
+                calendarLoginTypeActivatedForRecurrence.push("IcloudLogin");
+            }
+            if(window.featuresHelper.isFeatureActive("recurrence_caldav")) {
+                calendarLoginTypeActivatedForRecurrence.push("CaldavLogin");
+            }
+            if(window.featuresHelper.isFeatureActive("recurrence_activesync")) {
+                calendarLoginTypeActivatedForRecurrence.push("ActivesyncLogin");
+            }
 
             if(calendarLoginTypeActivatedForRecurrence.indexOf(eventTile.event.calendar_login_type) == -1 ) {
                 alert("Recurring events are not supported for this account. Please send to admin.")

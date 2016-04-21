@@ -25,6 +25,8 @@
 
 //= require helpers
 
+//= require features_helper
+
 //= require_tree ./templates
 
 //= require jquery.elastic.source

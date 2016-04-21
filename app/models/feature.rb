@@ -18,4 +18,10 @@ class Feature < ActiveRecord::Base
     end
 
   end
+
+  def self.active_for_operator operator_id, operator_privilege
+    self.where(active_mode: [ACTIVE_MODE_ALL, ACTIVE_MODE_SPECIFIC_OPERATOR_IDS, ACTIVE_MODE_SPECIFIC_OPERATOR_PRIVILEGES]).select{|feature|
+      feature.active_for_operator? operator_id, operator_privilege
+    }
+  end
 end
