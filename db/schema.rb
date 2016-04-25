@@ -46,6 +46,15 @@ ActiveRecord::Schema.define(version: 20160420124816) do
 
   add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree
 
+  create_table "company_domain_associations", force: true do |t|
+    t.string   "company_name"
+    t.string   "domain"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "company_domain_associations", ["company_name", "domain"], name: "index_company_domain_associations_on_company_name_and_domain", unique: true, using: :btree
+
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
     t.integer  "attempts",   default: 0, null: false
@@ -253,6 +262,20 @@ ActiveRecord::Schema.define(version: 20160420124816) do
     t.string   "color",                 default: "#ffffff"
     t.boolean  "planning_access",       default: false
     t.boolean  "in_formation",          default: false
+  end
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
