@@ -437,12 +437,11 @@
                 // If he has no lastName it means it is the first time this contact is processed. So we ask the AI to
                 // give us the civilities
                 if(!a.lastName) {
-                    var fullName = a.firstName.replace("'", "");
+                    var fullName = ("" + a.firstName).replace("'", "");
                     $http({
                         url: '/client_contacts/ai_parse_contact_civilities?fullname=' + fullName,
                         method: "GET"
                     }).then(function success(response) {
-                        console.log(response);
                         if(response.data.status == "success") {
                             a.firstName = response.data.first_name;
                             a.lastName = response.data.last_name;
@@ -468,7 +467,7 @@
                     $http({
                         url: '/client_contacts/ai_get_company_name',
                         method: "POST",
-                        params: { contact_address: a.email, message_text: window.messageText }
+                        data: { contact_address: a.email, message_text: window.messageText }
                     }).then(function success(response) {
                         console.log(response);
                         if(response.data.identification != "fail") {
