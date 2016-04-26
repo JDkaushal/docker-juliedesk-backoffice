@@ -187,7 +187,7 @@
 
                 if(clientAliasInTos.length == 0 && clientAliasInCcs.length == 0) {
                     $scope.ccs.push({name: window.threadAccount.email});
-                } else if($scope.tos.indexOf(clientEmails) > - 1) {
+                } else if(clientAliasInTos.length >= 1) {
                     // If we are responding to the client, make sure we don't use one of its aliases in ccs
                     $scope.ccs = _.reject($scope.ccs, function(recipient) {
                         return clientEmails.indexOf(recipient.name) >= 0;
