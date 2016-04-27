@@ -42,7 +42,7 @@
         margin-right: 5px;
       }
 
-      &:nth-child(4n+2), &:nth-child(4n+3) {
+      &:nth-of-type(4n+2), &:nth-of-type(4n+3) {
         background: #fafafa;
       }
 
