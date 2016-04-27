@@ -101,7 +101,7 @@ module ApplicationHelper
             "Cost per client": "#{(operator_hours_count / active_clients_count * 4.6).round(2)}€"
         },
         "Other": {
-          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where.not(privilege: Operator::PRIVILEGE_ADMIN).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
+          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
           "Missing request_at count": all_messages.count - messages.count,
         }
     }
