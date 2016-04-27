@@ -481,7 +481,11 @@ EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
 };
 EventTile.prototype.fetchEvent = function(callback) {
     var eventTile = this;
-    eventTile.showSpinner();
+
+    // Dirty fix to display the Spinner after the event tile has been drawn, thus avoiding it beeing immediately hidden
+    setTimeout(function() {
+        eventTile.showSpinner();
+    }, 0);
     CommonHelpers.externalRequest({
         action: "get_event",
         email: eventTile.accountEmail,
@@ -499,6 +503,7 @@ EventTile.prototype.fetchEvent = function(callback) {
             }
         }
         else {
+            eventTile.hideSpinner();
             eventTile.event = eventTile.eventDataFromEvent(response.data);
             if(eventTile.afterEventFetchedCallback) eventTile.afterEventFetchedCallback();
             if(callback) callback(response.data);
@@ -566,6 +571,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
 
 EventTile.prototype.showSpinner = function() {
     var eventTile = this;
+    console.log(eventTile.$selector.find(".spinner-container"));
     eventTile.$selector.find(".spinner-container").fadeIn(200);
 };
 
