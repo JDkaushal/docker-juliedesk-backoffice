@@ -444,6 +444,7 @@
                     }).then(function success(response) {
                         if(response.data.status == "success") {
                             a.firstName = response.data.first_name;
+                            a.usageName = response.data.first_name;
                             a.lastName = response.data.last_name;
                             switch(response.data.gender) {
                                 case 'male':
