@@ -168,9 +168,8 @@ window.classificationForms.askAvailabilitiesForm.prototype.processDateDetection 
         addedDates.push(date);
     });
 
-    if(mainAiInterpretation && mainAiInterpretation.raw_response) {
+    if(mainAiInterpretation && !mainAiInterpretation.error && mainAiInterpretation.raw_response) {
         var datesToCheck = JSON.parse(mainAiInterpretation.raw_response).dates_to_check;
-
         if(datesToCheck.length > 0) {
             var suggestedTimesNodes = $('.already-suggested-date');
             var currentNodeDate;
