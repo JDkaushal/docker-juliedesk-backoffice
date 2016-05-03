@@ -29,7 +29,8 @@ class Account
                 :is_pro,
                 :virtual_appointments_support_config,
                 :threads_count_today,
-                :title_preferences
+                :title_preferences,
+                :travel_time_transport_mode
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -67,6 +68,7 @@ class Account
     account.calendar_logins = data['calendar_logins']
     account.is_pro = data['is_pro']
     account.title_preferences = data['title_preferences']
+    account.travel_time_transport_mode = data['travel_time_transport_mode']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

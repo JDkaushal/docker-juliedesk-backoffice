@@ -1,0 +1,26 @@
+<div>
+  <div class="header" ng-class="{warning: isWarning}">
+    <div class="close-sprite" ng-click="close()"></div>
+    <div class="text">Temps de trajet estimé</div>
+  </div>
+  <div class="content">
+    <div class="travelTimeDate">
+      <div class="sprite"></div>
+      <div class="day">{{currentStartDate.format("dddd Do MMMM")}}</div>
+      <div class="range">{{currentStartDate.format("H[h]mm")}} - {{currentEndDate.format("H[h]mm")}}</div>
+    </div>
+
+    <div class="directions">
+      <div class="sprite"></div>
+      <div class="from"><input type="text" value="{{currentOrigin}}"/></div>
+      <div class="to"><input type="text" value="{{currentDestination}}"/></div>
+    </div>
+
+    <div class="travel-time-details">
+      <div class="travel-time">{{currentTravelTime}} de temps de trajet</div>
+      <div class="google-direction-link">
+        <%= link_to 'Voir trajet sur Google Map', '{{currentGoogleDirectionUrl}}', target: '_blank' %>
+      </div>
+    </div>
+  </div>
+</div>

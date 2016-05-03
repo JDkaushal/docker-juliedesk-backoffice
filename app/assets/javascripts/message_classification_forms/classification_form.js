@@ -126,6 +126,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         duration: $("#duration").val(),
         location_nature: $("#location_nature").val(),
         location: $("#location").val(),
+        location_coordinates: $('#location_coordinates').val(),
         call_instructions: window.getCallInstructions(),
         notes: $("#notes").val(),
         other_notes: $("#other_notes").val(),

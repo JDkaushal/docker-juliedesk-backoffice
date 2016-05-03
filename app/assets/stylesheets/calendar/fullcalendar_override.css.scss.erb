@@ -46,7 +46,67 @@
         }
 
         .fc-event {
-            min-height: 30px !important;
+            // This min height prevents events shorter than 30 min to display correctly
+            //min-height: 30px !important;
+
+            .travel-time-wrapper {
+                height: 100%;
+                width: 100%;
+                text-align: right;
+                vertical-align: bottom;
+
+                &.before {
+
+                }
+
+                &.after {
+
+                }
+
+                .travel-time-inner-wrapper {
+
+                    .duration {
+                        position: relative;
+                        left: -6px;
+                    }
+
+                    .sprite {
+                        background-image: url(<%= asset_path 'transport.png' %>);
+                        background-size: 13px 16px;
+                        background-repeat: no-repeat;
+                        width: 13px;
+                        height: 16px;
+                        position: relative;
+                        left: -3px;
+                        top: 3px;
+                        display: inline-block;
+                    }
+                }
+            }
+
+            .fc-event-location {
+                margin-left: 5px;
+                .location {
+                    width: 90%;
+                    display: inline-block;
+                    // Prevent multi-lignes
+                    white-space: nowrap;
+                    overflow: hidden;
+                    font-size: 11px;
+                    font-weight: 200;
+                }
+
+                .sprite {
+                    background-image: url(<%= asset_path 'location.png' %>);
+                    background-size: 9px 15px;
+                    background-repeat: no-repeat;
+                    width: 9px;
+                    height: 15px;
+                    position: relative;
+                    left: -3px;
+                    display: inline-block;
+                }
+            }
         }
         a.fc-event {
             color: #fff;
@@ -82,6 +142,7 @@
             &.juliedesk-located-event {
                 border-left-width: 8px !important;
                 border-left-color: #444 !important;
+                line-height: 15px;
             }
 
             &:hover {

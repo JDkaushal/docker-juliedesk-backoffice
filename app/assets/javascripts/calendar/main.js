@@ -370,6 +370,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
     calendar.addCal(calendar.getConstraintsDataEvents(start, end));
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
+
         calendar.fetchEvents(start, end, calendar.accountPreferences[email], function() {
             localWaitingAccounts -= 1;
             if(localWaitingAccounts == 0) {
@@ -400,6 +401,9 @@ Calendar.prototype.redrawFullCalendar = function() {
 
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
     var calendar = this;
+    var travelTimeCalculator = $('#travel_time_calculator').scope();
+    var unavailableEvents = [];
+    var allEvents = [];
 
     CommonHelpers.externalRequest({
         action: "events",
@@ -408,10 +412,20 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         start: start,
         end: end
     }, function (response) {
-        calendar.addCal(calendar.getNonAvailableEvents(start, end, accountPreferencesHash));
-        calendar.addEventsToCheckIfNeeded();
+        unavailableEvents = calendar.getNonAvailableEvents(start, end, accountPreferencesHash);
 
+        calendar.addCal(unavailableEvents);
+        calendar.addEventsToCheckIfNeeded();
         calendar.addAllCals(response.items);
+
+        if(travelTimeCalculator) {
+            // Allow us to detect easily if the events are following or followed by unavailable events
+            allEvents.push(response.items);
+            allEvents.push(unavailableEvents);
+
+            travelTimeCalculator.processForClient(accountPreferencesHash, _.flatten(allEvents));
+        }
+
         if(callback) callback();
     });
 };
@@ -557,7 +571,6 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
         calendar.publicHolidaysAdded = true;
     }
 
-
     return result;
 };
 
@@ -571,6 +584,14 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
 
     var startTime = ev.start.dateTime;
     var endTime = ev.end.dateTime;
+
+    var travelTimeOriginalStartTime = undefined;
+    var travelTimeOriginalEndTime = undefined;
+
+    if(ev.isTravelTime) {
+        travelTimeOriginalStartTime = ev.originalStart.dateTime;
+        travelTimeOriginalEndTime = ev.originalEnd.dateTime;
+    }
 
     if (ev.start.dateTime === undefined) {
         startTime = ev.start.date;
@@ -596,10 +617,18 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         color = calendar.getCalendarColor(eventCalendar);
     }
 
+    //console.log(ev);
     eventData = {
         id: ev.id,
         title: ev.summary,
         allDay: ev.all_day,
+        isTravelTime: ev.isTravelTime,
+        travelTime: ev.travelTime,
+        travelTimeType: ev.travelTimeType,
+        travelTimeGoogleDestinationUrl: ev.travelTimeGoogleDestinationUrl,
+        travelTimeIsWarning: ev.travelTimeIsWarning,
+        travelTimeOriginalStartTime: travelTimeOriginalStartTime,
+        travelTimeOriginalEndTime: travelTimeOriginalEndTime,
         start: sstartTime,
         end: sendTime,
         url: ev.htmlLink,

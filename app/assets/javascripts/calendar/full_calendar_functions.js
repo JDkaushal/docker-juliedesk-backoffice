@@ -139,31 +139,43 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
 };
 Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     var calendar = this;
-    if (event.beingAdded) {
-        if(calendar.getMode() == "suggest_dates" && event.editable) {
-            for(var k=0; k<calendar.events.length; k++){
-                if(calendar.events[k].start.isSame(event.start)){
-                    calendar.events.splice(k, 1);
+    var travelTimeTileCtrl = $('travel-time-tile').scope();
+
+    if(event.isTravelTime) {
+        travelTimeTileCtrl.display(event, $(jsEvent.currentTarget));
+        travelTimeTileCtrl.$apply();
+    } else {
+
+        if (event.beingAdded) {
+            if(calendar.getMode() == "suggest_dates" && event.editable) {
+                for(var k=0; k<calendar.events.length; k++){
+                    if(calendar.events[k].start.isSame(event.start)){
+                        calendar.events.splice(k, 1);
+                    }
                 }
+                calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
+                    return toremove.start.isSame(event.start)
+                        && toremove.beingAdded;
+                });
+                calendar.drawEventList();
             }
-            calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
-                return toremove.start.isSame(event.start)
-                    && toremove.beingAdded;
-            });
-            calendar.drawEventList();
+            else if(calendar.getMode() == "create_event"  && event.title == "") {
+                calendar.addEvent(event);
+            }
         }
-        else if(calendar.getMode() == "create_event"  && event.title == "") {
-            calendar.addEvent(event);
+        else {
+            calendar.showEventDetails(event, $(jsEvent.currentTarget));
         }
-    }
-    else {
-        calendar.showEventDetails(event, $(jsEvent.currentTarget));
     }
 };
 
 Calendar.prototype.fullCalendarInit = function() {
     var calendar = this;
     var defaultDate = moment();
+    var travelTimeBackgroundColor = '#C27938';
+    var travelTimeIsWarningBackgroundColor = '#CA6A65';
+    var travelTimeOpacity = '0.80';
+
     if(calendar.eventsToCheck.length > 0 && calendar.getMode() == "create_event") {
         defaultDate = $.map(calendar.eventsToCheck, function(v, k) {
            return v.start;
@@ -217,6 +229,64 @@ Calendar.prototype.fullCalendarInit = function() {
         },
         eventDragStart: function(event, jsEvent, ui, view) {
             calendar.fullCalendarEventDragStart(event, jsEvent, ui, view);
+        },
+        eventAfterRender: function(event, element, view) {
+            var $element = $(element);
+            if(event.isTravelTime) {
+                var travelTimeDiv = $('<div class="travel-time-wrapper ' + event.travelTimeType + '"></div>');
+                var travelTimeInnerDiv = $('<div class="travel-time-inner-wrapper"></div>');
+                var travelTimeDuration = $('<span class="duration"></span>');
+                var travelTimeSprite = $('<span class="sprite"></span>');
+
+                if(event.travelTimeIsWarning) {
+                    $element.css('background-color', travelTimeIsWarningBackgroundColor);
+                } else {
+                    $element.css('background-color', travelTimeBackgroundColor);
+                }
+
+                $element.css('opacity', travelTimeOpacity);
+
+                var minutes = event.travelTime % 60;
+
+                if(minutes < 10) {
+                    minutes  = '0' + minutes;
+                }
+
+                event.formattedTravelTime = Math.floor(event.travelTime / 60) + 'h' + minutes;
+
+                travelTimeDuration.html(event.formattedTravelTime);
+
+                travelTimeInnerDiv.append(travelTimeDuration).append(travelTimeSprite);
+                travelTimeDiv.append(travelTimeInnerDiv);
+
+                $element.html(travelTimeDiv);
+
+                //$element.wrap('<a href="' + event.travelTimeGoogleDestinationUrl + '" target="_blank"></a>');
+
+                var currentElementTop = $element.position().top;
+
+                if(event.travelTimeType == 'before') {
+                    travelTimeInnerDiv.css('padding-top', $element.height() - travelTimeInnerDiv.height());
+                    $element.css('border-radius', '7px 7px 0px 0px');
+                    $element.css('top', currentElementTop + 2);
+                } else {
+                    $element.css('border-radius', '0px 0px 7px 7px');
+                    $element.css('top', currentElementTop - 2);
+                }
+
+            }
+
+            if(event.isLocated && event.location) {
+                var eventLocation = $('<div class="fc-event-location"></div>');
+                var locationText = $('<span class="location"></span>');
+                var locationSprite = $('<span class="sprite"></span>');
+
+                locationText.html(event.location);
+
+                eventLocation.append(locationSprite).append(locationText);
+                $element.find('.fc-event-inner').append(eventLocation);
+
+            }
         },
         eventAfterAllRender: function(view) {
             calendar.fullCalendarEventAfterAllRender(view)

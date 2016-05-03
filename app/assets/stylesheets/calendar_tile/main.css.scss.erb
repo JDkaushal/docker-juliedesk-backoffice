@@ -154,3 +154,134 @@
 
   }
 }
+
+travel-time-tile {
+  height: 300px;
+  width: 250px;
+  position: absolute;
+  top: 300px;
+  left: 775px;
+  z-index: 1;
+  background-color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: #A0A0A0;
+
+  .header {
+    height: 50px;
+    text-align: center;
+    background-color: #C27938;
+    opacity: 0.80;
+
+      &.warning {
+          background-color: #CA6A65;
+      }
+
+    .close-sprite {
+        background-image: url(<%= asset_path 'close.png' %>);
+        background-repeat: no-repeat;
+        background-size: 10px 10px;
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        position: absolute;
+        top: 5px;
+        left: 234px;
+        cursor: pointer;
+        opacity: 0.80;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .text {
+      padding-top: 15px;
+      color: black;
+        font-size: 15px;
+    }
+  }
+
+  .content {
+    padding: 20px 20px 20px 35px;
+    overflow: hidden;
+
+    .travelTimeDate {
+        margin-bottom: 6px;
+
+      .sprite {
+          position: absolute;
+          left: 12px;
+          top: 74px;
+        background-image: url(<%= asset_path 'time.png' %>);
+        background-repeat: no-repeat;
+          background-size: 12px 12px;
+          width: 12px;
+          height: 12px;
+          display: inline-block;
+      }
+
+        .day {
+            font-size: 16px;
+            text-transform:capitalize;
+        }
+
+        .range {
+            font-size: 16px;
+        }
+    }
+
+    .directions {
+        margin-bottom: 25px;
+        font-weight: lighter;
+        font-size: 16px;
+
+        .sprite {
+            background-image: url(<%= asset_path 'direction.png' %>);
+            background-repeat: no-repeat;
+            background-size: 10px 53px;
+            width: 10px;
+            height: 53px;
+            display: inline-block;
+            position: absolute;
+            left: 12px;
+            top: 128px;
+        }
+
+      .from {
+          margin-bottom: 18px;
+          white-space: nowrap;
+      }
+
+      .to {
+        white-space: nowrap;
+      }
+
+        input[type="text"] {
+            border: none;
+            width: 200px;
+        }
+    }
+
+      .travel-time-details {
+          color: $darkBlue;
+          line-height: 17px;
+
+          .travel-time {
+              font-size: 16px;
+              font-weight: bold;
+          }
+
+          a {
+              color: $darkBlue;
+          }
+
+      }
+  }
+
+
+}

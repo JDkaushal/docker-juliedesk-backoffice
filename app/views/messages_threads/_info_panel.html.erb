@@ -1,4 +1,6 @@
 <%= javascript_include_tag 'angular_dependencies' %>
+<!-- For google Places and google Matrix Distance used to compute the travel time -->
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBSrSZEH0YsG0vuXKaxDyM-hvhppg-auVM"%>
 <script>
     setCurrentLocale("<%= I18n.locale %>");
 
@@ -322,6 +324,9 @@
 
             $(".messages-thread-info-panel .created-event-panel").addClass("several-events").show();
         <% end %>
+
+
+        initGooglePlacesAutoCompleteOnLocationField();
     });
 
     window.getCurrentAppointment = function() {
@@ -348,6 +353,31 @@
         }
         return null;
     };
+
+    function initGooglePlacesAutoCompleteOnLocationField() {
+        var locationInput = $('#location');
+        var locationCoordinatesInput = $('#location_coordinates');
+
+        var autocomplete = new google.maps.places.Autocomplete(locationInput[0]);
+
+        if(window.threadComputedData) {
+            locationCoordinatesInput.val(JSON.stringify(window.threadComputedData.location_coordinates || []));
+        }
+
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            var displayedLocation;
+
+            if(place.types[0] == "street_address") {
+                displayedLocation = place.formatted_address;
+            }else {
+                displayedLocation = place.name + ' - ' + place.formatted_address;
+            }
+
+            locationInput.val(displayedLocation);
+            locationCoordinatesInput.val(JSON.stringify([place.geometry.location.lat(), place.geometry.location.lng()]));
+        });
+    }
 
     function setupAutocompleteAssociateAccount() {
         var accountsAutocompleteSource = <%==
@@ -884,12 +914,34 @@
 
         if (address) {
             $("input#location").val(address.address);
+            locatePlaceWithGoogle(address.address);
         }
         else {
             $("input#location").val("");
         }
 
         setNotes();
+    }
+
+    // Used to get geographic coordinates of the specified place (like when the operator select the client registered address from the location drop down
+    function locatePlaceWithGoogle(address) {
+
+        if (window.threadDataIsEditable) {
+            if(!address) return;
+
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode( { 'address': address}, function(results, status) {
+                var coordinates = [];
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var result = results[0];
+                    coordinates = [result.geometry.location.lat(), result.geometry.location.lng()]
+                }
+
+                $('#location_coordinates').val(JSON.stringify(coordinates));
+            });
+
+        }
     }
 
     function setNotes() {
@@ -1225,6 +1277,7 @@
             <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
             <%= select_tag :location_nature, "", class: "data-entry form-control" %>
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+            <%= hidden_field_tag :location_coordinates %>
         </div>
         <div class="number-to-call-part-container">
           <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
