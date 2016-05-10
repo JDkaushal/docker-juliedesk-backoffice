@@ -76,6 +76,11 @@ module ApplicationHelper
 
     incoming_messages_count = incoming_messages.select(:server_message_id).distinct.count
     real_threads_count = messages.select(:messages_thread_id).distinct.count
+
+    team_operator_ids = Operator.where.not(privilege: Operator::PRIVILEGE_ADMIN).select(:id).map(&:id)
+    reviewed_count = OperatorActionsGroup.where("initiated_at >= ? AND initiated_at < ?", start_date, [end_date, DateTime.now].min).where(operator_id: team_operator_ids, review_notation: [0, 1, 2, 3, 4, 5]).count
+    errors_count = OperatorActionsGroup.where("initiated_at >= ? AND initiated_at < ?", start_date, [end_date, DateTime.now].min).where(operator_id: team_operator_ids, review_notation: [0, 1, 2, 3]).count
+
     {
         "Messages and threads": {
             "Incoming messages": incoming_messages_count,
@@ -99,6 +104,9 @@ module ApplicationHelper
             "Operator time per incoming message": "#{(operator_hours_count / incoming_messages_count * 60.0).round(2)}'",
             "Operator time per outgoing thread": "#{(operator_hours_count / real_threads_count * 60.0).round(2)}'",
             "Cost per client": "#{(operator_hours_count / active_clients_count * 4.6).round(2)}€"
+        },
+        "Quality": {
+            "Error rate": "#{(errors_count * 100.0 / reviewed_count).round(2)}%"
         },
         "Other": {
           "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
