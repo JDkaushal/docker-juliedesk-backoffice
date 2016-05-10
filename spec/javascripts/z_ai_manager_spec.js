@@ -499,11 +499,11 @@
                });
 
                 it('should listen to the clientsFetched event and process it accordingly', function() {
-                    spyOn($scope, 'validateClientRelatedEntities');
+                    spyOn($scope, 'discardClientRelatedEntities');
                     var args = {clients: [{email: 'email1'}, {email: 'email2'}]};
                     $rootScope.$broadcast('clientsFetched', args);
 
-                    expect($scope.validateClientRelatedEntities).toHaveBeenCalledWith(args.clients);
+                    expect($scope.discardClientRelatedEntities).toHaveBeenCalledWith(args.clients);
                 });
             });
 

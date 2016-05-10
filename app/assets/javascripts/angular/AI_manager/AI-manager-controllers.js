@@ -131,7 +131,7 @@
                 });
 
                 $scope.$on('clientsFetched', function(event, args) {
-                    $scope.validateClientRelatedEntities(args.clients);
+                    $scope.discardClientRelatedEntities(args.clients);
                 });
 
                 $($element[0]).on('click', '.attendee', function(e) {
@@ -196,9 +196,18 @@
                     $scope.trackOpenEvent();
                 };
 
-                $scope.validateClientRelatedEntities = function(clients) {
+                $scope.discardClientRelatedEntities = function(clients) {
+                    var $node, phoneBaseSelector, skypeBaseSelector;
                     _.each(clients, function(client) {
-                        $('.juliedesk-entity.phone[owner="' + client.email + '"], .juliedesk-entity.skype[owner="' + client.email + '"]').addClass('validated');
+                        phoneBaseSelector = '.juliedesk-entity.phone[owner="' + client.email + '"]';
+                        skypeBaseSelector = '.juliedesk-entity.skype[owner="' + client.email + '"]';
+                        $node = $(phoneBaseSelector + '[from="signature"],' + phoneBaseSelector + '[from="reply_signature"],' + skypeBaseSelector + '[from="signature"],' + skypeBaseSelector + '[from="reply_signature"]');
+                        if($node) {
+                            // Remove Events handlers (click ...)
+                            $node.off();
+                            // Change the class so it is not displayed anymore as an entity to the operator
+                            $node.removeClass('juliedesk-entity').addClass('juliedesk-entity-client');
+                        }
                     });
                 };
 
