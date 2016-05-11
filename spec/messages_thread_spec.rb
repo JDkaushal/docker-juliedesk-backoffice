@@ -320,7 +320,7 @@ describe MessagesThread, :type => :model do
                                                      calendar_id: "cid1",
                                                      appointment_nature: "meeting",
                                                      event_url: nil,
-                                                     calendar_login_username: "google.nmarlier%40gmail.com",
+                                                     calendar_login_username: "google.nmarlier@gmail.com",
                                                      event_from_invitation: false,
                                                      event_from_invitation_organizer: nil
                                                  })
@@ -348,7 +348,7 @@ describe MessagesThread, :type => :model do
                                                      calendar_id: "cid2",
                                                      appointment_nature: "call",
                                                      event_url: nil,
-                                                     calendar_login_username: "icloud.nmarlier%40gmail.com",
+                                                     calendar_login_username: "icloud.nmarlier@gmail.com",
                                                      event_from_invitation: false,
                                                      event_from_invitation_organizer: nil
                                                  })
