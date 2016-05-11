@@ -106,7 +106,11 @@ module WeeklyRecapHelper
           select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
           sort_by(&:updated_at).
           last
-      JSON.parse(julie_action.try(:events) || "[]").map { |ev| ev.symbolize_keys.merge({messages_thread_id: mt.id, messages_thread_subject: mt.subject}) }
+      JSON.parse(julie_action.try(:events) || "[]").map { |ev| ev.symbolize_keys.merge({
+                                                                                           messages_thread_id: mt.id,
+                                                                                           messages_thread_subject: mt.subject,
+                                                                                           server_thread_id: mt.server_thread_id,
+                                                                                       }) }
     }.flatten
 
     scheduling_mts = self.get_messages_threads({
@@ -137,6 +141,7 @@ module WeeklyRecapHelper
           thread_subject: mt.subject,
           other: {
               id: mt.id,
+              server_thread_id: mt.server_thread_id,
               event: mt.event_data,
               attendees: self.build_attendees_array(mt, params[:account_email]),
               last_message_received_at: self.build_last_message_received_at(mt),
@@ -148,6 +153,7 @@ module WeeklyRecapHelper
           thread_subject: event[:messages_thread_subject],
           other: {
               id: event[:messages_thread_id],
+              server_thread_id: event[:server_thread_id],
               event: event,
               attendees: []
           }
@@ -159,6 +165,7 @@ module WeeklyRecapHelper
           thread_subject: mt.subject,
           other: {
               id: mt.id,
+              server_thread_id: mt.server_thread_id,
               waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
               valid_suggestions_count: mt.computed_data_light[:date_times].select { |dt|
                 begin
@@ -180,6 +187,7 @@ module WeeklyRecapHelper
           thread_subject: mt.subject,
           other: {
               id: mt.id,
+              server_thread_id: mt.server_thread_id,
               last_message_received_at: self.build_last_message_received_at(mt),
               appointment_nature: mt.computed_data_light[:appointment_nature],
               attendees: self.build_attendees_array(mt, params[:account_email])
