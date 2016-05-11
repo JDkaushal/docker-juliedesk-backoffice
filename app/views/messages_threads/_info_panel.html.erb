@@ -269,7 +269,7 @@
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
             accountEmail: window.threadAccount.email,
             // For backslahes to work in JS
-            calendarLoginUsername: "<%= @messages_thread.event_data[:calendar_login_username].gsub(/\\/, "\\\\\\\\") %>",
+            calendarLoginUsername: "<%= "#{@messages_thread.event_data[:calendar_login_username]}".gsub(/\\/, "\\\\\\\\") %>",
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",
