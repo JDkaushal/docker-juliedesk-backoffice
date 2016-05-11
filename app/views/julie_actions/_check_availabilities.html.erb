@@ -257,7 +257,8 @@
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
                     window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
                     window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
-                    window.currentCalendarLoginUsername = decodeURIComponent("<%= @messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\'));
+                    // For backslahes to work in JS
+                    window.currentCalendarLoginUsername = "<%= @messages_thread.event_data[:calendar_login_username].gsub(/\\/, "\\\\\\\\") %>";
                     _.each({
                         action: "update_event",
                         event_id: window.currentEventId,

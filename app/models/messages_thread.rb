@@ -504,7 +504,7 @@ class MessagesThread < ActiveRecord::Base
           event_url: last_creation.event_url,
           calendar_id: last_creation.calendar_id,
           appointment_nature: last_creation.message_classification.appointment_nature,
-          calendar_login_username: CGI.escape(last_creation.calendar_login_username),
+          calendar_login_username: last_creation.calendar_login_username,
           event_from_invitation: last_creation.event_from_invitation,
           event_from_invitation_organizer: last_creation.event_from_invitation_organizer
       }

@@ -268,7 +268,8 @@
             eventUrl: "<%= messages_thread.event_data[:event_url] %>",
             calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
             accountEmail: window.threadAccount.email,
-            calendarLoginUsername: decodeURIComponent("<%= messages_thread.event_data[:calendar_login_username] %>".replace('%5C', '\\')),
+            // For backslahes to work in JS
+            calendarLoginUsername: "<%= @messages_thread.event_data[:calendar_login_username].gsub(/\\/, "\\\\\\\\") %>",
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",
