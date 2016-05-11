@@ -45,6 +45,7 @@ module WeeklyRecapHelper
         company = ""
       end
       {
+          email: att['email'],
           name: [att['firstName'], att['lastName']].select(&:present?).join(" "),
           company: company
       }
@@ -105,7 +106,7 @@ module WeeklyRecapHelper
           select{|ja| ja.done && ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT}.
           sort_by(&:updated_at).
           last
-      JSON.parse(julie_action.try(:events) || "[]").map { |ev| ev.symbolize_keys.merge({messages_thread_id: mt.id}) }
+      JSON.parse(julie_action.try(:events) || "[]").map { |ev| ev.symbolize_keys.merge({messages_thread_id: mt.id, messages_thread_subject: mt.subject}) }
     }.flatten
 
     scheduling_mts = self.get_messages_threads({
@@ -133,24 +134,29 @@ module WeeklyRecapHelper
       {
           status: "scheduled",
           subject: mt.computed_data_light[:summary],
+          thread_subject: mt.subject,
           other: {
               id: mt.id,
               event: mt.event_data,
-              last_message_received_at: self.build_last_message_received_at(mt)
+              attendees: self.build_attendees_array(mt, params[:account_email]),
+              last_message_received_at: self.build_last_message_received_at(mt),
           }
       }
     } + events_creation_data.map { |event|
       {
           status: "scheduled",
+          thread_subject: event[:messages_thread_subject],
           other: {
               id: event[:messages_thread_id],
-              event: event
+              event: event,
+              attendees: []
           }
       }
     } + scheduling_mts.map { |mt|
       {
           status: "scheduling",
           subject: mt.computed_data_light[:summary],
+          thread_subject: mt.subject,
           other: {
               id: mt.id,
               waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
@@ -171,6 +177,7 @@ module WeeklyRecapHelper
       {
           status: "aborted",
           subject: mt.computed_data_light[:summary],
+          thread_subject: mt.subject,
           other: {
               id: mt.id,
               last_message_received_at: self.build_last_message_received_at(mt),

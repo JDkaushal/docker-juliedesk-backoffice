@@ -7,6 +7,7 @@ describe WeeklyRecapHelper do
       before do
         @scheduled_correct_mt = FactoryGirl.create(:messages_thread, {
                                                                        account_email: "nicolas@juliedesk.com",
+                                                                       subject: "Subject correct mt",
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -54,6 +55,7 @@ describe WeeklyRecapHelper do
 
         scheduled_before_mt = FactoryGirl.create(:messages_thread, {
                                                                       account_email: "nicolas@juliedesk.com",
+                                                                      subject: "Subject before mt",
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-01-10",
@@ -101,6 +103,7 @@ describe WeeklyRecapHelper do
 
         scheduled_other_account_email = FactoryGirl.create(:messages_thread, {
                                                                       account_email: "nicolas2@juliedesk.com",
+                                                                      subject: "Subject other account mt",
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-01-10",
@@ -148,6 +151,7 @@ describe WeeklyRecapHelper do
 
         scheduled_already_scheduled_account_email = FactoryGirl.create(:messages_thread, {
                                                                                account_email: "nicolas@juliedesk.com",
+                                                                               subject: "Subject already scheduled mt",
                                                                                messages: [
                                                                                    FactoryGirl.create(:message, {
                                                                                                                   received_at: "2016-01-10",
@@ -203,6 +207,7 @@ describe WeeklyRecapHelper do
                                {
                                    :status => "scheduled",
                                    :subject => "Skype scheduled on 2016-02-03",
+                                   :thread_subject => "Subject correct mt",
                                    :other =>
                                        {
                                            :id => @scheduled_correct_mt.id,
@@ -216,6 +221,7 @@ describe WeeklyRecapHelper do
                                                    :event_from_invitation => false,
                                                    :event_from_invitation_organizer => nil
                                                },
+                                           :attendees => [{:email=>"nmarlier@gmail.com", :name=>"Nico M", :company=>"JD"}],
                                            :last_message_received_at => "2016-02-03 00:00:00 UTC"
                                        }
                                }
@@ -227,6 +233,7 @@ describe WeeklyRecapHelper do
       before do
         @scheduled_correct_mt = FactoryGirl.create(:messages_thread, {
                                                                        account_email: "nicolas2@juliedesk.com",
+                                                                       subject: "Subject correct mt",
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -275,6 +282,7 @@ describe WeeklyRecapHelper do
 
         scheduled_incorrect_mt = FactoryGirl.create(:messages_thread, {
                                                                        account_email: "nicolas2@juliedesk.com",
+                                                                       subject: "Subject incorrect mt",
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -332,6 +340,7 @@ describe WeeklyRecapHelper do
                                {
                                    :status => "scheduled",
                                    :subject => "Skype scheduled on 2016-02-03",
+                                   :thread_subject => "Subject correct mt",
                                    :other =>
                                        {
                                            :id => @scheduled_correct_mt.id,
@@ -345,6 +354,7 @@ describe WeeklyRecapHelper do
                                                    :event_from_invitation => false,
                                                    :event_from_invitation_organizer => nil
                                                },
+                                           :attendees => [],
                                            :last_message_received_at => "2016-02-03 00:00:00 UTC"
                                        }
                                }
@@ -356,6 +366,7 @@ describe WeeklyRecapHelper do
       before do
         @events_creation_mt = FactoryGirl.create(:messages_thread, {
                                                                       account_email: "nicolas@juliedesk.com",
+                                                                      subject: "Subject creation mt",
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-02-03",
@@ -393,6 +404,7 @@ describe WeeklyRecapHelper do
         expect(data).to eq([
                                {
                                    :status => "scheduled",
+                                   :thread_subject => "Subject creation mt",
                                    :other =>
                                        {
                                            :id => @events_creation_mt.id,
@@ -403,8 +415,10 @@ describe WeeklyRecapHelper do
                                                    :calendar_id => "calendar_id_1",
                                                    :event_url => "event_url_1",
                                                    :calendar_login_username => "calendar_login_username_1",
-                                                   :messages_thread_id => @events_creation_mt.id
-                                               }
+                                                   :messages_thread_id => @events_creation_mt.id,
+                                                   :messages_thread_subject => "Subject creation mt",
+                                               },
+                                           :attendees => []
                                        }
                                }
                            ])
@@ -415,6 +429,7 @@ describe WeeklyRecapHelper do
       before do
         @correct_scheduling_mt = FactoryGirl.create(:messages_thread, {
                                                                         account_email: "nicolas@juliedesk.com",
+                                                                        subject: "Subject scheduling mt",
                                                                         messages: [
                                                                             FactoryGirl.create(:message, {
                                                                                                            received_at: "2016-02-03",
@@ -463,6 +478,7 @@ describe WeeklyRecapHelper do
                                {
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
+                                   :thread_subject => "Subject scheduling mt",
                                    :other =>
                                        {
                                            :id => @correct_scheduling_mt.id,
@@ -470,7 +486,7 @@ describe WeeklyRecapHelper do
                                            :valid_suggestions_count => 0,
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
-                                           :attendees => [{name: "Nico M", company: "JD"}],
+                                           :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
                                            :last_message_received_at => "2016-02-03 00:00:00 UTC"
 
                                        }
@@ -483,6 +499,7 @@ describe WeeklyRecapHelper do
       before do
         @correct_scheduling_mt = FactoryGirl.create(:messages_thread, {
                                                                         account_email: "nicolas@juliedesk.com",
+                                                                        subject: "Subject correct scheduling mt",
                                                                         messages: [
                                                                             FactoryGirl.create(:message, {
                                                                                                            received_at: "2016-02-03",
@@ -531,6 +548,7 @@ describe WeeklyRecapHelper do
                                {
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
+                                   :thread_subject => "Subject correct scheduling mt",
                                    :other =>
                                        {
                                            :id => @correct_scheduling_mt.id,
@@ -538,7 +556,7 @@ describe WeeklyRecapHelper do
                                            :valid_suggestions_count => 0,
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
-                                           :attendees => [{name: "Nico M", company: "JD"}],
+                                           :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
                                            :last_message_received_at => "2016-02-03 00:00:00 UTC"
 
                                        }
@@ -552,6 +570,7 @@ describe WeeklyRecapHelper do
       before do
         @correct_scheduling_mt = FactoryGirl.create(:messages_thread, {
                                                                         account_email: "nicolas@juliedesk.com",
+                                                                        subject: "Subject scheduling mt",
                                                                         messages: [
                                                                             FactoryGirl.create(:message, {
                                                                                                            received_at: "2016-02-03",
@@ -591,6 +610,7 @@ describe WeeklyRecapHelper do
 
         @correct_scheduling_aborted_mt = FactoryGirl.create(:messages_thread, {
                                                                         account_email: "nicolas@juliedesk.com",
+                                                                        subject: "Subject scheduling aborted mt",
                                                                         messages: [
                                                                             FactoryGirl.create(:message, {
                                                                                                            received_at: "2016-01-20",
@@ -631,6 +651,7 @@ describe WeeklyRecapHelper do
                                {
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
+                                   :thread_subject => "Subject scheduling mt",
                                    :other =>
                                        {
                                            :id => @correct_scheduling_mt.id,
@@ -638,20 +659,21 @@ describe WeeklyRecapHelper do
                                            :valid_suggestions_count => 0,
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
-                                           :attendees => [{name: "Nico M", company: "JD"}],
+                                           :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
                                            :last_message_received_at => "2016-02-03 00:00:00 UTC"
                                        }
                                },
                                {
                                    :status=>"aborted",
                                    :subject=>"Skype scheduled on 2016-01-20",
+                                   :thread_subject => "Subject scheduling aborted mt",
                                    :other=>
                                        {
                                            :id=>@correct_scheduling_aborted_mt.id,
                                            :last_message_received_at=>"2016-01-20 00:00:00 UTC",
                                            :appointment_nature=>"skype",
                                            :attendees=>[
-                                               {:name=>"Nico M", :company=>"JD"}
+                                               {email: "nmarlier@gmail.com", :name=>"Nico M", :company=>"JD"}
                                            ]
                                        }
                                }
@@ -664,6 +686,7 @@ describe WeeklyRecapHelper do
 
         @correct_aborted_mt = FactoryGirl.create(:messages_thread, {
                                                                      account_email: "nicolas@juliedesk.com",
+                                                                     subject: "Subject aborted mt",
                                                                      messages: [
                                                                          FactoryGirl.create(:message, {
                                                                                                         received_at: "2016-02-03",
@@ -712,13 +735,14 @@ describe WeeklyRecapHelper do
                                {
                                    :status=>"aborted",
                                    :subject=>"Skype canceled on 2016-02-03",
+                                   :thread_subject => "Subject aborted mt",
                                    :other=>
                                        {
                                            :id=>@correct_aborted_mt.id,
                                            :last_message_received_at=>"2016-02-03 00:00:00 UTC",
                                            :appointment_nature=>"skype",
                                            :attendees=>[
-                                               {:name=>"Nico M", :company=>"JD"}
+                                               {email: "nmarlier@gmail.com", :name=>"Nico M", :company=>"JD"}
                                            ]
                                        }
                                }
