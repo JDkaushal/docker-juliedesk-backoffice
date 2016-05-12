@@ -34,7 +34,7 @@ window.wordings['en'] = {
             }
         },
         invitation_already_sent: {
-            noted: "Thank you for the invite.\nI confirm you the event is in %{client}'s calendar for %{date}."
+            noted: "Thank you for the invite.\nI confirm, the event is in %{client}'s calendar for %{date}."
         },
         suggest_dates: {
             ask_agreement: {

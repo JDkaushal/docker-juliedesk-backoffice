@@ -44,12 +44,7 @@
                 }
             }else {
                 var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
-                // When there are 2 attendees, we will check if it is an assistant and its assisted
-                if(presentAttendees.length == 2){
-                    manageSingleAssistedWithAssistant(presentAttendees, otherRecipients);
-                }else{
-                    $scope.setDefaultRecipients(otherRecipients, presentAttendees);
-                }
+                $scope.setDefaultRecipients(otherRecipients, presentAttendees);
             }
 
             $scope.setRecipients();
@@ -194,7 +189,6 @@
                     });
                 }
             }
-
         };
 
         function setAssistantAndAssistedInRecipients(assistant, assisted){

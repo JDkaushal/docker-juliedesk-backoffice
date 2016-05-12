@@ -10,6 +10,8 @@
         $(".calendar-container").addClass("minimized");
     };
 
+    window.currentSelectedSupportItem = null;
+
   $(function() {
       $("#reply-button").show();
       $("#forward-button").hide();
@@ -20,12 +22,32 @@
           $(".forward-to-support-menu").toggle();
       });
 
-
       $(".forward-to-support-menu").on("click", ".forward-to-support-menu-item", function() {
           var $button = $(this);
           clickOnTemplateItem($button);
       });
+
+      initializeEmailLanguageSelector();
   });
+
+    function initializeEmailLanguageSelector(){
+
+        var $languageSelector = $("<div>").addClass("language-selector-container");
+        $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
+        $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
+
+        $(".reply-box").append($languageSelector);
+
+        $(".language-selector-container .selector").click(function() {
+            window.threadComputedData.locale = $(this).data("value");
+
+            if(window.currentSelectedSupportItem)
+                clickOnTemplateItem(window.currentSelectedSupportItem);
+        });
+
+        $('.email.extended').removeClass('extended');
+
+    };
 
     function clickOnTemplateItem($item) {
         var template = $item.data("template-en");
@@ -33,6 +55,8 @@
         if(window.threadComputedData.locale == 'fr') {
             template = $item.data("template-fr");
         }
+
+        window.currentSelectedSupportItem = $item;
 
         window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
         $(".forward-to-support-menu").hide();
