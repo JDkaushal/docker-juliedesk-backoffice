@@ -130,6 +130,7 @@ Rails.application.routes.draw do
       get "emails_forecast", controller: :ai_forecast, action: :emails
 
       post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
+      post "/accounts/change_account_main_email", controller: :accounts, action: :change_account_main_email
     end
   end
 
