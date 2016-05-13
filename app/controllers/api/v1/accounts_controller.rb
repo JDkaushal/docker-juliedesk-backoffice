@@ -4,7 +4,7 @@ class Api::V1::AccountsController < Api::ApiV1Controller
     Account.migrate_account_email(params[:old_email], params[:new_email])
 
     render json: {
-               success: true
+             success: true
            }
   end
 end
