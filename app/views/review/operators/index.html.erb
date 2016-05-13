@@ -16,6 +16,7 @@
             reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=operator&operator_id=" + $(this).data("operator-id"));
         })
     });
+
     function reviewMessagesThreads($button, url) {
         if($button.hasClass("disabled")) return;
         $button.addClass("disabled");
@@ -51,25 +52,43 @@
 
   <table class="table table-striped">
     <tr>
-      <th>Operator</th>
-      <th>Level</th>
-      <th>Mails</th>
-      <th>% reviewed</th>
+      <th>Opérateur</th>
+      <th>Niveau</th>
+      <th><%= display_review_sorting_link(:actions_count, params) do |glyphicon_class| %> Mails traités <span class="glyphicon <%= glyphicon_class %>"></span> <% end %></th>
+      <th><%= display_review_sorting_link(:mails_treatment_hourly_flow, params) do |glyphicon_class| %> Mails/heures <span class="glyphicon <%= glyphicon_class %>"></span> <% end %></th>
+      <th><%= display_review_sorting_link(:coverage, params) do |glyphicon_class| %> % Corrigés <span class="glyphicon <%= glyphicon_class %>"></span> <% end %></th>
+      <th><%= display_review_sorting_link(:errors_count, params) do |glyphicon_class| %> Nbr erreurs <span class="glyphicon <%= glyphicon_class %>"></span> <% end %></th>
+      <th><%= display_review_sorting_link(:errors_percentage, params) do |glyphicon_class| %> % erreurs <span class="glyphicon <%= glyphicon_class %>"></span> <% end %></th>
       <th></th>
-      <th>% errors</th>
       <th></th>
     </tr>
+    <tr>
+      <td>Général</td>
+      <td></td>
+      <td><%= @data[:total_count]%></td>
+      <td><%= number_with_precision @data[:total_count] / (@data[:total_duration_for_all_operators_in_seconds].to_f / 3600), :precision => 1 %></td>
+      <td><%= number_to_percentage (@data[:total_percentage_coverage_for_all_operators] || 0) * 100, precision: 0 %></td>
+      <td><%= @data[:total_errors_count_for_all_operators] %></td>
+      <td><%= number_to_percentage (@data[:total_errors_percentage_for_all_operators] || 0) * 100, precision: 1 %></td>
+      <td></td>
+      <td></td>
+    </tr>
+
     <% @data[:operators].each do |operator_hash| %>
+        <% actions_count = operator_hash[:actions_count] || 0 %>
+
         <tr>
           <td><%= operator_hash[:name] %></td>
           <td><%= operator_hash[:level] %></td>
-          <td><%= operator_hash[:actions_count] %> (<%= number_to_percentage((operator_hash[:actions_count] || 0) * 100.0 / @data[:total_count], precision: 0) %>)</td>
+          <td><%= actions_count %> (<%= number_to_percentage(actions_count * 100.0 / @data[:total_count], precision: 0) %>)</td>
+          <td><%= number_with_precision operator_hash[:mails_treatment_hourly_flow], :precision => 1 %></td>
           <td><%= number_to_percentage (operator_hash[:coverage] || 0) * 100, precision: 0 %></td>
+          <td><%= operator_hash[:errors_count] %> (<%= number_to_percentage (operator_hash[:errors_percentage_global] || 0) * 100, precision: 0 %>)</td>
+          <td><%= number_to_percentage (operator_hash[:errors_percentage] || 0) * 100, precision: 1 %></td>
+          <td><%= link_to "Détails statistiques", review_operator_path(id: operator_hash[:id]), class: "btn-link" %></td>
           <td>
             <div class="btn btn-success open-links-operator" data-operator-id="<%= operator_hash[:id] %>">Review</div>
           </td>
-          <td><%= number_to_percentage (operator_hash[:errors_percentage] || 0) * 100, precision: 2 %></td>
-          <td><%= link_to "Stats details", review_operator_path(id: operator_hash[:id]), class: "btn-link" %></td>
         </tr>
     <% end %>
   </table>

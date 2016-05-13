@@ -161,4 +161,26 @@ module ApplicationHelper
 
     tmp
   end
+
+  def display_review_sorting_link(attribute, params, &block)
+    direction = :not_sorting
+    if params[:sort] && params[:sort][:direction] && params[:sort][:attribute]
+      direction_params = params[:sort][:direction].to_sym
+      attribute_params = params[:sort][:attribute].to_sym
+
+      if attribute == attribute_params
+        direction = direction_params == :asc ? :desc : :asc
+      end
+    end
+
+    link_to review_root_path(sort: {attribute: attribute, direction: direction}) do
+      glyphicon_class = if direction == :not_sorting
+        'glyphicon-resize-vertical'
+      else
+        direction == :asc ? 'glyphicon-chevron-down' : 'glyphicon-chevron-up'
+      end
+
+      block.call(glyphicon_class)
+    end
+  end
 end
