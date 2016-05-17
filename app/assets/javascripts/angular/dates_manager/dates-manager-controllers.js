@@ -350,7 +350,7 @@
                 date.timezone = timezone;
                 currentTimezonedDate = moment(date.date).tz(timezone);
                 date.date_with_timezone = currentTimezonedDate;
-                date.displayText = currentTimezonedDate.locale(currentLocale).format(localize("email_templates.common.full_date_format"));
+                //date.displayText = currentTimezonedDate.locale(currentLocale).format(localize("email_templates.common.full_date_format"));
             });
 
             return selectedDates;
