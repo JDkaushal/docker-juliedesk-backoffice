@@ -486,11 +486,11 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
         while (mCurrentTime < moment(endTime)) {
             if (mCurrentTime.locale("en").format("ddd").toLowerCase() == day) {
                 $(slots).each(function (k, slot) {
-                    var eventStartTime = mCurrentTime.clone();
+                    var eventStartTime = mCurrentTime.clone().tz(accountPreferencesHash.default_timezone_id);
                     eventStartTime.hours(slot[0] / 100);
                     eventStartTime.minutes(slot[0] % 100);
 
-                    var eventEndTime = mCurrentTime.clone();
+                    var eventEndTime = mCurrentTime.clone().tz(accountPreferencesHash.default_timezone_id);
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
 
@@ -499,8 +499,19 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                         eventEndTime.tz(currentTimezone);
                     }
 
+                    if(accountPreferencesHash.default_timezone_id != currentTimezone) {
+                        eventStartTime.tz(currentTimezone);
+                        eventEndTime.tz(currentTimezone);
+                    }
+
+                    var event_title = "Not available";
+
+                    if(accountPreferencesHash.full_name) {
+                        event_title += ' [' +  accountPreferencesHash.full_name + ']';
+                    }
+
                     var event = {
-                        summary: "Not available",
+                        summary: event_title,
                         start: {
                             dateTime: eventStartTime.format("YYYY-MM-DDTHH:mm:ssZ")
                         },
@@ -956,20 +967,26 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
 
     // Add default timezone if needed
     if(allTimeZones.indexOf(calendar.initialData.default_timezone_id) == -1) {
-        calendar.$selector.find("#calendar-timezone").append(
-            $("<option>").val(calendar.initialData.default_timezone_id).html(calendar.initialData.default_timezone_id)
-        );
+        //calendar.$selector.find("#calendar-timezone").append(
+        //    $("<option>").val(calendar.initialData.default_timezone_id).html(calendar.initialData.default_timezone_id)
+        //);
         allTimeZones.push(calendar.initialData.default_timezone_id);
     }
 
+    // Add all other clients timezones
+    _.each(calendar.accountPreferences, function(account) {
+        allTimeZones.push(account.default_timezone_id);
+    });
+
+    console.log('here', allTimeZones);
     // Add all calendars timezones
     $(calendar.calendars).each(function (k, calendarItem) {
         if (calendar.shouldDisplayCalendarItem(calendarItem)) {
             if (calendarItem.timezone && allTimeZones.indexOf(calendarItem.timezone) == -1) {
                 allTimeZones.push(calendarItem.timezone);
-                calendar.$selector.find("#calendar-timezone").append(
-                    $("<option>").val(calendarItem.timezone).html(calendarItem.timezone + " (" + calendarItem.id + ")")
-                );
+                //calendar.$selector.find("#calendar-timezone").append(
+                //    $("<option>").val(calendarItem.timezone).html(calendarItem.timezone + " (" + calendarItem.id + ")")
+                //);
             }
         }
     });
@@ -978,13 +995,21 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
     if(calendar.initialData.additional_timezone_ids) {
         _.each(calendar.initialData.additional_timezone_ids, function(timezone_id) {
             if(allTimeZones.indexOf(timezone_id) == -1) {
-                calendar.$selector.find("#calendar-timezone").append(
-                    $("<option>").val(timezone_id).html(timezone_id)
-                );
+                //calendar.$selector.find("#calendar-timezone").append(
+                //    $("<option>").val(timezone_id).html(timezone_id)
+                //);
                 allTimeZones.push(timezone_id);
             }
         });
     }
+
+    allTimeZones = _.uniq(allTimeZones);
+
+    _.each(allTimeZones, function(timezone) {
+        calendar.$selector.find("#calendar-timezone").append(
+            $("<option>").val(timezone).html(timezone)
+        );
+    });
 };
 Calendar.prototype.fetchAccountPreferences = function (callback) {
     var calendar = this;
