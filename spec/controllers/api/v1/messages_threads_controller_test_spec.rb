@@ -153,6 +153,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "summary" => mc.summary,
                                                               "duration" => mc.duration,
                                                               "location" => mc.location,
+                                                              "location_coordinates"=>[],
                                                               "attendees" => mc.attendees,
                                                               "notes" => mc.notes,
                                                               "constraints" => mc.constraints,
