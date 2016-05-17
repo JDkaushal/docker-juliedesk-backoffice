@@ -186,6 +186,9 @@ window.generateEmailTemplate = function (params) {
 
                     timezoneIndex = 0;
 
+                    console.log(hash);
+                    console.log(params);
+
                     currentDay = hash[params.usedTimezones[0]][0].format("YYYY-MM-DD");
 
                     _.each(params.usedTimezones, function(timezone) {
