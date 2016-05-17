@@ -1,12 +1,18 @@
 (function(){
     var app = angular.module('attendees-manager-directives', ['templates']);
 
-    app.directive('attendeeGeneralDetails', function(){
+    app.directive('attendeeGeneralDetails', ['$timeout', function($timeout){
         return {
             restrict: 'E',
-            templateUrl: 'attendee-general-details.html'
+            templateUrl: 'attendee-general-details.html',
+            link: function(scope, element, attrs) {
+                // Allow us to initialize the timezonePicker on the timezone field exposed in the attendee details thumbnail
+                $timeout(function() {
+                    $(element[0]).find('.attendee-timezone').timezonePicker();
+                });
+            }
         };
-    });
+    }]);
 
     app.directive('capitalize', function() {
         return {

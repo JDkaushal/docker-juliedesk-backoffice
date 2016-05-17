@@ -54,6 +54,10 @@ class JulieActionsController < ApplicationController
     end
     print_time "Update messages thread"
 
+    if params[:timezone].present?
+      julie_action.message_classification.update(timezone: params[:timezone])
+    end
+
     date_times = []
     if params[:date_times]
       message_classification_timezone = julie_action.message_classification.timezone

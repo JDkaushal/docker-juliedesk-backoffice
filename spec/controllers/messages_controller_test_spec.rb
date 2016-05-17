@@ -138,7 +138,14 @@ describe MessagesController, :type => :controller do
 
         expect(OperatorAction).to receive(:create_and_verify).and_return(true)
 
-        expect(MessageClassification).to receive(:create_from_params).with("classification"=>"ask_date_suggestions", "id"=>"#{m1.id}", "controller"=>"messages", "action"=>"classify", "operator"=>"normal@op.com").and_call_original
+        expect(MessageClassification).to receive(:create_from_params).with({
+                                                                               "classification"=>"ask_date_suggestions",
+                                                                               "id"=>"#{m1.id}",
+                                                                               "controller"=>"messages",
+                                                                               "action"=>"classify",
+                                                                               "operator"=>"normal@op.com",
+                                                                               "messages_thread_id"=>mt1.id
+                                                                           }).and_call_original
 
         post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS
 

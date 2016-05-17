@@ -187,7 +187,7 @@ en:
     french: "French"
     english: "English"
     timezone: "Timezone"
-    timezone_for_virtual: "Timezone to communicate"
+    timezone_for_virtual: "Timezone of the client for this appointment"
     timezone_for_physical: "Appointment timezone"
     ticket_notes: "Time constraints / free notes"
     appointment_type: "Appointment type"

@@ -57,6 +57,11 @@
       <% end %>
   };
 
+  function emailSender() {
+      return <%== {name: @message.get_email_sender}.to_json %>;
+  }
+
+
 </script>
 
 <div class="fixed-columns">

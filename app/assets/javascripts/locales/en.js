@@ -170,6 +170,7 @@ window.wordings['en'] = {
             full_date_format: "dddd D MMMM YYYY h:mma",
             full_time_format: "h:mma",
             only_date_format: "dddd D MMMM YYYY",
+            only_date_format_without_year: "dddd D MMMM",
             simplified_date_format: "dddd D MMMM YYYY",
             date_time_separator: "at",
             only_time_format: "h:mma",

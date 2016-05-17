@@ -15,6 +15,21 @@ class MessagesThread < ActiveRecord::Base
 
   attr_writer :account
 
+  def get_dates_to_verify
+    thread_locale = self.computed_data[:locale]
+    now = DateTime.now
+    self.suggested_date_times.uniq.map do |dt|
+      date = DateTime.parse(dt['date'])
+      if date > now
+        {'timezone' => dt['timezone'], 'date' => date, 'date_with_timezone' => date.in_time_zone(dt['timezone'])}
+      else
+        nil
+      end
+    end.compact.sort_by do |dt|
+      dt['date_with_timezone']
+    end
+
+  end
 
   def get_all_messages_recipients
     recipients_emails = []
@@ -202,6 +217,14 @@ class MessagesThread < ActiveRecord::Base
         },
         last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
     }
+  end
+
+  def last_message_classification_with_data
+    message_classifications = messages.map{|m|
+      m.message_classifications
+    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+
+    message_classifications.last
   end
 
   def computed_data

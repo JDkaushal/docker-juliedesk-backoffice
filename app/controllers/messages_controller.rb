@@ -65,7 +65,7 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     print_time "Find message"
     params[:operator] = session[:user_username]
-    @message_classification = @message.message_classifications.create_from_params params
+    @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
     print_time "create message classification"
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,

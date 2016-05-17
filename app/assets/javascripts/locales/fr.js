@@ -171,6 +171,7 @@ window.wordings['fr'] = {
             full_date_format: "dddd D MMMM YYYY à H[h]mm",
             full_time_format: "H[h]mm",
             only_date_format: "dddd D MMMM YYYY",
+            only_date_format_without_year: "dddd D MMMM",
             simplified_date_format: "dddd, D MMMM YYYY",
             date_time_separator: "à",
             only_time_format: "H[h]mm",

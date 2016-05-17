@@ -41,8 +41,14 @@
             window.addEventListener("message", function (event) {
                 if (event.data.message == "drawExternalEventsList") {
                     window.timeSlotsToSuggest = event.data.date_times;
-                    suggestDatesSetReplyMessage();
                     window.redrawTimeSlotsToSuggestContainer();
+                    suggestDatesSetReplyMessage();
+
+                    // Scroll top on the right column to the dates propostion area
+                    $('.messages-thread-info-panel').animate({
+                        scrollTop: 0
+                    });
+
                 }
             });
         }
@@ -81,18 +87,22 @@
         var message = '';
         var messageBuilder = $('#reply-area').scope();
         var threadComputedData = window.threadComputedData;
+        var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
 
         message += messageBuilder.generateReply({
             action: "suggest_dates",
             client_agreement: true,
             isPostpone: isPostpone,
-            attendeesAreNoticed: threadComputedData.attendees_are_noticed,
+            attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
             previousAppointment: previousAppointment,
             currentEventData: window.currentEventData,
             locale: threadComputedData.locale,
             appointment: window.getCurrentAppointment(),
             address: window.getCurrentAddress(),
-            timeSlotsToSuggest: window.timeSlotsToSuggest,
+            timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
+            //timeSlotsToSuggest: window.timeSlotsToSuggest,
+            usedTimezones: datesSuggestionsManager.getUsedTimezones(),
+            threadMainTimezone: threadComputedData.timezone,
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(otherClients(), function(attendee) {
                 var names = attendee.usageName.split(" ");
@@ -157,6 +167,7 @@
             data: {
                 text: $("textarea#reply-text").val(),
                 generated_text: window.currentFullMessageWithFooter,
+                timezone: $('#dates_suggestion_timezone').val(),
                 to: window.currentRecipients().to,
                 cc: window.currentRecipients().cc,
                 date_times: window.timeSlotsToSuggest,

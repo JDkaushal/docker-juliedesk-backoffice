@@ -1,49 +1,44 @@
 
-<div class="dates-identification-panel">
-  <div class="already-suggested-dates-container">
-    <div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>
+<div class="dates-identification-panel" ng-controller="datesIdentificationsManager as datesIdentificationsMng" id="dates-identifications-manager" data-dates-to-identify="<%= messages_thread.get_dates_to_verify.to_json %>">
+  <div class="loader" ng-show="loading"></div>
 
-    <div class="already-suggested-dates">
-      <%
-         thread_locale = messages_thread.computed_data[:locale]
-         now = DateTime.now
-         messages_thread.suggested_date_times.uniq.map do |dt|
-            date = DateTime.parse(dt['date'])
-            if date > now
-              {'timezone' => dt['timezone'], 'date' => date, 'date_with_timezone' => date.in_time_zone(dt['timezone'])}
-            else
-              nil
-            end
-        end.compact.sort_by do |dt|
-          dt['date_with_timezone']
-        end.each_with_index do |dt, i| %>
-          <div class="already-suggested-date" data-date="<%= dt['date'].to_s %>" data-timezone="<%= dt['timezone'] %>">
-            <%= check_box_tag "already_suggested_date_#{i}", "" %>
-            <% localized_date = I18n.l(dt['date_with_timezone'], format: :full_date, locale: thread_locale)
-                localized_date[0] = localized_date[0].capitalize
-            %>
-            <span class="date"><%= localized_date %></span>
-            <div class="timezone"><%= dt['timezone']%></div>
-            <label for="<%= "already_suggested_date_#{i}" %>"></label>
-          </div>
-      <% end %>
+  <div ng-hide="loading">
+
+    <div class="already-suggested-dates-container" ng-show="showAlreadySuggestedArea">
+      <!--<div class="date-identification-question"><%= I18n.t("dates_identifications.does_contact_already_date") %></div>-->
+      <div class="date-identification-title">Dates à vérifier</div>
+
+      <%= select_tag :identification_timezones, "", {class: 'form-control identification-timezones-select', 'ng-options' => 'timezone as timezone for timezone in usedTimezones', 'ng-model' => 'selectedTimezone', 'ng-change' => 'computeDataOnDatesToIdentify();'} %>
+
+      <div class="already-suggested-dates">
+
+        <div class="already-suggested-date" ng-class="{highlighted: date.selected}" data-date="{{date.date}}" data-timezone="{{date.timezone}}" ng-repeat="date in datesToIdentify track by $index">
+          <input id="already_suggested_date_{{$index}}" name="already_suggested_date_{{$index}}" ng-model="date.selected" type="checkbox" value="">
+          <span class="date">{{date.displayText}}</span>
+          <label for="already_suggested_date_{{$index}}"></label>
+        </div>
+
+      </div>
+
+      <button id="submit-these-already-suggested-dates" class="btn btn-success btn-block" ng-disabled="nextButtonDisabled()"><%= I18n.t("common.next")%></button>
+      <button id="none-of-already-suggested-dates" class="btn btn-default btn-block"><%= I18n.t("common.select_other_dates")%></button>
+
     </div>
 
-    <button id="none-of-already-suggested-dates" class="btn btn-default"><%= I18n.t("common.sno")%></button>
-    <button id="submit-these-already-suggested-dates" class="btn btn-success"><%= I18n.t("common.syes")%></button>
+    <div class="detected-dates-container" ng-show="showDetectedDatesArea">
+      <div class="date-identification-question"><%= I18n.t("dates_identifications.verify_detected_dates")%></div>
+      <div class="detected-dates">
+
+      </div>
+      <div class="add-detected-date-button-container">
+        <button class="btn btn-sm btn-default" id="add-detected-date-button"><%= I18n.t("dates_identifications.add_a_date")%></button>
+      </div>
+      <br>
+      <button class="btn btn btn-success btn-block" id="submit-detected-date-button"><%= I18n.t("common.validate")%></button>
+    </div>
+
 
   </div>
 
-  <div class="detected-dates-container">
-    <div class="date-identification-question"><%= I18n.t("dates_identifications.verify_detected_dates")%></div>
-    <div class="detected-dates">
-
-    </div>
-    <div class="add-detected-date-button-container">
-      <button class="btn btn-sm btn-default" id="add-detected-date-button"><%= I18n.t("dates_identifications.add_a_date")%></button>
-    </div>
-    <br>
-    <button class="btn btn btn-success btn-block" id="submit-detected-date-button"><%= I18n.t("common.validate")%></button>
-  </div>
 
 </div>

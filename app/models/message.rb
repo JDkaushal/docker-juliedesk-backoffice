@@ -23,6 +23,19 @@ class Message < ActiveRecord::Base
     self.delete
   end
 
+  def get_email_sender
+    parsed_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+
+    if parsed_reply_all_recipients['from'].present? && parsed_reply_all_recipients['from'].is_a?(Array)
+      email_sender_email = parsed_reply_all_recipients['from'][0]['email']
+    else
+      if parsed_reply_all_recipients['to'].present? && parsed_reply_all_recipients['to'].is_a?(Array)
+        email_sender_email = parsed_reply_all_recipients['to'][0]['email']
+      else
+        email_sender_email = ''
+      end
+    end
+  end
 
   def initial_recipients params={}
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")

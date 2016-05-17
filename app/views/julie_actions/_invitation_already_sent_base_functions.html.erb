@@ -91,8 +91,10 @@
 
     function setInvitationDeclinedNewAvailabilitesReplyText() {
         window.pickingNewAvailabilities = true;
-
+        var threadComputedData = window.threadComputedData;
+        var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
         var messageBuilder = $('#reply-area').scope();
+
         window.setReplyMessage(messageBuilder.generateReply({
             action: "suggest_dates",
             noDateFits: 'external_invitation',
@@ -100,15 +102,21 @@
             declining_previously_suggested_date: decliningAlreadySuggestedDate(),
             client: window.threadAccount.usage_name,
             invitation_start_date: window.selectedEvents[0].start,
-            timezoneId: window.threadComputedData.timezone,
-            locale: window.threadComputedData.locale,
-            timeSlotsToSuggest: window.timeSlotsToSuggest
+            timezoneId: threadComputedData.timezone,
+            locale: threadComputedData.locale,
+            timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
+            usedTimezones: datesSuggestionsManager.usedTimezones,
+            threadMainTimezone: threadComputedData.timezone
         }), "all", window.otherEmails);
     }
 
     function redrawSelectedEventsContainer() {
+        var datesManager = $('#dates-suggestion-manager').scope();
+
         var $container = $("#thread-header-other-entries-container");
-        $container.html("");
+        //$container.html("");
+        datesManager.displayDatesSuggestionManager = false;
+
         var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");
         var $selectedEventsListDiv = $("<div>").addClass("selected-events-list");
         $selectedEventsListDiv.append($("<div>").addClass("selected-events-title").html("Selected events"));

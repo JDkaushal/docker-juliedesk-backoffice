@@ -215,6 +215,7 @@
         this.loaded = false;
         $scope.attendees = [];
         $scope.missingInformationLookedFor = '';
+        $scope.displayAttendeesTimezone = false;
         this.readOnly = window.threadDataIsEditable == undefined;
 
         //Watchers------------------------------------------------------------------------
@@ -494,6 +495,9 @@
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
                 $scope.exposeAttendeesToGlobalScope();
+                $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
+                $(".attendee-timezone").timezonePicker();
+                $scope.displayExtendedInfos();
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
@@ -604,6 +608,18 @@
             return (currentAppointment && currentAppointment.required_additional_informations != 'empty');
         };
 
+        $scope.getUsedTimezones = function() {
+            return _.compact(_.uniq(_.map($scope.attendees, function(attendee) {
+                var timezone = undefined;
+
+                if(attendee.isPresent && !attendee.isThreadOwner) {
+                    timezone = attendee.timezone;
+                }
+
+                return timezone;
+            })));
+        };
+
         $scope.getAttendeeByGuid = function(guid) {
             return _.find($scope.attendees, function (a) {
                 return a.guid == guid;
@@ -680,6 +696,12 @@
             return _.filter($scope.attendees, function(a) {
                 return a.isClient;
             });
+        };
+
+        $scope.displayExtendedInfos = function(){
+            var currentAppointmentIsVirtual = window.getCurrentAppointment().appointment_kind_hash.is_virtual;
+
+            $scope.displayAttendeesTimezone = currentAppointmentIsVirtual;
         };
 
         $scope.lookupAttendeesMissingInfos = function(){
