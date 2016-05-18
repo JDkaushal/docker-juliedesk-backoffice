@@ -51,7 +51,7 @@ class Review::OperatorsController < ReviewController
     total_count_week = operator_actions_week.count
 
     counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
-    total_duration_by_operator = operator_actions.group(:operator_id).select("SUM(duration), operator_id")
+    #total_duration_by_operator = operator_actions.group(:operator_id).select("SUM(duration), operator_id")
     counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
 
@@ -70,32 +70,7 @@ class Review::OperatorsController < ReviewController
     operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
       actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
       errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      total_duration_in_seconds = operator.operator_presences.where('date >= ?', reference_date_month).count * 30 * 60 # Each presence is equivalent to 30 minutes so we multiply the count by 30 then by 60 to have it in seconds
-
-      {
-          id: operator.id,
-          name: operator.name,
-          level: operator.level_string,
-          actions_count: actions_count,
-          coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (actions_count || 1),
-          errors_percentage: (errors_count || 0) * 1.0 / (actions_count || 1),
-          errors_percentage_global: (errors_count || 0) * 1.0 / (total_errors_count_for_all_operators || 1),
-          errors_count: errors_count,
-          total_duration_in_seconds: total_duration_in_seconds,
-          mails_treatment_hourly_flow: (actions_count || 0) / (total_duration_in_seconds.to_f / 3600)
-      }
-    }
-
-    if params['sort'].present?
-      operators_data = sort_operators_data(params['sort'], operators_data)
-    end
-
-    total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) {|sum, oa| sum + oa.count}
-
-    operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
-      actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      total_duration_in_seconds = total_duration_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'sum')
+      total_duration_in_seconds = operator.operator_presences.where('date >= ? AND is_review = ?', reference_date_month, false).count * 30 * 60 # Each presence is equivalent to 30 minutes so we multiply the count by 30 then by 60 to have it in seconds
 
       {
           id: operator.id,
@@ -123,7 +98,7 @@ class Review::OperatorsController < ReviewController
         flag_to_review_count: flag_count,
         to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).count,
         total_count: total_count,
-        total_duration_for_all_operators_in_seconds: total_duration_by_operator.inject(0) {|sum, oa| sum + oa.sum},
+        total_duration_for_all_operators_in_seconds: operators_data.inject(0) {|sum, oa| sum + oa[:total_duration_in_seconds]},
         total_percentage_coverage_for_all_operators: counts_by_operator_reviewed.inject(0) {|sum, oa| sum + oa.count}.to_f / total_count,
         total_errors_count_for_all_operators: total_errors_count_for_all_operators,
         total_errors_percentage_for_all_operators: total_errors_count_for_all_operators.to_f / total_count,
