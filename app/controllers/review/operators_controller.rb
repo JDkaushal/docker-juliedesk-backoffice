@@ -40,7 +40,9 @@ class Review::OperatorsController < ReviewController
   end
 
   def index
-    operator_actions = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days)
+    reference_date_month = DateTime.now - 30.days
+
+    operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month)
     reviewed_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
     total_count = operator_actions.count
 
@@ -54,21 +56,21 @@ class Review::OperatorsController < ReviewController
     counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
 
     result = EmailServer.search_messages({
-                                    after: (DateTime.now - 30.days).to_s,
+                                    after: (reference_date_month).to_s,
                                     labels: "flag",
                                     limit: 1000
                                 })
 
     flag_server_message_ids = result['messages']['ids']
     flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id).uniq
-    flag_count = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
+    flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
 
     total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) {|sum, oa| sum + oa.count}
 
     operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
       actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
       errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      total_duration_in_seconds = total_duration_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'sum')
+      total_duration_in_seconds = operator.operator_presences.where('date >= ?', reference_date_month).count * 30 * 60 # Each presence is equivalent to 30 minutes so we multiply the count by 30 then by 60 to have it in seconds
 
       {
           id: operator.id,
