@@ -90,6 +90,31 @@ class Review::OperatorsController < ReviewController
       operators_data = sort_operators_data(params['sort'], operators_data)
     end
 
+    total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) {|sum, oa| sum + oa.count}
+
+    operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
+      actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      total_duration_in_seconds = total_duration_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'sum')
+
+      {
+          id: operator.id,
+          name: operator.name,
+          level: operator.level_string,
+          actions_count: actions_count,
+          coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (actions_count || 1),
+          errors_percentage: (errors_count || 0) * 1.0 / (actions_count || 1),
+          errors_percentage_global: (errors_count || 0) * 1.0 / (total_errors_count_for_all_operators || 1),
+          errors_count: errors_count,
+          total_duration_in_seconds: total_duration_in_seconds,
+          mails_treatment_hourly_flow: (actions_count || 0) / (total_duration_in_seconds.to_f / 3600)
+      }
+    }
+
+    if params['sort'].present?
+      operators_data = sort_operators_data(params['sort'], operators_data)
+    end
+
     @data = {
         main_coverage: reviewed_count * 1.0 / total_count,
         review_count: reviewed_count,
