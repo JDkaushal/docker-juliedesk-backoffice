@@ -259,6 +259,26 @@ class Account
     end
   end
 
+  def self.migrate_events account_email, old_username, new_username
+    jas = MessagesThread.where(account_email: account_email).includes(messages: {message_classifications: :julie_action}).map(&:messages).flatten.map(&:message_classifications).flatten.map(&:julie_action)
+
+    creation_jas = jas.select { |ja| ja.events != "[]" }
+    creation_jas.each do |creation_ja|
+      creation_ja.events = JSON.parse(creation_ja.events).map do |event|
+        if event['calendar_login_username'] == old_username
+          event['calendar_login_username'] = new_username
+        end
+        event
+      end.to_json
+      creation_ja.save
+    end
+
+    scheduled_jas = jas.select { |ja| ja.event_id && ja.calendar_login_username == old_username }
+    scheduled_jas.each do |scheduled_ja|
+      scheduled_ja.update_attribute :calendar_login_username, new_username
+    end
+  end
+
   private
 
   def self.get_account_details account_email, params={}
