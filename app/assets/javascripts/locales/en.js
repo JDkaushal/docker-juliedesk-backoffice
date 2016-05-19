@@ -244,6 +244,9 @@ window.wordings['en'] = {
         follow_up_confirmation: {
             header: "Got it, I'm going to follow-up on:\n",
             item: "- %{label}\n"
+        },
+        utilities: {
+            timezone_display: "%{city} time"
         }
     },
     common: {

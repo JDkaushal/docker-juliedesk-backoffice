@@ -168,30 +168,24 @@ window.generateEmailTemplate = function (params) {
 
                 }
 
-                //if (params.timezoneId != params.defaultTimezoneId || isVirtualAppointment) {
-                //    message += "\n" + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
-                //}
+                if(params.usedTimezones.length > 1) {
+                    var currentTimeString = '';
+                    var currentTime = undefined;
+                    var currentDay = '';
+                    var currentSubDay = '';
+                    var currentSubDayReference = '';
+                    var currentSubTimeString = '';
+                    var i = 0;
+                    var timezoneIndex = 0;
+                    var currentTotalTimeSlots = 0;
 
-                var currentTimeString = '';
-                var currentTime = undefined;
-                var currentDay = '';
-                var currentSubDay = '';
-                var currentSubDayReference = '';
-                var currentSubTimeString = '';
-                var i = 0;
-                var timezoneIndex = 0;
-                var currentTotalTimeSlots = 0;
+                    _.each(params.timeSlotsToSuggest, function(hash) {
 
-                _.each(params.timeSlotsToSuggest, function(hash) {
+                        timezoneIndex = 0;
 
-                    timezoneIndex = 0;
+                        currentDay = hash[params.usedTimezones[0]][0].format("YYYY-MM-DD");
 
-                    console.log(hash);
-                    console.log(params);
-
-                    currentDay = hash[params.usedTimezones[0]][0].format("YYYY-MM-DD");
-
-                    _.each(params.usedTimezones, function(timezone) {
+                        _.each(params.usedTimezones, function(timezone) {
 
                             i = 0;
                             currentTotalTimeSlots = hash[timezone].length;
@@ -237,35 +231,42 @@ window.generateEmailTemplate = function (params) {
                                 currentSubTimeString += currentTime.format(localize("email_templates.common.only_time_format"));
                                 i += 1;
                             });
-                            currentTimeString += currentSubTimeString + ' (' + extractCityFromTimezone(timezone) + ')';
+                            currentTimeString += currentSubTimeString + ' (' + localize("email_templates.utilities.timezone_display", {city: extractCityFromTimezone(timezone)}) + ')';
 
-                        timezoneIndex += 1;
+                            timezoneIndex += 1;
+                        });
+                        message += "\n - " + currentTimeString;
                     });
-                    message += "\n - " + currentTimeString;
-                });
-                //_.each(_.groupBy(params.timeSlotsToSuggest, function(timeSlot) {
-                //    return moment(timeSlot).tz(params.timezoneId).format("YYYY-MM-DD");
-                //}), function(timeSlots, day) {
-                //    date = moment(timeSlots[0]).tz(params.timezoneId);
-                //
-                //    dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
-                //    var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString);
-                //
-                //    if(date.isSame(today, "day"))
-                //        dateString = window.helpers.capitalize(localize('dates.today')) + ", " + localizedDateString;
-                //    else if(date.isSame(tomorrow, "day"))
-                //        dateString = window.helpers.capitalize(localize('dates.tomorrow')) + ", " + localizedDateString;
-                //
-                //    var timeSlotsStrings = _.map(timeSlots, function(timeSlot) {
-                //        return moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_time_format"))
-                //    });
-                //    var lastTimeSlotString = timeSlotsStrings.pop();
-                //    var timesString = timeSlotsStrings.join(", ");
-                //    if(timesString != "") timesString +=  " " + localize("common.or") + " ";
-                //    timesString += lastTimeSlotString;
-                //
-                //    message += "\n - " + dateString + " " + localize("email_templates.common.date_time_separator") + " " + timesString;
-                //});
+                }else {
+                    // We use the old system when only one timezone is used
+                    params.timezoneId = params.usedTimezones[0];
+
+                    if (params.timezoneId != params.defaultTimezoneId || isVirtualAppointment) {
+                        message += "\n" + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
+                    }
+
+                    _.each(params.timeSlotsToSuggest, function(hash) {
+                        date = moment(hash[params.timezoneId][0]).tz(params.timezoneId);
+
+                        dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
+                        var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString);
+
+                        if(date.isSame(today, "day"))
+                            dateString = window.helpers.capitalize(localize('dates.today')) + ", " + localizedDateString;
+                        else if(date.isSame(tomorrow, "day"))
+                            dateString = window.helpers.capitalize(localize('dates.tomorrow')) + ", " + localizedDateString;
+
+                        var timeSlotsStrings = _.map(hash[params.timezoneId], function(timeSlot) {
+                            return moment(timeSlot).tz(params.timezoneId).locale(params.locale).format(localize("email_templates.common.only_time_format"))
+                        });
+                        var lastTimeSlotString = timeSlotsStrings.pop();
+                        var timesString = timeSlotsStrings.join(", ");
+                        if(timesString != "") timesString +=  " " + localize("common.or") + " ";
+                        timesString += lastTimeSlotString;
+
+                        message += "\n - " + dateString + " " + localize("email_templates.common.date_time_separator") + " " + timesString;
+                    });
+                }
 
                 if(params.noDateFits == "external_invitation"){
                     message += localize("email_templates.suggest_dates.after_dates.external_invitation");
@@ -326,7 +327,7 @@ window.generateEmailTemplate = function (params) {
                 dateString += localize("email_templates.common.date_time_separator") + " ";
             }
 
-            dateString += date.format(localize("email_templates.common.full_time_format")) + " (" + extractCityFromTimezone(timezone) + ")";
+            dateString += date.format(localize("email_templates.common.full_time_format")) + ' (' + localize("email_templates.utilities.timezone_display", {city: extractCityFromTimezone(timezone)}) + ')';
 
             //currentDay =  date.clone();
 
