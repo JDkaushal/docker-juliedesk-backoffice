@@ -32,7 +32,7 @@
             $scope.setRawDatesFromData();
             $scope.rawDatesToCheck.push(date);
             $scope.rawDatesToCheck = _.uniq($scope.rawDatesToCheck, function(date) {
-                return date.date;
+                return moment(date.date).format();
             });
         };
 
