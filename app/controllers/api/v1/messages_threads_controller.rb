@@ -58,15 +58,21 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", start_date, end_date).where.not(request_at: nil)
     current_start_date = start_date
 
+    forecast = AiEmailFlowForecast.where('datetime >= ? AND datetime <= ?', start_date, end_date)
+
     data = {}
     while current_start_date < end_date
+
+      forecast_count = forecast.find{|f| f.datetime <= current_start_date + precision && f.datetime + 1.hour > current_start_date}.try(:count) || 0 / 2
+
 
       key = current_start_date.strftime("%Y%m%dT%H%M")
       current_messages = messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}
       incoming_count = incoming_messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}.length
       data[key] = {
           count: incoming_count,
-          median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0
+          median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0,
+          forecast_count: forecast_count
       }
       current_start_date += precision
     end
