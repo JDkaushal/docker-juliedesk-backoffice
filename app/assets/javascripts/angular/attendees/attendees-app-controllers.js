@@ -467,7 +467,6 @@
                         }
 
                         $scope.trackFetchFirstNameLastNameEvent({
-                            identification: response.data.identification,
                             is_error: response.data.status == 'error' || response.data.status == 'invalid',
                             error_message: response.data.message,
                             contact_full_name: fullName,
@@ -475,6 +474,9 @@
                         });
                     }, function error(response) {
                         console.log(response);
+                        $scope.trackFetchFirstNameLastNameEvent({
+                            is_error: true
+                        });
                     })
                 }
 
@@ -499,6 +501,9 @@
                         });
                     }, function error(response) {
                         console.log(response);
+                        $scope.trackGetCompanyNameEvent({
+                            is_error: true
+                        });
                     })
                 }
             }
@@ -533,7 +538,6 @@
                 thread_id: messagesThreadId,
                 is_error: params.is_error,
                 error_message: params.error_message,
-                identification: params.identification,
                 contact_full_name: params.contact_full_name,
                 ai_response: params.ai_response
             });
