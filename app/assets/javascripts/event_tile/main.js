@@ -205,6 +205,11 @@ EventTile.prototype.getEventStartEnd = function() {
         mEnd.set('m', eventTile.$selector.find("input.end-minutes").val());
     }
 
+    if(!mStart._isValid || !mEnd._isValid) {
+        mStart = eventTile.event.start;
+        mEnd = eventTile.event.start;
+    }
+
     return {start: mStart, end: mEnd};
 };
 
