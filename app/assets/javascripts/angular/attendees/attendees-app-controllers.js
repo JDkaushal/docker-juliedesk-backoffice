@@ -206,6 +206,12 @@
         var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
         var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
+        // Used for the actions tracking (provide some context on the tracking like the id of the tracking in the form of
+        // operator_id-messagesThreadId
+        var messagesContainerNode = $('#messages_container');
+        var messagesThreadId = messagesContainerNode.data('messages-thread-id');
+        var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
+
         angular.element(document).ready(function () {
             $scope.virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
             $scope.messageBuilder = $scope.messageBuilder || $('#reply-area').scope();
@@ -459,6 +465,14 @@
                                     break;
                             }
                         }
+
+                        $scope.trackFetchFirstNameLastNameEvent({
+                            identification: response.data.identification,
+                            is_error: response.data.status == 'error',
+                            message: response.data.message,
+                            contact_full_name: fullName,
+                            ai_response: {first_name: response.data.first_name, last_name: response.data.last_name, gender: response.data.gender}
+                        });
                     }, function error(response) {
                         console.log(response);
                     })
@@ -471,10 +485,18 @@
                         method: "POST",
                         data: { contact_address: a.email, message_text: window.messageText }
                     }).then(function success(response) {
-                        console.log(response);
                         if(response.data.identification != "fail") {
                             a.company = response.data.company;
                         }
+
+                        $scope.trackGetCompanyNameEvent({
+                            identification: response.data.identification,
+                            is_error: response.data.status == 'error',
+                            message: response.data.message,
+                            contact_email_address: a.email,
+                            message_text: window.messageText,
+                            company_name_found: response.data.company
+                        });
                     }, function error(response) {
                         console.log(response);
                     })
@@ -501,6 +523,33 @@
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
+            });
+        };
+
+        $scope.trackFetchFirstNameLastNameEvent = function(params) {
+
+            window.trackEvent("ask_ai_first_name_last_name", {
+                distinct_id: trackingId,
+                thread_id: messagesThreadId,
+                is_error: params.is_error,
+                message: params.message,
+                identification: params.identification,
+                contact_full_name: params.contact_full_name,
+                ai_response: params.ai_response
+            });
+        };
+
+        $scope.trackGetCompanyNameEvent = function(params) {
+
+            window.trackEvent("ask_ai_company_name", {
+                distinct_id: trackingId,
+                thread_id: messagesThreadId,
+                is_error: params.is_error,
+                message: params.message,
+                identification: params.identification,
+                contact_email_address: params.contact_email_address,
+                message_text: params.message_text,
+                company_name_found: params.company_name_found
             });
         };
 
