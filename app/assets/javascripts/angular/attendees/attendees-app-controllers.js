@@ -468,8 +468,8 @@
 
                         $scope.trackFetchFirstNameLastNameEvent({
                             identification: response.data.identification,
-                            is_error: response.data.status == 'error',
-                            message: response.data.message,
+                            is_error: response.data.status == 'error' || response.data.status == 'invalid',
+                            error_message: response.data.message,
                             contact_full_name: fullName,
                             ai_response: {first_name: response.data.first_name, last_name: response.data.last_name, gender: response.data.gender}
                         });
@@ -491,8 +491,8 @@
 
                         $scope.trackGetCompanyNameEvent({
                             identification: response.data.identification,
-                            is_error: response.data.status == 'error',
-                            message: response.data.message,
+                            is_error: response.data.status == 'error' || response.data.status == 'invalid',
+                            error_message: response.data.message,
                             contact_email_address: a.email,
                             message_text: window.messageText,
                             company_name_found: response.data.company
@@ -532,7 +532,7 @@
                 distinct_id: trackingId,
                 thread_id: messagesThreadId,
                 is_error: params.is_error,
-                message: params.message,
+                error_message: params.error_message,
                 identification: params.identification,
                 contact_full_name: params.contact_full_name,
                 ai_response: params.ai_response
@@ -545,7 +545,7 @@
                 distinct_id: trackingId,
                 thread_id: messagesThreadId,
                 is_error: params.is_error,
-                message: params.message,
+                error_message: params.error_message,
                 identification: params.identification,
                 contact_email_address: params.contact_email_address,
                 message_text: params.message_text,
