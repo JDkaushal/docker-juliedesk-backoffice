@@ -224,47 +224,49 @@
 
                 it('should return the correct object', function() {
                     window.threadComputedData.timezone = 'Europe/Paris';
-                    var referenceDay = moment("2016-04-28T14:39:24+02:00");
+                    var referenceDay = moment("2016-04-28T12:00:00+00:00");
 
                     var suggestions = {
                         'Europe/Paris':
                             [
-                                { value: moment() },
-                                { value: moment().add('h', 3) },
-                                { value: moment().add('d', 1) },
-                                { value: moment().add('d', 2) },
-                                { value: moment().add('d', 3) },
-                                { value: moment().add('d', 3).add('h', 1) },
-                                { value: moment().add('d', 3).add('h', 2) },
-                                { value: moment().add('d', 3).add('h', 3) }
+                                { value: referenceDay.clone() },
+                                { value: referenceDay.clone().add('h', 3) },
+                                { value: referenceDay.clone().add('d', 1) },
+                                { value: referenceDay.clone().add('d', 2) },
+                                { value: referenceDay.clone().add('d', 3) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 1) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 2) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 3) }
                             ],
                         'America/New_York':
                             [
-                                { value: moment() },
-                                { value: moment().add('h', 2) },
-                                { value: moment().add('d', 1) },
-                                { value: moment().add('d', 2) },
-                                { value: moment().add('d', 3) },
-                                { value: moment().add('d', 3).add('h', 2) },
-                                { value: moment().add('d', 4) },
-                                { value: moment().add('d', 4).add('h', 3) }
+                                { value: referenceDay.clone() },
+                                { value: referenceDay.clone().add('h', 2) },
+                                { value: referenceDay.clone().add('d', 1) },
+                                { value: referenceDay.clone().add('d', 2) },
+                                { value: referenceDay.clone().add('d', 3) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 2) },
+                                { value: referenceDay.clone().add('d', 4) },
+                                { value: referenceDay.clone().add('d', 4).add('h', 3) }
                             ],
                         'Asia/Calcutta':
                             [
-                                { value: moment() },
-                                { value: moment().add('h', 6) },
-                                { value: moment().add('d', 1) },
-                                { value: moment().add('d', 2) },
-                                { value: moment().add('d', 3) },
-                                { value: moment().add('d', 3).add('h', 1) },
-                                { value: moment().add('d', 3).add('h', 3) },
-                                { value: moment().add('d', 3).add('h', 6) }
+                                { value: referenceDay.clone() },
+                                { value: referenceDay.clone().add('h', 6) },
+                                { value: referenceDay.clone().add('d', 1) },
+                                { value: referenceDay.clone().add('d', 2) },
+                                { value: referenceDay.clone().add('d', 3) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 1) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 3) },
+                                { value: referenceDay.clone().add('d', 3).add('h', 6) }
                             ]
                     };
                     $scope.timeSlotsSuggestions = suggestions;
                     $scope.allUsedTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Calcutta'];
 
                     var result = $scope.getTimeSlotsSuggestionsForTemplate();
+
+                    console.log(result);
 
                     expect(result.length).toEqual(6);
                     expect(Object.keys(result[0])).toEqual([ 'Europe/Paris', 'America/New_York', 'Asia/Calcutta' ]);
@@ -524,9 +526,12 @@
             describe('getSelectedDatesToIdentify', function() {
 
                 it('should return the selected dates', function() {
-                    $scopeIdentificationMng.datesToIdentify = [{selected: true, x: 1}, {selected: false, x: 2}, {selected: true, x: 3}];
+                    window.threadComputedData.timezone = 'Europe/Paris';
 
-                    expect($scopeIdentificationMng.getSelectedDatesToIdentify()).toEqual([{ selected: true, x: 1 }, { selected: true, x: 3 }]);
+                    var date = moment();
+                    $scopeIdentificationMng.datesToIdentify = [{selected: true, date: date}, {selected: false, date: date}, {selected: true, date: date}];
+
+                    expect($scopeIdentificationMng.getSelectedDatesToIdentify()).toEqual([{ selected: true, date: date, timezone: 'Europe/Paris', date_with_timezone: date.tz('Europe/Paris')}, { selected: true, date: date, timezone: 'Europe/Paris', date_with_timezone: date.tz('Europe/Paris') }]);
                 });
             });
 
@@ -602,6 +607,12 @@
 
                 describe('attendee found', function() {
 
+                    beforeEach(function() {
+                        window.getCurrentAppointment = function() {
+                            return {};
+                        };
+                    });
+
                     describe('thread owner', function() {
                         it('should call the correct methods', function() {
                             window.emailSender = function(){
@@ -613,13 +624,11 @@
                             $httpBackend.flush();
 
                             spyOn($attendeesService, 'getAttendeeByEmail').and.callThrough();
-                            spyOn($scopeIdentificationMng, 'setTimezoneOnAppointment');
                             $scopeIdentificationMng.selectedTimezone = undefined;
 
                             $scopeIdentificationMng.selectCorrectTimezone();
 
                             expect($attendeesService.getAttendeeByEmail).toHaveBeenCalledWith(window.threadAccount.email);
-                            expect($scopeIdentificationMng.setTimezoneOnAppointment).toHaveBeenCalled();
                             expect($scopeIdentificationMng.selectedTimezone).toBe('timezoneCOmputed');
                         });
                     });
@@ -635,13 +644,11 @@
                             $httpBackend.flush();
 
                             spyOn($attendeesService, 'getAttendeeByEmail').and.callThrough();
-                            spyOn($scopeIdentificationMng, 'setTimezoneOnAppointment');
                             $scopeIdentificationMng.selectedTimezone = undefined;
 
                             $scopeIdentificationMng.selectCorrectTimezone();
 
                             expect($attendeesService.getAttendeeByEmail).toHaveBeenCalledWith('test@test1.com');
-                            expect($scopeIdentificationMng.setTimezoneOnAppointment).toHaveBeenCalled();
                             expect($scopeIdentificationMng.selectedTimezone).toBe('America/Chicago');
                         });
                     });
@@ -700,13 +707,11 @@
                             $httpBackend.flush();
 
                             spyOn($attendeesService, 'getAttendeeByEmail').and.callThrough();
-                            spyOn($scopeIdentificationMng, 'setTimezoneOnAppointment');
                             $scopeIdentificationMng.selectedTimezone = undefined;
 
                             $scopeIdentificationMng.selectCorrectTimezone();
 
                             expect($attendeesService.getAttendeeByEmail).toHaveBeenCalledWith("test@test4.com");
-                            expect($scopeIdentificationMng.setTimezoneOnAppointment).toHaveBeenCalled();
                             expect($scopeIdentificationMng.selectedTimezone).toBe('timezoneOfAssisted');
                         });
                     });

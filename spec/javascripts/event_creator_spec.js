@@ -90,15 +90,19 @@
                 it('should call the correct method and set the correct scope variables', function() {
                     spyOn($scope, 'setRawDatesFromData');
 
-                    $scope.rawDatesToCheck = [{date: 1}, {date: 2}];
+                    var date1 = moment('2016-02-02T12:00:00+0000');
+                    var date2 = moment('2016-02-03T12:00:00+0000');
+                    var date3 = moment('2016-02-04T12:00:00+0000');
 
-                    $scope.addRawDateToCheck({date: 2});
+                    $scope.rawDatesToCheck = [{date: date1}, {date: date2}];
+
+                    $scope.addRawDateToCheck({date: date2});
 
                     expect($scope.setRawDatesFromData).toHaveBeenCalled();
-                    expect($scope.rawDatesToCheck).toEqual([{date: 1}, {date: 2}]);
+                    expect($scope.rawDatesToCheck).toEqual([{date: date1}, {date: date2}]);
 
-                    $scope.addRawDateToCheck({date: 3});
-                    expect($scope.rawDatesToCheck).toEqual([{date: 1}, {date: 2}, {date: 3}]);
+                    $scope.addRawDateToCheck({date: date3});
+                    expect($scope.rawDatesToCheck).toEqual([{date: date1}, {date: date2}, {date: date3}]);
 
                 });
             });

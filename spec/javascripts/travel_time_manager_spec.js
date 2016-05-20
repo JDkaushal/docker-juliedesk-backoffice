@@ -593,7 +593,9 @@
 
                     $scope.maxDistanceTmp = {'email@gmail.com': {1: [{duration: 1200}, {duration: 2400}]}};
 
-                    expect($scope.getMaxDurationForEvent('email@gmail.com', 1)).toEqual(2400);
+                    // 2400 + (0.25 * 2400) because we are manually adding 25% of the duration on top of the actual duration
+                    // This is to have some margin in case of bad traffic for example etc...
+                    expect($scope.getMaxDurationForEvent('email@gmail.com', 1)).toEqual(Math.ceil(2400 + (0.25 * 2400)));
                 });
             });
 
