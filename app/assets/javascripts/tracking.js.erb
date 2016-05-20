@@ -15,6 +15,17 @@ window.trackEvent = function(event, params, callback) {
     });
 };
 
+window.trackPing = function() {
+    var date = new Date();
+    $.get("https://jd-pinguin.herokuapp.com/").success(function(data) {
+        var duration = new Date() - date;
+        window.trackEvent("ping", {
+            duration: duration,
+            request_ip: JSON.parse(data).request_ip
+        });
+    });
+};
+
 window.trackFormSubmit = function(selector, event, params) {
     //TODO: Implement
 };
