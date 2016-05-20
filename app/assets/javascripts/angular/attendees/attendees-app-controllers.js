@@ -209,8 +209,11 @@
         // Used for the actions tracking (provide some context on the tracking like the id of the tracking in the form of
         // operator_id-messagesThreadId
         var messagesContainerNode = $('#messages_container');
-        var messagesThreadId = messagesContainerNode.data('messages-thread-id');
-        var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
+        if(messagesContainerNode.length > 0) {
+            var messagesThreadId = messagesContainerNode.data('messages-thread-id');
+            var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
+        }
+
 
         angular.element(document).ready(function () {
             $scope.virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
@@ -752,9 +755,15 @@
         };
 
         $scope.displayExtendedInfos = function(){
-            var currentAppointmentIsVirtual = window.getCurrentAppointment().appointment_kind_hash.is_virtual;
+            var currentAppointment = window.getCurrentAppointment();
+            if(currentAppointment && currentAppointment.appointment_kind_hash) {
+                var currentAppointmentIsVirtual = currentAppointment.appointment_kind_hash.is_virtual;
 
-            $scope.displayAttendeesTimezone = currentAppointmentIsVirtual;
+                $scope.displayAttendeesTimezone = currentAppointmentIsVirtual;
+            } else {
+                $scope.displayAttendeesTimezone = false;
+            }
+
         };
 
         $scope.lookupAttendeesMissingInfos = function(){

@@ -134,6 +134,7 @@
 
             $scope.messageBuilder = $scopeRB;
             $scopeRB.attendeesApp = $scope;
+
             AttendeesCtrl = $controller('AttendeesCtrl', {$scope: $scope, $http: $http});
             replyBuilder = $controller('replyBuilder', {$scope: $scopeRB});
 
@@ -159,12 +160,9 @@
                     };
 
                     spyOn( window, 'updateNotesCallingInfos' );
-                    spyOn( window, 'getCurrentAppointment' );
                     $httpBackend.flush();
 
                     expect( window.updateNotesCallingInfos ).toHaveBeenCalled();
-                    expect( window.getCurrentAppointment ).not.toHaveBeenCalled();
-
                     expect($scope.checkMissingInformations()).toEqual('');
                 });
             });

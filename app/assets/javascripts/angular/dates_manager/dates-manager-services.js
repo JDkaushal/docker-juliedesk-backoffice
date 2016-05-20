@@ -26,7 +26,7 @@
 
         this.sortTimezones = function(timezones) {
           return   _.sortBy(timezones, function(timezone) {
-              return -(moment().tz(timezone)._offset);
+              return moment().tz(timezone)._offset;
           });
         };
 
