@@ -485,7 +485,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
 
         while (mCurrentTime < moment(endTime)) {
             if (mCurrentTime.locale("en").format("ddd").toLowerCase() == day) {
-                
+
                 var currentDay = mCurrentTime.day();
                 $(slots).each(function (k, slot) {
                     var eventStartTime = mCurrentTime.clone().tz(accountPreferencesHash.default_timezone_id);

@@ -185,6 +185,29 @@ EventTile.prototype.disableAll = function() {
     //$('#event_update_vm_ctrl').find('#call_details').prop('disabled', false);
 };
 
+EventTile.prototype.getEventStartEnd = function() {
+    var eventTile = this;
+
+    var allDay = eventTile.$selector.find("input.event-date-all-day:checked").length > 0;
+    var mStart, mEnd;
+    if(allDay) {
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), "UTC");
+        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), "UTC");
+        mEnd.add("d", 1);
+    }
+    else {
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneId());
+        mStart.set('h', eventTile.$selector.find("input.start-hours").val());
+        mStart.set('m', eventTile.$selector.find("input.start-minutes").val());
+
+        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), eventTile.getTimezoneIdForEndDate());
+        mEnd.set('h', eventTile.$selector.find("input.end-hours").val());
+        mEnd.set('m', eventTile.$selector.find("input.end-minutes").val());
+    }
+
+    return {start: mStart, end: mEnd};
+};
+
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
@@ -197,8 +220,8 @@ EventTile.prototype.redraw = function() {
 
     var rrule = "";
     var rstart = moment(eventTile.event.start);
+
     if(eventTile.recurringEvent) {
-        console.log(eventTile);
         eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
         if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(eventTile.recurringEvent.recurrence.join("\n"));
@@ -216,8 +239,8 @@ EventTile.prototype.redraw = function() {
     eventTile.recurrenceForm = new RecurrenceForm(eventTile.$selector.find(".recurrence-container .recurrence-form-container"), {
         rrule: rrule,
         rstart: rstart,
+        parentEventTile: eventTile,
         ruleChangedCallback: function(recurrenceForm) {
-            console.log(recurrenceForm);
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(recurrenceForm.rrule);
             eventTile.$selector.find(".recurrence-link-container .recurrence-text").html(recurrenceForm.getText());
         }
