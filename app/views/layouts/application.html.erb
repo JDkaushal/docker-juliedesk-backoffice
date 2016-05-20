@@ -8,6 +8,12 @@
   <%= csrf_meta_tags %>
 
   <script src="/javascripts/pusher.min.js"></script>
+  <script>
+    $(function() {
+        // To measure internet speed
+        window.trackPing();
+    })
+  </script>
 </head>
 <body>
 <%= render partial: "common/features" %>
