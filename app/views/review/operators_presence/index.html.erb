@@ -3,7 +3,8 @@
     var app = angular.module("backofficeApp", []);
     app.controller("OperatorsPresenceCtrl", function($scope, $http, $timeout, $sce) {
         moment.locale('fr');
-        var operatorEmailByHourRate = 7.5;
+        $scope.operatorEmailByHourRate = 5;
+        //var operatorEmailByHourRate = 7.5;
         var aiForecastWindow = 45;
 
         $scope.startWeekDate = moment.tz('Indian/Antananarivo').startOf("isoweek").utc().add(6, 'h');
@@ -55,7 +56,7 @@
                     currentValue = 'n/a';
 
                     if($scope.aiForecast[formattedDate]) {
-                        currentValue = Math.ceil($scope.aiForecast[formattedDate] / operatorEmailByHourRate);
+                        currentValue = Math.ceil($scope.aiForecast[formattedDate] / $scope.operatorEmailByHourRate);
                     }
 
                     $scope.countsToMatch[currentDate.format('EHH')] = currentValue;
@@ -431,6 +432,9 @@
 
 <div ng-app="backofficeApp" ng-controller="OperatorsPresenceCtrl" class="operators-presence-container" data-start-date="<%= params[:start_date]%>">
   <h1>Operator presence times</h1>
+
+  <label>Number of emails processed per hour per operator</label>
+  <input ng-model="operatorEmailByHourRate" ng-change="computeAIForecast()">
 
   <div id=by-julie>Predictions by Julie</div>
 
