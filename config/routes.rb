@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   root to: "messages_threads#index"
 
   resources :client_contacts, param: :client_email, only: [] do
@@ -12,6 +13,8 @@ Rails.application.routes.draw do
       get :fetch_one
     end
   end
+
+  resources :event_operator_interactions, only: [:create]
 
   resources :messages_threads, only: [:show, :index] do
     collection do

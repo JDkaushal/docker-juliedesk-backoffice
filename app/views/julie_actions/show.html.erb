@@ -415,9 +415,10 @@
 
         var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
         var fullMessage = "";
-        if(shouldSayHi) {
-            var recipientsTos = $('#recipients-to-input').tokenInput('get');
 
+        var recipientsTos = $('#recipients-to-input').tokenInput('get');
+
+        if(shouldSayHi) {
             if(recipientsTos.length == 1) {
                 var attendeesApp = $('#attendeesCtrl').scope();
 
@@ -433,6 +434,15 @@
             }
             else {
                 fullMessage += localize("email_templates.common.hello_all");
+            }
+        } else {
+            if(recipientsTos.length == 1) {
+                var attendeesApp = $('#attendeesCtrl').scope();
+                if(attendeesApp) {
+                    var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+                    if (attendee && attendee.usageName)
+                        fullMessage += localize("email_templates.common.interlocutor_name", {name: attendee.usageName});
+                }
             }
         }
         fullMessage += message;

@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attribute_changed: MyString
+  old_state: MyString
+  new_state: MyString
+  event_id: MyString
+  string: MyString
+  client_id: MyString
+  calendar_id: MyString
+  operator_id: 1
+  done_at: 2016-05-23 15:54:59
+
+two:
+  attribute_changed: MyString
+  old_state: MyString
+  new_state: MyString
+  event_id: MyString
+  string: MyString
+  client_id: MyString
+  calendar_id: MyString
+  operator_id: 1
+  done_at: 2016-05-23 15:54:59

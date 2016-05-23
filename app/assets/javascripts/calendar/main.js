@@ -579,7 +579,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                 color: "#444",
                 textColor: "#aaa",
                 calId: "juliedesk-public-holidays",
-                isNotAvailableEvent: true
+                isNotAvailableEvent: true,
+                busyLocked: true
             };
             result.push(event);
         }
@@ -664,7 +665,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         recurrence: ev.recurrence,
         preview: ev.preview,
         calendar_login_username: ev.calendar_login_username,
-        calendar_login_type: ev.calendar_login_type
+        calendar_login_type: ev.calendar_login_type,
+        busyLocked: ev.busyLocked
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;

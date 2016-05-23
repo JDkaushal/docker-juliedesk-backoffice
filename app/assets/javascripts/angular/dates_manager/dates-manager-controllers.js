@@ -256,6 +256,10 @@
             $scope.loading = false;
             if(!$scope.$$phase)
                 $scope.$apply();
+
+            if(window.datesIdentificationManageInitiatedCallback) {
+                window.datesIdentificationManageInitiatedCallback();
+            }
         };
 
         $scope.showAlreadySuggestedDates = function() {

@@ -2,6 +2,8 @@
     window.classificationForms.classificationForm.isParentOf(this, params);
 
     var askDateSuggestionsForm = this;
+    // Used to have a common accessor between all the different forms
+    var currentClassifForm = askDateSuggestionsForm;
 
     window.leftColumnMessage = localize("classification_forms.common.fill_info_in");
 
@@ -11,9 +13,15 @@
 
     $(function () {
         $(".client-agreement-panel .yes-button").click(function () {
-            askDateSuggestionsForm.validateClientAgreement(true, false);
+            window.acceptClientAgreement();
         });
 
         askDateSuggestionsForm.checkClientAgreement();
+
+        bypassClientAgreementIfPossible();
     });
+
+    window.acceptClientAgreement = function() {
+        askDateSuggestionsForm.validateClientAgreement(true, false);
+    };
 };

@@ -173,6 +173,7 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, elementOriginalColor, 
     var calendar = this;
     var timezone = calendar.getCalendarTimezone();
     var newBusy = !event.busy;
+    var oldBusy = event.busy;
 
     CommonHelpers.externalRequest({
         action: "update_event",
@@ -206,6 +207,19 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, elementOriginalColor, 
                 $element.css({'background-color': elementOriginalColor});
                 $imgSpanNode.removeClass('busy').addClass('free');
             }
+
+            $.ajax({
+                type: 'POST',
+                url: '/event_operator_interactions',
+                data: {
+                    event_infos: {
+                        id: event.id,
+                        calendar_login_username: event.calendar_login_username,
+                        calendar_id: event.calId
+                    },
+                    modifications_done: {attributes: {busy: {old_state: oldBusy, new_state: newBusy}}}
+                }
+            })
         }
         else {
             alert("Error updating event");
@@ -281,6 +295,7 @@ Calendar.prototype.fullCalendarInit = function() {
         },
         eventAfterRender: function(event, element, view) {
             var $element = $(element);
+
             if(event.isTravelTime) {
                 var travelTimeDiv = $('<div class="travel-time-wrapper ' + event.travelTimeType + '"></div>');
                 var travelTimeInnerDiv = $('<div class="travel-time-inner-wrapper"></div>');
@@ -336,6 +351,50 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.find('.fc-event-inner').append(eventLocation);
 
             }
+
+            if(event.allDay && (event.calendar_login_type != 'IcloudLogin' || event.calendar_login_type != 'CaldavLogin')) {
+                var busyImgClickable = true;
+
+                $element.addClass('event-allday');
+                var $imgSpanNode = $('<span class="allday-busy-img"></span>');
+                var $allDayMaskNode = $('<div class="allday-mask"></div>');
+                var elementOriginalColor = $('.event-allday').css('background-color');
+
+                $element.append($imgSpanNode);
+
+                $allDayMaskNode.width($element.width());
+                $allDayMaskNode.css({left: $element.position().left});
+
+                if(event.busyLocked) {
+                    event.busy = true;
+                    busyImgClickable = false;
+                    $imgSpanNode.css('cursor' , 'not-allowed');
+                }
+
+                if(event.busy) {
+                    $imgSpanNode.addClass('busy');
+                    $element.css({'background-color': '#FD9797'});
+                    $allDayMaskNode.show();
+                } else {
+                    $imgSpanNode.addClass('free');
+                    $allDayMaskNode.hide();
+                }
+
+                currentAllDayMasks.push($allDayMaskNode);
+
+                if(busyImgClickable) {
+                    $imgSpanNode.click(function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        calendar.setBusyStatusOnEvent(event, elementOriginalColor, $element, $imgSpanNode, $allDayMaskNode);
+                    });
+                }
+
+            }
+
+            if(event.isNotAvailableEvent) {
+                $element.addClass('not-available');
+            }
         },
         eventAfterAllRender: function(view) {
             calendar.fullCalendarEventAfterAllRender(view);
@@ -349,43 +408,6 @@ Calendar.prototype.fullCalendarInit = function() {
             });
 
             currentAllDayMasks = [];
-        },
-        eventAfterRender: function(event, element, view) {
-            var $element = $(element);
-
-            if(event.allDay && (event.calendar_login_type != 'IcloudLogin' || event.calendar_login_type != 'CaldavLogin')) {
-
-                $element.addClass('event-allday');
-                var $imgSpanNode = $('<span class="allday-busy-img"></span>');
-                var $allDayMaskNode = $('<div class="allday-mask"></div>');
-                var elementOriginalColor = $('.event-allday').css('background-color');
-
-                $element.append($imgSpanNode);
-
-                $allDayMaskNode.width($element.width());
-                $allDayMaskNode.css({left: $element.position().left});
-
-                if(event.busy) {
-                    $imgSpanNode.addClass('busy');
-                    $element.css({'background-color': '#FD9797'});
-                    $allDayMaskNode.show();
-                } else {
-                    $imgSpanNode.addClass('free');
-                    $allDayMaskNode.hide();
-                }
-
-                currentAllDayMasks.push($allDayMaskNode);
-
-                $imgSpanNode.click(function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    calendar.setBusyStatusOnEvent(event, elementOriginalColor, $element, $imgSpanNode, $allDayMaskNode);
-                });
-            }
-
-            if(event.isNotAvailableEvent) {
-                $element.addClass('not-available');
-            }
         },
         viewRender: function(view, element) {
             calendar.fullCalendarViewRender(view, element);

@@ -3,6 +3,9 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
     this.alreadySuggestedDates = params.alreadySuggestedDates;
 
     var askAvailabilitiesForm = this;
+    // Used to have a common accessor between all the different forms
+    var currentClassifForm = askAvailabilitiesForm;
+
     window.leftColumnMessage = localize("classification_forms.ask_availabilities.dates_identification")
 
 
@@ -12,7 +15,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     $(function(e) {
         $(".client-agreement-panel .yes-button").click(function () {
-            askAvailabilitiesForm.validateClientAgreement(true, true);
+            window.acceptClientAgreement();
         });
 
         askAvailabilitiesForm.checkClientAgreement();
@@ -47,7 +50,19 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         //$(".waiting-for-others-panel").show();
 
     });
+
+    // When the dates identification manager has been loaded, we bypass when possible the client agreement validation
+    window.datesIdentificationManageInitiatedCallback = function() {
+        if(bypassClientAgreementIfPossible)
+            bypassClientAgreementIfPossible();
+    };
+
+    window.acceptClientAgreement = function() {
+        askAvailabilitiesForm.validateClientAgreement(true, true);
+    };
 };
+
+
 
 window.classificationForms.askAvailabilitiesForm.prototype.getSuggestedDateTimes = function() {
     var askAvailabilitiesForm = this;

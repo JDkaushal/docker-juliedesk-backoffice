@@ -163,6 +163,7 @@ window.wordings['fr'] = {
         common: {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
+            interlocutor_name: "%{name}, \n\n",
             hello_only: "Bonjour,\n\n",
             hello_all: "Bonjour à tous,\n\n",
             hello_named: "Bonjour %{name},\n\n",

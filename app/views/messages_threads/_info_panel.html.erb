@@ -355,6 +355,24 @@
         return null;
     };
 
+    function bypassClientAgreementIfPossible() {
+        if(window.acceptClientAgreement && window.threadAccount && emailSender) {
+            var clientEmailAliases = window.threadAccount.email_aliases || [];
+            clientEmailAliases.push(window.threadAccount.email);
+
+            var senderEmail = emailSender();
+
+            if(senderEmail) {
+                senderEmail = senderEmail.name;
+
+                if(clientEmailAliases.indexOf(senderEmail) > -1) {
+                    window.acceptClientAgreement();
+                }
+            }
+        }
+    }
+
+
     function initGooglePlacesAutoCompleteOnLocationField() {
         var locationInput = $('#location');
         var locationCoordinatesInput = $('#location_coordinates');
