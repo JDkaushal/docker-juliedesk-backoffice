@@ -29,3 +29,23 @@ window.trackPing = function() {
 window.trackFormSubmit = function(selector, event, params) {
     //TODO: Implement
 };
+
+function trackActionV2(type, extraParams) {
+    try {
+        var messageContainerNode = $('#messages_container');
+        var messagesThreadId = messageContainerNode.data('messagesThreadId');
+        var selectedMessage = $('.email.highlighted');
+
+        var defaultParams = {
+            distinct_id: messageContainerNode.data('operatorId') + '-' + messagesThreadId,
+            thread_id: messagesThreadId,
+            thread_messages_count: messageContainerNode.data('messagesCount'),
+            bo_message_id: selectedMessage.data('messageId')
+        };
+
+        trackEvent(type, $.extend(defaultParams, extraParams), function(){})
+    }
+    catch(err) {
+        console.log(err);
+    }
+}

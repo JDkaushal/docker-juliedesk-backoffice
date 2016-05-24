@@ -258,6 +258,7 @@ window.classificationForms.classificationForm.prototype.validateAttendeesAreNoti
 
 window.classificationForms.classificationForm.prototype.onceAgreementAndAttendeesNoticedDone = function() {
     $(".messages-thread-info-panel .classic-info-panel").show();
+    trackActionV2('Form_is_open', {first_time: !window.threadComputedData.appointment_nature});
 };
 
 window.classificationForms.classificationForm.prototype.onceAgreementAndAttendeesNoticedDoneRevert = function() {

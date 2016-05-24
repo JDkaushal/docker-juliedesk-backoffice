@@ -50,3 +50,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+      trackActionV2('Email_to_send_opened', {first_time: !window.threadComputedData.appointment_nature, client_agreement: (window.classificationForm && window.classificationForm.clientAgreement) || 1})
+  });
+</script>
+

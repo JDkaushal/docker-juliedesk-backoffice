@@ -235,6 +235,7 @@
                 });
                 window.submitClassification();
             }
+            trackActionV2('Form_is_saved', {first_time: !window.threadComputedData.appointment_nature});
         });
 
         $("body").on("change", "input[type=checkbox]#attendee", function() {
