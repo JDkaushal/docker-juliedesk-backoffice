@@ -162,7 +162,7 @@ window.wordings['en'] = {
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
-            interlocutor_name: "%{name}, \n",
+            interlocutor_name: "%{name}, \n\n",
             hello_only: "Hi,\n\n",
             hello_all: "Hi all,\n\n",
             hello_named: "Hi %{name},\n\n",
