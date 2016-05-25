@@ -272,7 +272,11 @@ window.generateEmailTemplate = function (params) {
                     message += localize("email_templates.suggest_dates.after_dates.external_invitation");
                 }else{
                     var timeSlotsPlural = "plural";
-                    if (params.timeSlotsToSuggest.length == 1) timeSlotsPlural = "singular";
+
+                    var firstTimeSlotProposition = params.timeSlotsToSuggest[0];
+                    // We first check if we are only suggesting on one day, then if we only gave one suggestion ofr this day
+                    // If this is the case it means that we will use the singular case template in the email
+                    if ( params.timeSlotsToSuggest.length == 1 && firstTimeSlotProposition[Object.keys(firstTimeSlotProposition)[0]].length == 1 ) timeSlotsPlural = "singular";
 
                     var attendeesSpecificConf = determineAttendeesSpecificConf('email_templates.suggest_dates.after_dates', params.assistedAttendees, params.unassistedAttendees);
                     message += localize("email_templates.suggest_dates.after_dates." + timeSlotsPlural + attendeesSpecificConf[0], attendeesSpecificConf[1]);
