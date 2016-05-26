@@ -39,7 +39,10 @@ module EmailServer
   end
 
   def self.search_messages opts={}
-    url = "/messages/search?limit=#{opts[:limit] || 1000}&labels=#{opts[:labels] || ""}&after=#{opts[:after] || (DateTime.now - 30.days).to_s}"
+    opts[:limit] ||= 1000
+    opts[:labels] ||= ""
+    opts[:after] ||= (DateTime.now - 30.days).to_s
+    url = "/messages/search?#{opts.to_param}"
     result = self.make_request :get, url
 
     result

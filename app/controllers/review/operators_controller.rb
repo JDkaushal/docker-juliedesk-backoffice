@@ -50,10 +50,7 @@ class Review::OperatorsController < ReviewController
     reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
     total_count_week = operator_actions_week.count
 
-    counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
-    #total_duration_by_operator = operator_actions.group(:operator_id).select("SUM(duration), operator_id")
-    counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
-    counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
+
 
     result = EmailServer.search_messages({
                                     after: (reference_date_month).to_s,
@@ -65,12 +62,53 @@ class Review::OperatorsController < ReviewController
     flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id).uniq
     flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
 
-    total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) {|sum, oa| sum + oa.count}
+    counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
+    counts_by_operator_flagged = operator_actions.where(messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
+    #total_duration_by_operator = operator_actions.group(:operator_id).select("SUM(duration), operator_id")
+    counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
+    counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
+
+
+    counts_by_operator_reviewed_flagged = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5], messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
+    counts_by_operator_errors_flagged = operator_actions.where(review_notation: [0, 1, 2, 3], messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
+
+
+    total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) { |sum, oa| sum + oa.count }
+
+    errors_percentage_global = (
+    (
+    counts_by_operator_errors_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v } *
+        counts_by_operator_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v } *
+        1.0 /
+        counts_by_operator_reviewed_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v }
+    ) +
+        (
+        (counts_by_operator_errors.map{|c| c['count']}.inject(0) { |k, v| k + v } - counts_by_operator_errors_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v }) *
+            (counts_by_operator.map{|c| c['count']}.inject(0) { |k, v| k + v } - counts_by_operator_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v }) *
+            1.0 /
+            (counts_by_operator_reviewed.map{|c| c['count']}.inject(0) { |k, v| k + v } - counts_by_operator_reviewed_flagged.map{|c| c['count']}.inject(0) { |k, v| k + v })
+        )
+    ) / counts_by_operator.map{|c| c['count']}.inject(0) { |k, v| k + v }
 
     operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
       actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
       errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      reviewed_count = counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+
+      actions_flagged_count = counts_by_operator_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      errors_flagged_count = counts_by_operator_errors_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      reviewed_flagged_count = counts_by_operator_reviewed_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      begin
+        error_rate = (
+            ( errors_flagged_count * actions_flagged_count * 1.0 / reviewed_flagged_count ) +
+            ( (errors_count - errors_flagged_count) * (actions_count - actions_flagged_count) * 1.0 / (reviewed_count - reviewed_flagged_count) )
+        ) / actions_count
+      rescue
+        error_rate = 0
+      end
+
       total_duration_in_seconds = operator.operator_presences.where('date >= ? AND is_review = ?', reference_date_month, false).count * 30 * 60 # Each presence is equivalent to 30 minutes so we multiply the count by 30 then by 60 to have it in seconds
+
 
       {
           id: operator.id,
@@ -78,9 +116,8 @@ class Review::OperatorsController < ReviewController
           level: operator.level_string,
           actions_count: actions_count,
           coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (actions_count || 1),
-          errors_percentage: (errors_count || 0) * 1.0 / (actions_count || 1),
-          errors_percentage_global: (errors_count || 0) * 1.0 / (total_errors_count_for_all_operators || 1),
-          errors_count: errors_count,
+          errors_percentage: error_rate,
+          errors_count: errors_count || 0,
           total_duration_in_seconds: total_duration_in_seconds,
           mails_treatment_hourly_flow: (actions_count || 0) / (total_duration_in_seconds.to_f / 3600)
       }
@@ -101,7 +138,7 @@ class Review::OperatorsController < ReviewController
         total_duration_for_all_operators_in_seconds: operators_data.inject(0) {|sum, oa| sum + oa[:total_duration_in_seconds]},
         total_percentage_coverage_for_all_operators: counts_by_operator_reviewed.inject(0) {|sum, oa| sum + oa.count}.to_f / total_count,
         total_errors_count_for_all_operators: total_errors_count_for_all_operators,
-        total_errors_percentage_for_all_operators: total_errors_count_for_all_operators.to_f / total_count,
+        total_errors_percentage_for_all_operators: errors_percentage_global,
         operators: operators_data
     }
   end

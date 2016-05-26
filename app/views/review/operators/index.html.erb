@@ -83,7 +83,7 @@
           <td><%= actions_count %> (<%= number_to_percentage(actions_count * 100.0 / @data[:total_count], precision: 0) %>)</td>
           <td><%= number_with_precision operator_hash[:mails_treatment_hourly_flow], :precision => 1 %></td>
           <td><%= number_to_percentage (operator_hash[:coverage] || 0) * 100, precision: 0 %></td>
-          <td><%= operator_hash[:errors_count] %> (<%= number_to_percentage (operator_hash[:errors_percentage_global] || 0) * 100, precision: 0 %>)</td>
+          <td><%= operator_hash[:errors_count] %></td>
           <td><%= number_to_percentage (operator_hash[:errors_percentage] || 0) * 100, precision: 1 %></td>
           <td><%= link_to "Détails statistiques", review_operator_path(id: operator_hash[:id]), class: "btn-link" %></td>
           <td>
