@@ -405,6 +405,16 @@
         };
 
         $scope.countsToMatchForHalfHour = function(halfHour) {
+            // The hours returned by the AI are UTC based => { 2016-07-02 00:00:00: 6 }
+            // The $scope.halfHours variable contain dates that are timezoned
+            // In the table, we display the dates in the Madagascar timezone (Antananarivo) beginning at 6 (from startWeekDate)
+            // When we do halfHour.format("EHH"), moment translate the date to UTC before formatting :
+            // moment('2016-08-01T06:00:00+0000').tz('Indian/Antananarivo').utc().format() => "2016-08-01T06:00:00Z"
+            // moment('2016-08-01T06:00:00+0000').tz('Indian/Antananarivo').utc().tz('Indian/Antananarivo').format() => "2016-08-01T09:00:00+03:00"
+            // We then get the correct AI forecast for the current half hour
+
+            // Basically we work on UTC times everywhere but display times on the calendar in Madagascar timezone
+
             return $scope.countsToMatch[halfHour.format("EHH")];
         };
 
