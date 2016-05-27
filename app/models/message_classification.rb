@@ -107,7 +107,8 @@ class MessageClassification < ActiveRecord::Base
 
       result = self.new(
           locale: params[:locale],
-          timezone: params[:timezone],
+          # Extra protection against trailing whitespace causing bugs with timezones
+          timezone: params[:timezone].strip,
           classification: params[:classification],
           appointment_nature: params[:appointment_nature],
           summary: params[:summary],

@@ -132,7 +132,7 @@
         <div class="row" ng-show="attendeesFormCtrl.timezoneNeeded">
               <div class="col-xs-12">
               <%= label_tag :attendee_timezone, 'Timezone' %>
-              <%= text_field_tag :attendee_timezone, "",{'ng-change' => 'attendeesFormCtrl.timezoneChanged(attendeesForm)', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.timezone', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control'} %>
+              <%= text_field_tag :attendee_timezone, "",{'ng-change' => 'attendeesFormCtrl.timezoneChanged(attendeesForm)', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.timezone', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control' } %>
             </div>
           <div class="row error-area highlighted" ng-messages="attendeesForm.attendee_timezone.$error" style="color:grey" role="alert" id="error-area">
             <div class="col-xs-12">

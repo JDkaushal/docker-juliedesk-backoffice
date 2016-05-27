@@ -119,7 +119,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
 
     var data = {
         locale: $("input[name='locale']:checked").val(),
-        timezone: $("#timezone").val(),
+        // Need to trim the timezone because it can lead to bug as 'Europe/Berlin  ' is not recognized as a correct timezone
+        timezone: $("#timezone").val().trim(),
         classification: classificationForm.classification,
         appointment_nature: $("#appointment_nature").val(),
         summary: $("#summary").val(),
