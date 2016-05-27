@@ -13,71 +13,71 @@
 <br>
 <br>
 
-<% operator_actions_groups = @operator.operator_actions_groups
- team_operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2])
- level_1_operators = Operator.where(privilege: nil)
-%>
-
-<% max_duration = 30*60 %>
-
-<% dates = {}
-   (0..3).each do |i|
-     dates["S#{(DateTime.now - i.weeks).strftime("%V")} #{(i==0) ? "<div class='subheader'>(en cours)</div>" : ""}"] = {start: (DateTime.now - i.weeks).beginning_of_week, end: (DateTime.now - i.weeks).end_of_week}
-   end
-   (0..3).each do |i|
-     dates["#{(DateTime.now - i.months).strftime("%B")} #{(i==0) ? "<div class='subheader'>(en cours)</div>" : ""}"] = {start: (DateTime.now - i.months).beginning_of_month, end: (DateTime.now - i.months).end_of_month}
-   end
+<%
+   my_stats = JSON.parse DATA_CACHE_REDIS["operator_stats-#{@operator.id}"]
+   team_stats = JSON.parse DATA_CACHE_REDIS["operator_stats_team"]
+   level_1_stats = JSON.parse DATA_CACHE_REDIS["operator_stats_level_1"]
 %>
 
 
 <table class="review-stats-table">
   <tr>
     <th class="title-th">Stats de traitement</th>
-    <% dates.each do |key, dates_hash| %>
-        <th><%== key %></th>
+    <% current = 0 %>
+    <% my_stats.each do |key, dates_hash| %>
+        <th>
+          <%= key %>
+          <% if current == 0 %>
+        <div class='subheader'>(en cours)</div>
+              <% current = 1
+                 elsif current == 1 && !key.starts_with?("S") %>
+              <div class='subheader'>(en cours)</div>
+          <% current = 2
+             end %>
+        </th>
     <% end %>
   </tr>
   <tr>
     <td>Nombre d'emails que je traite par heure</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= number_with_precision(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: @operator.id, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% my_stats.each do |key, data| %>
+        <td><%= number_with_precision(data['operator_action_groups_by_hour_ratio'], precision: 1) %></td>
     <% end %>
   </tr>
   <tr>
     <td>Nombre d'emails traités par heure par les niveaux 1</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= number_with_precision(OperatorActionsGroup.where(operator_id: level_1_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: level_1_operators.map(&:id), is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% level_1_stats.each do |key, data| %>
+        <td><%= number_with_precision(data['operator_action_groups_by_hour_ratio'], precision: 1) %></td>
     <% end %>
   </tr>
   <tr>
     <td>Nombre d'emails traités par heure par l'ensemble de l'équipe</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= number_with_precision(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count * 2.0 / OperatorPresence.where(operator_id: team_operators.map(&:id), is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count, precision: 1) %></td>
+    <% team_stats.each do |key, data| %>
+        <td><%= number_with_precision(data['operator_action_groups_by_hour_ratio'], precision: 1) %></td>
     <% end %>
   </tr>
 
   <tr>
     <td>Nombre d'emails que j'ai traité</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count %></td>
+    <% my_stats.each do |key, data| %>
+        <td><%= data['operator_action_groups_count'] %></td>
     <% end %>
   </tr>
   <tr>
     <td>Nombre d'emails traités en moyenne dans l'équipe</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).count / team_operators.count %></td>
+    <% team_stats.each do |key, data| %>
+        <td><%= data['operator_action_groups_count_per_operator'] %></td>
     <% end %>
   </tr>
   <tr>
     <td>Mon temps moyen de traitement</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= display_duration(operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where("duration < ?", max_duration).average(:duration)) %></td>
+    <% my_stats.each do |key, data| %>
+        <td><%= display_duration data['average_processing_time_maxed'] %></td>
     <% end %>
   </tr>
   <tr>
     <td>Temps moyen de traitement de l'équipe</td>
-    <% dates.each do |key, dates_hash| %>
-        <td><%= display_duration(OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where("duration < ?", max_duration).average(:duration)) %></td>
+    <% team_stats.each do |key, data| %>
+        <td><%= display_duration data['average_processing_time_maxed'] %></td>
     <% end %>
   </tr>
 </table>
@@ -86,8 +86,18 @@
 <table class="review-stats-table">
   <tr>
     <th class="title-th">Ma qualité de traitement</th>
-    <% dates.each do |key, dates_hash| %>
-        <th><%== key %></th>
+    <% current = 0 %>
+    <% my_stats.each do |key, dates_hash| %>
+        <th>
+          <%= key %>
+          <% if current == 0 %>
+              <div class='subheader'>(en cours)</div>
+          <% current = 1
+             elsif current == 1 && !key.starts_with?("S") %>
+              <div class='subheader'>(en cours)</div>
+          <% current = 2
+             end %>
+        </th>
     <% end %>
   </tr>
   <% notations = [
@@ -101,16 +111,9 @@
   <% (1..5).to_a.reverse.each do |notation| %>
       <tr>
         <td><%= notations[notation] %> (<%= notation %>/5)</td>
-        <% dates.each do |key, dates_hash| %>
-            <%
-               if notation == 5
-                 possible_notations = [5, 6]
-               else
-                 possible_notations = [notation]
-               end
-            %>
+        <% my_stats.each do |key, data| %>
             <td>
-              <%= operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end]).where(review_notation: possible_notations).count %>
+              <%= data["notation_#{notation}_count"] %>
             </td>
         <% end %>
       </tr>
@@ -118,87 +121,23 @@
 
   <tr></tr>
 
-  <%
-     flagged_server_messages_ids = []
-     (0..3).each do |i|
-       start_date = (DateTime.now - i.months).beginning_of_month
-       end_date = (DateTime.now - i.months).end_of_month
 
-       flagged_server_messages_ids += EmailServer.search_messages({
-                                             after: start_date.to_s,
-                                             before: end_date.to_s,
-                                             labels: "flag",
-                                             limit: 1000
-                                     })['messages']['ids']
-        end
-     flagged_messages_thread_ids = Message.where(server_message_id: flagged_server_messages_ids).select(:messages_thread_id).distinct.map(&:messages_thread_id)
-
-     %>
 
      <tr>
     <td>Mon taux d'erreur (<4/5)</td>
 
-    <% dates.each do |key, dates_hash| %>
-        <%
-           if key.starts_with? "S"
-             errors_rate = 0
-           else
-             operator_actions_groups_for_dates = operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end])
-             actions_count = operator_actions_groups_for_dates.count
-             reviewed_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3, 4, 5]).count
-             errors_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3]).count
-
-             actions_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).count
-             reviewed_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3, 4, 5]).count
-             errors_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3]).count
-
-             actions_non_flagged_count = actions_count - actions_flagged_count
-             reviewed_non_flagged_count = reviewed_count - reviewed_flagged_count
-             errors_non_flagged_count = errors_count - errors_flagged_count
-
-             errors_rate = (
-             (errors_flagged_count * actions_flagged_count * 1.0 / (reviewed_flagged_count + 1)) +
-                     (errors_non_flagged_count * actions_non_flagged_count * 1.0 / (reviewed_non_flagged_count + 1))
-             ) / actions_count
-           end
-        %>
-
+    <% my_stats.each do |key, data| %>
         <td>
-          <%= number_to_percentage(errors_rate * 100.0, precision: 2) %>
+          <%= number_to_percentage((data["errors_rate"] || 0) * 100.0, precision: 2) %>
         </td>
     <% end %>
   </tr>
 
   <tr>
     <td>Taux d'erreur (<4/5) de l'équipe</td>
-    <% dates.each do |key, dates_hash| %>
-        <%
-           if key.starts_with? "S"
-             errors_rate = 0
-           else
-
-             operator_actions_groups_for_dates = OperatorActionsGroup.where(operator_id: team_operators.map(&:id)).where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end])
-             actions_count = operator_actions_groups_for_dates.count
-             reviewed_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3, 4, 5]).count
-             errors_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3]).count
-
-             actions_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).count
-             reviewed_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3, 4, 5]).count
-             errors_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3]).count
-
-             actions_non_flagged_count = actions_count - actions_flagged_count
-             reviewed_non_flagged_count = reviewed_count - reviewed_flagged_count
-             errors_non_flagged_count = errors_count - errors_flagged_count
-
-             errors_rate = (
-             (errors_flagged_count * actions_flagged_count * 1.0 / (reviewed_flagged_count + 1)) +
-                     (errors_non_flagged_count * actions_non_flagged_count * 1.0 / (reviewed_non_flagged_count + 1))
-             ) / actions_count
-           end
-
-        %>
+    <% team_stats.each do |key, data| %>
         <td>
-          <%= number_to_percentage(errors_rate * 100.0, precision: 2) %>
+          <%= number_to_percentage((data["errors_rate"] || 0) * 100.0, precision: 2) %>
         </td>
     <% end %>
   </tr>

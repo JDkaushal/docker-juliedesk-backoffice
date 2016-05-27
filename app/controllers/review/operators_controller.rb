@@ -43,8 +43,8 @@ class Review::OperatorsController < ReviewController
     reference_date_month = DateTime.now - 30.days
 
     operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month)
-    reviewed_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
-    total_count = operator_actions.count
+    reviewed_count_month = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
+    total_count_month = operator_actions.count
 
     operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days)
     reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
@@ -128,15 +128,15 @@ class Review::OperatorsController < ReviewController
     end
 
     @data = {
-        main_coverage: reviewed_count * 1.0 / total_count,
-        review_count: reviewed_count,
+        main_coverage: reviewed_count_month * 1.0 / total_count_month,
+        review_count: reviewed_count_month,
         main_coverage_week: reviewed_count_week * 1.0 / total_count_week,
         review_count_week: reviewed_count_week,
         flag_to_review_count: flag_count,
         to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).count,
-        total_count: total_count,
+        total_count: total_count_month,
         total_duration_for_all_operators_in_seconds: operators_data.inject(0) {|sum, oa| sum + oa[:total_duration_in_seconds]},
-        total_percentage_coverage_for_all_operators: counts_by_operator_reviewed.inject(0) {|sum, oa| sum + oa.count}.to_f / total_count,
+        total_percentage_coverage_for_all_operators: counts_by_operator_reviewed.inject(0) {|sum, oa| sum + oa.count}.to_f / total_count_month,
         total_errors_count_for_all_operators: total_errors_count_for_all_operators,
         total_errors_percentage_for_all_operators: errors_percentage_global,
         operators: operators_data

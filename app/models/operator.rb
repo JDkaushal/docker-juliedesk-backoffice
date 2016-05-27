@@ -117,5 +117,80 @@ class Operator < ActiveRecord::Base
     (1..length).map { o[rand(o.length)] }.join
   end
 
+  def self.generate_stats_data operator_ids, flagged_messages_thread_ids=nil
+    operator_actions_groups = OperatorActionsGroup.where(operator_id: operator_ids)
+    dates = {}
+    (0..3).each do |i|
+      dates["S#{(DateTime.now - i.weeks).strftime("%V")}"] = {start: (DateTime.now - i.weeks).beginning_of_week, end: (DateTime.now - i.weeks).end_of_week}
+    end
+    (0..3).each do |i|
+      dates["#{(DateTime.now - i.months).strftime("%B")}"] = {start: (DateTime.now - i.months).beginning_of_month, end: (DateTime.now - i.months).end_of_month}
+    end
+
+    max_duration = 30 * 60
+
+    unless flagged_messages_thread_ids
+      flagged_server_messages_ids = []
+      (0..3).each do |i|
+        start_date = (DateTime.now - i.months).beginning_of_month
+        end_date = (DateTime.now - i.months).end_of_month
+
+        flagged_server_messages_ids += EmailServer.search_messages({
+                                                                       after: start_date.to_s,
+                                                                       before: end_date.to_s,
+                                                                       labels: "flag",
+                                                                       limit: 1000
+                                                                   })['messages']['ids']
+      end
+      flagged_messages_thread_ids = Message.where(server_message_id: flagged_server_messages_ids).select(:messages_thread_id).distinct.map(&:messages_thread_id)
+    end
+
+    Hash[dates.map do |k, dates_hash|
+      hours_count = OperatorPresence.where(operator_id: operator_ids, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).count / 2.0
+      operator_actions_groups_for_dates = operator_actions_groups.where("initiated_at > ? AND initiated_at < ?", dates_hash[:start], dates_hash[:end])
+      operator_actions_groups_count = operator_actions_groups_for_dates.count
+
+      operator_action_groups_by_hour_ratio = operator_actions_groups_count / hours_count
+
+
+      average_processing_time = operator_actions_groups_for_dates.average(:duration)
+      average_processing_time_maxed = operator_actions_groups_for_dates.where("duration < ?", max_duration).average(:duration)
+
+
+      actions_count = operator_actions_groups_for_dates.count
+      reviewed_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3, 4, 5]).count
+      errors_count = operator_actions_groups_for_dates.where(review_notation: [0, 1, 2, 3]).count
+
+      actions_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).count
+      reviewed_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3, 4, 5]).count
+      errors_flagged_count = operator_actions_groups_for_dates.where(messages_thread_id: flagged_messages_thread_ids).where(review_notation: [0, 1, 2, 3]).count
+
+      actions_non_flagged_count = actions_count - actions_flagged_count
+      reviewed_non_flagged_count = reviewed_count - reviewed_flagged_count
+      errors_non_flagged_count = errors_count - errors_flagged_count
+
+      errors_rate = (
+      (errors_flagged_count * actions_flagged_count * 1.0 / (reviewed_flagged_count + 1)) +
+          (errors_non_flagged_count * actions_non_flagged_count * 1.0 / (reviewed_non_flagged_count + 1))
+      ) / actions_count
+
+      [k, {
+          operator_action_groups_by_hour_ratio: operator_action_groups_by_hour_ratio,
+          operator_action_groups_count: operator_actions_groups_count,
+          operator_action_groups_count_per_operator: operator_actions_groups_count / OperatorPresence.where(operator_id: operator_ids, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).select(:operator_id).distinct.count / 2.0,
+          average_processing_time: average_processing_time,
+          average_processing_time_maxed: average_processing_time_maxed,
+          notation_1_count: operator_actions_groups_for_dates.where(review_notation: 1).count,
+          notation_2_count: operator_actions_groups_for_dates.where(review_notation: 2).count,
+          notation_3_count: operator_actions_groups_for_dates.where(review_notation: 3).count,
+          notation_4_count: operator_actions_groups_for_dates.where(review_notation: 4).count,
+          notation_5_count: operator_actions_groups_for_dates.where(review_notation: [5, 6]).count,
+          errors_rate: errors_rate,
+          updated_at: DateTime.now
+      }]
+    end]
+
+  end
+
 
 end
