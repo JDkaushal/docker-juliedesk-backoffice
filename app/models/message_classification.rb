@@ -105,10 +105,12 @@ class MessageClassification < ActiveRecord::Base
         follow_up_data = params[:follow_up_data].values.to_json
       end
 
+      sanitized_timezone = params[:timezone].present? ? params[:timezone].strip : nil
+
       result = self.new(
           locale: params[:locale],
           # Extra protection against trailing whitespace causing bugs with timezones
-          timezone: params[:timezone].strip,
+          timezone: sanitized_timezone,
           classification: params[:classification],
           appointment_nature: params[:appointment_nature],
           summary: params[:summary],
