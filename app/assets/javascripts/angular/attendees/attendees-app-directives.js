@@ -21,8 +21,6 @@
                 var capitalize = function(inputValue) {
                     if(inputValue == undefined) inputValue = '';
                     var capitalized = inputValue.charAt(0).toUpperCase() + inputValue.slice(1);
-
-                    console.log(capitalized);
                     if(capitalized !== inputValue) {
                         modelCtrl.$setViewValue(capitalized);
                         modelCtrl.$render();

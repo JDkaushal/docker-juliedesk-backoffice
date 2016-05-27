@@ -74,8 +74,6 @@
                     if(this.attendeeInForm.timezone)
                         this.sanitizeContent('timezone');
 
-                    console.log(this.attendeeInForm.timezone);
-
                     this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
                     if(attendeesFormCtrl.currentMode == 'new')
