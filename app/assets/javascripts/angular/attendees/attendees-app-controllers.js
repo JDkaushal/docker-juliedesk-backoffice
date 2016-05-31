@@ -488,10 +488,12 @@
 
                 // If we have no company for this contact, we will ask the AI to find it if possible
                 if(!a.company) {
+                    var messageText = decodeURIComponent(window.messageText.replace(/%20/g, ' '))
+
                     $http({
                         url: '/client_contacts/ai_get_company_name',
                         method: "POST",
-                        data: { contact_address: a.email, message_text: window.messageText }
+                        data: { contact_address: a.email, message_text: messageText }
                     }).then(function success(response) {
                         if(response.data.identification != "fail") {
                             a.company = response.data.company;
@@ -502,7 +504,7 @@
                             is_error: response.data.status == 'error' || response.data.status == 'invalid',
                             error_message: response.data.message,
                             contact_email_address: a.email,
-                            message_text: window.messageText,
+                            message_text: messageText,
                             company_name_found: response.data.company
                         });
                     }, function error(response) {
