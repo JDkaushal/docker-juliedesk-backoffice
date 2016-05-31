@@ -39,6 +39,35 @@ class Review::OperatorsPresenceController < ReviewController
     end
   end
 
+  def forecast
+
+    unless params[:start]
+      params[:start] = DateTime.now.beginning_of_week.to_s
+    end
+
+    date = DateTime.parse params[:start]
+
+    client = HTTPClient.new(default_header: {
+                                "Authorization" => ENV['CONSCIENCE_API_KEY']
+                            })
+    client.ssl_config.verify_mode = 0
+    url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/planning/?date=#{date.strftime('%Y-%m-%d')}"
+    response = client.get(url)
+
+    json_response = JSON.parse(response.body)['planning']
+
+    @operators = json_response.map do |name, data|
+      o = Operator.new(name: name)
+      first_date = date.in_time_zone("Indian/Antananarivo").change(hour: 6)
+      o.operator_presences = data.flatten.map.with_index{|bit, i|
+        bit == 1 ? OperatorPresence.new(date: first_date + (i * 30.minutes)) : nil
+      }.compact
+
+      o
+    end
+
+  end
+
   def add
     OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}).delete_all
     params[:presences].map{|p| DateTime.parse(p)}.each do |p|

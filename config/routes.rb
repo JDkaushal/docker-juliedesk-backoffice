@@ -95,6 +95,7 @@ Rails.application.routes.draw do
         post "/remove", action: :remove
         post "/reset_day", action: :reset_day
         post "/copy_day", action: :copy_day
+        get "/forecast", action: :forecast
       end
     end
 

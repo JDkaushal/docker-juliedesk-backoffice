@@ -1,0 +1,29 @@
+
+
+<br>
+<h1>Semaine <%= DateTime.parse(params[:start]).strftime("%W").to_i %></h1>
+
+<table class="table table-striped">
+  <tr>
+
+    <th>Name</th>
+    <% (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).each do |day| %>
+        <th><%= day.strftime("%A") %></th>
+    <% end %>
+    <th>Count</th>
+  </tr>
+
+  <% @operators.each do |operator| %>
+      <tr>
+        <td><%= [operator.stars, operator.name].compact.join(" ") %>
+        </td>
+        <% count = 0 %>
+        <% (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).each do |day|
+          count += operator.presences_for_day(day).count %>
+            <td><%= operator.formatted_presences_for_day(day) %></td>
+        <% end %>
+        <td><%= count / 2.0 %></td>
+      </tr>
+  <% end %>
+
+</table>
