@@ -11,7 +11,7 @@ class ClientContactsController < ApplicationController
 
     if params['contacts_emails'].present?
       params['contacts_emails'].each do |contact|
-        if cache = accounts_cache_light[contact]
+        if cache = accounts_cache_light.find{|email, infos| email.downcase == contact.downcase}.try('[]', 1)
           @contacts_aliases[contact] = cache["email_aliases"]
           @contacts_companies[contact] = cache["company_hash"] ? cache["company_hash"]["name"] : ''
         else
@@ -189,7 +189,7 @@ class ClientContactsController < ApplicationController
 
     is_client = false
 
-    if accounts_cache_light[params[:email]]
+    if accounts_cache_light.find{|email, infos| email.downcase == params[:email].downcase}.try('[]', 1)
       is_client = true
     else
       accounts_cache_light.each do |email, account|
