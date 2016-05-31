@@ -488,7 +488,7 @@
 
                 // If we have no company for this contact, we will ask the AI to find it if possible
                 if(!a.company) {
-                    var messageText = decodeURIComponent(window.messageText.replace(/%20/g, ' '))
+                    var messageText = decodeURIComponent(window.messageText);
 
                     $http({
                         url: '/client_contacts/ai_get_company_name',
