@@ -25,7 +25,7 @@
         <% end %>
     <% end %>
 
-    <%  currentAttendees = currentAttendees.push(possible_contacts_for_cache).flatten.uniq { |co| co[:email] }  %>
+    <%  currentAttendees = currentAttendees.push(possible_contacts_for_cache).flatten.uniq { |co| co[:email].downcase }  %>
 
     // Add the attendees without an email at the end, so they won't be removed by a uniq email operation (This would cause to remove every attendee without an email except the first)
     <%  currentAttendees.push(attendees.select{|a| a['email'].blank? }).flatten!  %>
