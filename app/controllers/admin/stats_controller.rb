@@ -7,4 +7,8 @@ class Admin::StatsController < AdminController
       @data[(date + month.months).strftime("%Y-%m-01")] = ApplicationHelper.messages_and_delay_stats date + month.months, params[:exclude].present?
     end
   end
+
+  def production
+
+  end
 end

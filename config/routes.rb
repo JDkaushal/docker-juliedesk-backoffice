@@ -56,12 +56,16 @@ Rails.application.routes.draw do
     end
   end
 
+
+
   namespace :admin do
     resources :operators, only: [:show, :index, :new, :create, :update, :edit] do
       member do
         post :disable, action: :disable, as: :disable
       end
     end
+
+    get :production, controller: :stats, action: :production
 
     resources :features, only: [:new, :create, :edit, :update, :index, :destroy]
 
