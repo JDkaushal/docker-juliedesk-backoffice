@@ -177,7 +177,7 @@ class Operator < ActiveRecord::Base
       [k, {
           operator_action_groups_by_hour_ratio: operator_action_groups_by_hour_ratio,
           operator_action_groups_count: operator_actions_groups_count,
-          operator_action_groups_count_per_operator: operator_actions_groups_count / OperatorPresence.where(operator_id: operator_ids, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).select(:operator_id).distinct.count / 2.0,
+          operator_action_groups_count_per_operator: operator_actions_groups_count / (OperatorPresence.where(operator_id: operator_ids, is_review: false).where("date > ? AND date < ?", dates_hash[:start], [DateTime.now, dates_hash[:end]].min).select(:operator_id).distinct.count / 2.0 + 1),
           average_processing_time: average_processing_time,
           average_processing_time_maxed: average_processing_time_maxed,
           notation_1_count: operator_actions_groups_for_dates.where(review_notation: 1).count,
