@@ -1,27 +1,35 @@
-<h1>Semaine 32</h1>
-<h2>25 abril 2032</h2>
+<div class="col-md-8 col-md-offset-2">
+  <h1>
+    <%= link_to "<", "?start=#{(@date - 1.week).strftime("%Y-%m-%d")}", class: "btn btn-default" %>
+    Week <%= @date.strftime("%W") %>
+    <%= link_to ">", "?start=#{(@date + 1.week).strftime("%Y-%m-%d")}", class: "btn btn-default" %>
+  </h1>
 
-<div>
-  Mail traités
-  320
+  <h2><%= @date.strftime("%d %B") %> - <%= (@date + 6.days).strftime("%d %B %Y") %></h2>
+
+  <div>
+    Actions
+    <%= @data[:operator_actions_groups_count] %>
+  </div>
+
+  <div>
+    75% of emails processed in less than
+    <%= number_with_precision(@data[:delay_p75], precision: 0) %>'
+  </div>
+
+  <div>
+    Reviewed actions
+    <%= number_to_percentage(@data[:operator_actions_groups_reviewed_ratio] * 100, precision: 2) %>
+  </div>
+
+  <div>
+    Error rate
+    <%= number_to_percentage(@data[:errors_rate] * 100, precision: 2) %>
+  </div>
+
+  <% start_of_week = DateTime.now.beginning_of_week %>
+  <% (0..6).each do |i| %>
+      <% date = 0 %>
+  <% end %>
+
 </div>
-
-<div>
-  75% des emails traités
-  33 min
-</div>
-
-<div>
-  Review
-  15%
-</div>
-
-<div>
-  Erreurs
-  3%
-</div>
-
-<% start_of_week = DateTime.now.beginning_of_week %>
-<% (0..6).each do |i| %>
-<% date = sta
-<% end %>
