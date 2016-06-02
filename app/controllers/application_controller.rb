@@ -82,6 +82,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def only_admin_or_manager
+    if session[:privilege] == Operator::PRIVILEGE_ADMIN || Operator.find(session[:operator_id]).manager_access
+      true
+    else
+      redirect_to "/"
+      false
+    end
+  end
+
   def only_super_operator_level_2_or_admin
     if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
         session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2

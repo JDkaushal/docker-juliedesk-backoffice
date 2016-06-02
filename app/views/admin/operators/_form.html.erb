@@ -49,6 +49,14 @@
 
     <div class="form-group">
 
+      <%= f.label :manager_access %>
+      <div class="form-control">
+        <%= f.check_box :manager_access %> has access to manager features
+      </div>
+    </div>
+
+    <div class="form-group">
+
       <%= f.label :madagascar_ip_restriction %>
       <div class="form-control">
         <%= f.check_box :ips_whitelist_enabled %> restriction enabled
