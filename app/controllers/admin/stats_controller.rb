@@ -53,8 +53,6 @@ class Admin::StatsController < AdminController
     ) / actions_count
 
 
-
-
     @data = {
         operator_actions_groups_count: actions_count,
         delay_p75: (ApplicationHelper.percentile(messages.map{|m| m.received_at - m.request_at}, 0.75) || 0) / 60.0,

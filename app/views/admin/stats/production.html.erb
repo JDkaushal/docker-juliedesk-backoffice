@@ -1,3 +1,112 @@
+<script src="/chart.js"></script>
+<script>
+  $(function() {
+      $(".chart").each(function() {
+          var i = $(this).data("offset");
+          reloadGraph(i);
+      });
+  });
+
+  var reloadGraph = function(i) {
+      var startDate = moment("<%= @date %>");
+      startDate.add('d', i);
+      startDate.tz("Indian/Antananarivo").set('h', 6);
+      var endDate = startDate.clone();
+      endDate.add('d', 1);
+      $.ajax({
+          url: "https://juliedesk-backoffice.herokuapp.com/api/v1/sent_messages_stats?start_date=" + startDate.format("YYYY-MM-DDT00:00:00") + "&end_date=" + endDate.format("YYYY-MM-DDT00:00:00"),
+          beforeSend: function (xhr) {
+              xhr.setRequestHeader ("Authorization", 'EDx19D72bH7e5I64EXk1kwa4jXvynddS');
+          },
+          success: function(data) {
+              console.log(data);
+              redrawGraph(i, data.data);
+          }
+      });
+  };
+
+  var redrawGraph = function(i, stats) {
+      var labels = [];
+      var counts = [];
+      var forecastCounts = [];
+      var delays = [];
+      var delayLimits = [];
+      _.each(stats, function(v, k) {
+          var time = moment(k);
+          labels.push("");
+
+          counts.push(v.count);
+          delays.push(v.median_delay);
+          forecastCounts.push(v.forecast_count);
+          delayLimits.push(20);
+      });
+      var data = {
+          labels: labels,
+          datasets_Y1: [
+              {
+                  label: "Emails forecast",
+                  fillColor: "rgba(0,0,0,0)",
+                  strokeColor: "rgba(0,150,200,1)",
+                  strokeWidth: 1,
+                  data: forecastCounts,
+              },
+              {
+                  label: "Emails",
+                  fillColor: "rgba(150,200,220,0.2)",
+                  strokeColor: "rgba(150,200,220,1)",
+                  data: counts,
+              }
+          ],
+          datasets_Y2:[
+              {
+                  label: "Delays",
+                  fillColor: "rgba(220,150,100,0.2)",
+                  strokeColor: "rgba(220,150,100,1)",
+                  data: delays,
+              },
+              {
+                  strokeColor: "rgba(255,0,0,1.0)",
+                  strokeWidth: 1,
+                  fillColor: "rgba(0,0,0,0)",
+                  data: delayLimits,
+              }
+          ]
+      };
+      var chart = new Chart(document.getElementById("chart-" + i).getContext("2d"), {
+          type: 'bar',
+          data: {
+              labels: labels,
+              datasets: data
+          }
+      });
+
+
+      chart.LineDoubleY(data, {
+          animation: false,
+          pointDot: false,
+          bezierCurve: true,
+          datasetStrokeWidth: 4,
+
+          scaleShowGridLines : true,
+          scaleHorizontalWidth: 12,
+          scaleShowVerticalLines : false,
+          scaleGridLineColor : "#999",
+
+
+          Y1_scaleOverride: true,
+          Y1_scaleSteps: 8,
+          Y1_scaleStepWidth : 10,
+          Y1_scaleStartValue : 0,
+
+          Y2_scaleOverride: true,
+          Y2_scaleSteps: 3,
+          Y2_scaleStepWidth : 60,
+          Y2_scaleStartValue : 0,
+
+          scaleFontSize: 16
+      });
+  };
+</script>
 <div class="col-md-8 col-md-offset-2">
   <h1>
     <%= link_to "<", "?start=#{(@date - 1.week).strftime("%Y-%m-%d")}", class: "btn btn-default" %>
@@ -8,28 +117,37 @@
   <h2><%= @date.strftime("%d %B") %> - <%= (@date + 6.days).strftime("%d %B %Y") %></h2>
 
   <div>
-    Actions
-    <%= @data[:operator_actions_groups_count] %>
+    Actions:
+    <b><%= @data[:operator_actions_groups_count] %></b>
   </div>
 
   <div>
-    75% of emails processed in less than
-    <%= number_with_precision(@data[:delay_p75], precision: 0) %>'
+    75% of emails processed in less than:
+    <b><%= number_with_precision(@data[:delay_p75], precision: 0) %>'</b>
   </div>
 
   <div>
-    Reviewed actions
-    <%= number_to_percentage(@data[:operator_actions_groups_reviewed_ratio] * 100, precision: 2) %>
+    Reviewed actions:
+    <b><%= number_to_percentage(@data[:operator_actions_groups_reviewed_ratio] * 100, precision: 2) %></b>
   </div>
 
   <div>
     Error rate
-    <%= number_to_percentage(@data[:errors_rate] * 100, precision: 2) %>
+    <b><%= number_to_percentage(@data[:errors_rate] * 100, precision: 2) %></b>
   </div>
 
-  <% start_of_week = DateTime.now.beginning_of_week %>
+  <br>
+  <br>
+  <br>
+
   <% (0..6).each do |i| %>
-      <% date = 0 %>
+      <% date = @date + i.days %>
+      <% if date < DateTime.now %>
+        <h4><%= date.strftime("%A %d %B") %></h4>
+          <canvas id="chart-<%= i %>" class="chart" width="1000" height="250" data-offset="<%= i  %>"></canvas>
+          <br>
+          <br>
+      <% end %>
   <% end %>
 
 </div>
