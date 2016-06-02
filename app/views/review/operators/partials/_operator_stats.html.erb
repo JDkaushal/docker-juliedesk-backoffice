@@ -65,7 +65,7 @@
   <tr>
     <td>Nombre d'emails traités en moyenne dans l'équipe</td>
     <% team_stats.each do |key, data| %>
-        <td><%= number_with_precision(data['operator_action_groups_count_per_operator'],1) %></td>
+        <td><%= number_with_precision(data['operator_action_groups_count_per_operator'], precision: 1) %></td>
     <% end %>
   </tr>
   <tr>
