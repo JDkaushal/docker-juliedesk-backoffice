@@ -499,7 +499,8 @@ class Message < ActiveRecord::Base
     #   end
     # end
 
-    message.get_email_body
+    # Calendar server seems to escape the html tags sometimes
+    CGI.unescapeHTML(message.get_email_body)
   end
 
 
