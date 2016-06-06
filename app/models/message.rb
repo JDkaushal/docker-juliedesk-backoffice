@@ -207,10 +207,14 @@ class Message < ActiveRecord::Base
     server_threads.each do |server_thread|
       should_update_thread = true
 
-      messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
-      if messages_thread
-        should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
-        messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
+      if server_thread['subject'].include? "MB5jB- Julie alias test"
+        should_update_thread = false
+      else
+        messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
+        if messages_thread
+          should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
+          messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
+        end
       end
 
       if should_update_thread
