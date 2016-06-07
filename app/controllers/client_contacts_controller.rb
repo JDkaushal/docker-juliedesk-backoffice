@@ -255,7 +255,7 @@ class ClientContactsController < ApplicationController
                       result['company']
                      end
 
-      CompanyDomainAssociation.create(domain: domain, company_name)
+      CompanyDomainAssociation.create(domain: domain, company_name: company_name)
     end
 
     render json: result
