@@ -476,12 +476,14 @@
                             is_error: response.data.status == 'error' || response.data.status == 'invalid',
                             error_message: response.data.message,
                             contact_full_name: fullName,
+                            contact_email_address: a.email,
                             ai_response: {first_name: response.data.first_name, last_name: response.data.last_name, gender: response.data.gender}
                         });
                     }, function error(response) {
                         console.log(response);
                         $scope.trackFetchFirstNameLastNameEvent({
-                            is_error: true
+                            is_error: true,
+                            contact_email_address: a.email
                         });
                     })
                 }
@@ -547,6 +549,7 @@
                 is_error: params.is_error,
                 error_message: params.error_message,
                 contact_full_name: params.contact_full_name,
+                contact_email_address: params.contact_email_address,
                 ai_response: params.ai_response
             });
         };
