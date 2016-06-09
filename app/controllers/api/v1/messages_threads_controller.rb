@@ -63,7 +63,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     data = {}
     while current_start_date < end_date
 
-      forecast_count = forecast.find{|f| f.datetime <= current_start_date + precision && f.datetime + 1.hour > current_start_date}.try(:count) || 0 / 2
+      forecast_count = (forecast.find{|f| f.datetime <= current_start_date + precision && f.datetime + 1.hour > current_start_date}.try(:count) || 0) / 2
 
 
       key = current_start_date.strftime("%Y%m%dT%H%M")
