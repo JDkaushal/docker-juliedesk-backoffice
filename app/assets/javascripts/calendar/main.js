@@ -27,6 +27,8 @@ function Calendar($selector, params) {
     this.end = null;
     this.eventBeingAdded = null;
 
+    this.firstLoaded = false;
+
     this.selectedEvents = [];
     this.publicHolidaysAdded = false;
 
@@ -849,6 +851,7 @@ Calendar.prototype.addEvent = function (event) {
             }), function() {
                 this.color = "#ccc";
             });
+
             calendar.eventBeingAdded = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
                 return ev.beingAdded
                     && ev.start.isSame(event.start);

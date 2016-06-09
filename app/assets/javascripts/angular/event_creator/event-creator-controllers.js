@@ -135,7 +135,11 @@
         };
 
         window.allCalendarEventsFetched = function() {
-            $scope.selectSuggestedDateInCalendar();
+
+            if(!window.currentCalendar.firstLoaded) {
+                window.currentCalendar.firstLoaded = true;
+                $scope.selectSuggestedDateInCalendar();
+            }
         };
 
         $scope.getDatesManagerApp = function() {

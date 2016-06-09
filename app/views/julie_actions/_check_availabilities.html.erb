@@ -96,6 +96,8 @@
         $("#no-date-fits").click(function () {      
             window.timeSlotToCreate = null;
             $(".messages-thread-info-panel .create-event-panel").hide();
+            clearDatesToCheck();
+
             if(window.threadComputedData.client_agreement) {
                 window.currentCalendar.initialData.mode = "suggest_dates";
                 $(".messages-thread-info-panel .message-container").html("Pick new availabilities");
@@ -129,6 +131,16 @@
             $('.create-event-panel').hide();
             enableInvitationAlreadySentFlow();
         });
+
+        function clearDatesToCheck() {
+            _.each(window.currentCalendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                return ev.beingAdded;
+            }), function(e) {
+                e.color = "#ccc";
+            });
+
+            window.currentCalendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
+        };
 
         function enableInvitationAlreadySentFlow() {
 
@@ -212,9 +224,13 @@
                var location = window.threadComputedData.location;
 
                 var emailInNotes = "";
-                if($("input[type=checkbox]#include-email-in-notes:checked").length > 0) {
+
+                // include_email_in_notes here
+
+                if(window.getCurrentAppointment().include_email_in_notes) {
                     <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
                     var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
+
                     emailInNotes = "\n\n" + textData.text;
                 }
 
@@ -326,6 +342,8 @@
             var messageBuilder = $('#reply-area').scope();
             var attendeesMng = $('#attendeesCtrl').scope();
 
+            var attendeesWithMissingInfos = window.getPresentAttendeesWithMissingInfos();
+
             message += messageBuilder.generateReply({
                 action: "invites_sent",
                 isPostpone: isPostpone && !window.currentEventFromInvitation,
@@ -336,7 +354,7 @@
                 timezoneId: window.threadComputedData.timezone,
                 defaultTimezoneId: window.threadAccount.default_timezone_id,
                 allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
-                attendeesWithMissingInfos: window.getPresentAttendeesWithMissingInfos(),
+                attendeesWithMissingInfos: attendeesWithMissingInfos,
                 locale: window.threadComputedData.locale
             });
 
@@ -394,12 +412,19 @@
                 }
             }
 
-            var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
-            var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
-            var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
-            if(missingInfosMessage != ''){
-                message += missingInfosMessage;
+            if(messageParams && messageParams['askCallInstructions'] && attendeesWithMissingInfos == 1) {
+                // We don't generate the "Xx, please also provide your hpone number, just in case!" when we are in a virtual appointment
+                // where we ask for the call instructions and there are only one attendee with missing infos
+                // It would create a duplicate question
+            } else {
+                var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+                var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
+                var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+                if(missingInfosMessage != ''){
+                    message += missingInfosMessage;
+                }
             }
+
 
             window.setReplyMessage(message, 'all', window.otherEmails);
 

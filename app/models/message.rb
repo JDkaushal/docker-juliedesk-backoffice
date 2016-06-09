@@ -250,11 +250,12 @@ class Message < ActiveRecord::Base
                                                 from_me: server_message['from_me']
 
             # Added by Nico to interprete
+            # We don't consider that a email sent by Julie means that the thread was updated
             unless m.from_me
               m.delay.interprete
-            end
 
-            updated_messages_thread_ids << messages_thread.id
+              updated_messages_thread_ids << messages_thread.id
+            end
           end
         end
 
@@ -504,7 +505,7 @@ class Message < ActiveRecord::Base
     # end
 
     # Calendar server seems to escape the html tags sometimes
-    CGI.unescapeHTML(message.get_email_body)
+    message.get_email_body
   end
 
 

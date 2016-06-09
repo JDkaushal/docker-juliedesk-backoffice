@@ -32,7 +32,13 @@ class MessagesThreadsController < ApplicationController
   def set_to_be_merged
     @messages_thread = MessagesThread.find(params[:id])
 
-    @messages_thread.update(to_be_merged: params[:to_merge])
+    operator_id = if params[:to_merge]
+                    session[:operator_id]
+                  else
+                    nil
+                  end
+
+    @messages_thread.update(to_be_merged: params[:to_merge], to_be_merged_operator_id: operator_id)
 
     redirect_to messages_threads_path
   end
@@ -121,27 +127,33 @@ class MessagesThreadsController < ApplicationController
                                      })
     print_time "Create and verify OperatorAction"
 
-    EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
-    print_time "Email server archive thread"
-
-    messages.update_all(archived: true)
-    messages_thread.update(should_follow_up: false, status: params[:thread_status])
-    print_time "Update messages and messages thread"
-
     # Voir pertinence à ce moment, on le fait sur l'index déjà normalement
     if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
-      EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
+      # We should not have to do that now, because we only archive it when no unread messages are present
+      # EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
+
+      # We redirect the operator to the current thread show action, so he can continue to work on the thread
+      redirect_to @messages_thread
     else
-      messages_thread.update_attribute(:in_inbox, false)
+
+      EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
+      print_time "Email server archive thread"
+
+      messages.update_all(archived: true)
+      messages_thread.update(should_follow_up: false, status: params[:thread_status], in_inbox: false)
+      print_time "Update messages and messages thread"
 
       Pusher.trigger('private-global-chat', 'archive', {
           :message => 'archive',
           :message_thread_id => messages_thread.id
       })
+
+      # When the thread is archived we can redirect the operator to the threads list
+      redirect_to action: :index
     end
+
     print_time "Check if unarchive or not"
     print_all_times
-    redirect_to action: :index
   end
 
   def split

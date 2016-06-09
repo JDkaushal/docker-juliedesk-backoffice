@@ -1,14 +1,33 @@
 <script>
     $(function() {
         $(".open-links-flag").click(function() {
-
             var $button = $(this);
             reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=flag");
+        });
+
+        $(".open-links-flag-even").click(function() {
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=flag&selectivity=even");
+        });
+
+        $(".open-links-flag-odd").click(function() {
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=flag&selectivity=odd");
         });
 
         $(".open-links-random").click(function() {
             var $button = $(this);
             reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=random");
+        });
+
+        $(".open-links-random-even").click(function() {
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=random&selectivity=even");
+        });
+
+        $(".open-links-random-odd").click(function() {
+            var $button = $(this);
+            reviewMessagesThreads($button, "/review/operators/messages_thread_ids_to_review?mode=random&selectivity=odd");
         });
 
         $(".open-links-operator").click(function() {
@@ -38,15 +57,23 @@
 
   <div class="main-actions">
     <div class="flag-actions">
-      <div class="btn btn-success open-links-flag" data-messages-thread-ids="<%== @data[:flag_to_review_messages_thread_ids].to_json %>">Flag email review</div>
-      <span>(<%= @data[:flag_to_review_count] %> to review)</span>
+      <div class="btn btn-success open-links-flag" data-messages-thread-ids="<%== @data[:flag_to_review_messages_thread_ids].to_json %>">Flag email review (<%= @data[:flag_to_review_count] %>)</div>
+
+      <div class="btn btn-success open-links-flag-even">Threads pairs</div>
+
+      <div class="btn btn-success open-links-flag-odd">Threads impairs</div>
+
     </div>
     <div class="random-actions">
       <div class="btn btn-success open-links-random" data-messages-thread-ids="<%== @data[:review_messages_thread_ids].to_json %>">Random review</div>
+
+      <div class="btn btn-success open-links-random-even">Threads pairs</div>
+
+      <div class="btn btn-success open-links-random-odd">Threads impairs</div>
     </div>
     <div class="group-review-actions">
-      <%= link_to "Group review threads", "/review/messages_threads/group_review_next", class: "btn btn-info" %>
-      <span>(<%= @data[:to_group_review_count] %> to group review)</span>
+      <%= link_to "Group review threads (#{@data[:to_group_review_count]})", "/review/messages_threads/group_review_next", class: "btn btn-info" %>
+      <span></span>
     </div>
   </div>
 

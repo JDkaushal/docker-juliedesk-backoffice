@@ -34,6 +34,8 @@
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+    // If the appointment_nature is not set, it means it is the first time we are filling the form
+    window.formFirstPass = !window.threadComputedData.appointment_nature;
 
     window.threadAccount = <%== @messages_thread.account.to_json %>;
 

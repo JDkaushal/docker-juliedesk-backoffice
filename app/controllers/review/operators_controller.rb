@@ -161,9 +161,26 @@ class Review::OperatorsController < ReviewController
 
       flag_server_message_ids = result['messages']['ids']
       flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).select(:messages_thread_id).map(&:messages_thread_id).uniq
+
+      if params[:selectivity].present?
+        if params[:selectivity] == "even"
+          flag_messages_thread_ids = flag_messages_thread_ids.select{|mt_id| mt_id.even?}
+        elsif params[:selectivity] == "odd"
+          flag_messages_thread_ids = flag_messages_thread_ids.select{|mt_id| mt_id.odd?}
+        end
+      end
+
       operator_actions = operator_actions.where(messages_thread_id: flag_messages_thread_ids)
     elsif params[:mode] == "operator"
       operator_actions = operator_actions.where(operator_id: params[:operator_id])
+    elsif params[:mode] == "random"
+      if params[:selectivity].present?
+        if params[:selectivity] == "even"
+          operator_actions = operator_actions.where('(messages_thread_id % 2) <> 0')
+        elsif params[:selectivity] == "odd"
+          operator_actions = operator_actions.where('(messages_thread_id % 2) = 0')
+        end
+      end
     end
 
     messages_thread_ids = operator_actions

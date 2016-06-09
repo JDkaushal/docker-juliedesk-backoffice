@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160602151054) do
+ActiveRecord::Schema.define(version: 20160609144926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -196,26 +196,27 @@ ActiveRecord::Schema.define(version: 20160602151054) do
 
   create_table "messages_threads", force: true do |t|
     t.string   "account_email"
-    t.boolean  "in_inbox",              default: false
+    t.boolean  "in_inbox",                 default: false
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "subject"
     t.text     "snippet"
     t.string   "account_name"
-    t.boolean  "delegated_to_founders", default: false
+    t.boolean  "delegated_to_founders",    default: false
     t.text     "to_founders_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
     t.integer  "server_thread_id"
     t.string   "server_version"
-    t.boolean  "delegated_to_support",  default: false
-    t.boolean  "should_follow_up",      default: false
+    t.boolean  "delegated_to_support",     default: false
+    t.boolean  "should_follow_up",         default: false
     t.text     "follow_up_instruction"
     t.integer  "last_operator_id"
     t.datetime "event_booked_date"
     t.string   "status"
-    t.boolean  "to_be_merged",          default: false
+    t.boolean  "to_be_merged",             default: false
+    t.integer  "to_be_merged_operator_id"
   end
 
   create_table "operator_actions", force: true do |t|

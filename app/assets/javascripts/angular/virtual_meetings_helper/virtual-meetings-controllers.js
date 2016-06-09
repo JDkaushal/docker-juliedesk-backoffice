@@ -112,8 +112,12 @@
                 $scope.refresh = function(attendees) {
 
                     if(attendees){
-                        var attendeesWithoutThreadOwner = _.filter(attendees, function (a) {
-                            return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
+                        var presentAttendees = _.filter(attendees, function (a) {
+                            return a.isPresent;
+                        });
+
+                        var attendeesWithoutThreadOwner = _.filter(presentAttendees, function (a) {
+                            return $scope.attendeesManagerCtrl.getThreadOwnerEmails().indexOf(a.email) == -1;
                         });
 
                         if(attendeesWithoutThreadOwner.length > 0){
@@ -147,8 +151,11 @@
                     //    }
                     //}
 
-                    //if($scope.currentConf.target == 'interlocutor' )
-                    //    $scope.setDefaultSupportManually(findTargetAttendee($scope.currentConf.targetInfos));
+                    // We only set the default support when there are 2 attendees (Thread owner and another attendee)
+                    // We don't set the support when the thread is not in edit mode (to prevent overriding the current value
+                    // We set automatically the support only when it is the first time filling the form
+                    if(window.threadDataIsEditable && window.formFirstPass && $scope.currentConf.target == 'interlocutor' && presentAttendees && presentAttendees.length == 2 )
+                        $scope.setDefaultSupportManually(findTargetAttendee($scope.currentConf.targetInfos));
 
                 };
 
@@ -373,6 +380,7 @@
                 };
 
                 $scope.setDefaultSupportManually = function(target){
+
                     var selectedSupport = '';
                     var currentAppointmentType = $('#appointment_nature').val();
 

@@ -209,6 +209,8 @@
         var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
         var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
+        var excludedAttendeesEmails = ['support@juliedesk.com'];
+
         // Used for the actions tracking (provide some context on the tracking like the id of the tracking in the form of
         // operator_id-messagesThreadId
         var messagesContainerNode = $('#messages_container');
@@ -275,7 +277,7 @@
                 if(attendee.email && attendee.email.indexOf('@') === -1)
                     emailValid = false;
 
-                return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase)) == -1 && (emailLowCase != window.threadAccount.email.toLowerCase()) && emailValid
+                return (threadOwnerEmailAliasesDowncase.indexOf(emailLowCase) == -1) && (emailLowCase != window.threadAccount.email.toLowerCase()) && (excludedAttendeesEmails.indexOf(emailLowCase) == - 1) && emailValid
             }), function(attendee) {
                 var attendeeDetails = _.find(attendeesDetails.contacts, function(a) {
                     var searchedEmail = attendee.email;

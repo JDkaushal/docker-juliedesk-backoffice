@@ -392,7 +392,6 @@ window.generateEmailTemplate = function (params) {
             }
         }
 
-        console.log("email_templates.invites_sent." + postponeSuffix + suggestedDateSuffix);
         message = localize("email_templates.invites_sent." + postponeSuffix + suggestedDateSuffix, {
             appointment_nature: params.appointment.title_in_email[params.locale],
             location: locationInTemplate,
