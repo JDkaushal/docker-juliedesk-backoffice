@@ -275,4 +275,18 @@ ActiveRecord::Schema.define(version: 20160602151054) do
     t.boolean  "manager_access",        default: false
   end
 
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
 end
