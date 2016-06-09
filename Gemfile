@@ -28,8 +28,6 @@ gem "stringex", :git => 'git://github.com/Fred-JulieDesk/stringex.git'
 
 gem 'delayed_job_active_record'
 
-gem "detect_language"
-
 gem 'handlebars_assets'
 
 gem "rack-timeout"
