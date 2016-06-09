@@ -473,7 +473,7 @@
                         }
 
                         $scope.trackFetchFirstNameLastNameEvent({
-                            is_error: response.data.status == 'error' || response.data.status == 'invalid',
+                            is_error: response.data.status == 'error' || response.data.status == 'invalid' || response.status == 'invalid',
                             error_message: response.data.message,
                             contact_full_name: fullName,
                             contact_email_address: a.email,
