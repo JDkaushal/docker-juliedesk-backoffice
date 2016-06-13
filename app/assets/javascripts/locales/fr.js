@@ -255,7 +255,9 @@ window.wordings['fr'] = {
         cancel: "Annuler",
         or: "ou",
         phone: "Téléphone :",
-        egalement: "aussi"
+        egalement: "aussi",
+        mister: 'M.',
+        madam: 'Mme'
     },
     events: {
         new_event: "Nouvel évènement",

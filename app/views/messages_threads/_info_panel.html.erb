@@ -192,6 +192,7 @@
             window.setCurrentLocale($(this).val());
             updateNotesCallingInfos();
             reProcessTitle();
+            updateAttendeesUsageNames();
         });
 
         $("body").on("change", "input#attendee", function() {
@@ -567,6 +568,12 @@
         $("input#summary").val(newTitle);
         if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
             $('.event-tile-panel .title').val(newTitle);
+    }
+
+    function updateAttendeesUsageNames() {
+        var attendessApp = angular.element($('#attendeesCtrl')).scope();
+
+        attendessApp.updateAttendeesUsageName();
     }
 
     function reProcessTitle() {

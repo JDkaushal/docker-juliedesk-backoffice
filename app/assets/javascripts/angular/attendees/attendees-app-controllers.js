@@ -240,6 +240,7 @@
                 $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
                 $scope.lookupAttendeesMissingInfos();
                 $scope.setTitlePreference();
+                //$scope.postProcessAttendees();
             }
         }, true);
         //--------------------------------------------------------------------------------
@@ -251,6 +252,30 @@
         //--------------------------------------------------------------------------------
 
         //Attendees-----------------------------------------------------------------------
+
+        //$scope.postProcessAttendees = function() {
+        //    var languageLevel = window.threadAccount.language_level;
+        //
+        //    _.each($scope.attendees, function(attendee) {
+        //        $scope.formatUsageName(languageLevel, attendee);
+        //
+        //
+        //    });
+        //};
+
+        $scope.updateAttendeesUsageName = function() {
+            _.each($scope.attendees, function(attendee) {
+                $scope.formatUsageName(attendee);
+            });
+
+        };
+
+        $scope.formatUsageName = function(attendee) {
+            if(window.threadAccount.language_level == 'soutenu') {
+                attendee.usageName = attendee.displayUsageNameSoutenu();
+            }
+        };
+
         this.callingInformationsChanged = function(){
             var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
             if(virtualMeetingsHelper)
@@ -444,8 +469,6 @@
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
                 a.firstName = a.usageName;
 
-            $scope.attendees.push(a);
-
             //We ask the AI only when we are classifying an email and if the attendee is not a client
             if(window.isClassifying && !a.isClient) {
 
@@ -521,6 +544,14 @@
                     })
                 }
             }
+
+            // We compute the usage name based on the client language level preference only in the first pass of the form filling
+            if(!window.threadComputedData.appointment_nature) {
+                $scope.formatUsageName(a);
+            }
+
+
+            $scope.attendees.push(a);
         };
 
         this.fetchAttendeeFromClientContactNetwork = function(){
@@ -1038,15 +1069,28 @@
                 that[key] = value;
             });
         },
+        displayUsageNameSoutenu: function() {
+            var displayedUsageName = '';
+            var displayedGender = this.displayGender();
+            var displayedName = this.lastName || this.firstName;
+
+            if(displayedGender == '') {
+                displayedName = this.displayNormalizedName();
+            }
+
+            return [displayedGender, displayedName].join(' ').trim();
+        },
         displayGender: function(){
             var displayedGender = '';
+            var currentLocale = window.currentLocale;
+
           if(this.gender){
               switch(this.gender){
                   case('M'):
-                      displayedGender = 'M.';
+                      displayedGender = localize("common.mister", {locale: currentLocale});
                       break;
                   case('F'):
-                      displayedGender = 'Mme.';
+                      displayedGender = localize("common.madam", {locale: currentLocale});
                       break;
                   default:
                       displayedGender = '';

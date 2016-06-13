@@ -145,6 +145,62 @@
 
         }));
 
+        describe('formatUsageName', function() {
+
+            describe('language_level set to normal', function() {
+                beforeEach(function() {
+                    window.threadAccount.language_level = 'normal';
+
+                    window.getCurrentAppointment = function(){
+                        return {required_additional_informations: 'empty'}
+                    };
+                });
+                //
+                it('should set the correct usageName', function() {
+
+                    spyOn( window, 'updateNotesCallingInfos' );
+                    $httpBackend.flush();
+
+                    expect($scope.attendees[0].usageName).toEqual('fname1');
+                });
+
+
+            });
+            //
+            describe('language_level set to soutenu', function() {
+                beforeEach(function() {
+                    window.threadAccount.language_level = 'soutenu';
+
+                    window.getCurrentAppointment = function(){
+                        return {required_additional_informations: 'empty'}
+                    };
+
+                });
+
+                it('should set the correct usageName', function() {
+
+                    spyOn( window, 'updateNotesCallingInfos' );
+                    $httpBackend.flush();
+
+                    expect($scope.attendees[0].usageName).toEqual('Mr. lname1');
+
+                });
+
+                it('should set the correct usageName when no gender is set', function() {
+                    var gender = window.currentAttendees[0].gender;
+                    window.currentAttendees[0].gender = '?';
+
+                    spyOn( window, 'updateNotesCallingInfos' );
+                    $httpBackend.flush();
+
+                    expect($scope.attendees[0].usageName).toEqual('fname1 lname1');
+
+                    window.currentAttendees[0].gender = gender;
+                });
+            });
+
+        });
+
         describe('Missing Informations', function(){
 
             beforeEach(function(){
