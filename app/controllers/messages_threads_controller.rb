@@ -133,7 +133,8 @@ class MessagesThreadsController < ApplicationController
       # EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
 
       # We redirect the operator to the current thread show action, so he can continue to work on the thread
-      redirect_to @messages_thread
+      # And we scroll to the bottom of the page to show the new message to the operator
+      redirect_to messages_thread_path(@messages_thread, scroll_to_bottom: true)
     else
 
       EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
