@@ -43,19 +43,20 @@
                 describe('No coordinates available', function() {
                     beforeEach(function() {
 
-                       window.threadComputedData = {location_coordinates: undefined}
+                       window.threadComputedData = {location_coordinates: undefined};
+                        window.threadAccount.delay_between_appointments = 10;
                     });
 
-                    it('should not call any methods', function() {
+                    it('should still display the default delay for the appointments', function() {
                         spyOn($scope, 'setEvents');
                         spyOn($scope, 'selectEventsToCompute');
                         spyOn($scope, 'calculate');
+                        spyOn($scope, 'computeDefaultAppointmentDelay');
 
                         $scope.processForClient({email: 'email@gmail.com'}, []);
 
-                        expect($scope.setEvents).not.toHaveBeenCalled();
-                        expect($scope.selectEventsToCompute).not.toHaveBeenCalled();
                         expect($scope.calculate).not.toHaveBeenCalled();
+                        expect($scope.computeDefaultAppointmentDelay).toHaveBeenCalledWith('email@gmail.com');
                     });
 
                 });
@@ -120,7 +121,7 @@
                 it('should set the correct scope variable', function() {
                     $scope.events = {'email@gmail.com': events};
 
-                    var result = $scope.sortEventsStartDate('email@gmail.com');
+                    var result = $scope.sortEventsStartDate(events);
 
                     expect(_.map(result, function(e) {return e.id;})).toEqual([ 3, 2, 5, 1, 4 ])
                 });
@@ -142,29 +143,41 @@
 
                     $scope.selectEventsToCompute('email@gmail.com');
 
+                    //var result = $scope.events['email@gmail.com'];
+                    //var expectation = [
+                    //    //{location: '', start: {date: "2016-05-05"}, end: {dateTime: "2016-05-06"}, calculateTravelTime: false},
+                    //    {id: 2, location: '100 rue de la rue', start: {dateTime: "2016-05-05T13:00:00.000+02:00"}, end: {dateTime: "2016-05-05T15:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true},
+                    //    {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true, upperEdgeMaxTimeDisplay: 1380},
+                    //    {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true, lowerEdgeMaxTimeDisplay: 1380},
+                    //    {id: 5, location: '2 sentier du sentier', start: {dateTime: "2016-05-06T17:00:00.000+02:00"}, end: {dateTime: "2016-05-06T19:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: true, calculateTravelTime: false},
+                    //    {id: 6, location: '1 impasse de impasse', start: {dateTime: "2016-05-06T19:00:00.000+02:00"}, end: {dateTime: "2016-05-07T15:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true}
+                    //];
+                    //
+                    //expect(result[2]).toEqual(expectation[2]);
+
                     expect($scope.events['email@gmail.com']).toEqual(
                         [
                             //{location: '', start: {date: "2016-05-05"}, end: {dateTime: "2016-05-06"}, calculateTravelTime: false},
                             {id: 2, location: '100 rue de la rue', start: {dateTime: "2016-05-05T13:00:00.000+02:00"}, end: {dateTime: "2016-05-05T15:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true},
-                            {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true, upperEdgeMaxTravelTimeDisplay: 1380},
-                            {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true, lowerEdgeMaxTravelTimeDisplay: 1380},
+                            {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true, upperEdgeMaxTimeDisplay: 1380},
+                            {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true, lowerEdgeMaxTimeDisplay: 1380},
                             {id: 5, location: '2 sentier du sentier', start: {dateTime: "2016-05-06T17:00:00.000+02:00"}, end: {dateTime: "2016-05-06T19:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: true, calculateTravelTime: false},
                             {id: 6, location: '1 impasse de impasse', start: {dateTime: "2016-05-06T19:00:00.000+02:00"}, end: {dateTime: "2016-05-07T15:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true}
                         ]
                     );
 
-                    console.log($scope.events['email@gmail.com']);
-
-                    console.log(
-                        [
-                            //{location: '', start: {date: "2016-05-05"}, end: {dateTime: "2016-05-06"}, calculateTravelTime: false},
-                            {id: 2, location: '100 rue de la rue', start: {dateTime: "2016-05-05T13:00:00.000+02:00"}, end: {dateTime: "2016-05-05T15:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true},
-                            {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true, upperEdgeMaxTravelTimeDisplay: 1380},
-                            {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true, lowerEdgeMaxTravelTimeDisplay: 1380},
-                            {id: 5, location: '2 sentier du sentier', start: {dateTime: "2016-05-06T17:00:00.000+02:00"}, end: {dateTime: "2016-05-06T19:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: true, calculateTravelTime: false},
-                            {id: 6, location: '1 impasse de impasse', start: {dateTime: "2016-05-06T19:00:00.000+02:00"}, end: {dateTime: "2016-05-07T15:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true}
-                        ]
-                    );
+                    //console.log($scope.events['email@gmail.com']);
+                    //
+                    //console.log(
+                    //    [
+                    //        //{location: '', start: {date: "2016-05-05"}, end: {dateTime: "2016-05-06"}, calculateTravelTime: false},
+                    //        {id: 2, location: '100 rue de la rue', start: {dateTime: "2016-05-05T13:00:00.000+02:00"}, end: {dateTime: "2016-05-05T15:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true},
+                    //        {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true, upperEdgeMaxTravelTimeDisplay: 1380},
+                    //        {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}, lowerEdgeBusy: false, upperEdgeBusy: true, calculateTravelTime: true, lowerEdgeMaxTravelTimeDisplay: 1380},
+                    //        {id: 5, location: '2 sentier du sentier', start: {dateTime: "2016-05-06T17:00:00.000+02:00"}, end: {dateTime: "2016-05-06T19:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: true, calculateTravelTime: false},
+                    //        {id: 6, location: '1 impasse de impasse', start: {dateTime: "2016-05-06T19:00:00.000+02:00"}, end: {dateTime: "2016-05-07T15:00:00.000+02:00"}, lowerEdgeBusy: true, upperEdgeBusy: false, calculateTravelTime: true}
+                    //    ]
+                    //);
                 });
             });
 
@@ -237,6 +250,29 @@
                     ]);
                 });
 
+                describe('No events need to have a calculated travel time', function() {
+
+                   beforeEach(function() {
+                       window.threadAccount.delay_between_appointments = 10;
+                   });
+
+                    it('should call the correct method', function() {
+                        $scope.events = {
+                            'email@gmail.com': [
+                                {calculateTravelTime: false, id: 1},
+                                {calculateTravelTime: false, id: 2},
+                                {calculateTravelTime: false, id: 3},
+                                {calculateTravelTime: false, id: 4}
+                            ]
+                        };
+
+                        spyOn($scope, 'computeDefaultAppointmentDelay');
+
+                        $scope.calculate('email@gmail.com');
+
+                        expect($scope.computeDefaultAppointmentDelay).toHaveBeenCalledWith('email@gmail.com');
+                    });
+                });
             });
 
             describe('computeEvents', function() {
@@ -445,6 +481,7 @@
                 describe('All pending requests are complete', function() {
 
                     it('should call the right method', function() {
+                        window.threadAccount.delay_between_appointments = 10;
                         $scope.pendingGoogleMatrixCall = {'email@gmail.com': 1};
 
                         var response = {
@@ -463,10 +500,12 @@
 
                         spyOn($scope, 'handleResponseElement');
                         spyOn($scope, 'addTravelTimeEventsToCalendar');
+                        spyOn($scope, 'computeDefaultAppointmentDelay');
 
                         $scope.handleGoogleMatrixResponse(response, 'OK', [{id: 1}, {id: 2}, {id: 3}, {id: 4}], 'email@gmail.com');
 
                         expect($scope.addTravelTimeEventsToCalendar).toHaveBeenCalledWith('email@gmail.com');
+                        expect($scope.computeDefaultAppointmentDelay).toHaveBeenCalledWith('email@gmail.com');
                     })
                 });
             });
@@ -529,12 +568,12 @@
                     });
 
                     it('should call the right methods with the correct parameters', function() {
-                        spyOn($scope, 'buildTravelTimeEvents');
+                        spyOn($scope, 'buildInfoEvent');
 
                         $scope.getMaxDurationForEventThenCompute('email@gmail.com', {id: 1}, 'destination');
 
                         expect($scope.getMaxDurationForEvent).toHaveBeenCalled();
-                        expect($scope.buildTravelTimeEvents).toHaveBeenCalledWith('email@gmail.com', {id: 1}, 10, 'destination');
+                        expect($scope.buildInfoEvent).toHaveBeenCalledWith('email@gmail.com', 'travelTime', {id: 1}, 10, 'destination');
                     });
                 });
 
@@ -544,12 +583,12 @@
                     });
 
                     it('should call the right methods with the correct parameters', function() {
-                        spyOn($scope, 'buildTravelTimeEvents');
+                        spyOn($scope, 'buildInfoEvent');
 
                         $scope.getMaxDurationForEventThenCompute('email@gmail.com', {id: 1}, 'destination');
 
                         expect($scope.getMaxDurationForEvent).toHaveBeenCalled();
-                        expect($scope.buildTravelTimeEvents).not.toHaveBeenCalled();
+                        expect($scope.buildInfoEvent).not.toHaveBeenCalled();
                     });
                 });
 
@@ -625,7 +664,7 @@
                 });
             });
 
-            describe('buildTravelTimeEvents', function() {
+            describe('buildInfoEvent', function() {
                 var event;
 
                 describe('the event upper edge is busy', function() {
@@ -636,14 +675,14 @@
                     describe('the lowerEdgeMaxTravelTimeDisplay is lower than the real travel time', function() {
 
                         it('should call the correct method with the right parameters', function() {
-                            spyOn($scope, 'createTravelTimeEvent');
+                            spyOn($scope, 'createInfoEvent');
 
                             event.start = {dateTime: '2016-02-01T13:00:000+0200'};
-                            event.lowerEdgeMaxTravelTimeDisplay = 10;
+                            event.lowerEdgeMaxTimeDisplay = 10;
 
-                            $scope.buildTravelTimeEvents('email@gmail.com', event, 40, 'destination');
+                            $scope.buildInfoEvent('email@gmail.com', 'travelTime', event, 40, 'destination');
 
-                            expect($scope.createTravelTimeEvent).toHaveBeenCalledWith('email@gmail.com', 'before', '2016-02-01T13:00:000+0200', 40, 10, 'destination');
+                            expect($scope.createInfoEvent).toHaveBeenCalledWith('email@gmail.com', 'travelTime', 'before', '2016-02-01T13:00:000+0200', 40, 10, 'destination');
                         });
 
                     });
@@ -651,14 +690,14 @@
                     describe('the lowerEdgeMaxTravelTimeDisplay is higher than the real travel time', function() {
 
                         it('should call the correct method with the right parameters', function() {
-                            spyOn($scope, 'createTravelTimeEvent');
+                            spyOn($scope, 'createInfoEvent');
 
                             event.start = {dateTime: '2016-02-01T13:00:000+0200'};
-                            event.lowerEdgeMaxTravelTimeDisplay = 120;
+                            event.lowerEdgeMaxTimeDisplay = 120;
 
-                            $scope.buildTravelTimeEvents('email@gmail.com', event, 40, 'destination');
+                            $scope.buildInfoEvent('email@gmail.com', 'travelTime', event, 40, 'destination');
 
-                            expect($scope.createTravelTimeEvent).toHaveBeenCalledWith('email@gmail.com', 'before', '2016-02-01T13:00:000+0200', 40, 40, 'destination');
+                            expect($scope.createInfoEvent).toHaveBeenCalledWith('email@gmail.com', 'travelTime', 'before', '2016-02-01T13:00:000+0200', 40, 40, 'destination');
                         });
 
                     });
@@ -672,14 +711,14 @@
                     describe('the lowerEdgeMaxTravelTimeDisplay is lower than the real travel time', function() {
 
                         it('should call the correct method with the right parameters', function() {
-                            spyOn($scope, 'createTravelTimeEvent');
+                            spyOn($scope, 'createInfoEvent');
 
                             event.end = {dateTime: '2016-02-01T13:00:000+0200'};
-                            event.upperEdgeMaxTravelTimeDisplay = 10;
+                            event.upperEdgeMaxTimeDisplay = 10;
 
-                            $scope.buildTravelTimeEvents('email@gmail.com', event, 40, 'destination');
+                            $scope.buildInfoEvent('email@gmail.com', 'travelTime', event, 40, 'destination');
 
-                            expect($scope.createTravelTimeEvent).toHaveBeenCalledWith('email@gmail.com', 'after', '2016-02-01T13:00:000+0200', 40, 10, 'destination');
+                            expect($scope.createInfoEvent).toHaveBeenCalledWith('email@gmail.com', 'travelTime', 'after', '2016-02-01T13:00:000+0200', 40, 10, 'destination');
                         });
 
                     });
@@ -687,22 +726,21 @@
                     describe('the lowerEdgeMaxTravelTimeDisplay is higher than the real travel time', function() {
 
                         it('should call the correct method with the right parameters', function() {
-                            spyOn($scope, 'createTravelTimeEvent');
+                            spyOn($scope, 'createInfoEvent');
 
                             event.end = {dateTime: '2016-02-01T13:00:000+0200'};
-                            event.lowerEdgeMaxTravelTimeDisplay = 120;
+                            event.upperEdgeMaxTimeDisplay = 120;
 
-                            $scope.buildTravelTimeEvents('email@gmail.com', event, 40, 'destination');
+                            $scope.buildInfoEvent('email@gmail.com', 'travelTime', event, 40, 'destination');
 
-                            expect($scope.createTravelTimeEvent).toHaveBeenCalledWith('email@gmail.com', 'after', '2016-02-01T13:00:000+0200', 40, 40, 'destination');
+                            expect($scope.createInfoEvent).toHaveBeenCalledWith('email@gmail.com', 'travelTime', 'after', '2016-02-01T13:00:000+0200', 40, 40, 'destination');
                         });
 
                     });
                 });
             });
 
-
-            describe('createTravelTimeEvent', function() {
+            describe('createInfoEvent', function() {
                 beforeEach(function(){
                     $scope.originCoordinates = {
                         lat: function(){return 10;},
@@ -710,6 +748,33 @@
                     };
 
                     $scope.travelTimeEvents['email@gmail.com'] = [];
+                    $scope.defaultDelayEvents['email@gmail.com'] = [];
+                });
+
+                describe('creating an appointment default delay event before the current event', function() {
+
+                    describe('the real travel time is bigger than the displayed one', function() {
+
+                        it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
+
+                            $scope.createInfoEvent('email@gmail.com', 'defaultDelay', 'before', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
+
+                            var lastDefaultDelayEvent = $scope.defaultDelayEvents['email@gmail.com'][0];
+
+                            expect(lastDefaultDelayEvent.isDefaultDelay).toBe(true);
+                            expect(lastDefaultDelayEvent.travelTime).toEqual(30);
+                            expect(lastDefaultDelayEvent.travelTimeGoogleDestinationUrl).toEqual(undefined);
+                            expect(lastDefaultDelayEvent.originalStart.dateTime.format()).toEqual(moment('2016-02-01T12:30:000+0200').format());
+                            expect(lastDefaultDelayEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
+                            expect(lastDefaultDelayEvent.start.dateTime.format()).toEqual(moment('2016-02-01T12:40:000+0200').format());
+                            expect(lastDefaultDelayEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
+                            expect(lastDefaultDelayEvent.eventInfoType).toEqual('before');
+                            expect(lastDefaultDelayEvent.location).toEqual('1 rue du test 74432 Test');
+                            expect(lastDefaultDelayEvent.isWarning).toBe(true);
+                        });
+                    });
+
+
                 });
 
                 describe('creating a travelTimeEvent before the current event', function() {
@@ -718,7 +783,7 @@
 
                         it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
 
-                            $scope.createTravelTimeEvent('email@gmail.com', 'before', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
+                            $scope.createInfoEvent('email@gmail.com', 'travelTime', 'before', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
 
                             var lastTravelTimeEvent = $scope.travelTimeEvents['email@gmail.com'][0];
 
@@ -729,9 +794,9 @@
                             expect(lastTravelTimeEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
                             expect(lastTravelTimeEvent.start.dateTime.format()).toEqual(moment('2016-02-01T12:40:000+0200').format());
                             expect(lastTravelTimeEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
-                            expect(lastTravelTimeEvent.travelTimeType).toEqual('before');
+                            expect(lastTravelTimeEvent.eventInfoType).toEqual('before');
                             expect(lastTravelTimeEvent.location).toEqual('1 rue du test 74432 Test');
-                            expect(lastTravelTimeEvent.travelTimeIsWarning).toBe(true);
+                            expect(lastTravelTimeEvent.isWarning).toBe(true);
                         });
                     });
 
@@ -739,7 +804,7 @@
 
                         it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
 
-                            $scope.createTravelTimeEvent('email@gmail.com', 'before', '2016-02-01T13:00:000+0200', 30, 30, '1 rue du test 74432 Test');
+                            $scope.createInfoEvent('email@gmail.com', 'travelTime', 'before', '2016-02-01T13:00:000+0200', 30, 30, '1 rue du test 74432 Test');
 
                             var lastTravelTimeEvent = $scope.travelTimeEvents['email@gmail.com'][0];
 
@@ -750,11 +815,37 @@
                             expect(lastTravelTimeEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
                             expect(lastTravelTimeEvent.start.dateTime.format()).toEqual(moment('2016-02-01T12:30:000+0200').format());
                             expect(lastTravelTimeEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
-                            expect(lastTravelTimeEvent.travelTimeType).toEqual('before');
+                            expect(lastTravelTimeEvent.eventInfoType).toEqual('before');
                             expect(lastTravelTimeEvent.location).toEqual('1 rue du test 74432 Test');
-                            expect(lastTravelTimeEvent.travelTimeIsWarning).toBe(false);
+                            expect(lastTravelTimeEvent.isWarning).toBe(false);
                         });
                     });
+
+                });
+
+                describe('creating an appointment default delay event after the current event', function() {
+
+                    describe('the real travel time is bigger than the displayed one', function() {
+
+                        it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
+
+                            $scope.createInfoEvent('email@gmail.com', 'defaultDelay', 'after', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
+
+                            var lastDefaultDelayEvent = $scope.defaultDelayEvents['email@gmail.com'][0];
+
+                            expect(lastDefaultDelayEvent.isDefaultDelay).toBe(true);
+                            expect(lastDefaultDelayEvent.travelTime).toEqual(30);
+                            expect(lastDefaultDelayEvent.travelTimeGoogleDestinationUrl).toEqual(undefined);
+                            expect(lastDefaultDelayEvent.originalStart.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
+                            expect(lastDefaultDelayEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:30:000+0200').format());
+                            expect(lastDefaultDelayEvent.start.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
+                            expect(lastDefaultDelayEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:20:000+0200').format());
+                            expect(lastDefaultDelayEvent.eventInfoType).toEqual('after');
+                            expect(lastDefaultDelayEvent.location).toEqual('1 rue du test 74432 Test');
+                            expect(lastDefaultDelayEvent.isWarning).toBe(true);
+                        });
+                    });
+
 
                 });
 
@@ -764,7 +855,7 @@
 
                         it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
 
-                            $scope.createTravelTimeEvent('email@gmail.com', 'after', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
+                            $scope.createInfoEvent('email@gmail.com', 'travelTime', 'after', '2016-02-01T13:00:000+0200', 30, 20, '1 rue du test 74432 Test');
 
                             var lastTravelTimeEvent = $scope.travelTimeEvents['email@gmail.com'][0];
 
@@ -775,9 +866,9 @@
                             expect(lastTravelTimeEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:30:000+0200').format());
                             expect(lastTravelTimeEvent.start.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
                             expect(lastTravelTimeEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:20:000+0200').format());
-                            expect(lastTravelTimeEvent.travelTimeType).toEqual('after');
+                            expect(lastTravelTimeEvent.eventInfoType).toEqual('after');
                             expect(lastTravelTimeEvent.location).toEqual('1 rue du test 74432 Test');
-                            expect(lastTravelTimeEvent.travelTimeIsWarning).toBe(true);
+                            expect(lastTravelTimeEvent.isWarning).toBe(true);
                         });
                     });
 
@@ -785,7 +876,7 @@
 
                         it('should push to the travelTimeEvents scope variable the right created travelTimeEvent', function() {
 
-                            $scope.createTravelTimeEvent('email@gmail.com', 'after', '2016-02-01T13:00:000+0200', 30, 30, '1 rue du test 74432 Test');
+                            $scope.createInfoEvent('email@gmail.com', 'travelTime', 'after', '2016-02-01T13:00:000+0200', 30, 30, '1 rue du test 74432 Test');
 
                             var lastTravelTimeEvent = $scope.travelTimeEvents['email@gmail.com'][0];
 
@@ -796,9 +887,9 @@
                             expect(lastTravelTimeEvent.originalEnd.dateTime.format()).toEqual(moment('2016-02-01T13:30:000+0200').format());
                             expect(lastTravelTimeEvent.start.dateTime.format()).toEqual(moment('2016-02-01T13:00:000+0200').format());
                             expect(lastTravelTimeEvent.end.dateTime.format()).toEqual(moment('2016-02-01T13:30:000+0200').format());
-                            expect(lastTravelTimeEvent.travelTimeType).toEqual('after');
+                            expect(lastTravelTimeEvent.eventInfoType).toEqual('after');
                             expect(lastTravelTimeEvent.location).toEqual('1 rue du test 74432 Test');
-                            expect(lastTravelTimeEvent.travelTimeIsWarning).toBe(false);
+                            expect(lastTravelTimeEvent.isWarning).toBe(false);
                         });
                     });
                 });
@@ -820,6 +911,52 @@
                 });
 
 
+            });
+
+            describe('addDefaultDelayEventsToCalendar', function() {
+
+                it('should call the right method with the right parameters', function() {
+                    window.currentCalendar = {
+                        addCal: function(events) {}
+                    };
+                    $scope.defaultDelayEvents = {'email@gmail.com': [{id: 1}, {id: 2}]};
+
+                    spyOn(window.currentCalendar, 'addCal');
+
+                    $scope.addDefaultDelayEventsToCalendar('email@gmail.com');
+
+                    expect(window.currentCalendar.addCal).toHaveBeenCalledWith([{id: 1}, {id: 2}]);
+                });
+            });
+
+            describe('computeDefaultAppointmentDelay', function() {
+
+                it('should call the right method with the right parameters', function() {
+
+                    $scope.events = {
+                        'email@gmail.com': [
+                            //{id: 1, location: '', start: {dateTime: "2016-05-05"}, end: {dateTime: "2016-05-06"}},
+                            {id: 2, location: '100 rue de la rue', start: {dateTime: "2016-05-05T13:00:00.000+02:00"}, end: {dateTime: "2016-05-05T15:00:00.000+02:00"}},
+                            {id: 3, location: "10 avenue de l'avenue", start: {dateTime: "2016-05-05T15:00:00.000+02:00"}, end: {dateTime: "2016-05-05T16:00:00.000+02:00"}},
+                            {id: 4, location: '9 boulevard du boulevard', start: {dateTime: "2016-05-06T15:00:00.000+02:00"}, end: {dateTime: "2016-05-06T17:00:00.000+02:00"}},
+                            {id: 5, location: '2 sentier du sentier', start: {dateTime: "2016-05-06T17:00:00.000+02:00"}, end: {dateTime: "2016-05-06T19:00:00.000+02:00"}},
+                            {id: 6, location: '1 impasse de impasse', start: {dateTime: "2016-05-06T19:00:00.000+02:00"}, end: {dateTime: "2016-05-07T15:00:00.000+02:00"}}
+                        ]};
+
+                    $scope.travelTimeEvents['email@email.com'] = [];
+                    window.threadAccount.delay_between_appointments = 10;
+
+                    spyOn($scope, 'buildInfoEvent');
+                    spyOn($scope, 'detectAvailableEdges');
+                    spyOn($scope, 'addDefaultDelayEventsToCalendar');
+
+                    $scope.computeDefaultAppointmentDelay('email@gmail.com');
+
+                    expect($scope.detectAvailableEdges).toHaveBeenCalled();
+                    expect($scope.buildInfoEvent).toHaveBeenCalled();
+                    expect($scope.addDefaultDelayEventsToCalendar).toHaveBeenCalledWith('email@gmail.com');
+
+                });
             });
         });
 

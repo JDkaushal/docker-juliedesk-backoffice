@@ -31,7 +31,8 @@ class Account
                 :threads_count_today,
                 :title_preferences,
                 :travel_time_transport_mode,
-                :language_level
+                :language_level,
+                :delay_between_appointments
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -71,6 +72,7 @@ class Account
     account.title_preferences = data['title_preferences']
     account.travel_time_transport_mode = data['travel_time_transport_mode']
     account.language_level = data['language_level']
+    account.delay_between_appointments = data['delay_between_appointments']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

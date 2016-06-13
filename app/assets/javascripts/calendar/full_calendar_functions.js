@@ -295,6 +295,7 @@ Calendar.prototype.fullCalendarInit = function() {
         },
         eventAfterRender: function(event, element, view) {
             var $element = $(element);
+            var currentElementTop = $element.position().top;
 
             if(event.isTravelTime) {
                 var travelTimeDiv = $('<div class="travel-time-wrapper ' + event.travelTimeType + '"></div>');
@@ -302,7 +303,7 @@ Calendar.prototype.fullCalendarInit = function() {
                 var travelTimeDuration = $('<span class="duration"></span>');
                 var travelTimeSprite = $('<span class="sprite"></span>');
 
-                if(event.travelTimeIsWarning) {
+                if(event.isWarning) {
                     $element.css('background-color', travelTimeIsWarningBackgroundColor);
                 } else {
                     $element.css('background-color', travelTimeBackgroundColor);
@@ -327,9 +328,9 @@ Calendar.prototype.fullCalendarInit = function() {
 
                 //$element.wrap('<a href="' + event.travelTimeGoogleDestinationUrl + '" target="_blank"></a>');
 
-                var currentElementTop = $element.position().top;
 
-                if(event.travelTimeType == 'before') {
+
+                if(event.eventInfoType == 'before') {
                     travelTimeInnerDiv.css('padding-top', $element.height() - travelTimeInnerDiv.height());
                     $element.css('border-radius', '7px 7px 0px 0px');
                     $element.css('top', currentElementTop + 2);
@@ -337,7 +338,39 @@ Calendar.prototype.fullCalendarInit = function() {
                     $element.css('border-radius', '0px 0px 7px 7px');
                     $element.css('top', currentElementTop - 2);
                 }
+            }
 
+            if(event.isDefaultDelay) {
+                var defaultDelayDiv = $('<div class="default-delay-wrapper"></div>');
+                var defaultDelayInnerDiv = $('<div class="default-delay-inner-wrapper"></div>');
+                var defaultDelayDuration = $('<span class="duration"></span>');
+                var defaultDelaySprite = $('<span class="sprite"></span>');
+
+                var defaultDelay = event.travelTime + 'min. delay';
+
+                $element.css('opacity', travelTimeOpacity);
+
+                defaultDelayDuration.html(defaultDelay);
+
+                defaultDelayDuration.append(defaultDelaySprite);
+
+                defaultDelayInnerDiv.append(defaultDelayDuration);
+                defaultDelayDiv.append(defaultDelayInnerDiv);
+                $element.html(defaultDelayDiv);
+
+                if(event.isWarning) {
+                    $element.css('background-color', travelTimeIsWarningBackgroundColor);
+                } else {
+                    $element.css('background-color', travelTimeBackgroundColor);
+                }
+
+                if(event.eventInfoType == 'before') {
+                    $element.css('border-radius', '7px 7px 0px 0px');
+                    $element.css('top', currentElementTop + 2);
+                } else {
+                    $element.css('border-radius', '0px 0px 7px 7px');
+                    $element.css('top', currentElementTop - 2);
+                }
             }
 
             if(event.isLocated && event.location) {

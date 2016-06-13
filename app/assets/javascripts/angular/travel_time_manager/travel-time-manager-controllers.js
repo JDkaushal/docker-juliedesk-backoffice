@@ -30,7 +30,7 @@
                     $scope.currentStartDate = travelTimeEvent.travelTimeOriginalStartTime.locale('fr');
                     $scope.currentEndDate = travelTimeEvent.travelTimeOriginalEndTime.locale('fr');
 
-                    if(travelTimeEvent.travelTimeType == 'before') {
+                    if(travelTimeEvent.eventInfoType == 'before') {
                         $scope.currentOrigin = window.threadComputedData.location;
                         $scope.currentDestination = travelTimeEvent.location || 'Non défini';
                     } else {
@@ -99,6 +99,8 @@
         $scope.preferedMeanOfTransport = undefined;
         $scope.googleMatrixService = undefined;
         $scope.travelTimeEvents = {};
+        $scope.defaultDelayEvents = {};
+        $scope.defaultDelayByClient = {};
 
         // Used when the window.threadAccount.travel_time_transport_mode is set to 'max'.
         // In this mode we take the longest duration between the driving one and the transit one
@@ -127,11 +129,20 @@
 
         $scope.processForClient = function(clientPrefs, events) {
             var email = clientPrefs.email;
+            $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments
+
+            $scope.travelTimeEvents[email] = [];
+            $scope.defaultDelayEvents[email] = [];
+
+            $scope.setEvents(email, events);
+            $scope.selectEventsToCompute(email);
 
             if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) {
-                $scope.setEvents(email, events);
-                $scope.selectEventsToCompute(email);
                 $scope.calculate(email);
+            }else {
+                if($scope.defaultDelayByClient[email] && $scope.defaultDelayByClient[email] > 0) {
+                    $scope.computeDefaultAppointmentDelay(email);
+                }
             }
 
         };
@@ -142,8 +153,8 @@
             });
         };
 
-        $scope.sortEventsStartDate = function(email) {
-            return _.sortBy($scope.events[email], function(e) {
+        $scope.sortEventsStartDate = function(events) {
+            return _.sortBy(events, function(e) {
                 return moment(e.start.date || e.start.dateTime).valueOf();
             });
         };
@@ -155,80 +166,129 @@
         //};
 
         $scope.selectEventsToCompute = function(email) {
-            var currentStartDate, currentEndDate;
-            var currentIndex = 0;
-            var nextIndex, previousIndex;
-            var nextEvent, previousEvent;
 
-            var startDateSortedEventsAsc = $scope.sortEventsStartDate(email);
+            var startDateSortedEventsAsc = $scope.sortEventsStartDate($scope.events[email]);
             // Make a copy of the array so we can safely reverse it then use both later on
             var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
 
             _.each($scope.events[email], function(e) {
                 if(!!e.location) {
 
-                    currentStartDate = moment(e.start.dateTime);
-                    currentEndDate = moment(e.end.dateTime);
+                    //// Calendar server return the start and end date as {date: XXX} whereas multi_calendar return {dateTime: XXX}
+                    //e.start.dateTime = e.start.dateTime || e.start.date;
+                    //e.end.dateTime = e.end.dateTime || e.end.date;
+                    //
+                    //currentStartDate = moment(e.start.dateTime);
+                    //currentEndDate = moment(e.end.dateTime);
+                    //
+                    //// The lower edge of an event is the start date
+                    //// The upper edge of an event is the end date
+                    //e.lowerEdgeBusy = false;
+                    //e.upperEdgeBusy = false;
+                    //
+                    //// If the lower Edge is not busy (aka not event overlap on the start date of the current event), it means that we are going to calculate the travel time
+                    //// before this particular event and then display it
+                    //// So we will store the next event
+                    //if(previousEvent = _.find($scope.events[email], function(event) {
+                    //        return e.id != event.id && $scope.lowerEdgeIsBusyCondition(currentStartDate, event);
+                    //    })) {
+                    //    e.lowerEdgeBusy = true;
+                    //} else {
+                    //    if(previousEvent = _.find(startDateSortedEventsDesc, function(event) {
+                    //        return event.end.dateTime && currentStartDate.isAfter(event.end.dateTime);
+                    //    })) {
+                    //        e.lowerEdgeMaxTimeDisplay = currentStartDate.diff(previousEvent.end.dateTime, 'minutes');
+                    //    }
+                    //}
+                    //
+                    //if(nextEvent = _.find($scope.events[email], function(event) {
+                    //        return e.id != event.id && $scope.upperEdgeIsBusyCondition(currentEndDate, event);
+                    //    })) {
+                    //    e.upperEdgeBusy = true;
+                    //} else {
+                    //    if(nextEvent = _.find(startDateSortedEventsAsc, function(event) {
+                    //            // Discard events that are all day without being tagged as they are (like public holidays)
+                    //            // To do that we just check if the start property object has a property dateTime
+                    //            // (in the case of all day events like public holidays, the start property object has a 'date' property
+                    //            return event.start.dateTime && currentEndDate.isBefore(event.start.dateTime);
+                    //        })) {
+                    //
+                    //        e.upperEdgeMaxTimeDisplay = -(currentEndDate.diff(nextEvent.start.dateTime, 'minutes'));
+                    //    }
+                    //}
 
-                    nextIndex = currentIndex + 1;
-                    previousIndex = currentIndex - 1;
-
-                    // The lower edge of an event is the start date
-                    // The upper edge of an event is the end date
-                    e.lowerEdgeBusy = false;
-                    e.upperEdgeBusy = false;
-
-                    // If the lower Edge is not busy (aka not event overlap on the start date of the current event), it means that we are going to calculate the travel time
-                    // before this particular event and then display it
-                    // So we will store the next event
-                    if(previousEvent = _.find($scope.events[email], function(event) {
-                            return e.id != event.id && $scope.lowerEdgeIsBusyCondition(currentStartDate, event);
-                        })) {
-                        e.lowerEdgeBusy = true;
-                    } else {
-                        if(previousEvent = _.find(startDateSortedEventsDesc, function(event) {
-                            return event.end.dateTime && currentStartDate.isAfter(event.end.dateTime);
-                        })) {
-                            e.lowerEdgeMaxTravelTimeDisplay = currentStartDate.diff(previousEvent.end.dateTime, 'minutes');
-                        }
-                    }
-
-                    if(nextEvent = _.find($scope.events[email], function(event) {
-                            return e.id != event.id && $scope.upperEdgeIsBusyCondition(currentEndDate, event);
-                        })) {
-                        e.upperEdgeBusy = true;
-                    } else {
-                        if(nextEvent = _.find(startDateSortedEventsAsc, function(event) {
-                                // Discard events that are all day without being tagged as they are (like public holidays)
-                                // To do that we just check if the start property object has a property dateTime
-                                // (in the case of all day events like public holidays, the start property object has a 'date' property
-                                return event.start.dateTime && currentEndDate.isBefore(event.start.dateTime);
-                            })) {
-
-                            e.upperEdgeMaxTravelTimeDisplay = -(currentEndDate.diff(nextEvent.start.dateTime, 'minutes'));
-                        }
-                    }
+                    $scope.detectAvailableEdges(email, e, {
+                        startDateSortedEventsDesc: startDateSortedEventsDesc,
+                        startDateSortedEventsAsc: startDateSortedEventsAsc
+                    });
 
                     e.calculateTravelTime = !e.lowerEdgeBusy || !e.upperEdgeBusy;
-
                 } else {
                     e.calculateTravelTime = false;
                 }
-
-                currentIndex += 1;
             });
         };
 
+        $scope.detectAvailableEdges = function(email, e, params) {
+
+            var nextEvent, previousEvent;
+
+// Calendar server return the start and end date as {date: XXX} whereas multi_calendar return {dateTime: XXX}
+
+            if(!e.all_day && !e.isNotAvailableEvent) {
+                e.start.dateTime = e.start.dateTime || e.start.date;
+                e.end.dateTime = e.end.dateTime || e.end.date;
+            }
+
+            var currentStartDate = moment(e.start.dateTime);
+            var currentEndDate = moment(e.end.dateTime);
+
+            // The lower edge of an event is the start date
+            // The upper edge of an event is the end date
+            e.lowerEdgeBusy = false;
+            e.upperEdgeBusy = false;
+
+            // If the lower Edge is not busy (aka not event overlap on the start date of the current event), it means that we are going to calculate the travel time
+            // before this particular event and then display it
+            // So we will store the next event
+            if(previousEvent = _.find($scope.events[email], function(event) {
+                    return e.id != event.id && $scope.lowerEdgeIsBusyCondition(currentStartDate, event);
+                })) {
+                e.lowerEdgeBusy = true;
+            } else {
+                if(previousEvent = _.find(params.startDateSortedEventsDesc, function(event) {
+                        return currentStartDate.isAfter(event.end.dateTime || event.end.date);
+                    })) {
+                    e.lowerEdgeMaxTimeDisplay = currentStartDate.diff(previousEvent.end.dateTime || previousEvent.end.date, 'minutes');
+                }
+            }
+
+            if(nextEvent = _.find($scope.events[email], function(event) {
+                    return e.id != event.id && $scope.upperEdgeIsBusyCondition(currentEndDate, event);
+                })) {
+                e.upperEdgeBusy = true;
+            } else {
+                if(nextEvent = _.find(params.startDateSortedEventsAsc, function(event) {
+                        // Discard events that are all day without being tagged as they are (like public holidays)
+                        // To do that we just check if the start property object has a property dateTime
+                        // (in the case of all day events like public holidays, the start property object has a 'date' property
+                        return currentEndDate.isBefore(event.start.dateTime || event.start.date);
+                    })) {
+                    e.upperEdgeMaxTimeDisplay = -(currentEndDate.diff(nextEvent.start.dateTime || nextEvent.start.date, 'minutes'));
+                }
+            }
+        };
+
         $scope.upperEdgeIsBusyCondition = function(currentEndDate, event) {
-            var eventStartDate = moment(event.start.dateTime);
-            var eventEndDate = moment(event.end.dateTime);
+            var eventStartDate = moment(event.start.dateTime || event.start.date);
+            var eventEndDate = moment(event.end.dateTime || event.end.date);
 
             return currentEndDate.isBetween(eventStartDate, eventEndDate, 'minute', '[)');
         };
 
         $scope.lowerEdgeIsBusyCondition = function(currentStartDate, event) {
-            var eventStartDate = moment(event.start.dateTime);
-            var eventEndDate = moment(event.end.dateTime);
+            var eventStartDate = moment(event.start.dateTime || event.end.date);
+            var eventEndDate = moment(event.end.dateTime || event.end.date);
 
             return currentStartDate.isBetween(eventStartDate, eventEndDate, 'minute', '(]');
         };
@@ -238,11 +298,19 @@
                return e.calculateTravelTime;
             });
 
-            $scope.computeEvents(email, eventsToCompute);
+            // If there are no events to compute ofr the travel time, we still be displayed the appointments default delay
+            if(eventsToCompute.length > 0) {
+                $scope.computeEvents(email, eventsToCompute);
+            } else {
+                if($scope.defaultDelayByClient[email] && $scope.defaultDelayByClient[email] > 0) {
+                    $scope.travelTimeEvents[email] = [];
+                    $scope.computeDefaultAppointmentDelay(email);
+                }
+            }
+
         };
 
         $scope.computeEvents = function(email, events) {
-            $scope.travelTimeEvents[email] = [];
             $scope.maxDistanceTmp[email] = {};
             $scope.pendingGoogleMatrixCall[email] = 0;
 
@@ -358,6 +426,10 @@
             //console.log($scope.maxDistanceTmp);
             if($scope.pendingGoogleMatrixCall[email] == 0) {
                 $scope.addTravelTimeEventsToCalendar(email);
+
+                if($scope.defaultDelayByClient[email] && $scope.defaultDelayByClient[email] > 0) {
+                    $scope.computeDefaultAppointmentDelay(email);
+                }
             }
         };
 
@@ -401,7 +473,7 @@
             var max = $scope.getMaxDurationForEvent(email, eventId);
 
             if(max) {
-                $scope.buildTravelTimeEvents(email, event, max, destination);
+                $scope.buildInfoEvent(email, 'travelTime', event, max, destination);
                 //$scope.computeTravelTimeWithEvent(email, event, max);
             }
         };
@@ -438,37 +510,36 @@
         //        foundEvent.travel_time = travelTime;
         //    }
         //
-        //    $scope.buildTravelTimeEvents(event, travelTime);
+        //    $scope.buildInfoEvent(event, travelTime);
         //};
 
-        $scope.buildTravelTimeEvents = function(email, event, travelTime, destination) {
+        $scope.buildInfoEvent = function(email, eventType, event, timeDuration, destination) {
             var referenceDate, travelTimeBefore, travelTimeAfter;
 
             if(!event.lowerEdgeBusy) {
                 referenceDate = event.start;
-                travelTimeBefore = travelTime;
+                travelTimeBefore = timeDuration;
 
-                if(travelTimeBefore > event.lowerEdgeMaxTravelTimeDisplay)
-                    travelTimeBefore = event.lowerEdgeMaxTravelTimeDisplay;
+                if(travelTimeBefore > event.lowerEdgeMaxTimeDisplay)
+                    travelTimeBefore = event.lowerEdgeMaxTimeDisplay;
 
-                $scope.createTravelTimeEvent(email, 'before', (referenceDate.dateTime || referenceDate.date), travelTime, travelTimeBefore, destination);
+                $scope.createInfoEvent(email, eventType, 'before', (referenceDate.dateTime || referenceDate.date), timeDuration, travelTimeBefore, destination);
             }
 
             if(!event.upperEdgeBusy) {
                 referenceDate = event.end;
-                travelTimeAfter = travelTime;
+                travelTimeAfter = timeDuration;
 
-                if(travelTimeAfter > event.upperEdgeMaxTravelTimeDisplay)
-                    travelTimeAfter = event.upperEdgeMaxTravelTimeDisplay;
+                if(travelTimeAfter > event.upperEdgeMaxTimeDisplay)
+                    travelTimeAfter = event.upperEdgeMaxTimeDisplay;
 
-                $scope.createTravelTimeEvent(email, 'after', (referenceDate.dateTime || referenceDate.date), travelTime, travelTimeAfter, destination);
+
+                $scope.createInfoEvent(email, eventType, 'after', (referenceDate.dateTime || referenceDate.date), timeDuration, travelTimeAfter, destination);
             }
         };
 
-        $scope.createTravelTimeEvent = function(email, type, referenceDate, realTravelTime, displayedTravelTime, destination) {
-            var travelTimeEvent = {isTravelTime: true, travelTime: realTravelTime};
-
-            travelTimeEvent['travelTimeGoogleDestinationUrl'] = 'https://www.google.com/maps/dir/' + $scope.originCoordinates.lat() + ',' + $scope.originCoordinates.lng() + '/' + encodeURIComponent(destination);
+        $scope.createInfoEvent = function(email, eventType, type, referenceDate, realTravelTime, displayedTravelTime, destination) {
+            var infoEvent = {travelTime: realTravelTime};
 
             var startDate, originalStartDate, endDate, originalEndDate;
 
@@ -484,18 +555,26 @@
                 originalEndDate = moment(referenceDate).add(realTravelTime, 'm');
             }
 
-            travelTimeEvent.originalStart = {dateTime: originalStartDate};
-            travelTimeEvent.originalEnd = {dateTime: originalEndDate};
-            travelTimeEvent.start = {dateTime: startDate};
-            travelTimeEvent.end  = {dateTime: endDate};
-            travelTimeEvent.travelTimeType = type;
+            infoEvent.originalStart = {dateTime: originalStartDate};
+            infoEvent.originalEnd = {dateTime: originalEndDate};
+            infoEvent.start = {dateTime: startDate};
+            infoEvent.end  = {dateTime: endDate};
+            infoEvent.eventInfoType = type;
             // We store the destination in the location field so it can be accessed later to be displayed in the travel time tile, opened when clicking a travel time event
-            travelTimeEvent.location = destination;
+            infoEvent.location = destination;
             // In the case where the travel time would overlap the following or predecessing event
             // We compress it to fit and display it in red
-            travelTimeEvent.travelTimeIsWarning = displayedTravelTime != realTravelTime;
+            infoEvent.isWarning = displayedTravelTime != realTravelTime;
 
-            $scope.travelTimeEvents[email].push(travelTimeEvent);
+            if(eventType == 'travelTime') {
+                infoEvent.isTravelTime = true;
+                infoEvent.travelTimeGoogleDestinationUrl = 'https://www.google.com/maps/dir/' + $scope.originCoordinates.lat() + ',' + $scope.originCoordinates.lng() + '/' + encodeURIComponent(destination);
+
+                $scope.travelTimeEvents[email].push(infoEvent);
+            }else if(eventType == 'defaultDelay') {
+                infoEvent.isDefaultDelay = true;
+                $scope.defaultDelayEvents[email].push(infoEvent);
+            }
         };
 
         $scope.addTravelTimeEventsToCalendar = function(email) {
@@ -506,9 +585,48 @@
                 //console.log(email, $scope.travelTimeEvents[email]);
                 // The setTimeout heere is used for display purpose, without it when multi clients are present the travel events for each one sometimes does not display properly
                 //setTimeout(function() {
-                    window.currentCalendar.addCal($scope.travelTimeEvents[email]);
+                window.currentCalendar.addCal($scope.travelTimeEvents[email]);
                 //}, 100);
+            }
+        };
 
+        $scope.computeDefaultAppointmentDelay = function(email) {
+            // We retrieve the events for which we didn't had to calculate the travelTime
+            //var events = _.filter($scope.events[email], function(event) { return !event.calculateTravelTime });
+            var allEvents = $scope.events[email].concat($scope.travelTimeEvents[email]);
+            allEvents = _.compact(allEvents);
+
+            var startDateSortedEventsAsc = $scope.sortEventsStartDate(allEvents);
+
+            var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
+
+            var timeDuration = $scope.defaultDelayByClient[email];
+
+            _.each(allEvents, function(e) {
+
+                // We don't compute default appointment delay for holiday + unavailable events + already computed travel times events + events having a travel time
+                if(!e.isTravelTime && !e.calculateTravelTime && !e.isNotAvailableEvent) {
+
+                    $scope.detectAvailableEdges(email, e, {
+                        startDateSortedEventsDesc: startDateSortedEventsDesc,
+                        startDateSortedEventsAsc: startDateSortedEventsAsc
+                    });
+
+                    e.displayDefaultDelay = !e.lowerEdgeBusy || !e.upperEdgeBusy;
+
+                    if(e.displayDefaultDelay) {
+                        $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
+                    }
+                }
+
+            });
+
+            $scope.addDefaultDelayEventsToCalendar(email);
+        };
+
+        $scope.addDefaultDelayEventsToCalendar = function(email) {
+            if(window.currentCalendar) {
+                window.currentCalendar.addCal($scope.defaultDelayEvents[email]);
             }
         };
 
