@@ -168,6 +168,7 @@ class Account
   def client_info
     info = ""
     info += "\nCompany: #{self.company_hash['name']}" if self.company_hash.present?
+    info += "\nMeeting delay: #{self.delay_between_appointments}" if self.delay_between_appointments.present?
     info += "\nMobile: #{self.mobile_number}" if self.mobile_number.present?
     info += "\nLandline: #{self.landline_number}" if self.landline_number.present?
     info += "\nSkype: #{self.skype}" if self.skype.present?
