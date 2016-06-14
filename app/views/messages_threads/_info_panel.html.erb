@@ -1189,7 +1189,7 @@
 
           <div class="account-details">
             <%= simple_format account.client_info %>
-            <%if account.current_notes.present? || account.awaiting_current_notes.present? %>
+            <% if account.current_notes.present? || account.awaiting_current_notes.present? %>
                 <%
                    notes = account.current_notes
                    if account.awaiting_current_notes.present?

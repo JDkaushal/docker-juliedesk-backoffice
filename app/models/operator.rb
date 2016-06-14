@@ -11,6 +11,42 @@ class Operator < ActiveRecord::Base
   PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
 
 
+  def compute_daily_stats(ref_date = Time.now)
+    now = ref_date.in_time_zone("Indian/Antananarivo")
+
+    start_date = if now.hour < 6
+      now - 1.day
+    else
+      now
+    end
+
+    # We study the stats on a day between 6AM of this day until 6AM the next
+    start_date = start_date.change(hour: 6, min: 0, sec: 0)
+    end_date = start_date + 1.day
+
+    # One Presence is equivalent to 30 minutes worked
+    # We exclude the end_date from the query because it would add 30 minutes to the total duration if the operator add a shift at 6AM
+    # but it should count for the next day
+
+    # Stock this in Redis for the day ?
+    worked_hours = self.operator_presences.where('date >= ? AND date < ?', start_date, end_date).size / 2.0
+    requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('initiated_at >= ? AND initiated_at <= ?', start_date, end_date)
+    requests_handled_for_the_day_count = requests_handled_for_the_day.size
+
+    uniq_clients = requests_handled_for_the_day.map{|r| r.messages_thread.account_email}.uniq
+    productivity_per_hour_today = requests_handled_for_the_day_count.to_f/worked_hours
+
+    if productivity_per_hour_today.nan?
+      productivity_per_hour_today = 0
+    end
+
+    {
+      requests_handled_today_count: requests_handled_for_the_day_count,
+      happy_customer_count: uniq_clients.size,
+      productivity_per_hour_today: '%.1f' % productivity_per_hour_today
+    }
+  end
+
   def password=(value)
     self.salt = SecureRandom.base64(8)
     self.encrypted_password = Digest::SHA2.hexdigest(self.salt + value)

@@ -8,6 +8,7 @@ class MessagesThreadsController < ApplicationController
   before_action :check_staging_mode
 
   def index
+    @operator_greetings_stats = Operator.find(session[:operator_id]).compute_daily_stats
     render_messages_threads
   end
 
