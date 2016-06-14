@@ -224,10 +224,13 @@ Calendar.prototype.findAccountEmailForEvent = function(event) {
         return getStagingTargetEmail();
     }else{
         var calendar = this;
-        var calendarLoginUsername = event.calendar_login_username;
+        if(event.calendar_login_email) {
+            return event.calendar_login_email;
+        }
+        var calendarId = event.calId;
 
         var calendarObject = _.find(calendar.calendars, function(calendar) {
-            return calendar.calendar_login_username == calendarLoginUsername;
+            return calendar.id == calendarId;
         });
         return calendarObject.email;
     }
