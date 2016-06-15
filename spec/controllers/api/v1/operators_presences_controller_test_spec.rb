@@ -119,4 +119,5 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
       end
     end
   end
+
 end

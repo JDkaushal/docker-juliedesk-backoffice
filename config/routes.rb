@@ -69,12 +69,12 @@ Rails.application.routes.draw do
 
     resources :features, only: [:new, :create, :edit, :update, :index, :destroy]
 
-
     get "parallel_run", controller: :parallel_run, action: :recap
     get "parallel_run/stats", controller: :parallel_run, action: :stats
 
     get "stats", controller: :stats, action: :main
 
+    put "settings", controller: :my_settings, action: :update
 
     root to: "operators#index"
   end
@@ -99,6 +99,8 @@ Rails.application.routes.draw do
         post "/remove", action: :remove
         post "/reset_day", action: :reset_day
         post "/copy_day", action: :copy_day
+        post :upload_planning_constraints
+        post :get_planning_from_ai
         get "/forecast", action: :forecast
       end
     end

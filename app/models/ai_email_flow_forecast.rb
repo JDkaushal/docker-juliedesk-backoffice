@@ -9,7 +9,6 @@ class AiEmailFlowForecast < ActiveRecord::Base
     }
   end
 
-
   def self.fetch(date = nil)
 
       unless date.present?
@@ -21,6 +20,55 @@ class AiEmailFlowForecast < ActiveRecord::Base
       end
 
     make_call(date, ENV['AI_FORECAST_PROJECTION_DURATION_IN_DAYS'])
+  end
+
+  def self.handle_forecast_data(data)
+    forecasts = {}
+    datetime_format = '%Y-%m-%d %H:%M:%S'
+    forecast_datetimes = data.keys
+    existing_forecasts_datetimes = []
+    forecasts_to_insert = []
+
+    existing_forecasts =  AiEmailFlowForecast.where(datetime: forecast_datetimes)
+
+    existing_forecasts.each do |forecast|
+      current_forecast_datetime = forecast.datetime.strftime(datetime_format)
+      forecast.update(count: data[current_forecast_datetime])
+
+      existing_forecasts_datetimes << current_forecast_datetime
+
+      forecasts[current_forecast_datetime] = forecast.count
+    end
+
+    forecast_datetimes -= existing_forecasts_datetimes
+
+
+    forecast_datetimes.each do |forecast_datetime|
+      current_count = data[forecast_datetime]
+      forecasts_to_insert << "(#{current_count}, '#{forecast_datetime}')"
+      #new_forecast = AiEmailFlowForecast.create(datetime: forecast_datetime, count: data[forecast_datetime])
+      forecasts[forecast_datetime] = current_count
+    end
+
+    if forecasts_to_insert.size > 0
+      sql = "INSERT INTO ai_email_flow_forecasts (\"count\", \"datetime\") VALUES #{forecasts_to_insert.join(", ")}"
+
+      ActiveRecord::Base.connection.execute(sql)
+    end
+
+
+
+    # data.each do |datetime, count|
+    #   if forecast = AiEmailFlowForecast.find_by(datetime: datetime)
+    #     forecast.update(count: count)
+    #   else
+    #     forecast = AiEmailFlowForecast.create(datetime: datetime, count: count)
+    #   end
+    #
+    #   forecasts[forecast.datetime.strftime(datetime_format)] = forecast.count
+    # end
+
+    forecasts
   end
 
   private
@@ -35,12 +83,14 @@ class AiEmailFlowForecast < ActiveRecord::Base
 
     json_response = JSON.parse(response.body)
 
-    json_response['forecast'].each do |datetime, count|
-      if forecast = AiEmailFlowForecast.find_by(datetime: datetime)
-        forecast.update(count: count)
-      else
-        AiEmailFlowForecast.create(datetime: datetime, count: count)
-      end
-    end
+    self.handle_forecast_data(json_response['forecast'])
+
+    # json_response['forecast'].each do |datetime, count|
+    #   if forecast = AiEmailFlowForecast.find_by(datetime: datetime)
+    #     forecast.update(count: count)
+    #   else
+    #     AiEmailFlowForecast.create(datetime: datetime, count: count)
+    #   end
+    # end
   end
 end

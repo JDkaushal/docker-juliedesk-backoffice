@@ -5,6 +5,7 @@ class Review::OperatorsPresenceController < ReviewController
   before_filter :only_planning_access
 
   def index
+
     respond_to do |format|
       format.html {
         if params[:start]
@@ -15,22 +16,10 @@ class Review::OperatorsPresenceController < ReviewController
       }
       format.json {
         render json: {
-            status: "success",
-            data: {
-                operators: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level).map{|o|
-                  presences = o.operator_presences.where("date >= ? AND date < ?", DateTime.parse(params[:start]), DateTime.parse(params[:start]) + 7.days)
-                  {
-                      name: o.name,
-                      id: o.id,
-                      stars: o.stars,
-                      privilege: o.privilege,
-                      in_formation: o.in_formation,
-                      color: o.color,
-                      presences: presences.where(is_review: false).map{|op| op.date.strftime("%Y%m%dT%H%M00")},
-                      review_presences: presences.where(is_review: true).map{|op| op.date.strftime("%Y%m%dT%H%M00")}
-                  }
-                }
-            }
+          status: "success",
+          data: {
+              operators: generate_operators_presence_data(DateTime.parse(params[:start]))
+          }
         }
       }
       format.csv {
@@ -101,7 +90,100 @@ class Review::OperatorsPresenceController < ReviewController
     render json: {}
   end
 
+  def upload_planning_constraints
+    result = ''
+
+    if params[:file].present?
+      filename = "planning_constraints_#{Time.now.strftime('%d-%m-%YT%H:%M:%S')}.csv"
+
+      Uploaders::AmazonAws.store_file(filename, params[:file])
+
+      result = AiProxy.new.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
+
+      result.merge!('start_date' => params[:start_date])
+      handle_planning_ai_data(result)
+    end
+
+    render json: result.merge(filename: filename)
+  end
+
+  def get_planning_from_ai
+
+    result = AiProxy.new.build_request(:fetch_planning, { date: params[:start_date], filename: params[:filename], productivity: params[:productivity] })
+    result.merge!('start_date' => params[:start_date])
+    handle_planning_ai_data(result)
+
+    render json: result
+  end
+
   private
+
+  def generate_operators_presence_data(start)
+
+    Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by(&:name).sort_by(&:level).map{|o|
+      presences = o.operator_presences.where("date >= ? AND date < ?", start, start + 7.days)
+      {
+          name: o.name,
+          id: o.id,
+          stars: o.stars,
+          privilege: o.privilege,
+          in_formation: o.in_formation,
+          color: o.color,
+          presences: presences.where(is_review: false).map{|op| op.date.strftime("%Y%m%dT%H%M00")},
+          review_presences: presences.where(is_review: true).map{|op| op.date.strftime("%Y%m%dT%H%M00")}
+      }
+    }
+  end
+
+  def clean_operator_presences_for_week(start_date)
+    Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).each do |operator|
+      operator.operator_presences.where("date >= ? AND date < ?", start_date, start_date + 7.days).delete_all
+    end
+  end
+
+  def handle_planning_ai_data(data)
+    # Update the productivity with one used to by the AI to generate the planning
+    MySettings['planning.operator_hourly_productivity'] = data['productivity']
+
+    # Update or create the emails forecast for the given period
+    data['forecast'] = AiEmailFlowForecast.handle_forecast_data(data['forecast'])
+
+    # Handle the new planning data
+    data['planning'] = handle_new_planning_data(data['start_date'], data['planning'])
+  end
+
+  def handle_new_planning_data(start_date, data)
+    # We begin at 6AM in Madagascar which is the same as 3AM UTC
+    start_date = ActiveSupport::TimeZone.new('UTC').parse(start_date).change(hour: 3)
+    presences_to_insert = []
+
+    clean_operator_presences_for_week(start_date)
+
+    data.each do |operator_id, presence_days|
+      presence_days.each_with_index do |presences, day_nb|
+        current_date = start_date + day_nb.days
+
+        presences.each do |presence|
+          if presence == 1
+            presences_to_insert << "(#{operator_id}, '#{current_date}')"
+            #OperatorPresence.create(operator_id: operator_id, date: current_date)
+          end
+
+          current_date += 30.minutes
+        end
+      end
+    end
+
+    if presences_to_insert.size > 0
+      # We use raw sql to make the bulk insertions, it speeds things up to 70x
+      sql = "INSERT INTO operator_presences (\"operator_id\", \"date\") VALUES #{presences_to_insert.join(", ")}"
+
+      ActiveRecord::Base.connection.execute(sql)
+    end
+
+    # We generate the newly added presences
+    generate_operators_presence_data(start_date)
+  end
 
   def only_planning_access
     if session[:planning_access]

@@ -5,6 +5,17 @@
   .table-container {
     position: relative;
   }
+  
+  .week-number {
+    font-size: 25px;
+    font-weight: bold;
+  }
+
+  #planning_constraints_upload_form {
+    // To put the file form out of view
+    position: absolute;
+    left: -500px;
+  }
 
   table {
     overflow-x: visible;

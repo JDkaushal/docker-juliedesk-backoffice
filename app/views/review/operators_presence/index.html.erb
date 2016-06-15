@@ -3,14 +3,19 @@
     var app = angular.module("backofficeApp", []);
     app.controller("OperatorsPresenceCtrl", function($scope, $http, $timeout, $sce) {
         moment.locale('fr');
-        $scope.operatorEmailByHourRate = 5;
         //var operatorEmailByHourRate = 7.5;
+        $scope.operatorEmailByHourRate = $('#operator_hourly_productivity').val();
         var aiForecastWindow = 45;
 
         $scope.startWeekDate = moment.tz('Indian/Antananarivo').startOf("isoweek").utc().add(6, 'h');
 
         $scope.countsToMatch = {};
         $scope.aiForecast = {};
+
+        $('#planning_constraints_upload_input').change(function(e) {
+            console.log('File selected');
+            $scope.uploadPlanningConstraints();
+        });
 
         $scope.init = function() {
             var startDate = $('.operators-presence-container').data('start-date');
@@ -436,6 +441,140 @@
             return result + 'h';
         };
 
+        $scope.updateOperatorHourlyProductivity = function() {
+            $scope.loading = true;
+
+            $http.put("/admin/settings", {
+                settings: {
+                    'planning.operator_hourly_productivity': $scope.operatorEmailByHourRate
+                }
+            }).then(function() {
+                $scope.loading = false;
+                $scope.computeAIForecast();
+            }, function(response) {
+                console.log(response);
+                $scope.loading = false;
+                $scope.displaySaveFailedLabel();
+            });
+        };
+
+        $scope.regenerate_planning = function() {
+
+            if(confirm('Vous êtes sur le point de réinitialiser le planning de la semaine ' + $scope.startWeekDate.format("W") + ' , toutes les données déjà entrées seront effacées. Êtes vous sûr de vouloir continuer ?')){
+                // We use the change event to know when a file has been selected
+                $('#planning_constraints_upload_input').click();
+            }
+        };
+
+        $scope.uploadPlanningConstraints = function() {
+            var formattedStartDate = $scope.startWeekDate.format('Y-M-D');
+            var form = $('#planning_constraints_upload_form')[0];
+            var formData = new FormData(form);
+            formData.append('start_date', formattedStartDate);
+            formData.append('productivity', $scope.operatorEmailByHourRate);
+
+            $scope.loading = true;
+
+            // We clear the input file, in case the operator want to upload another file (since we listen to the change event,
+            // it would not get triggered if the operator selected the same file twice
+            form.reset();
+
+            //$scope.fetchPlanning("2016-6-13", "planning_constraints_16-06-2016T17:09:23.csv");
+
+            // processData: false,
+            // contentType: false,
+            // are needed to send FormData Through Ajax, $http does not work (it badly format the request body and result in a 403 error)
+            $.ajax({
+                url: "/review/operators_presence/upload_planning_constraints",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // This call can return success of fail when the planning has already been generated
+                    // If not, it will take several minutes (~10) to complete. This means that we will check regularly
+                    // if it has completed
+                    if(response.status != 'success' && response.status != 'fail') {
+                        $scope.fetchPlanning(formattedStartDate, response.filename);
+                    } else {
+                        $scope.applyPlanningData(response);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorMessage) {
+                    console.log(errorMessage); // Optional
+                    $scope.loading = false;
+                    $scope.displaySaveFailedLabel();
+                }
+            });
+        };
+
+//        $scope.initiateAIPlanning = function(constraints_file_url) {
+//
+//            console.log("Initiating planning");
+//            var params = $.param( {
+//                productivity: 3,
+//                file_name: constraints_file_url,
+//                start_date: $scope.startWeekDate.format('Y-M-D')
+//            }, true );
+//
+//            console.log(params);
+//
+////            $http({
+////                method: 'GET',
+////                url: '<%= ENV['CONSCIENCE_API_BASE_PATH_V1']%>/planning/initiate?' + params,
+////
+////
+////            })
+//
+//        };
+
+        $scope.fetchPlanning = function(date, filename) {
+            console.log('Fetching planning ...');
+            $scope.loading = true;
+            // every 30 secs
+            $timeout(function() {
+                return $scope.getPlanning(date, filename, function() { $scope.fetchPlanning(date,filename); });
+            }, 30000)
+        };
+
+        $scope.getPlanning = function(date, filename, callback) {
+            $http({
+                method: 'POST',
+                url:  "/review/operators_presence/get_planning_from_ai",
+                data: {
+                    start_date: date,
+                    filename: filename,
+                    productivity: $scope.operatorEmailByHourRate
+                }
+            }).then(function(response) {
+                if(response.data.status == "processing") {
+                    console.log('processing');
+                    // Until the planning has been generated or has fail to be generated (status != procesing) we fetch
+                    // every 30 seconds (see $scope.fetchPlanning)
+                    callback();
+                } else {
+                    $scope.applyPlanningData(response.data);
+                }
+            }, function(response) {
+                $scope.loading = false;
+                $scope.displaySaveFailedLabel();
+                console.log(response);
+            });
+        };
+
+        $scope.applyPlanningData = function(data) {
+            console.log(data);
+            $scope.loading = false;
+            alert('Planning updated');
+
+            $scope.operatorEmailByHourRate = data.productivity;
+            $scope.aiForecast = $.extend($scope.aiForecast, data.forecast);
+            $scope.operators = data.planning;
+            $scope.computeAIForecast();
+            console.log('ai computed');
+
+        };
+
         $scope.init();
     });
 </script>
@@ -444,7 +583,9 @@
   <h1>Operator presence times</h1>
 
   <label>Number of emails processed per hour per operator</label>
-  <input ng-model="operatorEmailByHourRate" ng-change="computeAIForecast()">
+  <input id="operator_hourly_productivity" ng-model="operatorEmailByHourRate" value="<%= MySettings['planning.operator_hourly_productivity'] || 5 %>">
+  <div class="btn btn-primary btn-xs" ng-click="updateOperatorHourlyProductivity()">Update</div>
+
 
   <div id=by-julie>Predictions by Julie</div>
 
@@ -459,7 +600,12 @@
     <div ng-click="fetch()" class="btn btn-default">Refresh</div>
     <div class="btn btn-default" ng-click="previousWeek()"><</div>
     <div class="btn btn-default" ng-click="nextWeek()">></div>
-    Week {{ startWeekDate.format("W") }} of {{ startWeekDate.format("YYYY") }}: {{ startWeekDate.format("dddd D MMMM") }} - {{ endWeekDate.format("dddd D MMMM") }}
+    <span class="week-number">Week {{ startWeekDate.format("W") }}</span> of {{ startWeekDate.format("YYYY") }}: {{ startWeekDate.format("dddd D MMMM") }} - {{ endWeekDate.format("dddd D MMMM") }}
+    <div class="btn btn-success btn-xs" ng-click="regenerate_planning()">Générer un nouveau planning</div>
+
+    <form id="planning_constraints_upload_form" method="post" action="/review/operators_presence/upload_planning_constraints" enctype="multipart/form-data">
+      <input type="file" name="file" id="planning_constraints_upload_input">
+    </form>
   </h5>
   <br>
   <br>

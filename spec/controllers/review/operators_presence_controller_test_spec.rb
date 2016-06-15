@@ -255,5 +255,207 @@ END
         expect(@op1.operator_presences.map{|op| op.date.to_s}).to eq(["2015-10-12 17:00:00 UTC", "2015-10-13 11:00:00 UTC"])
       end
     end
+
+    describe 'upload_planning_constraints' do
+
+      it 'should upload the file to S3' do
+        start_date = Time.new(2016,01,01,15,00,00)
+
+        allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
+
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        expect(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
+
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+      end
+
+      it 'should send the correct request to the AI' do
+        start_date = Time.new(2016,01,01,15,00,00)
+
+        allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
+
+        expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
+
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+      end
+
+      it 'should call the correct method to handle the planning data' do
+        start_date = Time.new(2016,01,01,15,00,00)
+
+        allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
+
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+
+        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
+
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+      end
+
+      it 'should render the correct json' do
+        start_date = Time.new(2016,01,01,15,00,00)
+
+        allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
+
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
+
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+
+        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 +0100\",\"filename\":\"planning_constraints_01-01-2016T12:00:00.csv\"}")
+      end
+    end
+
+    describe 'get_planning_from_ai' do
+
+      it 'should send the correct request to the AI' do
+        start_date = Time.new(2016,01,01,15,00,00)
+        filename = "planning_constraints_01-01-2016T12:00:00.csv"
+
+        expect_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+      end
+
+      it 'should send the correct request to the AI' do
+        start_date = Time.new(2016,01,01,15,00,00)
+        filename = "planning_constraints_01-01-2016T12:00:00.csv"
+
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
+        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+      end
+
+      it 'should render the correct json' do
+        start_date = Time.new(2016,01,01,15,00,00)
+        filename = "planning_constraints_01-01-2016T12:00:00.csv"
+
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+
+        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 +0100\"}")
+      end
+
+    end
+
+    describe 'generate_operators_presence_data' do
+
+      it 'should return the correct data' do
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 13, 00, 00), is_review: true)
+
+        @op3.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+        @op3.save
+        @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+        @op4.save
+
+        expected =[
+                {:name => @normal.name, :id => @normal.id, :stars => nil,   :privilege => nil, :in_formation=>false, :color=>"#ffffff", :presences => [], :review_presences => []},
+                {:name => @op1.name,    :id => @op1.id,    :stars => nil,   :privilege => nil, :in_formation=>false, :color=>"#ffffff", :presences => ["20150910T100000", "20150911T120000"], :review_presences => []},
+                {:name => @op2.name,    :id => @op2.id,    :stars => nil,   :privilege => nil, :in_formation=>false, :color=>"#ffffff", :presences => ["20150911T120000"], :review_presences => ["20150911T130000"]},
+                {:name => @op5.name,    :id => @op5.id,    :stars => nil,   :privilege => nil, :in_formation=>false, :color=>"#ffffff", :presences => [], :review_presences => []},
+                {:name => @op3.name,    :id => @op3.id,    :stars => "*",   :privilege => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, :in_formation=>false, :color=>"#ffffff", :presences => [], :review_presences => []},
+                {:name => @op4.name,    :id => @op4.id,    :stars => "**",  :privilege => Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, :in_formation=>false, :color=>"#ffffff", :presences => [], :review_presences => []}
+            ]
+
+        expect(controller.send(:generate_operators_presence_data, DateTime.new(2015, 9, 10))).to eq(expected)
+      end
+
+    end
+
+    describe 'clean_operator_presences_for_week' do
+
+      it 'should destroy the correct OperatorPresences' do
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 00, 00))
+        @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 13, 00, 00), is_review: true)
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 9, 13, 00, 00), is_review: true)
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 9, 14, 00, 00), is_review: true)
+        @op2.operator_presences.create(date: DateTime.new(2015, 9, 9, 15, 00, 00), is_review: true)
+
+        @op3.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+        @op3.save
+        @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+        @op4.save
+
+        expect{
+          controller.send(:clean_operator_presences_for_week, DateTime.new(2015, 9, 10))
+        }.to change{OperatorPresence.count}.by(-4)
+
+      end
+    end
+
+    describe 'handle_planning_ai_data' do
+      it 'should call the right methods' do
+
+        forecast = 'forecast'
+        planning = 'planning'
+        start_date = Time.new(2016,01,01,15,00,00)
+
+        MySettings['planning.operator_hourly_productivity'] = 5
+
+        expect(AiEmailFlowForecast).to receive(:handle_forecast_data).with(forecast)
+        expect(controller).to receive(:handle_new_planning_data).with(start_date.to_s, planning)
+
+        controller.send(:handle_planning_ai_data, {'start_date' => start_date.to_s, 'forecast' => forecast, 'planning' => planning, 'productivity' => 7})
+
+        expect(MySettings['planning.operator_hourly_productivity']).to eq(7)
+      end
+
+      it 'should modify the params hash in place' do
+        forecast = 'forecast'
+        planning = 'planning'
+        start_date = Time.new(2016,01,01,15,00,00)
+        params = {'start_date' => start_date.to_s, 'forecast' => forecast, 'planning' => planning, 'productivity' => 7}
+
+        allow(AiEmailFlowForecast).to receive(:handle_forecast_data).with(forecast).and_return('returned_forecast')
+        allow(controller).to receive(:handle_new_planning_data).with(start_date.to_s, planning).and_return('returned_planning')
+
+        controller.send(:handle_planning_ai_data, params)
+
+        expect(params).to eq({'start_date' => start_date.to_s, 'forecast' => 'returned_forecast', 'planning' => 'returned_planning', 'productivity' => 7})
+      end
+    end
+
+    describe 'handle_new_planning_data' do
+
+      it 'should create the correct operator presences' do
+
+        start_date = "2016-6-13"
+        data = {@op1.id =>[
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]}
+
+        expect(controller).to receive(:generate_operators_presence_data).with(ActiveSupport::TimeZone.new('UTC').parse(start_date).change(hour: 3))
+
+        expect{
+          controller.send(:handle_new_planning_data,start_date, data)
+        }.to change{OperatorPresence.count}.by(76)
+      end
+
+    end
   end
 end
