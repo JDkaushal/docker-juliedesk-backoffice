@@ -805,7 +805,6 @@ Calendar.prototype.changeWeekendsCheckbox = function () {
 
 Calendar.prototype.goToDateTime = function(dateTime) {
     var calendar = this;
-    console.log(dateTime);
     calendar.$selector.find("#calendar").fullCalendar('gotoDate', moment(dateTime));
 };
 
