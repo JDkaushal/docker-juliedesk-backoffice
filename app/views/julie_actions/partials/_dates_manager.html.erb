@@ -11,7 +11,7 @@
         <div class="timezoned-suggestions-area" ng-repeat="(timezone, suggestions) in timeSlotsSuggestions">
           <div class="timezone-title">{{timezone}}</div>
 
-          <div class="btn btn-sm btn-block time-slot-to-suggest" ng-class="suggestion.isOutBound ? 'btn-danger' : 'btn-primary'" ng-repeat="suggestion in suggestions">
+          <div class="btn btn-sm btn-block time-slot-to-suggest" data-date-time="{{suggestion.value.format()}}" ng-class="suggestion.isOutBound ? 'btn-danger' : 'btn-primary'" ng-repeat="suggestion in suggestions">
             {{suggestion.displayText}}
           </div>
         </div>

@@ -803,8 +803,9 @@ Calendar.prototype.changeWeekendsCheckbox = function () {
     $('#calendar').fullCalendar('addEventSource', currentEvents);
 };
 
-    Calendar.prototype.goToDateTime = function(dateTime) {
+Calendar.prototype.goToDateTime = function(dateTime) {
     var calendar = this;
+    console.log(dateTime);
     calendar.$selector.find("#calendar").fullCalendar('gotoDate', moment(dateTime));
 };
 

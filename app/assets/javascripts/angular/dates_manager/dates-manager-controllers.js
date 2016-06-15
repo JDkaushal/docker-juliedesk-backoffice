@@ -169,7 +169,9 @@
         };
 
         $scope.addTimeSlotSuggestion = function(timezone, suggestion) {
+            console.log(suggestion);
             suggestion = moment(suggestion).tz(timezone);
+            console.log(suggestion);
 
             var suggestionDisplayText = window.helpers.capitalize(suggestion.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")));
 
@@ -178,6 +180,8 @@
                 displayText: suggestionDisplayText,
                 isOutBound: false
             };
+
+            console.log(suggestionData);
 
             if($scope.checkSuggestionTimeOutBound(suggestion)) {
                 suggestionData.isOutBound = true;
