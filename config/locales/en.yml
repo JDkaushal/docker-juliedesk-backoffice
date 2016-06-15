@@ -175,6 +175,8 @@ en:
     to_process_later: "To process later"
     waiting_for_preference_change: "Waiting for preference change"
     to_follow_up: "To follow-up"
+    priorized: "High-priority"
+    principal: "Principal"
 
   show:
     x_unread_emails:

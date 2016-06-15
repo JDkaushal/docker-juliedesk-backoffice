@@ -32,14 +32,14 @@ class Account
                 :title_preferences,
                 :travel_time_transport_mode,
                 :language_level,
-                :delay_between_appointments
+                :delay_between_appointments,
+                :have_priority
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
   RULE_DEFAULT = "rule_default"
 
   def self.create_from_email email, params={}
-
     cache = params[:accounts_cache]# || self.accounts_cache
     return nil unless email.present?
     data = get_account_details(email, {accounts_cache: cache})
@@ -73,6 +73,7 @@ class Account
     account.travel_time_transport_mode = data['travel_time_transport_mode']
     account.language_level = data['language_level']
     account.delay_between_appointments = data['delay_between_appointments']
+    account.have_priority = data['have_priority']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

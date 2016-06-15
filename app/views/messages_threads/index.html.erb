@@ -5,7 +5,7 @@
         $("body").on("click", ".messages-thread-item", function(e) {
             var target = $(this).attr("href");
             var messagesThreadId = $(this).data("id");
-            var messagesThread = _.find($scope.messagesThreads, function(thread) {
+            var messagesThread = _.find($scope.getAllMessagesThreads(), function(thread) {
                 return thread.id == messagesThreadId
             });
             e.preventDefault();
@@ -26,6 +26,9 @@
         $scope.isAdmin = <%= (session[:privilege] == "admin")?"true":"false" %>;
         $scope.todayRequestCountForClients = {};
 
+        $scope.priorizedMessagesThreads = [];
+        $scope.messagesThreads = [];
+
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
             $(".refresh-inbox-button").attr("disabled", true);
@@ -37,7 +40,9 @@
             $http.get(url)
                     .success(function(e) {
                         $scope.loading = false;
-                        $scope.messagesThreads = e.data;
+
+                        $scope.splitPriorizedThreadFromOthers(e.data);
+
                         $scope.operatorsOnPlanning = e.operators_data;
                         $(".header .global-todo-count").html($scope.messagesThreads.length);
                         //$scope.getTodayRequestsCountsForClients();
@@ -49,6 +54,24 @@
                             alert("There was an error.");
                         }
                     });
+        };
+
+        $scope.getAllMessagesThreads = function() {
+            return $scope.messagesThreads.concat($scope.priorizedMessagesThreads);
+        };
+
+        $scope.splitPriorizedThreadFromOthers = function(data) {
+            var partitionnedThreads = _.partition(data, function(messagesThread) {
+
+                console.log(messagesThread);
+
+                return messagesThread.account && messagesThread.account.have_priority;
+            });
+
+            console.log(partitionnedThreads);
+
+            $scope.priorizedMessagesThreads = partitionnedThreads[0];
+            $scope.messagesThreads = partitionnedThreads[1];
         };
 
         $scope.getTodayRequestsCountsForClients = function() {
@@ -401,8 +424,17 @@
           <div style="font-size: 30px; color: #f00;">I SEE THIS BECAUSE THE FEATURE test_feature is active for me.</div>
       <% end %>
 
+      <div ng-show="priorizedMessagesThreads.length > 0">
+        <div class="category-title"><%= I18n.t("index.priorized") %></div>
+        <div class="messages-threads-container bordered">
+          <div ng-repeat="messagesThread in priorizedMessagesThreads">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
 
       <div ng-show="toProcessNowMessagesThreads().length > 0">
+        <div class="category-title"><%= I18n.t('index.principal') %></div>
         <div class="messages-threads-container bordered">
           <div ng-repeat="messagesThread in toProcessNowMessagesThreads()">
             <%= render "row_in_list" %>
