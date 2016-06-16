@@ -213,6 +213,21 @@ EventTile.prototype.getEventStartEnd = function() {
     return {start: mStart, end: mEnd};
 };
 
+
+EventTile.prototype.getRruleIndex = function(recurrenceArray) {
+
+    var recurrenceLength = recurrenceArray.length;
+    if(recurrenceLength > 0) {
+        // Happens that the recurrence Rrule is not the first element
+        for(var i = 0; i < recurrenceLength; i++) {
+            // Every RRule contains a FREQ element
+            if(recurrenceArray[i].indexOf('FREQ') > -1) {
+                return i;
+            }
+        }
+    }
+};
+
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
@@ -224,20 +239,29 @@ EventTile.prototype.redraw = function() {
     eventTile.$selector.find(".recurrence-container").hide();
 
     var rrule = "";
+    var rruleIndex = 0;
     var rstart = moment(eventTile.event.start);
 
     if(eventTile.recurringEvent) {
         eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
         if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(eventTile.recurringEvent.recurrence.join("\n"));
-            if(eventTile.recurringEvent.recurrence.length > 0) {
-                rrule = eventTile.recurringEvent.recurrence[0];
-            }
+            rruleIndex = eventTile.getRruleIndex(eventTile.recurringEvent.recurrence);
+            rrule = eventTile.recurringEvent.recurrence.splice(rruleIndex, 1)[0];
+            eventTile.recurringEvent.recurrence.unshift(rrule);
         }
         rstart = moment(eventTile.recurringEvent.start)
     }
     else if(eventTile.event.recurrence && $.isArray(eventTile.event.recurrence) && eventTile.event.recurrence.length > 0) {
-        rrule = eventTile.event.recurrence[0];
+
+        rruleIndex = eventTile.getRruleIndex(eventTile.event.recurrence);
+        // We extract the rrule by splicing it from the array
+        rrule = eventTile.event.recurrence.splice(rruleIndex, 1)[0];
+
+        // We add the Rrule as first element of the array
+        eventTile.event.recurrence.unshift(rrule);
+
+        //rrule = eventTile.event.recurrence[0];
         rstart = moment(eventTile.event.start)
     }
 
