@@ -11,6 +11,7 @@ module WeeklyRecapHelper
     messages_threads = MessagesThread.
         joins(messages: :message_classifications).
         where("messages_threads.account_email = ? OR message_classifications.attendees LIKE ?", params[:account_email], "%#{params[:account_email]}%").
+        where(messages_threads: {was_merged: false}).
         #where(messages_threads: {account_email: params[:account_email]}).
         where(message_classifications: {thread_status: params[:thread_statuses]}).
         where("message_classifications.created_at >= ?", params[:start_of_week]).

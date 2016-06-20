@@ -249,6 +249,7 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.find params[:id]
     messages_thread.operator_actions_groups.destroy_all
     messages_thread.mt_operator_actions.destroy_all
+    messages_thread.update_attribute :was_merged, true
     Pusher.trigger('private-global-chat', 'archive', {
                                             :message => 'archive',
                                             :message_thread_id => messages_thread.id
