@@ -22,8 +22,8 @@ gem "pusher"
 
 gem "mail", '2.6.3'
 
-#gem "stringex", :git => 'git://github.com/Fred-JulieDesk/stringex.git'
-gem "stringex", path: "../stringex"
+gem "stringex", :git => 'git://github.com/Fred-JulieDesk/stringex.git'
+#gem "stringex", path: "../stringex"
 
 gem 'delayed_job_active_record'
 

@@ -1,5 +1,6 @@
-PATH
-  remote: ../stringex
+GIT
+  remote: git://github.com/Fred-JulieDesk/stringex.git
+  revision: c797728c8d2e96bbeedd950f268a871f0013de6c
   specs:
     stringex (2.6.0)
 
