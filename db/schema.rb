@@ -302,6 +302,11 @@ ActiveRecord::Schema.define(version: 20160620104809) do
     t.datetime "updated_at"
   end
 
-  add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

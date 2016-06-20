@@ -259,13 +259,13 @@ END
     describe 'upload_planning_constraints' do
 
       it 'should upload the file to S3' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
-        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         expect(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
@@ -273,13 +273,13 @@ END
       end
 
       it 'should send the correct request to the AI' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
         expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
-        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
@@ -287,13 +287,13 @@ END
       end
 
       it 'should call the correct method to handle the planning data' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
-        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
@@ -301,53 +301,53 @@ END
       end
 
       it 'should render the correct json' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
-        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
         post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
 
-        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 +0100\",\"filename\":\"planning_constraints_01-01-2016T12:00:00.csv\"}")
+        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\",\"filename\":\"planning_constraints_01-01-2016T12:00:00.csv\"}")
       end
     end
 
     describe 'get_planning_from_ai' do
 
       it 'should send the correct request to the AI' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
         filename = "planning_constraints_01-01-2016T12:00:00.csv"
 
         expect_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
-        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
       end
 
       it 'should send the correct request to the AI' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
         filename = "planning_constraints_01-01-2016T12:00:00.csv"
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
-        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
       end
 
       it 'should render the correct json' do
-        start_date = Time.new(2016,01,01,15,00,00)
+        start_date = ActiveSupport::TimeZone.new('UTC').parse('2016/01/01T15:00:00')
         filename = "planning_constraints_01-01-2016T12:00:00.csv"
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
-        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 +0100"})
+        allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
-        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 +0100\"}")
+        expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\"}")
       end
 
     end
@@ -408,6 +408,7 @@ END
         forecast = 'forecast'
         planning = 'planning'
         start_date = Time.new(2016,01,01,15,00,00)
+
 
         MySettings['planning.operator_hourly_productivity'] = 5
 
