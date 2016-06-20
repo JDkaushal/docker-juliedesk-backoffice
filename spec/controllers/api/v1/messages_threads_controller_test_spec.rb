@@ -125,7 +125,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "event_booked_date" => nil,
                                                       "status" => nil,
                                                       "to_be_merged"=>false,
-                                                      "to_be_merged_operator_id"=>nil
+                                                      "to_be_merged_operator_id"=>nil,
+                                                      "was_merged"=>false
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
