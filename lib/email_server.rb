@@ -169,23 +169,31 @@ module EmailServer
     response = self.make_request_raw method, path, post_params
 
     if response
-      JSON.parse(response.body)['data']
+      #JSON.parse(response.body)['data']
+      response.parse['data']
     else
       nil
     end
   end
 
   def self.make_request_raw method, path, post_params={}
-    client = HTTPClient.new(default_header: {
-                                "Authorization" => ENV['EMAIL_SERVER_API_KEY']
-                            })
-
-
+    # client = HTTPClient.new(default_header: {
+    #                             "Authorization" => ENV['EMAIL_SERVER_API_KEY']
+    #                         })
+    #
+    #
+    # url = "#{API_BASE_PATH}#{path}"
+    # response = if method == :get
+    #   client.get(url)
+    # elsif method == :post
+    #   client.post(url, post_params.to_param)
+    # end
+    http = HTTP.auth(ENV['EMAIL_SERVER_API_KEY'])
     url = "#{API_BASE_PATH}#{path}"
-    if method == :get
-      response = client.get(url)
+    response = if method == :get
+      http.get(url)
     elsif method == :post
-      response = client.post(url, post_params.to_param)
+      http.post(url, body: post_params.to_param)
     end
 
     response

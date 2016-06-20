@@ -130,15 +130,35 @@ class MessageInterpretation < ActiveRecord::Base
 
 
   def process_main_entity
-    client = HTTPClient.new(default_header: {
-                                "Authorization" => ENV['CONSCIENCE_API_KEY']
-                            })
-    client.ssl_config.verify_mode = 0
-    url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
-    response = client.get(url)
-    self.raw_response = response.body
+    # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
+    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
+    #
+    # response = http.get(url)
+
+    response_body = AiProxy.new(format_response: false).build_request(:process_entity_main, {id: self.message.server_message_id}).body
+
+    response_body_str = ''
+
+    continue = true
+    while continue
+      current_chunk = response_body.readpartial
+      if current_chunk.present?
+        response_body_str += current_chunk
+      else
+        continue = false
+      end
+    end
+
+    # client = HTTPClient.new(default_header: {
+    #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
+    #                         })
+    # client.ssl_config.verify_mode = 0
+    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
+    # response = client.get(url)
+    self.raw_response = response_body_str
     begin
       JSON.parse(self.raw_response)
+      #response.parse
       self.error = false
     rescue
       self.error = true
@@ -157,25 +177,53 @@ class MessageInterpretation < ActiveRecord::Base
 
     if server_message.present?
 
-      client = HTTPClient.new(default_header: {
-                                  "Authorization" => ENV['CONSCIENCE_API_KEY']
-                              })
-
-      client.ssl_config.verify_mode = 0
-      url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
-
       body = {
           'parsed_html' => server_message['parsed_html'],
           'text' => server_message['text'],
           'sender' => server_message['from'],
           'date' => server_message['date']
-      }.to_json
+      }
 
-      response = client.post(url, body)
+      response_body = AiProxy.new(format_response: false).build_request(:process_entity_entities, body).body
 
-      self.raw_response = response.body
+      response_body_str = ''
+
+      continue = true
+      while continue
+        current_chunk = response_body.readpartial
+        if current_chunk.present?
+          response_body_str += current_chunk
+        else
+          continue = false
+        end
+      end
+      # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
+      # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
+      #
+      #
+      #
+      # response = http.post(url, json: body)
+
+      # client = HTTPClient.new(default_header: {
+      #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
+      #                         })
+      #
+      # client.ssl_config.verify_mode = 0
+      # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
+
+      # body = {
+      #     'parsed_html' => server_message['parsed_html'],
+      #     'text' => server_message['text'],
+      #     'sender' => server_message['from'],
+      #     'date' => server_message['date']
+      # }.to_json
+
+      #response = client.post(url, body)
+
+      self.raw_response = response_body_str
       begin
         JSON.parse(self.raw_response)
+        #response.parse
         self.error = false
       rescue
         self.error = true

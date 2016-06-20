@@ -56,7 +56,7 @@ class MessagesThreadsController < ApplicationController
   end
 
   def show
-    print_time "init"
+    # print_time "init"
     @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
 
     print_time "DB"
@@ -87,9 +87,12 @@ class MessagesThreadsController < ApplicationController
     # TODO Don't forget to check if "account_email" is usable in calendar_login when calling computed_data method in place of "client_email"
     @messages_thread.create_event_title_review_if_needed
 
+    #JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('gregoire.lopez@tactill.com') || "{}")
+
     print_time "Event title review"
 
     render :show
+    #render nothing: true
 
     print_time "Render"
 

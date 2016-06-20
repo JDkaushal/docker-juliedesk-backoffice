@@ -74,14 +74,23 @@ class AiEmailFlowForecast < ActiveRecord::Base
   private
 
   def self.make_call(date, duration)
-    client = HTTPClient.new(default_header: {
-                                "Authorization" => ENV['CONSCIENCE_API_KEY']
-                            })
-    client.ssl_config.verify_mode = 0
-    url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/forecastemails/?date=#{date.strftime('%Y-%m-%d')}&duration=#{duration}"
-    response = client.get(url)
 
-    json_response = JSON.parse(response.body)
+    # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
+    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/forecastemails/?date=#{date.strftime('%Y-%m-%d')}&duration=#{duration}"
+    #
+    # response = http.get(url)
+
+    json_response = AiProxy.new.build_request(:fetch_forecast_emails, { date: date.strftime('%Y-%m-%d'), duration: duration})
+
+    # client = HTTPClient.new(default_header: {
+    #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
+    #                         })
+    # client.ssl_config.verify_mode = 0
+    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/forecastemails/?date=#{date.strftime('%Y-%m-%d')}&duration=#{duration}"
+    # response = client.get(url)
+
+    #json_response = JSON.parse(response.body)
+    #json_response = response.parse
 
     self.handle_forecast_data(json_response['forecast'])
 

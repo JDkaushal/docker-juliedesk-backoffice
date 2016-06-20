@@ -36,14 +36,22 @@ class Review::OperatorsPresenceController < ReviewController
 
     date = DateTime.parse params[:start]
 
-    client = HTTPClient.new(default_header: {
-                                "Authorization" => ENV['CONSCIENCE_API_KEY']
-                            })
-    client.ssl_config.verify_mode = 0
-    url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/planning/?date=#{date.strftime('%Y-%m-%d')}"
-    response = client.get(url)
+    # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
+    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/planning/?date=#{date.strftime('%Y-%m-%d')}"
+    #
+    # response = http.get(url)
+    json_response = AiProxy.new.build_request(:fetch_forecast, { date: date.strftime('%Y-%m-%d')})['planning']
 
-    json_response = JSON.parse(response.body)['planning']
+
+    # client = HTTPClient.new(default_header: {
+    #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
+    #                         })
+    # client.ssl_config.verify_mode = 0
+    #
+    # response = client.get(url)
+
+    #json_response = JSON.parse(response.body)['planning']
+    #json_response = response.parse['planning']
 
     @operators = json_response.map do |name, data|
       o = Operator.new(name: name)

@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     collection do
       get "index_with_import", action: :index_with_import, as: :index_with_import
       get "search"
+
+      # Route used to test memory consumption (is also the root of the app)
+      get 'index'
     end
 
     member do

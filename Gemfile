@@ -40,6 +40,9 @@ gem "angularjs-rails"
 gem 'angular-rails-templates'
 
 gem "httpclient"
+#gem "httpclient",    path: "../httpclient"
+gem "http"
+#gem "http", path: "../http"
 
 group :production do
   gem 'lograge'

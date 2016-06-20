@@ -76,13 +76,20 @@ class MessagesController < ApplicationController
                                      })
     print_time "create and verify operator action"
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
-      client = HTTPClient.new(default_header: {
-                                  "Authorization" => ENV['JULIEDESK_APP_API_KEY']
-                              })
-      client.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", {
-                         email: @message.messages_thread.account_email,
-                         awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
-                     })
+      http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
+
+      http.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
+                                                                                                    email: @message.messages_thread.account_email,
+                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
+                                                                                                })
+
+      # client = HTTPClient.new(default_header: {
+      #                             "Authorization" => ENV['JULIEDESK_APP_API_KEY']
+      #                         })
+      # client.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", {
+      #                    email: @message.messages_thread.account_email,
+      #                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
+      #                })
     end
     print_time "send set awaiting current notes"
     messages_thread_params = {last_operator_id: session[:operator_id]}
