@@ -3,7 +3,14 @@ class ClientContact < ActiveRecord::Base
   validates :client_email, presence: true
 
   def self.fetch_redis(email)
-    REDIS_FOR_ACCOUNTS_CACHE.get(email)
+    result = REDIS_FOR_ACCOUNTS_CACHE.get(email)
+
+    if result.present?
+      JSON.parse(result)
+
+    else
+      nil
+    end
   end
 
   def to_param
