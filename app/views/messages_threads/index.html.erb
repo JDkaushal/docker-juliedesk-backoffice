@@ -62,13 +62,8 @@
 
         $scope.splitPriorizedThreadFromOthers = function(data) {
             var partitionnedThreads = _.partition(data, function(messagesThread) {
-
-                console.log(messagesThread);
-
                 return messagesThread.account && messagesThread.account.have_priority;
             });
-
-            console.log(partitionnedThreads);
 
             $scope.priorizedMessagesThreads = partitionnedThreads[0];
             $scope.messagesThreads = partitionnedThreads[1];
