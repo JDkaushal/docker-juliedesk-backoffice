@@ -175,7 +175,7 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect(MessageClassification).to receive(:create_from_params).and_call_original
-        expect_any_instance_of(HTTPClient).to receive(:post).with("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes",{
+        expect_any_instance_of(HTTP::Client).to receive(:post).with("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
                                                                                                                                                       email: mt1.account_email,
                                                                                                                                                       awaiting_current_notes: "Awaiting Current notes (message_thread id: #{mt1.id})"
                                                                                                                                                   })

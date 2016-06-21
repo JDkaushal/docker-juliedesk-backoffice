@@ -85,7 +85,15 @@ class Account
 
     account.complaints_count = data['complaints_count']
 
-    account.build_contacts_from_same_company(accounts_cache: cache)
+    # We skip generating the contacts from the same company on the home page, since it will be only used on the message
+    # thread page and recalculated at this moment
+
+    if params[:skip_contacts_from_company]
+      account.contacts_from_same_company = []
+    else
+      account.build_contacts_from_same_company(accounts_cache: cache)
+    end
+
     #account.contacts_from_same_company = []
 
     if params[:messages_threads_from_today].present?
@@ -127,40 +135,36 @@ class Account
 
   def build_contacts_from_same_company params={}
 
-    # We retrieve the other users of the same company from the cache directly
-    company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'name'))
-
-    if company_members.present?
-      company_members = JSON.parse(company_members)
-      company_members.reject!{ |u| u['email'] == self.email }
-    end
-
-    self.contacts_from_same_company = company_members || []
-
-    # name_str = 'name'.freeze
+    # if params[:accounts_cache]
+    #   name_str = 'name'.freeze
     #
-    # cache = if params[:accounts_cache]
-    #   params[:accounts_cache]
-    # else
-    #   Account.accounts_cache(mode: "light")
-    # end
+    #   self.contacts_from_same_company = params[:accounts_cache].values.select{|account|
+    #     self.company_hash &&
+    #         account['company_hash'].try(:[], name_str) == self.company_hash[name_str] &&
+    #         account['email'] != self.email
+    #   }.map{|account|
+    #     julie_alias = account['julie_aliases'] && account['julie_aliases'].first
+    #     json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"} : nil
     #
-    # self.contacts_from_same_company = cache.values.select{|account|
-    #   self.company_hash &&
-    #       account['company_hash'].try(:[], name_str) == self.company_hash[name_str] &&
-    #       account['email'] != self.email
-    # }.map{|account|
-    #   julie_alias = account['julie_aliases'] && account['julie_aliases'].first
-    #   json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"} : nil
-    #
-    #   {
-    #       name: account['full_name'],
-    #       email: account['email'],
-    #       isClient: 'true'.freeze,
-    #       assisted: "#{json_julie_alias.present?}",
-    #       assistedBy: json_julie_alias
+    #     {
+    #         name: account['full_name'],
+    #         email: account['email'],
+    #         isClient: 'true'.freeze,
+    #         assisted: "#{json_julie_alias.present?}",
+    #         assistedBy: json_julie_alias
+    #     }
     #   }
-    # }
+    # else
+      #We retrieve the other users of the same company from the cache directly
+      company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'name'))
+
+      if company_members.present?
+        company_members = JSON.parse(company_members)
+        company_members.reject!{ |u| u['email'] == self.email }
+      end
+
+      self.contacts_from_same_company = company_members || []
+    #end
   end
 
   def self.get_active_account_emails params={}

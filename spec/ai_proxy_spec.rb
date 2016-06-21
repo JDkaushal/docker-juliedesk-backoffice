@@ -64,40 +64,32 @@ describe AiProxy do
       @data = {key1: 'val1', key2: 'val2'}
       @url = 'test_url'
 
-      @fake_client = HTTPClient.new(default_header: {
-                                        "Authorization" => ENV['CONSCIENCE_API_KEY']
-                                    })
+      @fake_client = HTTP.auth( ENV['CONSCIENCE_API_KEY'] )
     end
 
     describe 'get request' do
       it 'should call the right methods' do
-        expect(HTTPClient).to receive(:new).with(default_header: {
-                                                     "Authorization" => 'conscience_api_key'
-                                                 }).and_return(@fake_client)
+        expect(HTTP).to receive(:auth).with(ENV['CONSCIENCE_API_KEY']).and_return(@fake_client)
 
-
-        expect(@proxy).to receive(:execute_get_request).with(@fake_client, {url: @url, data: @data}).and_return(OpenStruct.new(:body => "request get body"))
+        expect(@proxy).to receive(:execute_get_request).with(@fake_client, {url: @url, data: @data}).and_return("request get body")
         expect(@proxy).to receive(:format_response).with("request get body")
 
         @proxy.dispatch_request(:get, @url, @data)
 
-        expect(@fake_client.ssl_config.verify_mode).to eq(0)
+        #expect(@fake_client.ssl_config.verify_mode).to eq(0)
       end
     end
 
     describe 'post request' do
       it 'should call the right methods' do
-        expect(HTTPClient).to receive(:new).with(default_header: {
-                                                     "Authorization" => 'conscience_api_key'
-                                                 }).and_return(@fake_client)
+        expect(HTTP).to receive(:auth).with(ENV['CONSCIENCE_API_KEY']).and_return(@fake_client)
 
-
-        expect(@proxy).to receive(:execute_post_request).with(@fake_client, {url: @url, data: @data}).and_return(OpenStruct.new(:body => "request post body"))
+        expect(@proxy).to receive(:execute_post_request).with(@fake_client, {url: @url, data: @data}).and_return("request post body")
         expect(@proxy).to receive(:format_response).with("request post body")
 
         @proxy.dispatch_request(:post, @url, @data)
 
-        expect(@fake_client.ssl_config.verify_mode).to eq(0)
+        #expect(@fake_client.ssl_config.verify_mode).to eq(0)
       end
     end
   end
@@ -121,10 +113,10 @@ describe AiProxy do
     end
 
     it 'should parse the response' do
-      body = 'test body'
-      expect(JSON).to receive(:parse).with(body)
+      response = HTTPResponseStub.new
+      expect(response).to receive(:parse)
 
-      @proxy.send(:format_response, body)
+      @proxy.send(:format_response, response)
     end
   end
 
@@ -132,15 +124,17 @@ describe AiProxy do
     before(:each) do
       @proxy = AiProxy.new
 
-      @fake_client = HTTPClient.new(default_header: {
-                                        "Authorization" => ENV['CONSCIENCE_API_KEY']
-                                    })
+      @fake_client = HTTP.auth( ENV['CONSCIENCE_API_KEY'] )
+
       @params = {url: 'url', key2: 'val2'}
     end
 
     it 'should perform a get request to the correct url' do
+      ssl = @proxy.send(:get_ssl_context)
 
-      expect(@fake_client).to receive(:get).with('url')
+      allow(@proxy).to receive(:get_ssl_context).and_return(ssl)
+
+      expect(@fake_client).to receive(:get).with('url', ssl_context: ssl)
       @proxy.send(:execute_get_request, @fake_client, @params)
     end
   end
@@ -149,16 +143,31 @@ describe AiProxy do
     before(:each) do
       @proxy = AiProxy.new
 
-      @fake_client = HTTPClient.new(default_header: {
-                                        "Authorization" => ENV['CONSCIENCE_API_KEY']
-                                    })
+      @fake_client = HTTP.auth( ENV['CONSCIENCE_API_KEY'] )
+
       @params = {url: 'url', data: {key2: 'val2', key3: 'val3', key4: 'val4'}}
     end
 
     it 'should perform a get request to the correct url' do
-      expect(@fake_client).to receive(:post).with('url', {key2: 'val2', key3: 'val3', key4: 'val4'}.to_json)
+      ssl = @proxy.send(:get_ssl_context)
+
+      allow(@proxy).to receive(:get_ssl_context).and_return(ssl)
+
+      expect(@fake_client).to receive(:post).with('url', json: {key2: 'val2', key3: 'val3', key4: 'val4'}, ssl_context: ssl)
       @proxy.send(:execute_post_request, @fake_client, @params)
     end
+  end
+
+  class HTTPResponseStub
+
+    def code
+      200
+    end
+
+    def parse
+      #stub
+    end
+
   end
 
 end

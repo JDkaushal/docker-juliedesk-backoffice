@@ -56,7 +56,6 @@ class AiProxy
     result = self.send("execute_#{type}_request", client, {url: url, data: data})
 
     #format_response(result.body)
-    puts @format_response
     @format_response ? format_response(result) : result
   end
 
