@@ -63,7 +63,7 @@ class Message < ActiveRecord::Base
       computed_initial_to_emails = initial_to_emails.uniq
       computed_initial_cc_emails = initial_cc_emails.uniq
 
-      unless (computed_initial_to_emails + computed_initial_cc_emails).include? client_email
+      unless client_email.blank? || ((computed_initial_to_emails + computed_initial_cc_emails).include? client_email)
         if computed_initial_to_emails.empty?
           computed_initial_to_emails += [client_email]
         else
@@ -84,7 +84,7 @@ class Message < ActiveRecord::Base
 
       if computed_initial_to_emails.empty?
         result = {
-            to: [client_email].sort.map(&:downcase),
+            to: [client_email].compact.sort.map(&:downcase),
             cc: computed_initial_cc_emails.sort.map(&:downcase),
             client: client_email,
             possible: possible_emails.sort
