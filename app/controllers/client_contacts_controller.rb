@@ -2,7 +2,7 @@ class ClientContactsController < ApplicationController
 
   def fetch
     @contacts = ClientContact.where(client_email: params['client_email'], email: params['contacts_emails'])
-    accounts_cache = Account.accounts_cache
+    #accounts_cache = Account.accounts_cache
     accounts_cache_light = Account.accounts_cache(mode: 'light')
 
     @contacts_infos = []
@@ -36,7 +36,7 @@ class ClientContactsController < ApplicationController
           end
         end
 
-        if cache = accounts_cache[searched_email]
+        if cache = ClientContact.fetch_redis(searched_email)
           fullname_splitted = cache['full_name'].split(' ')
           account = {
               id: contact.id,
@@ -92,7 +92,7 @@ class ClientContactsController < ApplicationController
             end
           end
 
-          if cache = accounts_cache[searched_email]
+          if cache = ClientContact.fetch_redis(searched_email)
             fullname_splitted = cache['full_name'].split(' ')
             @contacts_infos.push({
                  client_email: params['client_email'],
