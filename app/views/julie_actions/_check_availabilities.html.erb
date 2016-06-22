@@ -379,6 +379,7 @@
 
                     data['call_instructions'] = call_instructions;
 
+                    angular.element($('#attendeesCtrl')).scope().confirmAIOnPresentAttendees();
                     // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
                     $.ajax({
                         url: "/client_contacts/synchronize",

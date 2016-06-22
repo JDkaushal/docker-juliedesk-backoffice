@@ -52,11 +52,11 @@
     </div>
 
       <div class="row">
-        <div class="col-xs-6" style="padding-right: 2px;">
+        <div class="col-xs-6" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}" style="padding-right: 2px;">
           <%= label_tag :first_name %>
-          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.firstNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
+          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.attendeeInForm.firstNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
         </div>
-        <div class="col-xs-6" style="padding-left: 0;">
+        <div class="col-xs-6" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}" style="padding-left: 0;">
           <%= label_tag :last_name %>
           <%= text_field_tag :last_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.lastName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
         </div>
@@ -66,9 +66,8 @@
         <div class="col-xs-12">
         <%= label_tag :usage_name %>
         <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', class: 'form-control', capitalize:true} %>
-
         </div>
-    </div>
+      </div>
 
       <div class="row">
         <div class="col-xs-6">
@@ -122,7 +121,7 @@
       </div>
 
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-xs-12" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}">
           <%= label_tag :company %>
           <%= text_field_tag :company, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.company', 'uib-typeahead' => "company for company in attendees_manager.getCompaniesNames() | filter:$viewValue", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true, autocomplete:"off"} %>
         </div>
@@ -181,7 +180,15 @@
           <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()'>
             Cancel
           </button>
-          <%= submit_tag 'Ok', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)'} %>
+
+          <span ng-if="attendeesFormCtrl.attendeeInForm.needAIConfirmation">
+            <%= submit_tag 'Confirm', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', class: 'ai-confirm-btn-form'} %>
+          </span>
+
+          <span ng-if="!attendeesFormCtrl.attendeeInForm.needAIConfirmation">
+            <%= submit_tag 'Ok', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)'} %>
+          </span>
+
         </div>
         <div ng-if="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">
 

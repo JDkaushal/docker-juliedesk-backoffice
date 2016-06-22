@@ -4,15 +4,40 @@
 
     app.controller('localeManager', ['$scope', '$injector', 'messageInterpretationsService', function($scope, $injector, messageInterpretationsService) {
         $scope.currentLocale = undefined;
+        $scope.localeValidated = false;
+        $scope.clickedOnWrong = false;
+
+        var messagesContainerNode = $('#messages_container');
+        var messagesThreadId = messagesContainerNode.data('messages-thread-id');
+        var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
 
         var localeDiscrepancyMessageNode = $('.locale-discrepancy-message');
+
+        $('.locale-discrepancy-message').on('click', '.locale-ai-right-link', function(e) {
+            e.preventDefault();
+            $scope.clickedOnWrong = true;
+            $scope.displayLocaleDiscrepancyMessage(false);
+        });
+
+        $(".submit-classification").click(function () {
+            $scope.trackLocaleAIFeedback();
+        });
 
         $scope.init = function() {
             var mainInterpretation = messageInterpretationsService.getMainInterpretation();
 
             $("input[name='locale']").change(function (e) {
-                if(!!$scope.currentLocale) {
-                    $scope.checkLocaleConsistency(e.currentTarget.value);
+                if(!!$scope.currentLocale && window.formFirstPass) {
+                    $scope.checkLocaleConsistency(e.currentTarget.value, function() {
+                        if(!$scope.localeValidated) {
+                            askNextLinearFormEntry();
+                            $scope.localeValidated = true;
+
+                            if($('#appointment_family_nature').val()) {
+                                askNextLinearFormEntry();
+                            }
+                        }
+                    });
                 }
             });
 
@@ -22,23 +47,36 @@
 
             if(!!$scope.currentLocale) {
                 // The first time the form is filled
-                if (window.threadComputedData.appointment_nature === null) {
-                    $('#locale_' + $scope.currentLocale).prop('checked', true);
-                    // Bypass the locale selection step
-                    askNextLinearFormEntry();
+                if (window.formFirstPass) {
+                    //$('#locale_' + $scope.currentLocale).prop('checked', true);
+
+                    // If the AI locale detected is the same as the current used locale in the thread
+                    if($scope.currentLocale == window.currentLocale) {
+                        // Bypass the locale selection step
+                        askNextLinearFormEntry();
+                        $scope.localeValidated = true;
+                    } else {
+                        $scope.checkLocaleConsistency(window.currentLocale);
+                    }
                 } else {
                     $scope.checkLocaleConsistency($scope.currentLocale);
                 }
             }
         };
 
-        $scope.checkLocaleConsistency = function(locale) {
+        $scope.checkLocaleConsistency = function(locale, sameLocaleCallback) {
             if(locale != $scope.currentLocale) {
-                localeDiscrepancyMessageNode.find('#locale_discrepancy_text').html($scope.getLocaleDiscrepancyMessage());
-                $scope.displayLocaleDiscrepancyMessage(true);
+                $scope.currentLocaleDifferentThanAI();
             } else {
                 $scope.displayLocaleDiscrepancyMessage(false);
+                if(sameLocaleCallback)
+                    sameLocaleCallback();
             }
+        };
+
+        $scope.currentLocaleDifferentThanAI = function() {
+            localeDiscrepancyMessageNode.find('#locale_discrepancy_text').html($scope.getLocaleDiscrepancyMessage());
+            $scope.displayLocaleDiscrepancyMessage(true);
         };
 
         $scope.displayLocaleDiscrepancyMessage = function(show) {
@@ -50,15 +88,15 @@
         };
 
         $scope.getLocaleDiscrepancyMessage = function() {
-            var message = 'Attention - ';
+            var message = '';
             var locale = $scope.currentLocale;
 
             switch(locale) {
                 case 'en':
-                    message += 'Anglais détecté';
+                    message += 'Anglais détecté <a class="locale-ai-right-link" href="#">C\'est bien du français</a>';
                     break;
                 case 'fr':
-                    message += 'Français détecté';
+                    message += 'Français détecté <a class="locale-ai-right-link" href="#">C\'est bien de l\'anglais</a>';
                     break;
                 default:
                     message += 'Locale non supportée : ' + locale;
@@ -67,30 +105,82 @@
             return message;
         };
 
+        $scope.trackLocaleAIFeedback = function() {
+            window.trackEvent("ai_language_detection", {
+                distinct_id: trackingId,
+                message_id: $('.email.highlighted').attr('id'),
+                language_detected: $scope.currentLocale,
+                language_confirmed: window.currentLocale,
+                ai_success_boolean: $scope.currentLocale == window.currentLocale,
+                first_path: window.formFirstPass,
+                click_on_wrong_boolean: $scope.clickedOnWrong
+            });
+        };
+
         $scope.init();
 
     }]);
 
     app.controller('appointmentTypeManager', ['$scope', '$injector', 'messageInterpretationsService', function($scope, $injector, messageInterpretationsService) {
         $scope.currentAppointmentType = undefined;
+        $scope.currentlySelectedAppointmentType = undefined;
+
         var appointmentSelectNode = $('#appointment_family_nature');
+
+        var messagesContainerNode = $('#messages_container');
+        var messagesThreadId = messagesContainerNode.data('messages-thread-id');
+        var trackingId = messagesContainerNode.data('operator-id').toString() + '-' + messagesThreadId.toString();
+
+        $(".submit-classification").click(function () {
+            $scope.trackAppointmentTypeAIFeedback();
+        });
+
+        appointmentSelectNode.change(function() {
+            $scope.currentlySelectedAppointmentType = appointmentSelectNode.val();
+
+            if($scope.currentlySelectedAppointmentType == $scope.currentAppointmentType) {
+                $scope.tagInputToVerify();
+            }else {
+                $scope.untagInputToVerify();
+            }
+        });
 
         $scope.init = function() {
             // The first time the form is filled
             if(window.threadComputedData.appointment_nature === null) {
                 var mainInterpretation = messageInterpretationsService.getMainInterpretation();
 
+                console.log(mainInterpretation);
                 if(mainInterpretation && mainInterpretation.appointment_classif && mainInterpretation.appointment_proba >= 0.50) {
                     $scope.currentAppointmentType = mainInterpretation.appointment_classif;
                     $scope.setAppointmentType();
+                    //$scope.tagInputToVerify();
                 }
             }
+        };
+
+        $scope.tagInputToVerify = function() {
+            $('#appointment_family_nature').addClass('ai-need-control');
+        };
+
+        $scope.untagInputToVerify = function() {
+            $('#appointment_family_nature').removeClass('ai-need-control');
         };
 
         $scope.setAppointmentType = function() {
             appointmentSelectNode.val($scope.currentAppointmentType);
             // To trigger the related events
             appointmentSelectNode.trigger('change');
+        };
+
+        $scope.trackAppointmentTypeAIFeedback = function() {
+            window.trackEvent("ai_appointment_type", {
+                distinct_id: trackingId,
+                message_id: $('.email.highlighted').attr('id'),
+                event_type_detected: $scope.currentAppointmentType,
+                event_type_confirmed: $scope.currentlySelectedAppointmentType,
+                ai_success_boolean: $scope.currentAppointmentType == $scope.currentlySelectedAppointmentType
+            });
         };
 
         $scope.init();

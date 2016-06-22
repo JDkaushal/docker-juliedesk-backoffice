@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160620104809) do
+ActiveRecord::Schema.define(version: 20160622145304) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(version: 20160620104809) do
   end
 
   create_table "client_contacts", force: true do |t|
-    t.string   "client_email",           null: false
+    t.string   "client_email",                           null: false
     t.string   "email"
     t.string   "first_name"
     t.string   "last_name"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20160620104809) do
     t.text     "conf_call_instructions"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "need_ai_confirmation",   default: false
   end
 
   add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree

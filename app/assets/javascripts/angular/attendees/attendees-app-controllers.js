@@ -74,6 +74,9 @@
                     if(this.attendeeInForm.timezone)
                         this.sanitizeContent('timezone');
 
+                    if(this.attendeeInForm.needAIConfirmation)
+                        this.attendeeInForm.confirmAI();
+
                     this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
                     if(attendeesFormCtrl.currentMode == 'new')
@@ -159,16 +162,6 @@
                                 return $(this).text().trim() == assistant.displayNormalizedName();
                             }).prop('selected', true);
                     }
-                };
-
-                this.firstNameKeyup = function(event){
-                  if(firstNameMirrored){
-                      attendeesFormCtrl.attendeeInForm.usageName = event.currentTarget.value;
-                  }
-                };
-
-                this.firstNameFocus = function(){
-                    firstNameMirrored = !!(attendeesFormCtrl.attendeeInForm.usageName == '' || attendeesFormCtrl.attendeeInForm.usageName == undefined);
                 };
 
                 // For testing purposes
@@ -413,6 +406,7 @@
                 assisted: true,
                 assistedBy: {email: window.currentJulieAlias.email, displayName: window.currentJulieAlias.name},
                 company: companyName,
+                validatedCompany: companyName,
                 timezone: window.threadAccount.default_timezone_id,
                 landline: window.threadAccount.landline_number,
                 mobile: window.threadAccount.mobile_number,
@@ -441,6 +435,10 @@
         };
 
         this.createAttendee = function(informations, attendee){
+            var company = informations.company || '';
+            var needAIConfirmation = informations.needAIConfirmation || false;
+            var validatedCompany = needAIConfirmation ? '' : company;
+
             var a = new Attendee({
                 accountEmail: attendee.account_email,
                 guid: informations.id || $scope.guid(),
@@ -453,7 +451,8 @@
                 isAssistant: informations.isAssistant == "true",
                 assisted: informations.assisted == "true",
                 assistedBy: informations.assistedBy,
-                company: informations.company || '',
+                company: company,
+                validatedCompany: validatedCompany,
                 timezone: informations.timezone || window.threadAccount.default_timezone_id,
                 landline: informations.landline,
                 mobile: informations.mobile,
@@ -461,6 +460,7 @@
                 confCallInstructions: informations.confCallInstructions,
                 isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1),
                 isClient: informations.isClient == "true",
+                needAIConfirmation: needAIConfirmation,
                 isThreadOwner: false,
                 hasMissingInformations: false,
                 missingInformationsTemp: {}
@@ -484,6 +484,13 @@
                             a.firstName = response.data.first_name;
                             a.usageName = response.data.first_name;
                             a.lastName = response.data.last_name;
+
+                            a.needAIConfirmation = true;
+                            a.validatedCompany = '';
+
+                            a.firstNameAI = response.data.first_name;
+                            a.lastNameAI = response.data.last_name;
+
                             switch(response.data.gender) {
                                 case 'male':
                                     a.gender = 'M';
@@ -526,6 +533,10 @@
                     }).then(function success(response) {
                         if(response.data.identification != "fail") {
                             a.company = response.data.company;
+                            a.needAIConfirmation = true;
+                            a.validatedCompany = '';
+
+                            a.companyAI = response.data.company;
                         }
 
                         $scope.trackGetCompanyNameEvent({
@@ -602,6 +613,12 @@
                 contact_email_address: params.contact_email_address,
                 message_text: params.message_text,
                 company_name_found: params.company_name_found
+            });
+        };
+
+        $scope.confirmAIOnPresentAttendees = function() {
+            _.each($scope.getAttendeesOnPresence(true), function(a) {
+                a.confirmAI();
             });
         };
 
@@ -1068,6 +1085,74 @@
             $.each( params, function( key, value ) {
                 that[key] = value;
             });
+        },
+        firstNameKeyup: function(event){
+            if(window.formFirstPass || this.needAIConfirmation) {
+                if(window.threadAccount.language_level == 'soutenu') {
+                    this.usageName = this.displayUsageNameSoutenu();
+                } else {
+                    this.setUsageName(event.currentTarget.value);
+                }
+            }
+        },
+        firstNameMirrored: function(){
+            return (this.usageName == '' || this.usageName == undefined);
+
+        },
+        setUsageName: function(value) {
+            if(this.firstNameMirrored){
+                this.usageName = value;
+            }
+        },
+        confirmAI: function() {
+            if(this.needAIConfirmation) {
+                this.validatedCompany = this.company;
+                this.needAIConfirmation = false;
+
+                this.trackAIResults();
+            }
+        },
+        trackAIResults: function() {
+            var messageId = $('.email.highlighted').attr('id');
+            var that = this;
+
+            var baseInfos = {
+                message_id: messageId,
+                contact_email_address: that.email
+            };
+
+            // Sometimes the AI will not be refetched, especially when a non present attendee is saved and not AI confirmed
+            // When the form will be accessed again, the AI will not be queried again so we will not know what the first response of the AI was
+            // SO ne no need to track it
+            if(that.firstNameAI) {
+                window.trackEvent("ai_first_name_detection", $.extend({
+                        first_name_detected: that.firstNameAI,
+                        first_name_confirmed: that.firstName,
+                        ai_success_boolean: that.firstNameAI == that.firstName
+                    }, baseInfos)
+                );
+            }
+
+            if(that.lastNameAI) {
+                window.trackEvent("ai_last_name_detection", $.extend({
+                        last_name_detected: that.lastNameAI,
+                        last_name_confirmed: that.lastName,
+                        ai_success_boolean: that.lastNameAI == that.lastName
+                    }, baseInfos)
+                );
+            }
+
+            if(that.companyAI) {
+                window.trackEvent("ai_company_name_detection", $.extend({
+                        company_name_detected: that.companyAI,
+                        company_name_confirmed: that.company,
+                        ai_success_boolean: that.companyAI == that.company
+                    }, baseInfos)
+                );
+            }
+        },
+        showAIConfirmation: function() {
+          return this.isPresent && this.needAIConfirmation;
         },
         displayUsageNameSoutenu: function() {
             var displayedUsageName = '';

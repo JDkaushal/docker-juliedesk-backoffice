@@ -8,12 +8,21 @@
   <%= image_tag 'client_picto.png', width: 20, height: 20 %>
 </div>
 <div class="attendee-details" ng-class="{'col-xs-8': attendee.isClient, 'col-xs-9': !attendee.isClient}">
-  <div class="row ellipsable">
-    <span class="attendee-usage-name">{{(attendee.gender == 'M' || attendee.gender == 'F') ? attendee.displayGender() : '' }} {{attendee.firstName}} {{attendee.lastName}}</span><span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
+
+  <div ng-show="!attendees_manager.readOnly && attendee.showAIConfirmation()">
+    <div class="row ellipsable">
+      <span class="attendee-usage-name">{{attendee.email}}</span><span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
+    </div>
   </div>
 
-  <div class="row ellipsable" style="margin-top: -3px;">
-    <cite class="attendee-email">{{attendee.email}}</cite>
+  <div ng-show="!attendee.showAIConfirmation() || attendees_manager.readOnly">
+    <div class="row ellipsable">
+      <span class="attendee-usage-name">{{(attendee.gender == 'M' || attendee.gender == 'F') ? attendee.displayGender() : '' }} {{attendee.firstName}} {{attendee.lastName}}</span><span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>
+    </div>
+
+    <div class="row ellipsable" style="margin-top: -3px;">
+      <cite class="attendee-email">{{attendee.email}}</cite>
+    </div>
   </div>
 
   <div class="row ellipsable" ng-show="attendee.assisted">
@@ -30,12 +39,36 @@
   </button>
 </div>
 <div class="attendee-additional-informations col-xs-offset-1" >
+
+  <div ng-show="!attendees_manager.readOnly && attendee.showAIConfirmation()">
+    <div class="col-xs-6 need-ai-confirmation" style="padding-right: 6px; padding-left:0;">
+      <%= label_tag :first_name, 'Prénom' %>
+      <%= text_field_tag :first_name, "",{'ng-model' => 'attendee.firstName', class: 'form-control', 'ng-keyup' => 'attendee.firstNameKeyup($event)'} %>
+    </div>
+    <div class="col-xs-6 need-ai-confirmation" style="padding-left: 6px; padding-right:0;">
+      <%= label_tag :last_name, 'Nom' %>
+      <%= text_field_tag :last_name, "",{'ng-model' => 'attendee.lastName', class: 'form-control'} %>
+    </div>
+    <div class="col-xs-12 need-ai-confirmation" style="padding-left: 0; padding-right:0;">
+      <%= label_tag :company, 'Entreprise' %>
+      <%= text_field_tag :company, "",{'ng-model' => 'attendee.company', class: 'form-control'} %>
+    </div>
+
+    <div class="col-xs-12" style="padding-left: 0; padding-right:0;margin-top:5px;">
+
+      <button type="button" class="ai-confirm-btn" ng-click="attendee.confirmAI()">
+        Confirm
+      </button>
+    </div>
+  </div>
+
   <div class="row ellipsable timezone" ng-show="displayAttendeesTimezone || attendee.isClient">
     <%= label_tag :timezone, 'Timezone' %>
     <%= text_field_tag :timezone, "",{'ng-model' => 'attendee.timezone', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control attendee-timezone'} %>
   </div>
 
   <div ng-if="!attendee.isClient">
+
     <div ng-show="displayAttendeesInformations()">
       <div class="row ellipsable missing-call-informations" ng-show="attendee.hasMissingInformations"><span style="margin-left: 27px;color: #F6BB67;">{{attendees_manager.displayMissingInformationsText()}}</span></div>
       <div class="row ellipsable additional-informations-fields" style="margin-top: -3px;">

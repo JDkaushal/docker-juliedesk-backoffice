@@ -27,6 +27,7 @@ class AiEmailFlowForecast < ActiveRecord::Base
     datetime_format = '%Y-%m-%d %H:%M:%S'
     forecast_datetimes = data.keys
     existing_forecasts_datetimes = []
+
     forecasts_to_insert = []
 
     existing_forecasts =  AiEmailFlowForecast.where(datetime: forecast_datetimes)

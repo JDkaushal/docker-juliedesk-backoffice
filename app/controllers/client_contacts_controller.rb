@@ -55,7 +55,8 @@ class ClientContactsController < ApplicationController
               mobile: cache['mobile_number'],
               skypeId: cache['skype'],
               confCallInstructions: cache['confcall_instructions'],
-              isClient: "true"
+              isClient: "true",
+              needAIConfirmation: contact.need_ai_confirmation
           }
         else
           account = {
@@ -75,7 +76,8 @@ class ClientContactsController < ApplicationController
               mobile: contact.mobile,
               skypeId: contact.skypeId,
               confCallInstructions: contact.conf_call_instructions,
-              isClient: "false"
+              isClient: "false",
+              needAIConfirmation: contact.need_ai_confirmation
           }
         end
         @contacts_infos.push(account)
@@ -153,6 +155,7 @@ class ClientContactsController < ApplicationController
             mobile: contact_params['mobile'],
             skypeId:  contact_params['skypeId'],
             conf_call_instructions: contact_params['confCallInstructions'],
+            need_ai_confirmation: contact_params['needAIConfirmation']
         )
       else
         client_contact = ClientContact.new(client_email: params[:client_email], email: contact_params['email'])
@@ -169,7 +172,15 @@ class ClientContactsController < ApplicationController
         client_contact.mobile = contact_params['mobile']
         client_contact.skypeId =  contact_params['skypeId']
         client_contact.conf_call_instructions = contact_params['confCallInstructions']
+        client_contact.need_ai_confirmation = contact_params['needAIConfirmation']
         client_contact.save
+      end
+
+      if contact_params['companyUpdated']
+        domain = contact_params['email'].split('@')[-1]
+        company_domain_assoc = CompanyDomainAssociation.find_or_initialize_by(domain: domain)
+        company_domain_assoc.company_name = contact_params['company']
+        company_domain_assoc.save
       end
     end
 
