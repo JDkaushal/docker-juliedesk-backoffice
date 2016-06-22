@@ -7,7 +7,6 @@ class ClientContact < ActiveRecord::Base
 
     if result.present?
       JSON.parse(result)
-
     else
       nil
     end
