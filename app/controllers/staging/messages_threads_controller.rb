@@ -70,12 +70,16 @@ if ENV['STAGING_APP']
       end
 
       def retrieve_event_data(event_params)
-        client = HTTPClient.new(default_header: {
-                                    "Authorization" => ENV['JULIEDESK_APP_API_KEY']
-                                })
+        #client = HTTPClient.new(default_header: {
+                                #     "Authorization" => ENV['JULIEDESK_APP_API_KEY']
+                                # })
+        client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
         response = client.get("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
 
-        JSON.parse(response.body)
+        #response = client.get("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
+
+        response.parse
+        #JSON.parse(response.body)
       end
 
       def insert_event_in_staging_calendar(account_email, last_julie_action, event_params)

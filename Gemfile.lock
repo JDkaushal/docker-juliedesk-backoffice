@@ -268,7 +268,6 @@ DEPENDENCIES
   flamegraph
   handlebars_assets
   http
-  httpclient
   jasmine
   jquery-minicolors-rails
   jquery-rails

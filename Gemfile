@@ -39,7 +39,7 @@ gem "angularjs-rails"
 # To use angular templates steamlessly
 gem 'angular-rails-templates'
 
-gem "httpclient"
+#gem "httpclient"
 #gem "httpclient",    path: "../httpclient"
 gem "http"
 #gem "http", path: "../http"
