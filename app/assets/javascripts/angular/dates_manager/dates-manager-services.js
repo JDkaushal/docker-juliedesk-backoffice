@@ -2,6 +2,25 @@
 
     var app = angular.module('dates-manager-services', []);
 
+    app.service('messageInterpretationsService', function(){
+        this.mainInterpretation = null;
+
+        this.getMainInterpretation = function(){
+            if(!this.mainInterpretation) {
+                var mainInterpretation = _.find(window.messageInterpretations, function(mI) {
+                    return mI.question == "main";
+                });
+
+                if(mainInterpretation && !mainInterpretation.error && !!mainInterpretation.raw_response) {
+                    this.mainInterpretation = JSON.parse(mainInterpretation.raw_response);
+                }
+            }
+
+            return this.mainInterpretation;
+            //return result;
+        };
+    });
+
     app.service('attendeesService', function(){
         var attendeesApp;
         var that = this;

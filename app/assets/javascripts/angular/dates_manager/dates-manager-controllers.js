@@ -240,7 +240,7 @@
         $scope.init();
     }]);
 
-    app.controller('datesIdentificationsManager', ['$scope', 'attendeesService', function($scope, attendeesService) {
+    app.controller('datesIdentificationsManager', ['$scope', 'attendeesService', 'messageInterpretationsService', function($scope, attendeesService, messageInterpretationsService) {
         $scope.datesToIdentify = [];
         $scope.usedTimezones = [];
         $scope.selectedTimezone = undefined;
@@ -248,9 +248,12 @@
         $scope.showDetectedDatesArea = false;
         $scope.loading = false;
 
+        $scope.aiDatesToCheck = [];
+
         $scope.init = function() {
             $scope.getUsedTimezones();
             $scope.selectCorrectTimezone();
+            $scope.setAiDatesToCheck();
             $scope.getDatesToIdentify();
 
             $scope.loading = false;
@@ -259,6 +262,16 @@
 
             if(window.datesIdentificationManageInitiatedCallback) {
                 window.datesIdentificationManageInitiatedCallback();
+            }
+        };
+
+        $scope.setAiDatesToCheck = function() {
+            var mainInterpretation = messageInterpretationsService.getMainInterpretation();
+
+            if(mainInterpretation) {
+                $scope.aiDatesToCheck = _.map(mainInterpretation.dates_to_check, function(date) {
+                    return moment(date);
+                });
             }
         };
 
@@ -301,6 +314,15 @@
 
                 date['displayText'] = currentTimezonedDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format"));
                 date['timezone'] = $scope.selectedTimezone;
+
+                _.every($scope.aiDatesToCheck, function(dateToCheck) {
+                    if(currentTimezonedDate.isSame(dateToCheck)) {
+                        // We trigger the change event to undisable the "Oui" button in the suggestion date pannel
+                        date['selected'] = true;
+                        return false;
+                    }
+                    return true;
+                });
             });
         };
 
