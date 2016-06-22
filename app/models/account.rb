@@ -161,6 +161,7 @@ class Account
       if company_members.present?
         company_members = JSON.parse(company_members)
         company_members.reject!{ |u| u['email'] == self.email }
+        company_members.each {|contact| contact[:email] = contact['email']}
       end
 
       self.contacts_from_same_company = company_members || []
