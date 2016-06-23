@@ -53,7 +53,7 @@
                         spyOn($scope, 'calculate');
                         spyOn($scope, 'computeDefaultAppointmentDelay');
 
-                        $scope.processForClient({email: 'email@gmail.com'}, []);
+                        $scope.processForClient({email: 'email@gmail.com', delay_between_appointments: 10}, []);
 
                         expect($scope.calculate).not.toHaveBeenCalled();
                         expect($scope.computeDefaultAppointmentDelay).toHaveBeenCalledWith('email@gmail.com');
@@ -265,6 +265,8 @@
                                 {calculateTravelTime: false, id: 4}
                             ]
                         };
+
+                        $scope.defaultDelayByClient['email@gmail.com'] = 10;
 
                         spyOn($scope, 'computeDefaultAppointmentDelay');
 
@@ -497,6 +499,8 @@
                                 }
                             ]
                         };
+
+                        $scope.defaultDelayByClient['email@gmail.com'] = 10;
 
                         spyOn($scope, 'handleResponseElement');
                         spyOn($scope, 'addTravelTimeEventsToCalendar');

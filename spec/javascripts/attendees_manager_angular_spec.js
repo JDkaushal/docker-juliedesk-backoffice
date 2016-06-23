@@ -1750,6 +1750,10 @@
 
             it('should have an attendee variable set to the correct attendees', function(){
 
+                window.getCurrentAppointment = function(){
+                    return {required_additional_informations: 'mobile_only'}
+                };
+
                 var expectedAttendees = [
                     new Attendee({
                         email: "test@test1.com",
@@ -1772,7 +1776,9 @@
                         confCallInstructions: "",
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: 'Test Company'
                     }),
                     new Attendee({
                         email: "test@test2.com",
@@ -1795,7 +1801,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: ''
                     })
                 ];
 
@@ -1818,7 +1826,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ""
                 });
 
                 // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
@@ -1831,6 +1840,10 @@
             });
 
             it('should have an attendee variable set to the correct attendees (an attendee as an invalid email)', function(){
+
+                window.getCurrentAppointment = function(){
+                    return {required_additional_informations: 'mobile_only'}
+                };
 
                 window.currentAttendees.push({
                     email: "htyhty",
@@ -1849,7 +1862,9 @@
                     confCallInstructions: '',
                     isPresent: "false",
                     isClient: "false",
-                    isThreadOwner: "false"
+                    isThreadOwner: "false",
+                    needAIConfirmation: false,
+                    validatedCompany: ""
                 });
 
                 var expectedAttendees = [
@@ -1874,7 +1889,9 @@
                         confCallInstructions: "",
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: "Test Company"
                     }),
                     new Attendee({
                         email: "test@test2.com",
@@ -1897,7 +1914,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: ""
                     })
                 ];
 
@@ -1920,7 +1939,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ""
                 });
 
                 // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
@@ -2117,7 +2137,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
                 spyOn( window, 'updateNotesCallingInfos' );
                 $httpBackend.flush();
@@ -2172,7 +2193,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
                 spyOn( window, 'updateNotesCallingInfos' );
                 $httpBackend.flush();
@@ -2282,7 +2304,8 @@
                     confCallInstructions: '',
                     isPresent: "true",
                     isClient: "true",
-                    isThreadOwner: "false"
+                    isThreadOwner: "false",
+                    needAIConfirmation: true
                 }], aliases: {}, companies: {}}, {'A-Token': 'xxx'});
 
                 var expectedAttendees = [
@@ -2307,7 +2330,9 @@
                         confCallInstructions: "",
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: true,
+                        validatedCompany: ''
                     }),
                     new Attendee({
                         email: "test@test2.com",
@@ -2330,7 +2355,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: ''
                     })
                 ];
 
@@ -2353,7 +2380,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
 
                 // We do this to bypass this methode since there is no DOM, it raise an exception when trying to replace the value of a DOM element
@@ -2412,7 +2440,9 @@
                         confCallInstructions: "",
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        validatedCompany: 'Test Company',
+                        needAIConfirmation: false
                     }),
                     new Attendee({
                         email: "test@test2.com",
@@ -2435,7 +2465,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        needAIConfirmation: false,
+                        validatedCompany: ''
                     })
                 ];
 
@@ -2458,7 +2490,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
 
                 spyOn( window, 'updateNotesCallingInfos' );
@@ -2521,7 +2554,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        validatedCompany: '',
+                        needAIConfirmation: false
                     }),
                     new Attendee({
                         email: "testalias@test1.com",
@@ -2544,7 +2579,9 @@
                         confCallInstructions: '',
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        validatedCompany: 'Test Company',
+                        needAIConfirmation: false
                     })
                 ];
 
@@ -2567,7 +2604,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
 
                 spyOn( window, 'updateNotesCallingInfos' );
@@ -2603,7 +2641,9 @@
                         confCallInstructions: "",
                         isPresent: true,
                         isClient: true,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        validatedCompany: 'Retrieved Company',
+                        needAIConfirmation: false
                     }),
                     new Attendee({
                         email: "test@test2.com",
@@ -2626,7 +2666,9 @@
                         confCallInstructions: "",
                         isPresent: undefined,
                         isClient: false,
-                        isThreadOwner: false
+                        isThreadOwner: false,
+                        validatedCompany: '',
+                        needAIConfirmation: false
                     })
                 ];
 
@@ -2649,7 +2691,8 @@
                     confCallInstructions: undefined,
                     isPresent: true,
                     isClient: true,
-                    isThreadOwner: true
+                    isThreadOwner: true,
+                    validatedCompany: ''
                 });
 
                 spyOn( window, 'updateNotesCallingInfos' );

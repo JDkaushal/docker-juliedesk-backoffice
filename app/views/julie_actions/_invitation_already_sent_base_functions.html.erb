@@ -20,8 +20,7 @@
             data['calendar_login_username'] = window.selectedEvents[0].calendar_login_username;
             data['calendar_id'] = window.selectedEvents[0].calId;
             data['event_from_invitation'] = true;
-            var attendees = window.selectedEvents[0].attendees;
-            data['event_from_invitation_organizer'] = attendees.length > 0 ? attendees[0].email : null;
+            data['event_from_invitation_organizer'] = window.selectedEvents[0].organizerEmail;
         }
 
         $.ajax({

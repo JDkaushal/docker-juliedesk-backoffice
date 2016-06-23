@@ -38,15 +38,23 @@ EventTile.prototype.render = function() {
     var eventTile = this;
     eventTile.$selector.html(HandlebarsTemplates['event_tile/main']());
 
-    if(this.fromInvitation) {
+    if(eventTile.fromInvitation) {
         var fromInvitationMessage = 'Invitation from undetermined email';
+        var invitationFromClient = false;
 
-        if(this.fromInvitationOrganizer) {
-            fromInvitationMessage = 'Invitation from ' + this.fromInvitationOrganizer;
+        if(eventTile.fromInvitationOrganizer) {
+            fromInvitationMessage = 'Invitation from ' + eventTile.fromInvitationOrganizer;
+            var clientEmails = window.threadAccount.email_aliases;
+            clientEmails.push(window.threadAccount.email);
+
+            invitationFromClient = clientEmails.indexOf(eventTile.fromInvitationOrganizer) > -1;
         }
 
-        eventTile.$selector.find('.event-from-invitation-container').show();
-        eventTile.$selector.find('.event-from-invitation-container .text').text(fromInvitationMessage);
+        if(!invitationFromClient) {
+            eventTile.$selector.find('.event-from-invitation-container').show();
+            eventTile.$selector.find('.event-from-invitation-container .text').text(fromInvitationMessage);
+        }
+
     }
 
     eventTile.initActions();

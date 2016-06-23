@@ -281,7 +281,7 @@ class MessagesThreadsController < ApplicationController
           mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
               mt.messages.map{|m| m.received_at}.max ||
               DateTime.parse("2500-01-01")
-        }.reverse
+        }
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
 

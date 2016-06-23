@@ -189,7 +189,7 @@
 
        $scope.getAppointmentWorkingHours = function() {
          return {
-             start: [8, 30],
+             start: [8, 0],
              end: [21, 0]
          }
        };

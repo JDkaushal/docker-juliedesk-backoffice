@@ -43,11 +43,11 @@
   <div ng-show="!attendees_manager.readOnly && attendee.showAIConfirmation()">
     <div class="col-xs-6 need-ai-confirmation" style="padding-right: 6px; padding-left:0;">
       <%= label_tag :first_name, 'Prénom' %>
-      <%= text_field_tag :first_name, "",{'ng-model' => 'attendee.firstName', class: 'form-control', 'ng-keyup' => 'attendee.firstNameKeyup($event)'} %>
+      <%= text_field_tag :first_name, "",{'ng-model' => 'attendee.firstName', class: 'form-control', 'ng-keyup' => 'attendee.firstLastNameKeyup($event)'} %>
     </div>
     <div class="col-xs-6 need-ai-confirmation" style="padding-left: 6px; padding-right:0;">
       <%= label_tag :last_name, 'Nom' %>
-      <%= text_field_tag :last_name, "",{'ng-model' => 'attendee.lastName', class: 'form-control'} %>
+      <%= text_field_tag :last_name, "",{'ng-model' => 'attendee.lastName', class: 'form-control' , 'ng-keyup' => 'attendee.firstLastNameKeyup($event)'} %>
     </div>
     <div class="col-xs-12 need-ai-confirmation" style="padding-left: 0; padding-right:0;">
       <%= label_tag :company, 'Entreprise' %>

@@ -666,7 +666,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         preview: ev.preview,
         calendar_login_username: ev.calendar_login_username,
         calendar_login_type: ev.calendar_login_type,
-        busyLocked: ev.busyLocked
+        busyLocked: ev.busyLocked,
+        organizerEmail: ev.organizer && ev.organizer.email
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;
