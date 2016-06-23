@@ -1,5 +1,7 @@
 <script>
     var app = angular.module("backofficeApp", []);
+    window.currentOperatorId = <%= session[:operator_id] %>;
+
     app.controller("MessagesThreadsListCtrl", function($scope, $http, $sce) {
 
         $("body").on("click", ".messages-thread-item", function(e) {
@@ -11,7 +13,8 @@
             e.preventDefault();
             trackActionV2("Click_on_thread", {
                 thread_id: messagesThread.id,
-                thread_messages_count: messagesThread.messages.length
+                thread_messages_count: messagesThread.messages.length,
+                operator_id: window.currentOperatorId
             }, function() {
                 window.location = target;
             });
@@ -384,7 +387,7 @@
         $scope.refreshInbox(false);
     });
 
-    trackActionV2('Home_is_open', {});
+    trackActionV2('Home_is_open', {operator_id: window.currentOperatorId});
 </script>
 
 <div class="fixed-columns full">
