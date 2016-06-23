@@ -17,6 +17,8 @@
 
         $scope.init = function() {
             // Maybe define this function directly here
+            console.log('init');
+
             initTokenInputs();
 
             if(window.threadAccount)
@@ -209,14 +211,6 @@
 
         function initTokenInputs() {
 
-            trackEvent("Julie_action_is_open", {
-                distinct_id: $replyBoxNode.data('tracking-id'),
-                thread_id: $messagesContainer.data('messages-thread-id'),
-                thread_messages_count: $messagesContainer.data('messages-count'),
-                bo_message_id: $replyBoxNode.data('bo-message-id'),
-                action_nature: $scope.actionNature
-            });
-
             if (window.tokenInputsInitialized) {
                 return;
             }
@@ -269,13 +263,12 @@
 
             if(!!$scope.attendeesApp) {
                 $scope.attendeesApp.$on('attendeesFetched', function(attendees) {
-                    $scope.init();
+                    if(!$scope.initiated)
+                        $scope.init();
                 });
             } else {
                 $scope.init();
             }
-
-
         });
     }]);
 

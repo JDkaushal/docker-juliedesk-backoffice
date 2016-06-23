@@ -61,10 +61,10 @@ function Calendar($selector, params) {
 
     calendar.distinctIdForTracking = "" + Date.now() + "-" + allEmailsForTracking.join("|");
     // Init fetching
-    trackEvent("Click_on_open_calendar", {
-        distinct_id: calendar.distinctIdForTracking,
+    trackActionV2("Click_on_open_calendar", {
         client_emails: allEmailsForTracking,
-        initial_action: "Open calendar"
+        initial_action: "Open calendar",
+        calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
     });
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
@@ -364,11 +364,6 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
 
     var allEmailsForTracking = calendar.initialData.other_emails.slice();
     allEmailsForTracking.unshift(calendar.initialData.email);
-    trackEvent("Click_on_open_calendar", {
-        distinct_id: calendar.distinctIdForTracking,
-        client_emails: allEmailsForTracking,
-        initial_action: "Fetching events"
-    });
 
     calendar.showLoadingSpinner("Loading events...");
 
@@ -391,8 +386,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
                 }
             }
 
-            trackEvent("Calendar_is_opened", {
-                distinct_id: calendar.distinctIdForTracking,
+            trackActionV2("Calendar_is_opened", {
                 client_emails: allEmailsForTracking
             });
         });

@@ -30,20 +30,23 @@ window.trackFormSubmit = function(selector, event, params) {
     //TODO: Implement
 };
 
-function trackActionV2(type, extraParams) {
+function trackActionV2(type, extraParams, callback) {
+    callback = callback || function(){};
+
     try {
         var messageContainerNode = $('#messages_container');
         var messagesThreadId = messageContainerNode.data('messagesThreadId');
         var selectedMessage = $('.email.highlighted');
 
         var defaultParams = {
-            distinct_id: messageContainerNode.data('operatorId') + '-' + messagesThreadId,
+            operator_id: messageContainerNode.data('operatorId'),
+            julie_action_id: window.julie_action_id,
             thread_id: messagesThreadId,
             thread_messages_count: messageContainerNode.data('messagesCount'),
             bo_message_id: selectedMessage.data('messageId')
         };
 
-        trackEvent(type, $.extend(defaultParams, extraParams), function(){})
+        trackEvent(type, $.extend(defaultParams, extraParams), callback)
     }
     catch(err) {
         console.log(err);

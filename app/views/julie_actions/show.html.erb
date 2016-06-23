@@ -39,6 +39,7 @@
     window.startedAt = Date.now();
 
     window.julie_action_nature = '<%= @julie_action.action_nature %>';
+    window.julie_action_id = '<%= @julie_action.id %>';
 
     window.actionDeletedEvent = false;
 
@@ -263,7 +264,7 @@
         });
 
         $("#reply-button").click(function () {
-            trackActionV2('Click_on_sent', {});
+            trackActionV2('Click_on_send_email', {});
             $("#reply-button").prop('disabled', true);
             if(window.clickReplyButton) {
                 window.clickReplyButton();
@@ -284,7 +285,6 @@
                 });
                 window.sendReply();
             }
-            trackActionV2('Email_is_sent', {});
         });
 
         $("#forward-button").click(function () {
@@ -337,49 +337,40 @@
         window.sendReply = function (replyParams) {
             $(".reply-box #callback-message").html("<%= I18n.t("common.sending")%>");
 
-            trackEvent("Click_on_send_email", {
-                distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-                thread_id: <%= @messages_thread.id %>,
-                thread_messages_count: <%= @messages_thread.messages.length %>,
-                bo_message_id: <%= @julie_action.message_classification.message_id %>,
-                action_nature: "<%= @julie_action.message_classification.classification %>"
-            }, function() {
-                var forward = false;
-                if(replyParams && replyParams.forward) {
-                    forward =  true;
-                }
+            var forward = false;
+            if(replyParams && replyParams.forward) {
+                forward =  true;
+            }
 
-                var subject = "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ").gsub("\"", "\\\"") %>";
-                if(forward) {
-                    subject = "<%== "Fw: #{@message.server_message['subject']}".gsub(/(Fw: )+/, "Fw: ").gsub("\"", "\\\"") %>";
+            var subject = "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ").gsub("\"", "\\\"") %>";
+            if(forward) {
+                subject = "<%== "Fw: #{@message.server_message['subject']}".gsub(/(Fw: )+/, "Fw: ").gsub("\"", "\\\"") %>";
+            }
+            $.ajax({
+                url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
+                method: "post",
+                data: {
+                    subject: subject,
+                    text: $("textarea#reply-text").val(),
+                    html_signature: $("#reply-text-signature").html(),
+                    from: $("select#julie-alias-select").val(),
+                    to: window.currentRecipients().to,
+                    cc: window.currentRecipients().cc,
+                    quote_message: $("input#quote_message:checked").length > 0,
+                    julie_action_id: "<%= @julie_action.id %>",
+                    forward: forward
+                },
+                success: function (e) {
+                    $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
+                    $("#reply-button").removeProp('disabled');
+                    window.location = "<%= messages_thread_path(@messages_thread, scroll_to_bottom: true) %>"
+                },
+                error: function (e) {
+                    console.log("error", e);
+                    $("#reply-button").removeProp('disabled');
+                    $(".reply-box #callback-message").html("Error: " + e.responseJSON.message);
                 }
-                $.ajax({
-                    url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
-                    method: "post",
-                    data: {
-                        subject: subject,
-                        text: $("textarea#reply-text").val(),
-                        html_signature: $("#reply-text-signature").html(),
-                        from: $("select#julie-alias-select").val(),
-                        to: window.currentRecipients().to,
-                        cc: window.currentRecipients().cc,
-                        quote_message: $("input#quote_message:checked").length > 0,
-                        julie_action_id: "<%= @julie_action.id %>",
-                        forward: forward
-                    },
-                    success: function (e) {
-                        $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");
-                        $("#reply-button").removeProp('disabled');
-                        window.location = "<%= messages_thread_path(@messages_thread, scroll_to_bottom: true) %>"
-                    },
-                    error: function (e) {
-                        console.log("error", e);
-                        $("#reply-button").removeProp('disabled');
-                        $(".reply-box #callback-message").html("Error: " + e.responseJSON.message);
-                    }
-                });
             });
-
         };
 
     });

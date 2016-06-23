@@ -124,19 +124,17 @@
 
     $(function () {
 
-        trackEvent("Thread_is_open", {
-            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-            thread_id: <%= @messages_thread.id %>,
-            thread_messages_count: <%= @messages_thread.messages.length %>,
+        trackActionV2("Thread_is_open", {
             thread_status: "<%= @messages_thread.current_status %>"
         });
 
-        trackFormSubmit("#archive-form", "Click_on_archive", {
-            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
-            thread_id: <%= @messages_thread.id %>,
-            thread_messages_count: <%= @messages_thread.messages.length %>,
-            thread_status: $("select[name='thread_status']").val()
-        });
+        // Not implemented: To remove
+//        trackFormSubmit("#archive-form", "Click_on_archive", {
+//            distinct_id: "<%= session[:operator_id]%>-<%= @messages_thread.id %>",
+//            thread_id: <%= @messages_thread.id %>,
+//            thread_messages_count: <%= @messages_thread.messages.length %>,
+//            thread_status: $("select[name='thread_status']").val()
+//        });
 
         window.startedAt = Date.now();
 

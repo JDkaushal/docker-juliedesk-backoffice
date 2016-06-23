@@ -2,37 +2,42 @@ window.classificationForms = {};
 
 window.classificationForms.createClassificationForm = function (params) {
     if (!params) params = {};
+    var form;
+
     if (params.classification == "ask_date_suggestions") {
-        return new window.classificationForms.askDateSuggestionsForm(params);
+        form = new window.classificationForms.askDateSuggestionsForm(params);
     }
     else if (params.classification == "ask_availabilities") {
-        return new window.classificationForms.askAvailabilitiesForm(params);
+        form = new window.classificationForms.askAvailabilitiesForm(params);
     }
     else if (params.classification == "give_info" || params.classification == "update_event") {
-        return new window.classificationForms.giveInfoForm(params);
+        form = new window.classificationForms.giveInfoForm(params);
     }
     else if (params.classification == "ask_cancel_appointment") {
-        return new window.classificationForms.askCancelAppointment(params);
+        form = new window.classificationForms.askCancelAppointment(params);
     }
     else if (params.classification == "ask_cancel_events") {
-        return new window.classificationForms.askCancelEvents(params);
+        form = new window.classificationForms.askCancelEvents(params);
     }
     else if (params.classification == "ask_postpone_events") {
-        return new window.classificationForms.askPostponeEvents(params);
+        form = new window.classificationForms.askPostponeEvents(params);
     }
     else if (params.classification == "give_preference") {
-        return new window.classificationForms.givePreferenceForm(params);
+        form = new window.classificationForms.givePreferenceForm(params);
     }
     else if (params.classification == "wait_for_contact") {
-        return new window.classificationForms.waitForContactForm(params);
+        form = new window.classificationForms.waitForContactForm(params);
     }
     else if (params.classification == "follow_up_on_weekly_recap") {
-        return new window.classificationForms.followUpOnWeeklyRecapForm(params);
+        form = new window.classificationForms.followUpOnWeeklyRecapForm(params);
     }
     else if (params.classification == "invitation_already_sent") {
-        return new window.classificationForms.invitationSentEvents(params);
+        form = new window.classificationForms.invitationSentEvents(params);
+    } else {
+        throw "No classification form defined for classification: '" + params.classification + "'";
     }
-    throw "No classification form defined for classification: '" + params.classification + "'";
+
+    return form;
 };
 
 window.classificationForms.classificationForm = function (params) {
@@ -259,7 +264,6 @@ window.classificationForms.classificationForm.prototype.validateAttendeesAreNoti
 
 window.classificationForms.classificationForm.prototype.onceAgreementAndAttendeesNoticedDone = function() {
     $(".messages-thread-info-panel .classic-info-panel").show();
-    trackActionV2('Form_is_open', {first_time: !window.threadComputedData.appointment_nature});
 };
 
 window.classificationForms.classificationForm.prototype.onceAgreementAndAttendeesNoticedDoneRevert = function() {

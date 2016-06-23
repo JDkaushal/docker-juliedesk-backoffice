@@ -116,7 +116,6 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitSuggestedDates 
         }).toArray();
         $(".messages-thread-info-panel .dates-identification-panel").hide();
         $(".messages-thread-info-panel .classic-info-panel").show();
-        trackActionV2('Form_is_open', {first_time: !window.threadComputedData.appointment_nature});
 
         askAvailabilitiesForm.addSuggestedDatesToHeader();
 
@@ -168,7 +167,6 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitDetectedDates =
     }).toArray();
     $(".messages-thread-info-panel .dates-identification-panel").hide();
     $(".messages-thread-info-panel .classic-info-panel").show();
-    trackActionV2('Form_is_open', {first_time: !window.threadComputedData.appointment_nature});
 
     askAvailabilitiesForm.addSuggestedDatesToHeader();
 

@@ -69,11 +69,7 @@ function trackAction($element, $email) {
     var messageContainerNode = $('#messages_container');
     var messagesThreadId = messageContainerNode.data('messagesThreadId');
 
-    trackEvent("Click_on_julie_action", {
-        distinct_id: messageContainerNode.data('operatorId') + '-' + messagesThreadId,
-        thread_id: messagesThreadId,
-        thread_messages_count: messageContainerNode.data('messagesCount'),
-        bo_message_id: $email.data('messageId'),
+    trackActionV2("Click_on_julie_action", {
         action_nature: actionNature
     });
 

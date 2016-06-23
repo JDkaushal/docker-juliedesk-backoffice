@@ -9,8 +9,7 @@
                 return thread.id == messagesThreadId
             });
             e.preventDefault();
-            trackEvent("Click_on_thread", {
-                distinct_id: "<%= session[:operator_id]%>-" + messagesThread.id,
+            trackActionV2("Click_on_thread", {
                 thread_id: messagesThread.id,
                 thread_messages_count: messagesThread.messages.length
             }, function() {
