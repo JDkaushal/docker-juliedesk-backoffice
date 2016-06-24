@@ -2,7 +2,7 @@
 
     var app = angular.module('reply-box-controllers', []);
 
-    app.controller('recipientsManager', ['$scope', '$filter', function($scope, $filter) {
+    app.controller('recipientsManager', ['$scope', '$filter', '$timeout', function($scope, $filter, $timeout) {
         $scope.attendeesApp = $scope.attendeesApp || undefined;
         $scope.initiated = false;
         $scope.ccs = [];
@@ -17,7 +17,6 @@
 
         $scope.init = function() {
             // Maybe define this function directly here
-            console.log('init');
 
             initTokenInputs();
 
@@ -25,7 +24,9 @@
                 setDefaultRecipientsOther();
 
             if(window.afterReplyBoxInitCallback){
-                window.afterReplyBoxInitCallback();
+                $timeout(function() {
+                    window.afterReplyBoxInitCallback();
+                }, 0);
             }
             $scope.initiated = true;
         };

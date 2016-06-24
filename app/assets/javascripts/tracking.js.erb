@@ -40,7 +40,7 @@ function trackActionV2(type, extraParams, callback) {
 
         var defaultParams = {
             operator_id: messageContainerNode.data('operatorId'),
-            julie_action_id: window.julie_action_id,
+            current_classification: window.classification,
             thread_id: messagesThreadId,
             thread_messages_count: messageContainerNode.data('messagesCount'),
             bo_message_id: selectedMessage.data('messageId')
