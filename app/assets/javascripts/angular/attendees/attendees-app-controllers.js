@@ -561,7 +561,6 @@
                 $scope.formatUsageName(a);
             }
 
-
             $scope.attendees.push(a);
         };
 
@@ -1086,7 +1085,7 @@
                 that[key] = value;
             });
         },
-        firstNameKeyup: function(event){
+        firstLastNameKeyup: function(event){
             if(window.formFirstPass || this.needAIConfirmation) {
                 if(window.threadAccount.language_level == 'soutenu') {
                     this.usageName = this.displayUsageNameSoutenu();

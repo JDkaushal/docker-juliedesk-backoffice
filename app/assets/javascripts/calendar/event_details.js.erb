@@ -42,6 +42,7 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
 Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     var calendar = this;
     var $container = calendar.$selector.find("#event-details-container");
+    console.log(event);
     calendar.currentEvent = event;
     calendar.currentEventTile = new EventTile($container, {
         timezoneId: calendar.getCalendarTimezone(),
@@ -61,9 +62,14 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
             $container.fadeOut(200);
             //calendar.showEventDetails(calendar.currentEvent);
         },
-        doneEditingCallback: function() {
+        doneEditingCallback: function(params) {
             $container.fadeOut(200);
-            calendar.refreshEvents();
+
+            if(params.action == 'cancel_event_creation') {
+                calendar.addEvent(null);
+            } else {
+                calendar.refreshEvents();
+            }
         }
     });
     calendar.$selector.find("#event-details-container").fadeIn(200);
@@ -86,9 +92,9 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
     var $target = $(e.target);
 
     if($target.closest(".event-tile-container").length == 0) {
+        $container.fadeOut(200);
         if(calendar.getMode() == "free_calendar" || calendar.getMode() == "create_events") {
             calendar.addEvent(null);
         }
-        $container.fadeOut(200);
     }
 };

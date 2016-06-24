@@ -31,7 +31,9 @@
                 associateInvitationToThread(true);
             });
             // When another invitation has been received we want to discard the current and link the new with the current thread
-        }else if(invitationAlreadyPresent) {
+        }
+        //else if(invitationAlreadyPresent) {
+        else {
             var currentEventId = window.currentEventTile.eventId;
             // Don't
             if(currentEventId == window.selectedEvents[0].id) {
@@ -61,9 +63,10 @@
                     associateInvitationToThread(false);
                 });
             }
-        }else{
-            associateInvitationToThread(false);
         }
+//        else{
+//            associateInvitationToThread(false);
+//        }
     };
 
     window.afterReplyBoxInitCallback = function(){
@@ -116,7 +119,7 @@
                     currentCalendar.selectEvent(e);
             });
 
-            window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+            window.selectedEvents = currentCalendar.selectedEvents[0] ? [currentCalendar.selectedEvents[0]] : [];
 
             window.redrawSelectedEventsContainer();
 

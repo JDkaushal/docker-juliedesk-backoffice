@@ -54,11 +54,11 @@
       <div class="row">
         <div class="col-xs-6" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}" style="padding-right: 2px;">
           <%= label_tag :first_name %>
-          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.attendeeInForm.firstNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
+          <%= text_field_tag :first_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.firstName', 'ng-focus' => 'attendeesFormCtrl.firstNameFocus()', 'ng-keyup' => 'attendeesFormCtrl.attendeeInForm.firstLastNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize: true} %>
         </div>
         <div class="col-xs-6" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}" style="padding-left: 0;">
           <%= label_tag :last_name %>
-          <%= text_field_tag :last_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.lastName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
+          <%= text_field_tag :last_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.lastName', 'ng-keyup' => 'attendeesFormCtrl.attendeeInForm.firstLastNameKeyup($event)', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
         </div>
       </div>
 

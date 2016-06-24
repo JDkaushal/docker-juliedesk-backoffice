@@ -527,7 +527,7 @@
                     currentCalendar.selectEvent(e);
             });
 
-            window.selectedEvents = currentSelectedEvent ? [currentSelectedEvent] : [];
+            window.selectedEvents = currentCalendar.selectedEvents[0] ? [currentCalendar.selectedEvents[0]] : [];
 
             window.redrawSelectedEventsContainer();
 

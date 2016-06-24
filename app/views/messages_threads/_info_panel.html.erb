@@ -1,6 +1,6 @@
 <%= javascript_include_tag 'angular_dependencies' %>
 <!-- For google Places and google Matrix Distance used to compute the travel time -->
-<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&key=#{ENV['GOOGLE_JS_API_KEY']}"%>
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=#{@messages_thread.computed_data[:locale]}&key=#{ENV['GOOGLE_JS_API_KEY']}"%>
 <script>
     setCurrentLocale("<%= I18n.locale %>");
 

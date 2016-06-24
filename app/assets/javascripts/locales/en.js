@@ -30,7 +30,7 @@ window.wordings['en'] = {
                     suggested: "but would be available for %{appointment_nature}%{location}:",
                     not_suggested: "but %{client} would be available for %{appointment_nature}%{location}:"
                 },
-                external_invitation: "\n\nMay I suggest you one of the following time slot :"
+                external_invitation: "\n\nMay I suggest one of the following time slot :"
             }
         },
         invitation_already_sent: {

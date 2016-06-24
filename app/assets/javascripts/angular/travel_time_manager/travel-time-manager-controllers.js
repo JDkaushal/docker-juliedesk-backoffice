@@ -129,7 +129,7 @@
 
         $scope.processForClient = function(clientPrefs, events) {
             var email = clientPrefs.email;
-            $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments
+            $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments;
 
             $scope.travelTimeEvents[email] = [];
             $scope.defaultDelayEvents[email] = [];

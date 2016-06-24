@@ -145,6 +145,22 @@ class Message < ActiveRecord::Base
     }.present?
   end
 
+  def from_a_julie? params={}
+
+    julie_alias = if params[:from_email]
+      (params[:julie_aliases] || JulieAlias.all).find{ |julie_alias|
+        julie_alias.email == params[:from_email]
+      }
+    else
+      (params[:julie_aliases] || JulieAlias.all).find{|julie_alias|
+        "#{server_message['from']}".downcase.include? julie_alias.email
+      }
+    end
+
+    julie_alias.present?
+  end
+
+
   def is_discussion_client_julie_only
     result = false
     if destined_to_julie?
@@ -157,7 +173,9 @@ class Message < ActiveRecord::Base
         client_aliases = thread_account.all_emails
       end
 
-      result = message_tos.size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0) && client_aliases.include?(ApplicationHelper.find_addresses(server_message['from']).addresses.first.address)
+      from_address = ApplicationHelper.find_addresses(server_message['from']).addresses.first.address
+
+      result = message_tos.size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0) && ( client_aliases.include?(from_address) || from_a_julie?(from_email: from_address) )
     end
     result
   end

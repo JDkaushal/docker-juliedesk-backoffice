@@ -248,7 +248,7 @@ window.wordings['fr'] = {
             item: "- %{label}\n"
         },
         utilities: {
-            timezone_display: "heure %{city}"
+            timezone_display: "heure de %{city}"
         }
     },
     common: {

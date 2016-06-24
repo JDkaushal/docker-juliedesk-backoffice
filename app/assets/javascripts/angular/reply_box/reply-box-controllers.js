@@ -17,7 +17,6 @@
 
         $scope.init = function() {
             // Maybe define this function directly here
-
             initTokenInputs();
 
             if(window.threadAccount)
@@ -137,27 +136,12 @@
 
             var clientsAttendees = partitionnedAttendees[0];
             var nonClientAttendees = partitionnedAttendees[1];
-            var partitionnedNonClientAttendees = _.partition(nonClientAttendees, function(a) {
-               return a.assisted && a.assistedBy && a.assistedBy.email;
-            });
 
-            var assistedNonClientAttendees = partitionnedNonClientAttendees[0];
-            var unassistedNonClientAttendees = partitionnedNonClientAttendees[1];
-
-            $scope.tos = _.map(unassistedNonClientAttendees, function(a) {
-                return {name: a.email};
-            });
-
-            $scope.tos = $scope.tos.concat(_.map(assistedNonClientAttendees, function(a) {
-                return {name: a.assistedBy.email};
-            }));
-
-            $scope.ccs = _.map(clientsAttendees, function(a) {
-                return {name: a.email};
-            });
-
-
-            $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
+            if(nonClientAttendees.length > 0) {
+                defaultRecipientsWhenNonClientAttendees(clientsAttendees, nonClientAttendees);
+            } else {
+                defaultRecipientsWhenOnlyClientAttendees(clientsAttendees);
+            }
 
             if(threadOwner.email != 'pierre-louis@juliedesk.com') {
                 // We don't add the client email if we are already responding to one of its aliases
@@ -175,6 +159,47 @@
             $scope.ccs = _.map($scope.ccs, function(a) {
                 return {name: $filter('lowercase')(a.name)};
             });
+        };
+
+        function defaultRecipientsWhenOnlyClientAttendees(clientAttendees) {
+            var sender;
+            var senderEmail = window.emailSender();
+
+            // We iterate over each attendee, if he is the original email sender we set him in TO, if not we set him in CCs
+            // That way if the original email sender is one of the client attendees we will respond to him, if not we leave the TO field blank
+            _.each(clientAttendees, function(a) {
+
+                if(a.email == senderEmail.name) {
+                    $scope.tos = [senderEmail];
+                }else {
+                    $scope.ccs.push({name: a.email});
+                }
+
+            });
+        };
+
+        function defaultRecipientsWhenNonClientAttendees(clientsAttendees, nonClientAttendees) {
+
+            var partitionnedNonClientAttendees = _.partition(nonClientAttendees, function(a) {
+                return a.assisted && a.assistedBy && a.assistedBy.email;
+            });
+
+            var assistedNonClientAttendees = partitionnedNonClientAttendees[0];
+            var unassistedNonClientAttendees = partitionnedNonClientAttendees[1];
+
+            $scope.tos = _.map(unassistedNonClientAttendees, function(a) {
+                return {name: a.email};
+            });
+
+            $scope.tos = $scope.tos.concat(_.map(assistedNonClientAttendees, function(a) {
+                return {name: a.assistedBy.email};
+            }));
+
+            $scope.ccs = _.map(clientsAttendees, function(a) {
+                return {name: a.email};
+            });
+
+            $scope.ccs = $scope.ccs.concat([window.emailSender()].concat(window.initialToRecipients().concat(window.initialCcRecipients())));
         };
 
         function setDefaultRecipientsOther() {
