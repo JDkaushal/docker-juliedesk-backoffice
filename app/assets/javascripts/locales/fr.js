@@ -36,6 +36,38 @@ window.wordings['fr'] = {
         invitation_already_sent: {
             noted: "Merci pour l'invitation.\nJe prends note que l'événement est bien dans le calendrier de %{client} à la date du %{date}."
         },
+        follow_up_contacts: {
+            before_dates: "Je me permets de vous relancer concernant %{appointment_nature}%{location} avec %{clients}.",
+            zero_dates: {
+                after_dates: {
+                    single_attendee_unassisted: "\nPourriez-vous me communiquer vos disponibilités ?\nMerci.",
+                    multiple_attendees_unassisted: "\n%{attendees}, pourriez-vous me communiquer vos disponibilités ? \nMerci.",
+                    single_attendee_assisted: "\nnPourriez-vous me communiquer les disponibilités de %{assisted_attendee} ?\nMerci.",
+                    multiple_attendees_assisted: "\nPourriez-vous me communiquer les disponibilités de %{assisted_attendees} ?\nMerci.",
+                    multiple_attendees_mix: "\nPourriez-vous me communiquer vos disponibilités ?\nMerci."
+                }
+            },
+            one_date: {
+                before_dates: "Ci-dessous une proposition mise à jour :\n",
+                after_dates: {
+                    single_attendee_unassisted: "\nEst-ce que cet horaire vous conviendrait ?\nMerci.",
+                    multiple_attendees_unassisted: "\n%{attendees}, est-ce que cet horaire vous conviendrait ?\nMerci.",
+                    single_attendee_assisted: "\nEst-ce que cet horaire conviendrait à %{assisted_attendee} ?\nMerci.",
+                    multiple_attendees_assisted: "\nEst-ce que cet horaire conviendrait à %{assisted_attendees} ?\nMerci.",
+                    multiple_attendees_mix: "\nEst-ce que cet horaire vous conviendrait ?\nMerci."
+                }
+            },
+            multiple_dates: {
+                before_dates: "Ci-dessous quelques propositions mises à jour :\n",
+                after_dates: {
+                    single_attendee_unassisted: "\nPourriez-vous m'indiquer votre préférence ?\nMerci.",
+                    multiple_attendees_unassisted: "\n%{attendees}, pourriez-vous m'indiquer votre préférence ?\nMerci.",
+                    single_attendee_assisted: "\nPourriez-vous m'indiquer la préférence de %{assisted_attendee} ?\nMerci.",
+                    multiple_attendees_assisted: "\nPourriez-vous m'indiquer les préférences de %{assisted_attendees} ?\nMerci.",
+                    multiple_attendees_mix: "\nPourriez-vous m'indiquer votre préférence ?\nMerci."
+                }
+            }
+        },
         suggest_dates: {
             ask_agreement: {
                 postpone: "Souhaitez-vous que je propose de nouvelles disponibilités ? J'ai annulé l'évènement en attendant.",

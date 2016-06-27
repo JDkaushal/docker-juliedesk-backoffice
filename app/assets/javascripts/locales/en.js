@@ -36,6 +36,38 @@ window.wordings['en'] = {
         invitation_already_sent: {
             noted: "Thank you for the invite.\nI confirm, the event is in %{client}'s calendar for %{date}."
         },
+        follow_up_contacts: {
+            before_dates: "Allow me to follow up regarding %{appointment_nature}%{location} with %{clients}.",
+            zero_dates: {
+                after_dates: {
+                    single_attendee_unassisted: "\nCould you please provide me your availabilities?\nThank you.",
+                    multiple_attendees_unassisted: "\n%{attendees}, could you please provide me your availabilities? \nThank you.",
+                    single_attendee_assisted: "\nCould you please prodive me the availabilities of %{assisted_attendee}?\nThank you.",
+                    multiple_attendees_assisted: "\nCould you please provide me the availabilities of %{assisted_attendees}?\nThank you.",
+                    multiple_attendees_mix: "\nCould you please provide me your availabilities?\nThank you."
+                }
+            },
+            one_date: {
+                before_dates: "Here is an updated availability:\n",
+                after_dates: {
+                    single_attendee_unassisted: "\nWould that work for you?\nThank you.",
+                    multiple_attendees_unassisted: "\n%{attendees}, would that work for you?\nThank you.",
+                    single_attendee_assisted: "\nWould that work for %{assisted_attendee}?\nThank you.",
+                    multiple_attendees_assisted: "\nWould that work for %{assisted_attendees}?\nThank you.",
+                    multiple_attendees_mix: "\nWould that work for you?\nThank you."
+                }
+            },
+            multiple_dates: {
+                before_dates: "Here are updated availabilities:\n",
+                after_dates: {
+                    single_attendee_unassisted: "\nCould you let me know your preference?\nThank you.",
+                    multiple_attendees_unassisted: "\n%{attendees}, could you let me know your preference?\nThank you.",
+                    single_attendee_assisted: "\nCould you let me know the preference of %{assisted_attendee}?\nThank you.",
+                    multiple_attendees_assisted: "\nCould you let me know the preference of %{assisted_attendees}?\nThank you.",
+                    multiple_attendees_mix: "\nCould you let me know your preference?\nThank you."
+                }
+            }
+        },
         suggest_dates: {
             ask_agreement: {
                 postpone: "Would you like me to suggest other availabilities? I have cancelled the original event in the meantime.",

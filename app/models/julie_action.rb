@@ -26,6 +26,32 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP = "follow_up_on_weekly_recap"
   JD_ACTION_INVITATION_ALREADY_SENT  = "invitation_already_sent"
 
+  JD_ACTION_FOLLOW_UP_CLIENT         = "follow_up_client"
+  JD_ACTION_FOLLOW_UP_CONTACTS       = "follow_up_contacts"
+
+  def self.available_actions
+
+    [
+      JulieAction::JD_ACTION_SUGGEST_DATES,
+      JulieAction::JD_ACTION_CHECK_AVAILABILITIES,
+      JulieAction::JD_ACTION_SEND_INFO,
+      JulieAction::JD_ACTION_SEND_CONFIRMATION,
+      JulieAction::JD_ACTION_FREE_ACTION,
+      JulieAction::JD_ACTION_CANCEL_EVENT,
+      JulieAction::JD_ACTION_CREATE_EVENT,
+      JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
+      JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS,
+      JulieAction::JD_ACTION_FORWARD_TO_CLIENT,
+      JulieAction::JD_ACTION_FORWARD_TO_SUPPORT,
+      JulieAction::JD_ACTION_WAIT_FOR_CONTACT,
+      JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP,
+      JulieAction::JD_ACTION_INVITATION_ALREADY_SENT,
+      JulieAction::JD_ACTION_FOLLOW_UP_CLIENT,
+      JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
+    ].freeze
+
+  end
+
 
   def event_data
     message.messages_thread.event_data

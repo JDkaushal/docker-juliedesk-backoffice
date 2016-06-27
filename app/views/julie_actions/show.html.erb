@@ -8,20 +8,7 @@
     <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
 <% end %>
 
-<% if [JulieAction::JD_ACTION_SUGGEST_DATES,
-       JulieAction::JD_ACTION_CHECK_AVAILABILITIES,
-       JulieAction::JD_ACTION_SEND_INFO,
-       JulieAction::JD_ACTION_SEND_CONFIRMATION,
-       JulieAction::JD_ACTION_FREE_ACTION,
-       JulieAction::JD_ACTION_CANCEL_EVENT,
-       JulieAction::JD_ACTION_CREATE_EVENT,
-       JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS,
-       JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS,
-       JulieAction::JD_ACTION_FORWARD_TO_CLIENT,
-       JulieAction::JD_ACTION_FORWARD_TO_SUPPORT,
-       JulieAction::JD_ACTION_WAIT_FOR_CONTACT,
-       JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP,
-       JulieAction::JD_ACTION_INVITATION_ALREADY_SENT].include? @julie_action.action_nature %>
+<% if JulieAction.available_actions.include? @julie_action.action_nature %>
     <%= render partial: @julie_action.action_nature, locals: {julie_action: @julie_action, messages_thread: @messages_thread} %>
 <% end %>
 
@@ -331,9 +318,11 @@
             }
         };
 
-        window.redrawTimeSlotsToSuggestContainer = function () {
+        window.redrawTimeSlotsToSuggestContainer = function (params) {
+            params = params || {};
+
             var suggestedDateScope = $("#dates-suggestion-manager").scope();
-            suggestedDateScope.setSuggestions();
+            suggestedDateScope.setSuggestions(params.forceDisplayManager);
         };
 
         window.sendReply = function (replyParams) {

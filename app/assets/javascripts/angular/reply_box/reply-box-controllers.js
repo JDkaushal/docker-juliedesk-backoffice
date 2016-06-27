@@ -8,6 +8,8 @@
         $scope.ccs = [];
         $scope.tos = [];
 
+        $scope.specialActions = ['ask_date_suggestions', 'ask_availabilities', 'follow_up_contacts'];
+
         var $ccTokenNode = $("#recipients-cc-input");
         var $toTokenNode = $("#recipients-to-input");
         var $messagesContainer = $('#messages_container');
@@ -80,8 +82,9 @@
         };
 
         $scope.setDefaultRecipients = function(otherRecipients, presentAttendees) {
+            console.log('action nature', $scope.actionNature);
 
-            if(['ask_date_suggestions', 'ask_availabilities'].indexOf($scope.actionNature) > -1) {
+            if($scope.specialActions.indexOf($scope.actionNature) > -1) {
                 setDefaultRecipientsAskOrVerifyAvailabilities(presentAttendees);
             }else {
                 setDefaultRecipientsOther();

@@ -18,6 +18,8 @@ class MessageClassification < ActiveRecord::Base
   FORWARD_TO_SUPPORT       = "forward_to_support"
   INVITATION_ALREADY_SENT  = "invitation_already_sent"
   UPDATE_EVENT             = "update_event"
+  FOLLOW_UP_CONTACTS       = "follow_up_contacts"
+  FOLLOW_UP_CLIENT         = "follow_up_client"
 
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
@@ -168,55 +170,104 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def append_julie_action
-    if    self.classification == MessageClassification::ASK_DATE_SUGGESTIONS
-      create_julie_action action_nature: JulieAction::JD_ACTION_SUGGEST_DATES
+    julie_action_nature = nil
 
-    elsif self.classification == MessageClassification::ASK_AVAILABILITIES
-      create_julie_action action_nature: JulieAction::JD_ACTION_CHECK_AVAILABILITIES
-
-    elsif self.classification == MessageClassification::ASK_INFO
-      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_INFO
-
-    elsif self.classification == MessageClassification::GIVE_INFO || self.classification == MessageClassification::UPDATE_EVENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
-
-    elsif self.classification == MessageClassification::GIVE_PREFERENCE
-      create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
-
-    elsif self.classification == MessageClassification::ASK_CANCEL_APPOINTMENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_EVENT
-
-    elsif self.classification == MessageClassification::ASK_POSTPONE_APPOINTMENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_EVENT
-
-    elsif self.classification == MessageClassification::ASK_CANCEL_EVENTS
-      create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS
-
-    elsif self.classification == MessageClassification::ASSOCIATE_EVENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_ASSOCIATE_EVENT
-
-    elsif self.classification == MessageClassification::ASK_POSTPONE_EVENTS
-      create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
-
-    elsif self.classification == MessageClassification::ASK_CREATE_EVENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_CREATE_EVENT
-
-    elsif self.classification == MessageClassification::UNKNOWN
-      create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
-    elsif self.classification == MessageClassification::FORWARD_TO_SUPPORT
-      create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
-
-    elsif self.classification == MessageClassification::NOTHING_TO_DO
-      create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
-    elsif self.classification == MessageClassification::FORWARD_TO_CLIENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_CLIENT
-    elsif self.classification == MessageClassification::WAIT_FOR_CONTACT
-      create_julie_action action_nature: JulieAction::JD_ACTION_WAIT_FOR_CONTACT
-    elsif self.classification == MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
-      create_julie_action action_nature: JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP
-    elsif self.classification == MessageClassification::INVITATION_ALREADY_SENT
-      create_julie_action action_nature: JulieAction::JD_ACTION_INVITATION_ALREADY_SENT
+    case self.classification
+      when MessageClassification::ASK_DATE_SUGGESTIONS
+        julie_action_nature = JulieAction::JD_ACTION_SUGGEST_DATES
+      when MessageClassification::ASK_AVAILABILITIES
+        julie_action_nature = JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+      when MessageClassification::ASK_INFO
+        julie_action_nature = JulieAction::JD_ACTION_SEND_INFO
+      when MessageClassification::GIVE_INFO
+        julie_action_nature = JulieAction::JD_ACTION_SEND_CONFIRMATION
+      when MessageClassification::UPDATE_EVENT
+        julie_action_nature = JulieAction::JD_ACTION_SEND_CONFIRMATION
+      when MessageClassification::GIVE_PREFERENCE
+        julie_action_nature = JulieAction::JD_ACTION_SEND_CONFIRMATION
+      when MessageClassification::ASK_CANCEL_APPOINTMENT
+        julie_action_nature = JulieAction::JD_ACTION_CANCEL_EVENT
+      when MessageClassification::ASK_POSTPONE_APPOINTMENT
+        julie_action_nature = JulieAction::JD_ACTION_POSTPONE_EVENT
+      when MessageClassification::ASK_CANCEL_EVENTS
+        julie_action_nature = JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS
+      when MessageClassification::ASSOCIATE_EVENT
+        julie_action_nature = JulieAction::JD_ACTION_ASSOCIATE_EVENT
+      when MessageClassification::ASK_POSTPONE_EVENTS
+        julie_action_nature = JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
+      when MessageClassification::ASK_CREATE_EVENT
+        julie_action_nature = JulieAction::JD_ACTION_CREATE_EVENT
+      when MessageClassification::UNKNOWN
+        julie_action_nature = JulieAction::JD_ACTION_FREE_ACTION
+      when MessageClassification::FORWARD_TO_SUPPORT
+        julie_action_nature = JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
+      when MessageClassification::NOTHING_TO_DO
+        julie_action_nature = JulieAction::JD_ACTION_NOTHING_TO_DO
+      when MessageClassification::FORWARD_TO_CLIENT
+        julie_action_nature = JulieAction::JD_ACTION_FORWARD_TO_CLIENT
+      when MessageClassification::WAIT_FOR_CONTACT
+        julie_action_nature = JulieAction::JD_ACTION_WAIT_FOR_CONTACT
+      when MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
+        julie_action_nature = JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP
+      when MessageClassification::INVITATION_ALREADY_SENT
+        julie_action_nature = JulieAction::JD_ACTION_INVITATION_ALREADY_SENT
+      when MessageClassification::FOLLOW_UP_CLIENT
+        julie_action_nature = JulieAction::JD_ACTION_FOLLOW_UP_CLIENT
+      when MessageClassification::FOLLOW_UP_CONTACTS
+        julie_action_nature = JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
     end
+
+    create_julie_action action_nature: julie_action_nature
+
+    # if    self.classification == MessageClassification::ASK_DATE_SUGGESTIONS
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_SUGGEST_DATES
+    #
+    # elsif self.classification == MessageClassification::ASK_AVAILABILITIES
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+    #
+    # elsif self.classification == MessageClassification::ASK_INFO
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_SEND_INFO
+    #
+    # elsif self.classification == MessageClassification::GIVE_INFO || self.classification == MessageClassification::UPDATE_EVENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
+    #
+    # elsif self.classification == MessageClassification::GIVE_PREFERENCE
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_SEND_CONFIRMATION
+    #
+    # elsif self.classification == MessageClassification::ASK_CANCEL_APPOINTMENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_EVENT
+    #
+    # elsif self.classification == MessageClassification::ASK_POSTPONE_APPOINTMENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_EVENT
+    #
+    # elsif self.classification == MessageClassification::ASK_CANCEL_EVENTS
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_CANCEL_MULTIPLE_EVENTS
+    #
+    # elsif self.classification == MessageClassification::ASSOCIATE_EVENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_ASSOCIATE_EVENT
+    #
+    # elsif self.classification == MessageClassification::ASK_POSTPONE_EVENTS
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_POSTPONE_MULTIPLE_EVENTS
+    #
+    # elsif self.classification == MessageClassification::ASK_CREATE_EVENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_CREATE_EVENT
+    #
+    # elsif self.classification == MessageClassification::UNKNOWN
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_FREE_ACTION
+    # elsif self.classification == MessageClassification::FORWARD_TO_SUPPORT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
+    #
+    # elsif self.classification == MessageClassification::NOTHING_TO_DO
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_NOTHING_TO_DO
+    # elsif self.classification == MessageClassification::FORWARD_TO_CLIENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_FORWARD_TO_CLIENT
+    # elsif self.classification == MessageClassification::WAIT_FOR_CONTACT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_WAIT_FOR_CONTACT
+    # elsif self.classification == MessageClassification::FOLLOWUP_ON_WEEKLY_RECAP
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_FOLLOWUP_ON_WEEKLY_RECAP
+    # elsif self.classification == MessageClassification::INVITATION_ALREADY_SENT
+    #   create_julie_action action_nature: JulieAction::JD_ACTION_INVITATION_ALREADY_SENT
+    # end
   end
 
   def has_data?

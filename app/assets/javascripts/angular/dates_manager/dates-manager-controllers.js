@@ -144,12 +144,15 @@
             return $scope.outBoundSuggestionsCount > 0;
         };
 
-        $scope.setSuggestions = function() {
+        $scope.setSuggestions = function(forceDisplayManager) {
+            //forceDisplayManager is used in the follow_up_contacts flow, because in this one 0 propostions are a possible choice,
+            // So we must display the 'Next' button to allow the operator to generate the template
+
             $scope.clearPreviousSuggestions();
 
             var suggestions = window.timeSlotsToSuggest.slice(0);
 
-            if(suggestions.length > 0) {
+            if(suggestions.length > 0 || forceDisplayManager) {
                 $scope.displayDatesSuggestionManager = true;
 
                 var timezones = $scope.getUsedTimezones();

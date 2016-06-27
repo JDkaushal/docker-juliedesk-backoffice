@@ -222,6 +222,10 @@ fr:
               action: "Attendre des suggestions du contact"
             invitation_already_sent:
               action: "L'invitation a été envoyée"
+            follow_up_contacts:
+              action: "Relancer contact(s)"
+            follow_up_client:
+              action: "Relancer client"
       manage_scheduled_event:
         title: "Gérer le rendez-vous organisé"
         classifications:
