@@ -6,7 +6,7 @@ class MessageInterpretation < ActiveRecord::Base
   QUESTION_ENTITIES = "entities"
 
   def self.questions
-    [QUESTION_MAIN, QUESTION_ENTITIES]
+    [QUESTION_MAIN, QUESTION_ENTITIES].freeze
   end
 
   def process
