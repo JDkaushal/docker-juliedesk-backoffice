@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'automatic_templates_manager' %>
 <script>
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
@@ -10,21 +11,17 @@
         $(".calendar-container").addClass("minimized");
     };
 
-    window.currentSelectedSupportItem = null;
-
   $(function() {
       $("#reply-button").show();
       $("#forward-button").hide();
 
       $("input#quote_message").prop("checked", true).prop("disabled", true);
 
-      $(".forward-to-support-menu-button").click(function() {
-          $(".forward-to-support-menu").toggle();
-      });
-
-      $(".forward-to-support-menu").on("click", ".forward-to-support-menu-item", function() {
-          var $button = $(this);
-          clickOnTemplateItem($button);
+      window.templateManager = new TemplateManager({
+          categories: ['send_to_support'],
+          onItemSelected: function(clickedNode, template) {
+              window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
+          }
       });
 
       initializeEmailLanguageSelector();
@@ -41,55 +38,52 @@
         $(".language-selector-container .selector").click(function() {
             window.threadComputedData.locale = $(this).data("value");
 
-            if(window.currentSelectedSupportItem)
-                clickOnTemplateItem(window.currentSelectedSupportItem);
+            window.templateManager.refreshCurrentSelectedTemplate();
         });
 
         $('.email.extended').removeClass('extended');
-
     };
 
-    function clickOnTemplateItem($item) {
-        var template = $item.data("template-en");
-
-        if(window.threadComputedData.locale == 'fr') {
-            template = $item.data("template-fr");
-        }
-
-        window.currentSelectedSupportItem = $item;
-
-        window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
-        $(".forward-to-support-menu").hide();
-    }
+//    function clickOnTemplateItem($item) {
+//        var template = $item.data("template-en");
+//
+//        if(window.threadComputedData.locale == 'fr') {
+//            template = $item.data("template-fr");
+//        }
+//
+//        window.currentSelectedSupportItem = $item;
+//
+//        window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
+//        $(".forward-to-support-menu").hide();
+//    }
 
     window.afterReplyBoxInitCallback = function(){
-        var messageBuilder = $('#reply-area').scope();
-
         window.setReplyMessage("", "only_client", ["support@juliedesk.com"]);
 
-        var host = "<%= "https://juliedesk-app.herokuapp.com" %>";
-        var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+        window.templateManager.fetchTemplates();
 
-        $.ajax({
-            url: host + "/api/v1/julie_templates",
-            type: "GET",
-            contentType: "application/json",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", access_key);
-            },
-            success: function (response) {
-                var data = response.data;
-                $(".forward-to-support-menu").html("").hide();
-                _(data).each(function (item) {
-                    var $menuItem = $("<div>").addClass("forward-to-support-menu-item").html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr);
-                    $(".forward-to-support-menu").append($menuItem);
-                });
-
-
-                setTimeout(function() {
-                    clickOnTemplateItem($(".forward-to-support-menu-item:eq(0)"));
-                }, 500);
-            }
-        });
+//        var host = "<%= "https://juliedesk-app.herokuapp.com" %>";
+//        var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+//
+//        $.ajax({
+//            url: host + "/api/v1/julie_templates",
+//            type: "GET",
+//            contentType: "application/json",
+//            beforeSend: function (xhr) {
+//                xhr.setRequestHeader("Authorization", access_key);
+//            },
+//            success: function (response) {
+//                var data = response.data;
+//                $(".forward-to-support-menu").html("").hide();
+//                _(data).each(function (item) {
+//                    var $menuItem = $("<div>").addClass("forward-to-support-menu-item").html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr);
+//                    $(".forward-to-support-menu").append($menuItem);
+//                });
+//
+//                setTimeout(function() {
+//                    clickOnTemplateItem($(".forward-to-support-menu-item:eq(0)"));
+//                }, 500);
+//            }
+//        });
     };
 </script>

@@ -1,0 +1,99 @@
+var TemplateManager = function(params){
+    this.categories = params.categories;
+
+    this.menuButtonNode = params.menuButtonNode || $(".template-manager-menu-button");
+    this.menuPanelNode = params.menuPanelNode || $(".template-manager-menu");
+    this.menuPanelItemClass = params.menuPanelItemClass || "template-manager-menu-item";
+
+    this.templates = [];
+    this.currentSelectedTemplate = null;
+
+    this.onItemSelected = params.onItemSelected;
+
+    this.templatesVariablesRegexps = [
+      new RegExp('%{event_type}', 'g')
+    ];
+
+    this.templatesVariablesValues = [
+        {value: window.getCurrentAppointment().title_in_calendar, localized: true}
+    ];
+
+    var host = "https://juliedesk-app.herokuapp.com";
+    var accessKey = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+
+    var that = this;
+
+    this.fetchTemplates = function() {
+        $.ajax({
+            url: host + "/api/v1/julie_templates",
+            data: {categories: that.categories},
+            type: "GET",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", accessKey);
+            },
+            success: function (response) {
+                var data = response.data;
+                that.menuPanelNode.html("").hide();
+                _(data).each(function (item) {
+                    var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr);
+                    that.templates.push($menuItem);
+                    that.menuPanelNode.append($menuItem);
+                });
+
+                setTimeout(function() {
+                    that.clickOnTemplateItem(that.templates[0]);
+                }, 500);
+            }
+        });
+
+    };
+
+    this.clickOnTemplateItem = function($item) {
+        var template = '';
+
+        if(window.threadComputedData.locale == 'fr') {
+            template = $item.data("template-fr");
+        }else {
+            template = $item.data("template-en");
+        }
+
+        template = that.replaceVariables(template);
+        that.currentSelectedTemplate = $item;
+
+        if(that.onItemSelected)
+            that.onItemSelected($item, template);
+
+        that.menuPanelNode.hide();
+    };
+
+    this.refreshCurrentSelectedTemplate = function() {
+        if(that.currentSelectedTemplate)
+            that.clickOnTemplateItem(that.currentSelectedTemplate);
+    };
+
+    this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {
+        that.clickOnTemplateItem($(this));
+    });
+
+    this.menuButtonNode.click(function() {
+        that.menuPanelNode.toggle();
+    });
+
+    this.replaceVariables = function(template) {
+        var currentValue;
+
+        for(var i =0; i< that.templatesVariablesRegexps.length; i++) {
+            currentValue = that.templatesVariablesValues[i];
+            if(currentValue.localized) {
+                currentValue = currentValue.value[window.threadComputedData.locale]
+            } else {
+                currentValue = currentValue.value;
+            }
+
+            template = template.replace(that.templatesVariablesRegexps[i], currentValue.toLowerCase());
+        }
+
+        return template;
+    };
+};
