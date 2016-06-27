@@ -1090,7 +1090,7 @@
                 if(window.threadAccount.language_level == 'soutenu') {
                     this.usageName = this.displayUsageNameSoutenu();
                 } else {
-                    this.setUsageName(event.currentTarget.value);
+                    this.setUsageName(this.firstName);
                 }
             }
         },
