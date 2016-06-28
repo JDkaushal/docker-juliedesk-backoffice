@@ -8,6 +8,8 @@ var TemplateManager = function(params){
     this.templates = [];
     this.currentSelectedTemplate = null;
 
+    this.skipDefaultItem = params.selectDefaultItem || false;
+
     this.onItemSelected = params.onItemSelected;
 
     this.templatesVariablesRegexps = [
@@ -42,7 +44,9 @@ var TemplateManager = function(params){
                 });
 
                 setTimeout(function() {
-                    that.clickOnTemplateItem(that.templates[0]);
+                    if(that.selectDefaultItem) {
+                        that.clickOnTemplateItem(that.templates[0]);
+                    }
                 }, 500);
             }
         });

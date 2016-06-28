@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'automatic_templates_manager' %>
 <script>
     window.drawCalendarCallback = function(){
         if(window.threadAccount) {
@@ -20,6 +21,20 @@
     };
 
     $(function() {
+
+        window.templateManager = new TemplateManager({
+            categories: ['free_reply'],
+            skipDefaultItem: true,
+            onItemSelected: function(clickedNode, template) {
+                window.setReplyMessage(template, "only_client");
+            }
+        });
+
+        initializeEmailLanguageSelector();
+    });
+
+    function initializeEmailLanguageSelector(){
+
         var $languageSelector = $("<div>").addClass("language-selector-container");
         $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
         $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
@@ -28,9 +43,16 @@
 
         $(".language-selector-container .selector").click(function() {
             window.threadComputedData.locale = $(this).data("value");
-            window.setReplyMessage("", "only_client");
+
+            window.templateManager.refreshCurrentSelectedTemplate();
         });
 
         $('.email.extended').removeClass('extended');
-    });
+    };
+
+    window.afterReplyBoxInitCallback = function(){
+        window.setReplyMessage("", "only_client");
+
+        window.templateManager.fetchTemplates();
+    };
 </script>
