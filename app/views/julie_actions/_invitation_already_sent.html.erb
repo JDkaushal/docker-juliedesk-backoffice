@@ -34,35 +34,41 @@
         }
         //else if(invitationAlreadyPresent) {
         else {
-            var currentEventId = window.currentEventTile.eventId;
+            var currentEventId = window.currentEventTile && window.currentEventTile.eventId;
             // Don't
-            if(currentEventId == window.selectedEvents[0].id) {
-                var data = {
-                    text: $("textarea#reply-text").val(),
-                    generated_text: window.currentFullMessageWithFooter,
-                    to: window.currentRecipients().to,
-                    cc: window.currentRecipients().cc,
-                    done: true,
-                    processed_in: Date.now() - window.startedAt,
-                    messages_thread_id: "<%= @messages_thread.id %>"
-                };
 
-                $.ajax({
-                    url: "/julie_actions/<%= @julie_action.id %>/update",
-                    method: "post",
-                    data: data
-                });
-                window.sendReply();
-            }else {
-                invitationAlreadySentDeleteEvent({
-                    eventId: currentEventId,
-                    calendarLoginUsername: window.currentEventTile.calendarLoginUsername,
-                    eventUrl: window.currentEventTile.eventUrl,
-                    calendarId: window.currentEventTile.calendarId
-                }, function() {
-                    associateInvitationToThread(false);
-                });
+            if(currentEventId) {
+                if(currentEventId == window.selectedEvents[0].id) {
+                    var data = {
+                        text: $("textarea#reply-text").val(),
+                        generated_text: window.currentFullMessageWithFooter,
+                        to: window.currentRecipients().to,
+                        cc: window.currentRecipients().cc,
+                        done: true,
+                        processed_in: Date.now() - window.startedAt,
+                        messages_thread_id: "<%= @messages_thread.id %>"
+                    };
+
+                    $.ajax({
+                        url: "/julie_actions/<%= @julie_action.id %>/update",
+                        method: "post",
+                        data: data
+                    });
+                    window.sendReply();
+                }else {
+                    invitationAlreadySentDeleteEvent({
+                        eventId: currentEventId,
+                        calendarLoginUsername: window.currentEventTile.calendarLoginUsername,
+                        eventUrl: window.currentEventTile.eventUrl,
+                        calendarId: window.currentEventTile.calendarId
+                    }, function() {
+                        associateInvitationToThread(false);
+                    });
+                }
+            } else {
+                associateInvitationToThread(false);
             }
+
         }
 //        else{
 //            associateInvitationToThread(false);
