@@ -44,7 +44,7 @@ var TemplateManager = function(params){
                 });
 
                 setTimeout(function() {
-                    if(that.selectDefaultItem) {
+                    if(!that.skipDefaultItem) {
                         that.clickOnTemplateItem(that.templates[0]);
                     }
                 }, 500);
@@ -71,9 +71,12 @@ var TemplateManager = function(params){
         that.menuPanelNode.hide();
     };
 
-    this.refreshCurrentSelectedTemplate = function() {
-        if(that.currentSelectedTemplate)
+    this.refreshCurrentSelectedTemplate = function(noTemplateSelectedCallback) {
+        if(that.currentSelectedTemplate) {
             that.clickOnTemplateItem(that.currentSelectedTemplate);
+        }else {
+            noTemplateSelectedCallback();
+        }
     };
 
     this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {

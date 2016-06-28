@@ -44,7 +44,9 @@
         $(".language-selector-container .selector").click(function() {
             window.threadComputedData.locale = $(this).data("value");
 
-            window.templateManager.refreshCurrentSelectedTemplate();
+            window.templateManager.refreshCurrentSelectedTemplate(function() {
+                window.setReplyMessage("", "only_client");
+            });
         });
 
         $('.email.extended').removeClass('extended');
