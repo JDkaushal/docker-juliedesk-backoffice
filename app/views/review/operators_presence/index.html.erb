@@ -565,7 +565,7 @@
         $scope.applyPlanningData = function(data) {
             console.log(data);
             $scope.loading = false;
-            alert('Planning updated');
+            alert('Planning update : ' + data.status);
 
             $scope.operatorEmailByHourRate = data.productivity;
             $scope.aiForecast = $.extend($scope.aiForecast, data.forecast);
