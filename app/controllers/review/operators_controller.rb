@@ -68,10 +68,8 @@ class Review::OperatorsController < ReviewController
     counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
 
-
     counts_by_operator_reviewed_flagged = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5], messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_errors_flagged = operator_actions.where(review_notation: [0, 1, 2, 3], messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
-
 
     total_errors_count_for_all_operators = counts_by_operator_errors.inject(0) { |sum, oa| sum + oa.count }
 
@@ -91,13 +89,13 @@ class Review::OperatorsController < ReviewController
     ) / counts_by_operator.map{|c| c['count']}.inject(0) { |k, v| k + v }
 
     operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
-      actions_count = counts_by_operator.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      errors_count = counts_by_operator_errors.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      reviewed_count = counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      actions_count = counts_by_operator.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
+      errors_count = counts_by_operator_errors.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
+      reviewed_count = counts_by_operator_reviewed.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
 
-      actions_flagged_count = counts_by_operator_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      errors_flagged_count = counts_by_operator_errors_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
-      reviewed_flagged_count = counts_by_operator_reviewed_flagged.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count')
+      actions_flagged_count = counts_by_operator_flagged.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
+      errors_flagged_count = counts_by_operator_errors_flagged.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
+      reviewed_flagged_count = counts_by_operator_reviewed_flagged.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
       begin
         error_rate = (
             ( errors_flagged_count * actions_flagged_count * 1.0 / reviewed_flagged_count ) +
@@ -144,11 +142,7 @@ class Review::OperatorsController < ReviewController
   end
 
   def messages_thread_ids_to_review
-    operator_actions = OperatorActionsGroup
-                           .where("initiated_at > ?", DateTime.now - 30.days)
-                           .where("initiated_at < ?", DateTime.now - 1.days)
-                           .where(review_status: nil)
-
+    operator_actions = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 30.days).where(review_status: nil)
 
 
 
