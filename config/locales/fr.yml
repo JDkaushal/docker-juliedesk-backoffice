@@ -345,6 +345,7 @@ fr:
     waiting_for_preference_change: "En attente de changement de préférence"
     to_follow_up: "A relancer"
     priorized: "Prioritaire"
+    priorized_follow_up: "Relance prioritaire"
     principal: "Principal"
   show:
     x_unread_emails:

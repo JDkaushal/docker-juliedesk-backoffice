@@ -126,7 +126,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "status" => nil,
                                                       "to_be_merged"=>false,
                                                       "to_be_merged_operator_id"=>nil,
-                                                      "was_merged"=>false
+                                                      "was_merged"=>false,
+                                                      "follow_up_reminder_date"=>nil
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {

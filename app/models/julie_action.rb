@@ -52,6 +52,22 @@ class JulieAction < ActiveRecord::Base
 
   end
 
+  def get_messages_thread_reminder_date
+    case self.action_nature
+      when JulieAction::JD_ACTION_SUGGEST_DATES
+        get_suggested_dates_barycentre
+      when JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
+        get_suggested_dates_barycentre
+      when JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+        get_suggested_dates_barycentre
+      when JulieAction::JD_ACTION_WAIT_FOR_CONTACT
+        Time.now + 3.days
+      when JulieAction::JD_ACTION_FREE_ACTION
+        Time.now + 3.days
+      else
+        nil
+    end
+  end
 
   def event_data
     message.messages_thread.event_data
@@ -75,5 +91,34 @@ class JulieAction < ActiveRecord::Base
 
   def send_to_founders event_data
 
+  end
+
+  private
+
+  def get_suggested_dates_barycentre
+    # When there are no date_times proposed, it means it was an event creation
+    # So we will not set a reminder
+    if self.date_times == "[]"
+      nil
+    else
+      parsed_dates = JSON.parse(self.date_times).map{|d| d['date']}
+      barycentre = DateTime.parse(parsed_dates.shift)
+      now = Time.now
+
+      parsed_dates.push(now.to_s)
+
+      if parsed_dates.size > 0
+        parsed_dates.each do |date|
+          date = DateTime.parse(date)
+          barycentre = barycentre + (get_days_diff(barycentre, date) / 2).days
+        end
+      end
+
+      barycentre.change(hour: 10, min: 10)
+    end
+  end
+
+  def get_days_diff(date1, date2)
+    (date2 - date1).to_i
   end
 end

@@ -181,7 +181,8 @@
                             cc: window.currentRecipients().cc,
                             done: true,
                             processed_in: Date.now() - window.startedAt,
-                            messages_thread_id: "<%= @messages_thread.id %>"
+                            messages_thread_id: "<%= @messages_thread.id %>",
+                            client_settings: window.getClientSettings()
                         };
 
                         $.ajax({
@@ -365,7 +366,8 @@
                 calendar_login_username: window.currentCalendarLoginUsername,
                 done: true,
                 messages_thread_id: "<%= @messages_thread.id %>",
-                event_booked_date: start.format()
+                event_booked_date: start.format(),
+                client_settings: window.getClientSettings()
             };
 
             if(window.threadComputedData.is_virtual_appointment){
@@ -497,7 +499,8 @@
                 done: true,
                 processed_in: Date.now() - window.startedAt,
                 messages_thread_id: "<%= @messages_thread.id %>",
-                event_booked_date: event_start_date
+                event_booked_date: event_start_date,
+                client_settings: window.getClientSettings()
             }
         });
         window.sendReply();

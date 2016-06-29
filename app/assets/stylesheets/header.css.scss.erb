@@ -1,3 +1,14 @@
+$followUpColor : #FB9053;
+$followUpHoverColor: #DF824C;
+
+@mixin reminder-sprite-base {
+    display: inline-block;
+    width: 16px;
+    height: 18px;
+    background-repeat: no-repeat;
+    background-size: 16px 18px;
+}
+
 .header.jd-global-header {
   position: absolute;
   top: 0;
@@ -41,6 +52,118 @@
     background: #f5f5f5;
     z-index: 10;
     display: none;
+
+    .follow-up-reminder {
+        position: relative;
+        top: 5px;
+        display: inline-block;
+        color: white;
+
+        .reminder-sprite {
+            background-image: url(<%= asset_path 'no_reminder2x.png' %>);
+        }
+
+        &.on {
+            .wrapper {
+                background-color: $followUpColor;
+
+                &.selected {
+                    background-color: $followUpHoverColor;
+                }
+                &:hover {
+                    background-color: $followUpHoverColor;
+                }
+            }
+
+            .reminder-sprite {
+                background-image: url(<%= asset_path 'reminder2x.png' %>);
+            }
+        }
+
+      .wrapper {
+          border-radius: 10px;
+          width: 130px;
+          height: 30px;
+          margin-bottom: 5px;
+          text-align: left;
+          padding-left: 10px;
+          cursor: pointer;
+          position: relative;
+          left: 40px;
+
+          background-color: #B4B4B4;
+
+          &.selected {
+              background-color: #a1a1a1;
+          }
+          &:hover {
+              background-color: #a1a1a1;
+          }
+
+        .date-sprite {
+            display: inline-block;
+            width: 11px;
+            height: 13px;
+            background-repeat: no-repeat;
+            background-image: url(<%= asset_path 'calendar_picker2x.png' %>);
+            background-size: 11px 13px;
+            position: relative;
+            top: -3px;
+        }
+        .value {
+            position: relative;
+            top: -5px;
+        }
+        .reminder-sprite {
+            position: absolute;
+            left: 106px;
+            top: 6px;
+            @include reminder-sprite-base;
+        }
+      }
+        .droplist {
+            position: absolute;
+            left: -65px;
+            width: 236px;
+            background-color: $followUpColor;
+            height: 571px;
+
+            ul {
+                list-style-type: none;
+                padding-left: 0;
+
+                li {
+                    border-bottom: solid 1px;
+
+                    &:hover {
+                        background-color: $followUpHoverColor;
+                    }
+                    .clickable {
+                        cursor: pointer;
+                        padding-right: 5px;
+                    }
+
+                    .no-reminder-sprite {
+                        position: relative;
+                        left: -165px;
+                        top: 3px;
+                        @include reminder-sprite-base;
+                        background-image: url(<%= asset_path 'no_reminder2x.png' %>);
+                    }
+
+                    &.picker {
+                        padding-left: 3px;
+                        padding-top: 3px;
+
+                        .ui-datepicker-inline {
+                            width: 14em;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 
     span.old-thread-status-label {
 

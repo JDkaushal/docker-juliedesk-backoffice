@@ -308,7 +308,7 @@ class MessageClassification < ActiveRecord::Base
         THREAD_STATUS_DOES_NOT_CONCERN_CLIENT,
         THREAD_STATUS_EVENTS_CREATION,
         THREAD_STATUS_OTHER
-    ]
+    ].freeze
   end
 
   def computed_thread_status

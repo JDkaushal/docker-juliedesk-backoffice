@@ -35,23 +35,9 @@ class JulieActionsController < ApplicationController
 
   def update
     print_time "init"
-    julie_action = JulieAction.find params[:id]
+    julie_action = JulieAction.includes(:message_classification).find(params[:id])
     print_time "Find Julie Action"
 
-    if params[:messages_thread_id].present?
-      data = {last_operator_id: session[:operator_id]}
-
-      if params[:deleted_event] == 'true'
-        data.merge!(event_booked_date: nil)
-      else
-        if params[:event_booked_date].present?
-          data.merge!(event_booked_date: DateTime.parse(params[:event_booked_date]))
-        end
-      end
-
-      messages_thread = MessagesThread.find(params[:messages_thread_id])
-      messages_thread.update(data)
-    end
     print_time "Update messages thread"
 
     if params[:timezone].present?
@@ -88,9 +74,41 @@ class JulieActionsController < ApplicationController
      })
     print_time "Updating julie action"
 
+    if params[:messages_thread_id].present?
+      data = {last_operator_id: session[:operator_id]}
+
+      if params[:deleted_event] == 'true'
+        data.merge!(event_booked_date: nil)
+      else
+        if params[:event_booked_date].present?
+          data.merge!(event_booked_date: DateTime.parse(params[:event_booked_date]))
+        end
+      end
+
+      messages_thread = MessagesThread.find(params[:messages_thread_id])
+
+      if params[:client_settings] && params[:client_settings][:auto_follow_up] == 'true'
+        new_reminder = julie_action.get_messages_thread_reminder_date
+
+        if messages_thread.follow_up_reminder_date.present?
+          # We only replace the reminder date if the new one is sooner than the old one or if it is nil
+          if messages_thread.follow_up_reminder_date.nil? || new_reminder.nil? || new_reminder < messages_thread.follow_up_reminder_date
+            data.merge!(follow_up_reminder_date: new_reminder)
+          end
+        else
+          # When no reminder date has been set on the thread, we will anyway replace it with the new_reminder, even if he is nil again
+          data.merge!(follow_up_reminder_date: new_reminder)
+        end
+      end
+
+      messages_thread.update(data)
+    end
+
     if params[:call_instructions].present?
+      puts 'here'
       julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
     end
+
     print_time "Updating message classification"
 
     render json: {

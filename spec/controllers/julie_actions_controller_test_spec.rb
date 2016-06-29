@@ -160,6 +160,49 @@ describe JulieActionsController, :type => :controller do
 
         put :update, id: ja1.id, call_instructions: {target: "interlocutor", targetInfos: {'$$hashKey' => "object:162", displayName: "Pierre Jean (grepolide@gmail.com)", email: "grepolide@gmail.com", guid: 174 ,name: "Pierre Jean"}, support: "", details: "", event_instructions: ""}
       end
+
+      it 'should update the messages_thread follow up date' do
+        allow(Time).to receive(:now).and_return(DateTime.new(2016, 01, 01))
+
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
+
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
+
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mt1.messages << m1
+
+        ja1 = JulieAction.create(message_classification_id: mc1.id, action_nature: JulieAction::JD_ACTION_SUGGEST_DATES)
+
+        put :update, id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'true'}
+
+        mt1.reload
+        expect(mt1.follow_up_reminder_date.to_s).to eq("2016-01-10 10:10:00 UTC")
+      end
+
+      it 'should update the messages_thread follow up date' do
+        allow(Time).to receive(:now).and_return(DateTime.new(2016, 01, 01))
+
+        mc1 = FactoryGirl.create(:message_classification_complete)
+        m1 = FactoryGirl.create(:message_complete)
+
+        mc1.timezone = "Europe/Paris"
+        mc1.message = m1
+        mc1.save
+
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        mt1.messages << m1
+
+        ja1 = JulieAction.create(message_classification_id: mc1.id, action_nature: JulieAction::JD_ACTION_SUGGEST_DATES)
+
+        put :update, id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'false'}
+
+        mt1.reload
+        expect(mt1.follow_up_reminder_date.to_s).to eq('')
+      end
+
     end
   end
 end

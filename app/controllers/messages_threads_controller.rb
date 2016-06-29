@@ -100,6 +100,7 @@ class MessagesThreadsController < ApplicationController
   end
 
   def archive
+
     print_time "init"
     messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
     messages = messages_thread.messages
@@ -131,11 +132,16 @@ class MessagesThreadsController < ApplicationController
                                      })
     print_time "Create and verify OperatorAction"
 
+    should_update_reminder_date = params[:follow_up_reminder_enabled].present?
+
     # Voir pertinence à ce moment, on le fait sur l'index déjà normalement
     if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
       # We should not have to do that now, because we only archive it when no unread messages are present
       # EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
 
+      if should_update_reminder_date
+        messages_thread.update(follow_up_reminder_date: params[:follow_up_reminder_date])
+      end
       # We redirect the operator to the current thread show action, so he can continue to work on the thread
       # And we scroll to the bottom of the page to show the new message to the operator
       redirect_to messages_thread_path(@messages_thread, scroll_to_bottom: true)
@@ -145,7 +151,18 @@ class MessagesThreadsController < ApplicationController
       print_time "Email server archive thread"
 
       messages.update_all(archived: true)
-      messages_thread.update(should_follow_up: false, status: params[:thread_status], in_inbox: false)
+
+      data = {
+          should_follow_up: false,
+          status: params[:thread_status],
+          in_inbox: false
+      }
+
+      if should_update_reminder_date
+        data.merge!(follow_up_reminder_date: params[:follow_up_reminder_date])
+      end
+
+      messages_thread.update(data)
       print_time "Update messages and messages thread"
 
       Pusher.trigger('private-global-chat', 'archive', {

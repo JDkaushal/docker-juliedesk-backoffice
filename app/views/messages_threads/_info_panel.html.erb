@@ -1184,7 +1184,6 @@
               <div class="complaints-count"><%= account.complaints_count %> complaints</div>
           <% end %>
 
-
           <div class="change-account-init-button">Change</div>
           <%= image_tag "ajax-loader.gif", class: "change-account-spinner" %>
           <div class="change-account-container">
@@ -1194,6 +1193,10 @@
 
           <div class="account-details">
             <%= simple_format account.client_info %>
+
+            <% if account.auto_follow_up_enabled %>
+                <div class="auto-follow-up-badge">#Auto Follow up</div>
+            <% end %>
             <% if account.current_notes.present? || account.awaiting_current_notes.present? %>
                 <%
                    notes = account.current_notes

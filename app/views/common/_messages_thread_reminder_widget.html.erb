@@ -1,0 +1,156 @@
+<div class="follow-up-reminder">
+  <div class="wrapper">
+    <span class="date-sprite"></span>
+    <span class="value">none</span>
+    <span class="reminder-sprite"></span>
+  </div>
+  <div class="droplist" style="display: none;">
+    <ul>
+      <li><div class="clickable" data-reminder-value="0"><span class="no-reminder-sprite"></span>none</div></li>
+      <li><div class="clickable" data-reminder-value="3;h">3 hours</div></li>
+      <li><div class="clickable" data-reminder-value="1;d">1 day</div></li>
+      <li><div class="clickable" data-reminder-value="3;d">3 days</div></li>
+      <li><div class="clickable" data-reminder-value="7;d">7 days</div></li>
+      <li class="picker">
+        <div type="text" id="follow_up_reminder_datepicker"></div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<input type="hidden" id="follow_up_reminder_date" name="follow_up_reminder_date">
+<% if @messages_thread.account.auto_follow_up_enabled %>
+    <input type="hidden" id="follow_up_reminder_enabled" name="follow_up_reminder_enabled" value="true">
+<% end %>
+
+<script>
+  var currentFollowUpReminderDate = "<%= local_assigns[:messages_thread].follow_up_reminder_date %>".replace(' UTC', '+0000');
+  var today = moment().utc().format();
+  var reminderEdited = false;
+
+  $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
+  setReminderTextAndStyle();
+
+  var newFollowUpReminderDate = currentFollowUpReminderDate;
+
+  function reminderHasBeenEdited() {
+    return reminderEdited;
+  };
+
+  function setReminderTextAndStyle() {
+      var text = 'none';
+      var currentClass = '';
+      if(currentFollowUpReminderDate != '') {
+        text = moment(currentFollowUpReminderDate).toNow(true);
+          currentClass = 'on';
+      }
+
+      $('.follow-up-reminder').addClass(currentClass);
+      $('.follow-up-reminder .value').text(text);
+  };
+
+  function getCurrentFollowUpRemainderDate() {
+      return newFollowUpReminderDate;
+  };
+
+  function calculateNewReminder(durationToAdd) {
+      var reminderOn;
+      reminderEdited = true;
+
+        if(durationToAdd == "0") {
+            reminderOn = false;
+            newFollowUpReminderDate = '';
+        }else {
+            var durationToAdd = durationToAdd.split(';');
+            newFollowUpReminderDate = moment(today).add(durationToAdd[0], durationToAdd[1]).format();
+            reminderOn = true;
+        }
+
+      if(reminderOn) {
+          $('.follow-up-reminder').addClass('on');
+      } else {
+          $('.follow-up-reminder').removeClass('on');
+      }
+
+      $('#follow_up_reminder_date').val(newFollowUpReminderDate);
+  };
+
+  function setNewReminderDirectly(newDate) {
+      reminderEdited = true;
+      newDate = moment(newDate, "DD-MM-YYYY");
+
+      newFollowUpReminderDate = moment(today);
+
+      newFollowUpReminderDate.year(newDate.year());
+      newFollowUpReminderDate.month(newDate.month());
+      newFollowUpReminderDate.date(newDate.date());
+
+      $('#follow_up_reminder_date').val(newFollowUpReminderDate.format());
+  };
+
+  function toggleReminderUI() {
+      $('.follow-up-reminder .droplist').toggle();
+      $('.follow-up-reminder .wrapper').toggleClass('selected');
+  };
+
+  function hideReminderUI() {
+      $('.follow-up-reminder .droplist').hide();
+      $('.follow-up-reminder .wrapper').removeClass('selected');
+  };
+
+  $(document).ready(function(){
+
+      if(window.threadAccount && window.threadAccount.auto_follow_up_enabled) {
+
+          $('.follow-up-reminder .wrapper').click(function(e) {
+            toggleReminderUI();
+          });
+
+          $('.new-thread-status-select').change(function(e) {
+              var currentSelection = $(this).val();
+
+              if(['other', 'does_not_concern_client', 'handled_in_other_threads'].indexOf(currentSelection) > -1) {
+                  calculateNewReminder('0');
+                  $('.follow-up-reminder .value').text('none');
+              } else if(['scheduling_waiting_for_client', 'scheduling_waiting_for_contact'].indexOf(currentSelection) > -1) {
+                  if(newFollowUpReminderDate == '') {
+                      calculateNewReminder('3;d');
+                      $('.follow-up-reminder .value').text('3 days');
+                  }
+              }
+          });
+
+          $('#follow_up_reminder_datepicker').datepicker({
+              dateFormat: "dd-mm-yy",
+              minDate: new Date,
+              onSelect: function(dateText, inst){
+                  $('.follow-up-reminder .value').text(dateText);
+                  setNewReminderDirectly(dateText);
+                  hideReminderUI();
+              }
+          });
+
+          $('.droplist').on('click', '.clickable', function(e) {
+              calculateNewReminder($(this).data('reminder-value'));
+              $('.follow-up-reminder .value').text($(this).text());
+              hideReminderUI();
+          });
+
+          // To close the form when clicking outside the element
+          $(document).mouseup(function(e) {
+              var container = $('.follow-up-reminder');
+
+              if (!container.is(e.target) // if the target of the click isn't the container...
+                      && container.has(e.target).length === 0) // ... nor a descendant of the container
+              {
+                  hideReminderUI();
+              }
+          });
+      }
+  });
+
+
+
+
+
+</script>

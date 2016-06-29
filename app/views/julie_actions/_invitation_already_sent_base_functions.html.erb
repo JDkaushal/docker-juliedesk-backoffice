@@ -20,7 +20,8 @@
             data['calendar_login_username'] = window.selectedEvents[0].calendar_login_username;
             data['calendar_id'] = window.selectedEvents[0].calId;
             data['event_from_invitation'] = true;
-            data['event_from_invitation_organizer'] = window.selectedEvents[0].organizerEmail;
+            data['event_from_invitation_organizer'] = window.selectedEvents[0].organizerEmail;,
+            data['client_settings'] = window.getClientSettings()
         }
 
         $.ajax({

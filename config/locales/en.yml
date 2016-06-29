@@ -176,6 +176,7 @@ en:
     waiting_for_preference_change: "Waiting for preference change"
     to_follow_up: "To follow-up"
     priorized: "High-priority"
+    priorized_follow_up: "High-priority Follow-up"
     principal: "Principal"
 
   show:

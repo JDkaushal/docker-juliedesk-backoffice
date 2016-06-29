@@ -45,6 +45,9 @@
     };
 
     var cancelEventReplyFunction = function() {
+
+
+
         $.ajax({
             url: "/julie_actions/<%= @julie_action.id %>/update",
             method: "post",
@@ -57,7 +60,8 @@
                 deleted_event: window.actionDeletedEvent,
                 date_times: window.timeSlotsToSuggest,
                 processed_in: Date.now() - window.startedAt,
-                messages_thread_id: "<%= @messages_thread.id %>"
+                messages_thread_id: "<%= @messages_thread.id %>",
+                client_settings: window.getClientSettings()
             }
         });
         window.sendReply();

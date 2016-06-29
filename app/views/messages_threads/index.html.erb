@@ -7,14 +7,22 @@
         $("body").on("click", ".messages-thread-item", function(e) {
             var target = $(this).attr("href");
             var messagesThreadId = $(this).data("id");
-            var messagesThread = _.find($scope.getAllMessagesThreads(), function(thread) {
+            var messagesThread = _.find($scope.allMessagesThreads, function(thread) {
                 return thread.id == messagesThreadId
             });
+            var messagesThreadAccount = messagesThread.account || {};
             e.preventDefault();
             trackActionV2("Click_on_thread", {
                 thread_id: messagesThread.id,
                 thread_messages_count: messagesThread.messages.length,
-                operator_id: window.currentOperatorId
+                operator_id: window.currentOperatorId,
+                from_inbox: messagesThread.queue,
+                vip: messagesThreadAccount.only_support_can_process,
+                sent_for_merging: messagesThread.to_be_merged,
+                admin_only: messagesThreadAccount.only_admin_can_process,
+                support: messagesThread.delegated_to_support,
+                client_email: messagesThread.account_email,
+                current_status: messagesThread.status
             }, function() {
                 window.location = target;
             });
@@ -29,7 +37,11 @@
         $scope.todayRequestCountForClients = {};
 
         $scope.priorizedMessagesThreads = [];
+        $scope.priorizedToFollowUpMessagesThreads = [];
         $scope.messagesThreads = [];
+        $scope.normalToFollowUpmessagesThreads = [];
+
+        $scope.allMessagesThreads = [];
 
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
@@ -43,7 +55,8 @@
                     .success(function(e) {
                         $scope.loading = false;
 
-                        $scope.splitPriorizedThreadFromOthers(e.data);
+                        $scope.dispatchThreads(e.data);
+                        $scope.allMessagesThreads = e.data;
 
                         $scope.operatorsOnPlanning = e.operators_data;
                         $(".header .global-todo-count").html($scope.messagesThreads.length);
@@ -59,16 +72,30 @@
         };
 
         $scope.getAllMessagesThreads = function() {
-            return $scope.messagesThreads.concat($scope.priorizedMessagesThreads);
+            return $scope.messagesThreads.concat($scope.priorizedMessagesThreads).concat($scope.priorizedToFollowUpMessagesThreads).concat($scope.normalToFollowUpmessagesThreads);
         };
 
-        $scope.splitPriorizedThreadFromOthers = function(data) {
+        $scope.dispatchThreads = function(data) {
             var partitionnedThreads = _.partition(data, function(messagesThread) {
                 return messagesThread.account && messagesThread.account.have_priority;
             });
+            var partitionnedPriorized = _.partition(partitionnedThreads[0], function(messagesThread) {
+                messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_prior' : 'prior';
 
-            $scope.priorizedMessagesThreads = partitionnedThreads[0];
-            $scope.messagesThreads = partitionnedThreads[1];
+                return messagesThread.should_follow_up;
+            });
+
+            var partitionnedNormals = _.partition(partitionnedThreads[1], function(messagesThread) {
+                messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_main' : 'main';
+
+                return messagesThread.should_follow_up;
+            });
+
+            $scope.priorizedToFollowUpMessagesThreads = partitionnedPriorized[0];
+            $scope.priorizedMessagesThreads = partitionnedPriorized[1];
+
+            $scope.normalToFollowUpmessagesThreads = partitionnedNormals[0];
+            $scope.messagesThreads = partitionnedNormals[1];
         };
 
         $scope.getTodayRequestsCountsForClients = function() {
@@ -114,20 +141,10 @@
             });
         };
 
-        $scope.toProcessNowMessagesThreads = function() {
-            return _.filter($scope.messagesThreads, function(messagesThread) {
-                return !$scope.shouldFollowUp(messagesThread) && !$scope.shouldProcessLater(messagesThread);
-            });
-        };
-
-        $scope.toFollowUpMessagesThreads = function() {
-          return _.filter($scope.messagesThreads, function(messagesThread) {
-            return $scope.shouldFollowUp(messagesThread);
-          })
-        };
-
         $scope.shouldFollowUp = function(messagesThread) {
-          return (messagesThread.should_follow_up && !messagesThread.in_inbox) ||
+            var isPriority = messagesThread.account && messagesThread.account.have_priority;
+
+          return (messagesThread.should_follow_up && !messagesThread.in_inbox && !isPriority) ||
               ((new RegExp("Récapitulatif hebdomadaire de la semaine du")).test(messagesThread.subject)) ||
               ((new RegExp("weekly recap")).test(messagesThread.subject));
         };
@@ -410,7 +427,7 @@
       </div>
 
 
-      <div class="action-to-do-container" ng-show="toProcessNowMessagesThreads().length == 0 && !loading">
+      <div class="action-to-do-container" ng-show="allMessagesThreads.length == 0 && !loading">
           <div class="nothing-to-do">
             <div class="smiley"></div>
             <div><%= I18n.t("index.nothing_to_do") %></div>
@@ -430,10 +447,19 @@
         </div>
       </div>
 
-      <div ng-show="toProcessNowMessagesThreads().length > 0">
+      <div ng-show="priorizedToFollowUpMessagesThreads.length > 0">
+        <div class="category-title"><%= I18n.t("index.priorized_follow_up") %></div>
+        <div class="messages-threads-container bordered">
+          <div ng-repeat="messagesThread in priorizedToFollowUpMessagesThreads">
+            <%= render "row_in_list" %>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="messagesThreads.length > 0">
         <div class="category-title"><%= I18n.t('index.principal') %></div>
         <div class="messages-threads-container bordered">
-          <div ng-repeat="messagesThread in toProcessNowMessagesThreads()">
+          <div ng-repeat="messagesThread in messagesThreads">
             <%= render "row_in_list" %>
           </div>
         </div>
@@ -448,10 +474,10 @@
         </div>
       </div>
 
-      <div ng-show="toFollowUpMessagesThreads().length > 0">
+      <div ng-show="normalToFollowUpmessagesThreads.length > 0">
         <div class="category-title"><%= I18n.t("index.to_follow_up") %></div>
         <div class="messages-threads-container bordered">
-          <div ng-repeat="messagesThread in toFollowUpMessagesThreads()">
+          <div ng-repeat="messagesThread in normalToFollowUpmessagesThreads">
             <%= render "row_in_list" %>
           </div>
         </div>

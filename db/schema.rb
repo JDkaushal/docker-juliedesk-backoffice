@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160622145304) do
+ActiveRecord::Schema.define(version: 20160629082245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -226,6 +226,7 @@ ActiveRecord::Schema.define(version: 20160622145304) do
     t.boolean  "to_be_merged",             default: false
     t.integer  "to_be_merged_operator_id"
     t.boolean  "was_merged",               default: false
+    t.datetime "follow_up_reminder_date"
   end
 
   create_table "operator_actions", force: true do |t|

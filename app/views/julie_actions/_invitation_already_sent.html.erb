@@ -46,7 +46,8 @@
                         cc: window.currentRecipients().cc,
                         done: true,
                         processed_in: Date.now() - window.startedAt,
-                        messages_thread_id: "<%= @messages_thread.id %>"
+                        messages_thread_id: "<%= @messages_thread.id %>",
+                        client_settings: window.getClientSettings()
                     };
 
                     $.ajax({

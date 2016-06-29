@@ -18,9 +18,12 @@
         });
 
         $('.finish-buttons-finish-button').click(function() {
-            trackActionV2('Click_on_finish', {});
+            trackActionV2('Click_on_finish', {
+                follow_up_date: $('#follow_up_reminder_date').val(),
+                follow_up_edit: reminderHasBeenEdited(),
+                new_status: $('.new-thread-status-select').val()
+            });
         });
-
 
         if(window.lastEmailStatus == "from_me") {
 
@@ -117,6 +120,8 @@
               <option value="<%= thread_status %>" <%= (thread_status == local_assigns[:messages_thread].suggested_current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
           <% end %>
         </select>
+
+        <%= render partial: 'common/messages_thread_reminder_widget', locals: {messages_thread: local_assigns[:messages_thread]} %>
 
         <%= submit_tag "Finish", class: "finish-buttons-finish-button" %>
         <div class="finish-buttons-cancel-button">x</div>

@@ -57,6 +57,16 @@
         $(".calendar-container").addClass("visible");
     };
 
+    window.getClientSettings = function() {
+        var result = {};
+
+        if(window.threadAccount) {
+            result['auto_follow_up'] = window.threadAccount.auto_follow_up_enabled;
+        }
+
+        return result;
+    };
+
     /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
     window.afterEventFetched = function () {
         // Add attendees as recipients if not present already
@@ -269,7 +279,8 @@
                         cc: window.currentRecipients().cc,
                         done: true,
                         processed_in: Date.now() - window.startedAt,
-                        messages_thread_id: "<%= @messages_thread.id %>"
+                        messages_thread_id: "<%= @messages_thread.id %>",
+                        client_settings: window.getClientSettings()
                     }
                 });
                 window.sendReply();
@@ -292,7 +303,8 @@
                         cc: window.currentRecipients().cc,
                         done: true,
                         processed_in: Date.now() - window.startedAt,
-                        messages_thread_id: "<%= @messages_thread.id %>"
+                        messages_thread_id: "<%= @messages_thread.id %>",
+                        client_settings: window.getClientSettings()
                     }
                 });
                 window.sendReply({forward: true});
