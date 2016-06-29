@@ -17,7 +17,7 @@ var TemplateManager = function(params){
     ];
 
     this.templatesVariablesValues = [
-        {value: window.getCurrentAppointment() && window.getCurrentAppointment().title_in_calendar, localized: true}
+        {value: window.getCurrentAppointment && window.getCurrentAppointment() && window.getCurrentAppointment().title_in_calendar, localized: true}
     ];
 
     var host = "https://juliedesk-app.herokuapp.com";
