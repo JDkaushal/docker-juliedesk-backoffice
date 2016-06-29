@@ -33,7 +33,11 @@ class Operator < ActiveRecord::Base
     requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('initiated_at >= ? AND initiated_at <= ?', start_date, end_date)
     requests_handled_for_the_day_count = requests_handled_for_the_day.size
 
-    uniq_clients = requests_handled_for_the_day.map{|r| r.messages_thread.account_email}.uniq
+    uniq_clients = requests_handled_for_the_day.map do |r|
+      if r.messages_thread.present?
+        r.messages_thread.account_email
+      end
+    end.compact.uniq
     productivity_per_hour_today = requests_handled_for_the_day_count.to_f/worked_hours
 
     if productivity_per_hour_today.nan?
