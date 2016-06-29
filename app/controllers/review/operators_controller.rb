@@ -50,8 +50,6 @@ class Review::OperatorsController < ReviewController
     reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
     total_count_week = operator_actions_week.count
 
-
-
     result = EmailServer.search_messages({
                                     after: (reference_date_month).to_s,
                                     labels: "flag",
@@ -113,7 +111,7 @@ class Review::OperatorsController < ReviewController
           name: operator.name,
           level: operator.level_string,
           actions_count: actions_count,
-          coverage: (counts_by_operator_reviewed.select{|c| c['operator_id'] == operator.id}.first.try(:[], 'count') || 0) * 1.0 / (actions_count || 1),
+          coverage: (counts_by_operator_reviewed.find{|c| c['operator_id'] == operator.id}.try(:[], 'count') || 0) * 1.0 / (actions_count || 1),
           errors_percentage: error_rate,
           errors_count: errors_count || 0,
           total_duration_in_seconds: total_duration_in_seconds,
