@@ -1,6 +1,8 @@
 <%= javascript_include_tag 'angular_dates_manager_app'%>
 
 <div id="thread-header-other-entries-container">
+  <div id="selected-events-container"></div>
+
   <div id="dates-suggestion-manager" class="time-slots-to-suggest-list-container" ng-controller="datesSuggestionsManager as datesSuggestionsMng" ng-show="displayDatesSuggestionManager">
     <div class="time-slots-to-suggest-list">
       <%= label_tag :dates_suggestion_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>

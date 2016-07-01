@@ -54,6 +54,14 @@
       <%= text_field_tag :company, "",{'ng-model' => 'attendee.company', class: 'form-control'} %>
     </div>
 
+    <div class="col-xs-12 need-ai-confirmation">
+      <%= label_tag :gender %>
+      <br>
+      <%= radio_button_tag 'gender', "M", true, 'ng-model' =>  'attendee.gender', class: 'gender-radio-btn gender-masculin' %>
+      <%= radio_button_tag 'gender', "F", true, 'ng-model' => 'attendee.gender', class: 'gender-radio-btn gender-feminin' %>
+      <%= radio_button_tag 'gender', "Unknown", true, 'ng-model' => 'attendee.gender', class: 'gender-radio-btn gender-unknown' %>
+    </div>
+
     <div class="col-xs-12" style="padding-left: 0; padding-right:0;margin-top:5px;">
 
       <button type="button" class="ai-confirm-btn" ng-click="attendee.confirmAI()">

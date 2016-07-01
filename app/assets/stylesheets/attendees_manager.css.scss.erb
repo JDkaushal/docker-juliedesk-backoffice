@@ -10,6 +10,70 @@
 
     margin-top: 30px;
 
+
+    .need-ai-confirmation {
+        .gender-radio-btn{
+            &:checked{
+                background-color: $aiControlColor;
+                &:after{
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .gender-radio-btn{
+        height: 35px;
+        width: 36px;
+        display: inline-block;
+
+        -webkit-appearance: none;
+        background-color: white;
+        border: 1px solid #cacece;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+
+        &:checked{
+            background-color: $darkBlue;
+            &:after{
+                color: white;
+            }
+        }
+
+        &:after{
+            font-size: 14px;
+            position: relative;
+            top: 25%;
+            left: 34%;
+            color: black;
+        }
+
+        &.gender-masculin:after{
+            content: 'M';
+        }
+
+        &.gender-feminin:after{
+            content: 'Mme';
+            left: 2%;
+        }
+
+        &.gender-unknown:after{
+            content: '?';
+            left: 40%;
+        }
+
+        .ng-invalid{
+            &.ng-dirty{
+                border-color: initial;
+            }
+        }
+
+        .ng-valid{
+            &.ng-dirty {
+                border-color: initial;
+            }
+        }
+    }
+
     .ai-confirm-btn {
         background-color: $aiControlColor;
         float: right;
@@ -220,6 +284,8 @@
         }
     }
 
+
+
     attendees-form{
 
         .header-row{
@@ -369,58 +435,6 @@
                 background: image-url("contact_checked.png");
                 background-size: 18px 18px;
                 background-repeat: no-repeat;
-            }
-        }
-
-        .gender-radio-btn{
-            height: 35px;
-            width: 36px;
-            display: inline-block;
-
-            -webkit-appearance: none;
-            background-color: white;
-            border: 1px solid #cacece;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
-
-            &:checked{
-                background-color: $darkBlue;
-                &:after{
-                    color: white;
-                }
-            }
-
-            &:after{
-                font-size: 14px;
-                position: relative;
-                top: 25%;
-                left: 34%;
-                color: black;
-            }
-
-            &.gender-masculin:after{
-                content: 'M';
-            }
-
-            &.gender-feminin:after{
-                content: 'Mme';
-                left: 2%;
-            }
-
-            &.gender-unknown:after{
-                content: '?';
-                left: 40%;
-            }
-
-            .ng-invalid{
-                &.ng-dirty{
-                    border-color: initial;
-                }
-            }
-
-            .ng-valid{
-                &.ng-dirty {
-                    border-color: initial;
-                }
             }
         }
 

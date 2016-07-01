@@ -113,8 +113,8 @@
     function redrawSelectedEventsContainer() {
         var datesManager = $('#dates-suggestion-manager').scope();
 
-        var $container = $("#thread-header-other-entries-container");
-        //$container.html("");
+        var $container = $("#selected-events-container");
+        $container.html("");
         datesManager.displayDatesSuggestionManager = false;
 
         var $selectedEventsListContainerDiv = $("<div>").addClass("selected-events-list-container");

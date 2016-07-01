@@ -34,7 +34,8 @@ class Account
                 :language_level,
                 :delay_between_appointments,
                 :have_priority,
-                :auto_follow_up_enabled
+                :auto_follow_up_enabled,
+                :julie_aliases
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -76,6 +77,7 @@ class Account
     account.delay_between_appointments = data['delay_between_appointments']
     account.have_priority = data['have_priority']
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
+    account.julie_aliases = data['julie_aliases']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

@@ -156,12 +156,16 @@ EventTile.prototype.setStartAndEnd = function(mStart, mEnd) {
 };
 EventTile.prototype.getTimezoneId = function() {
     var eventTile = this;
-    if(eventTile.$selector.find("input.event-timezone-picker").val()) {
-        return eventTile.$selector.find("input.event-timezone-picker").val();
+    var timezone = eventTile.timezoneId;
+
+
+    if(eventTile.event.creationTimezone) {
+        timezone = eventTile.event.creationTimezone;
+    }else if(eventTile.$selector.find("input.event-timezone-picker").val()) {
+        timezone = eventTile.$selector.find("input.event-timezone-picker").val();
     }
-    else {
-        return eventTile.timezoneId;
-    }
+
+    return timezone;
 };
 
 EventTile.prototype.getTimezoneIdForEndDate = function() {
@@ -579,6 +583,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
     var eventTile = this;
     var eventData;
 
+    var creationTimezone = ev.start.timezone;
     var startTime = ev.start.dateTime;
     var endTime = ev.end.dateTime;
 
@@ -613,7 +618,10 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         calId: ev.calId,
         private: ev.private,
         owned: ev.owned,
+        // creationTimezone is the timezone returned by the provider and the one effectively used during the creation,
+        // some of them don't return it
         timezoneId: eventTile.getTimezoneId(),
+        creationTimezone: creationTimezone,
         recurringEventId: ev.recurringEventId,
         recurrence: ev.recurrence,
         calendar_login_username: ev.calendar_login_username,
