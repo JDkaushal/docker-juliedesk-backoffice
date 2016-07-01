@@ -19,7 +19,7 @@
 </div>
 
 <input type="hidden" id="follow_up_reminder_date" name="follow_up_reminder_date">
-<% if @messages_thread.account.auto_follow_up_enabled %>
+<% if @messages_thread.account.present? && @messages_thread.account.auto_follow_up_enabled %>
     <input type="hidden" id="follow_up_reminder_enabled" name="follow_up_reminder_enabled" value="true">
 <% end %>
 
