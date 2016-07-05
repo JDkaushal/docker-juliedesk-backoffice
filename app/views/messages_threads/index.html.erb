@@ -81,7 +81,7 @@
                 return $scope.shouldProcessLater(messagesThread);
             });
 
-            $scope.toProcessLaterMessagesThreads = partitionnedToProcessLater[1];
+            $scope.toProcessLaterMessagesThreads = partitionnedToProcessLater[0];
 
             var partitionnedThreadsOnPriority = _.partition(partitionnedToProcessLater[1], function(messagesThread) {
                 messagesThread.queue = 'to_process_later';
