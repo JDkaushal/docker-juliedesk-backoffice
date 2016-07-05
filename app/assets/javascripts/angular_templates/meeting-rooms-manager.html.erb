@@ -1,0 +1,7 @@
+<div class="meeting-rooms-manager-wrapper" ng-show="displayForm">
+  <div class="checkbox-header">
+    <input type="checkbox" ng-model="usingMeetingRoom" ng-disabled="formDisabled"><span>Salle de réunion</span>
+  </div>
+  <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="selectedRoom" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
+  <%= select_tag :meeting_rooms_attendees_count, options_for_select(2..50), {'ng-show' => 'displayAttendeesCountSelect', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+</div>

@@ -123,7 +123,9 @@ describe MessagesThread, :type => :model do
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
                                                         :calendar_login_type => nil,
-                                                        :title_preference=>nil
+                                                        :title_preference=>nil,
+                                                        :using_meeting_room=>nil,
+                                                        :meeting_room_details=>nil
                                                     })
       end
     end
@@ -157,7 +159,9 @@ describe MessagesThread, :type => :model do
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
                                                         :calendar_login_type => nil,
-                                                        :title_preference=>nil
+                                                        :title_preference=>nil,
+                                                        :using_meeting_room=>nil,
+                                                        :meeting_room_details=>nil
                                                     })
       end
     end
@@ -194,7 +198,9 @@ describe MessagesThread, :type => :model do
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
                                                         :calendar_login_type => nil,
-                                                        :title_preference=>nil
+                                                        :title_preference=>nil,
+                                                        :using_meeting_room=>false,
+                                                        :meeting_room_details=>nil
                                                     })
       end
     end
@@ -232,7 +238,9 @@ describe MessagesThread, :type => :model do
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
                                                         :calendar_login_type => nil,
-                                                        :title_preference=>nil
+                                                        :title_preference=>nil,
+                                                        :using_meeting_room=>false,
+                                                        :meeting_room_details=>nil
                                                     })
       end
     end
@@ -271,7 +279,9 @@ describe MessagesThread, :type => :model do
                                                         :last_message_sent_at => nil,
                                                         :calendar_login_username => nil,
                                                         :calendar_login_type => nil,
-                                                        :title_preference=>nil
+                                                        :title_preference=>nil,
+                                                        :using_meeting_room=>false,
+                                                        :meeting_room_details=>nil
                                                     })
       end
     end

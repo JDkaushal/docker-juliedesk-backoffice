@@ -143,11 +143,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         host = "<%= "https://juliedesk-app.herokuapp.com" %>";
     }
 
-
-
     var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
 
-    //console.log("Receiving request: ", request);
+    console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
         $.ajax({
             url: host + "/api/v1/accounts/show?email=" + request.email,
@@ -191,7 +189,11 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 start: request.start,
                 end: request.end,
                 email: request.email,
-                calendar_ids: request.calendar_ids
+                calendar_ids: request.calendar_ids,
+                // This attribute allow us to complement the default calendars to show of a user with others calendars
+                // (Used primarily with the meeting rooms)
+                // As opposed to the calendar_ids attribute that will override them
+                meeting_rooms_to_show: request.meeting_rooms_to_show
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);
@@ -242,7 +244,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 end_timezone: request.end_timezone,
                 utc_offset: request.utc_offset,
                 recurrence: request.recurrence,
-                call_instructions: window.threadComputedData.call_instructions
+                call_instructions: window.threadComputedData.call_instructions,
+                meeting_room: request.meeting_room
             }),
             success: function(e) {
                 if(e.status == "success") {
@@ -302,7 +305,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 original_location: request.original_location,
                 recurring_event: request.recurringEvent,
                 deleting_occurrence: request.deletingOccurrence,
-                call_instructions: window.threadComputedData.call_instructions
+                call_instructions: window.threadComputedData.call_instructions,
+                meeting_room: request.meeting_room
             }),
             success: function(e) {
                 callback(e);

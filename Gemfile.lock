@@ -160,6 +160,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rack-timeout (0.3.2)
+    railroady (1.5.1)
     rails (4.1.15)
       actionmailer (= 4.1.15)
       actionpack (= 4.1.15)
@@ -282,6 +283,7 @@ DEPENDENCIES
   rack-cors
   rack-mini-profiler
   rack-timeout
+  railroady
   rails (= 4.1.15)
   rails-settings-cached
   redis

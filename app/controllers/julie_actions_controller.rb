@@ -105,7 +105,6 @@ class JulieActionsController < ApplicationController
     end
 
     if params[:call_instructions].present?
-      puts 'here'
       julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
     end
 

@@ -29,7 +29,6 @@ function EventTile($selector, params) {
 
     var eventTile = this;
 
-
     eventTile.render();
 }
 EventTile.prototype.getMode = function() {
@@ -741,6 +740,7 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
 
     var eventTile = this;
     var editedEvent = eventTile.getEditedEvent();
+    var meetingRoomManager = $('#meeting-rooms-manager').scope();
 
     var params = {
         email: eventTile.accountEmail,
@@ -756,7 +756,8 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
         end: editedEvent.end.format(),
         start_timezone: editedEvent.start_timezone,
         end_timezone: editedEvent.end_timezone,
-        utc_offset: editedEvent.utc_offset
+        utc_offset: editedEvent.utc_offset,
+        meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
     };
 
     if(!saving_recurring_occurrence) {
@@ -973,6 +974,11 @@ EventTile.prototype.hideRecurrenceContainer = function() {
 
 EventTile.prototype.initActions = function() {
     var eventTile = this;
+    var meetingRoomsNode = $('#meeting-rooms-manager');
+
+    eventTile.$selector.on('change', '#location_nature_event', function(e) {
+        $('#location_nature option[value="' + $('#location_nature_event').val() + '"]').prop('selected', 'selected').trigger('change');
+    });
 
     eventTile.$selector.find("#event-edit-button").click(function() {
         var currentAppointment = window.getCurrentAppointment();
@@ -1005,6 +1011,11 @@ EventTile.prototype.initActions = function() {
 
         }else{
             $('.event-tile-container .location').show();
+            $('#event_tile_location_selector').html($('#location_nature').clone().prop('id', 'location_nature_event')).show();
+            $('#event_tile_location_selector option[value="' + $('#location_nature').val() + '"]').prop('selected', true);
+            $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
+
+            meetingRoomsNode.scope().scaleEventTile();
         }
 
         reProcessTitle();
@@ -1022,13 +1033,15 @@ EventTile.prototype.initActions = function() {
         if(!!scope)
             scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
 
-        vmHelperNode.closest('.event-tile-container').css('height', '545px');
-        vmHelperNode.closest('.created-event-panel').css('height', '515px');
+        $('.event-tile-container').css('height', '545px');
+        $('.created-event-panel').css('height', '515px');
 
         $('.event-tile-container .location').show();
 
         if(window.threadComputedData && !window.threadComputedData.is_virtual_appointment){
             $('#calling-infos-missing').hide();
+            $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();
+            $('#event_tile_location_selector').hide();
         }
 
         if(eventTile.event.beingAdded) {

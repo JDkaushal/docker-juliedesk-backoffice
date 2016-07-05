@@ -93,7 +93,9 @@ class MessageClassification < ActiveRecord::Base
           date_times: last_classification_with_data.try(:date_times),
           thread_status: last_classification_with_data.try(:thread_status),
           follow_up_data:last_classification_with_data.try(:follow_up_data),
-          title_preference: last_classification_with_data.try(:title_preference)
+          title_preference: last_classification_with_data.try(:title_preference),
+          using_meeting_room: last_classification_with_data.try(:using_meeting_room),
+          meeting_room_details: last_classification_with_data.try(:meeting_room_details),
       )
     else
       attendees = []
@@ -108,6 +110,8 @@ class MessageClassification < ActiveRecord::Base
       end
 
       sanitized_timezone = params[:timezone].present? ? params[:timezone].strip : nil
+
+      puts params[:meeting_room_details].inspect
 
       result = self.new(
           locale: params[:locale],
@@ -132,13 +136,16 @@ class MessageClassification < ActiveRecord::Base
           number_to_call: params[:number_to_call],
           operator: params[:operator],
           processed_in: params[:processed_in],
-
           date_times: (params[:date_times].try(:values) || []).to_json,
           thread_status: params[:thread_status],
           follow_up_data: follow_up_data,
-          title_preference: params[:title_preference]
+          title_preference: params[:title_preference],
+          using_meeting_room: params[:using_meeting_room] || false,
+          meeting_room_details: (params[:meeting_room_details] || {}).to_json,
       )
     end
+
+
 
     result.save!
 

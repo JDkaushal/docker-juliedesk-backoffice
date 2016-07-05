@@ -86,6 +86,7 @@
                 window.lastAppointmentType = $("#appointment_nature").val();
 
             setAppointmentValues();
+
             if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $(".linear-form-entry[data-entry-name='appointmentType']:hidden").length == 0 && $("#appointment_nature").val()) {
                 askNextLinearFormEntry();
             }
@@ -98,6 +99,8 @@
                 if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
                     if($('#event-cancel-button').css('display') == 'block'){
                         $('.event-tile-panel .location-container input.location').hide();
+                        $('.event-tile-container .create-event-meeting-rooms-container').hide();
+                        $('#event_tile_location_selector').hide();
                     }
 
                     if($('#event_update_vm_ctrl').length == 0){
@@ -114,13 +117,19 @@
                     if($('#event-cancel-button').css('display') == 'block'){
                         // In case we hide it with some previous calling instructions
                         $('.event-tile-panel .location-container input.location').show();
+                        $('.event-tile-container .create-event-meeting-rooms-container').show();
                         $('.event-tile-panel #calling-infos-missing').hide();
+                        $('#event_tile_location_selector').show();
+
+                        var meetingRoomNode = $('#meeting-rooms-manager');
+
+                        if(meetingRoomNode.length > 0) {
+                            meetingRoomNode.scope().scaleEventTile();
+                        }
                     }
                     var eventUpdateNode = $('#event_update_virtual_meetings_helper');
                     if(eventUpdateNode.length > 0){
                         eventUpdateNode.remove();
-                        $('.event-tile-container').css('height', '545px');
-                        $('.created-event-panel').css('height', '515px');
                     }
                 }
             }
@@ -875,7 +884,7 @@
         $("select#location_nature").append($("<option>").val("Custom").html("Custom"));
         $("select#location_nature").val("Custom");
         if (appointment.default_address) {
-            $("select#location_nature").val(appointment.default_address.label);
+            $("select#location_nature").val(appointment.default_address.label).trigger('change');
         }
     }
 
@@ -935,21 +944,25 @@
         }
     }
 
-    function setAddressValues() {
-        var appointment = _.find(window.threadAccount.appointments, function (appointmentObject) {
-            return appointmentObject.label == $("#appointment_nature").val();
+    function getCurrentAddressObject() {
+        return _.find(window.threadAccount.addresses, function (addressObject) {
+            return addressObject.label == $("select#location_nature").val();
         });
+    }
 
+    function setAddressValues() {
         var address = _.find(window.threadAccount.addresses, function (addressObject) {
             return addressObject.label == $("select#location_nature").val();
         });
 
+        var locationInputs = $("input#location, input#event_location");
+
         if (address) {
-            $("input#location").val(address.address);
+            locationInputs.val(address.address);
             locatePlaceWithGoogle(address.address);
         }
         else {
-            $("input#location").val("");
+            locationInputs.val("");
         }
 
         setNotes();
@@ -972,7 +985,6 @@
 
                 $('#location_coordinates').val(JSON.stringify(coordinates));
             });
-
         }
     }
 
@@ -1315,8 +1327,13 @@
             <%= select_tag :location_nature, "", class: "data-entry form-control" %>
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
             <%= hidden_field_tag :location_coordinates %>
+
+            <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
+
           <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
+
         </div>
+
         <div class="number-to-call-part-container">
           <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
           <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_instruction"><%= I18n.t("common.validate") %></div>

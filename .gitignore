@@ -9,3 +9,4 @@ config/database.yml
 dump.rdb
 test.sh
 coverage
+doc

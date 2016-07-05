@@ -117,8 +117,6 @@
         return <%== initial_recipients[:possible].map{|c| {name: c}}.to_json %>;
     }
 
-
-
     window.currentRecipients = function () {
         return {
             to: $.map($("#recipients-to-input").tokenInput("get"), function (elt) {

@@ -147,8 +147,9 @@
         };
 
         $scope.setEvents = function(email, events) {
+            // We don't take into account the all day events and the events coming from the meeting rooms
             $scope.events[email] = _.reject(events, function(e) {
-                return e.all_day;
+                return e.all_day || e.is_meeting_room;
             });
         };
 
@@ -561,7 +562,7 @@
             _.each(allEvents, function(e) {
 
                 // We don't compute default appointment delay for holiday + unavailable events + already computed travel times events + events having a travel time
-                if(!e.isTravelTime && !e.calculateTravelTime && !e.isNotAvailableEvent) {
+                if(!e.isTravelTime && !e.calculateTravelTime && !e.isNotAvailableEvent && !e.is_meeting_room) {
 
                     $scope.detectAvailableEdges(email, e, {
                         startDateSortedEventsDesc: startDateSortedEventsDesc,

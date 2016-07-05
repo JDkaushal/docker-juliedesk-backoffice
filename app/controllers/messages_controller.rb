@@ -11,6 +11,8 @@ class MessagesController < ApplicationController
     @message = Message.find params[:id]
     @classification = params[:classification]
 
+    @display_calendar = @classification == MessageClassification::GIVE_INFO || @classification == MessageClassification::UPDATE_EVENT
+
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten.map(&:downcase)
@@ -71,6 +73,7 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     print_time "Find message"
     params[:operator] = session[:user_username]
+
     @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
     print_time "create message classification"
     OperatorAction.create_and_verify({

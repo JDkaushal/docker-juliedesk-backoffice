@@ -58,6 +58,46 @@
             // This min height prevents events shorter than 30 min to display correctly
             //min-height: 30px !important;
 
+            &.meeting-room-unavailable {
+                pointer-events: none;
+                z-index: 0 !important;
+                background-color: #E37F7F !important;
+
+                &:hover {
+                    z-index: 999 !important;
+                }
+
+                .fc-event-inner {
+
+                    &.juliedesk-located-event {
+                        border: none !important;
+                    }
+
+                    .fc-event-title {
+
+                        .sprite {
+                            background-image: url(<%= asset_path 'meeting_room.png' %>);
+                            background-size: 15px 14px;
+                            background-repeat: no-repeat;
+                            width: 15px;
+                            height: 14px;
+                            position: relative;
+                            left: -3px;
+                            top: 0px;
+                            display: inline-block;
+                        }
+
+                        .text {
+                            margin-left: 5px;
+                            font-style:italic;
+                            font-weight: 400;
+                        }
+                    }
+                }
+
+
+            }
+
             .travel-time-wrapper {
                 height: 100%;
                 width: 100%;

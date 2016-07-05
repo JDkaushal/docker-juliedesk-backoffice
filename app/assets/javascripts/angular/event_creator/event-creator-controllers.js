@@ -2,12 +2,21 @@
 
     var app = angular.module('event-creator-controllers', []);
 
-    app.controller('datesVerificationManager', ['$scope', '$timeout', function($scope, $timeout) {
+    app.controller('datesVerificationManager', ['$scope', '$timeout', '$rootScope', function($scope, $timeout, $rootScope) {
         $scope.selectedDateRaw = undefined;
         $scope.rawDatesToCheck = [];
         $scope.datesToCheck = [];
         $scope.datesManager = undefined;
         $scope.selectedDate = undefined;
+
+        $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
+
+            if(newVal != oldVal) {
+                // We will listen to this event in the meeting rooms manager to check for the rooms disponibilities
+                $scope.$emit('datesVerifNewSelectedDate', newVal);
+            }
+
+        });
 
         $scope.init = function() {
             $scope.setRawDatesFromData();

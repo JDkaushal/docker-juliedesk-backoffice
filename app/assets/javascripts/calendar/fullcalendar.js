@@ -588,6 +588,7 @@ function Calendar(element, instanceOptions) {
 	
 	
 	function render(inc) {
+
 		if (!content) {
 			initialRender();
 		}
@@ -745,7 +746,7 @@ function Calendar(element, instanceOptions) {
 		if (inc) {
 			date = currentView.incrementDate(date, inc);
 		}
-		currentView.render(date.clone()); // the view's render method ONLY renders the skeleton, nothing else
+        currentView.render(date.clone()); // the view's render method ONLY renders the skeleton, nothing else
 		setSize();
 		unfreezeContentHeight();
 		(currentView.afterRender || noop)();

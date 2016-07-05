@@ -279,7 +279,9 @@ class MessagesThread < ActiveRecord::Base
           last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
           calendar_login_username: computed_calendar_login_username,
           calendar_login_type: computed_calendar_login_type,
-          location_coordinates: last_message_classification.try(:location_coordinates)
+          location_coordinates: last_message_classification.try(:location_coordinates),
+          using_meeting_room: last_message_classification.try(:using_meeting_room),
+          meeting_room_details: last_message_classification.try(:meeting_room_details)
       }
     end
 

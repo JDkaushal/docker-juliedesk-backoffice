@@ -31,7 +31,19 @@
             </div>
         </div>
     </div>
-    
+
+    <div class="create-event-meeting-rooms-container">
+      <div class="header">
+        <input type="checkbox"><span class="text">Réservation de salle de réunion</span>
+      </div>
+
+      <select class="create_event_room_selection_select form-control"></select>
+
+      <div class="meeting_room_warning_area warning-area">
+        <span class="sprite"></span><span class="meeting_room_non_available_msg text">Salle de réunion non disponible</span>
+      </div>
+    </div>
+
     <button id="create-event-button" class="btn btn-success btn-block" ng-disabled="eventActionsDisabled()">
       <%= I18n.t("info_box.create_event") %>
     </button>

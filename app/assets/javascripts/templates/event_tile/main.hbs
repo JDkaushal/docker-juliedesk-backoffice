@@ -36,7 +36,22 @@
 
         <div class="location-container">
             <div class="location-icon"></div>
-            <input class="location"/>
+            <div id="event_tile_location_selector"></div>
+            <input class="location" id="event_location"/>
+
+            <div class="create-event-meeting-rooms-wrapper" style="display: none;">
+                <div class="create-event-meeting-rooms-container">
+                    <div class="header">
+                        <input type="checkbox"><span class="text">Réservation de salle de réunion</span>
+                    </div>
+                    <div class="selection-area">
+                        <select class="create_event_room_selection_select form-control"></select>
+                        <div class="meeting_room_warning_area warning-area">
+                            <span class="sprite"></span><span class="meeting_room_non_available_msg text">Salle de réunion non disponible</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
 

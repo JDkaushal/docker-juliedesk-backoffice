@@ -4,7 +4,7 @@
                                                          classification: @classification,
                                                          accounts_cache_light: @accounts_cache_light
                                                  } %>
-<script src="/javascripts/chrono.min.js"></script>
+
 <script>
   window.processingMessageThreadId = <%= @messages_thread.id %>;
   window.messageInterpretations = <%== @message.message_interpretations.to_json %>;
@@ -27,48 +27,51 @@
 
   window.messageText = '<%= CGI.escape(@message.server_message['text']).gsub('+', '%20') %>';
 
-  window.activateCalendarWithParams = function (calendarParams) {
-      calendarParams.height = $(".calendar-container").height();
-      calendarParams.other_emails = window.otherAccountEmails;
-      if(window.threadAccount) {
-          calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
-      }
-      calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
+  <% if @display_calendar %>
 
-      calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
-          return data.attendee_email;
-      });
+      window.activateCalendarWithParams = function (calendarParams) {
+          calendarParams.height = $(".calendar-container").height();
+          calendarParams.other_emails = window.otherAccountEmails;
+          if(window.threadAccount) {
+              calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
+          }
+          calendarParams.additional_timezone_ids = [window.threadComputedData.timezone];
 
-      calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
-      calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
-
-      window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
-      $(".calendar-container").addClass("visible");
-  };
-
-  window.drawCalendarCallback = function(){
-      <% if @classification == MessageClassification::GIVE_INFO %>
-      $("#show-calendar-button").click(function () {
-          trackActionV2("Click_on_open_calendar", {
-              calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
+          calendarParams.constraintsData = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+              return data.attendee_email;
           });
 
+          calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
+          calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
+
+          window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+          $(".calendar-container").addClass("visible");
+      };
+
+      window.drawCalendarCallback = function(){
           window.activateCalendarWithParams({
-              mode: "free_calendar",
+              mode: "create_event",
               date_times: [],
               email: "<%= @message.messages_thread.account_email %>",
               duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
           });
+          window.currentCalendar.redrawFullCalendar();
+      };
+
+  $(document).ready(function() {
+      $("#show-calendar-button").click(function () {
+          trackActionV2("Click_on_open_calendar", {
+              calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
+          });
           $(".calendar-container").removeClass("minimized");
+          window.currentCalendar.redrawFullCalendar();
       });
-      <% end %>
-  };
+  });
+  <% end %>
 
   function emailSender() {
       return <%== {name: @message.get_email_sender}.to_json %>;
   }
-
-
 </script>
 
 <div class="fixed-columns">
@@ -77,7 +80,7 @@
   <div class="left-column">
 
     <%= render partial: "common/classification_action_header", locals: {messages_thread: @messages_thread} %>
-    <% if @classification == MessageClassification::GIVE_INFO %>
+    <% if @display_calendar %>
         <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
         <%= render template: "calendar/calendar" %>
     <% end %>

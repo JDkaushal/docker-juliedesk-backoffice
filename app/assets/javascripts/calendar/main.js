@@ -51,6 +51,7 @@ function Calendar($selector, params) {
     });
     calendar.$selector.on("change", ".calendar-item input[type='checkbox']", function (e) {
         calendar.changeShowCalendarCheckbox(e);
+        calendar.refreshMeetingRoomSelectOptions();
     });
     calendar.$selector.find("#minimize-button").click(function(e) {
         trackActionV2('Click_on_close_calendar');
@@ -96,6 +97,10 @@ function Calendar($selector, params) {
     });
 }
 
+Calendar.prototype.refreshMeetingRoomSelectOptions = function() {
+    $('#meeting-rooms-manager').scope().populateCreateEventRoomSelect();
+};
+
 Calendar.prototype.selectEvent = function (event) {
     var calendar = this;
     if(event.isSelected) {
@@ -124,13 +129,16 @@ Calendar.prototype.getMode = function () {
 Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
     var calendar = this;
     var accountPreferences = calendar.accountPreferences[calendarItem.email];
+    var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
 
     return (
         accountPreferences &&
         accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
         accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
         ) ||
-        calendar.isFakeCalendarId(calendarItem.id);
+        calendar.isFakeCalendarId(calendarItem.id) ||
+        // If the calendar is a meeting room that we should display
+        meetingRoomsToDisplayIds.indexOf(calendarItem.id) >- 1;
 
 };
 
@@ -162,9 +170,11 @@ Calendar.prototype.generateDelayTitle = function() {
     }).delay_between_appointments;
 
     return "Delay: " + delayB + "'";
-}
+};
+
 Calendar.prototype.redrawCalendarsListPopup = function () {
     var calendar = this;
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
     var $calendarsListPopup = $("#calendars-list-popup");
     $calendarsListPopup.find(".calendars").html("");
@@ -174,7 +184,8 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         calendar.$selector.find("#weekends-checkbox").prop("checked", true);
     }
 
-    var groupedCalendars = _.groupBy(calendar.calendars, 'email');
+    var groupedCalendars = _.groupBy(calendar.calendars, 'groupEmail');
+
     for(var email in groupedCalendars) {
         var groupedCalendarsByCalendarLogin = _.groupBy(groupedCalendars[email], 'calendar_login_username');
         for(var calendarLoginUsername in groupedCalendarsByCalendarLogin) {
@@ -183,13 +194,21 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
             $calendarsListPopup.find(".calendars").append($("<div>").addClass("account-email-category").html(categoryName));
             $(groupedCalendarsByCalendarLogin[calendarLoginUsername]).each(function (k, calendarItem) {
                 var $div = $("<div>").addClass("calendar-item");
-                $div.data("email", email);
+                $div.data("email", calendarItem.email);
                 $div.data("calendar-id", calendarItem.id);
                 $div.data("calendar-login-username", calendarItem.calendar_login_username);
+                $div.data("calendar-summary", calendarItem.summary);
+
+                // For meeting rooms
+                $div.data("room-capacity", calendarItem.capacity);
+
+                if(calendarItem.is_resource) {
+                    $div.addClass('is-meeting-room');
+                }
 
                 var $checkbox = $("<input type='checkbox'>");
 
-                if(email != calendar.initialData.email) {
+                if(calendarItem.email != calendar.initialData.email) {
                     $checkbox.prop("disabled", "disabled");
                 }
 
@@ -200,12 +219,12 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
                 $div.append($("<div>").addClass('circle').css({backgroundColor: calendar.getCalendarColor(calendarItem)}));
                 $div.append($("<span>").addClass('calendar-name').html(calendarItem.summary));
 
-
                 $calendarsListPopup.find(".calendars").append($div);
             });
         }
     }
 
+    meetingRoomsManager.populateCreateEventRoomSelect();
 };
 
 Calendar.prototype.allEmails = function() {
@@ -236,7 +255,6 @@ Calendar.prototype.fetchCalendars = function (callback) {
     var calendar = this;
     calendar.showLoadingSpinner();
 
-
     var allEmails = calendar.allEmails();
     var accountsToWait = 0;
     calendar.calendars = [];
@@ -248,10 +266,34 @@ Calendar.prototype.fetchCalendars = function (callback) {
             action: "calendars",
             email: email
         }, function (response) {
-            for(var j=0; j <response.items.length; j++) {
+            for(var j=0; j < response.items.length; j++) {
                 var calendarItem = response.items[j];
                 calendarItem.email = response.email;
+                if(calendarItem.is_resource) {
+                    calendarItem.groupEmail = 'Meeting Rooms';
+                }else {
+                    calendarItem.groupEmail = response.email;
+                }
                 calendar.calendars.push(calendarItem);
+            }
+
+            // Here we are setting the Ews meeting rooms in the calendars property to handle them as normal calendars
+            // This way they will appear in the meeting rooms section in the calendar selection Popup of the display calendar
+            if(getCurrentAddressObject) {
+
+                var currentAddress = getCurrentAddressObject();
+
+                if(currentAddress) {
+
+                    var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
+                        mR.is_resource = true;
+                        mR.groupEmail = 'Meeting Rooms';
+                        mR.email = calendar.initialData.email;
+                        return mR.calendar_login_username == "ews_company_meeting_room";
+                    });
+
+                    calendar.calendars = calendar.calendars.concat(ewsMeetingRooms);
+                }
             }
 
             accountsToWait --;
@@ -396,13 +438,27 @@ Calendar.prototype.redrawFullCalendar = function() {
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
     var unavailableEvents = [];
     var allEvents = [];
+    var meeting_rooms_to_show = {};
+
+    if(window.threadAccount) {
+        if(accountPreferencesHash.email == window.threadAccount.email) {
+            _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function(c) {
+               var calendarItemNode = $(c).closest('.calendar-item');
+
+                meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
+                meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
+            });
+        }
+    }
 
     CommonHelpers.externalRequest({
         action: "events",
         email: accountPreferencesHash.email,
         calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
+        meeting_rooms_to_show: meeting_rooms_to_show,
         start: start,
         end: end
     }, function (response) {
@@ -418,6 +474,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             allEvents.push(unavailableEvents);
 
             travelTimeCalculator.processForClient(accountPreferencesHash, _.flatten(allEvents));
+        }
+
+        if(meetingRoomsManager) {
+            meetingRoomsManager.checkIfDetectAvailabilities();
         }
 
         if(callback) callback();
@@ -638,6 +698,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         allDay: ev.all_day,
         isTravelTime: ev.isTravelTime,
         isDefaultDelay: ev.isDefaultDelay,
+        // Allow to know if the event is from a meeting room
+        isMeetingRoom: ev.is_meeting_room,
         travelTime: ev.travelTime,
         eventInfoType: ev.eventInfoType,
         travelTimeGoogleDestinationUrl: ev.travelTimeGoogleDestinationUrl,
@@ -688,25 +750,45 @@ Calendar.prototype.computeIsLocated = function (event) {
 
 Calendar.prototype.addAllCals = function (calEvents) {
     var calendar = this;
+    calendar.meetingRoomsEvents = {};
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+
+    var meetingRoomsIds = [];
+    if(meetingRoomsManager) {
+        _.each(meetingRoomsManager.availableRooms, function(mR) {
+            meetingRoomsIds.push(mR.id);
+            calendar.meetingRoomsEvents[mR.id] = [];
+        });
+    }
+
     for (var k = 0; k < calEvents.length; k++) {
         var ev = calEvents[k];
 
-        var x = 0;
-        for (var i = 0; i < calendar.calendars.length; i++) {
-            if (calendar.calendars[i].id == ev.calId) {
-                x = i;
-                break;
-            }
-        }
+        //var x = 0;
+        //for (var i = 0; i < calendar.calendars.length; i++) {
+        //    if (calendar.calendars[i].id == ev.calId) {
+        //        x = i;
+        //        break;
+        //    }
+        //}
         var eventData = calendar.eventDataFromEvent(ev);
 
-        calendar.eventDataX.push(eventData);
+        // We don't add the individual meeting rooms events to the displayed events on the calendar
+        if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
+            calendar.meetingRoomsEvents[eventData.calId].push(eventData);
+        } else {
+            calendar.eventDataX.push(eventData);
+        }
     }
+
+    calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(calendar.meetingRoomsEvents));
+
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
     calendar.eventDataX = [];
 };
 Calendar.prototype.addCal = function (calEvents) {
     var calendar = this;
+
     for (var k = 0; k < calEvents.length; k++) {
         var ev = calEvents[k];
         var eventData = calendar.eventDataFromEvent(ev);
@@ -767,7 +849,7 @@ Calendar.prototype.getCheckedMainAccountCalendarIds = function(e) {
 
     var result = {};
 
-    $(".calendar-item input[type='checkbox']:checked").each(function() {
+    $(".calendar-item:not(.is-meeting-room) input[type='checkbox']:checked").each(function() {
         var $calendarItem = $(this).closest(".calendar-item");
         if($calendarItem.data("email") == calendar.initialData.email) {
             var calendarId = $calendarItem.data("calendar-id");

@@ -210,9 +210,10 @@
             var eventCreatorManager = $('#datesVerificationsManager').scope();
 
             if(window.threadComputedData.client_agreement) {
-                trackActionV2('Click_on_create_event', {ux_element: 'standCE'});
-
                 var currentTimezone = window.currentCalendar.getCalendarTimezone();
+                var meetingRoomManager = $('#meeting-rooms-manager').scope();
+
+                trackActionV2('Click_on_create_event', {ux_element: 'standCE', meeting_room: meetingRoomManager.usingMeetingRoom});
 
                 window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
 
@@ -272,7 +273,8 @@
                     end: end.format(),
                     start_timezone: currentTimezone,
                     end_timezone: currentTimezone,
-                    calendar_login_username: window.threadComputedData.calendar_login_username
+                    calendar_login_username: window.threadComputedData.calendar_login_username,
+                    meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
                 };
 
                 if(isPostpone && !window.currentEventFromInvitation) {
@@ -322,7 +324,6 @@
     });
 
     var createOrUpdateEvent = function(start, requestParams) {
-
         CommonHelpers.externalRequest(requestParams, function (e) {
 
             var eventCreatorManager = $('#datesVerificationsManager').scope();

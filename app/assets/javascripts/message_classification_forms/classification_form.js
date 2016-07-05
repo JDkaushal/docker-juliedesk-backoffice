@@ -112,6 +112,7 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
 
 window.classificationForms.classificationForm.prototype.sendForm = function () {
     var classificationForm = this;
+    var meetingRoomManager = $('#meeting-rooms-manager').scope();
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
@@ -148,7 +149,9 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         number_to_call: $("#number_to_call").val(),
         date_times: classificationForm.getSuggestedDateTimes(),
         processed_in: Date.now() - classificationForm.startedAt,
-        title_preference: $('.title-preferences-checkbox:checked').val()
+        title_preference: $('.title-preferences-checkbox:checked').val(),
+        using_meeting_room: meetingRoomManager.getUsingMeetingRoom() || undefined,
+        meeting_room_details: meetingRoomManager.getMeetingRoomDetails() || undefined
     };
 
     if(window.currentEventTile) {

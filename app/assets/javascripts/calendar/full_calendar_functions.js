@@ -241,8 +241,11 @@ Calendar.prototype.fullCalendarInit = function() {
     var defaultDate = moment();
     var travelTimeBackgroundColor = '#C27938';
     var travelTimeIsWarningBackgroundColor = '#CA6A65';
+    var noMeetingRoomBackgroundColor = '#E37F7F';
     var travelTimeOpacity = '0.80';
     var currentAllDayMasks = [];
+
+    var columnWidth, columnWidthInt, offsetRowInt;
 
     if(calendar.eventsToCheck.length > 0 && calendar.getMode() == "create_event") {
         defaultDate = $.map(calendar.eventsToCheck, function(v, k) {
@@ -333,8 +336,6 @@ Calendar.prototype.fullCalendarInit = function() {
 
                 //$element.wrap('<a href="' + event.travelTimeGoogleDestinationUrl + '" target="_blank"></a>');
 
-
-
                 if(event.eventInfoType == 'before') {
                     travelTimeInnerDiv.css('padding-top', $element.height() - travelTimeInnerDiv.height());
                     $element.css('border-radius', '7px 7px 0px 0px');
@@ -378,6 +379,18 @@ Calendar.prototype.fullCalendarInit = function() {
                 }
             }
 
+            if(event.isMeetingRoom) {
+                var currentPos = $element.position().left;
+                //var meetingRoomBusyDiv = $('<div class="meeting-room-busy"><div class="fc-event-title">No meeting Rooms</div></div>');
+                $element.addClass('meeting-room-unavailable');
+                //$element.append(meetingRoomBusyDiv);
+                $element.find('.fc-event-title').html('<span class="sprite"></span><span class="text">no meeting rooms</span>');
+                $element.width(columnWidth);
+
+                // Allow to stick the meeting room label on the left of the row
+                $element.css('left', (columnWidthInt * parseInt(currentPos / columnWidthInt) + offsetRowInt) + 'px');
+            }
+
             if(event.isLocated && event.location) {
                 var eventLocation = $('<div class="fc-event-location"></div>');
                 var locationText = $('<span class="location"></span>');
@@ -387,7 +400,6 @@ Calendar.prototype.fullCalendarInit = function() {
 
                 eventLocation.append(locationSprite).append(locationText);
                 $element.find('.fc-event-inner').append(eventLocation);
-
             }
 
             if(event.allDay && (event.calendar_login_type != 'IcloudLogin' || event.calendar_login_type != 'CaldavLogin')) {
@@ -448,6 +460,9 @@ Calendar.prototype.fullCalendarInit = function() {
             currentAllDayMasks = [];
         },
         viewRender: function(view, element) {
+            columnWidth = $('.fc-col3.fc-widget-header').css('width');
+            columnWidthInt = parseInt(columnWidth);
+            offsetRowInt = parseInt($('.fc-agenda-axis').css('width'));
             calendar.fullCalendarViewRender(view, element);
         },
         eventClick: function(event, jsEvent, view) {
