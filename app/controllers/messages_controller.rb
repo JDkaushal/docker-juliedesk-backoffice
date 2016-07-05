@@ -192,6 +192,9 @@ class MessagesController < ApplicationController
 
     @message.messages_thread.delay.compute_messages_request_at
 
+    # We set should follow up to false when we send the email
+    @message.messages_thread.update(should_follow_up: false)
+
     @julie_action = JulieAction.find params[:julie_action_id]
     @julie_action.update_attribute :server_message_id, @new_server_message_id
 
