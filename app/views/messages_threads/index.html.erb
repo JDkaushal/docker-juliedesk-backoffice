@@ -40,6 +40,7 @@
         $scope.priorizedToFollowUpMessagesThreads = [];
         $scope.messagesThreads = [];
         $scope.normalToFollowUpmessagesThreads = [];
+        $scope.toProcessLaterMessagesThreads = [];
 
         $scope.allMessagesThreads = [];
 
@@ -72,30 +73,38 @@
         };
 
         $scope.getAllMessagesThreads = function() {
-            return $scope.messagesThreads.concat($scope.priorizedMessagesThreads).concat($scope.priorizedToFollowUpMessagesThreads).concat($scope.normalToFollowUpmessagesThreads);
+            return $scope.messagesThreads.concat($scope.priorizedMessagesThreads).concat($scope.priorizedToFollowUpMessagesThreads).concat($scope.normalToFollowUpmessagesThreads).concat($scope.toProcessLaterMessagesThreads);
         };
 
         $scope.dispatchThreads = function(data) {
-            var partitionnedThreads = _.partition(data, function(messagesThread) {
+            var partitionnedToProcessLater = _.partition(data, function(messagesThread) {
+                return $scope.shouldProcessLater(messagesThread);
+            });
+
+            $scope.toProcessLaterMessagesThreads = partitionnedToProcessLater[1];
+
+            var partitionnedThreadsOnPriority = _.partition(partitionnedToProcessLater[1], function(messagesThread) {
+                messagesThread.queue = 'to_process_later';
                 return messagesThread.account && messagesThread.account.have_priority;
             });
-            var partitionnedPriorized = _.partition(partitionnedThreads[0], function(messagesThread) {
+
+            var partitionnedPriorizedThreadsOnFollowUp = _.partition(partitionnedThreadsOnPriority[0], function(messagesThread) {
                 messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_prior' : 'prior';
 
                 return messagesThread.should_follow_up;
             });
 
-            var partitionnedNormals = _.partition(partitionnedThreads[1], function(messagesThread) {
+            var partitionnedNormalsThreadsOnFollowUp = _.partition(partitionnedThreadsOnPriority[1], function(messagesThread) {
                 messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_main' : 'main';
 
                 return messagesThread.should_follow_up;
             });
 
-            $scope.priorizedToFollowUpMessagesThreads = partitionnedPriorized[0];
-            $scope.priorizedMessagesThreads = partitionnedPriorized[1];
+            $scope.priorizedToFollowUpMessagesThreads = partitionnedPriorizedThreadsOnFollowUp[0];
+            $scope.priorizedMessagesThreads = partitionnedPriorizedThreadsOnFollowUp[1];
 
-            $scope.normalToFollowUpmessagesThreads = partitionnedNormals[0];
-            $scope.messagesThreads = partitionnedNormals[1];
+            $scope.normalToFollowUpmessagesThreads = partitionnedNormalsThreadsOnFollowUp[0];
+            $scope.messagesThreads = partitionnedNormalsThreadsOnFollowUp[1];
         };
 
         $scope.getTodayRequestsCountsForClients = function() {
@@ -135,11 +144,11 @@
             }
         };
 
-        $scope.toProcessLaterMessagesThreads = function() {
-            return _.filter($scope.messagesThreads, function(messagesThread) {
-               return !$scope.shouldFollowUp(messagesThread) && $scope.shouldProcessLater(messagesThread);
-            });
-        };
+//        $scope.toProcessLaterMessagesThreads = function() {
+//            return _.filter($scope.messagesThreads, function(messagesThread) {
+//               return !$scope.shouldFollowUp(messagesThread) && $scope.shouldProcessLater(messagesThread);
+//            });
+//        };
 
         $scope.shouldFollowUp = function(messagesThread) {
             var isPriority = messagesThread.account && messagesThread.account.have_priority;
@@ -465,10 +474,10 @@
         </div>
       </div>
 
-      <div ng-show="isAdmin && toProcessLaterMessagesThreads().length > 0">
+      <div ng-show="isAdmin && toProcessLaterMessagesThreads.length > 0">
         <div class="category-title"><%= I18n.t("index.to_process_later") %></div>
         <div class="messages-threads-container bordered">
-          <div ng-repeat="messagesThread in toProcessLaterMessagesThreads()">
+          <div ng-repeat="messagesThread in toProcessLaterMessagesThreads">
             <%= render "row_in_list" %>
           </div>
         </div>
