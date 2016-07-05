@@ -153,7 +153,6 @@ class MessagesThreadsController < ApplicationController
       messages.update_all(archived: true)
 
       data = {
-          should_follow_up: false,
           status: params[:thread_status],
           in_inbox: false
       }

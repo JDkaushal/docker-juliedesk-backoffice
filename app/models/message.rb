@@ -189,8 +189,8 @@ class Message < ActiveRecord::Base
 
     #First, remove from inbox all messages_thread that should not be in inbox anymore
     MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
-    #Then, put in inbox the others
-    MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true)
+    #Then, put in inbox the others, remove should follow up ones as they have received a new message
+    MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true, should_follow_up: false)
 
     server_thread_ids_to_update = []
     server_thread_ids_to_create = []
@@ -225,7 +225,7 @@ class Message < ActiveRecord::Base
     server_threads.each do |server_thread|
       should_update_thread = true
 
-      if server_thread['subject'].include? "MB5jB- Julie alias test"
+      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze
         should_update_thread = false
       else
         messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
