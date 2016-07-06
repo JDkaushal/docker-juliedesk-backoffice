@@ -545,7 +545,8 @@
                             error_message: response.data.message,
                             contact_email_address: a.email,
                             message_text: messageText,
-                            company_name_found: response.data.company
+                            company_name_found: response.data.company,
+                            extra_checks: {database_id: response.data.database_id, database_domain: response.data.database_domain, security_check_is_empty: response.data.security_check_is_empty}
                         });
                     }, function error(response) {
                         console.log(response);

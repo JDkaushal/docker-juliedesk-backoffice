@@ -254,7 +254,7 @@ class ClientContactsController < ApplicationController
     record = CompanyDomainAssociation.find_by(domain: domain)
 
     if record.present?
-      result = {identification: 'backoffice_database', company: record.company_name}
+      result = {identification: 'backoffice_database', company: record.company_name, database_id: record.id, database_domain: domain, security_check_is_empty: record.company_name.blank?}
 
     else
       result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
