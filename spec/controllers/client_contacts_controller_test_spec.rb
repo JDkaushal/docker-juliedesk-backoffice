@@ -280,14 +280,14 @@ describe ClientContactsController, :type => :controller do
 
     describe 'association present in database' do
       it 'should make the call to the ai then save the result in database' do
-        CompanyDomainAssociation.create(domain: 'domain.com', company_name: 'company')
+        assoc = CompanyDomainAssociation.create(domain: 'domain.com', company_name: 'company')
 
         @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
 
         expect_any_instance_of(AiProxy).not_to receive(:build_request)
         response = post :ai_get_company_name, {contact_address: 'address@domain.com', message_text: 'fgtrgerferfer'}
 
-        expect(JSON.parse(response.body)).to eq({"identification"=>"backoffice_database", "company"=>"company"})
+        expect(JSON.parse(response.body)).to eq({"identification"=>"backoffice_database", "company"=>"company", "database_id"=>assoc.id, "database_domain"=>assoc.domain, "security_check_is_empty"=>false})
       end
     end
 
