@@ -179,8 +179,10 @@ class ClientContactsController < ApplicationController
       if contact_params['companyUpdated']
         domain = contact_params['email'].split('@')[-1]
         company_domain_assoc = CompanyDomainAssociation.find_or_initialize_by(domain: domain)
-        company_domain_assoc.company_name = contact_params['company']
-        company_domain_assoc.save
+        if company_domain_assoc.is_editable
+          company_domain_assoc.company_name = contact_params['company']
+          company_domain_assoc.save
+        end
       end
     end
 
