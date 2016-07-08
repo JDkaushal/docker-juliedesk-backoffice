@@ -478,6 +478,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
     var currentTimezone = calendar.getCalendarTimezone();
     var usingAnotherTimeZone = window.threadAccount.default_timezone_id != currentTimezone;
 
+    var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual
+
     for (var day in accountPreferencesHash.unbooking_hours) {
         var slots = accountPreferencesHash.unbooking_hours[day];
         var mCurrentTime = moment(startTime);
@@ -497,16 +499,18 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
 
-                    if(usingAnotherTimeZone) {
-                        eventStartTime.tz(currentTimezone);
-                        eventEndTime.tz(currentTimezone);
-                    }
+                    if (virtualAppointment) {
+                        if(usingAnotherTimeZone) {
+                            eventStartTime.tz(currentTimezone);
+                            eventEndTime.tz(currentTimezone);
+                        }
 
-                    if(accountPreferencesHash.default_timezone_id != currentTimezone) {
-                        eventStartTime.tz(currentTimezone);
-                        eventEndTime.tz(currentTimezone);
+                        if(accountPreferencesHash.default_timezone_id != currentTimezone) {
+                            eventStartTime.tz(currentTimezone);
+                            eventEndTime.tz(currentTimezone);
+                        }
                     }
-
+                    
                     var event_title = "Not available";
 
                     if(accountPreferencesHash.full_name) {
