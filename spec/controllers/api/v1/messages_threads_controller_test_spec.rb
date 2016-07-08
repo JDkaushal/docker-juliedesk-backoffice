@@ -127,7 +127,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "to_be_merged"=>false,
                                                       "to_be_merged_operator_id"=>nil,
                                                       "was_merged"=>false,
-                                                      "follow_up_reminder_date"=>nil
+                                                      "follow_up_reminder_date"=>nil,
+                                                      "last_relevant_classification_id"=>nil
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
@@ -177,7 +178,9 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "call_instructions" => mc.call_instructions,
                                                               "thread_status" => mc.thread_status,
                                                               "follow_up_data" => mc.follow_up_data,
-                                                              "title_preference"=>nil
+                                                              "title_preference"=>nil,
+                                                              "using_meeting_room"=>false,
+                                                              "meeting_room_details"=>nil
                                                           }
                                                         }
                                                     }
