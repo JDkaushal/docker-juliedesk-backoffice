@@ -68,6 +68,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         }
     }
     else {
+        trackActionV2('Select_availability', {ux_element: 'calendar'});
         calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
         calendar.addEvent(eventData);
         calendar.drawEventList();
@@ -166,6 +167,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
             }
         }
         else {
+            trackActionV2('Click_on_existing_event', {ux_element: 'calendar'});
             calendar.showEventDetails(event, $(jsEvent.currentTarget));
         }
     }

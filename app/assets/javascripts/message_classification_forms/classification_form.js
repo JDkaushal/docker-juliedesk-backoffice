@@ -199,6 +199,8 @@ window.classificationForms.classificationForm.prototype.validateClientAgreement 
     var $infoPanelContainer = $(".messages-thread-info-panel");
     $infoPanelContainer.find(".client-agreement-panel").data("client-agreement", clientAgreement);
 
+    trackActionV2("Click_on_agreement", {ux_element: 'form'});
+
     if(clientAgreement) {
         if(classificationForm.isPostpone) {
             $infoPanelContainer.find(".client-agreement-panel").hide();

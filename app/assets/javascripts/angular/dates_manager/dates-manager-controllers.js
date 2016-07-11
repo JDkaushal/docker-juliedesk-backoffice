@@ -21,6 +21,7 @@
         };
 
         $scope.nextButtonClickAction = function(e) {
+            trackActionV2('Click_on_close_calendar', {ux_element: 'calendar'});
             $(".calendar-container").addClass("minimized");
             $('.email.extended').removeClass('extended');
             $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);

@@ -6,7 +6,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
     // Used to have a common accessor between all the different forms
     var currentClassifForm = askAvailabilitiesForm;
 
-    window.leftColumnMessage = localize("classification_forms.ask_availabilities.dates_identification")
+    window.leftColumnMessage = localize("classification_forms.ask_availabilities.dates_identification");
 
 
     window.submitClassification = function () {
@@ -21,12 +21,15 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         askAvailabilitiesForm.checkClientAgreement();
 
         $("#submit-these-already-suggested-dates").click(function() {
+            trackActionV2('Click_on_validate_suggested_dates', {ux_element: 'standDC'});
             askAvailabilitiesForm.submitSuggestedDates(true);
         });
         $("#none-of-already-suggested-dates").click(function() {
+            trackActionV2('Click_on_select_other_dates', {ux_element: 'standDI'});
             askAvailabilitiesForm.submitSuggestedDates(false);
         });
         $("#submit-detected-date-button").click(function() {
+            trackActionV2('Click_on_validate_other_dates', {ux_element: 'standDI'});
             askAvailabilitiesForm.submitDetectedDates();
         });
 

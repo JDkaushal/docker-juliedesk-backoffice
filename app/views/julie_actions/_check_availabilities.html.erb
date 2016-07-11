@@ -59,7 +59,6 @@
         window.setReplyMessage("");
     };
 
-
     $(function () {
         $(".messages-thread-info-panel .create-event-panel").show();
         if(window.threadComputedData.client_agreement) {
@@ -209,6 +208,8 @@
 
         $("#create-event-button").click(function () {
             if(window.threadComputedData.client_agreement) {
+                trackActionV2('Click_on_create_event', {ux_element: 'standCE'});
+
                 var eventCreatorManager = $('#datesVerificationsManager').scope();
                 var currentTimezone = window.currentCalendar.getCalendarTimezone();
 

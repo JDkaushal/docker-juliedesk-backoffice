@@ -53,6 +53,7 @@ function Calendar($selector, params) {
         calendar.changeShowCalendarCheckbox(e);
     });
     calendar.$selector.find("#minimize-button").click(function(e) {
+        trackActionV2('Click_on_close_calendar');
         calendar.clickMinimizeButton(e);
     });
 
@@ -386,9 +387,9 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
                 }
             }
 
-            trackActionV2("Calendar_is_opened", {
-                client_emails: allEmailsForTracking
-            });
+            //trackActionV2("Calendar_is_opened", {
+            //    client_emails: allEmailsForTracking
+            //});
         });
     }
 };

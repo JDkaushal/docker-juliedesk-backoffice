@@ -1,10 +1,17 @@
 <script>
     $(function () {
+        var freeReplyDoneBtn = $(".free-reply-done-button");
+        var nothingToDoBtn = $(".nothing-to-do-button");
+        var finishBtn = $(".finish-buttons-finish-button");
+        var finishCancelBtn = $(".finish-buttons-cancel-button");
+        var newThreadStatusSelect = $(".new-thread-status-select");
+        var finishBtns = $(".finish-buttons");
+
         $(".new-thread-status-select, .old-thread-status-select").each(function () {
             var $selector = $(this);
             $selector.change(function () {
                 setThreadStatusSelectColor($selector);
-                $(".finish-buttons-finish-button").prop("disabled", false);
+                finishBtn.prop("disabled", false);
             });
             setThreadStatusSelectColor($selector);
         });
@@ -17,55 +24,59 @@
             return true;
         });
 
-        $('.finish-buttons-finish-button').click(function() {
+        finishBtn.click(function() {
             trackActionV2('Click_on_finish', {
                 follow_up_date: $('#follow_up_reminder_date').val(),
                 follow_up_edit: reminderHasBeenEdited(),
-                new_status: $('.new-thread-status-select').val()
+                new_status: newThreadStatusSelect.val(),
+                ux_element: 'backoffice'
             });
+        });
+
+        freeReplyDoneBtn.click(function(e) {
+            trackActionV2('Click_on_done', {ux_element: 'backoffice'});
         });
 
         if(window.lastEmailStatus == "from_me") {
 
-            $(".finish-buttons-cancel-button").hide();
+            finishCancelBtn.hide();
             //$(".new-thread-status-label").hide();
             //$(".new-thread-status-select").hide();
 
-            $(".free-reply-done-button").show();
-            $(".nothing-to-do-button").hide();
+            freeReplyDoneBtn.show();
+            nothingToDoBtn.hide();
 
-            $(".free-reply-done-button").click(function() {
-                $(".finish-buttons").show();
+            freeReplyDoneBtn.click(function() {
+                finishBtns.show();
             });
-
         }
         else if(window.lastEmailStatus == "from_me_free_reply") {
-            $(".free-reply-done-button").show();
-            $(".nothing-to-do-button").hide();
+            freeReplyDoneBtn.show();
+            nothingToDoBtn.hide();
 
-            if($(".new-thread-status-select").val() == null) {
-                $(".finish-buttons-finish-button").prop("disabled", true);
+            if(newThreadStatusSelect.val() == null) {
+                finishBtn.prop("disabled", true);
             }
 
-            $(".free-reply-done-button").click(function() {
-                $(".finish-buttons").show();
+            freeReplyDoneBtn.click(function() {
+                finishBtns.show();
             });
         }
         else {
             $(".old-thread-status-label").show();
-            $(".free-reply-done-button").hide();
-            $(".nothing-to-do-button").show();
+            freeReplyDoneBtn.hide();
+            nothingToDoBtn.show();
 
-            if($(".new-thread-status-select").val() == null) {
-                $(".finish-buttons-finish-button").prop("disabled", true);
+            if(newThreadStatusSelect.val() == null) {
+                finishBtn.prop("disabled", true);
             }
 
-            $(".nothing-to-do-button").click(function() {
-                $(".finish-buttons").show();
+            nothingToDoBtn.click(function() {
+                finishBtns.show();
             });
         }
-        $(".finish-buttons-cancel-button").click(function() {
-            $(".finish-buttons").hide();
+        finishCancelBtn.click(function() {
+            finishBtns.hide();
         });
     });
 

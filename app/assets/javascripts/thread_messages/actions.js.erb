@@ -70,7 +70,8 @@ function trackAction($element, $email) {
     var messagesThreadId = messageContainerNode.data('messagesThreadId');
 
     trackActionV2("Click_on_julie_action", {
-        current_classification: actionNature
+        current_classification: actionNature,
+        ux_element: 'thread'
     });
 
     if(!$element.attr('disabled')){

@@ -125,7 +125,8 @@
     $(function () {
 
         trackActionV2("Thread_is_open", {
-            thread_status: "<%= @messages_thread.current_status %>"
+            thread_status: "<%= @messages_thread.current_status %>",
+            ux_element: 'thread'
         });
 
         // Not implemented: To remove

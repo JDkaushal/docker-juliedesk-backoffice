@@ -3,7 +3,7 @@ window.trackEvent = function(event, params, callback) {
         type: 'POST',
         url: 'https://jd-backoffice-analytics.herokuapp.com/api/v1/track',
         crossDomain: true,
-        data: {name: event, date: (new Date()).toISOString(), properties: params, distinct_id: params.distinct_id},
+        data: {name: event, date: (new Date()).toISOString() , properties: params, distinct_id: params.distinct_id},
         beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
         dataType: 'json',
         success: function(responseData, textStatus, jqXHR) {

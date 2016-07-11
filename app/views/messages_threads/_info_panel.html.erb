@@ -1,4 +1,5 @@
 <%= javascript_include_tag 'angular_dependencies' %>
+<%= javascript_include_tag 'classif_form_tracking' %>
 <!-- For google Places and google Matrix Distance used to compute the travel time -->
 <%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=#{@messages_thread.computed_data[:locale]}&key=#{ENV['GOOGLE_JS_API_KEY']}"%>
 <script>
@@ -241,7 +242,7 @@
                 });
                 window.submitClassification();
             }
-            trackActionV2('Click_on_save_form', {first_time: !window.threadComputedData.appointment_nature});
+            trackActionV2('Click_on_save_form', {first_time: !window.threadComputedData.appointment_nature, ux_element: 'form'});
         });
 
         $("body").on("change", "input[type=checkbox]#attendee", function() {
@@ -1166,7 +1167,7 @@
       <br>
       <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
       <br>
-      <button class="btn btn-block btn-success validate-locale-button"><%= I18n.t("common.validate") %></button>
+      <button class="btn btn-block btn-success validate-locale-button" data-tracking-id="Click_on_validate_language_only"><%= I18n.t("common.validate") %></button>
     </div>
   </div>
 
@@ -1228,13 +1229,13 @@
       <div class="data-entry linear-form-entry locale-selection">
         <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en") %> <%= I18n.t("info_box.french") %>
+          <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.french") %>
         </div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en") %> <%= I18n.t("info_box.english") %>
+          <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.english") %>
         </div>
         <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_language"><%= I18n.t("common.validate") %></div>
       </div>
 
 
@@ -1253,7 +1254,7 @@
       <div class="data-entry linear-form-entry" data-entry-name="timezone">
         <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_appointment_type"><%= I18n.t("common.validate") %></div>
 
         <div class="different-timezone-warner">
           <div class="warning">
@@ -1276,7 +1277,7 @@
         </div>
         <div class="add-constraint-button btn btn-primary btn-sm btn-block">Add constraint</div>
 
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="data-entry linear-form-entry">
@@ -1299,13 +1300,13 @@
           </span>
         </div>
 
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_title"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
         <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_duration"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="data-entry linear-form-entry">
@@ -1314,14 +1315,15 @@
             <%= select_tag :location_nature, "", class: "data-entry form-control" %>
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
             <%= hidden_field_tag :location_coordinates %>
+          <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
         </div>
         <div class="number-to-call-part-container">
           <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
-
+          <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_instruction"><%= I18n.t("common.validate") %></div>
           <!--<div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>-->
           <!--<%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>-->
         </div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+
       </div>
 
       <div class="data-entry linear-form-entry">
@@ -1330,14 +1332,14 @@
           <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
           <%= I18n.t("info_box.private_event") %>
         </div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_private"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
         <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
         <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_notes"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="save-info-container">
