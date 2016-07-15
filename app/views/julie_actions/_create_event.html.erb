@@ -5,6 +5,11 @@
     window.updatedEvents = [];
     window.deletedEvents = [];
 
+    window.currentHtmlMessage = '<%= @message.server_message['parsed_html'].gsub("\n", '').gsub("\r", '') %>';
+    window.currentTicketInfos = {};
+
+    var $container;
+
     window.afterReplyBoxInitCallback = function(){
         window.setReplyMessage("");
     };
@@ -35,8 +40,12 @@
 
         $(".calendar-container").addClass("minimized");
 
-        var $container = $("#thread-header-other-entries-container");
         $container.html($("<div>").addClass("new-events-container"));
+        var $ticketModuleNode = $('<div id="ticket_module"></div>').hide();
+
+        $ticketModuleNode.append($('<span class="sprite"></span><span class="pre-button">train ticket ?</span><span class="btn ticket-parsing-btn">Extract ticket</span>'));
+
+        $container.find(".new-events-container").append($ticketModuleNode);
         $container.find(".new-events-container").append($("<div>").addClass("btn btn-success create-new-event-tile-button").html("Create new event"));
         $container.find(".new-events-container").append($("<div>").addClass("new-event-tiles-container"));
         window.newEventEventTiles = [];
@@ -59,11 +68,90 @@
             window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container:eq(0)")));
             redrawNewEventEventTiles();
         });
+
+        $('.ticket-parsing-btn').click(function(e) {
+            $(this).attr('disabled', true);
+            populateEventsWithTicketsData();
+        });
+    };
+
+    function populateEventsWithTicketsData() {
+        _.each(window.currentTicketInfos, function(ticketInfos) {
+            $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
+            window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container").last(), {
+                event: {
+                    title: generateTitleFromTicketInfos(ticketInfos),
+                    location: generateLocationFromTicketInfos(ticketInfos),
+                    start: generateStartDateFromTicketInfos(ticketInfos),
+                    end: generateEndDateFromTicketInfos(ticketInfos),
+                    beingAdded: true,
+                    calendar_login_username: window.threadComputedData.calendar_login_username,
+                    calendar_login_type: window.threadComputedData.calendar_login_type
+                }
+            }));
+        });
+        redrawNewEventEventTiles();
+    };
+
+    function generateTitleFromTicketInfos(ticketInfos) {
+        var stations = ticketInfos['gares'];
+        var cities = ticketInfos['villes'];
+
+        var originStation = stations[0];
+        if(cities[0])
+            originStation += ' (' + cities[0] + ')';
+
+        var destinationStation = stations[1];
+        if(cities[1])
+            destinationStation += ' (' + cities[1] + ')';
+
+        return originStation + ' => ' + destinationStation;
+    };
+
+    function generateLocationFromTicketInfos(ticketInfos) {
+        var seat = 'Siège(s)';
+        var train = 'Train';
+        var reservation = 'Réservation';
+
+        var seatParsed = ticketInfos['numero_de_place'];
+        var trainParsed = ticketInfos['numero_de_voyage'];
+        var reservationParsed = ticketInfos['numero_de_reservation'];
+
+        if(seatParsed)
+            seat += ' [' + seatParsed + ']';
+
+        if(trainParsed)
+            train += ' ' + trainParsed;
+
+        if(reservationParsed)
+            reservation += ' ' + reservationParsed;
+
+        return [seat, train, reservation].join(' ; ');
+    };
+
+    function generateStartDateFromTicketInfos(ticketInfos) {
+        var start = moment("Mercredi 2 Septembre").year(moment().year());
+
+        var startTime = ticketInfos['horaires'][0];
+
+        start.hour(startTime[0]).minute(startTime[1]);
+
+        return start;
+    };
+
+    function generateEndDateFromTicketInfos(ticketInfos) {
+        var end = moment("Mercredi 2 Septembre").year(moment().year());
+
+        var endTime = ticketInfos['horaires'][1];
+
+        end.hour(endTime[0]).minute(endTime[1]);
+
+        return end;
     };
 
     function generateNewEventEventTile($selector, params) {
         if(!params) params = {};
-        var event = {
+        var event = params.event || {
             title: localize("events.new_event"),
             beingAdded: true,
             calendar_login_username: window.threadComputedData.calendar_login_username,
@@ -255,5 +343,33 @@
             }
         });
         window.sendReply();
-    }
+    };
+
+    $(document).ready(function() {
+
+        $container = $("#thread-header-other-entries-container");
+
+        $.ajax({
+            url: "/api/v1/messages_threads/parse_ticket",
+            method: 'post',
+            data: {
+                html_message: window.currentHtmlMessage
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "<%= ENV['JULIEDESK_APP_API_KEY'] %>");
+            },
+            success: function (response) {
+                if(response['Status'] == "Success") {
+                    $('#ticket_module').show();
+                    window.currentTicketInfos = response['Result'];
+                }
+                console.log(response);
+            },
+            error: function(response){
+                console.log(response);
+            }
+        })
+
+
+    });
 </script>

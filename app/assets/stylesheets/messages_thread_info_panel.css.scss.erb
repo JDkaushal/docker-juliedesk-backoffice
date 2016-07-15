@@ -68,6 +68,35 @@
       width: 200px;
       @include border-radius(2px);
     }
+
+      #ticket_module {
+          margin: 20px auto;
+          width: 250px;
+
+          .sprite {
+              background-image: url(<%= asset_path 'SNCF.jpg' %>);
+              background-repeat: no-repeat;
+              background-size: 50px 50px;
+              width: 50px;
+              display: inline-block;
+              height: 50px;
+              position: relative;
+              top: 16px;
+          }
+
+          .pre-button {
+              margin-left: 5px;
+          }
+
+          .ticket-parsing-btn {
+              margin-left: 7px;
+              display: inline-block;
+              background-color: $aiControlColor;
+              color: white;
+          }
+
+      }
+
     .selected-events-list-container {
       border-bottom: 1px solid #ccc;
       background-color: #fff;

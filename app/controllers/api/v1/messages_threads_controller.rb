@@ -119,4 +119,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
            }
 
   end
+
+  def parse_ticket
+    render json: AiProxy.new.build_request(:parse_sncf_ticket, { html_message: CGI.unescapeHTML(params[:html_message]) })
+  end
 end

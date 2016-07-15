@@ -11,6 +11,7 @@ class AiProxy
       process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V2'] + '/entities/'}.freeze,
 
       get_company_name:       { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/companynames/' }.freeze,
+      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/parsersncf/'}.freeze
   }.freeze
 
   def self.get_endpoint(key)

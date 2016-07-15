@@ -243,6 +243,8 @@ EventTile.prototype.getRruleIndex = function(recurrenceArray) {
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
+    console.log('redraw', eventTile.event);
+
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
