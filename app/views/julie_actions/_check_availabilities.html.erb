@@ -207,10 +207,11 @@
         };
 
         $("#create-event-button").click(function () {
+            var eventCreatorManager = $('#datesVerificationsManager').scope();
+
             if(window.threadComputedData.client_agreement) {
                 trackActionV2('Click_on_create_event', {ux_element: 'standCE'});
 
-                var eventCreatorManager = $('#datesVerificationsManager').scope();
                 var currentTimezone = window.currentCalendar.getCalendarTimezone();
 
                 window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
@@ -302,10 +303,7 @@
                 }
             }
             else {
-                var availableTimeSlots = $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']:checked").map(function() {
-                    var $suggestedDateTime = $(this).closest(".suggested-date-time-container").find(".suggested-date-time");
-                    return moment.tz($suggestedDateTime.data("date"), $suggestedDateTime.data("timezone")).format();
-                }).get();
+                var availableTimeSlots = [eventCreatorManager.selectedDateRaw];
                 var messageBuilder = $('#reply-area').scope();
                 $(".calendar-container").addClass("minimized");
                 window.setReplyMessage(messageBuilder.generateReply({
