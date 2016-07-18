@@ -6,6 +6,7 @@ window.classificationForms.givePreferenceForm = function (params) {
     window.leftColumnMessage = localize("classification_forms.common.fill_info_in");
 
     $(".submit-add-preference").click(function () {
+        trackActionV2('Click_on_save_preference', {ux_element: 'backoffice'});
         $(this).prop("disabled", true);
         var data = {
             classification: givePreferenceForm.classification,

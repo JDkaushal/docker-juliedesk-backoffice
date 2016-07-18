@@ -34,6 +34,7 @@ window.classificationForms.followUpOnWeeklyRecapForm.prototype.showSelectThreads
     followUpOnWeeklyRecapForm.redrawSelectThreadsPanel();
     $infoPanelContainer.find("input[type=checkbox]").change(followUpOnWeeklyRecapForm.redrawSelectThreadsPanel);
     $infoPanelContainer.find("#validate-follow-up-button").click(function() {
+        trackActionV2('Click_on_follow_up', {ux_element: 'backoffice', threads_to_follow_up_count: $('.follow-up-select-threads-panel input[type="checkbox"]:checked').length});
         followUpOnWeeklyRecapForm.sendFollowUpData();
     })
 };

@@ -5,6 +5,7 @@
         var finishBtn = $(".finish-buttons-finish-button");
         var finishCancelBtn = $(".finish-buttons-cancel-button");
         var newThreadStatusSelect = $(".new-thread-status-select");
+        var oldThreadStatusSelect = $(".old-thread-status-select");
         var finishBtns = $(".finish-buttons");
 
         $(".new-thread-status-select, .old-thread-status-select").each(function () {
@@ -25,10 +26,16 @@
         });
 
         finishBtn.click(function() {
+            var oldStatus = oldThreadStatusSelect.val();
+
+            if(oldStatus == '')
+                oldStatus = undefined;
+
             trackActionV2('Click_on_finish', {
                 follow_up_date: $('#follow_up_reminder_date').val(),
                 follow_up_edit: reminderHasBeenEdited(),
                 new_status: newThreadStatusSelect.val(),
+                old_status: oldStatus,
                 ux_element: 'backoffice'
             });
         });
@@ -73,6 +80,7 @@
 
             nothingToDoBtn.click(function() {
                 finishBtns.show();
+                trackActionV2('Click_on_nothing_to_do', {ux_element: 'backoffice'});
             });
         }
         finishCancelBtn.click(function() {

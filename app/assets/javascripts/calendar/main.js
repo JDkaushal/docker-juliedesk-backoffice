@@ -385,11 +385,10 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
                 if(window.allCalendarEventsFetched) {
                     window.allCalendarEventsFetched();
                 }
+                trackActionV2("Calendar_loaded", {
+                    client_emails: allEmailsForTracking
+                });
             }
-
-            //trackActionV2("Calendar_is_opened", {
-            //    client_emails: allEmailsForTracking
-            //});
         });
     }
 };

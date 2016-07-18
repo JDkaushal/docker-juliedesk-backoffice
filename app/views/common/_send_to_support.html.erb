@@ -1,6 +1,8 @@
 <script>
     $(function () {
         $(".send-to-support-button, .done-button.send-to-support").click(function () {
+            trackActionV2('Click_on_send_to_admin', {ux_element: 'backoffice'});
+
             $(".send-to-support-overlay textarea#send_to_support_message").val("");
             $(".send-to-support-overlay-container").fadeIn(200);
             $(".send-to-support-overlay textarea#send_to_support_message").focus();
@@ -10,11 +12,11 @@
 
         $(".send-to-support-overlay .send-to-support-cancel").click(function () {
             $(".send-to-support-overlay-container").fadeOut(100, function () {
-
             });
+            trackActionV2('Click_on_cancel_send_to_admin', {ux_element: 'backoffice'});
         });
         $(".send-to-support-overlay .send-to-support-submit").click(function () {
-
+            trackActionV2('Click_on_validate_send_to_admin', {ux_element: 'backoffice'});
         });
     });
 </script>

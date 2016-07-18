@@ -11,6 +11,7 @@ function EventTile($selector, params) {
     this.fromInvitationOrganizer = params.eventFromInvitationOrganizer;
 
     this.event = params.event;
+
     this.selectEventCallback = params.selectEventCallback;
     this.doneEditingCallback = params.doneEditingCallback;
     this.afterRedrawCallback = params.afterRedrawCallback;
@@ -1041,6 +1042,24 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-save-button").click(function() {
+
+        trackActionV2('Click_on_save_event', {ux_element: 'backoffice', from_ticket: eventTile.event.from_ticket});
+        
+        if(eventTile.event.from_ticket) {
+            trackActionV2('ai_ticket_detection',
+                {
+                    ux_element: 'backoffice',
+                    title_from_ticket: eventTile.event.from_ticket_details.title,
+                    title_saved: eventTile.event.title,
+                    location_from_ticket: eventTile.event.from_ticket_details.location,
+                    location_saved: eventTile.event.location,
+                    start_from_ticket: eventTile.event.from_ticket_details.start.format(),
+                    start_saved: eventTile.event.start.format(),
+                    end_from_ticket: eventTile.event.from_ticket_details.end.format(),
+                    end_saved: eventTile.event.end.format()
+                }
+            );
+        }
 
         if(eventTile.recurringEvent) {
             if(eventTile.getEditedEvent().recurrence.length == 0) {

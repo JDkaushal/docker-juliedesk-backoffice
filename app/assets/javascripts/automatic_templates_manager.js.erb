@@ -80,7 +80,10 @@ var TemplateManager = function(params){
     };
 
     this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {
-        that.clickOnTemplateItem($(this));
+        var that = $(this);
+
+        trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: that.text()});
+        that.clickOnTemplateItem(that);
     });
 
     this.menuButtonNode.click(function() {

@@ -288,6 +288,8 @@
         });
 
         $("#forward-button").click(function () {
+            trackActionV2('Click_on_send_email', {ux_element: 'backoffice'});
+
             $("#forward-button").prop('disabled', true);
             if(window.clickForwardButton) {
                 window.clickForwardButton();

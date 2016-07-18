@@ -33,22 +33,26 @@ window.trackFormSubmit = function(selector, event, params) {
 function trackActionV2(type, extraParams, callback) {
     callback = callback || function(){};
 
-    try {
+    //try {
         var messageContainerNode = $('#messages_container');
         var messagesThreadId = messageContainerNode.data('messagesThreadId');
         var selectedMessage = $('.email.highlighted');
+
+        if(window.threadAccount)
+            var currentAccountEmail = window.threadAccount.email;
 
         var defaultParams = {
             operator_id: messageContainerNode.data('operatorId'),
             current_classification: window.classification,
             thread_id: messagesThreadId,
+            account_name: currentAccountEmail,
             thread_messages_count: messageContainerNode.data('messagesCount'),
             bo_message_id: selectedMessage.data('messageId')
         };
 
         trackEvent(type, $.extend(defaultParams, extraParams), callback)
-    }
-    catch(err) {
-        console.log(err);
-    }
+//    }
+//    catch(err) {
+//        console.log(err);
+//    }
 }

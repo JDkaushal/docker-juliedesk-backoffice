@@ -34,6 +34,8 @@
         }
         else {
             if(confirm("This action is irreversible. Are you sure you want to merge?")) {
+                trackActionV2('Click_on_definitely_merge', {ux_element: 'backoffice'});
+
                 $(".merging-global-spinner").show();
 
                 $.ajax({
@@ -151,6 +153,7 @@
                     beginSplitting();
                 }
             <% else %>
+                trackActionV2('Click_on_split', {ux_element: 'backoffice'});
                 beginSplitting();
             <% end %>
         });
@@ -161,6 +164,7 @@
                     beginMerging();
                 }
             <% else %>
+                trackActionV2('Click_on_associer_à_un_autre_thread', {ux_element: 'backoffice'});
                 beginMerging();
             <% end %>
         });
@@ -175,6 +179,8 @@
         });
 
         $(".actually-split-button").click(function () {
+            trackActionV2('Click_on_definitely_split', {ux_element: 'backoffice'});
+
             var messageIdsToSplit = $(".email .checkbox-container input[type=checkbox]:checked").map(function () {
                 return $(this).val();
             }).toArray();
@@ -199,7 +205,14 @@
         $('#cancel_to_be_merged_button').click(function() {
             setToBeMergedOnMessagesThread(<%= @messages_thread.id %>, false);
         });
+
+
     });
+
+//    $(window).unload(function() {
+//        console.log('Handler for .unload() called.');
+//    });
+
 </script>
 <%= render partial: "common/thread_header", locals: {messages_thread: @messages_thread} %>
 <div class="merging-global-spinner">Merging....</div>

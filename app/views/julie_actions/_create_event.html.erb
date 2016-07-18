@@ -70,6 +70,7 @@
         });
 
         $('.ticket-parsing-btn').click(function(e) {
+            trackActionV2('Click_on_extract_ticket', {ux_element: 'backoffice'});
             $(this).attr('disabled', true);
             populateEventsWithTicketsData();
         });
@@ -78,12 +79,25 @@
     function populateEventsWithTicketsData() {
         _.each(window.currentTicketInfos, function(ticketInfos) {
             $container.find(".new-event-tiles-container").append($("<div>").addClass("new-event-tile-container"));
+            var titleFromTicket = generateTitleFromTicketInfos(ticketInfos);
+            var locationFromTicket = generateLocationFromTicketInfos(ticketInfos);
+            var startFromTicket = generateStartDateFromTicketInfos(ticketInfos);
+            var endFromTicket = generateEndDateFromTicketInfos(ticketInfos);
+
+
             window.newEventEventTiles.push(generateNewEventEventTile($container.find(".new-event-tile-container").last(), {
                 event: {
-                    title: generateTitleFromTicketInfos(ticketInfos),
-                    location: generateLocationFromTicketInfos(ticketInfos),
-                    start: generateStartDateFromTicketInfos(ticketInfos),
-                    end: generateEndDateFromTicketInfos(ticketInfos),
+                    from_ticket: true,
+                    from_ticket_details: {
+                        title: titleFromTicket,
+                        location: locationFromTicket,
+                        start: startFromTicket,
+                        end: endFromTicket
+                    },
+                    title: titleFromTicket,
+                    location: locationFromTicket,
+                    start: startFromTicket,
+                    end: endFromTicket,
                     beingAdded: true,
                     calendar_login_username: window.threadComputedData.calendar_login_username,
                     calendar_login_type: window.threadComputedData.calendar_login_type

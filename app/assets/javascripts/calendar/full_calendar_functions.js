@@ -236,6 +236,7 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, elementOriginalColor, 
 };
 
 Calendar.prototype.fullCalendarInit = function() {
+    var calendarNode = $('#calendar');
     var calendar = this;
     var defaultDate = moment();
     var travelTimeBackgroundColor = '#C27938';
@@ -270,7 +271,7 @@ Calendar.prototype.fullCalendarInit = function() {
     }
 
     //defaultDate = moment("2015-03-01");
-    $('#calendar').fullCalendar({
+    calendarNode.fullCalendar({
         header: {
             left: 'today prevYear,prev,next,nextYear title',
             center: '',
@@ -454,5 +455,17 @@ Calendar.prototype.fullCalendarInit = function() {
             return false;
         }
     });
+
+    calendarNode.on('click', '.fc-button-prev, .fc-button-next', function(e) {
+        console.log('week btn click');
+        trackActionV2('Click_on_change_week', {ux_element: 'backoffice'});
+    });
+
+
+    calendarNode.on('click', '.fc-button-prevYear, .fc-button-nextYear', function(e) {
+        console.log('month btn click');
+        trackActionV2('Click_on_change_month', {ux_element: 'backoffice'});
+    });
+
 };
 

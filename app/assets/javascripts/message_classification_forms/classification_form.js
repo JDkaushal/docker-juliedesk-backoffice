@@ -58,6 +58,7 @@ window.classificationForms.classificationForm = function (params) {
 
     $(function () {
         $("#back-button").click(function () {
+            trackActionV2('Click_on_back_app', {ux_element: 'backoffice'});
             if (classificationForm.clickBackButtonFunctions.length == 0) {
                 window.history.back();
             }
