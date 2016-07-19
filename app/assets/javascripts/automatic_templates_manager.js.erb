@@ -53,6 +53,21 @@ var TemplateManager = function(params){
 
     };
 
+    this.refreshCurrentSelectedTemplate = function(noTemplateSelectedCallback) {
+        if(that.currentSelectedTemplate) {
+            that.clickOnTemplateItem(that.currentSelectedTemplate);
+        }else {
+            noTemplateSelectedCallback();
+        }
+    };
+
+    this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {
+        var currentItem = $(this);
+
+        trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: currentItem.text()});
+        that.clickOnTemplateItem(currentItem);
+    });
+
     this.clickOnTemplateItem = function($item) {
         var template = '';
 
@@ -70,21 +85,6 @@ var TemplateManager = function(params){
 
         that.menuPanelNode.hide();
     };
-
-    this.refreshCurrentSelectedTemplate = function(noTemplateSelectedCallback) {
-        if(that.currentSelectedTemplate) {
-            that.clickOnTemplateItem(that.currentSelectedTemplate);
-        }else {
-            noTemplateSelectedCallback();
-        }
-    };
-
-    this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {
-        var that = $(this);
-
-        trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: that.text()});
-        that.clickOnTemplateItem(that);
-    });
 
     this.menuButtonNode.click(function() {
         that.menuPanelNode.toggle();
