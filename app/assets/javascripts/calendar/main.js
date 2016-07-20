@@ -61,12 +61,7 @@ function Calendar($selector, params) {
     allEmailsForTracking.unshift(calendar.initialData.email);
 
     calendar.distinctIdForTracking = "" + Date.now() + "-" + allEmailsForTracking.join("|");
-    // Init fetching
-    trackActionV2("Click_on_open_calendar", {
-        client_emails: allEmailsForTracking,
-        initial_action: "Open calendar",
-        calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
-    });
+    
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
