@@ -62,7 +62,7 @@
                     allUsedTimezones = _.uniq(allUsedTimezones.concat(usedTimezones));
                 }
             }else {
-                usedTimezones = [];
+                usedTimezones = allUsedTimezones;
             }
 
             if(usedTimezones.length > 0) {

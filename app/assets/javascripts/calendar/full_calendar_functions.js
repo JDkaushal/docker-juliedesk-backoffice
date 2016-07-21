@@ -173,7 +173,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     }
 };
 
-Calendar.prototype.setBusyStatusOnEvent = function(event, elementOriginalColor, $element, $imgSpanNode, $allDayMaskNode) {
+Calendar.prototype.setBusyStatusOnEvent = function(event, $element, $imgSpanNode, $allDayMaskNode) {
     var calendar = this;
     var timezone = calendar.getCalendarTimezone();
     var newBusy = !event.busy;
@@ -208,7 +208,7 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, elementOriginalColor, 
                 $imgSpanNode.removeClass('free').addClass('busy');
             }else {
                 $allDayMaskNode.hide();
-                $element.css({'background-color': elementOriginalColor});
+                $element.css({'background-color': event.color});
                 $imgSpanNode.removeClass('busy').addClass('free');
             }
 
@@ -408,7 +408,6 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.addClass('event-allday');
                 var $imgSpanNode = $('<span class="allday-busy-img"></span>');
                 var $allDayMaskNode = $('<div class="allday-mask"></div>');
-                var elementOriginalColor = $('.event-allday').css('background-color');
 
                 $element.append($imgSpanNode);
 
@@ -436,7 +435,7 @@ Calendar.prototype.fullCalendarInit = function() {
                     $imgSpanNode.click(function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        calendar.setBusyStatusOnEvent(event, elementOriginalColor, $element, $imgSpanNode, $allDayMaskNode);
+                        calendar.setBusyStatusOnEvent(event, $element, $imgSpanNode, $allDayMaskNode);
                     });
                 }
 

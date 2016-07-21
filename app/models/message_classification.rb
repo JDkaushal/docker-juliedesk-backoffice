@@ -48,6 +48,7 @@ class MessageClassification < ActiveRecord::Base
   THREAD_STATUS_SCHEDULING_ABORTED              = "scheduling_aborted"
   THREAD_STATUS_DOES_NOT_CONCERN_CLIENT         = "does_not_concern_client"
   THREAD_STATUS_HANDLED_IN_OTHER_THREADS        = "handled_in_other_threads"
+  THREAD_STATUS_HANDLED_BY_CLIENT               = "handled_by_client"
   THREAD_STATUS_EVENTS_CREATION                 = "events_creation"
   THREAD_STATUS_OTHER                           = "other"
 
@@ -313,6 +314,7 @@ class MessageClassification < ActiveRecord::Base
         THREAD_STATUS_SCHEDULING_ABORTED,
         THREAD_STATUS_HANDLED_IN_OTHER_THREADS,
         THREAD_STATUS_DOES_NOT_CONCERN_CLIENT,
+        THREAD_STATUS_HANDLED_BY_CLIENT,
         THREAD_STATUS_EVENTS_CREATION,
         THREAD_STATUS_OTHER
     ].freeze

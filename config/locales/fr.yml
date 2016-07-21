@@ -420,5 +420,6 @@ fr:
     scheduling_aborted: "Scheduling aborted"
     handled_in_other_threads: "Handled in other threads"
     does_not_concern_client: "Does not concerns client"
+    handled_by_client: "Handled by Client"
     events_creation: "Events creation"
     other: "Non-related to scheduling"

@@ -399,6 +399,22 @@
 
         };
 
+        $scope.countHalfHoursByDay = function(operator, weekDay) {
+            var allHalfHours = _.map($scope.getHalfHours(weekDay), function(h) {
+                return h.format(presenceFormat);
+            });
+
+            var result = _.intersection(operator.presences, allHalfHours).length;
+
+            // As we are counting the halHours and we need the result in hours
+            if(result && result > 0) {
+                result /= 2;
+            }
+
+            return result;
+        };
+
+
         $scope.countsForHalfHour = function(halfHour) {
             var result = 0;
             _($scope.operators).each(function(operator) {
@@ -649,6 +665,7 @@
             id="{{weekday}}-{{operator.id}}-{{$index}}"
         >
         </td>
+        <td style="width:70px;">{{countHalfHoursByDay(operator, weekday)}}h</td>
       </tr>
 
       <tr ng-repeat="operator in levelTwo0perators() track by $index" class="operator-{{operator.id}}-{{weekday}}">

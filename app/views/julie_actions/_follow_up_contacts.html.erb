@@ -1,4 +1,3 @@
-<%=render 'julie_actions/partials/travel_time_manager'%>
 
 <script>
     window.leftColumnMessage = "Suggest dates";
@@ -74,13 +73,14 @@
     function addSuggestedDatesToCalendar(dates) {
         var eventData, end;
         var currentEventDuration = currentCalendar.getCurrentDuration();
+        var currentTimezone = currentCalendar.getCalendarTimezone();
 
         var currentCalendarUsername = currentCalendar.initialData.default_calendar_login_username;
         var currentLoginType = currentCalendar.initialData.default_calendar_login_type;
         var currentLoginEmail = currentCalendar.initialData.email;
 
         _.each(dates, function(date) {
-            date = moment(date);
+            date = moment(date).tz(currentTimezone);
 
             end = date.clone();
             end.add('m', currentEventDuration);

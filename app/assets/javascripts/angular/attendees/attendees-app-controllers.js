@@ -77,6 +77,8 @@
                     if(this.attendeeInForm.needAIConfirmation)
                         this.attendeeInForm.confirmAI();
 
+                    this.attendeeInForm.validatedCompany = this.attendeeInForm.company;
+
                     this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
                     if(attendeesFormCtrl.currentMode == 'new')
@@ -1035,7 +1037,7 @@
         };
 
         this.displayAttendeeNewForm = function (){
-            sharedProperties.displayAttendeeForm({attendee: {timezone: window.threadAccount.default_timezone_id, isPresent: true}, action: 'new'});
+            sharedProperties.displayAttendeeForm({attendee: new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true}), action: 'new'});
         };
 
         this.displayAttendeeUpdateForm = function(attendee){
@@ -1086,7 +1088,7 @@
                 that[key] = value;
             });
         },
-        firstLastNameKeyup: function(event){
+        firstLastNameKeyup: function(){
             if(window.formFirstPass || this.needAIConfirmation) {
                 if(window.threadAccount.language_level == 'soutenu') {
                     this.usageName = this.displayUsageNameSoutenu();
