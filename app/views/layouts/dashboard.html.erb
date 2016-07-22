@@ -8,12 +8,20 @@
   <%= csrf_meta_tags %>
 
   <script src="/javascripts/pusher.min.js"></script>
-
 </head>
 <body>
 <%= render partial: "common/features" %>
 <%= render partial: "common/chat" %>
 <%= yield %>
 
+<script>
+    window.addEventListener('focus', function() {
+        trackActionV2('Focus_in_backoffice', {url: window.location.href})
+    });
+
+    window.addEventListener('blur', function() {
+        trackActionV2('Focus_out_backoffice', {url: window.location.href})
+    });
+</script>
 </body>
 </html>
