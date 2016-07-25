@@ -349,9 +349,9 @@
                 forward =  true;
             }
 
-            var subject = "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/, "Re: ").gsub("\"", "\\\"") %>";
+            var subject = "<%== "Re: #{@message.server_message['subject']}".gsub(/(Re: )+/i, "Re: ").gsub("\"", "\\\"") %>";
             if(forward) {
-                subject = "<%== "Fw: #{@message.server_message['subject']}".gsub(/(Fw: )+/, "Fw: ").gsub("\"", "\\\"") %>";
+                subject = "<%== "Fw: #{@message.server_message['subject']}".gsub(/(Fw: )+/i, "Fw: ").gsub("\"", "\\\"") %>";
             }
             $.ajax({
                 url: "/messages/<%= @julie_action.message_classification.message_id %>/reply",
