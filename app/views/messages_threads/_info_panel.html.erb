@@ -1207,9 +1207,11 @@
           <div class="account-details">
             <%= simple_format account.client_info %>
 
-            <% if account.auto_follow_up_enabled %>
-                <div class="auto-follow-up-badge">#Auto Follow up</div>
-            <% end %>
+
+            <div class="auto-follow-up-badge <%=account.auto_follow_up_enabled ? '' : 'disabled' %>"><span class="sprite"></span>Auto Follow up</div>
+
+            <div class="restaurant-booking-badge <%=account.restaurant_booking_enabled ? '' : 'disabled' %>"><span class="sprite"></span>Restaurant Booking</div>
+
             <% if account.current_notes.present? || account.awaiting_current_notes.present? %>
                 <%
                    notes = account.current_notes
@@ -1328,6 +1330,7 @@
             <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
             <%= hidden_field_tag :location_coordinates %>
 
+            <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
             <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
 
           <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>

@@ -157,7 +157,8 @@ window.wordings['en'] = {
             default: "Duly noted!",
             give_info: "Thank you, I have made a note of that.",
             give_preference: "Thank you, your preferences have been updated.",
-            update_event: "Thank you, the event was updated."
+            update_event: "Thank you, the event was updated.",
+            update_event_location_with_restaurant_booking: "Thank you.\nI have updated the venue: %{newLocation}\n\nI will get back to you concerning the reservation."
         },
         cancel: {
             attendees_noticed: "I have cancelled %{appointment_nature} scheduled %{date}.",
@@ -281,6 +282,10 @@ window.wordings['en'] = {
         utilities: {
             timezone_display: "%{city} time"
         }
+    },
+    restaurant_booking: {
+        no_location: "\n\nOnce you have decided, could you let me know your choice of restaurant, so I can make the reservation?",
+        with_location: "\n\nI will get back to you concerning the restaurant booking."
     },
     common: {
         cancel: "Cancel",

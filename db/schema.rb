@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160707080959) do
+ActiveRecord::Schema.define(version: 20160727133758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,35 +153,38 @@ ActiveRecord::Schema.define(version: 20160707080959) do
     t.string   "classification"
     t.integer  "message_id"
     t.string   "operator"
-    t.boolean  "validated",             default: false
+    t.boolean  "validated",                  default: false
     t.string   "appointment_nature"
     t.string   "summary"
     t.integer  "duration"
     t.text     "location"
-    t.text     "attendees",             default: "[]"
+    t.text     "attendees",                  default: "[]"
     t.text     "notes"
     t.text     "constraints"
-    t.text     "date_times",            default: "[]"
+    t.text     "date_times",                 default: "[]"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "locale"
     t.string   "timezone"
     t.integer  "processed_in"
     t.string   "location_nature"
-    t.boolean  "private",               default: false
+    t.boolean  "private",                    default: false
     t.text     "other_notes"
-    t.text     "constraints_data",      default: "[]"
-    t.boolean  "client_agreement",      default: false
-    t.boolean  "attendees_are_noticed", default: false
+    t.text     "constraints_data",           default: "[]"
+    t.boolean  "client_agreement",           default: false
+    t.boolean  "attendees_are_noticed",      default: false
     t.text     "number_to_call"
     t.string   "review_status"
-    t.text     "call_instructions",     default: "[]"
+    t.text     "call_instructions",          default: "[]"
     t.string   "thread_status"
     t.text     "follow_up_data"
     t.string   "title_preference"
-    t.json     "location_coordinates",  default: []
-    t.boolean  "using_meeting_room",    default: false
+    t.json     "location_coordinates",       default: []
+    t.boolean  "using_meeting_room",         default: false
     t.json     "meeting_room_details"
+    t.boolean  "using_restaurant_booking",   default: false
+    t.json     "restaurant_booking_details"
+    t.boolean  "location_changed"
   end
 
   create_table "message_interpretations", force: true do |t|

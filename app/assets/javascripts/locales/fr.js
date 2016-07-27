@@ -158,7 +158,8 @@ window.wordings['fr'] = {
             default: "Très bien, c'est noté.",
             give_info: "Merci, cela est bien noté.",
             give_preference: "Merci, vos préférences ont bien été mises à jour.",
-            update_event: "Merci, l'événement a bien été mis à jour."
+            update_event: "Merci, l'événement a bien été mis à jour.",
+            update_event_location_with_restaurant_booking: "Merci.\nJ'ai mis à jour le lieu de l'événement : %{newLocation}\n\nJe reviens vers vous concernant la réservation du restaurant."
         },
         cancel: {
             attendees_noticed: "J'ai annulé %{appointment_nature} prévu %{date}.",
@@ -282,6 +283,10 @@ window.wordings['fr'] = {
         utilities: {
             timezone_display: "heure de %{city}"
         }
+    },
+    restaurant_booking: {
+        no_location: "\n\nPourriez-vous m'indiquer votre choix de restaurant une foix décidé, afin que je puisse effectuer la réservation ?",
+        with_location: "\n\nJe reviens vers vous concernant la réservation du restaurant."
     },
     common: {
         cancel: "Annuler",

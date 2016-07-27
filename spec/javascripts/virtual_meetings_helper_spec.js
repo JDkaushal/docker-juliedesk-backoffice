@@ -274,7 +274,7 @@
                     }
                 ];
 
-                $httpBackend.flush();
+                httpBackend.flush();
                 expect(angular.equals($scopeVM.getCurrentAppointment(), window.threadAccount.appointments[0])).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentVAConfig(), window.threadAccount.appointments[0].support_config_hash)).toBe(true);
                 expect(angular.equals($scopeVM.getCurrentBehaviour(), window.threadAccount.appointments[0].behaviour)).toBe(true);

@@ -247,10 +247,10 @@ window.generateEmailTemplate = function (params) {
         dateString = "";
         today = "";
         tomorrow = "";
-        currentDay = undefined;
+        var currentDay = undefined;
         var dateFormatted = "";
 
-        i = 0;
+        var i = 0;
 
         currentDay = moment(params.timeSlotToCreate).tz(params.usedTimezones[0]).format("YYYY-MM-DD");
         _.each(params.usedTimezones, function(timezone) {
@@ -259,23 +259,11 @@ window.generateEmailTemplate = function (params) {
                 dateString += ' / ';
             }
 
-            //today = moment().tz(timezone);
-            //tomorrow = today.clone().add(1, 'd');
             date = moment(params.timeSlotToCreate).tz(timezone);
             dateFormatted = date.format("YYYY-MM-DD");
 
             if( i== 0 || dateFormatted != currentDay) {
                 dateString += computeDatePart(date, timezone, params.locale) + ' ';
-
-                //dateStringBuff = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
-                //var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateStringBuff) : window.helpers.lowerize(dateStringBuff);
-                //
-                //if(date.isSame(today, "day"))
-                //    dateString += window.helpers.capitalize(localize("dates.today")) + ', ' + localizedDateString + " ";
-                //else if(date.isSame(tomorrow, "day"))
-                //    dateString += window.helpers.capitalize(localize("dates.tomorrow")) + ', ' + localizedDateString + " ";
-                //else
-                //    dateString += dateStringBuff + " ";
 
                 dateString += localize("email_templates.common.date_time_separator") + " ";
             }
@@ -286,43 +274,6 @@ window.generateEmailTemplate = function (params) {
 
             i += 1;
         });
-
-        //if (timezoneIds.length == 1 && timezoneIds[0] == params.defaultTimezoneId && !isVirtualAppointment) {
-        //    today = moment().tz(params.defaultTimezoneId);
-        //    tomorrow = today.clone().add(1, 'd');
-        //    date = moment(params.timeSlotToCreate).tz(params.defaultTimezoneId);
-        //
-        //    dateString = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
-        //    var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateString) : window.helpers.lowerize(dateString);
-        //
-        //    if(date.isSame(today, "day"))
-        //        dateString = window.helpers.capitalize(localize("dates.today")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
-        //    else if(date.isSame(tomorrow, "day"))
-        //        dateString = window.helpers.capitalize(localize("dates.tomorrow")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
-        //    else
-        //        dateString = dateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[0].replace("_", " ")});
-        //}
-        //else {
-        //    for (var i = 0; i < timezoneIds.length; i++) {
-        //        if (dateString != "") {
-        //            dateString = dateString + "\n";
-        //        }
-        //        today = moment().tz(timezoneIds[i]);
-        //        tomorrow = today.clone().add(1, 'd');
-        //        date = moment(params.timeSlotToCreate).tz(timezoneIds[i]);
-        //
-        //        dateFormatted = window.helpers.capitalize(date.locale(params.locale).format(localize("email_templates.common.only_date_format")));
-        //        var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(dateFormatted) : window.helpers.lowerize(dateFormatted);
-        //
-        //        if(date.isSame(today, "day"))
-        //            dateString += window.helpers.capitalize(localize("dates.today")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
-        //        else if(date.isSame(tomorrow, "day"))
-        //            dateString += window.helpers.capitalize(localize("dates.tomorrow")) + ', ' + localizedDateString + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
-        //        else
-        //            dateString += dateFormatted + " " + localize("email_templates.common.date_time_separator") + " " + date.format(localize("email_templates.common.full_time_format")) + " " + localize("email_templates.common.timezone_precision", {timezone: timezoneIds[i].replace("_", " ")});
-        //
-        //    }
-        //}
 
         var postponeSuffix = "new_appointment";
         var suggestedDateSuffix = "";
@@ -348,16 +299,24 @@ window.generateEmailTemplate = function (params) {
             date: dateString
         });
 
-        if(attendeesWithMissingInfos.length <= 2){
-            if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
-                if (isAskInterlocutor) {
-                    message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
-                }
-                else if (isClientWillDefine) {
+        if(params.usingRestaurantBooking) {
+            if(addressInTemplate == "" && locationInTemplate == "") {
+                message += localize("restaurant_booking.no_location");
+            } else {
+                message += localize("restaurant_booking.with_location");
+            }
+        } else {
+            if(attendeesWithMissingInfos.length <= 2){
+                if(addressInTemplate == "" && locationInTemplate == "" && !isVirtualAppointment) {
+                    if (isAskInterlocutor) {
+                        message += localize("email_templates.invites_sent.ask_interlocutor_for_location");
+                    }
+                    else if (isClientWillDefine) {
 
-                }
-                else {
-                    message += localize("email_templates.invites_sent.ask_for_location");
+                    }
+                    else {
+                        message += localize("email_templates.invites_sent.ask_for_location");
+                    }
                 }
             }
         }
@@ -521,7 +480,12 @@ window.generateEmailTemplate = function (params) {
         } else if(params.origin == 'give_preference') {
             subMessage = localize("email_templates.confirmation.give_preference");
         } else if(params.origin == 'update_event') {
-            subMessage = localize("email_templates.confirmation.update_event");
+            if(params.usingRestaurantBooking && params.locationUpdated) {
+                subMessage = localize("email_templates.confirmation.update_event_location_with_restaurant_booking", {newLocation: params.location});
+            } else {
+                subMessage = localize("email_templates.confirmation.update_event");
+            }
+
         } else {
             subMessage = localize("email_templates.confirmation.default");
         }

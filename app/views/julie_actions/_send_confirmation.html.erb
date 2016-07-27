@@ -13,11 +13,19 @@
     window.afterReplyBoxInitCallback = function(){
         var messageBuilder = $('#reply-area').scope();
 
-        window.setReplyMessage(messageBuilder.generateReply({
+        var params = {
             action: "send_confirmation",
-            origin: '<%= @message_classification.classification %>',
+            origin: window.classification,
             locale: window.threadComputedData.locale
-        }), "all");
+        };
+
+        if(window.classification == 'update_event') {
+            params.locationUpdated = window.locationHasBeenChanged;
+            params.usingRestaurantBooking =  $('#restaurant-booking-manager').scope().getUsingRestaurantBooking();
+            params.location = window.threadComputedData.location;
+        }
+
+        window.setReplyMessage(messageBuilder.generateReply(params), "all");
     };
 
 </script>

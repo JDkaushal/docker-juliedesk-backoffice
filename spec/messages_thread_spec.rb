@@ -125,7 +125,9 @@ describe MessagesThread, :type => :model do
                                                         :calendar_login_type => nil,
                                                         :title_preference=>nil,
                                                         :using_meeting_room=>nil,
-                                                        :meeting_room_details=>nil
+                                                        :meeting_room_details=>nil,
+                                                        :using_restaurant_booking=>nil,
+                                                        :restaurant_booking_details=>nil
                                                     })
       end
     end
@@ -161,7 +163,9 @@ describe MessagesThread, :type => :model do
                                                         :calendar_login_type => nil,
                                                         :title_preference=>nil,
                                                         :using_meeting_room=>nil,
-                                                        :meeting_room_details=>nil
+                                                        :meeting_room_details=>nil,
+                                                        :using_restaurant_booking=>nil,
+                                                        :restaurant_booking_details=>nil
                                                     })
       end
     end
@@ -200,7 +204,9 @@ describe MessagesThread, :type => :model do
                                                         :calendar_login_type => nil,
                                                         :title_preference=>nil,
                                                         :using_meeting_room=>false,
-                                                        :meeting_room_details=>nil
+                                                        :meeting_room_details=>nil,
+                                                        :using_restaurant_booking=>false,
+                                                        :restaurant_booking_details=>nil
                                                     })
       end
     end
@@ -240,7 +246,9 @@ describe MessagesThread, :type => :model do
                                                         :calendar_login_type => nil,
                                                         :title_preference=>nil,
                                                         :using_meeting_room=>false,
-                                                        :meeting_room_details=>nil
+                                                        :meeting_room_details=>nil,
+                                                        :using_restaurant_booking=>false,
+                                                        :restaurant_booking_details=>nil
                                                     })
       end
     end
@@ -281,7 +289,9 @@ describe MessagesThread, :type => :model do
                                                         :calendar_login_type => nil,
                                                         :title_preference=>nil,
                                                         :using_meeting_room=>false,
-                                                        :meeting_room_details=>nil
+                                                        :meeting_room_details=>nil,
+                                                        :using_restaurant_booking=>false,
+                                                        :restaurant_booking_details=>nil
                                                     })
       end
     end

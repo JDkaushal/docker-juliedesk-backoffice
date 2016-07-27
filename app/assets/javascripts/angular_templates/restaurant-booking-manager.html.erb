@@ -1,0 +1,9 @@
+<div class="restaurant-booking-manager-wrapper" ng-show="displayForm">
+  <div class="checkbox-header">
+    <input type="checkbox" ng-model="usingRestaurantBooking" ng-disabled="formDisabled"><span>Réservation de restaurant <span class="sprite"></span></span>
+  </div>
+  <div class="restaurant-booking-selection-area" ng-show='displayAttendeesCountSelect'>
+    <span class="text">Participants:</span>
+    <%= select_tag :restaurant_booking_attendees_count, options_for_select(2..50), {'class' => 'form-control', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+  </div>
+</div>

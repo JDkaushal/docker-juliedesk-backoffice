@@ -355,7 +355,8 @@
                 defaultTimezoneId: window.threadAccount.default_timezone_id,
                 allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
                 attendeesWithMissingInfos: attendeesWithMissingInfos,
-                locale: window.threadComputedData.locale
+                locale: window.threadComputedData.locale,
+                usingRestaurantBooking: window.threadComputedData.using_restaurant_booking
             });
 
             var data = {

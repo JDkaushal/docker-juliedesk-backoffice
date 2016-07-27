@@ -253,9 +253,31 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 if(e.status == "success") {
                     if(staging_mode){
                         saveAttendeesStaging(e.data.event_id, realAttendees);
-                        callback(e);
+                        if(window.threadComputedData.using_restaurant_booking && request.location) {
+                            $('#restaurant-booking-manager').scope().sendAdminEmail({
+                                user_email: window.threadAccount.email,
+                                booking_date: request.start,
+                                // the attendees count is set by the restaurant-booking-manager app
+                                location: request.location,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e));
+                        } else {
+                            callback(e);
+                        }
                     }else{
-                        callback(e);
+                        // We send the restaurant booking email to the admins only when using the functionnality and
+                        // when a location is actually set
+                        if(window.threadComputedData.using_restaurant_booking && request.location) {
+                            $('#restaurant-booking-manager').scope().sendAdminEmail({
+                                user_email: window.threadAccount.email,
+                                booking_date: request.start,
+                                // the attendees count is set by the restaurant-booking-manager app
+                                location: request.location,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e));
+                        } else {
+                            callback(e);
+                        }
                     }
                 }
                 else {
@@ -311,7 +333,17 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 meeting_room: request.meeting_room
             }),
             success: function(e) {
-                callback(e);
+                if(window.threadComputedData.using_restaurant_booking && request.location && window.threadComputedData.location != request.location) {
+                    $('#restaurant-booking-manager').scope().sendAdminEmail({
+                        user_email: window.threadAccount.email,
+                        booking_date: request.start,
+                        // the attendees count is set by the restaurant-booking-manager app
+                        location: request.location,
+                        thread_id: window.processingMessageThreadId
+                    }, callback(e));
+                } else {
+                    callback(e);
+                }
             },
             error: function(e) {
                 error_callback(e);

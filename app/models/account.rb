@@ -35,6 +35,7 @@ class Account
                 :delay_between_appointments,
                 :have_priority,
                 :auto_follow_up_enabled,
+                :restaurant_booking_enabled,
                 :julie_aliases
 
   RULE_VALIDATED = "rule_validated"
@@ -77,6 +78,7 @@ class Account
     account.delay_between_appointments = data['delay_between_appointments']
     account.have_priority = data['have_priority']
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
+    account.restaurant_booking_enabled = data['restaurant_booking_enabled']
     account.julie_aliases = data['julie_aliases']
 
     begin

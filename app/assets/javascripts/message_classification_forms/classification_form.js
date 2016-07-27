@@ -113,6 +113,7 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
 window.classificationForms.classificationForm.prototype.sendForm = function () {
     var classificationForm = this;
     var meetingRoomManager = $('#meeting-rooms-manager').scope();
+    var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
@@ -150,8 +151,15 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         date_times: classificationForm.getSuggestedDateTimes(),
         processed_in: Date.now() - classificationForm.startedAt,
         title_preference: $('.title-preferences-checkbox:checked').val(),
+        // We separate using_meeting_room and meeting_room_details to have a quick access to the using_meeting_room boolean
+        // on the model without having to link into the JSON
         using_meeting_room: meetingRoomManager.getUsingMeetingRoom() || undefined,
-        meeting_room_details: meetingRoomManager.getMeetingRoomDetails() || undefined
+        meeting_room_details: meetingRoomManager.getMeetingRoomDetails() || undefined,
+        // We separate using_meeting_room and meeting_room_details to have a quick access to the using_restaurant_booking boolean
+        // on the model without having to link into the JSON
+        using_restaurant_booking: restaurantBookingManager.getUsingRestaurantBooking() || undefined,
+        restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
+        location_changed: window.threadComputedData.location != $("#location").val()
     };
 
     if(window.currentEventTile) {

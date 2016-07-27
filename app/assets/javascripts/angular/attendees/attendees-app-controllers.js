@@ -288,7 +288,6 @@
             }));
 
             var threadOwnerEmailAliasesDowncase = _.map(window.threadAccount.email_aliases, function(email){return email.toLowerCase()});
-
             angular.forEach(window.currentAttendees.filter(function(attendee){
                 var emailValid = true;
                 var emailLowCase = attendee.email ? attendee.email.toLowerCase() : undefined;
@@ -318,6 +317,7 @@
                     informations.company = companies[informations.email];
                 //If the current email is the principal email for a user
                 if(aliasedEmails.indexOf(informations.email) > -1){
+                    console.log('here')
                     informations.isClient = "true";
                     informations.company = companies[informations.email];
 
@@ -369,6 +369,7 @@
                     }
                     // If the email is not an aliased email nor a alias email, we create the attendee
                 }else{
+                    console.log('here')
                     attendeesCtrl.createAttendee(informations, attendee);
                 }
             });
@@ -1037,7 +1038,7 @@
         };
 
         this.displayAttendeeNewForm = function (){
-            sharedProperties.displayAttendeeForm({attendee: new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true}), action: 'new'});
+            sharedProperties.displayAttendeeForm({attendee: $scope.generateNewAttendee(), action: 'new'});
         };
 
         this.displayAttendeeUpdateForm = function(attendee){
@@ -1046,6 +1047,10 @@
 
         $scope.guid = function(){
             return generateGuid();
+        };
+
+        $scope.generateNewAttendee = function() {
+          return new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true});
         };
         //--------------------------------------------------------------------------------
 

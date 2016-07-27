@@ -281,7 +281,9 @@ class MessagesThread < ActiveRecord::Base
           calendar_login_type: computed_calendar_login_type,
           location_coordinates: last_message_classification.try(:location_coordinates),
           using_meeting_room: last_message_classification.try(:using_meeting_room),
-          meeting_room_details: last_message_classification.try(:meeting_room_details)
+          meeting_room_details: last_message_classification.try(:meeting_room_details),
+          using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
+          restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
       }
     end
 

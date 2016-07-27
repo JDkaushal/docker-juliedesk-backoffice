@@ -2107,8 +2107,10 @@
             });
 
             it('should call the displayAttendeeForm Method of the sharedProperties Service when opening a new form', function(){
+                var newAttendee = new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true});
+                spyOn($scope, 'generateNewAttendee').and.returnValue(newAttendee);
                 AttendeesCtrl.displayAttendeeNewForm();
-                expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: { timezone: 'America/Chicago', isPresent: true }, action: 'new'});
+                expect(SharedProperties.displayAttendeeForm).toHaveBeenCalledWith({attendee: newAttendee, action: 'new'});
             });
 
             it('should call the displayAttendeeForm Method of the sharedProperties Service when opening an update form', function(){

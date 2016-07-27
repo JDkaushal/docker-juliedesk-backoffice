@@ -1014,6 +1014,7 @@ EventTile.prototype.initActions = function() {
             $('#event_tile_location_selector').html($('#location_nature').clone().prop('id', 'location_nature_event')).show();
             $('#event_tile_location_selector option[value="' + $('#location_nature').val() + '"]').prop('selected', true);
             $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
+            $('.event-tile-container .create-event-restaurant-booking-manager').show();
 
             meetingRoomsNode.scope().scaleEventTile();
         }
@@ -1041,6 +1042,7 @@ EventTile.prototype.initActions = function() {
         if(window.threadComputedData && !window.threadComputedData.is_virtual_appointment){
             $('#calling-infos-missing').hide();
             $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();
+            $('.event-tile-container .create-event-restaurant-booking-manager').hide();
             $('#event_tile_location_selector').hide();
         }
 

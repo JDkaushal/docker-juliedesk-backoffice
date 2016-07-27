@@ -73,7 +73,7 @@
                     $scope.checkMeetingRoomAvailability(false);
                 });
 
-                $('#location_nature').change(function(e) {
+                $('#location_nature, #location_nature_event').change(function(e) {
                     $scope.refreshRoomsList();
                     $scope.setAddressValue();
                     $scope.$apply();

@@ -424,7 +424,7 @@
                 it('should return the correct hours', function() {
 
                     expect($scope.getAppointmentWorkingHours()).toEqual({
-                        start: [8, 30],
+                        start: [8, 0],
                         end: [21, 0]
                     });
 

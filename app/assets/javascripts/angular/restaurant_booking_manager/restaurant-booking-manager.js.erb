@@ -1,0 +1,193 @@
+(function(){
+
+    var app = angular.module('restaurant-booking-controllers', ['templates']);
+
+    app.directive('restaurantBookingManager', function() {
+        return {
+            restrict: 'E',
+            templateUrl: 'restaurant-booking-manager.html',
+            controller: ['$scope', '$element', '$http' , function($scope, $element, $http){
+                $scope.displayForm = true;
+                $scope.formDisabled = false;
+                $scope.displayAttendeesCountSelect = true;
+                $scope.selectedAttendeesNb = '2';
+                $scope.usingRestaurantBooking = false;
+
+                $scope.allowedAppointmentType = ['breakfast', 'lunch', 'dinner'];
+                $scope.allowedAddressType = ['restaurant'];
+
+                $scope.attendeesManagerCtrl = $scope.attendeesManagerCtrl || angular.element($('#attendeesCtrl')).scope();
+
+                $scope.juliedeskAppHost = "<%= ENV['JULIEDESK_APP_HOST'] %>";
+                $scope.sendAdminEmailUrl = $scope.juliedeskAppHost + '/api/v1/restaurant_booking/send_admin_email';
+
+                var createEventRestaurantManagerContainerSelect = $('.restaurant-booking-selection-area');
+                var createEventRestaurantManagerContainer = $('.create-event-restaurant-booking-manager-wrapper');
+                var createEventRestaurantManagerSelectionSelect = $('.create-event-restaurant-booking-selection-select');
+                var createEventUsingRestaurantBookingCheckbox = $('.using-restaurant-booking-checkbox');
+
+                $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
+                    // We only update the attendees count accordindly of adding or deleting them when we havent saved the count yet
+                    $scope.updateAttendeesCountSelect(args.attendees.slice());
+                });
+
+                $scope.$watch('usingRestaurantBooking', function(newVal, oldVal) {
+                    $scope.displayAttendeesCountSelect = newVal;
+                    createEventUsingRestaurantBookingCheckbox.prop('checked', newVal);
+                });
+
+                $scope.$watch('displayAttendeesCountSelect', function(newVal, oldVal) {
+                    if(newVal) {
+                        createEventRestaurantManagerContainerSelect.show();
+                    } else {
+                        createEventRestaurantManagerContainerSelect.hide();
+                    }
+                });
+
+                $('#location_nature, #location_nature_event').change(function(e) {
+                    $scope.checkFeatureState();
+                    $scope.$apply();
+                });
+
+                $('#appointment_nature').change(function(e) {
+                    $scope.checkFeatureState();
+                    $scope.$apply();
+                });
+
+                // To synchronize with other form present in the event edition tile ------------------------------------
+                $scope.$watch('displayForm', function(newVal, oldVal) {
+                    if(newVal) {
+                        createEventRestaurantManagerContainer.show();
+                    } else {
+                        createEventRestaurantManagerContainer.hide();
+                    }
+                });
+
+                $scope.$watch('selectedAttendeesNb', function(newVal, oldVal) {
+                    createEventRestaurantManagerSelectionSelect.val(newVal);
+                });
+
+                $('.create-event-restaurant-booking-manager input[type="checkbox"]').change(function(e) {
+                    $scope.usingRestaurantBooking = $(this).prop('checked');
+                    $scope.$apply();
+                });
+
+                createEventRestaurantManagerSelectionSelect.change(function(e) {
+                    $scope.selectedAttendeesNb = createEventRestaurantManagerSelectionSelect.val();
+                    $scope.$apply();
+                });
+                //------------------------------------------------------------------------------------------------------
+
+                $http.defaults.headers.common.Authorization = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+
+                $scope.init = function() {
+                    if(!window.formFirstPass) {
+                        $scope.setDefaultState();
+                    }
+
+                    if(createEventRestaurantManagerContainer.length > 0) {
+                        // We simply copy the content of the select element from our main form and paste it in the select element
+                        // of our auxilliary forms if any
+                        createEventRestaurantManagerSelectionSelect.html($element.find('#restaurant_booking_attendees_count').html());
+                    }
+
+                    $scope.formDisabled = !window.threadDataIsEditable;
+                };
+
+                $scope.setDefaultState = function() {
+                    $scope.displayForm = $scope.functionnalityActive();
+
+                    if($scope.displayForm) {
+                        $scope.usingRestaurantBooking = window.threadComputedData.using_restaurant_booking;
+
+                        if(window.threadComputedData.restaurant_booking_details) {
+                            $scope.selectedAttendeesNb = window.threadComputedData.restaurant_booking_details.attendees_count_for_restaurant_booking;
+                        }
+                    }
+                };
+
+                $scope.updateAttendeesCountSelect = function(attendees) {
+
+                    if(attendees){
+                        var presentAttendeesCount = _.countBy(attendees, function (a) {
+                            return a.isPresent;
+                        })[true];
+
+                        if(presentAttendeesCount > 1) {
+                            $scope.selectedAttendeesNb = String(presentAttendeesCount);
+
+                            if(!$scope.$$phase)
+                                $scope.$apply();
+                        }
+                    }
+                };
+
+                $scope.checkFeatureState = function() {
+                    $scope.displayForm = $scope.functionnalityActive();
+
+                    if($scope.displayForm) {
+                        var currentAddress = window.getCurrentAddressObject();
+                        $scope.usingRestaurantBooking = true;
+
+                        // Whe using the feature but the address object is set to define later, we don't precheck the
+                        // restaurant booking feature
+                        if(currentAddress && currentAddress.kind == 'client_will_define') {
+                            $scope.usingRestaurantBooking = false;
+                        }
+                    }
+                };
+
+                $scope.functionnalityActive = function() {
+                    var active = window.threadAccount && window.threadAccount.restaurant_booking_enabled;
+
+                    if(active) {
+                        var currentAppointment = window.getCurrentAppointment();
+                        var appointmentType = currentAppointment && currentAppointment.kind;
+                        var currentAddress = window.getCurrentAddressObject();
+                        var addressType = currentAddress && currentAddress.kind;
+
+                        active = $scope.allowedAppointmentType.indexOf(appointmentType) > -1
+                                || $scope.allowedAddressType.indexOf(addressType) > -1
+                    }
+
+                    return active;
+                };
+                $scope.getUsingRestaurantBooking = function() {
+                    return $scope.usingRestaurantBooking;
+                };
+
+                $scope.getRestaurantBookingDetails = function() {
+                    var result = null;
+
+                    if($scope.usingRestaurantBooking) {
+                        result = {attendees_count_for_restaurant_booking: $scope.selectedAttendeesNb};
+                    }
+
+                    return result;
+                };
+
+                $scope.sendAdminEmail = function(params, successCallback) {
+                    params['attendees_count'] = $scope.selectedAttendeesNb;
+
+                    $http({
+                        method: 'POST',
+                        url: $scope.sendAdminEmailUrl,
+                        data: params
+                    }).then(function(response) {
+                       console.log(response);
+                        if(successCallback)
+                            successCallback();
+                    }, function(error) {
+                        console.log(error);
+                        alert('An error occurred while sending the restaurant booking email to the admins, please inform the support.');
+                    });
+                };
+
+                $scope.init();
+            }],
+
+            controllerAs: 'restaurantBookingCtrl'
+        }
+    });
+
+})();

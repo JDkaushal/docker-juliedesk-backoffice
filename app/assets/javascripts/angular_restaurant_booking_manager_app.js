@@ -1,0 +1,1 @@
+//= require_tree ./angular/restaurant_booking_manager
