@@ -317,7 +317,6 @@
                     informations.company = companies[informations.email];
                 //If the current email is the principal email for a user
                 if(aliasedEmails.indexOf(informations.email) > -1){
-                    console.log('here')
                     informations.isClient = "true";
                     informations.company = companies[informations.email];
 
@@ -369,7 +368,6 @@
                     }
                     // If the email is not an aliased email nor a alias email, we create the attendee
                 }else{
-                    console.log('here')
                     attendeesCtrl.createAttendee(informations, attendee);
                 }
             });
