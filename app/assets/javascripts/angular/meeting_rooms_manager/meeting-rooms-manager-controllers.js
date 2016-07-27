@@ -147,6 +147,12 @@
                     $scope.setRoomsList();
                 };
 
+                $scope.orderAvailableRooms = function() {
+                    $scope.availableRooms = _.sortBy($scope.availableRooms, function(room) {
+                        return parseInt(room.capacity);
+                    });
+                };
+
                 $scope.refreshRoomsList = function() {
                     var address = window.getCurrentAddressObject();
 
@@ -171,6 +177,7 @@
                 };
 
                 $scope.setRoomsList = function() {
+                    $scope.orderAvailableRooms();
                     $scope.roomsList = [{id: 'attendees_count', summary: 'En fonction du nombre de participants'}];
 
                     _.each($scope.availableRooms, function(meetingRoom) {
@@ -326,6 +333,10 @@
                         var available = [];
 
                         if(selectedDateStartTime) {
+
+                            // TODO: Optimize this algorythm as now we are ordering the rooms by their capacity so
+                            // we could stop iterate after the first time we find a room available because it will be
+                            // the smallest possible for the current meeting
 
                             _.each(meetingRoomsAvailable, function (meetingRoom) {
                                 var meetingRoomEvents = window.currentCalendar.meetingRoomsEvents[meetingRoom.id];
