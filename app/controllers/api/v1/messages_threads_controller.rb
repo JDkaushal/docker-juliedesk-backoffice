@@ -41,11 +41,17 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           mt.account.only_admin_can_process
     }
 
+
+    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", DateTime.now - 30.minutes, DateTime.now).where.not(request_at: nil).count
+    operator_presences = OperatorPresence.where("date >= ? AND date < ?", DateTime.now - 30.minutes, DateTime.now).where(is_review: false).count
+
     render json: {
         status: "success",
         data: {
             count: inbox_messages_threads.length,
-            admin_count: admin_messages_threads.length
+            admin_count: admin_messages_threads.length,
+            global_productivity: processed_emails * 2,
+            individual_productivity: processed_emails * 2 / operator_presences
         }
     }
   end
@@ -56,6 +62,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     precision = (params[:precision].try(:to_i) || 30).minutes
     incoming_messages = Message.where(from_me: false).where("received_at >= ? AND received_at <= ?", start_date, end_date).select(:received_at)
     messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", start_date, end_date).where.not(request_at: nil)
+
+    operator_presences = OperatorPresence.where(is_review: false).where("date >= ? AND date <= ?", start_date, end_date)
     current_start_date = start_date
 
     forecast = AiEmailFlowForecast.where('datetime >= ? AND datetime <= ?', start_date, end_date)
@@ -68,9 +76,11 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
 
       key = current_start_date.strftime("%Y%m%dT%H%M")
       current_messages = messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}
+      current_operator_presences = operator_presences.select{|operator_presence| operator_presence.date >= current_start_date && operator_presence.date < current_start_date + precision}
       incoming_count = incoming_messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}.length
       data[key] = {
           count: incoming_count,
+          operators_count: current_operator_presences.length,
           median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0,
           forecast_count: forecast_count
       }

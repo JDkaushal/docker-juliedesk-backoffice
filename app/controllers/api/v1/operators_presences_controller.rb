@@ -21,6 +21,7 @@ class Api::V1::OperatorsPresencesController < Api::ApiV1Controller
               {
                   name: op.operator.name,
                   email: op.operator.email,
+                  privilege: op.operator.privilege,
                   present: pusher_user_emails.include?(op.operator.email),
                   operator_id: op.operator_id
               }
