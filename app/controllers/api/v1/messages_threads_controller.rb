@@ -41,8 +41,20 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
           mt.account.only_admin_can_process
     }
 
+    priority_messages_threads = messages_threads.select{ |mt|
+      mt.account && mt.account.have_priority
+    }
 
-    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", DateTime.now - 30.minutes, DateTime.now).where.not(request_at: nil).count
+    follow_up_messages_threads = messages_threads.select{|mt|
+      "#{mt.subject}".downcase.include?("Récapitulatif hebdomadaire de la semaine du") || "#{mt.subject}".downcase.include?("weekly recap")
+    } + MessagesThread.where(should_follow_up: true)
+
+    follow_up_messages_threads_priority = follow_up_messages_threads.select{|mt|
+      mt.account && mt.account.have_priority
+    }
+
+
+    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).where.not(request_at: nil).count
     operator_presences = OperatorPresence.where("date >= ? AND date < ?", DateTime.now - 30.minutes, DateTime.now).where(is_review: false).count
 
     render json: {
@@ -51,7 +63,10 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
             count: inbox_messages_threads.length,
             admin_count: admin_messages_threads.length,
             global_productivity: processed_emails * 2,
-            individual_productivity: (processed_emails * 2.0 / operator_presences).round(1)
+            individual_productivity: (processed_emails * 2.0 / operator_presences).round(1),
+            priority_count: priority_messages_threads.length,
+            follow_up_messages_threads_priority: follow_up_messages_threads_priority.length,
+            follow_up_messages_threads_main: follow_up_messages_threads.length -  follow_up_messages_threads_priority.length,
         }
     }
   end
