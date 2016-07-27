@@ -51,7 +51,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
             count: inbox_messages_threads.length,
             admin_count: admin_messages_threads.length,
             global_productivity: processed_emails * 2,
-            individual_productivity: processed_emails * 2 / operator_presences
+            individual_productivity: (processed_emails * 2.0 / operator_presences).round(1)
         }
     }
   end
