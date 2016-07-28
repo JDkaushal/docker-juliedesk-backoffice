@@ -54,7 +54,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     }
 
 
-    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).where.not(request_at: nil).count
+    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).count
     operator_presences = OperatorPresence.where("date >= ? AND date < ?", DateTime.now - 30.minutes, DateTime.now).where(is_review: false).count
 
     render json: {
