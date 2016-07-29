@@ -21,7 +21,7 @@
         <tr>
           <td><%= operator.id %></td>
           <td><%= link_to operator.email, edit_admin_operator_path(operator) %></td>
-          <td><%= operator.name %></td>
+          <td><%= operator.operator_of_the_month ? "** OOTM **" : nil %><%= operator.name %></td>
           <td><%= Operator.privilege_descriptions[operator.privilege] %></td>
           <td><%= operator.in_formation ? "In formation" : "" %></td>
         </tr>

@@ -17,6 +17,10 @@ class Admin::OperatorsController < AdminController
     # Seems like http params nil is passed as an empty string
     op_params = operators_params
     op_params[:privilege] = op_params[:privilege] == '' ? nil : op_params[:privilege]
+
+
+    Operator.update_all(operator_of_the_month: false) if op_params[:operator_of_the_month] == "1"
+
     @operator.update_attributes op_params
     redirect_to action: :index
   end
@@ -40,6 +44,6 @@ class Admin::OperatorsController < AdminController
   private
 
   def operators_params
-    params.require(:operator).permit(:email, :name, :ips_whitelist_enabled, :active, :password, :privilege, :color, :planning_access, :in_formation, :manager_access)
+    params.require(:operator).permit(:email, :name, :ips_whitelist_enabled, :active, :password, :privilege, :color, :planning_access, :in_formation, :manager_access, :operator_of_the_month)
   end
 end

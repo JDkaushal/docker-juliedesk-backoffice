@@ -75,6 +75,14 @@
 
     <div class="form-group">
 
+      <%= f.label :operator_of_the_month %>
+      <div class="form-control">
+        <%= f.check_box :operator_of_the_month %> is Operator of the Month
+      </div>
+    </div>
+
+    <div class="form-group">
+
       <%= f.label :color %>
       <%= f.text_field(:color, class: "form-control") %>
     </div>
