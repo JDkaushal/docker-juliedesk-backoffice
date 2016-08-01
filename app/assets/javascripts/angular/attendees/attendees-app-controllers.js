@@ -478,7 +478,7 @@
                 if(!a.lastName) {
                     var fullName = ("" + a.firstName).replace("'", "");
                     $http({
-                        url: '/client_contacts/ai_parse_contact_civilities?fullname=' + fullName,
+                        url: '/client_contacts/ai_parse_contact_civilities?fullname=' + fullName + '&email=' + a.email,
                         method: "GET"
                     }).then(function success(response) {
                         if(response.data.status == "success") {

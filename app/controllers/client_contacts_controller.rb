@@ -248,7 +248,7 @@ class ClientContactsController < ApplicationController
   end
 
   def ai_parse_contact_civilities
-    render json: AiProxy.new.build_request(:parse_human_civilities, { fullname: params[:fullname]})
+    render json: AiProxy.new.build_request(:parse_human_civilities, { fullname: params[:fullname], at: params[:email]})
   end
 
   def ai_get_company_name

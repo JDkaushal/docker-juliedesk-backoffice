@@ -1,7 +1,7 @@
 class AiProxy
 
   AI_ENDPOINTS = {
-      parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/firstlastnames/' }.freeze,
+      parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V3'] + '/firstlastnames/' }.freeze,
       initiate_planning:      { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/initiate/'}.freeze,
       fetch_planning:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/get/'}.freeze,
       fetch_forecast:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/'}.freeze,
