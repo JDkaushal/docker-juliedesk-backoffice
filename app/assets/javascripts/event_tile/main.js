@@ -1,4 +1,5 @@
 function EventTile($selector, params) {
+
     this.eventId = params.eventId;
     this.eventUrl = params.eventUrl;
     this.calendarId = params.calendarId;
@@ -36,6 +37,9 @@ EventTile.prototype.getMode = function() {
 };
 EventTile.prototype.render = function() {
     var eventTile = this;
+
+    console.log('render', eventTile);
+
     eventTile.$selector.html(HandlebarsTemplates['event_tile/main']());
 
     if(eventTile.fromInvitation) {
