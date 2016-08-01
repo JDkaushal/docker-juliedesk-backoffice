@@ -446,17 +446,21 @@
                 };
 
                 $scope.scaleEventTile = function() {
+                     if(!$scope.usingMeetingRoom) {
+                         return
+                    }
+
                     if($('#event-cancel-button').css('display') == 'block') {
 
                         var currentHeightContainer = '650px';
-                        var currentWidthPanel = '635px';
+                        var currentHeightPanel = '635px';
                         if($scope.unavailableMessageDisplayed) {
                             currentHeightContainer = '695px';
-                            currentWidthPanel = '680px';
+                            currentHeightPanel = '680px';
                         }
 
                         $('.event-tile-container.editing').css('height', currentHeightContainer);
-                        $('.created-event-panel').css('height', currentWidthPanel);
+                        $('.created-event-panel').css('height', currentHeightPanel);
                     }
                 };
 

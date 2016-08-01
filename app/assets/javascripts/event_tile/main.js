@@ -1030,12 +1030,19 @@ EventTile.prototype.initActions = function() {
 
         var vmHelperNode = $('#event_update_vm_ctrl');
         var scope = angular.element(vmHelperNode).scope();
+        var heightContainer = '535px';
+        var heightPanel = '515px';
 
         if(!!scope)
             scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
 
-        $('.event-tile-container').css('height', '545px');
-        $('.created-event-panel').css('height', '515px');
+        if(eventTile.$selector.find('.minimize-button').length > 0) {
+            heightContainer = '575px';
+            heightPanel = '545px';
+
+        }
+        $('.event-tile-container').css('height', heightContainer);
+        $('.created-event-panel').css('height', heightPanel);
 
         $('.event-tile-container .location').show();
 
