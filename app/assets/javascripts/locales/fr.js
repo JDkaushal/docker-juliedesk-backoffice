@@ -285,7 +285,7 @@ window.wordings['fr'] = {
         }
     },
     restaurant_booking: {
-        no_location: "\n\nPourriez-vous m'indiquer votre choix de restaurant une foix décidé, afin que je puisse effectuer la réservation ?",
+        no_location: "\n\nPourriez-vous m'indiquer votre choix de restaurant une fois décidé, afin que je puisse effectuer la réservation ?",
         with_location: "\n\nJe reviens vers vous concernant la réservation du restaurant."
     },
     common: {
