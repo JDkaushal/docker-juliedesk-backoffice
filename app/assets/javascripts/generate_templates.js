@@ -229,11 +229,11 @@ window.generateEmailTemplate = function (params) {
                 message += generateDatesForSingleTimezone(params);
             }
 
-            var timeSlotsCount = params.timeSlotsToSuggest[0][params.usedTimezones[0]].length;
-            if(timeSlotsCount == 1){
-                afterDatesTemplate = "email_templates.follow_up_contacts.one_date.after_dates";
-            }else {
+            var multipleDates = params.timeSlotsToSuggest.length > 1 || params.timeSlotsToSuggest[0][params.usedTimezones[0]].length > 1;
+            if(multipleDates){
                 afterDatesTemplate = "email_templates.follow_up_contacts.multiple_dates.after_dates";
+            }else {
+                afterDatesTemplate = "email_templates.follow_up_contacts.one_date.after_dates";
             }
         } else {
             afterDatesTemplate = "email_templates.follow_up_contacts.zero_dates.after_dates";

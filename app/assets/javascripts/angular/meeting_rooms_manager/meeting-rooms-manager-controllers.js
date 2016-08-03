@@ -7,7 +7,7 @@
             restrict: 'E',
             templateUrl: 'meeting-rooms-manager.html',
             controller: ['$scope', '$element' , function($scope, $element){
-                $scope.displayForm = true;
+                $scope.displayForm = false;
                 $scope.displayAttendeesCountSelect = false;
                 $scope.roomsList = [];
                 $scope.availableRooms = [];

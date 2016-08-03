@@ -31,6 +31,27 @@
             $scope.refreshAIForecast();
         };
 
+        $scope.matchQuery = function(item) {
+            if($scope.query) {
+                var text = JSON.stringify(item).toLowerCase();
+                return text.indexOf($scope.query.toLowerCase()) > -1;
+            }
+            else {
+                return true;
+            }
+        };
+
+        $scope.filterOperators = function() {
+            return _.filter($scope.operators, function(op) {
+                return $scope.matchQuery(op);
+            });
+        };
+
+        $scope.getOperators = function() {
+
+          return $scope.filterOperators();
+        };
+
         $scope.refreshAIForecast = function() {
             if(!$scope.lastFetchedForecastDate) {
                 $scope.firstFetchedForecastDate = $scope.startWeekDate.clone();
@@ -626,9 +647,21 @@
   <br>
   <br>
 
+  <div class="search-user-container companies">
+    <input id="search-user-input"
+           ng-model="query"
+           placeholder="Search operator..."
+           autofocus
+    />
+    <div class="result-count"></div>
+  </div>
+
+  <br>
+  <br>
+
   <div class="table-container weekday-grid" ng-repeat="weekday in [1, 2, 3, 4, 5, 6, 7]">
     <table class="table table-stripped">
-      <tr>
+      <tr id="weekday_hours_{{weekday}}">
         <th class="fixed">{{getWeekDay(weekday)}} (heure Mada)</th>
         <th class="hour"
             ng-class="(hour.clone().tz('Indian/Antananarivo').format('HH') == '06')?'main-of-day':''"
@@ -637,7 +670,7 @@
           {{ displayHourHeader(hour) }}
         </th>
       </tr>
-      <tr ng-repeat="operator in operators track by $index" class="operator-{{operator.id}}-{{weekday}}">
+      <tr ng-repeat="operator in getOperators() track by $index" class="operator-{{operator.id}}-{{weekday}}">
         <style>
             .operator-{{operator.id}}-{{weekday}} td.selected {
                 background: {{operator.color}} !important;
@@ -668,20 +701,20 @@
         <td style="width:70px;">{{countHalfHoursByDay(operator, weekday)}}h</td>
       </tr>
 
-      <tr ng-repeat="operator in levelTwo0perators() track by $index" class="operator-{{operator.id}}-{{weekday}}">
-        <td class="fixed">
-          <span class="operator-name">{{ operator.stars }} {{ operator.name }} (rv)</span>
-          <span class="operator-working-hours">{{ operator.review_presences.length / 2.0 }}h</span>
-        </td>
-        <td ng-repeat="halfHour in getHalfHours(weekday) track by $index"
-            ng-mouseover="preselectPresences(operator, halfHour, $event)"
-            ng-mouseDown="initTogglePresences(operator, halfHour, $event)"
-            ng-mouseUp="endTogglePresences(weekday, operator, halfHour, true, $event)"
-            ng-class="(isOperatorPresent(operator, halfHour, true))?'selected':''"
-            id="level2-{{weekday}}-{{operator.id}}-{{$index}}"
-        >
-        </td>
-      </tr>
+      <!--<tr ng-repeat="operator in levelTwo0perators() track by $index" class="operator-{{operator.id}}-{{weekday}}">-->
+        <!--<td class="fixed">-->
+          <!--<span class="operator-name">{{ operator.stars }} {{ operator.name }} (rv)</span>-->
+          <!--<span class="operator-working-hours">{{ operator.review_presences.length / 2.0 }}h</span>-->
+        <!--</td>-->
+        <!--<td ng-repeat="halfHour in getHalfHours(weekday) track by $index"-->
+            <!--ng-mouseover="preselectPresences(operator, halfHour, $event)"-->
+            <!--ng-mouseDown="initTogglePresences(operator, halfHour, $event)"-->
+            <!--ng-mouseUp="endTogglePresences(weekday, operator, halfHour, true, $event)"-->
+            <!--ng-class="(isOperatorPresent(operator, halfHour, true))?'selected':''"-->
+            <!--id="level2-{{weekday}}-{{operator.id}}-{{$index}}"-->
+        <!-->
+        <!--</td>-->
+      <!--</tr>-->
 
       <tr>
         <td class="fixed"></td>

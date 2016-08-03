@@ -212,12 +212,14 @@
                 // Or if one or more cc recipients are presents (means one or more were added)
                 // Or if the client email is not present in the to recipient list
 
+                var clientAllEmails = (window.threadAccount.email_aliases || []).concat(window.threadAccount.email);
+
                 // If the operator then add a recipient (either To or Cc), we uncheck the quote message checkbox, because
                 // the previous message is obviously containing informations only destined to Julie or the client
                 if (toRecipients.length > 1 || ccRecipients.filter(function(item) {
                             return item.name != "support@juliedesk.com";
                         }).length > 0 || toRecipients.filter(function (item) {
-                            return (item.name == window.threadAccount.email);
+                            return (clientAllEmails.indexOf(item.name) > -1);
                         }).length == 0)
                 {
                     state = false;
@@ -266,7 +268,13 @@
         });
 
         $("#reply-button").click(function () {
-            trackActionV2('Click_on_send_email', {ux_element: 'email'});
+            var trackingData = {ux_element: 'email'};
+
+            if(window.threadComputedData && window.threadComputedData.locale) {
+                trackingData.locale = window.threadComputedData.locale;
+            }
+
+            trackActionV2('Click_on_send_email', trackingData);
             $("#reply-button").prop('disabled', true);
             if(window.clickReplyButton) {
                 window.clickReplyButton();
