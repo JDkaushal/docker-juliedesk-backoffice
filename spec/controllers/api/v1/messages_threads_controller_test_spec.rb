@@ -19,7 +19,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":0,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
 
     it 'should return the messages threads for admin count when there are threads in inbox that are not delegated to founders and no accounts are retrieved from the redis accounts cache ' do
@@ -31,7 +31,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
 
     it 'should return the messages threads for admin count when there are threads in inbox that are delegated to founders' do
@@ -43,7 +43,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
 
     it 'should return the messages threads for admin count when there are threads in inbox that have an account set to only_admin_can_process or that have no accounts founds in the cache' do
@@ -57,7 +57,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":0,\"admin_count\":5,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
 
     it 'should return the correct messages threads count when there are threads in inbox that have an account found in the cache' do
@@ -71,7 +71,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":5,\"admin_count\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":5,\"admin_count\":0,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
 
     it 'should return the correct messages threads count when there are threads in inbox that have an account found in the cache but some have companies working hours out of bounds' do
@@ -87,7 +87,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
       get :inbox_count
 
-      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":3,\"admin_count\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
+      expect(response.body).to eq("{\"status\":\"success\",\"data\":{\"count\":3,\"admin_count\":0,\"global_productivity\":0,\"individual_productivity\":null,\"priority_count\":0,\"follow_up_messages_threads_priority\":0,\"follow_up_messages_threads_main\":0}}")
     end
   end
 
@@ -128,7 +128,6 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "to_be_merged_operator_id"=>nil,
                                                       "was_merged"=>false,
                                                       "follow_up_reminder_date"=>nil,
-                                                      "last_relevant_classification_id"=>nil
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
@@ -180,7 +179,10 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "follow_up_data" => mc.follow_up_data,
                                                               "title_preference"=>nil,
                                                               "using_meeting_room"=>false,
-                                                              "meeting_room_details"=>nil
+                                                              "meeting_room_details"=>nil,
+                                                              "using_restaurant_booking" => false,
+                                                              "restaurant_booking_details" => nil,
+                                                              "location_changed" => nil
                                                           }
                                                         }
                                                     }

@@ -15,7 +15,7 @@ module WeeklyRecapHelper
         #where(messages_threads: {account_email: params[:account_email]}).
         where(message_classifications: {thread_status: params[:thread_statuses]}).
         where("message_classifications.created_at >= ?", params[:start_of_week]).
-        distinct.
+        select("DISTINCT ON (messages_threads.id) messages_threads.*").
         includes(messages: {message_classifications: :julie_action})
 
     messages_threads = messages_threads.select { |mt|

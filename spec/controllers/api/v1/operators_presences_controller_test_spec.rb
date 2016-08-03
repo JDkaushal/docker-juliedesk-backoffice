@@ -52,11 +52,11 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
                                                      "data" => {
                                                          "operators_count" => 5,
                                                          "operators" => [
-                                                             {"name" => "operatorName1", "email" => "person1@example.com", "present" => true, "operator_id" => 1},
-                                                             {"name" => "operatorName2", "email" => "person2@example.com", "present" => true, "operator_id" => 2},
-                                                             {"name" => "operatorName3", "email" => "person3@example.com", "present" => true, "operator_id" => 3},
-                                                             {"name" => "operatorName4", "email" => "person4@example.com", "present" => true, "operator_id" => 4},
-                                                             {"name" => "operatorName5", "email" => "person5@example.com", "present" => true, "operator_id" => 5}
+                                                             {"name" => "operatorName1", "email" => "person1@example.com", "present" => true, "privilege"=>nil, "operator_of_the_month"=>false, "operator_id" => 1},
+                                                             {"name" => "operatorName2", "email" => "person2@example.com", "present" => true, "privilege"=>nil, "operator_of_the_month"=>false, "operator_id" => 2},
+                                                             {"name" => "operatorName3", "email" => "person3@example.com", "present" => true, "privilege"=>nil, "operator_of_the_month"=>false, "operator_id" => 3},
+                                                             {"name" => "operatorName4", "email" => "person4@example.com", "present" => true, "privilege"=>nil, "operator_of_the_month"=>false, "operator_id" => 4},
+                                                             {"name" => "operatorName5", "email" => "person5@example.com", "present" => true, "privilege"=>nil, "operator_of_the_month"=>false, "operator_id" => 5}
                                                          ]
                                                      }
                                                  }
@@ -92,24 +92,32 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
                                                 {
                                                     "name" => "#{op2.name}",
                                                     "email" => "#{op2.email}",
+                                                    "privilege" => nil,
+                                                    "operator_of_the_month" => false,
                                                     "present" => false,
                                                     "operator_id" => op2.id,
                                                 },
                                                 {
                                                     "name" => "#{op3.name}",
                                                     "email" => "#{op3.email}",
+                                                    "privilege" => nil,
+                                                    "operator_of_the_month" => false,
                                                     "present" => true,
                                                     "operator_id" => op3.id
                                                 },
                                                 {
                                                     "name" => "#{op4.name}",
                                                     "email" => "#{op4.email}",
+                                                    "privilege" => nil,
+                                                    "operator_of_the_month" => false,
                                                     "present" => true,
                                                     "operator_id" => op4.id
                                                 },
                                                 {
                                                     "name" => "#{op5.name}",
                                                     "email" => "#{op5.email}",
+                                                    "privilege" => nil,
+                                                    "operator_of_the_month" => false,
                                                     "present" => true,
                                                     "operator_id" => op5.id
                                                 }
