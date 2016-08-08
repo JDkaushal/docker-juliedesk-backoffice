@@ -9,7 +9,13 @@ module FollowUp
       # so that they will appear on the home page in the follow up inbox
 
       # We don't forget to reset the follow_up_reminder_date attribute to prevent further emails sent
-      MessagesThread.where('follow_up_reminder_date IS NOT NULL AND follow_up_reminder_date <= ?', now).update_all(should_follow_up: true, follow_up_reminder_date: nil)
+      MessagesThread.where('follow_up_reminder_date IS NOT NULL AND follow_up_reminder_date <= ?', now).includes(messages: {message_classifications: :julie_action}).each do |mt|
+        if mt.event_data[:event_id]
+          mt.update(follow_up_reminder_date: nil)
+        else
+          mt.update(should_follow_up: true, follow_up_reminder_date: nil)
+        end
+      end
     end
   end
 end
