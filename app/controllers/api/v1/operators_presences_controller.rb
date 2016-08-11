@@ -12,7 +12,13 @@ class Api::V1::OperatorsPresencesController < Api::ApiV1Controller
 
     operator_presences = OperatorPresence.where(date: date, is_review: false).includes(:operator)
 
-    pusher_user_emails = Pusher.get("/channels/presence-global/users")[:users].map{|u| u['id']}
+    if ENV['PUSHER_APP_ID']
+      pusher_user_emails = Pusher.get("/channels/presence-global/users")[:users].map{|u| u['id']}
+    elsif ENV['RED_SOCK_URL']
+      pusher_user_emails = RedSock.get_channel_info("presence-global").map{|u| u['email']}
+    else
+      pusher_user_emails = []
+    end
     render json: {
         status: "success",
         data: {

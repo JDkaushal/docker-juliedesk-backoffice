@@ -222,7 +222,7 @@
 
   <div class="left-column">
 
-    <div class="header jd-global-header"></div>
+    <div class="header jd-global-header <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>"></div>
 
     <div class="calendar-in-thread-details-container">
         <%= render template: "calendar/calendar" %>

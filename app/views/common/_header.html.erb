@@ -13,7 +13,7 @@
       });
   });
 </script>
-<div class="header jd-global-header">
+<div class="header jd-global-header <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>">
     <div class="sound-activator <%= (session[:sound_is_activated])?"activated":"" %>">
       <div class="sound-activated"></div>
       <div class="sound-disactivated"></div>

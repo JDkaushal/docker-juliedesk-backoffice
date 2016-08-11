@@ -175,10 +175,17 @@ class MessagesThreadsController < ApplicationController
       messages_thread.update(data)
       print_time "Update messages and messages thread"
 
-      Pusher.trigger('private-global-chat', 'archive', {
-          :message => 'archive',
-          :message_thread_id => messages_thread.id
-      })
+      if ENV['PUSHER_APP_ID']
+        Pusher.trigger('private-global-chat', 'archive', {
+            :message => 'archive',
+            :message_thread_id => messages_thread.id
+        })
+      elsif ENV['RED_SOCK_URL']
+        RedSock.trigger "private-global-chat", 'archive', {
+                                                 message: "archive",
+                                                 :message_thread_id => messages_thread.id
+                                             }
+      end
 
       # When the thread is archived we can redirect the operator to the threads list
       redirect_to action: :index
@@ -248,10 +255,17 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.find(params[:id])
     messages_thread.update_attribute :locked_by_operator_id, nil
 
-    Pusher.trigger('private-global-chat', 'locks-changed', {
-        :message => 'locks_changed',
-        :locks_statuses => MessagesThread.get_locks_statuses_hash
-    })
+    if ENV['PUSHER_APP_ID']
+      Pusher.trigger('private-global-chat', 'locks-changed', {
+          :message => 'locks_changed',
+          :locks_statuses => MessagesThread.get_locks_statuses_hash
+      })
+    elsif ENV['RED_SOCK_URL']
+      RedSock.trigger 'private-global-chat', 'locks-changed', {
+                                               :message => 'locks_changed',
+                                               :locks_statuses => MessagesThread.get_locks_statuses_hash
+                                           }
+    end
 
     redirect_to messages_thread
   end
@@ -280,10 +294,17 @@ class MessagesThreadsController < ApplicationController
     messages_thread.operator_actions_groups.destroy_all
     messages_thread.mt_operator_actions.destroy_all
     messages_thread.update_attribute :was_merged, true
-    Pusher.trigger('private-global-chat', 'archive', {
-                                            :message => 'archive',
-                                            :message_thread_id => messages_thread.id
-                                        })
+    if ENV['PUSHER_APP_ID']
+      Pusher.trigger('private-global-chat', 'archive', {
+                                              :message => 'archive',
+                                              :message_thread_id => messages_thread.id
+                                          })
+    elsif ENV['RED_SOCK_URL']
+      RedSock.trigger 'private-global-chat', 'archive', {
+                                               :message => 'archive',
+                                               :message_thread_id => messages_thread.id
+                                           }
+    end
 
     render json: {
                status: "success",

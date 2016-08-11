@@ -74,7 +74,7 @@
     <div class="messages-thread-emails">
 
       <div>
-        Learn link: <input value="https://juliedesk-backoffice.herokuapp.com/review/messages_threads/<%= @messages_thread.id %>/learn"/>
+        Learn link: <input value="https://<%= ENV['DOMAIN_NAME'] %>/review/messages_threads/<%= @messages_thread.id %>/learn"/>
       </div>
 
       <div class="messages-thread-subject">

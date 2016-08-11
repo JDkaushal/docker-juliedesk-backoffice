@@ -20,7 +20,7 @@
     <tr></tr>
     <% @data[:data].each do |data| %>
         <tr>
-          <td><%= link_to data[:message_id], "https://juliedesk-backoffice.herokuapp.com/messages_threads/#{data[:messages_thread_id]}", target: "_blank" %></td>
+          <td><%= link_to data[:message_id], "https://#{ENV['DOMAIN_NAME']}/messages_threads/#{data[:messages_thread_id]}", target: "_blank" %></td>
 
           <% @data[:fields].each do |field| %>
               <td class="<%= {"correct" => "success", "incorrect" => :danger}[data[:comparison][field]] %>">

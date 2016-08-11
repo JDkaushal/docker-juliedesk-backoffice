@@ -1,8 +1,29 @@
 source 'https://rubygems.org'
 
+# Used to load .env file as environment variable when loading gemfile
+begin
+  File.read(".env").scan(/^([[A-Z]|_]+)\=?(.*)?$/).each do |env_variable|
+    ENV[env_variable[0]] = env_variable[1]
+  end
+rescue Errno::ENOENT
+  puts "No .env file detected"
+end
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.15'
 ruby '2.2.0'
+
+
+if ENV['OVH_MODE']
+  gem 'capistrano-rails', group: :development
+  gem 'capistrano-rvm', group: :development
+
+  #Error tracking
+  gem 'airbrake', '~> 5.0'
+else
+  gem 'newrelic_rpm'
+end
+
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
@@ -16,16 +37,17 @@ gem 'unicorn'
 
 gem 'uglifier', '>= 1.3.0'
 
-gem 'newrelic_rpm'
-
 gem "pusher"
+gem "websocket-client-simple"
 
 gem "mail", '2.6.3'
+
+gem 'resque', "~> 1.26.0"
 
 gem "stringex", :git => 'git://github.com/Fred-JulieDesk/stringex.git'
 #gem "stringex", path: "../stringex"
 
-gem 'delayed_job_active_record'
+gem 'whenever', :require => false
 
 gem 'handlebars_assets'
 
@@ -38,6 +60,7 @@ gem "nokogiri"
 gem "angularjs-rails"
 # To use angular templates steamlessly
 gem 'angular-rails-templates'
+
 
 #gem "httpclient"
 #gem "httpclient",    path: "../httpclient"

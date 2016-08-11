@@ -74,7 +74,7 @@ if ENV['STAGING_APP']
                                 #     "Authorization" => ENV['JULIEDESK_APP_API_KEY']
                                 # })
         client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
-        response = client.get("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
+        response = client.get("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
 
         #response = client.get("https://juliedesk-app.herokuapp.com/api/v1/calendar_proxy/event_get?email=#{event_params['email']}&calendar_login_username=#{event_params['calendar_login_username']}&event_id=#{Rack::Utils.escape(event_params['event_id'])}&event_url=#{event_params['event_url']}&calendar_id=#{Rack::Utils.escape(event_params['calendar_id'])}")
 

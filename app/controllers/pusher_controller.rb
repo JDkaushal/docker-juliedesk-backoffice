@@ -82,6 +82,11 @@ class PusherController < ApplicationController
 
             send_lock_changed
           end
+        elsif event[:name] == "member_added"
+          messages_thread.update_attributes locked_by_operator_id: operator.id,
+                                            locked_at: DateTime.now
+
+          send_lock_changed
         end
       end
     end
@@ -92,9 +97,16 @@ class PusherController < ApplicationController
   private
 
   def send_lock_changed
-    Pusher.trigger('private-global-chat', 'locks-changed', {
-        :message => 'locks_changed',
-        :locks_statuses => MessagesThread.get_locks_statuses_hash
-    })
+    if Rails.env.production? && ENV['PUSHER_APP_ID']
+      Pusher.trigger('private-global-chat', 'locks-changed', {
+          :message => 'locks_changed',
+          :locks_statuses => MessagesThread.get_locks_statuses_hash
+      })
+    elsif ENV['RED_SOCK_URL']
+      RedSock.trigger('private-global-chat', 'locks-changed', {
+                                               :message => 'locks_changed',
+                                               :locks_statuses => MessagesThread.get_locks_statuses_hash
+                                           })
+    end
   end
 end

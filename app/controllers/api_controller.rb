@@ -7,7 +7,7 @@ class ApiController < ActionController::Base
   protected
 
   def authenticate
-    unless request.headers['Authorization'] == "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+    unless request.headers['Authorization'] == ENV['API_KEY']
       render json: {
           status: "error",
           message: "Authentication problem"

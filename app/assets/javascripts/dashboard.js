@@ -13,6 +13,8 @@
 //
 //= require jquery
 
+
+//= require redsock
 //= require helpers
 //= require underscore-min
 //= require moment-with-locales.min

@@ -277,7 +277,7 @@ class Message < ActiveRecord::Base
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
             unless m.from_me
-              m.delay.interprete
+              ConscienceWorker.enqueue m.id
 
               updated_messages_thread_ids << messages_thread.id
             end

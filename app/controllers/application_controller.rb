@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     operator = Operator.find_by_email(email)
     MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
     reset_session
-    redirect_to "https://#{email}@juliedesk-backoffice.herokuapp.com"
+    redirect_to "https://#{email}@#{ENV['DOMAIN_NAME']}"
   end
 
   # Add X-Request-ID to logs

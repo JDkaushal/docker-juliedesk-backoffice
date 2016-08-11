@@ -1,4 +1,4 @@
-<div class="header jd-global-header review">
+<div class="header jd-global-header review <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>">
   <%= link_to "/review" do %>
       JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
   <% end %>

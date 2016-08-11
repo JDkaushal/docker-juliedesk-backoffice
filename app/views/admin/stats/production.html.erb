@@ -14,7 +14,7 @@
       var endDate = startDate.clone();
       endDate.add('d', 1);
       $.ajax({
-          url: "https://juliedesk-backoffice.herokuapp.com/api/v1/sent_messages_stats?start_date=" + startDate.format("YYYY-MM-DDT00:00:00") + "&end_date=" + endDate.format("YYYY-MM-DDT00:00:00"),
+          url: "https://<%= ENV['DOMAIN_NAME'] %>/api/v1/sent_messages_stats?start_date=" + startDate.format("YYYY-MM-DDT00:00:00") + "&end_date=" + endDate.format("YYYY-MM-DDT00:00:00"),
           beforeSend: function (xhr) {
               xhr.setRequestHeader ("Authorization", 'EDx19D72bH7e5I64EXk1kwa4jXvynddS');
           },

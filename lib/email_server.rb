@@ -1,8 +1,8 @@
 module EmailServer
 
   #API_BASE_PATH = "https://jd-email-server-staging.herokuapp.com/api/v1"
-  SERVER_PATH = "https://jd-email-server.herokuapp.com"
-  API_BASE_PATH = "https://jd-email-server.herokuapp.com/api/v1"
+  SERVER_PATH = "#{ENV['EMAIL_SERVER_BASE_PATH']}"
+  API_BASE_PATH = "#{ENV['EMAIL_SERVER_BASE_PATH']}/api/v1"
 
   #API_BASE_PATH = "http://localhost:3000/api/v1"
 

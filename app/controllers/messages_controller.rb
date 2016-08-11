@@ -87,7 +87,7 @@ class MessagesController < ApplicationController
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
       http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
 
-      http.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
+      http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
                                                                                                     email: @message.messages_thread.account_email,
                                                                                                     awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
                                                                                                 })
@@ -193,7 +193,7 @@ class MessagesController < ApplicationController
              }, status: 400 and return
     end
 
-    @message.messages_thread.delay.compute_messages_request_at
+    RequestAtWorker.enqueue @message.messages_thread.id
 
     # We set should follow up to false when we send the email
     @message.messages_thread.update(should_follow_up: false)
