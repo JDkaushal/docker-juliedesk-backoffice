@@ -438,6 +438,11 @@
         this.createAttendee = function(informations, attendee){
             var company = informations.company || '';
             var needAIConfirmation = informations.needAIConfirmation || false;
+
+            console.log(attendee.account_email, informations.aIHasBeenConfirmed);
+            var aIHasBeenConfirmed = informations.aIHasBeenConfirmed || false;
+            console.log(attendee.account_email, aIHasBeenConfirmed);
+
             var validatedCompany = needAIConfirmation ? '' : company;
 
             var a = new Attendee({
@@ -462,6 +467,7 @@
                 isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1),
                 isClient: informations.isClient == "true",
                 needAIConfirmation: needAIConfirmation,
+                aIHasBeenConfirmed: aIHasBeenConfirmed,
                 isThreadOwner: false,
                 hasMissingInformations: false,
                 missingInformationsTemp: {}
@@ -471,7 +477,7 @@
                 a.firstName = a.usageName;
 
             //We ask the AI only when we are classifying an email and if the attendee is not a client
-            if(window.isClassifying && !a.isClient) {
+            if(window.isClassifying && !a.isClient && !a.aIHasBeenConfirmed) {
 
                 // If he has no lastName it means it is the first time this contact is processed. So we ask the AI to
                 // give us the civilities
@@ -1113,6 +1119,7 @@
             if(this.needAIConfirmation) {
                 this.validatedCompany = this.company;
                 this.needAIConfirmation = false;
+                this.aIHasBeenConfirmed = true;
 
                 this.trackAIResults();
             }

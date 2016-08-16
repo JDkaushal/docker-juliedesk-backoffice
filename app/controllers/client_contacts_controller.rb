@@ -56,7 +56,8 @@ class ClientContactsController < ApplicationController
               skypeId: cache['skype'],
               confCallInstructions: cache['confcall_instructions'],
               isClient: "true",
-              needAIConfirmation: contact.need_ai_confirmation
+              needAIConfirmation: contact.need_ai_confirmation,
+              aIHasBeenConfirmed: contact.ai_has_been_confirmed
           }
         else
           account = {
@@ -77,7 +78,8 @@ class ClientContactsController < ApplicationController
               skypeId: contact.skypeId,
               confCallInstructions: contact.conf_call_instructions,
               isClient: "false",
-              needAIConfirmation: contact.need_ai_confirmation
+              needAIConfirmation: contact.need_ai_confirmation,
+              aIHasBeenConfirmed: contact.ai_has_been_confirmed
           }
         end
         @contacts_infos.push(account)
@@ -155,7 +157,8 @@ class ClientContactsController < ApplicationController
             mobile: contact_params['mobile'],
             skypeId:  contact_params['skypeId'],
             conf_call_instructions: contact_params['confCallInstructions'],
-            need_ai_confirmation: contact_params['needAIConfirmation']
+            need_ai_confirmation: contact_params['needAIConfirmation'],
+            ai_has_been_confirmed: contact_params['aIHasBeenConfirmed'],
         )
       else
         client_contact = ClientContact.new(client_email: params[:client_email], email: contact_params['email'])
@@ -173,6 +176,7 @@ class ClientContactsController < ApplicationController
         client_contact.skypeId =  contact_params['skypeId']
         client_contact.conf_call_instructions = contact_params['confCallInstructions']
         client_contact.need_ai_confirmation = contact_params['needAIConfirmation']
+        client_contact.ai_has_been_confirmed = contact_params['aIHasBeenConfirmed']
         client_contact.save
       end
 

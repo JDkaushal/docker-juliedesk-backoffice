@@ -54,7 +54,8 @@ describe ClientContactsController, :type => :controller do
                                                 :skypeId=>nil,
                                                 :confCallInstructions=>nil,
                                                 :isClient=>"true",
-                                                :needAIConfirmation=>false
+                                                :needAIConfirmation=>false,
+                                                :aIHasBeenConfirmed=>false
                                               },
                                               {
                                                 :id=>cc2.id,
@@ -74,7 +75,8 @@ describe ClientContactsController, :type => :controller do
                                                 :skypeId=>nil,
                                                 :confCallInstructions=>nil,
                                                 :isClient=>"false",
-                                                :needAIConfirmation=>false}
+                                                :needAIConfirmation=>false,
+                                                :aIHasBeenConfirmed=>false}
                                              ])
     end
 
