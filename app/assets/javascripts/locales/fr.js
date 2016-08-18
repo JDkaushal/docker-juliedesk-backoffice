@@ -151,7 +151,9 @@ window.wordings['fr'] = {
             ask_for_location: "\n\nPourriez-vous m'indiquer l'adresse si vous souhaitez que je l'ajoute à l'évènement ?",
             ask_interlocutor_for_location: "\n\nPourriez-vous m'indiquer l'adresse pour que je l'ajoute à l'évènement ?",
             number_to_call: "Numéro à appeler : %{number}\n",
-            call_client_on: "Appeler %{client} au %{number_to_call}"
+            call_client_on: "Appeler %{client} au %{number_to_call}",
+            meeting_room_booked: "\n\nPour ceux présents chez %{company_name}, veuillez noter que la salle de réunion %{meeting_room_name} a été réservée."
+
         },
         info_asked: "Voici l'information demandée :",
         confirmation: {
@@ -316,7 +318,11 @@ window.wordings['fr'] = {
             give_confcall: "%{details}"
         },
         notes: {
-            address_details_boundary: 'Complément-Adresse'
+            address_details_boundary: 'Complément-Adresse',
+            meeting_rooms: {
+                boundary: '-Salle-de-Réunion------',
+                sentence: 'Salle de réunion réservée chez %{company_name} : %{meeting_room_name}'
+            }
         }
     },
     constraints: {

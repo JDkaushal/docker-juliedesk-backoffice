@@ -320,6 +320,10 @@ window.generateEmailTemplate = function (params) {
                 }
             }
         }
+
+        if(params.usingMeetingRoom && params.appointment && params.appointment.appointment_kind_hash.is_virtual) {
+            message += localize("email_templates.invites_sent.meeting_room_booked", {company_name: params.threadOwnerCompanyName, meeting_room_name: params.selectedRoomName})
+        }
     }
     else if(params.action == "cancel_event") {
         dateString = getScheduledEventDateString(params);

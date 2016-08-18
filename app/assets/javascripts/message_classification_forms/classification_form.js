@@ -114,6 +114,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
     var classificationForm = this;
     var meetingRoomManager = $('#meeting-rooms-manager').scope();
     var restaurantBookingManager = $('#restaurant-booking-manager').scope();
+    var currentAppointment = window.getCurrentAppointment();
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
@@ -161,6 +162,12 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
         location_changed: window.threadComputedData.location != $("#location").val()
     };
+
+    // We don't care about the location of the apointment when it is a virtual one
+    // We use the location to know the available meeting rooms to a client when he is performing a virtual appointment
+    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+        data.location = '';
+    }
 
     if(window.currentEventTile) {
         data.event_booked_date = window.currentEventTile.getEditedEvent().start.format();

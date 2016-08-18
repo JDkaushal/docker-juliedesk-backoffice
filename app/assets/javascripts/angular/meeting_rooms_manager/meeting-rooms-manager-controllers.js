@@ -8,10 +8,11 @@
             templateUrl: 'meeting-rooms-manager.html',
             controller: ['$scope', '$element' , function($scope, $element){
                 $scope.displayForm = false;
-                $scope.displayAttendeesCountSelect = false;
+                //$scope.displayAttendeesCountSelect = false;
+                $scope.displayCustomSelectionFilters = false;
                 $scope.roomsList = [];
                 $scope.availableRooms = [];
-                $scope.selectedRoom = {id: 'attendees_count', summary: 'En fonction du nombre de participants'};
+                $scope.selectedRoom = {id: 'auto_room_selection', summary: 'Sélection Auto Par Filtres'};
                 $scope.attendeesManagerCtrl = $scope.attendeesManagerCtrl || angular.element($('#attendeesCtrl')).scope();
                 $scope.datesVerificationManagerCtrl = $scope.datesVerificationManagerCtrl || angular.element($('#datesVerificationsManager')).scope();
                 $scope.selectedAttendeesNb = "2";
@@ -30,9 +31,12 @@
                 var createEventRoomSelectionSelect = $('.create_event_room_selection_select');
                 var locationInputs = $("input#location, input#event_location");
 
+                var meetingRoomsReFr = new RegExp("-" + localize("events.notes.meeting_rooms.boundary", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
+                var meetingRoomsReEn = new RegExp("-" + localize("events.notes.meeting_rooms.boundary", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
+
                 $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
                     // We only update the attendees count accordindly of adding or deleting them when we havent saved the count yet
-                    if($scope.usingMeetingRoom && !window.threadComputedData.meeting_room_details && !window.threadComputedData.meeting_room_details.attendees_count_for_meeting_room)
+                    if($scope.usingMeetingRoom && ( !window.threadComputedData.meeting_room_details || ( window.threadComputedData.meeting_room_details && !window.threadComputedData.meeting_room_details.attendees_count_for_meeting_room ) ) )
                         $scope.updateAttendeesCountSelect(args.attendees.slice());
                 });
 
@@ -42,8 +46,20 @@
                     });
                 }
 
+                //$scope.$watch('selectedRoom', function(newVal, oldVal) {
+                //    $scope.displayAttendeesCountSelect = newVal && newVal.id == 'attendees_count';
+                //});
+
                 $scope.$watch('selectedRoom', function(newVal, oldVal) {
-                    $scope.displayAttendeesCountSelect = newVal && newVal.id == 'attendees_count';
+                    if(newVal) {
+                        $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
+
+                        var currentAppointment = window.getCurrentAppointment();
+                        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+                            updateNotesCallingInfos();
+                        }
+                    }
+
                 });
 
                 $scope.$watch('displayForm', function(newVal, oldVal) {
@@ -57,13 +73,16 @@
                 $scope.$watch('usingMeetingRoom', function(newVal, oldVal) {
                     $('.create-event-meeting-rooms-container input[type="checkbox"]').prop('checked', newVal);
                     if(newVal) {
+                        $scope.setAddressValue();
                         createEventMeetingRoomContainerSelect.show();
                     } else {
+                        $scope.setAddressValue();
                         createEventMeetingRoomContainerSelect.hide();
                     }
                 });
 
                 $scope.init = function() {
+
                     if(!window.formFirstPass || window.julie_action_nature) {
                         $scope.setMeetingRoomManagerDefaultState();
                     }
@@ -178,7 +197,7 @@
 
                 $scope.setRoomsList = function() {
                     $scope.orderAvailableRooms();
-                    $scope.roomsList = [{id: 'attendees_count', summary: 'En fonction du nombre de participants'}];
+                    $scope.roomsList = [{id: 'auto_room_selection', summary: 'Sélection Auto Par Filtres'}];
 
                     _.each($scope.availableRooms, function(meetingRoom) {
                         $scope.roomsList.push({id: meetingRoom.id, summary: meetingRoom.summary, calendar_login_username: meetingRoom.calendar_login_username});
@@ -196,11 +215,24 @@
                         $scope.usingMeetingRoom = currentAddress.meeting_rooms_enabled;
 
                         if($scope.usingMeetingRoom) {
+                            var selectedMeetingRoom = currentAppointment.selected_meeting_room;
+
+                            if(selectedMeetingRoom.indexOf('auto_room_selection') > -1) {
+                                $scope.setDefaultFilters(selectedMeetingRoom);
+                                selectedMeetingRoom = 'auto_room_selection';
+                            }
+
                             $scope.selectedRoom = _.find($scope.roomsList, function(room) {
-                                return room.id == currentAppointment.selected_meeting_room;
+                                return room.id == selectedMeetingRoom;
                             });
                         }
                     }
+                };
+
+                $scope.setDefaultFilters = function(selectedRoomStr) {
+                    $scope.useAttendeesCountFilter = selectedRoomStr.indexOf('attendees_count') > -1;
+                    $scope.useCanConfCallFilter = selectedRoomStr.indexOf('can_confcall') > -1;
+                    $scope.useCanVisioFilter = selectedRoomStr.indexOf('can_visio') > -1;
                 };
 
                 $scope.setSelectedRoom = function() {
@@ -209,10 +241,21 @@
                     $scope.displayForm = address && address.meeting_rooms_enabled;
                     $scope.usingMeetingRoom = window.threadComputedData.using_meeting_room;
                     if(window.threadComputedData.meeting_room_details) {
-                        $scope.selectedRoom = window.threadComputedData.meeting_room_details.selected_meeting_room;
-                        $scope.computedDataSelectedRoom = window.threadComputedData.meeting_room_details.selected_meeting_room;
+
+                        if(window.threadComputedData.meeting_room_details.selected_meeting_room.id.indexOf('auto_room_selection') > -1) {
+                            $scope.setDefaultFilters(window.threadComputedData.meeting_room_details.selected_meeting_room.id);
+                            $scope.selectedRoom = angular.copy(window.threadComputedData.meeting_room_details.selected_meeting_room);
+                            $scope.computedDataSelectedRoom = angular.copy(window.threadComputedData.meeting_room_details.selected_meeting_room);
+
+                            $scope.selectedRoom.id = 'auto_room_selection';
+                            $scope.computedDataSelectedRoom.id = 'auto_room_selection';
+                        } else {
+                            $scope.selectedRoom = window.threadComputedData.meeting_room_details.selected_meeting_room;
+                            $scope.computedDataSelectedRoom = window.threadComputedData.meeting_room_details.selected_meeting_room;
+                        }
+
                         if(window.threadComputedData.meeting_room_details.attendees_count_for_meeting_room) {
-                            $scope.displayAttendeesCountSelect = true;
+                            //$scope.displayAttendeesCountSelect = true;
                             $scope.selectedAttendeesNb = window.threadComputedData.meeting_room_details.attendees_count_for_meeting_room;
                         }
                     }
@@ -221,9 +264,27 @@
                 $scope.updateAttendeesCountSelect = function(attendees) {
 
                     if(attendees){
-                        var presentAttendeesCount = _.countBy(attendees, function (a) {
-                            return a.isPresent;
-                        })[true];
+                        // TODO When in a vitual Appointment, only take into account attendees from the same company than the threadOwner
+                        var currentAppointment = window.getCurrentAppointment();
+                        var presentAttendeesCount;
+                        // When in a virtual appointment, we take into account only the attendees from the same company than the Thread Owner
+                        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+                            if(window.threadAccount.company_hash && window.threadAccount.company_hash.name.length > 0) {
+                                var threadOwnerCompany = window.threadAccount.company_hash.name;
+
+                                presentAttendeesCount = _.countBy(attendees, function (a) {
+                                    return a.isPresent && a.company == threadOwnerCompany;
+                                })[true];
+                            } else {
+                                // If the threadOwner does not have a company we set the attendees count to 1
+                                presentAttendeesCount = 1;
+                            }
+
+                        } else {
+                            presentAttendeesCount = _.countBy(attendees, function (a) {
+                                return a.isPresent;
+                            })[true];
+                        }
 
                         $scope.selectedAttendeesNb = String(presentAttendeesCount);
 
@@ -241,18 +302,36 @@
 
                     if($scope.usingMeetingRoom) {
                         result = {selected_meeting_room: $scope.selectedRoom};
-                        if(result.selected_meeting_room.id == 'attendees_count') {
-                            $.extend(result, {attendees_count_for_meeting_room: $scope.selectedAttendeesNb})
+                        if(result.selected_meeting_room.id == 'auto_room_selection') {
+                            result.selected_meeting_room.id += '|' + $scope.getActiveFilters().join(';');
+                            if($scope.useAttendeesCountFilter)
+                                $.extend(result, {attendees_count_for_meeting_room: $scope.selectedAttendeesNb});
                         }
                     }
 
                     return result;
                 };
 
+                $scope.getActiveFilters = function() {
+                    var activeFilters = [];
+
+                    if($scope.useAttendeesCountFilter) {
+                        activeFilters.push('attendees_count');
+                    }
+                    if($scope.useCanConfCallFilter) {
+                        activeFilters.push('can_confcall');
+                    }
+                    if($scope.useCanVisioFilter) {
+                        activeFilters.push('can_visio');
+                    }
+
+                    return activeFilters;
+                };
+
                 $scope.getMeetingRoomsToDisplay = function() {
                     var result = [];
 
-                    if($scope.computedDataSelectedRoom && $scope.computedDataSelectedRoom.id == 'attendees_count') {
+                    if($scope.computedDataSelectedRoom && $scope.computedDataSelectedRoom.id == 'auto_room_selection') {
                         result = $scope.determineFittingMeetingRooms();
                     }else {
                         if($scope.selectedRoom)
@@ -273,7 +352,7 @@
                     var filteredAvailableRooms = _.filter($scope.availableRooms, function(room) {
                         var toFilter = false;
 
-                        if(room.capacity === undefined || room.capacity >= attendeesCount) {
+                        if($scope.applyFilterOnRoom(room, {attendeesCount: attendeesCount})) {
                             if(room.id == selectedRoomId) {
                                 selectedRoomToUnshift = true;
                             } else {
@@ -287,6 +366,34 @@
                         filteredAvailableRooms.unshift($scope.selectedRoom);
 
                     return filteredAvailableRooms;
+                };
+
+                $scope.applyFilterOnRoom = function(room, params) {
+                    var toBeFiltered = true;
+
+                    if($scope.useAttendeesCountFilter) {
+                        toBeFiltered = toBeFiltered && $scope.attendeesCountFilter(room.capacity, params.attendeesCount);
+                    }
+                    if($scope.useCanConfCallFilter) {
+                        toBeFiltered = toBeFiltered && $scope.canConfCallFilter(room.can_confcall);
+                    }
+                    if($scope.useCanVisioFilter) {
+                        toBeFiltered = toBeFiltered && $scope.canVisioFilter(room.can_visio);
+                    }
+
+                    return toBeFiltered;
+                };
+
+                $scope.attendeesCountFilter = function(roomCapacity, attendeesCount) {
+                    return roomCapacity === undefined || roomCapacity >= attendeesCount;
+                };
+
+                $scope.canConfCallFilter = function(roomCanConfCall) {
+                    return roomCanConfCall == 'true';
+                };
+
+                $scope.canVisioFilter = function(roomCanVisio) {
+                    return roomCanVisio == 'true';
                 };
 
                 $scope.setNewSelectedRoom = function(roomId) {
@@ -413,7 +520,7 @@
                         return mR.id == room.id;
                     });
 
-                    if($scope.selectedRoom && $scope.selectedRoom.id != "attendees_count") {
+                    if($scope.selectedRoom && $scope.selectedRoom.id != "auto_room_selection") {
                         $('.create_event_room_selection_select option[value="' + $scope.selectedRoom.id + '"]').prop('selected', 'selected');
                         $scope.setAddressValue();
                     }
@@ -421,9 +528,16 @@
 
                 $scope.setAddressValue = function() {
                     window.setAddressValues();
+                    var currentAppointment = window.getCurrentAppointment();
 
-                    if($scope.selectedRoom) {
-                        var newLocation = [$scope.selectedRoom.summary, locationInputs.val()].join(', ');
+                    if($scope.selectedRoom && currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
+                        var newLocationArray = [locationInputs.val()];
+
+                        if($scope.usingMeetingRoom) {
+                            newLocationArray.unshift($scope.selectedRoom.summary);
+                        }
+
+                        var newLocation = newLocationArray.join(', ');
                         locationInputs.val(newLocation);
                         window.threadComputedData.location = newLocation;
                     }
@@ -452,11 +566,24 @@
 
                     if($('#event-cancel-button').css('display') == 'block') {
 
+                        var virtualMeetingHelperUsed = $('#event_update_virtual_meetings_helper').length > 0;
+
                         var currentHeightContainer = '650px';
                         var currentHeightPanel = '635px';
+
+                        if(virtualMeetingHelperUsed) {
+                            currentHeightContainer = '810px';
+                            currentHeightPanel = '790px';
+                        }
+
                         if($scope.unavailableMessageDisplayed) {
                             currentHeightContainer = '695px';
                             currentHeightPanel = '680px';
+
+                            if(virtualMeetingHelperUsed) {
+                                currentHeightContainer = '855px';
+                                currentHeightPanel = '840px';
+                            }
                         }
 
                         $('.event-tile-container.editing').css('height', currentHeightContainer);
@@ -523,6 +650,34 @@
                         }
 
                     });
+                };
+
+                $scope.setMeetingRoomInfosInNotes = function() {
+                    if($scope.selectedRoom && $scope.selectedRoom.id != 'auto_room_selection' && $scope.selectedRoom.summary && $scope.attendeesManagerCtrl) {
+                        var notesNode = $('#notes');
+                        var notes = notesNode.val();
+                        var meetingRoomInfos = '';
+
+                        meetingRoomInfos += "-" + localize("events.notes.meeting_rooms.boundary", {locale: window.currentLocale}) + "-------------------";
+                        meetingRoomInfos += "\n " + localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, company_name: $scope.attendeesManagerCtrl.getThreadOwner().company, meeting_room_name: $scope.selectedRoom.summary});
+                        meetingRoomInfos += "\n----------------------------------------";
+
+                        var tmpNotes = notes.replace(/\n/g,'');
+                        var regexFrResult = meetingRoomsReFr.exec(tmpNotes);
+                        var regexEnResult = meetingRoomsReEn.exec(tmpNotes);
+
+                        if(regexFrResult == null && regexEnResult == null){
+                            if(notes.replace(/\n/g,'').length > 0)
+                                notes += "\n\n";
+                            notes += meetingRoomInfos;
+                        }else{
+                            // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
+                            var usedRegex = regexFrResult != null ? meetingRoomsReFr : meetingRoomsReEn;
+                            notes = notes.replace(/\n/g,'__n').replace(usedRegex, meetingRoomInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
+                        }
+
+                        notesNode.val(notes);
+                    }
                 };
 
                 $scope.init();

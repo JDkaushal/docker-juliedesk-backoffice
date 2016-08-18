@@ -150,7 +150,8 @@ window.wordings['en'] = {
             ask_for_location: "\n\nPlease let me know the location if you want me to add it to the event.",
             ask_interlocutor_for_location: "\n\nPlease let me know the location to add it to the event.",
             number_to_call: "Number to call: %{number}\n",
-            call_client_on: "Call %{client} at %{number_to_call}"
+            call_client_on: "Call %{client} at %{number_to_call}",
+            meeting_room_booked: "\n\nTo those at %{company_name}, the meeting room %{meeting_room_name} has been booked."
         },
         info_asked: "Here is the info you asked:",
         confirmation: {
@@ -315,7 +316,11 @@ window.wordings['en'] = {
             give_target_number: "Reach %{target_name} at %{details}"
         },
         notes: {
-            address_details_boundary: 'Address-Details'
+            address_details_boundary: 'Address-Details',
+            meeting_rooms: {
+                boundary: '-Meeting-Room------',
+                sentence: 'Meeting room booked at %{company_name}: %{meeting_room_name}'
+            }
         }
     },
     constraints: {

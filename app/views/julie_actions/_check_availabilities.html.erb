@@ -237,7 +237,9 @@
                     emailInNotes = "\n\n" + textData.text;
                 }
 
-                var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
+                //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
+                // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
+                var description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
 
                 if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
                     if(window.threadComputedData.call_instructions.event_instructions)
@@ -324,7 +326,7 @@
 
     var createOrUpdateEvent = function(start, requestParams) {
         CommonHelpers.externalRequest(requestParams, function (e) {
-
+            var currentAppointment = window.getCurrentAppointment();
             var eventCreatorManager = $('#datesVerificationsManager').scope();
 
             window.currentCalendar.refreshEvents();
@@ -344,12 +346,12 @@
 
             var attendeesWithMissingInfos = window.getPresentAttendeesWithMissingInfos();
 
-            message += messageBuilder.generateReply({
+            var messageParams1 = {
                 action: "invites_sent",
                 isPostpone: isPostpone && !window.currentEventFromInvitation,
                 timeSlotToCreate: eventCreatorManager.selectedDateRaw,
                 usedTimezones: eventCreatorManager.getUsedTimezones(),
-                appointment: window.getCurrentAppointment(),
+                appointment: currentAppointment,
                 address: window.getCurrentAddress(),
                 timezoneId: window.threadComputedData.timezone,
                 defaultTimezoneId: window.threadAccount.default_timezone_id,
@@ -357,7 +359,19 @@
                 attendeesWithMissingInfos: attendeesWithMissingInfos,
                 locale: window.threadComputedData.locale,
                 usingRestaurantBooking: window.threadComputedData.using_restaurant_booking
-            });
+            };
+
+            if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+                var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+
+                if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+                    messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
+                    messageParams1.threadOwnerCompanyName = meetingRoomsManager.attendeesManagerCtrl.getThreadOwner().company;
+                    messageParams1.selectedRoomName = meetingRoomsManager.selectedRoom.summary;
+                }
+            }
+
+            message += messageBuilder.generateReply(messageParams1);
 
             var data = {
                 event_id: window.currentEventId,
@@ -400,7 +414,7 @@
                     callInstructions: call_instructions,
                     locale: window.threadComputedData.locale
                 };
-                var currentAppointmentKind = window.getCurrentAppointment().appointment_kind_hash.family_kind;
+                var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
 
                 if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
                     messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
@@ -420,7 +434,7 @@
                 // where we ask for the call instructions and there are only one attendee with missing infos
                 // It would create a duplicate question
             } else {
-                var courtesyStringNeeded = !window.getCurrentAppointment().appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+                var courtesyStringNeeded = !currentAppointment.appointment_kind_hash.is_virtual && !window.getCurrentAddress();
                 var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
                 var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
                 if(missingInfosMessage != ''){

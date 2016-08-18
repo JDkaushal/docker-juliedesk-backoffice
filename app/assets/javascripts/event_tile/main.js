@@ -999,6 +999,9 @@ EventTile.prototype.initActions = function() {
 
         eventTile.redrawDatePicker();
 
+        $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
+        meetingRoomsNode.scope().scaleEventTile();
+
         if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual){
             var vmHelperNode = $('#event_update_vm_ctrl');
             var scope = angular.element(vmHelperNode).scope();
@@ -1017,10 +1020,7 @@ EventTile.prototype.initActions = function() {
             $('.event-tile-container .location').show();
             $('#event_tile_location_selector').html($('#location_nature').clone().prop('id', 'location_nature_event')).show();
             $('#event_tile_location_selector option[value="' + $('#location_nature').val() + '"]').prop('selected', true);
-            $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
             $('.event-tile-container .create-event-restaurant-booking-manager').show();
-
-            meetingRoomsNode.scope().scaleEventTile();
         }
 
         reProcessTitle();
@@ -1049,10 +1049,10 @@ EventTile.prototype.initActions = function() {
         $('.created-event-panel').css('height', heightPanel);
 
         $('.event-tile-container .location').show();
+        $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();
 
         if(window.threadComputedData && !window.threadComputedData.is_virtual_appointment){
             $('#calling-infos-missing').hide();
-            $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();
             $('.event-tile-container .create-event-restaurant-booking-manager').hide();
             $('#event_tile_location_selector').hide();
         }

@@ -247,6 +247,7 @@ class Message < ActiveRecord::Base
                                               })
           end
         else
+          puts server_thread
           account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
           account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)

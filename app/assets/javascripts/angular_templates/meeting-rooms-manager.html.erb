@@ -3,5 +3,25 @@
     <input type="checkbox" ng-model="usingMeetingRoom" ng-disabled="formDisabled"><span>Salle de réunion</span>
   </div>
   <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="selectedRoom" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
-  <%= select_tag :meeting_rooms_attendees_count, options_for_select(2..50), {'ng-show' => 'displayAttendeesCountSelect', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+
+  <div ng-show="displayCustomSelectionFilters">
+
+    <div >
+      <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>
+      <%= label_tag :meeting_rooms_custom_attendees_count, 'Nombre de Participants'%>
+      <%= select_tag :meeting_rooms_attendees_count, options_for_select(2..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+    </div>
+
+    <div>
+      <%= check_box_tag :meeting_rooms_custom_can_confcall, false, {}, {'ng-model' => 'useCanConfCallFilter', 'ng-disabled' => 'formDisabled'} %>
+      <%= label_tag :meeting_rooms_custom_can_confcall, 'Matériel de Confcall'%>
+    </div>
+
+    <div>
+      <%= check_box_tag :meeting_rooms_custom_can_visio, false, {}, {'ng-model' => 'useCanVisioFilter', 'ng-disabled' => 'formDisabled'} %>
+      <%= label_tag :meeting_rooms_custom_can_visio, 'Matériel de Visio'%>
+    </div>
+  </div>
+
+
 </div>
