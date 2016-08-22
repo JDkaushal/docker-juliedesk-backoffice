@@ -209,6 +209,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduled",
                                    :subject => "Skype scheduled on 2016-02-03",
                                    :thread_subject => "Subject correct mt",
@@ -345,6 +346,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduled",
                                    :subject => "Skype scheduled on 2016-02-03",
                                    :thread_subject => "Subject correct mt",
@@ -412,6 +414,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduled",
                                    :thread_subject => "Subject creation mt",
                                    :other =>
@@ -488,6 +491,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
                                    :thread_subject => "Subject scheduling mt",
@@ -560,6 +564,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
                                    :thread_subject => "Subject correct scheduling mt",
@@ -666,6 +671,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status => "scheduling",
                                    :subject => "Skype scheduled on 2016-02-03",
                                    :thread_subject => "Subject scheduling mt",
@@ -682,6 +688,7 @@ describe WeeklyRecapHelper do
                                        }
                                },
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status=>"aborted",
                                    :subject=>"Skype scheduled on 2016-01-20",
                                    :thread_subject => "Subject scheduling aborted mt",
@@ -753,6 +760,7 @@ describe WeeklyRecapHelper do
 
         expect(data).to eq([
                                {
+                                   :account_email=>"nicolas@juliedesk.com",
                                    :status=>"aborted",
                                    :subject=>"Skype canceled on 2016-02-03",
                                    :thread_subject => "Subject aborted mt",

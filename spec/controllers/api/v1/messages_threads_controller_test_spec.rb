@@ -128,6 +128,17 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "to_be_merged_operator_id"=>nil,
                                                       "was_merged"=>false,
                                                       "follow_up_reminder_date"=>nil,
+                                                      "last_relevant_classification_id"=>nil,
+                                                      "current_scheduling_status"=>nil,
+                                                      "in_scheduling_process"=>nil,
+                                                      "event_creation_ja_id"=>nil,
+                                                      "last_classification_id"=>nil,
+                                                      "last_classification_with_data_id"=>nil,
+                                                      "suggested_date_times_ja"=>nil,
+                                                      "suggested_date_times_mc"=>nil,
+                                                      "next_suggested_status"=>nil,
+                                                      "last_message_from_me"=>nil,
+                                                      "last_message_sent_at"=>nil
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
@@ -140,7 +151,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                         "reply_all_recipients" => m.reply_all_recipients,
                                                         "from_me" => m.from_me,
                                                         "server_message_id" => m.server_message_id,
-                                                        "request_at" => nil
+                                                        "request_at" => nil,
+                                                        "last_relevant_classification_id"=>nil
                                                     }
                                                   },
                                                   "messages_classifications" => @mt1.messages.map { |m|
