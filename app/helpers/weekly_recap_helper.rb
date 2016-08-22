@@ -137,6 +137,7 @@ module WeeklyRecapHelper
 
     scheduled_mts.map { |mt|
       {
+          account_email: params[:account_email],
           status: "scheduled",
           subject: mt.computed_data_light[:summary],
           thread_subject: mt.subject,
@@ -150,6 +151,7 @@ module WeeklyRecapHelper
       }
     } + events_creation_data.map { |event|
       {
+          account_email: params[:account_email],
           status: "scheduled",
           thread_subject: event[:messages_thread_subject],
           other: {
@@ -161,6 +163,7 @@ module WeeklyRecapHelper
       }
     } + scheduling_mts.map { |mt|
       {
+          account_email: params[:account_email],
           status: "scheduling",
           subject: mt.computed_data_light[:summary],
           thread_subject: mt.subject,
@@ -183,6 +186,7 @@ module WeeklyRecapHelper
       }
     } + (aborted_mts + scheduling_aborted_mts).map { |mt|
       {
+          account_email: params[:account_email],
           status: "aborted",
           subject: mt.computed_data_light[:summary],
           thread_subject: mt.subject,
