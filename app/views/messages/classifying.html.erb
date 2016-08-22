@@ -46,6 +46,7 @@
 
           window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
           $(".calendar-container").addClass("visible");
+          $(".calendar-container").addClass("minimized");
       };
 
       window.drawCalendarCallback = function(){
@@ -58,15 +59,15 @@
           window.currentCalendar.redrawFullCalendar();
       };
 
-  $(document).ready(function() {
-      $("#show-calendar-button").click(function () {
-          trackActionV2("Click_on_open_calendar", {
-              calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
+      $(document).ready(function() {
+          $("#show-calendar-button").click(function () {
+              trackActionV2("Click_on_open_calendar", {
+                  calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;})
+              });
+              $(".calendar-container").removeClass("minimized");
+              window.currentCalendar.redrawFullCalendar();
           });
-          $(".calendar-container").removeClass("minimized");
-          window.currentCalendar.redrawFullCalendar();
       });
-  });
   <% end %>
 
   function emailSender() {
