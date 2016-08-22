@@ -240,7 +240,7 @@
 
                     $scope.displayForm = address && address.meeting_rooms_enabled;
                     $scope.usingMeetingRoom = window.threadComputedData.using_meeting_room;
-                    if(window.threadComputedData.meeting_room_details) {
+                    if(window.threadComputedData.meeting_room_details && window.threadComputedData.meeting_room_details.selected_meeting_room) {
 
                         if(window.threadComputedData.meeting_room_details.selected_meeting_room.id.indexOf('auto_room_selection') > -1) {
                             $scope.setDefaultFilters(window.threadComputedData.meeting_room_details.selected_meeting_room.id);
