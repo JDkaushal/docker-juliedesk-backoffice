@@ -179,7 +179,7 @@ describe JulieActionsController, :type => :controller do
         put :update, id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'true'}
 
         mt1.reload
-        expect(mt1.follow_up_reminder_date.to_s).to eq("2016-01-10 10:10:00 UTC")
+        expect(mt1.follow_up_reminder_date.to_s).to eq("2016-01-10 19:00:01 UTC")
       end
 
       it 'should update the messages_thread follow up date' do

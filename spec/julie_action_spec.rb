@@ -83,8 +83,8 @@ describe JulieAction do
         @ja = FactoryGirl.create(:julie_action, date_times: "[{\"date\":\"2016-06-30T12:15:00+00:00\"}]")
       end
 
-      it 'should return nil' do
-        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-03-31T10:10:00+00:00")
+      it 'should return the correct date' do
+        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-03-31T18:15:00+00:00")
       end
     end
 
@@ -94,8 +94,8 @@ describe JulieAction do
         @ja = FactoryGirl.create(:julie_action, date_times: "[{\"date\":\"2016-06-30T12:15:00+00:00\"}, {\"date\":\"2016-07-04T14:15:00+00:00\"}, {\"date\":\"2016-07-10T19:55:00+00:00\"}]")
       end
 
-      it 'should return nil' do
-        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-04-03T10:10:00+00:00")
+      it 'should return the correct date' do
+        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-04-03T20:15:00+00:00")
       end
     end
   end

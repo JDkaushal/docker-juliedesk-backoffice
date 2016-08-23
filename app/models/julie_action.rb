@@ -110,15 +110,20 @@ class JulieAction < ActiveRecord::Base
       if parsed_dates.size > 0
         parsed_dates.each do |date|
           date = DateTime.parse(date)
-          barycentre = barycentre + (get_days_diff(barycentre, date) / 2).days
+          barycentre = barycentre + (get_hours_diff(barycentre, date) / 2).hours
         end
       end
 
-      barycentre.change(hour: 10, min: 10)
+      #barycentre.change(hour: 10, min: 10)
+      barycentre
     end
   end
 
   def get_days_diff(date1, date2)
     (date2 - date1).to_i
+  end
+
+  def get_hours_diff(date1, date2)
+    ((date2.to_time - date1.to_time)/1.hour).round
   end
 end
