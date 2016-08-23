@@ -206,6 +206,10 @@
 
         var excludedAttendeesEmails = ['support@juliedesk.com'];
 
+        $scope.displaySearchList = false;
+        $scope.attendeeSearchFilter = '';
+        $scope.currentlySelectedSearchedAttendeeIndex = -1;
+
         // Used for the actions tracking (provide some context on the tracking like the id of the tracking in the form of
         // operator_id-messagesThreadId
         var messagesContainerNode = $('#messages_container');
@@ -238,6 +242,12 @@
                 //$scope.postProcessAttendees();
             }
         }, true);
+
+        $scope.$watch('attendeeSearchFilter', function(newVal, oldVal) {
+            $scope.displaySearchList = newVal != '';
+            $scope.currentlySelectedSearchedAttendeeIndex = - 1;
+            $scope.resetHighlightedAttendeeInSearch();
+        });
         //--------------------------------------------------------------------------------
 
         //Events Listeners----------------------------------------------------------------
@@ -257,6 +267,40 @@
         //
         //    });
         //};
+
+        $scope.keydownAttendeesSearchAction = function(event) {
+          console.log('KeyDown', event);
+            var availableAttendeesInSearch = _.sortBy($scope.getRegisteredAvailableAttendees(), function(att) {
+                return att.company;
+            });
+
+            switch(event.keyCode) {
+                case 13:
+                    availableAttendeesInSearch[$scope.currentlySelectedSearchedAttendeeIndex].isPresent = true;
+                    break;
+                case 38:
+                    if($scope.currentlySelectedSearchedAttendeeIndex > 0) {
+                        $scope.resetHighlightedAttendeeInSearch();
+                        $scope.currentlySelectedSearchedAttendeeIndex -= 1;
+                        availableAttendeesInSearch[$scope.currentlySelectedSearchedAttendeeIndex].highligthedInSearch = true;
+                    }
+
+                    break;
+                case 40:
+                    if($scope.currentlySelectedSearchedAttendeeIndex < availableAttendeesInSearch.length - 1) {
+                        $scope.resetHighlightedAttendeeInSearch();
+                        $scope.currentlySelectedSearchedAttendeeIndex += 1;
+                        availableAttendeesInSearch[$scope.currentlySelectedSearchedAttendeeIndex].highligthedInSearch = true;
+                    }
+                    break;
+            }
+        };
+
+        $scope.resetHighlightedAttendeeInSearch = function() {
+            _.each($scope.getRegisteredAvailableAttendees(), function(att) {
+                att.highligthedInSearch = false;
+            });
+        };
 
         $scope.updateAttendeesUsageName = function() {
             _.each($scope.attendees, function(attendee) {
@@ -620,6 +664,28 @@
                 contact_email_address: params.contact_email_address,
                 message_text: params.message_text,
                 company_name_found: params.company_name_found
+            });
+        };
+
+        $scope.getDisplayedAttendees = function() {
+          return _.filter($scope.attendees, function(a) {
+             return (!a.company || (a.company && a.isPresent));
+          });
+        };
+
+        $scope.getRegisteredAvailableAttendees = function() {
+            var filter = $scope.attendeeSearchFilter.toLowerCase();
+
+            return _.filter($scope.attendees, function(a) {
+                var filtered = false;
+
+                _.each([a.firstName, a.lastName, a.email], function(attribut) {
+                   if(attribut && !filtered) {
+                       filtered = attribut.indexOf(filter) > -1;
+                   }
+                });
+
+               return filtered && a.company && !a.isPresent;
             });
         };
 

@@ -4,6 +4,8 @@
 <div class="data-entry linear-form-entry attendees-manager" ng-app="attendees-manager">
   <div class="data-entry-name header"><%= I18n.t("info_box.attendees") %></div>
   <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
+    <label><%=I18n.t("common.add_registered_attendee")%></label>
+    <input class="registered-attendees-search-input form-control" ng-keydown="keydownAttendeesSearchAction($event)" ng-model="attendeeSearchFilter" placeholder="Recherche... (Prénom, Nom, email)"/>
     <div class="add-attendee-btn-container" ng-hide="attendees_manager.readOnly">
       <%= button_tag('ng-click' => 'attendees_manager.displayAttendeeNewForm()') do %>
           <%= content_tag(:i, '',class: 'fa fa-plus') %>
@@ -13,7 +15,7 @@
     <div>
       <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
     </div>
-    <div class="contact-group" ng-repeat="(key, value) in attendees | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+    <div class="contact-group" ng-hide="displaySearchList" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
       <div class="attendee-company-title">
         {{ key }}
       </div>
@@ -23,6 +25,18 @@
         </div>
       </div>
     </div>
+    <div class="contact-group search-list" ng-show="displaySearchList" ng-repeat="(key, value) in getRegisteredAvailableAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+      <div class="attendee-company-title">
+        {{ key }}
+      </div>
+      <div ng-repeat="attendee in value track by $index">
+        <div class="contact search-list" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}" ng-class="{'highlighted-in-search': attendee.highligthedInSearch }">
+          <attendee-general-details-light attendee="attendee"/>
+        </div>
+      </div>
+    </div>
+
+
     <attendees-form/>
   </div>
 

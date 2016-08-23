@@ -1,6 +1,23 @@
 (function(){
     var app = angular.module('attendees-manager-directives', ['templates']);
 
+    app.directive('attendeeGeneralDetailsLight', function() {
+        return {
+            restrict: 'E',
+            templateUrl: 'attendee-general-details-light.html',
+            scope: {
+                attendee: '='
+            },
+            controller: ['$scope', '$element', function($scope, $element) {
+
+                $scope.setPresent = function() {
+                  $scope.attendee.isPresent = true;
+                };
+
+            }]
+        };
+    });
+
     app.directive('attendeeGeneralDetails', ['$timeout', function($timeout){
         return {
             restrict: 'E',
