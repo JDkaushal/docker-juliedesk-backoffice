@@ -527,7 +527,11 @@
                 };
 
                 $scope.setAddressValue = function() {
-                    window.setAddressValues();
+                    if(window.threadComputedData.location) {
+                        window.setAddressFromComputedData();
+                    } else {
+                        window.setAddressValues();
+                    }
                     var currentAppointment = window.getCurrentAppointment();
 
                     if($scope.selectedRoom && currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {

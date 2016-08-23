@@ -970,6 +970,22 @@
         });
     }
 
+    function setAddressFromComputedData() {
+      var address = window.threadComputedData.location;
+
+        var locationInputs = $("input#location, input#event_location");
+
+        if (address) {
+            locationInputs.val(address);
+            locatePlaceWithGoogle(address);
+        }
+        else {
+            locationInputs.val("");
+        }
+
+        setNotes();
+    }
+
     function setAddressValues() {
         var address = _.find(window.threadAccount.addresses, function (addressObject) {
             return addressObject.label == $("select#location_nature").val();
