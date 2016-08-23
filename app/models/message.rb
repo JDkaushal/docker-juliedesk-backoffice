@@ -9,6 +9,13 @@ class Message < ActiveRecord::Base
 
   attr_accessor :server_message
 
+  def self.delegate_to_julia(message, julie_aliases_cache)
+    Ai::EmailProcessing::Processor.new(message.id, nil).delay.process
+  end
+
+  def self.delegate_to_julia_async(message_id)
+    Ai::EmailProcessing::Processor.delay.perform_later(message_id)
+  end
 
   def get_reply_all_recipients_emails
     recipients = JSON.parse(self.reply_all_recipients)
@@ -247,7 +254,6 @@ class Message < ActiveRecord::Base
                                               })
           end
         else
-          puts server_thread
           account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
           account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
@@ -275,6 +281,12 @@ class Message < ActiveRecord::Base
 
               updated_messages_thread_ids << messages_thread.id
             end
+
+            if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
+              #m.server_message = server_message
+              Message.delegate_to_julia_async(m.id)
+            end
+
           end
         end
 

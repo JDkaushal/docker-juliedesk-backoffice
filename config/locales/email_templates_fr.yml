@@ -1,0 +1,36 @@
+fr:
+  date:
+    formats:
+      date_suggestion: '%A %-d %B'
+  time:
+    formats:
+      date_suggestion: '%-kh%M'
+      date_confirmation: '%A %-d %B à %-kh%M'
+
+  email_templates:
+    appointment_types:
+      appointment: 'un rendez-vous'
+
+    date_confirmation:
+      invitations_sent: "Très bien. J'ai envoyé les invitations"
+
+    dates:
+      availability_question:
+        one: 'Cela vous conviendrait-il ?'
+        other: 'Quel horaire vous conviendrait le mieux ?'
+
+    location: 'Lieu : %{location}'
+
+    greetings:
+      M: 'M. %{client_name},'
+      F: 'Mme %{client_name},'
+      unknow: '%{client_name},'
+
+    common:
+      hello: 'bonjour,'
+      available:
+        one: 'serait disponible'
+        other: 'seraient disponibles'
+      for: 'pour'
+      at: 'à'
+      or: 'ou'

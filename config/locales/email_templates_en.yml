@@ -1,0 +1,36 @@
+en:
+  date:
+    formats:
+      date_suggestion: '%A %-d %B'
+  time:
+    formats:
+      date_suggestion: '%-l:%M%P'
+      date_confirmation: '%A %-d %B at %-l:%M%P'
+
+  email_templates:
+    appointment_types:
+      appointment: 'an appointment'
+
+    date_confirmation:
+      invitations_sent: "Perfect. I've sent invites"
+
+    dates:
+      availability_question:
+        one: 'Would that work for you?'
+        other: 'Which time works best for you?'
+
+    location: 'Location: %{location}'
+
+    greetings:
+      M: 'Mr. %{client_name},'
+      F: 'Ms. %{client_name},'
+      unknow: '%{client_name},'
+
+    common:
+      hello: 'hello,'
+      available:
+        one: 'is available'
+        other: 'are available'
+      for: 'for'
+      at: 'at'
+      or: 'or'

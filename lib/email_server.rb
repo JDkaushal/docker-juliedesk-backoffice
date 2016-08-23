@@ -20,7 +20,6 @@ module EmailServer
     end
 
     self.make_request :get, "/messages_threads?#{url_params.to_param}"
-
   end
 
   def self.get_messages_thread opts={}

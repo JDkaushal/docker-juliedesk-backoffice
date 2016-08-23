@@ -6,6 +6,7 @@ class AiProxy
       fetch_planning:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/get/'}.freeze,
       fetch_forecast:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/'}.freeze,
       fetch_forecast_emails:  { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/forecastemails/'}.freeze,
+      ask_julia:              { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/julia/'}.freeze,
 
       process_entity_main:    { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/main/'}.freeze,
       process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V2'] + '/entities/'}.freeze,
