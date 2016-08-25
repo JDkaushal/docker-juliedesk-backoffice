@@ -21,6 +21,8 @@ fr:
 
     location: 'Lieu : %{location}'
 
+    not_available: "Désolée mais cette date n'est plus disponible."
+
     greetings:
       M: 'M. %{client_name},'
       F: 'Mme %{client_name},'

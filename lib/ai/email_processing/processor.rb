@@ -64,41 +64,46 @@ module Ai
                                      when :ask_date_suggestions
                                        :dates_suggestion
                                      when :ask_availabilities
-                                       create_event(julia_response)
-                                       :date_confirmation
+                                       create_event(julia_response)[:template]
                                    end
 
         EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
       end
 
       def create_event(julia_response)
-        start_date = Time.parse(julia_response['validate'])
-        end_date = start_date + julia_response['duration'].minutes
+        confirmed_date = julia_response['validate']
 
-        create_params = {
-            email:"stagingjuliedesk@gmail.com",
-            calendar_login_username:"stagingjuliedesk@gmail.com",
-            all_day:false,
-            attendees:julia_response['participants'].map{|att| {email: att['email']}},
-            call_instructions:{},
-            description:"Event created By JuliA",
-            end:end_date,
-            end_timezone:"Europe/Berlin",
-            location:julia_response['location'],
-            meeting_room:{used: false},
-            private:false,
-            start:start_date,
-            start_timezone:"Europe/Berlin",
-            summary:"JuliA Event"
-        }
+        if confirmed_date.present?
+          start_date = Time.parse(confirmed_date)
+          end_date = start_date + julia_response['duration'].minutes
 
-        response = EventsManagement::Crud::Creator.new().process(create_params)['data']
+          create_params = {
+              email:"stagingjuliedesk@gmail.com",
+              calendar_login_username:"stagingjuliedesk@gmail.com",
+              all_day:false,
+              attendees:julia_response['participants'].map{|att| {email: att['email']}},
+              call_instructions:{},
+              description:"Event created By JuliA",
+              end:end_date,
+              end_timezone:"Europe/Berlin",
+              location:julia_response['location'],
+              meeting_room:{used: false},
+              private:false,
+              start:start_date,
+              start_timezone:"Europe/Berlin",
+              summary:"JuliA Event"
+          }
 
-        unless response['success']
-          raise("Error while creating event from server_message_id: #{@message.server_message_id}")
+          response = EventsManagement::Crud::Creator.new.process(create_params)['data']
+
+          unless response['success']
+            raise("Error while creating event from server_message_id: #{@message.server_message_id}")
+          end
+
+          {template: :date_confirmation}
+        else
+          {template: :not_available}
         end
-
-        response
       end
 
       def send_response_email(email_text, julie_alias)
