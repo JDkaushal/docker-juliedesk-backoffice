@@ -88,7 +88,7 @@ module Ai
         email_params = {
             subject: @server_message['subject'],
             from: julie_alias.generate_from,
-            to: initial_recipients[:to],
+            to: initial_recipients[:to].join(", "),
             cc: initial_recipients[:cc].join(", "),
             text: "#{email_text}",
             html: "#{text_to_html(email_text)}",
