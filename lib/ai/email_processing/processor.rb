@@ -32,13 +32,17 @@ module Ai
                                                                   locale: julia_response['language'],
                                                                   attendees: (julia_response['participants'] || []).to_json,
                                                                   location: julia_response['location'],
-                                                                  date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%SZ'), timezone: thread_owner_default_timezone}}.to_json,
+                                                                  date_times: '[]',
                                                                   duration: julia_response['duration'],
                                                                   timezone: thread_owner_default_timezone
                                                                 })
 
           new_julie_action = new_classif.append_julie_action
-          new_julie_action.update(done: true, server_message_id: @server_message_id)
+          new_julie_action.update({
+                                      done: true,
+                                      server_message_id: @server_message_id,
+                                      date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%SZ'), timezone: thread_owner_default_timezone}}.to_json
+                                  })
 
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
