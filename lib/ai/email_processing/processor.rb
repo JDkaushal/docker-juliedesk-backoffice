@@ -90,12 +90,12 @@ module Ai
               call_instructions:{},
               description:"Event created By JuliA",
               end:end_date,
-              end_timezone:"Europe/Berlin",
+              end_timezone:julia_response['timezone'],
               location:julia_response['location'],
               meeting_room:{used: false},
               private:false,
               start:start_date,
-              start_timezone:"Europe/Berlin",
+              start_timezone:julia_response['timezone'],
               summary:"JuliA Event"
           }
 

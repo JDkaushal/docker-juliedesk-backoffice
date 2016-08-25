@@ -16,7 +16,7 @@ module EventsManagement
     private
 
     def get_host_endpoint
-      ENV['STAGING_EVENT_API_ENDPOINT']
+      ENV['JULIEDESK_APP_HOST']
     end
 
     def compute_endpoint(key)
