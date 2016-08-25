@@ -10,6 +10,7 @@ module Ai
         @server_message = @message.server_message
         @server_message_id = @server_message['id']
         @julie_aliases_cache = julie_aliases_cache || JulieAlias.all
+        @thread_owner_account = nil
       end
 
       def self.perform_later(message_id)
@@ -21,8 +22,7 @@ module Ai
           julia_response = AiProxy.new.build_request(:ask_julia, {id: @server_message_id})
           @message.message_interpretations.create(question: :full_ai, raw_response: julia_response.to_json)
 
-          thread_owner_account = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(@message.messages_thread.account_email))
-          thread_owner_default_timezone = thread_owner_account['default_timezone_id']
+          @thread_owner_account = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(@message.messages_thread.account_email))
 
           # this is used by JuliA later on to process the ask_availabilities request
           new_classif = @message.message_classifications.create({
@@ -34,14 +34,14 @@ module Ai
                                                                   location: julia_response['location'],
                                                                   date_times: '[]',
                                                                   duration: julia_response['duration'],
-                                                                  timezone: thread_owner_default_timezone
+                                                                  timezone: julia_response['timezone']
                                                                 })
 
           new_julie_action = new_classif.append_julie_action
           new_julie_action.update({
                                       done: true,
                                       server_message_id: @server_message_id,
-                                      date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%SZ'), timezone: thread_owner_default_timezone}}.to_json
+                                      date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%S+00:00'), timezone: julia_response['timezone']}}.to_json
                                   })
 
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
