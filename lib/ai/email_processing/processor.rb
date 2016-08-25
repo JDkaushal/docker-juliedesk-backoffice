@@ -10,7 +10,8 @@ module Ai
         @server_message = @message.server_message
         @server_message_id = @server_message['id']
         @julie_aliases_cache = julie_aliases_cache || JulieAlias.all
-        @thread_owner_account = nil
+        @message_thread = @message.messages_thread
+        @thread_owner_account = @message_thread.account
       end
 
       def self.perform_later(message_id)
@@ -21,8 +22,6 @@ module Ai
         begin
           julia_response = AiProxy.new.build_request(:ask_julia, {id: @server_message_id})
           @message.message_interpretations.create(question: :full_ai, raw_response: julia_response.to_json)
-
-          @thread_owner_account = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(@message.messages_thread.account_email))
 
           # this is used by JuliA later on to process the ask_availabilities request
           new_classif = @message.message_classifications.create({
@@ -78,12 +77,14 @@ module Ai
         confirmed_date = julia_response['validate']
 
         if confirmed_date.present?
+          calendar_login = @message_thread.calendar_login
+
           start_date = Time.parse(confirmed_date)
           end_date = start_date + julia_response['duration'].minutes
 
           create_params = {
-              email:"stagingjuliedesk@gmail.com",
-              calendar_login_username:"stagingjuliedesk@gmail.com",
+              email:@thread_owner_account.email,
+              calendar_login_username: calendar_login['username'],
               all_day:false,
               attendees:julia_response['participants'].map{|att| {email: att['email']}},
               call_instructions:{},

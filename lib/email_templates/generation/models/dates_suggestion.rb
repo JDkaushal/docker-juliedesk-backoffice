@@ -19,8 +19,12 @@ module EmailTemplates
 
         private
 
+        def get_timezone
+          @params['timezone']
+        end
+
         def get_suggested_dates
-          @params['suggested_dates'].map{|d| d.to_datetime}.group_by{|d| d.to_date}
+          @params['suggested_dates'].map{|d| d.to_time.in_time_zone(get_timezone)}.group_by{|d| d.to_date}
         end
 
         def get_suggested_dates_count
