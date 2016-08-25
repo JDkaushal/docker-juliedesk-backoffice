@@ -25,16 +25,19 @@ module Ai
           thread_owner_default_timezone = thread_owner_account['default_timezone_id']
 
           # this is used by JuliA later on to process the ask_availabilities request
-          @message.message_classifications.create({
+          new_classif = @message.message_classifications.create({
                                                       classification: julia_response['request'],
                                                       appointment_nature: julia_response['appointment'],
                                                       locale: julia_response['language'],
-                                                      attendees: julia_response['participants'].to_json,
+                                                      attendees: (julia_response['participants'] || []).to_json,
                                                       location: julia_response['location'],
-                                                      date_times: julia_response['suggested_dates'].map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%SZ'), timezone: thread_owner_default_timezone}}.to_json,
+                                                      date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%SZ'), timezone: thread_owner_default_timezone}}.to_json,
                                                       duration: julia_response['duration'],
                                                       timezone: thread_owner_default_timezone
                                                   })
+
+          new_julie_action = new_classif.append_julie_action
+          new_julie_action.update(done: true, server_message_id: @server_message_id)
 
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
