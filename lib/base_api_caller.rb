@@ -5,7 +5,11 @@ class BaseApiCaller
   def initialize(client)
     @client = client
 
-    @ssl_context = get_default_ssl_context
+    @ssl_context = nil
+  end
+
+  def set_ssl_context(ssl_context)
+    @ssl_context = ssl_context
   end
 
   def build_request(key, data = nil)
@@ -64,6 +68,7 @@ class BaseApiCaller
   def execute_post_request(http_client, params)
     url = params.delete(:url)
     body = params[:data]
+
     http_client.post(url, json: body, ssl_context: @ssl_context)
   end
 
@@ -73,9 +78,4 @@ class BaseApiCaller
 
     ctx
   end
-
-  def set_ssl_context(ssl_context)
-    @ssl_context = ssl_context
-  end
-
 end
