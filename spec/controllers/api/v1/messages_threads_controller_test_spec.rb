@@ -138,7 +138,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "suggested_date_times_mc"=>nil,
                                                       "next_suggested_status"=>nil,
                                                       "last_message_from_me"=>nil,
-                                                      "last_message_sent_at"=>nil
+                                                      "last_message_sent_at"=>nil,
+                                                      "handled_by_ai"=>false
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
