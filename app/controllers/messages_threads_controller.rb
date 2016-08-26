@@ -2,7 +2,7 @@ class MessagesThreadsController < ApplicationController
 
   include ProfilerHelper
 
-  layout "dashboard", only: [:index]
+  layout "dashboard", only: [:index, :index_for_ai]
   before_filter :only_admin, only: [:history]
 
   before_action :check_staging_mode
@@ -10,6 +10,11 @@ class MessagesThreadsController < ApplicationController
   def index
     @operator_greetings_stats = Operator.find(session[:operator_id]).compute_daily_stats
     render_messages_threads
+  end
+
+  # Display only thread handled by the ai (handled_by_ai set to true)
+  def index_for_ai
+    render_messages_threads_ai
   end
 
   def search
@@ -47,6 +52,11 @@ class MessagesThreadsController < ApplicationController
   def index_with_import
     Message.import_emails
     render_messages_threads
+  end
+
+  def index_with_import_ai
+    Message.import_emails
+    render_messages_threads_ai
   end
 
   def history
@@ -283,6 +293,33 @@ class MessagesThreadsController < ApplicationController
 
   private
 
+  def render_messages_threads_ai
+    respond_to do |format|
+      format.html {
+      }
+      format.json {
+        @messages_thread = MessagesThread.where("in_inbox = TRUE AND handled_by_ai = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
+          mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
+              mt.messages.map{|m| m.received_at}.max ||
+              DateTime.parse("2500-01-01")
+        }
+
+        accounts_cache = Account.accounts_cache(mode: "light")
+        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
+
+        data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
+
+        render json: {
+                   status: "success",
+                   message: "",
+                   data: data
+               }
+      }
+
+
+    end
+  end
+
   def render_messages_threads
     respond_to do |format|
       format.html {
@@ -294,7 +331,7 @@ class MessagesThreadsController < ApplicationController
         @operators_on_planning = Operator.select('operators.id, operators.name, operators.color').joins(:operator_presences).where('operator_presences.date >= ? AND operator_presences.date <= ?', now.beginning_of_hour, now.end_of_hour)
         @messages_threads_from_today = MessagesThread.distinct.where('date(created_at) = ?', now.to_date).group('account_email').count
 
-        @messages_thread = MessagesThread.where("in_inbox = TRUE OR should_follow_up = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
+        @messages_thread = MessagesThread.where("(in_inbox = TRUE OR should_follow_up = TRUE) AND handled_by_ai = FALSE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
           mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
               mt.messages.map{|m| m.received_at}.max ||
               DateTime.parse("2500-01-01")

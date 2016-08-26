@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160816090257) do
+ActiveRecord::Schema.define(version: 20160826121051) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,6 +246,7 @@ ActiveRecord::Schema.define(version: 20160816090257) do
     t.string   "next_suggested_status"
     t.boolean  "last_message_from_me"
     t.datetime "last_message_sent_at"
+    t.boolean  "handled_by_ai",                    default: false
   end
 
   create_table "operator_actions", force: true do |t|

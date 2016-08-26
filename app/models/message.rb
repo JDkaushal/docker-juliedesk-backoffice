@@ -284,6 +284,7 @@ class Message < ActiveRecord::Base
 
             if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
               #m.server_message = server_message
+              messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
             end
 
