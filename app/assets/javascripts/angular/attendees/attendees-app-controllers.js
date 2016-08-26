@@ -269,7 +269,6 @@
         //};
 
         $scope.keydownAttendeesSearchAction = function(event) {
-          console.log('KeyDown', event);
             var availableAttendeesInSearch = _.sortBy($scope.getRegisteredAvailableAttendees(), function(att) {
                 return att.company;
             });
@@ -677,13 +676,14 @@
             var filter = $scope.attendeeSearchFilter.toLowerCase();
 
             return _.filter($scope.attendees, function(a) {
-                var filtered = false;
+                var computedSearchContent = [a.firstName, a.lastName, a.email].join(' ');
 
-                _.each([a.firstName, a.lastName, a.email], function(attribut) {
-                   if(attribut && !filtered) {
-                       filtered = attribut.indexOf(filter) > -1;
-                   }
-                });
+                var filtered = computedSearchContent.indexOf(filter) > -1;
+                //_.each([a.firstName, a.lastName, a.email], function(attribut) {
+                //   if(attribut && !filtered) {
+                //       filtered = attribut.indexOf(filter) > -1;
+                //   }
+                //});
 
                return filtered && a.company && !a.isPresent;
             });
