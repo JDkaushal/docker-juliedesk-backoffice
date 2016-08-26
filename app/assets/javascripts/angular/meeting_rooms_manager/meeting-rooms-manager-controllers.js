@@ -26,6 +26,8 @@
 
                 $scope.usingMeetingRoom;
 
+                $scope.locationBase = window.threadComputedData.location;
+
                 var createEventMeetingRoomContainerSelect = $('.create-event-meeting-rooms-container .selection-area');
                 var createEventMeetingRoomContainer = $('.create-event-meeting-rooms-container');
                 var createEventRoomSelectionSelect = $('.create_event_room_selection_select');
@@ -114,6 +116,7 @@
                     $scope.$apply();
                     // Allow us to reset the location ( stripping out any eventual meeting room name placed before the
                     // location itself )
+                    $scope.setLocationOnEvent();
                     $scope.setAddressValue();
                 });
 
@@ -526,25 +529,36 @@
                     }
                 };
 
+                $scope.setLocationOnEvent = function() {
+                    var location = [];
+                    if($scope.usingMeetingRoom && $scope.selectedRoom && $scope.selectedRoom.id != 'auto_room_selection') {
+                        location.push($scope.selectedRoom.summary);
+                    }
+
+                    location.push(window.threadComputedData.location);
+
+                    $('#event_location').val(location.join(', '));
+                };
+
                 $scope.setAddressValue = function() {
-                    if(window.threadComputedData.location) {
-                        window.setAddressFromComputedData();
-                    } else {
-                        window.setAddressValues();
-                    }
-                    var currentAppointment = window.getCurrentAppointment();
-
-                    if($scope.selectedRoom && currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
-                        var newLocationArray = [locationInputs.val()];
-
-                        if($scope.usingMeetingRoom) {
-                            newLocationArray.unshift($scope.selectedRoom.summary);
-                        }
-
-                        var newLocation = newLocationArray.join(', ');
-                        locationInputs.val(newLocation);
-                        window.threadComputedData.location = newLocation;
-                    }
+                    //if(window.threadComputedData.location) {
+                    //    window.setAddressFromComputedData();
+                    //} else {
+                    //    window.setAddressValues();
+                    //}
+                    //var currentAppointment = window.getCurrentAppointment();
+                    //
+                    //if($scope.selectedRoom && $scope.selectedRoom.id != "auto_room_selection" && currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
+                    //    var newLocationArray = [locationInputs.val()];
+                    //
+                    //    if($scope.usingMeetingRoom) {
+                    //        newLocationArray.unshift($scope.selectedRoom.summary);
+                    //    }
+                    //
+                    //    var newLocation = newLocationArray.join(', ');
+                    //    locationInputs.val(newLocation);
+                    //    window.threadComputedData.location = newLocation;
+                    //}
                 };
 
                 $scope.displayNonAvailableMessage = function(msg) {

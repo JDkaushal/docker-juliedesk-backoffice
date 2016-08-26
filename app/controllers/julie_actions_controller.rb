@@ -108,6 +108,10 @@ class JulieActionsController < ApplicationController
       julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
     end
 
+    if params[:using_meeting_room].present?
+      julie_action.message_classification.update(using_meeting_room: params[:using_meeting_room], meeting_room_details: params[:meeting_room_details])
+    end
+
     print_time "Updating message classification"
 
     render json: {

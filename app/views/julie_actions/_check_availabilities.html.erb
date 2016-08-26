@@ -224,7 +224,15 @@
 
                 $(".calendar-container").addClass("minimized");
 
-               var location = window.threadComputedData.location;
+                var location = [];
+
+                if(meetingRoomManager && meetingRoomManager.usingMeetingRoom && meetingRoomManager.selectedRoom && meetingRoomManager.selectedRoom.id != 'auto_room_selection') {
+                    location.push(meetingRoomManager.selectedRoom.summary);
+                }
+
+                location.push(window.threadComputedData.location);
+
+                location = location.join(', ');
 
                 var emailInNotes = "";
 
@@ -328,7 +336,7 @@
         CommonHelpers.externalRequest(requestParams, function (e) {
             var currentAppointment = window.getCurrentAppointment();
             var eventCreatorManager = $('#datesVerificationsManager').scope();
-
+            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
             window.currentCalendar.refreshEvents();
 
             if(!isPostpone || window.currentEventFromInvitation) {
@@ -362,7 +370,7 @@
             };
 
             if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-                var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+
 
                 if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
                     messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
@@ -383,6 +391,11 @@
                 event_booked_date: start.format(),
                 client_settings: window.getClientSettings()
             };
+
+            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+                data.using_meeting_room = true;
+                data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+            }
 
             if(window.threadComputedData.is_virtual_appointment){
                 var call_instructions = window.threadComputedData.call_instructions;
