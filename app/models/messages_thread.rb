@@ -191,6 +191,19 @@ class MessagesThread < ActiveRecord::Base
     }
   end
 
+  def find_or_compute_request_date
+    unless request_date
+      self.update_attribute :request_date, self.compute_request_date
+    end
+    request_date
+  end
+
+  def compute_request_date
+    self.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
+        self.messages.map{|m| m.received_at}.max ||
+        DateTime.parse("2500-01-01")
+  end
+
   def computed_data_only_attendees
     message_classifications = messages.map{|m|
       m.message_classifications
@@ -376,6 +389,12 @@ class MessagesThread < ActiveRecord::Base
 
     (messages_thread_messages - existing_messages).each do |message|
       message.clean_delete
+    end
+
+    computed_request_date = self.compute_request_date
+    if self.request_date != computed_request_date
+      self.request_date = computed_request_date
+      self.save
     end
 
     @splitted_server_messages = all_messages.select do |server_message|
