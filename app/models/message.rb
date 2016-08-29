@@ -263,7 +263,7 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet']})
+        messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
 
         server_thread['messages'].each do |server_message|
           message = Message.find_by_server_message_id server_message['id']

@@ -28,7 +28,7 @@
             <div class="snippet"> - {{ messagesThread.snippet}}</div>
           </div>
 
-        <div class="emails-count">({{ messagesThread.messages.length }})</div>
+        <div class="emails-count">({{ messagesThread.messages_count }})</div>
 
         <div ng-show="labelInRowInfos.text" class="delegated-to-founders {{labelInRowInfos.cssClass}}"><span class="to-be-merged-sprite" ng-show="labelInRowInfos.text == 'To merge'"></span><span class="delegation-text">{{ labelInRowInfos.text }}</span></div>
     </a>

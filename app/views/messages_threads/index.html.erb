@@ -110,9 +110,9 @@
         $scope.getTodayRequestsCountsForClients = function() {
             _.each($scope.messagesThreads, function(messagesThread) {
                 if(messagesThread.account_email != null) {
-                    var firstMessage = messagesThread.messages[0];
+                    var firstMessageDate = messagesThread.request_date;
 
-                    if(moment(firstMessage.received_at).isSame($scope.todayInUTC, 'd')) {
+                    if(firstMessageDate && moment(firstMessageDate).isSame($scope.todayInUTC, 'd')) {
                         if($scope.todayRequestCountForClients[messagesThread.account_email])
                             $scope.todayRequestCountForClients[messagesThread.account_email] += 1;
                         else

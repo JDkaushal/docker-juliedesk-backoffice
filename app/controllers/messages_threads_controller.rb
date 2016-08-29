@@ -352,7 +352,7 @@ class MessagesThreadsController < ApplicationController
                 (!mt.account || !mt.account.only_admin_can_process)
           }
         end
-        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name], only: [:id, :request_date, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
+        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
         operators_data = @operators_on_planning.as_json
 
         render json: {
