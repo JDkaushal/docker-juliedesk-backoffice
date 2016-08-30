@@ -6,7 +6,7 @@ begin
     ENV[env_variable[0]] = env_variable[1]
   end
 rescue Errno::ENOENT
-  puts "No .env file detected"
+  
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
