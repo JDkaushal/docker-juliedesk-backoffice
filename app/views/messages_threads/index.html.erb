@@ -89,15 +89,17 @@
             });
 
             var partitionnedPriorizedThreadsOnFollowUp = _.partition(partitionnedThreadsOnPriority[0], function(messagesThread) {
+                var followUp = messagesThread.should_follow_up && !messagesThread.in_inbox;
                 messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_prior' : 'prior';
 
-                return messagesThread.should_follow_up;
+                return followUp;
             });
 
             var partitionnedNormalsThreadsOnFollowUp = _.partition(partitionnedThreadsOnPriority[1], function(messagesThread) {
-                messagesThread.queue = messagesThread.should_follow_up ? 'follow_up_main' : 'main';
+                var followUp = messagesThread.should_follow_up && !messagesThread.in_inbox;
+                messagesThread.queue = followUp ? 'follow_up_main' : 'main';
 
-                return messagesThread.should_follow_up;
+                return followUpp;
             });
 
             $scope.priorizedToFollowUpMessagesThreads = partitionnedPriorizedThreadsOnFollowUp[0];
