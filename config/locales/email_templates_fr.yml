@@ -10,6 +10,18 @@ fr:
   email_templates:
     appointment_types:
       appointment: 'un rendez-vous'
+      lunch: "un déjeuner"
+      breakfast: "un petit-déjeuner"
+      coffee: "un café"
+      webex: "une webex"
+      hangout: "un Google hangout"
+      work_session: "une session de travail"
+      meeting: "une réunion"
+      dinner: "un dîner"
+      skype: "un skype"
+      call: "un call"
+      confcall: "une confcall"
+      drink: "un verre"
 
     date_confirmation:
       invitations_sent: "Très bien. J'ai envoyé les invitations"

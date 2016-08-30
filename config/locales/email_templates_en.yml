@@ -10,6 +10,18 @@ en:
   email_templates:
     appointment_types:
       appointment: 'an appointment'
+      lunch: "a lunch"
+      breakfast: "a breakfast"
+      coffee: "a coffee"
+      webex: "a webex"
+      hangout: "a Google hangout"
+      work_session: "a work session"
+      meeting: "a meeting"
+      dinner: "a dinner"
+      skype: "a skype"
+      call: "a call"
+      confcall: "a confcall"
+      drink: "a drink"
 
     date_confirmation:
       invitations_sent: "Perfect. I've sent invites"
