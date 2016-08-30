@@ -99,7 +99,7 @@
                 var followUp = messagesThread.should_follow_up && !messagesThread.in_inbox;
                 messagesThread.queue = followUp ? 'follow_up_main' : 'main';
 
-                return followUpp;
+                return followUp;
             });
 
             $scope.priorizedToFollowUpMessagesThreads = partitionnedPriorizedThreadsOnFollowUp[0];
