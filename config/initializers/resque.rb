@@ -1,4 +1,7 @@
 require 'resque/server'
 
 Resque.redis = RESQUE_REDIS
-Resque.logger = Logger.new(Rails.root.join('log', "resque.#{Rails.env}.log"))
+begin
+  Resque.logger = Logger.new(Rails.root.join('log', "resque.#{Rails.env}.log"))
+rescue 
+end
