@@ -1,5 +1,8 @@
-Rails.application.routes.draw do
+require 'resque/server'
 
+Rails.application.routes.draw do
+  mount Resque::Server, :at => "/resque"
+  
   root to: "messages_threads#index"
 
   resources :client_contacts, param: :client_email, only: [] do

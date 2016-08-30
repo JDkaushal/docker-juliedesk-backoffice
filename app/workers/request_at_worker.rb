@@ -6,7 +6,7 @@ class RequestAtWorker
   end
 
   def self.perform (id)
-    MessagesThread.find id
+    mt = MessagesThread.find id
     mt.compute_request_at
   end
 end
