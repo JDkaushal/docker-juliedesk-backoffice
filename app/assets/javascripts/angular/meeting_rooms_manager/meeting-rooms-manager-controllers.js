@@ -610,6 +610,25 @@
                 };
 
                 $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
+                    var allEvents = _.flatten(eventsByMeetingRooms);
+                    var busy_times = {};
+                    _.each(allEvents, function(event) {
+                        if(event.start in busy_times) {
+                            busy_times[event.start].busy_meeting_rooms_count += 1;
+                        }
+                        else {
+                            busy_times[event.start] = {event: event, busy_meeting_rooms_count: 1}
+                        }
+                    });
+
+                    return _.map(_.filter(busy_times, function(busyTime) {
+                        return busyTime.busy_meeting_rooms_count == eventsByMeetingRooms.length
+                    }), function(busyTime) {
+                        return busyTime.event;
+                    });
+                };
+
+                $scope.getOverlappingEventsOld = function(eventsByMeetingRooms) {
                     eventsByMeetingRooms = _.sortBy(eventsByMeetingRooms, function(val, _) { return val.length ;});
 
                     var totalEntries = Object.keys(eventsByMeetingRooms).length;

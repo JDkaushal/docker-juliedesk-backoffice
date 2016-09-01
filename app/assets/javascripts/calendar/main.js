@@ -126,21 +126,21 @@ Calendar.prototype.getMode = function () {
     return calendar.initialData.mode;
 };
 
-Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
-    var calendar = this;
-    var accountPreferences = calendar.accountPreferences[calendarItem.email];
-    var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+    Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
+        var calendar = this;
+        var accountPreferences = calendar.accountPreferences[calendarItem.email];
+        var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
 
-    return (
-        accountPreferences &&
-        accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
-        accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
-        ) ||
-        calendar.isFakeCalendarId(calendarItem.id) ||
-        // If the calendar is a meeting room that we should display
-        meetingRoomsToDisplayIds.indexOf(calendarItem.id) >- 1;
+        return (
+            accountPreferences &&
+            accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
+            accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
+            ) ||
+            calendar.isFakeCalendarId(calendarItem.id) ||
+            // If the calendar is a meeting room that we should display
+            meetingRoomsToDisplayIds.indexOf(calendarItem.id) >- 1;
 
-};
+    };
 
 Calendar.prototype.isFakeCalendarId = function(calendarId) {
     var calendar = this;
@@ -466,6 +466,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
         calendar.addCal(unavailableEvents);
         calendar.addEventsToCheckIfNeeded();
+
         calendar.addAllCals(response.items);
 
         if(travelTimeCalculator) {
@@ -761,9 +762,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
         });
     }
 
-    for (var k = 0; k < calEvents.length; k++) {
-        var ev = calEvents[k];
-
+    _.each(calEvents, function(calEvent) {
         //var x = 0;
         //for (var i = 0; i < calendar.calendars.length; i++) {
         //    if (calendar.calendars[i].id == ev.calId) {
@@ -771,7 +770,8 @@ Calendar.prototype.addAllCals = function (calEvents) {
         //        break;
         //    }
         //}
-        var eventData = calendar.eventDataFromEvent(ev);
+
+        var eventData = calendar.eventDataFromEvent(calEvent);
 
         // We don't add the individual meeting rooms events to the displayed events on the calendar
         if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
@@ -779,7 +779,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
         } else {
             calendar.eventDataX.push(eventData);
         }
-    }
+    });
 
     calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(calendar.meetingRoomsEvents));
 
