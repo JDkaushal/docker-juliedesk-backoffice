@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160829214514) do
+ActiveRecord::Schema.define(version: 20160905140539) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -202,53 +202,41 @@ ActiveRecord::Schema.define(version: 20160829214514) do
     t.datetime "received_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "archived",                        default: false
+    t.boolean  "archived",             default: false
     t.text     "reply_all_recipients"
-    t.boolean  "from_me",                         default: false
+    t.boolean  "from_me",              default: false
     t.integer  "server_message_id"
     t.datetime "request_at"
-    t.integer  "last_relevant_classification_id"
   end
 
   create_table "messages_threads", force: true do |t|
     t.string   "account_email"
-    t.boolean  "in_inbox",                         default: false
+    t.boolean  "in_inbox",                 default: false
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "subject"
     t.text     "snippet"
     t.string   "account_name"
-    t.boolean  "delegated_to_founders",            default: false
+    t.boolean  "delegated_to_founders",    default: false
     t.text     "to_founders_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
     t.integer  "server_thread_id"
     t.string   "server_version"
-    t.boolean  "delegated_to_support",             default: false
-    t.boolean  "should_follow_up",                 default: false
+    t.boolean  "delegated_to_support",     default: false
+    t.boolean  "should_follow_up",         default: false
     t.text     "follow_up_instruction"
     t.integer  "last_operator_id"
     t.datetime "event_booked_date"
     t.string   "status"
-    t.boolean  "to_be_merged",                     default: false
+    t.boolean  "to_be_merged",             default: false
     t.integer  "to_be_merged_operator_id"
-    t.boolean  "was_merged",                       default: false
+    t.boolean  "was_merged",               default: false
     t.datetime "follow_up_reminder_date"
-    t.integer  "last_relevant_classification_id"
-    t.string   "current_scheduling_status"
-    t.boolean  "in_scheduling_process"
-    t.integer  "event_creation_ja_id"
-    t.integer  "last_classification_id"
-    t.integer  "last_classification_with_data_id"
-    t.json     "suggested_date_times_ja"
-    t.json     "suggested_date_times_mc"
-    t.string   "next_suggested_status"
-    t.boolean  "last_message_from_me"
-    t.datetime "last_message_sent_at"
-    t.boolean  "handled_by_ai",                    default: false
+    t.boolean  "handled_by_ai",            default: false
     t.datetime "request_date"
-    t.integer  "messages_count",                   default: 0
+    t.integer  "messages_count",           default: 0
   end
 
   create_table "operator_actions", force: true do |t|
