@@ -17,7 +17,8 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
       end
 
       it 'should fallback to the current time if no time is provided' do
-        expect(Pusher).to receive(:get).and_return(users: [])
+        expect(controller).to receive(:get_currently_present_operators).and_return([])
+        #expect(Pusher).to receive(:get).and_return(users: [])
 
         # We just check if DateTime receive the method Now in the before filter
         get :operators_count_at_time
@@ -37,13 +38,15 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
         op5.operator_presences.create(date: DateTime.new(2015, 11, 25, 12, 00, 00))
         op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 16, 00, 00), is_review: true)
 
-        expect(Pusher).to receive(:get).and_return(users: [
-                                                       {'id' => op1.email},
-                                                       {'id' => op2.email},
-                                                       {'id' => op3.email},
-                                                       {'id' => op4.email},
-                                                       {'id' => op5.email}
-                                                   ])
+        expect(controller).to receive(:get_currently_present_operators).and_return([op1.email, op2.email, op3.email, op4.email, op5.email])
+
+        # expect(Pusher).to receive(:get).and_return(users: [
+        #                                                {'id' => op1.email},
+        #                                                {'id' => op2.email},
+        #                                                {'id' => op3.email},
+        #                                                {'id' => op4.email},
+        #                                                {'id' => op5.email}
+        #                                            ])
         get :operators_count_at_time
 
         expect(JSON.parse(response.body)).to eq(
@@ -80,7 +83,8 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
         op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 15, 00, 00))
         op5.operator_presences.create(date: DateTime.new(2015, 11, 26, 16, 00, 00), is_review: true)
 
-        expect(Pusher).to receive(:get).and_return(users: [{'id' => op1.email}, {'id' => op3.email}, {'id' => op4.email}, {'id' => op5.email}])
+        #expect(Pusher).to receive(:get).and_return(users: [{'id' => op1.email}, {'id' => op3.email}, {'id' => op4.email}, {'id' => op5.email}])
+        expect(controller).to receive(:get_currently_present_operators).and_return([op1.email, op3.email, op4.email, op5.email])
 
         get :operators_count_at_time, {date: "2015-11-26T15:14:00+00:00"}
 
