@@ -40,6 +40,7 @@ function trackActionV2(type, extraParams, callback) {
 
     //try {
         var messageContainerNode = $('#messages_container');
+        var bodyNode = $('body');
         var messagesThreadId = messageContainerNode.data('messagesThreadId');
         var selectedMessage = $('.email.highlighted');
 
@@ -47,8 +48,8 @@ function trackActionV2(type, extraParams, callback) {
             var currentAccountEmail = window.threadAccount.email;
 
         var defaultParams = {
-            operator_id: messageContainerNode.data('operatorId'),
-            operator_level: messageContainerNode.data('operatorPrivilege'),
+            operator_id: bodyNode.data('operatorId'),
+            operator_level: bodyNode.data('operatorPrivilege'),
             current_classification: window.classification,
             thread_id: messagesThreadId,
             account_name: currentAccountEmail,

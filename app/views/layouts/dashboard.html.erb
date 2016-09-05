@@ -9,7 +9,7 @@
 
   <script src="/javascripts/pusher.min.js"></script>
 </head>
-<body>
+<body data-operator-id="<%= session[:operator_id] %>" data-operator-privilege="<%= session[:privilege] %>">
 <%= render partial: "common/features" %>
 <%= render partial: "common/chat" %>
 <%= yield %>

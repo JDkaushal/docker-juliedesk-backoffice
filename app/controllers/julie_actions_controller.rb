@@ -87,7 +87,8 @@ class JulieActionsController < ApplicationController
 
       messages_thread = MessagesThread.find(params[:messages_thread_id])
 
-      if params[:client_settings] && params[:client_settings][:auto_follow_up] == 'true'
+      # We don't update the reminder date if the event has already been scheduled
+      if params[:client_settings] && params[:client_settings][:auto_follow_up] == 'true' && messages_thread.status != MessageClassification::THREAD_STATUS_SCHEDULED
         new_reminder = julie_action.get_messages_thread_reminder_date
 
         if messages_thread.follow_up_reminder_date.present?
