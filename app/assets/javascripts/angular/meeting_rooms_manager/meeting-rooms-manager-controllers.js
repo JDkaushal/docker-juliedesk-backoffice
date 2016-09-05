@@ -609,23 +609,114 @@
                     }
                 };
 
-                $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
-                    var allEvents = _.flatten(eventsByMeetingRooms);
-                    var busy_times = {};
-                    _.each(allEvents, function(event) {
-                        if(event.start in busy_times) {
-                            busy_times[event.start].busy_meeting_rooms_count += 1;
+                $scope.getFreeSlotsByRooms = function(eventsByMeetingRooms) {
+                    var result = {};
+
+                    _.each(eventsByMeetingRooms, function(events, room) {
+                        var subResult = [];
+                        result[room] = [];
+
+                        var sortedEvents = _.sortBy(events, function(e) {
+                            return e.start;
+                        });
+
+                        for(var i=0; i<sortedEvents.length;i++) {
+                            var currentEvent = $.extend({}, sortedEvents[i]);
+                            var cont = true;
+
+                            // We continue to iterate on nxt array elements until we find one which overlappe with the current one but end later
+                            while(cont) {
+                                var nextEvent = sortedEvents[i + 1];
+
+                                if(nextEvent) {
+                                    if (moment(nextEvent.start).isBefore(currentEvent.end) && moment(nextEvent.end).isAfter(currentEvent.end)) {
+                                        currentEvent.end = nextEvent.end;
+                                        i += 1;
+                                    } else {
+                                        subResult.push(currentEvent);
+                                        cont = false;
+                                    }
+                                } else {
+                                    subResult.push(currentEvent);
+                                    cont = false;
+                                }
+                            }
                         }
-                        else {
-                            busy_times[event.start] = {event: event, busy_meeting_rooms_count: 1}
+
+                        for(var j = 0; j<subResult.length;j++) {
+                            currentEvent = subResult[j];
+                            nextEvent = subResult[j+1];
+
+                            if(nextEvent && !moment(currentEvent.end).isSame(nextEvent.start)) {
+                                result[room].push({start: currentEvent.end, end: nextEvent.start});
+                            }
                         }
                     });
 
-                    return _.map(_.filter(busy_times, function(busyTime) {
-                        return busyTime.busy_meeting_rooms_count == eventsByMeetingRooms.length
-                    }), function(busyTime) {
-                        return busyTime.event;
+                    _.each(result, function(events, room) {
+                        var currentLength = events.length;
+                        if(currentLength > 0) {
+                            events.unshift({start: "1970-01-01T00:00:00+00:00", end: events[0].start});
+                            // We added a new item in the array with the unshift so we the new last item is one item further than then previous length of the array
+                            events.push({start: events[currentLength].end, end: "2999-01-01T00:00:00+00:00"});
+                        }
                     });
+
+                    return result;
+                };
+
+                $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
+
+                    var freeSlotsByRooms = $scope.getFreeSlotsByRooms(eventsByMeetingRooms);
+                    var freeSlotsFlattened = _.flatten(_.map(freeSlotsByRooms), function(events, _) { return events; });
+                    var sortedFlattened = _.sortBy(freeSlotsFlattened, function(event) {
+                        return moment(event.start);
+                    });
+
+                    var result = [];
+
+                    for(var i =0; i<sortedFlattened.length ; i++) {
+                        var currentEvent = $.extend({}, sortedFlattened[i]);
+                        var cont = true;
+
+                        while(cont) {
+                            var nextEvent = sortedFlattened[i + 1];
+
+                            // Voir Pourquoi ca itere sur tous les items
+                            if(nextEvent) {
+                                if (moment(nextEvent.start).isBefore(currentEvent.end)){
+                                    if(moment(nextEvent.end).isAfter(currentEvent.end)) {
+                                        currentEvent.end = nextEvent.end;
+                                    }
+                                    i += 1;
+                                }
+                                else {
+                                    result.push(currentEvent);
+                                    cont = false;
+                                }
+                            }else {
+                                cont = false;
+                                result.push(currentEvent);
+                            }
+                        }
+
+                    }
+
+                    //var busy_times = {};
+                    //_.each(allEvents, function(event) {
+                    //    if(event.start in busy_times) {
+                    //        busy_times[event.start].busy_meeting_rooms_count += 1;
+                    //    }
+                    //    else {
+                    //        busy_times[event.start] = {event: event, busy_meeting_rooms_count: 1}
+                    //    }
+                    //});
+                    //
+                    //return _.map(_.filter(busy_times, function(busyTime) {
+                    //    return busyTime.busy_meeting_rooms_count == eventsByMeetingRooms.length
+                    //}), function(busyTime) {
+                    //    return busyTime.event;
+                    //});
                 };
 
                 $scope.getOverlappingEventsOld = function(eventsByMeetingRooms) {
