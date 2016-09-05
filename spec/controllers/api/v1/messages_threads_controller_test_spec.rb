@@ -8,7 +8,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
   describe 'inbox_count' do
     before do
-      request.headers['Authorization'] = "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+      request.headers['Authorization'] = ENV['API_KEY']
     end
     it 'should return 0 messages threads count when no threads in inbox' do
       mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
@@ -93,7 +93,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
   describe 'messages_thread_context' do
     before do
-      request.headers['Authorization'] = "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+      request.headers['Authorization'] = ENV['API_KEY']
 
       @mt1 = FactoryGirl.create(:messages_thread_with_messages, server_thread_id: 666)
     end
@@ -128,18 +128,9 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "to_be_merged_operator_id"=>nil,
                                                       "was_merged"=>false,
                                                       "follow_up_reminder_date"=>nil,
-                                                      "last_relevant_classification_id"=>nil,
-                                                      "current_scheduling_status"=>nil,
-                                                      "in_scheduling_process"=>nil,
-                                                      "event_creation_ja_id"=>nil,
-                                                      "last_classification_id"=>nil,
-                                                      "last_classification_with_data_id"=>nil,
-                                                      "suggested_date_times_ja"=>nil,
-                                                      "suggested_date_times_mc"=>nil,
-                                                      "next_suggested_status"=>nil,
-                                                      "last_message_from_me"=>nil,
-                                                      "last_message_sent_at"=>nil,
-                                                      "handled_by_ai"=>false
+                                                      "handled_by_ai"=>false,
+                                                      "request_date"=>nil,
+                                                      "messages_count"=>0
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
@@ -152,8 +143,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                         "reply_all_recipients" => m.reply_all_recipients,
                                                         "from_me" => m.from_me,
                                                         "server_message_id" => m.server_message_id,
-                                                        "request_at" => nil,
-                                                        "last_relevant_classification_id"=>nil
+                                                        "request_at" => nil
                                                     }
                                                   },
                                                   "messages_classifications" => @mt1.messages.map { |m|

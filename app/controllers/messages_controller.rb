@@ -184,6 +184,9 @@ class MessagesController < ApplicationController
       email_params.merge!(message_thread_id: @message.messages_thread_id, server_thread_id: @message.messages_thread.server_thread_id)
     end
 
+    puts ENV['STAGING_APP']
+    puts email_params.inspect
+
     begin
       @new_server_message_id = EmailServer.deliver_message(email_params)['id']
     rescue Exception => e

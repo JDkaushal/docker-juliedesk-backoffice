@@ -35,7 +35,7 @@ describe ApiController, :type => :controller do
     end
 
     it 'should authenticate correctly if the token is set and valid' do
-      request.headers['Authorization'] = "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+      request.headers['Authorization'] = ENV['API_KEY']
       get :index
       expect(response.body).to eq 'Passed'
     end
@@ -45,7 +45,7 @@ describe ApiController, :type => :controller do
 
     it 'should set the correct headers in a before filter when an options request is handled' do
       routes.draw { match 'options_request' => 'api#options_request', via: [:options] }
-      request.headers['Authorization'] = "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+      request.headers['Authorization'] = ENV['API_KEY']
       process :options_request, "OPTIONS"
 
       expect(response.headers.keys).to include(
@@ -57,7 +57,7 @@ describe ApiController, :type => :controller do
     end
 
     it 'should set the correct headers in an after filter when a request other than options is handled' do
-      request.headers['Authorization'] = "EDx19D72bH7e5I64EXk1kwa4jXvynddS"
+      request.headers['Authorization'] = ENV['API_KEY']
       get :index
 
       expect(response.headers.keys).to include(

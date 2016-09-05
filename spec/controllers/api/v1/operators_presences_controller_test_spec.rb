@@ -8,7 +8,7 @@ describe Api::V1::OperatorsPresencesController, :type => :controller do
 
   describe 'Operators count for a given time' do
     before do
-      request.headers['Authorization'] = 'EDx19D72bH7e5I64EXk1kwa4jXvynddS'
+      request.headers['Authorization'] = ENV['API_KEY']
     end
 
     describe 'No date provided' do

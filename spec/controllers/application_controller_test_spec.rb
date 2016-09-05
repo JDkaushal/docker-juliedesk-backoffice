@@ -143,7 +143,7 @@ describe ApplicationController, :type => :controller do
 
         get :logout
 
-        expect(response).to redirect_to("https://#{@op1.email}@juliedesk-backoffice.herokuapp.com")
+        expect(response).to redirect_to("https://#{@op1.email}@test-backoffice.herokuapp.com")
 
       end
     end

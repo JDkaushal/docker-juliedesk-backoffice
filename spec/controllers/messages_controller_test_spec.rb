@@ -83,13 +83,13 @@ describe MessagesController, :type => :controller do
 
           expect_any_instance_of(MessagesThread).to receive(:delegate_to_founders).with(message: 'delegation message', operator: @normal.name)
           expect(OperatorAction).to receive(:create_and_verify).with({
-               initiated_at: DateTime.new(2015, 10, 10, 12, 00, 00),
-               target: mt1,
-               nature: OperatorAction::NATURE_SEND_TO_SUPPORT,
-               operator_id: @normal.id,
-               messages_thread_id: m1.messages_thread_id,
-               message: 'delegation message'
-           })
+                                                                         initiated_at: DateTime.new(2015, 10, 10, 12, 00, 00),
+                                                                         target: mt1,
+                                                                         nature: OperatorAction::NATURE_SEND_TO_SUPPORT,
+                                                                         operator_id: @normal.id,
+                                                                         messages_thread_id: m1.messages_thread_id,
+                                                                         message: 'delegation message'
+                                                                     })
 
           post :classifying, id: m1.id, classification: MessageClassification::TO_FOUNDERS, to_founders_message: 'delegation message'
 
@@ -175,10 +175,10 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect(MessageClassification).to receive(:create_from_params).and_call_original
-        expect_any_instance_of(HTTP::Client).to receive(:post).with("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
-                                                                                                                                                      email: mt1.account_email,
-                                                                                                                                                      awaiting_current_notes: "Awaiting Current notes (message_thread id: #{mt1.id})"
-                                                                                                                                                  })
+        expect_any_instance_of(HTTP::Client).to receive(:post).with("https://test-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
+                                                                                                                                                        email: mt1.account_email,
+                                                                                                                                                        awaiting_current_notes: "Awaiting Current notes (message_thread id: #{mt1.id})"
+                                                                                                                                                    })
         # 300 000 ms == 5min
         post :classify, id: m1.id, classification: MessageClassification::GIVE_PREFERENCE, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes'
       end
@@ -241,11 +241,11 @@ describe MessagesController, :type => :controller do
         mt2 = FactoryGirl.create(:messages_thread)
 
         post :generate_threads_for_follow_up, id: m1.id, follow_up_data: {
-            "0" => {
-                'messages_thread_id' => "#{mt1.id}",
-                'message' => "A relancer vite"
-            }
-        }
+                                                "0" => {
+                                                    'messages_thread_id' => "#{mt1.id}",
+                                                    'message' => "A relancer vite"
+                                                }
+                                            }
 
         expect(MessagesThread.find(mt1.id).should_follow_up).to eq(true)
         expect(MessagesThread.find(mt1.id).follow_up_instruction).to eq("A relancer vite")
@@ -259,8 +259,8 @@ describe MessagesController, :type => :controller do
         expect(operator_action_groups.first.operator_actions.select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message)).to eq("#FollowUp A relancer vite")
 
         expect(JSON.parse(response.body)).to eq({
-            "status" => "success",
-            "data" => {}
+                                                    "status" => "success",
+                                                    "data" => {}
                                                 })
       end
     end

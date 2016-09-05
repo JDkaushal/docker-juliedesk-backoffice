@@ -41,4 +41,10 @@ Rails.application.configure do
   ENV['CONSCIENCE_API_BASE_PATH_V2'] = 'test_ai_conscience_path_v2'
   ENV['CONSCIENCE_API_BASE_PATH_V3'] = 'test_ai_conscience_path_v3'
   ENV['CONSCIENCE_API_KEY'] = 'conscience_api_key'
+  ENV['API_KEY'] = 'testpikeyferferfrefer'
+
+  ENV['JULIEDESK_APP_BASE_PATH'] = 'https://test-app.herokuapp.com'
+  ENV['DOMAIN_NAME'] = 'test-backoffice.herokuapp.com'
+
+  ENV['STAGING_APP'] = nil
 end
