@@ -624,7 +624,7 @@
                             var currentEvent = $.extend({}, sortedEvents[i]);
                             var cont = true;
 
-                            // We continue to iterate on nxt array elements until we find one which overlappe with the current one but end later
+                            // We continue to iterate on next array elements until we find one which overlap with the current one but end later
                             while(cont) {
                                 var nextEvent = sortedEvents[i + 1];
 
@@ -653,53 +653,68 @@
                         }
                     });
 
-                    _.each(result, function(events, room) {
-                        var currentLength = events.length;
-                        if(currentLength > 0) {
-                            events.unshift({start: "1970-01-01T00:00:00+00:00", end: events[0].start});
-                            // We added a new item in the array with the unshift so we the new last item is one item further than then previous length of the array
-                            events.push({start: events[currentLength].end, end: "2999-01-01T00:00:00+00:00"});
-                        }
-                    });
+                    //_.each(result, function(events, room) {
+                    //    var currentLength = events.length;
+                    //    if(currentLength > 0) {
+                    //        events.unshift({start: "1970-01-01T00:00:00+00:00", end: events[0].start});
+                    //        // We added a new item in the array with the unshift so we the new last item is one item further than then previous length of the array
+                    //        events.push({start: events[currentLength].end, end: "2999-01-01T00:00:00+00:00"});
+                    //    }
+                    //});
 
                     return result;
                 };
 
                 $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
 
-                    var freeSlotsByRooms = $scope.getFreeSlotsByRooms(eventsByMeetingRooms);
-                    var freeSlotsFlattened = _.flatten(_.map(freeSlotsByRooms), function(events, _) { return events; });
-                    var sortedFlattened = _.sortBy(freeSlotsFlattened, function(event) {
-                        return moment(event.start);
+                    var isOneRoomEmpty = _.find(eventsByMeetingRooms, function(events, room) {
+                        return events.length == 0;
                     });
 
-                    var result = [];
+                    var busyResult = [];
 
-                    for(var i =0; i<sortedFlattened.length ; i++) {
-                        var currentEvent = $.extend({}, sortedFlattened[i]);
-                        var cont = true;
+                    if(!isOneRoomEmpty) {
+                        var freeSlotsByRooms = $scope.getFreeSlotsByRooms(eventsByMeetingRooms);
+                        var freeSlotsFlattened = _.flatten(_.map(freeSlotsByRooms), function(events, _) { return events; });
+                        var sortedFlattened = _.sortBy(freeSlotsFlattened, function(event) {
+                            return moment(event.start);
+                        });
 
-                        while(cont) {
-                            var nextEvent = sortedFlattened[i + 1];
+                        var freeResult = [];
 
-                            // Voir Pourquoi ca itere sur tous les items
-                            if(nextEvent) {
-                                if (moment(nextEvent.start).isBefore(currentEvent.end)){
-                                    if(moment(nextEvent.end).isAfter(currentEvent.end)) {
-                                        currentEvent.end = nextEvent.end;
+                        for(var i=0; i<sortedFlattened.length ; i++) {
+                            var currentEvent = $.extend({}, sortedFlattened[i]);
+                            var cont = true;
+
+                            while(cont) {
+                                var nextEvent = sortedFlattened[i + 1];
+
+                                if(nextEvent) {
+                                    if (moment(nextEvent.start).isBefore(currentEvent.end)) {
+                                        if(moment(nextEvent.end).isAfter(currentEvent.end)) {
+                                            currentEvent.end = nextEvent.end;
+                                        }
+                                        i += 1;
                                     }
-                                    i += 1;
-                                }
-                                else {
-                                    result.push(currentEvent);
+                                    else {
+                                        freeResult.push(currentEvent);
+                                        cont = false;
+                                    }
+                                }else {
+                                    freeResult.push(currentEvent);
                                     cont = false;
                                 }
-                            }else {
-                                cont = false;
-                                result.push(currentEvent);
                             }
                         }
 
+                        for(var j=0; j<freeResult.length ; j++) {
+                            currentEvent = freeResult[j];
+                            nextEvent = freeResult[j + 1];
+
+                            if(nextEvent) {
+                                busyResult.push({start: currentEvent.end, end: nextEvent.start, isMeetingRoom: true});
+                            }
+                        }
                     }
 
                     //var busy_times = {};
@@ -717,6 +732,8 @@
                     //}), function(busyTime) {
                     //    return busyTime.event;
                     //});
+
+                    return busyResult;
                 };
 
                 $scope.getOverlappingEventsOld = function(eventsByMeetingRooms) {
