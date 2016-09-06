@@ -1,7 +1,9 @@
 <script>
 
     window.afterReplyBoxInitCallback = function(){
-        window.afterEventFetched();
+        if(window.currentEventData) {
+            window.afterEventFetched();
+        }
     };
 
     window.afterEventFetched = function () {
@@ -45,8 +47,6 @@
     };
 
     var cancelEventReplyFunction = function() {
-
-
 
         $.ajax({
             url: "/julie_actions/<%= @julie_action.id %>/update",
