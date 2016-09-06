@@ -15,7 +15,9 @@ window.trackEvent = function(event, params, callback) {
             }
         });
     <% else %>
-        callback();
+        if(callback) {
+            callback();
+        }
     <% end %>
 };
 
