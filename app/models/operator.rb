@@ -94,8 +94,8 @@ class Operator < ActiveRecord::Base
     }[privilege]
   end
 
-  def formatted_presences_for_day day
-    day_presences = presences_for_day(day)
+  def formatted_presences_for_day day, presences=nil
+    day_presences = presences_for_day(day, presences)
     day_presences.group_by(&:is_review).map do |is_review, mode_day_presences|
       ops = mode_day_presences.map{|op|
         date = op.date.in_time_zone("Indian/Antananarivo")
@@ -127,12 +127,13 @@ class Operator < ActiveRecord::Base
     end.join(" & ")
   end
 
-  def presences_for_day day
-    start_date = day.in_time_zone("Indian/Antananarivo").beginning_of_day + 6.hours
+  def presences_for_day day, presences=nil
+    start_date = (day.in_time_zone("Indian/Antananarivo").beginning_of_day + 6.hours).utc
     end_date = start_date + 24.hours
-    operator_presences.select{|op|
-      op.date >= start_date &&
-          op.date < end_date
+
+    (presences || operator_presences).select{|op|
+      op.date.to_s >= start_date.to_s &&
+          op.date.to_s < end_date.to_s
     }
   end
 
