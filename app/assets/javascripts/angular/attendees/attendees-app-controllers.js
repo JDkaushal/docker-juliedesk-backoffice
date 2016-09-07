@@ -301,6 +301,10 @@
 
         $scope.resetAttendeesSearch = function() {
             $scope.attendeeSearchFilter = '';
+            // Sometime when a new attendee is added a display bug occure, hiding/showing the attendees seems to fix it
+            setTimeout(function(){
+                $('.contact').hide().show(0);
+            }, 10);
         };
 
         $scope.resetHighlightedAttendeeInSearch = function() {
