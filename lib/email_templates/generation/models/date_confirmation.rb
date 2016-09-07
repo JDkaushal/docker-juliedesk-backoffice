@@ -20,8 +20,12 @@ module EmailTemplates
 
         private
 
+        def get_timezone
+          @params['timezone']
+        end
+
         def get_validated_date
-          Time.parse(@params['validate'])
+          Time.parse(@params['validate']).in_time_zone(get_timezone)
         end
 
         def set_body

@@ -58,7 +58,7 @@ module Ai
           end
         end
       end
-      
+
       private
 
       def dispatch_request_type(julia_response)
