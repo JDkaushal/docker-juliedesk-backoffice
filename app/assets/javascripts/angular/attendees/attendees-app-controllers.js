@@ -81,6 +81,8 @@
 
                     this.attendeeInForm.name = this.attendeeInForm.firstName + ' ' + this.attendeeInForm.lastName;
 
+                    this.attendeeInForm.alreadySetPresent = this.attendeeInForm.isPresent;
+
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
                         sharedProperties.notifyAttendeeAdded(new Attendee(this.attendeeInForm));
@@ -276,6 +278,8 @@
             switch(event.keyCode) {
                 case 13:
                     availableAttendeesInSearch[$scope.currentlySelectedSearchedAttendeeIndex].isPresent = true;
+                    availableAttendeesInSearch[$scope.currentlySelectedSearchedAttendeeIndex].alreadySetPresent = true;
+                    $scope.resetAttendeesSearch();
                     break;
                 case 38:
                     if($scope.currentlySelectedSearchedAttendeeIndex > 0) {
@@ -293,6 +297,10 @@
                     }
                     break;
             }
+        };
+
+        $scope.resetAttendeesSearch = function() {
+            $scope.attendeeSearchFilter = '';
         };
 
         $scope.resetHighlightedAttendeeInSearch = function() {
@@ -488,6 +496,8 @@
 
             var validatedCompany = needAIConfirmation ? '' : company;
 
+            var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
+
             var a = new Attendee({
                 accountEmail: attendee.account_email,
                 guid: informations.id || $scope.guid(),
@@ -507,7 +517,8 @@
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
-                isPresent: attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1),
+                isPresent: isPresent,
+                alreadySetPresent: isPresent,
                 isClient: informations.isClient == "true",
                 needAIConfirmation: needAIConfirmation,
                 aIHasBeenConfirmed: aIHasBeenConfirmed,
@@ -668,7 +679,7 @@
 
         $scope.getDisplayedAttendees = function() {
           return _.filter($scope.attendees, function(a) {
-             return (!a.company || (a.company && a.isPresent));
+             return (a.alreadySetPresent || !a.company || (a.company && a.isPresent));
           });
         };
 
@@ -685,7 +696,7 @@
                 //   }
                 //});
 
-               return filtered && a.company && !a.isPresent;
+               return !a.alreadySetPresent && filtered && a.company && !a.isPresent;
             });
         };
 

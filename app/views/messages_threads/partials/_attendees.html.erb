@@ -15,7 +15,7 @@
     <div>
       <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
     </div>
-    <div class="contact-group" ng-hide="displaySearchList" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+    <div class="contact-group" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
       <div class="attendee-company-title">
         {{ key }}
       </div>
@@ -25,17 +25,18 @@
         </div>
       </div>
     </div>
-    <div class="contact-group search-list" ng-show="displaySearchList" ng-repeat="(key, value) in getRegisteredAvailableAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
-      <div class="attendee-company-title">
-        {{ key }}
-      </div>
-      <div ng-repeat="attendee in value track by $index">
-        <div class="contact search-list" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}" ng-class="{'highlighted-in-search': attendee.highligthedInSearch }">
-          <attendee-general-details-light attendee="attendee"/>
+    <div class="search-list-wrapper">
+      <div style="position: absolute;" class="contact-group search-list" ng-show="displaySearchList" ng-repeat="(key, value) in getRegisteredAvailableAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+        <div class="attendee-company-title">
+          {{ key }}
+        </div>
+        <div ng-repeat="attendee in value track by $index">
+          <div class="contact search-list-item" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}" ng-class="{'highlighted-in-search': attendee.highligthedInSearch }">
+            <attendee-general-details-light attendee="attendee" reset-search="resetAttendeesSearch()"/>
+          </div>
         </div>
       </div>
     </div>
-
 
     <attendees-form/>
   </div>

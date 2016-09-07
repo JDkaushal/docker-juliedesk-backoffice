@@ -6,12 +6,15 @@
             restrict: 'E',
             templateUrl: 'attendee-general-details-light.html',
             scope: {
-                attendee: '='
+                attendee: '=',
+                resetSearch: '&'
             },
             controller: ['$scope', '$element', function($scope, $element) {
 
                 $scope.setPresent = function() {
                   $scope.attendee.isPresent = true;
+                    $scope.attendee.alreadySetPresent = true;
+                  $scope.resetSearch();
                 };
 
             }]
