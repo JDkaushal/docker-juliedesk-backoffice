@@ -296,6 +296,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             saveAttendeesStaging(request.event_id, realAttendees);
         }
 
+        if(window.currentEventTile) {
+            var oldEvent = window.currentEventTile.event;
+        }
+
         $.ajax({
             url: host + "/api/v1/calendar_proxy/event_update",
             type: "POST",
@@ -335,15 +339,57 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 meeting_room: request.meeting_room
             }),
             success: function(e) {
-                if(window.threadComputedData.using_restaurant_booking && request.location && window.threadComputedData.location != request.location) {
-                    $('#restaurant-booking-manager').scope().sendAdminEmail({
-                        type: 'booking',
-                        user_email: window.threadAccount.email,
-                        booking_date: request.start,
-                        // the attendees count is set by the restaurant-booking-manager app
-                        location: request.location,
-                        thread_id: window.processingMessageThreadId
-                    }, callback(e));
+                var restaurantBookingManager = $('#restaurant-booking-manager').scope();
+
+                if(restaurantBookingManager.getUsingRestaurantBooking()) {
+
+                    if(request.location) {
+                        if(window.threadComputedData.restaurant_booking_details.restaurant == '') {
+                            restaurantBookingManager.sendAdminEmail({
+                                type: 'booking',
+                                user_email: window.threadAccount.email,
+                                booking_date: request.start,
+                                // the attendees count is set by the restaurant-booking-manager app
+                                location: request.location,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e));
+                        } else if(window.threadComputedData.restaurant_booking_details.restaurant != request.location) {
+                            restaurantBookingManager.sendAdminEmail({
+                                type: 'cancellation',
+                                user_email: window.threadAccount.email,
+                                booking_date: oldEvent.start.format(),
+                                location: window.threadComputedData.restaurant_booking_details.restaurant,
+                                thread_id: window.processingMessageThreadId
+                            }, restaurantBookingManager.sendAdminEmail({
+                                type: 'booking',
+                                user_email: window.threadAccount.email,
+                                booking_date: request.start,
+                                // the attendees count is set by the restaurant-booking-manager app
+                                location: request.location,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e)));
+                        } else if(oldEvent.start.format() != request.start) {
+                            restaurantBookingManager.sendAdminEmail({
+                                type: 'postpone',
+                                user_email: window.threadAccount.email,
+                                old_booking_date: oldEvent.start.format(),
+                                booking_date: request.start,
+                                // the attendees count is set by the restaurant-booking-manager app
+                                location: request.location,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e));
+                        }
+                    } else {
+                        if(window.threadComputedData.restaurant_booking_details.restaurant) {
+                            $('#restaurant-booking-manager').scope().sendAdminEmail({
+                                type: 'cancellation',
+                                user_email: window.threadAccount.email,
+                                booking_date: request.start,
+                                location: window.threadComputedData.restaurant_booking_details.restaurant,
+                                thread_id: window.processingMessageThreadId
+                            }, callback(e));
+                        }
+                    }
                 } else {
                     callback(e);
                 }
