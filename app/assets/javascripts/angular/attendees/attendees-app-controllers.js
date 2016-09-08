@@ -632,12 +632,15 @@
 
         this.fetchAttendeeFromClientContactNetwork = function(){
             $('.submit-classification').attr('disabled', true);
+
+            var currentAttendeesEmails = _.map(window.currentAttendees, function( a ){
+                return a.email;
+            });
+
             $http({
                 url: '/client_contacts/fetch?client_email=' + window.threadAccount.email,
                 method: "GET",
-                params: {"contacts_emails[]": _.map(window.currentAttendees, function( a ){
-                    return a.email;
-                })}
+                params: {"contacts_emails[]": _.without(currentAttendeesEmails, '')}
             }).then(function success(attendeesDetails) {
                 $('.submit-classification').attr('disabled', false);
                 attendeesCtrl.loaded = true;
