@@ -8,6 +8,16 @@ en:
       date_confirmation: '%A %-d %B at %-l:%M%P'
 
   email_templates:
+
+    errors:
+      dates_suggestion:
+        no_suggestions: "It’s difficult to find some free times in your calendar"
+      date_confirmation:
+        no_fitting_date: "It’s difficult to find some free times in your calendar"
+      common: "I am not available at the moment, I will get back to you very shortly"
+      unknown_request: "I’m not quite sure I understood your request… Could you rephrase it?"
+      no_thread_owner: "I don’t remember you are client of Julie Desk"
+
     appointment_types:
       appointment: 'an appointment'
       lunch: "a lunch"
@@ -25,6 +35,7 @@ en:
 
     date_confirmation:
       invitations_sent: "Perfect. I've sent invites"
+      new_propositions: "Sorry, %{client_name} is no longer available at this time, but here are some new availabilities for %{appointment_type}%{location} :"
 
     dates:
       availability_question:
@@ -34,6 +45,8 @@ en:
     location: 'Location: %{location}'
 
     not_available: 'Sorry, but this date is no longer available.'
+
+    event_updated: "Thank you, the event was updated."
 
     greetings:
       M: 'Mr. %{client_name},'

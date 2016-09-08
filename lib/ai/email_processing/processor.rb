@@ -68,6 +68,11 @@ module Ai
                                        :dates_suggestion
                                      when :ask_availabilities
                                        create_event(julia_response)[:template]
+                                       :date_confirmation
+                                     when :give_info
+                                       :event_updated
+                                     else
+                                       :unknown_request
                                    end
 
         EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
@@ -104,10 +109,6 @@ module Ai
           unless response['success']
             raise("Error while creating event from server_message_id: #{@message.server_message_id}")
           end
-
-          {template: :date_confirmation}
-        else
-          {template: :not_available}
         end
       end
 
@@ -134,7 +135,7 @@ module Ai
       end
 
       def error_response_template
-        'Sorry, I could not find an appropriate response to your request'
+        I18n.translate('email_templates.errors.common')
       end
 
     end

@@ -8,30 +8,79 @@ module EmailTemplates
           @params = params
           @output_array = []
 
-          I18n.locale = @params['language']
+          if I18n.available_locales.include?(@params['language'])
+            I18n.locale = @params['language']
+          end
+
         end
 
         def generate
           check_params_integrity
 
-          set_greetings_sentence
-          set_body
+          if data_consistent?
+            set_greetings_sentence
+            set_body
+          end
           set_footer_and_signature
           format_template_response
         end
 
         private
 
+        def data_consistent?
+          data_ok = false
+
+          if get_thread_owner.blank?
+            set_error_response(:no_thread_owner)
+          elsif get_language == 'unknown'
+            set_language_error
+          else
+            data_ok = true
+          end
+
+          data_ok
+        end
+
+        def set_error_response(key)
+          add_to_output_array(I18n.translate("email_templates.errors.#{key}"))
+        end
+
+        def set_language_error
+          message = <<END
+Je ne suis pas sûre de comprendre votre langue...
+I’m not sure I understand your language…
+Io non sono sicuro di aver capito la lingua...
+No estoy seguro de entender su idioma...
+Ich bin mir nicht sicher, ob ich Ihre Sprache verstehen...
+আমি নিশ্চিত আমি তোমার ভাষা বুঝি না...
+Saya tidak yakin saya mengerti bahasa Anda...
+私はあなたの言語を理解してないんだけど....
+END
+          add_to_output_array(message)
+        end
+
         def get_required_params
           raise('Not implemented on parent class')
         end
 
+        def get_language
+          @params['language']
+        end
+
         def get_attendees_without_thread_owner
-          @params['participants'].reject{|att| att['is_thread_owner']}
+          @params['participants'] && @params['participants'].reject{|att| att['is_thread_owner']}
         end
 
         def get_thread_owner
-          @params['participants'].find{|att| att['is_thread_owner']}
+          @params['participants'] && @params['participants'].find{|att| att['is_thread_owner']}
+        end
+
+        def get_suggested_dates
+          @params['suggested_dates'].map{|d| d.to_time.in_time_zone(get_timezone)}.group_by{|d| d.to_date}
+        end
+
+        def get_suggested_dates_count
+          @params['suggested_dates'].size
         end
 
         def get_attendees_names
@@ -110,7 +159,9 @@ module EmailTemplates
         def set_footer_and_signature
           # TODO Integrate Julie Alias signature
 
-          add_to_output_array(get_julie_alias_footer)
+          if @params['julie_alias'].present?
+            add_to_output_array(get_julie_alias_footer)
+          end
         end
 
         def format_template_response

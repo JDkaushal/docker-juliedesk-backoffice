@@ -13,6 +13,4 @@ module EmailTemplates
 
     end
   end
-
-
 end
