@@ -255,6 +255,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                         saveAttendeesStaging(e.data.event_id, realAttendees);
                         if(window.threadComputedData.using_restaurant_booking && request.location) {
                             $('#restaurant-booking-manager').scope().sendAdminEmail({
+                                type: 'booking',
                                 user_email: window.threadAccount.email,
                                 booking_date: request.start,
                                 // the attendees count is set by the restaurant-booking-manager app
@@ -269,6 +270,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                         // when a location is actually set
                         if(window.threadComputedData.using_restaurant_booking && request.location) {
                             $('#restaurant-booking-manager').scope().sendAdminEmail({
+                                type: 'booking',
                                 user_email: window.threadAccount.email,
                                 booking_date: request.start,
                                 // the attendees count is set by the restaurant-booking-manager app
@@ -335,6 +337,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             success: function(e) {
                 if(window.threadComputedData.using_restaurant_booking && request.location && window.threadComputedData.location != request.location) {
                     $('#restaurant-booking-manager').scope().sendAdminEmail({
+                        type: 'booking',
                         user_email: window.threadAccount.email,
                         booking_date: request.start,
                         // the attendees count is set by the restaurant-booking-manager app
@@ -351,6 +354,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         });
     }
     else if(request.action == "delete_event") {
+        var oldEvent = window.currentEventTile.event;
+
         $.ajax({
             url: host + "/api/v1/calendar_proxy/event_delete",
             type: "POST",
@@ -367,7 +372,17 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 instance_id: request.instance_id
             }),
             success: function(e) {
-                callback(e);
+                if(window.threadComputedData.using_restaurant_booking) {
+                    $('#restaurant-booking-manager').scope().sendAdminEmail({
+                        type: 'cancellation',
+                        user_email: window.threadAccount.email,
+                        booking_date: oldEvent.start.format(),
+                        location: window.threadComputedData.restaurant_booking_details.restaurant,
+                        thread_id: window.processingMessageThreadId
+                    }, callback(e));
+                } else {
+                    callback(e);
+                }
             },
             error: function(e) {
                 error_callback(e);

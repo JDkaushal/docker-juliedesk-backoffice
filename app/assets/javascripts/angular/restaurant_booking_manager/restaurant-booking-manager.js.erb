@@ -160,7 +160,7 @@
                     var result = null;
 
                     if($scope.usingRestaurantBooking) {
-                        result = {attendees_count_for_restaurant_booking: $scope.selectedAttendeesNb};
+                        result = {attendees_count_for_restaurant_booking: $scope.selectedAttendeesNb, restaurant: $('#location').val()};
                     }
 
                     return result;
