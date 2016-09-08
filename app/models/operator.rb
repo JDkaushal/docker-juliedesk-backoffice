@@ -128,12 +128,12 @@ class Operator < ActiveRecord::Base
   end
 
   def presences_for_day day, presences=nil
-    start_date = (day.in_time_zone("Indian/Antananarivo").beginning_of_day + 6.hours).utc
+    start_date = (day.in_time_zone("Indian/Antananarivo").beginning_of_day + 6.hours)
     end_date = start_date + 24.hours
 
     (presences || operator_presences).select{|op|
-      op.date.to_s >= start_date.to_s &&
-          op.date.to_s < end_date.to_s
+      op.date >= start_date &&
+          op.date < end_date
     }
   end
 
