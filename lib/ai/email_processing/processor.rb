@@ -67,7 +67,7 @@ module Ai
                                      when :ask_date_suggestions
                                        :dates_suggestion
                                      when :ask_availabilities
-                                       create_event(julia_response)[:template]
+                                       create_event(julia_response)
                                        :date_confirmation
                                      when :give_info
                                        :event_updated
@@ -140,5 +140,4 @@ module Ai
 
     end
   end
-  
 end
