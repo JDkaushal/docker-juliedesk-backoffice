@@ -802,7 +802,7 @@ window.getScheduledEventDateString = function(params) {
     var dateString = "";
     today = moment().tz(params.timezoneId);
     tomorrow = today.clone().add(1, 'd');
-    var date = moment(params.currentEventData.start.dateTime).tz(params.timezoneId);
+    var date = moment(params.currentEventData.start.dateTime || params.currentEventData.start.date).tz(params.timezoneId);
 
     var formatted_date = date.locale(params.locale).format(localize("email_templates.common.only_date_format"));
     var localizedDateString = window.getCurrentLocale() == 'en' ? window.helpers.capitalize(formatted_date) : window.helpers.lowerize(formatted_date);
