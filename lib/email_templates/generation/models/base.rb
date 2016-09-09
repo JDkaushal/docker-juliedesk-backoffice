@@ -8,7 +8,7 @@ module EmailTemplates
           @params = params
           @output_array = []
 
-          if I18n.available_locales.include?(@params['language'])
+          if I18n.available_locales.include?(@params['language'].try(:to_sym))
             I18n.locale = @params['language']
           end
 
