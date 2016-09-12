@@ -224,8 +224,8 @@ window.wordings['fr'] = {
             }
         },
         send_call_instructions: {
-            placed_in_notes: "J'ai inséré les instructions d'appel dans l'événement.",
-            placed_skype_in_notes: "J’ai inséré l'identifiant Skype de %{target_name} dans l’événement.",
+            placed_in_notes: "J'ai inséré les instructions d'appel dans les notes de l'événement.",
+            placed_skype_in_notes: "J’ai inséré l'identifiant Skype de %{target_name} dans les notes de l’événement.",
             give_target_number: "Instructions d’appel : appeler %{target_name} au %{details}",
             give_target_confcall: "Numéro de conférence : \n%{details}",
             give_target_skype: "L’identifiant Skype de %{target_name} a été joint à l’invitation : %{details}",

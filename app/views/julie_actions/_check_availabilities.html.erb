@@ -211,6 +211,7 @@
             if(window.threadComputedData.client_agreement) {
                 var currentTimezone = window.currentCalendar.getCalendarTimezone();
                 var meetingRoomManager = $('#meeting-rooms-manager').scope();
+                var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
 
                 trackActionV2('Click_on_create_event', {ux_element: 'standCE', meeting_room: meetingRoomManager.usingMeetingRoom});
 
@@ -245,6 +246,14 @@
                     emailInNotes = "\n\n" + textData.text;
                 }
 
+                var requestParams = {};
+
+                if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
+                    requestParams['virtual_resource_id'] = vmHelper.selectedVirtualResource.id;
+                    // Allows us to refresh the notes with the currently selected virtual resource instructions
+                    forceUpdateNotesCallingInfos();
+                }
+
                 //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
                 // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
                 var description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
@@ -254,7 +263,6 @@
                         location = window.threadComputedData.call_instructions.event_instructions;
 
                     if(window.currentEventTile) {
-                        var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
                         var currentEventNotesNode = $('.created-event-panel .notes');
                         var currentEventNotes = currentEventNotesNode.val();
                         var newEventDescription = '';
@@ -269,7 +277,7 @@
                     }
                 }
 
-                var requestParams = {
+                requestParams = $.extend(requestParams, {
                     action: "create_event",
                     email: "<%= @messages_thread.account_email %>",
                     summary: window.threadComputedData.summary,
@@ -284,7 +292,7 @@
                     end_timezone: currentTimezone,
                     calendar_login_username: window.threadComputedData.calendar_login_username,
                     meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
-                };
+                });
 
                 if(isPostpone && !window.currentEventFromInvitation) {
                     window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
@@ -337,6 +345,10 @@
             var currentAppointment = window.getCurrentAppointment();
             var eventCreatorManager = $('#datesVerificationsManager').scope();
             var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+            var virtualResourcesUsed = false;
+
             window.currentCalendar.refreshEvents();
 
             if(!isPostpone || window.currentEventFromInvitation) {
@@ -397,6 +409,12 @@
                 data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
             }
 
+            if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
+                data.notes_updated = $('#notes').val();
+                data.virtual_resource_used = vmHelper.selectedVirtualResource;
+                virtualResourcesUsed = true;
+            }
+
             if(window.threadComputedData.is_virtual_appointment){
                 var call_instructions = window.threadComputedData.call_instructions;
 
@@ -425,7 +443,8 @@
                 var messageParams = {
                     action: 'send_call_instructions',
                     callInstructions: call_instructions,
-                    locale: window.threadComputedData.locale
+                    locale: window.threadComputedData.locale,
+                    virtualResourcesUsed: virtualResourcesUsed
                 };
                 var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
 
@@ -454,7 +473,6 @@
                     message += missingInfosMessage;
                 }
             }
-
 
             window.setReplyMessage(message, 'all', window.otherEmails);
 

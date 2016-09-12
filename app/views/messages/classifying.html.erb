@@ -46,7 +46,9 @@
 
           window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
           $(".calendar-container").addClass("visible");
-          $(".calendar-container").addClass("minimized");
+          if(window.classification != 'update_event') {
+              $(".calendar-container").addClass("minimized");
+          }
       };
 
       window.drawCalendarCallback = function(){

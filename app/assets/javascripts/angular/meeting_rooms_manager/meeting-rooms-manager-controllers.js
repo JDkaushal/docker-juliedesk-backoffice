@@ -28,6 +28,8 @@
 
                 $scope.locationBase = window.threadComputedData.location;
 
+                $scope.utilitiesHelper = $('#events_availabilities_methods').scope();
+
                 var createEventMeetingRoomContainerSelect = $('.create-event-meeting-rooms-container .selection-area');
                 var createEventMeetingRoomContainer = $('.create-event-meeting-rooms-container');
                 var createEventRoomSelectionSelect = $('.create_event_room_selection_select');
@@ -418,7 +420,7 @@
                 };
 
                 $scope.checkMeetingRoomAvailability = function(checkSelectedRoom, specifiedDate) {
-                    if(window.currentCalendar && window.currentCalendar.meetingRoomsEvents &&
+                    if(window.currentCalendar && !$.isEmptyObject(window.currentCalendar.meetingRoomsEvents) &&
                         (window.julie_action_nature == 'check_availabilities' || window.classification == 'update_event')) {
 
                         if (window.classification == 'update_event') {
@@ -509,13 +511,14 @@
                 };
 
                 $scope.eventIsOverlapping = function(firstEventDateStartTime, firstEventDateEndTime, secondEventDateStartTime, secondEventDateEndTime) {
-                    return (
-                        firstEventDateStartTime.isSame(secondEventDateStartTime) || firstEventDateEndTime.isSame(secondEventDateEndTime) ||
-                        firstEventDateStartTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
-                        firstEventDateEndTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
-                        secondEventDateStartTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()') ||
-                        secondEventDateEndTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()')
-                    );
+                    return $scope.utilitiesHelper.eventIsOverlapping(firstEventDateStartTime, firstEventDateEndTime, secondEventDateStartTime, secondEventDateEndTime);
+                    //return (
+                    //    firstEventDateStartTime.isSame(secondEventDateStartTime) || firstEventDateEndTime.isSame(secondEventDateEndTime) ||
+                    //    firstEventDateStartTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
+                    //    firstEventDateEndTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
+                    //    secondEventDateStartTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()') ||
+                    //    secondEventDateEndTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()')
+                    //);
                 };
 
                 $scope.selectRoom = function(room) {
@@ -667,55 +670,57 @@
 
                 $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
 
-                    var isOneRoomEmpty = _.find(eventsByMeetingRooms, function(events, room) {
-                        return events.length == 0;
-                    });
+                    return $('#events_availabilities_methods').scope().getOverlappingEvents(eventsByMeetingRooms, {isMeetingRoom: true});
 
-                    var busyResult = [];
-
-                    if(!isOneRoomEmpty) {
-                        var freeSlotsByRooms = $scope.getFreeSlotsByRooms(eventsByMeetingRooms);
-                        var freeSlotsFlattened = _.flatten(_.map(freeSlotsByRooms), function(events, _) { return events; });
-                        var sortedFlattened = _.sortBy(freeSlotsFlattened, function(event) {
-                            return moment(event.start);
-                        });
-
-                        var freeResult = [];
-
-                        for(var i=0; i<sortedFlattened.length ; i++) {
-                            var currentEvent = $.extend({}, sortedFlattened[i]);
-                            var cont = true;
-
-                            while(cont) {
-                                var nextEvent = sortedFlattened[i + 1];
-
-                                if(nextEvent) {
-                                    if (moment(nextEvent.start).isBefore(currentEvent.end)) {
-                                        if(moment(nextEvent.end).isAfter(currentEvent.end)) {
-                                            currentEvent.end = nextEvent.end;
-                                        }
-                                        i += 1;
-                                    }
-                                    else {
-                                        freeResult.push(currentEvent);
-                                        cont = false;
-                                    }
-                                }else {
-                                    freeResult.push(currentEvent);
-                                    cont = false;
-                                }
-                            }
-                        }
-
-                        for(var j=0; j<freeResult.length ; j++) {
-                            currentEvent = freeResult[j];
-                            nextEvent = freeResult[j + 1];
-
-                            if(nextEvent) {
-                                busyResult.push({start: currentEvent.end, end: nextEvent.start, isMeetingRoom: true});
-                            }
-                        }
-                    }
+                    //var isOneRoomEmpty = _.find(eventsByMeetingRooms, function(events, room) {
+                    //    return events.length == 0;
+                    //});
+                    //
+                    //var busyResult = [];
+                    //
+                    //if(!isOneRoomEmpty) {
+                    //    var freeSlotsByRooms = $scope.getFreeSlotsByRooms(eventsByMeetingRooms);
+                    //    var freeSlotsFlattened = _.flatten(_.map(freeSlotsByRooms), function(events, _) { return events; });
+                    //    var sortedFlattened = _.sortBy(freeSlotsFlattened, function(event) {
+                    //        return moment(event.start);
+                    //    });
+                    //
+                    //    var freeResult = [];
+                    //
+                    //    for(var i=0; i<sortedFlattened.length ; i++) {
+                    //        var currentEvent = $.extend({}, sortedFlattened[i]);
+                    //        var cont = true;
+                    //
+                    //        while(cont) {
+                    //            var nextEvent = sortedFlattened[i + 1];
+                    //
+                    //            if(nextEvent) {
+                    //                if (moment(nextEvent.start).isBefore(currentEvent.end)) {
+                    //                    if(moment(nextEvent.end).isAfter(currentEvent.end)) {
+                    //                        currentEvent.end = nextEvent.end;
+                    //                    }
+                    //                    i += 1;
+                    //                }
+                    //                else {
+                    //                    freeResult.push(currentEvent);
+                    //                    cont = false;
+                    //                }
+                    //            }else {
+                    //                freeResult.push(currentEvent);
+                    //                cont = false;
+                    //            }
+                    //        }
+                    //    }
+                    //
+                    //    for(var j=0; j<freeResult.length ; j++) {
+                    //        currentEvent = freeResult[j];
+                    //        nextEvent = freeResult[j + 1];
+                    //
+                    //        if(nextEvent) {
+                    //            busyResult.push({start: currentEvent.end, end: nextEvent.start, isMeetingRoom: true});
+                    //        }
+                    //    }
+                    //}
 
                     //var busy_times = {};
                     //_.each(allEvents, function(event) {
@@ -733,7 +738,7 @@
                     //    return busyTime.event;
                     //});
 
-                    return busyResult;
+                    //return busyResult;
                 };
 
                 $scope.getOverlappingEventsOld = function(eventsByMeetingRooms) {

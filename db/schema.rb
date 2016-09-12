@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160905140539) do
+ActiveRecord::Schema.define(version: 20160913161030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -186,6 +186,7 @@ ActiveRecord::Schema.define(version: 20160905140539) do
     t.boolean  "using_restaurant_booking",   default: false
     t.json     "restaurant_booking_details"
     t.boolean  "location_changed"
+    t.json     "virtual_resource_used"
   end
 
   create_table "message_interpretations", force: true do |t|

@@ -40,8 +40,11 @@ class JulieActionsController < ApplicationController
 
     print_time "Update messages thread"
 
+    message_classification_params_to_update = {}
+
     if params[:timezone].present?
-      julie_action.message_classification.update(timezone: params[:timezone])
+      message_classification_params_to_update[:timezone] = params[:timezone]
+      #julie_action.message_classification.update(timezone: params[:timezone])
     end
 
     date_times = []
@@ -106,12 +109,32 @@ class JulieActionsController < ApplicationController
     end
 
     if params[:call_instructions].present?
-      julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
+      message_classification_params_to_update[:call_instructions] = params[:call_instructions].to_json
+
+      #julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
     end
 
     if params[:using_meeting_room].present?
-      julie_action.message_classification.update(using_meeting_room: params[:using_meeting_room], meeting_room_details: params[:meeting_room_details])
+      message_classification_params_to_update[:using_meeting_room] = params[:using_meeting_room]
+      message_classification_params_to_update[:meeting_room_details] = params[:meeting_room_details]
+
+      #julie_action.message_classification.update(using_meeting_room: params[:using_meeting_room], meeting_room_details: params[:meeting_room_details])
     end
+
+    if params[:notes_updated].present?
+      message_classification_params_to_update[:notes] = params[:notes_updated]
+    end
+
+    if params[:virtual_resource_used].present?
+      message_classification_params_to_update[:virtual_resource_used] = params[:virtual_resource_used]
+    else
+      message_classification_params_to_update[:virtual_resource_used] = nil
+    end
+
+    if message_classification_params_to_update.present?
+      julie_action.message_classification.update(message_classification_params_to_update)
+    end
+
 
     print_time "Updating message classification"
 

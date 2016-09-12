@@ -507,6 +507,50 @@
 //        }
     }
 
+    // Used to forcefully update the notes when creating an event to add the selected virtual resource call instructions
+    function forceUpdateNotesCallingInfos() {
+        window.threadDataIsEditable = true
+
+        var currentAppointment = window.getCurrentAppointment();
+
+        if(window.threadDataIsEditable){
+            $('#notes').val('');
+
+            angular.element($('#attendeesCtrl')).scope().updateNotes();
+            var node = $('#virtual-meetings-helper');
+
+            var vmHelper = angular.element(node).scope();
+
+            if(vmHelper){
+                if(currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
+                    vmHelper.setEventNotes();
+                }else {
+                    if(vmHelper.configLoaded)
+                        vmHelper.setEventNotes();
+                    else
+                        refreshVirtualAppointmentsHelper();
+                }
+            }
+        }
+
+        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+
+            if(meetingRoomsManager) {
+                meetingRoomsManager.setMeetingRoomInfosInNotes();
+            }
+        }
+
+        var notes = $('#notes').val().trim().replace(/\n/g, '__n');
+        $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
+        setNotes();
+
+        if($('#event-cancel-button').css('display') == 'block')
+            updateCurrentEventNotes();
+
+        window.threadDataIsEditable = false;
+    }
+
     function updateNotesCallingInfos() {
         var currentAppointment = window.getCurrentAppointment();
 
@@ -1173,6 +1217,7 @@
 </script>
 
 <%= render partial: "AI/partials/manager" %>
+<%= render partial: "messages_threads/partials/angular_utilities" %>
 
 <div class="messages-thread-info-panel scrollable">
 
@@ -1370,20 +1415,13 @@
             <%= hidden_field_tag :location_coordinates %>
 
             <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
-
-          <!--<div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>-->
-
         </div>
 
         <div class="number-to-call-part-container">
-          <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
-          <!--<div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_instruction"><%= I18n.t("common.validate") %></div>-->
-          <!--<div class="data-entry-name"><%= I18n.t("info_box.number_to_call") %></div>-->
-          <!--<%= text_area_tag :number_to_call, messages_thread.computed_data[:number_to_call], class: "data-entry form-control" %>-->
+            <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
         </div>
-        <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
+            <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" id="location_instructions_tracking_btn" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
-
       </div>
 
       <div class="data-entry linear-form-entry">

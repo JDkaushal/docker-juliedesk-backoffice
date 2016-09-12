@@ -70,7 +70,7 @@ EventTile.prototype.displayCallingInfosForm = function(){
     // We display the form in the edit event window when the event is owned by someone (we are editing it)
     var currentAppointment = window.getCurrentAppointment();
 
-    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual)
+    if(window.threadDataIsEditable && currentAppointment && currentAppointment.appointment_kind_hash.is_virtual)
     {
         var locationContainerNode = $('.location-container');
 
@@ -118,26 +118,6 @@ EventTile.prototype.displayCallingInfosForm = function(){
 
             });
         }
-
-        // These 2 functions were moved to the initActions() method below
-
-        //eventTile.$selector.find("#event-edit-button").click(function() {
-        //    scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
-        //
-        //    $('.event-tile-container .location').hide();
-        //
-        //    vmHelperNode.closest('.event-tile-container').css('height', '810px');
-        //    vmHelperNode.closest('.created-event-panel').css('height', '790px');
-        //});
-
-        //eventTile.$selector.find("#event-cancel-button").click(function() {
-        //    scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
-        //
-        //    $('.event-tile-container .location').show();
-        //    vmHelperNode.closest('.event-tile-container').css('height', '545px');
-        //    vmHelperNode.closest('.created-event-panel').css('height', '515px');
-        //});
-
     }
 };
 
@@ -480,8 +460,15 @@ EventTile.prototype.getEditedEvent = function() {
         var currentAppointment = window.getCurrentAppointment();
 
         if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-            if(window.threadComputedData.call_instructions.event_instructions || window.threadComputedData.call_instructions.event_instructions == '')
-                location = window.threadComputedData.call_instructions.event_instructions;
+            // WHen we are usin virtual resources, we just take the location of the event (for when meeting rooms set the event location)
+            if(!$.isEmptyObject(window.threadComputedData.virtual_resource_used)) {
+                location = $(eventTile.$selector[0].childNodes[0]).find("input.location").val();
+            } else {
+                if(window.threadComputedData.call_instructions.event_instructions || window.threadComputedData.call_instructions.event_instructions == '')
+                    location = window.threadComputedData.call_instructions.event_instructions;
+            }
+
+
         }
     }else{
         description = $(eventTile.$selector[0].childNodes[0]).find("textarea.notes").val();
@@ -795,11 +782,17 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
         });
     }
     else {
+        var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
         eventTile.showSpinner();
         params['action'] = "update_event";
         params['event_id'] = eventTile.eventId;
         params['event_url'] = eventTile.eventUrl;
         params['calendar_id'] = eventTile.calendarId;
+
+        if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
+            params['virtual_resource_id'] = vmHelper.selectedVirtualResource.id;
+        }
 
         if(saving_recurring_occurrence) {
             params['saving_occurrence'] = true;
@@ -1039,8 +1032,9 @@ EventTile.prototype.initActions = function() {
         var heightContainer = '535px';
         var heightPanel = '515px';
 
-        if(!!scope)
+        if(!!scope) {
             scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
+        }
 
         if(eventTile.$selector.find('.minimize-button').length > 0) {
             heightContainer = '575px';
@@ -1068,6 +1062,10 @@ EventTile.prototype.initActions = function() {
         }
         else {
             eventTile.redraw();
+
+            if(!!scope && scope.usingVirtualResources()) {
+                scope.determineFirstAvailableVirtualResource();
+            }
         }
     });
 

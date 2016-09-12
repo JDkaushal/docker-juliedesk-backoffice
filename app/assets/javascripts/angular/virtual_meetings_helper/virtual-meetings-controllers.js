@@ -15,6 +15,7 @@
 
                 // We use the || affectation here for testing purposes (injecting the scope manually at creation)
                 $scope.attendeesManagerCtrl = $scope.attendeesManagerCtrl || angular.element($('#attendeesCtrl')).scope();
+                $scope.datesVerificationManagerCtrl = $scope.datesVerificationManagerCtrl || angular.element($('#datesVerificationsManager')).scope();
                 $scope.formEditMode = Boolean(window.threadDataIsEditable);
                 $scope.currentConf = {};
                 $scope.showHeader = true;
@@ -29,6 +30,35 @@
 
                 // Used to synchronize the forms when there are multiple one on the page (i.e. when an event is present)
                 $scope.otherForm = undefined;
+
+                $scope.selectedVirtualResource = undefined;
+
+                if(window.threadComputedData && window.threadComputedData.virtual_resource_used) {
+                    $scope.selectedVirtualResource = window.threadComputedData.virtual_resource_used;
+                }
+
+                $scope.utilitiesHelper = $('#events_availabilities_methods').scope();
+
+                if($scope.datesVerificationManagerCtrl) {
+                    $scope.datesVerificationManagerCtrl.$on('datesVerifNewSelectedDate', function(event, args) {
+                        $scope.determineFirstAvailableVirtualResource(args);
+                    });
+                }
+
+                $('.event-tile-panel').on('change', 'input.event-dates', function(e) {
+                    var currentVAConfig = $scope.getCurrentVAConfig();
+                    if(currentVAConfig && currentVAConfig.virtual_resources) {
+                        $scope.determineFirstAvailableVirtualResource();
+                    }
+                });
+
+                $scope.isCurrentAppointmentVirtual = function() {
+                    return window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual;
+                };
+
+                $scope.isCurrentSupportUsingVirtualResources = function() {
+                    return $scope.currentConf
+                };
 
                 $scope.setAttendeesManagerCtrl = function(scope){
                     $scope.attendeesManagerCtrl = scope;
@@ -62,6 +92,12 @@
                 $scope.$watch('currentConf.support', function(newVal, oldVal){
                     if($scope.currentConf.target == 'client')
                         $scope.changeCurrentVAConfig(newVal);
+                });
+
+                $scope.$watch('selectedVirtualResource', function(newVal,_) {
+                    if($scope.otherForm){
+                        $scope.otherForm.selectedVirtualResource = newVal;
+                    }
                 });
 
                 $scope.$watch('currentConf', function(newVal, oldVal){
@@ -160,19 +196,62 @@
                 };
 
                 $scope.changeCurrentVAConfig = function(configLabel){
+                    var everyConfig = window.threadAccount.virtual_appointments_support_config.concat(window.threadAccount.virtual_appointments_company_support_config);
 
-                    var config = _.filter(window.threadAccount.virtual_appointments_support_config, function(vaConfig){
-                        return vaConfig.label.toLowerCase() == configLabel;
+                    var config = _.filter(everyConfig, function(vaConfig){
+                        return (vaConfig.label || vaConfig.resource_type).toLowerCase() == configLabel;
                     })[0];
 
                     if(config == undefined || config == null){
-                        config = _.filter(window.threadAccount.virtual_appointments_support_config, function(vaConfig){
-                            return vaConfig.label.toLowerCase() == 'vide';
+                        config = _.filter(everyConfig, function(vaConfig){
+                            return (vaConfig.label || vaConfig.resource_type).toLowerCase() == 'vide';
                         })[0];
                     }
                     virtualMeetingsHelperCtrl.currentVAConfig = config;
 
                     updateNotesCallingInfos();
+                };
+
+                $scope.getCallTargets = function() {
+                    var suffixClient = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? ' (défaut)' : '';
+                    var suffixLater = virtualMeetingsHelperCtrl.currentBehaviour == 'later' ? ' (défaut)' : '';
+                    var suffixInterlocutor = virtualMeetingsHelperCtrl.currentBehaviour == 'ask_interlocutor' ? ' (défaut)' : '';
+
+                    var targets = [
+                        {name:"L'interlocuteur" + suffixInterlocutor, value:'interlocutor'},
+                        {name:"Décidé plus tard" + suffixLater, value:'later'},
+                        {name:"Le client (" + window.threadAccount.full_name + ')' + suffixClient, value:'client'},
+                        {name:"Custom", value:'custom'}
+                    ];
+
+                    return targets;
+                };
+
+                $scope.getSupports = function(){
+                    var suffixMobile = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Mobile' ? ' (défaut)' : '';
+                    var suffixLandline = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Landline' ? ' (défaut)' : '';
+                    var suffixSkype = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Skype' ? ' (défaut)' : '';
+                    var suffixConfcall = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Confcall' ? ' (défaut)' : '';
+
+                    var currentAccount = window.threadAccount;
+
+                    var supports = [
+                        {name:"Téléphone portable" + suffixMobile, value:'mobile'},
+                        {name:"Téléphone fixe" + suffixLandline, value:'landline'},
+                        //{name:"Skype" + suffixSkype, value:'skype'},
+                        {name:"Confcall" + suffixConfcall, value:'confcall'}
+                    ];
+
+                    if($scope.currentConf.target == 'client' && currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
+                        _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
+                            var currentText = companyConfig.resource_type;
+                            currentText = currentText.charAt(0).toUpperCase() + currentText.substr(1).toLowerCase();
+
+                            supports.push({name: 'Ressource ' + currentText, value: companyConfig.resource_type});
+                        });
+                    }
+
+                    return supports;
                 };
 
                 $scope.loadCurrentConfig = function(){
@@ -183,24 +262,16 @@
                     virtualMeetingsHelperCtrl.currentAppointment = virtualMeetingsHelperCtrl.currentAppointment || _.find(window.threadAccount.appointments, function(a){ return a.kind == ($('#appointment_nature option:selected').val() || window.threadComputedData.appointment_nature) });
                     virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig || (virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash);
                     virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentBehaviour || virtualMeetingsHelperCtrl.currentAppointment.behaviour;
-                    $scope.callTargets = [
-                        {name:"L'interlocuteur", value:'interlocutor'},
-                        {name:"Décidé plus tard", value:'later'},
-                        {name:"Le client (" + window.threadAccount.full_name + ')', value:'client'},
-                        {name:"Custom", value:'custom'}
-                    ];
+
+                    $scope.currentConf = window.threadComputedData.call_instructions;
+
+                    $scope.callTargets = $scope.getCallTargets();
 
                     if($scope.otherForm)
                         $scope.otherForm.callTargets = $scope.callTargets;
 
-                    $scope.callSupports = [
-                        {name:"Téléphone portable", value:'mobile'},
-                        {name:"Téléphone fixe", value:'landline'},
-                        //{name:"Skype", value:'skype'},
-                        {name:"Confcall", value:'confcall'}
-                    ];
+                    $scope.callSupports = $scope.getSupports();
 
-                    $scope.currentConf = window.threadComputedData.call_instructions;
                     if($scope.otherForm)
                         $scope.otherForm.callSupports = $scope.callSupports;
 
@@ -274,28 +345,9 @@
                     virtualMeetingsHelperCtrl.currentVAConfig = virtualMeetingsHelperCtrl.currentAppointment == undefined ? {} : virtualMeetingsHelperCtrl.currentAppointment.support_config_hash;
                     virtualMeetingsHelperCtrl.currentBehaviour = virtualMeetingsHelperCtrl.currentAppointment.behaviour;
 
-                    var suffixClient = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? ' (défaut)' : '';
-                    var suffixLater = virtualMeetingsHelperCtrl.currentBehaviour == 'later' ? ' (défaut)' : '';
-                    var suffixInterlocutor = virtualMeetingsHelperCtrl.currentBehaviour == 'ask_interlocutor' ? ' (défaut)' : '';
+                    $scope.callTargets = $scope.getCallTargets();
 
-                    $scope.callTargets = [
-                        {name:"L'interlocuteur" + suffixInterlocutor, value:'interlocutor'},
-                        {name:"Décidé plus tard" + suffixLater, value:'later'},
-                        {name:"Le client (" + window.threadAccount.full_name + ')' + suffixClient, value:'client'},
-                        {name:"Custom", value:'custom'}
-                    ];
-
-                    var suffixMobile = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Mobile' ? ' (défaut)' : '';
-                    var suffixLandline = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Landline' ? ' (défaut)' : '';
-                    var suffixSkype = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Skype' ? ' (défaut)' : '';
-                    var suffixConfcall = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Confcall' ? ' (défaut)' : '';
-
-                    $scope.callSupports = [
-                        {name:"Téléphone portable" + suffixMobile, value:'mobile'},
-                        {name:"Téléphone fixe" + suffixLandline, value:'landline'},
-                        //{name:"Skype" + suffixSkype, value:'skype'},
-                        {name:"Confcall" + suffixConfcall, value:'confcall'}
-                    ];
+                    $scope.callSupports = $scope.getSupports();
 
                     var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
 
@@ -344,6 +396,10 @@
                                 break;
                             default:
                                 initialConfSupport = '';
+                        }
+
+                        if(virtualMeetingsHelperCtrl.currentVAConfig.resource_type) {
+                            initialConfSupport = virtualMeetingsHelperCtrl.currentVAConfig.resource_type;
                         }
                     }
 
@@ -405,6 +461,44 @@
 
                     }
 
+                };
+
+                $scope.supportChangedCallback = function() {
+                    $scope.computeCallDetails();
+                    $scope.checkVirtualResourceUse();
+                };
+
+                $scope.checkVirtualResourceUse = function() {
+                    $scope.changeCurrentVAConfig($scope.currentConf.support);
+                    var currentVAConfig = $scope.getCurrentVAConfig();
+                    if(currentVAConfig) {
+                        if(currentVAConfig.virtual_resources) {
+                            var currentCalendar = window.currentCalendar;
+
+                            if(currentCalendar && currentCalendar.dispStart) {
+                                if($.isEmptyObject(window.currentCalendar.virtualResourcesEvents)) {
+                                    currentCalendar.clearEvents();
+                                    currentCalendar.fetchAllAccountsEvents(currentCalendar.dispStart.format() + "T00:00:00Z", currentCalendar.dispEnd.format() + "T00:00:00Z");
+                                } else {
+                                    $scope.determineFirstAvailableVirtualResource();
+                                }
+
+                                if($scope.otherForm)
+                                    $scope.otherForm.selectedVirtualResource = $scope.selectedVirtualResource;
+                            }
+                        } else {
+                            $scope.hideNonAvailableMessage();
+                            $scope.selectedVirtualResource = undefined;
+                            if($scope.otherForm)
+                                $scope.otherForm.selectedVirtualResource = undefined;
+                        }
+                    } else {
+                        $scope.hideNonAvailableMessage();
+                        $scope.selectedVirtualResource = undefined;
+                        if($scope.otherForm)
+                            $scope.otherForm.selectedVirtualResource = undefined;
+                    }
+                    forceUpdateNotesCallingInfos();
                 };
 
                 $scope.computeCallDetails = function(notUseLastTarget){
@@ -636,6 +730,17 @@
                                 });
                             }
                         }
+                    } else {
+                        if($scope.selectedVirtualResource) {
+                            content = localize("events.call_instructions.give_confcall", {
+                                target_name: $scope.currentConf.targetInfos.name,
+                                details: $scope.selectedVirtualResource['instructions_' + window.threadComputedData.locale]
+                            });
+
+                            //eventInstructions = localize("events.call_instructions.instructions_in_notes", {
+                            //    locale: window.threadComputedData.locale
+                            //});
+                        }
                     }
 
                     window.threadComputedData.call_instructions.event_instructions = eventInstructions;
@@ -661,6 +766,8 @@
                 };
 
                 $scope.targetChanged = function($event){
+                    $scope.callSupports = $scope.getSupports();
+
                     if($scope.currentConf.target == 'later'){
                         $scope.currentConf.targetInfos = '';
                         $scope.changeCurrentVAConfig('vide');
@@ -731,6 +838,179 @@
 
                 $scope.detailsDisabled = function(){
                     return !$scope.formEditMode || ($scope.detailsFrozenBecauseClient || $scope.forcedDetailsFrozen)
+                };
+
+                $scope.getOverlappingVirtualResourcesEvents = function(eventsByVirtualResources) {
+                    var virtualResourceType = $scope.getCurrentVAConfig() && $scope.getCurrentVAConfig().resource_type;
+
+                    var result = [];
+
+                    if(virtualResourceType) {
+                        result = $('#events_availabilities_methods').scope().getOverlappingEvents(eventsByVirtualResources, {isVirtualResource: true, virtualResourceType: virtualResourceType});
+                    }
+
+                    return result;
+                };
+
+                $scope.usingVirtualResources = function() {
+                    var currentVAConfig = $scope.getCurrentVAConfig();
+                    var result = false;
+                    if(currentVAConfig) {
+                        var virtualResources = $scope.getCurrentVAConfig().virtual_resources;
+                        result = virtualResources && virtualResources.length > 0;
+                    }
+
+                    return result;
+                };
+
+                $scope.determineFirstAvailableVirtualResource = function(specifiedDate) {
+                    if(window.currentCalendar && !$.isEmptyObject(window.currentCalendar.virtualResourcesEvents) &&
+                        (window.julie_action_nature == 'check_availabilities' || window.classification == 'update_event')) {
+
+                        // When there is an event linked to the messages thread, we will check if the schedule we check is not the same event
+                        // To avoid saying the virtual resource is not available when it is actually booked for the specified period
+                        if(window.currentEventTile) {
+                            var currentEventId = window.currentEventTile.eventId;
+                        }
+
+                        if (window.classification == 'update_event') {
+                            var selectedDateStartTime = window.currentEventTile.getEditedEvent().start;
+                            var selectedDateEndTime = window.currentEventTile.getEditedEvent().end;
+                        } else {
+
+                            if(specifiedDate) {
+                                var selectedDateStartTime = moment(specifiedDate);
+                            }   else if($scope.datesVerificationManagerCtrl.selectedDate) {
+                                var selectedDateStartTime = moment($scope.datesVerificationManagerCtrl.selectedDate.date);
+                            } else {
+                                var selectedDateStartTime = null;
+                            }
+
+                            if(selectedDateStartTime)
+                                var selectedDateEndTime = selectedDateStartTime.clone().add('m', window.currentCalendar.getCurrentDuration());
+                        }
+
+                        var virtualResourcesAvailable = $scope.getCurrentVAConfig().virtual_resources;
+
+                        var available = [];
+
+                        if(selectedDateStartTime) {
+
+                            // TODO: Optimize this algorythm as now we are ordering the rooms by their capacity so
+                            // we could stop iterate after the first time we find a room available because it will be
+                            // the smallest possible for the current meeting
+                            var currentSelectedVirtualResourceId = undefined;
+
+                            if($scope.selectedVirtualResource) {
+                                currentSelectedVirtualResourceId = String($scope.selectedVirtualResource.id);
+                            }
+
+                            _.each(virtualResourcesAvailable, function (vR) {
+                                var virtualResourcesEvents = window.currentCalendar.virtualResourcesEvents[vR.id];
+                                var currentAvailability = $.extend(vR, {isAvailable: true});
+
+                                // We either directly specify the selected date (from the event) or we will fetch it from the datesVerif module
+
+                                if (virtualResourcesEvents) {
+                                    var eventOnThisSchedule = _.find(virtualResourcesEvents, function (event) {
+                                        var currentStartDate = moment(event.start);
+                                        var currentEndDate = moment(event.end);
+
+                                        return event.id != currentEventId && $scope.eventIsOverlapping(selectedDateStartTime, selectedDateEndTime, currentStartDate, currentEndDate);
+                                    });
+
+                                    if (eventOnThisSchedule) {
+                                        currentAvailability.isAvailable = false;
+                                    }
+                                }
+                                available.push(currentAvailability);
+                            });
+
+                            var firstAvailableVr = _.find(available, function (hash) {
+                                return hash.isAvailable;
+                            });
+
+                            if (firstAvailableVr) {
+                                $scope.hideNonAvailableMessage();
+                                $scope.selectedVirtualResource = firstAvailableVr;
+
+                                // To update the form select option if we have triggered this function from the calendar events fetched callback
+                                if(!$scope.$$phase)
+                                    $scope.$apply();
+                            } else {
+                                $scope.selectedVirtualResource = undefined;
+                                var resourceType = $scope.getCurrentVAConfig().resource_type;
+                                // Depending on the number of total rooms, we then display the correct message
+                                $scope.displayNonAvailableMessage('Aucune Ressource ' + resourceType + ' de disponible');
+                            }
+
+                            forceUpdateNotesCallingInfos();
+                        }
+                    }
+                };
+
+                $scope.eventIsOverlapping = function(firstEventDateStartTime, firstEventDateEndTime, secondEventDateStartTime, secondEventDateEndTime) {
+                    return $scope.utilitiesHelper.eventIsOverlapping(firstEventDateStartTime, firstEventDateEndTime, secondEventDateStartTime, secondEventDateEndTime);
+                    //return (
+                    //    firstEventDateStartTime.isSame(secondEventDateStartTime) || firstEventDateEndTime.isSame(secondEventDateEndTime) ||
+                    //    firstEventDateStartTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
+                    //    firstEventDateEndTime.isBetween(secondEventDateStartTime, secondEventDateEndTime, 'minute', '()') ||
+                    //    secondEventDateStartTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()') ||
+                    //    secondEventDateEndTime.isBetween(firstEventDateStartTime, firstEventDateEndTime, 'minute', '()')
+                    //);
+                };
+
+                $scope.hideNonAvailableMessage = function() {
+                    $scope.unavailableMessageDisplayed = false;
+                    $('.virtual-resources-non-available-msg').html('');
+                    $('.virtual-resources-details-container').hide();
+
+                    $scope.scaleEventTile();
+                };
+
+                $scope.displayNonAvailableMessage = function(msg) {
+                    $scope.unavailableMessageDisplayed = true;
+                    $('.virtual-resources-non-available-msg').html(msg);
+                    $('.virtual-resources-details-container').show();
+
+                    $scope.scaleEventTile();
+                };
+
+                $scope.scaleEventTile = function() {
+
+                    if($('#event-cancel-button').css('display') == 'block') {
+
+                        var virtualMeetingHelperUsed = $('#event_update_virtual_meetings_helper').length > 0;
+
+                        var currentHeightContainer = '650px';
+                        var currentHeightPanel = '635px';
+
+                        if(virtualMeetingHelperUsed) {
+                            currentHeightContainer = '810px';
+                            currentHeightPanel = '790px';
+                        }
+
+                        if($scope.unavailableMessageDisplayed) {
+                            currentHeightContainer = '695px';
+                            currentHeightPanel = '680px';
+
+                            if(virtualMeetingHelperUsed) {
+                                currentHeightContainer = '855px';
+                                currentHeightPanel = '840px';
+                            }
+                        }
+                    } else {
+                        var currentHeightContainer = '575px';
+                        var currentHeightPanel = '545px';
+
+                        if($scope.unavailableMessageDisplayed) {
+                            currentHeightContainer = '605px';
+                            currentHeightPanel = '590px';
+                        }
+                    }
+
+                    $('.event-tile-container').css('height', currentHeightContainer);
+                    $('.created-event-panel').css('height', currentHeightPanel);
                 };
 
                 updateWindowCallInstructions = function(){

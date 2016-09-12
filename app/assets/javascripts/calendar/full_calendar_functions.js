@@ -391,6 +391,18 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.css('left', (columnWidthInt * parseInt(currentPos / columnWidthInt) + offsetRowInt) + 'px');
             }
 
+            if(event.isVirtualResource) {
+                var currentPos = $element.position().left;
+                //var meetingRoomBusyDiv = $('<div class="meeting-room-busy"><div class="fc-event-title">No meeting Rooms</div></div>');
+                $element.addClass('meeting-room-unavailable');
+                //$element.append(meetingRoomBusyDiv);
+                $element.find('.fc-event-title').html('<span class="sprite"></span><span class="text">no Resource ' + event.virtualResourceType + '</span>');
+                $element.width(columnWidth);
+
+                // Allow to stick the meeting room label on the left of the row
+                $element.css('left', (columnWidthInt * parseInt(currentPos / columnWidthInt) + offsetRowInt) + 'px');
+            }
+
             if(event.isLocated && event.location) {
                 var eventLocation = $('<div class="fc-event-location"></div>');
                 var locationText = $('<span class="location"></span>');

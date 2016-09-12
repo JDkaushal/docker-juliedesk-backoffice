@@ -28,6 +28,7 @@ class Account
                 :office_365_refresh_token_expired,
                 :is_pro,
                 :virtual_appointments_support_config,
+                :virtual_appointments_company_support_config,
                 :threads_count_today,
                 :title_preferences,
                 :travel_time_transport_mode,
@@ -52,6 +53,7 @@ class Account
     account.appointments = data['appointments']
     account.addresses = data['addresses']
     account.virtual_appointments_support_config = data['virtual_appointments_support_config']
+    account.virtual_appointments_company_support_config = data['virtual_appointments_company_support_config']
     account.usage_name = data['usage_name']
     account.full_name = data['full_name']
     account.email_aliases = data['email_aliases']

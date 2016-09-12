@@ -222,8 +222,8 @@ window.wordings['en'] = {
             }
         },
         send_call_instructions: {
-            placed_in_notes: "I have included the call instructions in the event.",
-            placed_skype_in_notes: "I have noted %{target_name}’s Skype ID in the event.",
+            placed_in_notes: "I have included the call instructions in the event's notes.",
+            placed_skype_in_notes: "I have noted %{target_name}’s Skype ID in the event's notes.",
             give_target_number: "Call instructions: Reach %{target_name} at %{details}",
             give_target_confcall: "Conference Dialing: \n%{details}",
             give_target_skype: "%{target_name}’s Skype ID was included in the invite: %{details}",

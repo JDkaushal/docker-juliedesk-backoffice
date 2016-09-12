@@ -4,7 +4,7 @@
   </div>
   <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="selectedRoom" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
 
-  <div ng-show="displayCustomSelectionFilters">
+  <div ng-show="displayCustomSelectionFilters && usingMeetingRoom">
 
     <div >
       <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>

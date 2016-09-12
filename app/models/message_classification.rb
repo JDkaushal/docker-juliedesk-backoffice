@@ -99,7 +99,8 @@ class MessageClassification < ActiveRecord::Base
           meeting_room_details: last_classification_with_data.try(:meeting_room_details),
           using_restaurant_booking: last_classification_with_data.try(:using_restaurant_booking),
           restaurant_booking_details: last_classification_with_data.try(:restaurant_booking_details),
-          location_changed: last_classification_with_data.try(:location_changed)
+          location_changed: last_classification_with_data.try(:location_changed),
+          virtual_resource_used: last_classification_with_data.try(:virtual_resource_used)
       )
     else
       attendees = []
@@ -146,7 +147,8 @@ class MessageClassification < ActiveRecord::Base
           meeting_room_details: (params[:meeting_room_details] || {}).to_json,
           using_restaurant_booking: params[:using_restaurant_booking] || false,
           restaurant_booking_details: (params[:restaurant_booking_details] || {}).to_json,
-          location_changed: params[:location_changed]
+          location_changed: params[:location_changed],
+          virtual_resource_used: params[:virtual_resource_used]
       )
     end
 

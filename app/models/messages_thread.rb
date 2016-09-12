@@ -297,6 +297,7 @@ class MessagesThread < ActiveRecord::Base
           meeting_room_details: last_message_classification.try(:meeting_room_details),
           using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
           restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
+          virtual_resource_used: last_message_classification.try(:virtual_resource_used)
       }
     end
 

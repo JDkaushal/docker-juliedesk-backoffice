@@ -10,7 +10,7 @@
 
       <div ng-hide="currentConf.target == 'later' || currentConf.target == 'custom'">
         <%= label_tag 'Support' %>
-        <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-change' => 'computeCallDetails()', 'ng-model' => 'currentConf.support', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
+        <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-change' => 'supportChangedCallback()', 'ng-model' => 'currentConf.support', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
       </div>
 
       <div ng-hide="currentConf.target == 'later' || (currentConf.target == 'interlocutor' && !currentConf.targetInfos.guid)">

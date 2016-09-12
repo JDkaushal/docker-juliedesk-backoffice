@@ -439,9 +439,12 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+    var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
+    var currentAppointment = window.getCurrentAppointment();
     var unavailableEvents = [];
     var allEvents = [];
     var meeting_rooms_to_show = {};
+    var virtualResourcesToShow = [];
 
     if(window.threadAccount) {
         if(accountPreferencesHash.email == window.threadAccount.email) {
@@ -452,6 +455,19 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
                 meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
             });
         }
+
+        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
+        window.threadComputedData && window.threadComputedData.call_instructions) {
+          var virtualAppoinementCompanySupport = _.find(window.threadAccount.virtual_appointments_company_support_config, function(support) {
+             return support.resource_type == window.threadComputedData.call_instructions.support
+          });
+
+            if(virtualAppoinementCompanySupport && virtualAppoinementCompanySupport.virtual_resources) {
+                virtualResourcesToShow = _.map(virtualAppoinementCompanySupport.virtual_resources, function(resource) {
+                    return resource.id;
+                });
+            }
+        }
     }
 
     CommonHelpers.externalRequest({
@@ -459,6 +475,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         email: accountPreferencesHash.email,
         calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
         meeting_rooms_to_show: meeting_rooms_to_show,
+        virtual_resources_to_show: virtualResourcesToShow,
         start: start,
         end: end
     }, function (response) {
@@ -479,6 +496,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
         if(meetingRoomsManager) {
             meetingRoomsManager.checkIfDetectAvailabilities();
+        }
+
+        if(virtualMeetingHelper.usingVirtualResources()) {
+            virtualMeetingHelper.determineFirstAvailableVirtualResource();
         }
 
         if(callback) callback();
@@ -701,6 +722,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         isDefaultDelay: ev.isDefaultDelay,
         // Allow to know if the event is from a meeting room
         isMeetingRoom: ev.is_meeting_room,
+        isVirtualResource: ev.is_virtual_resource,
+        virtualResourceId: ev.virtual_resource_id,
         travelTime: ev.travelTime,
         eventInfoType: ev.eventInfoType,
         travelTimeGoogleDestinationUrl: ev.travelTimeGoogleDestinationUrl,
@@ -752,7 +775,9 @@ Calendar.prototype.computeIsLocated = function (event) {
 Calendar.prototype.addAllCals = function (calEvents) {
     var calendar = this;
     calendar.meetingRoomsEvents = {};
+    calendar.virtualResourcesEvents = {};
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+    var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
 
     var meetingRoomsIds = [];
     if(meetingRoomsManager) {
@@ -760,6 +785,20 @@ Calendar.prototype.addAllCals = function (calEvents) {
             meetingRoomsIds.push(mR.id);
             calendar.meetingRoomsEvents[mR.id] = [];
         });
+    }
+
+    if(virtualMeetingHelper && virtualMeetingHelper.isCurrentAppointmentVirtual()) {
+        var currentVAConfig = virtualMeetingHelper.getCurrentVAConfig();
+        var virtualResources = currentVAConfig && currentVAConfig.virtual_resources;
+        var virtualResourcesIds = [];
+
+        if(virtualResources && virtualResources.length > 0) {
+            _.each(virtualResources, function(vR) {
+                virtualResourcesIds.push(vR.id);
+                calendar.virtualResourcesEvents[vR.id] = [];
+            });
+        }
+
     }
 
     _.each(calEvents, function(calEvent) {
@@ -776,12 +815,20 @@ Calendar.prototype.addAllCals = function (calEvents) {
         // We don't add the individual meeting rooms events to the displayed events on the calendar
         if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
             calendar.meetingRoomsEvents[eventData.calId].push(eventData);
+        } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId)) {
+            calendar.virtualResourcesEvents[eventData.virtualResourceId].push(eventData);
         } else {
             calendar.eventDataX.push(eventData);
         }
     });
 
-    calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(calendar.meetingRoomsEvents));
+    if(meetingRoomsManager) {
+        calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(calendar.meetingRoomsEvents));
+    }
+
+    if(virtualMeetingHelper && virtualMeetingHelper.isCurrentAppointmentVirtual()) {
+        calendar.eventDataX = calendar.eventDataX.concat(virtualMeetingHelper.getOverlappingVirtualResourcesEvents(calendar.virtualResourcesEvents));
+    }
 
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
     calendar.eventDataX = [];
@@ -999,6 +1046,12 @@ Calendar.prototype.addEventsCountLabels = function () {
         calendar.$selector.find(".fc-widget-header.fc-" + day).append($("<div>").addClass("events-count-label").addClass("count-" + count).addClass(className).html("" + count));
     }
     calendar.$selector.find(".events-count-label.count-" + minCount).addClass("best-of-worst");
+};
+
+Calendar.prototype.clearEvents = function() {
+    var calendar = this;
+
+    calendar.$selector.find('#calendar').fullCalendar('removeEvents');
 };
 
 Calendar.prototype.changeCalendarTimezone = function (conserveEvents) {
