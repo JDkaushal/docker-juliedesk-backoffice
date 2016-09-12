@@ -143,7 +143,7 @@ class Message < ActiveRecord::Base
 
   def self.julie_aliases_from_server_message server_message, params={}
     (params[:julie_aliases] || JulieAlias.all).select{|julie_alias|
-      "#{server_message['to']} #{server_message['cc']}".downcase.include? julie_alias.email
+      "#{server_message['from']} #{server_message['to']} #{server_message['cc']}".downcase.include? julie_alias.email
     }
   end
 
