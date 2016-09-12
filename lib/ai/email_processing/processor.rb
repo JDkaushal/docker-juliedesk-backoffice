@@ -81,7 +81,7 @@ module Ai
                                        :unknown_request
                                    end
 
-        EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
+        text = EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
 
         # After email generation actions
         case current_request
@@ -89,6 +89,7 @@ module Ai
             create_event(julia_response)
         end
 
+        text
       end
 
       def create_event(julia_response)
