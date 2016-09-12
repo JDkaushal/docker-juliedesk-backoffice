@@ -84,3 +84,5 @@ en:
         thread_owner_infos_boundary: '-Organizer-Infos-----------------'
         attendees_infos_boundary: '-Contacts-Infos-------------------'
 
+    missing_informations:
+      phone_number: "%{attendees_names}, please provide the number on which you will be reachable."

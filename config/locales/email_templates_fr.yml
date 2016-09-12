@@ -83,3 +83,6 @@ fr:
         skype: 'Skype : %{skype_infos}'
         thread_owner_infos_boundary: '-Informations-organisateur-----------------'
         attendees_infos_boundary: '-Informations-de-contacts-------------------'
+
+    missing_informations:
+      phone_number: "%{attendees_names}, merci de me faire parvenir le numéro sur lequel vous serez joignable."

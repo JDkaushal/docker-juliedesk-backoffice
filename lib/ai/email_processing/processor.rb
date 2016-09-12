@@ -36,6 +36,9 @@ module Ai
                                                                   timezone: julia_response['timezone']
                                                                 })
 
+          # Manage the ClientContacts database entries
+          Ai::DataHandlers::AttendeesHandler.new(@thread_owner_account, (julia_response['participants'] || [])).handle
+
           new_julie_action = new_classif.append_julie_action
           new_julie_action.update({
                                       done: true,
@@ -52,7 +55,7 @@ module Ai
 
           EmailServer.archive_thread(messages_thread_id: @message_thread.server_thread_id)
 
-          #send_response_email(email_text, julia_response['julie_alias'])
+          send_response_email(email_text, julia_response['julie_alias'])
         rescue => e
           if Rails.env.production?
             send_response_email(error_response_template, JulieAlias.find_by(email: 'jul.ia@juliedesk.com'))
@@ -114,7 +117,6 @@ module Ai
           }
 
           create_params[:summary] = EventsManagement::Utilities::TitleGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
-
           create_params[:description] = EventsManagement::Utilities::NotesGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
 
           response = EventsManagement::Crud::Creator.new.process(create_params)['data']

@@ -67,6 +67,10 @@ END
           @params['language']
         end
 
+        def get_non_client_attendees
+          @params['participants'] && @params['participants'].reject{|att| att['is_client']}
+        end
+
         def get_attendees_without_thread_owner
           @params['participants'] && @params['participants'].reject{|att| att['is_thread_owner']}
         end
