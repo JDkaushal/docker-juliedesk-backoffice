@@ -61,3 +61,25 @@ fr:
       for: 'pour'
       at: 'à'
       or: 'ou'
+
+    events:
+      title:
+        appointment_type:
+          appointment: 'RDV'
+          lunch: "Dej"
+          breakfast: "Petit-déjeuner"
+          coffee: "Café"
+          webex: "WebEx"
+          hangout: "Google Hangout"
+          work_session: "Session de travail"
+          meeting: "Réunion"
+          dinner: "Dîner"
+          skype: "Skype"
+          call: "Call"
+          confcall: Call"
+          drink: "Verre"
+      notes:
+        phone: 'Téléphone : %{phone_infos}'
+        skype: 'Skype : %{skype_infos}'
+        thread_owner_infos_boundary: '-Informations-organisateur-----------------'
+        attendees_infos_boundary: '-Informations-de-contacts-------------------'

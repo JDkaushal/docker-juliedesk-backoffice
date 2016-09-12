@@ -43,13 +43,16 @@ module Ai
                                       date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%S+00:00'), timezone: julia_response['timezone']}}.to_json
                                   })
 
+          @message_thread.update(status: @message_thread.suggested_current_status)
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
           julia_response['julie_alias'] = julie_aliases.first
 
           email_text = dispatch_request_type(julia_response)
 
-          send_response_email(email_text, julia_response['julie_alias'])
+          EmailServer.archive_thread(messages_thread_id: @message_thread.server_thread_id)
+
+          #send_response_email(email_text, julia_response['julie_alias'])
         rescue => e
           if Rails.env.production?
             send_response_email(error_response_template, JulieAlias.find_by(email: 'jul.ia@juliedesk.com'))
@@ -63,11 +66,11 @@ module Ai
 
       def dispatch_request_type(julia_response)
 
-        current_appointment_type = case julia_response['request'].to_sym
+        current_request = julia_response['request'].to_sym
+        current_appointment_type = case current_request
                                      when :ask_date_suggestions
                                        :dates_suggestion
                                      when :ask_availabilities
-                                       create_event(julia_response)
                                        :date_confirmation
                                      when :give_info
                                        :event_updated
@@ -76,6 +79,13 @@ module Ai
                                    end
 
         EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
+
+        # After email generation actions
+        case current_request
+          when :ask_availabilities
+            create_event(julia_response)
+        end
+
       end
 
       def create_event(julia_response)
@@ -100,9 +110,12 @@ module Ai
               meeting_room:{used: false},
               private:false,
               start:start_date,
-              start_timezone:julia_response['timezone'],
-              summary:"JuliA Event"
+              start_timezone:julia_response['timezone']
           }
+
+          create_params[:summary] = EventsManagement::Utilities::TitleGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
+
+          create_params[:description] = EventsManagement::Utilities::NotesGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
 
           response = EventsManagement::Crud::Creator.new.process(create_params)['data']
 
@@ -135,7 +148,7 @@ module Ai
       end
 
       def error_response_template
-        I18n.translate('email_templates.errors.common')
+        I18n.translate('email_templates.errors.common', locale: @thread_owner_account.locale)
       end
 
     end

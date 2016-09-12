@@ -11,7 +11,7 @@ module EmailTemplates
             current_times_last_index = current_times_count - 1
             current_times_before_last_index = current_times_count - 2
 
-            times.each_with_index do |time, index|
+            times.sort.each_with_index do |time, index|
               current_date_string += I18n.localize(time, format: :date_suggestion)
 
               if current_times_count > 1 && index < current_times_last_index
@@ -29,7 +29,26 @@ module EmailTemplates
         def self.get_availability_question(date_count)
           I18n.translate('email_templates.dates.availability_question', count: date_count)
         end
-          
+
+        def self.normalize_attendee_name(attendee)
+          name = [attendee['first_name'], attendee['last_name']].compact.join(' ')
+          name || attendee['email']
+        end
+
+        def self.compute_attendee_infos_in_notes(attendee)
+          output = []
+
+          output.push(self.normalize_attendee_name(attendee))
+
+          phone_infos = [attendee['mobile'], attendee['landline']].reject{|number| number.blank?}
+          output.push("#{I18n.translate('email_templates.events.notes.phone', phone_infos: phone_infos.join(' / '))}") if phone_infos.present?
+
+          skype_infos = attendee['skype_id']
+          output.push("#{I18n.translate('email_templates.events.notes.skype', skype_infos: skype_infos)}") if skype_infos.present?
+
+          output.join("\n")
+        end
+
       end
     end
   end

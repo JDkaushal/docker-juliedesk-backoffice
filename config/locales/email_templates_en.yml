@@ -61,3 +61,26 @@ en:
       for: 'for'
       at: 'at'
       or: 'or'
+
+    events:
+      title:
+        appointment_type:
+          appointment: 'Mtg'
+          lunch: "Lunch"
+          breakfast: "Breakfast"
+          coffee: "Coffee"
+          webex: "WebEx"
+          hangout: "Google Hangout"
+          work_session: "Work Session"
+          meeting: "Mtg"
+          dinner: "Dinner"
+          skype: "Skype"
+          call: "Call"
+          confcall: Call"
+          drink: "Drink"
+      notes:
+        phone: 'Phone Number: %{phone_infos}'
+        skype: 'Skype: %{skype_infos}'
+        thread_owner_infos_boundary: '-Organizer-Infos-----------------'
+        attendees_infos_boundary: '-Contacts-Infos-------------------'
+
