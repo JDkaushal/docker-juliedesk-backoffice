@@ -8,7 +8,7 @@
         <select id="julie-alias-select">
           <% main_client_julie_aliases = (@messages_thread.account && @messages_thread.account.julie_aliases)  || [] %>
           <% @messages_thread.julie_aliases.each do |julie_alias| %>
-              <option selected="<%=  main_client_julie_aliases.include?(julie_alias.email) %>"><%= julie_alias.email %></option>
+              <option <%=  main_client_julie_aliases.include?(julie_alias.email) ? 'selected' : '' %>><%= julie_alias.email %></option>
           <% end %>
         </select>
         <% if @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
