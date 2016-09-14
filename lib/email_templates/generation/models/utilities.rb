@@ -31,7 +31,7 @@ module EmailTemplates
         end
 
         def self.normalize_attendee_name(attendee)
-          name = [attendee['first_name'], attendee['last_name']].compact.join(' ')
+          name = [attendee['firstName'], attendee['lastName']].compact.join(' ')
           name || attendee['email']
         end
 
@@ -43,7 +43,7 @@ module EmailTemplates
           phone_infos = [attendee['mobile'], attendee['landline']].reject{|number| number.blank?}
           output.push("#{I18n.translate('email_templates.events.notes.phone', phone_infos: phone_infos.join(' / '))}") if phone_infos.present?
 
-          skype_infos = attendee['skype_id']
+          skype_infos = attendee['skypeId']
           output.push("#{I18n.translate('email_templates.events.notes.skype', skype_infos: skype_infos)}") if skype_infos.present?
 
           output.join("\n")

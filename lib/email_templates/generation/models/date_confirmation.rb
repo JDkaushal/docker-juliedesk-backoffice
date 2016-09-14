@@ -43,7 +43,7 @@ module EmailTemplates
             end
           else
             if @params['suggested_dates'].present?
-              add_to_output_array(I18n.translate('email_templates.date_confirmation.new_propositions', client_name: get_thread_owner['first_name'], appointment_type: I18n.translate("email_templates.appointment_types.#{get_appointment_type}"), location: get_location))
+              add_to_output_array(I18n.translate('email_templates.date_confirmation.new_propositions', client_name: get_thread_owner['firstName'], appointment_type: I18n.translate("email_templates.appointment_types.#{get_appointment_type}"), location: get_location))
               get_suggested_dates.each do |date, times|
                 add_to_output_array(EmailTemplates::Generation::Models::Utilities.format_date_proposition_output(date, times))
               end
@@ -61,7 +61,7 @@ module EmailTemplates
           if attendees
             attendees.each do |attendee|
               if attendee['mobile'].blank? && attendee['landline'].blank?
-                attendees_with_missing_infos.push(attendee['first_name'])
+                attendees_with_missing_infos.push(attendee['firstName'])
               end
             end
           end

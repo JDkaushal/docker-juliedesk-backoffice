@@ -3,6 +3,8 @@ module EventsManagement
 
     ENDPOINTS = {
         create: {type: :post, url: '/api/v1/calendar_proxy/event_create'}.freeze,
+        update: {type: :post, url: '/api/v1/calendar_proxy/event_update'}.freeze,
+        fetch:  {type: :get,  url: '/api/v1/calendar_proxy/event_get'}.freeze
     }.freeze
 
     def initialize

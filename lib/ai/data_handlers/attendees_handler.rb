@@ -20,8 +20,8 @@ module Ai
 
         params = {
             email: attendee['email'],
-            first_name: attendee['first_name'],
-            last_name: attendee['last_name'],
+            first_name: attendee['firstName'],
+            last_name: attendee['lastName'],
             usage_name: attendee['first_name'],
             gender: attendee['gender'],
             is_assistant: false,
@@ -31,7 +31,7 @@ module Ai
             timezone: @default_timezone,
             landline: attendee['landline'],
             mobile: attendee['mobile'],
-            skypeId: attendee['skype_id'],
+            skypeId: attendee['skypeId'],
             need_ai_confirmation: false,
             ai_has_been_confirmed: true
         }

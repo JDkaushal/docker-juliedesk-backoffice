@@ -25,7 +25,7 @@ module EmailTemplates
 
         def set_body
           if @params['suggested_dates'].present?
-            add_to_output_array("#{get_thread_owner['first_name']} #{I18n.translate('email_templates.common.available', count: get_clients_count)} #{I18n.translate('email_templates.common.for')} #{I18n.translate("email_templates.appointment_types.#{get_appointment_type}")} #{get_location}")
+            add_to_output_array("#{get_thread_owner['firstName']} #{I18n.translate('email_templates.common.available', count: get_clients_count)} #{I18n.translate('email_templates.common.for')} #{I18n.translate("email_templates.appointment_types.#{get_appointment_type}")} #{get_location}")
 
             get_suggested_dates.each do |date, times|
               # current_date_string = "- #{I18n.localize(date, format: :date_suggestion).capitalize} #{I18n.translate('email_templates.common.at')} "

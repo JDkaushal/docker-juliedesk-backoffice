@@ -35,7 +35,7 @@ class BaseApiCaller
 
   def get_endpoint(key)
     endpoint_infos = compute_endpoint(key)
-    raise AIEndPointUnknown if endpoint_infos.blank?
+    raise EndPointUnknown if endpoint_infos.blank?
 
     endpoint_infos
   end
@@ -55,7 +55,7 @@ class BaseApiCaller
   def format_response(result)
     #JSON.parse(result)
     if result.code < 200 || result.code >299
-      raise AIError.new("#{result.status} \n\n #{result.body}")
+      raise ResponseError.new("#{result.status} \n\n #{result.body}")
     end
 
     result.parse
@@ -77,5 +77,12 @@ class BaseApiCaller
     ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
     ctx
+  end
+end
+
+class ResponseError < StandardError; end
+class EndPointUnknown < ResponseError
+  def message
+    'The specified endpoint has not been registered'
   end
 end

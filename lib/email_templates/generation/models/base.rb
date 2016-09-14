@@ -6,6 +6,7 @@ module EmailTemplates
 
         def initialize(params)
           @params = params
+          @server_message = @params.delete(:server_message)
           @output_array = []
 
           if I18n.available_locales.include?(@params['language'].try(:to_sym))
@@ -68,15 +69,15 @@ END
         end
 
         def get_non_client_attendees
-          @params['participants'] && @params['participants'].reject{|att| att['is_client']}
+          @params['participants'] && @params['participants'].reject{|att| att['isClient']}
         end
 
         def get_attendees_without_thread_owner
-          @params['participants'] && @params['participants'].reject{|att| att['is_thread_owner']}
+          @params['participants'] && @params['participants'].reject{|att| att['isThreadOwner']}
         end
 
         def get_thread_owner
-          @params['participants'] && @params['participants'].find{|att| att['is_thread_owner']}
+          @params['participants'] && @params['participants'].find{|att| att['isThreadOwner']}
         end
 
         def get_suggested_dates
@@ -110,7 +111,7 @@ END
         end
 
         def get_clients
-          @params['participants'].select{|att| att['is_client']}
+          @params['participants'].select{|att| att['isClient']}
         end
 
         def get_clients_count
@@ -153,7 +154,27 @@ END
         def set_greetings_sentence
           #write_to_output(I18n.translate("email_templates.greetings.#{@params.}", client_name: @params.))
           #add_to_output_array(I18n.translate("email_templates.greetings.M", client_name: 'Fred'))
-          add_to_output_array(I18n.translate("email_templates.common.hello").capitalize)
+          sender_attendee = get_attendee_who_sent_email
+
+          if sender_attendee.present?
+            add_to_output_array(I18n.translate("email_templates.greetings.#{sender_attendee['gender']}", client_name: sender_attendee['firstName']))
+          else
+            add_to_output_array(I18n.translate("email_templates.common.hello").capitalize)
+          end
+        end
+
+        def get_attendee_who_sent_email
+          @params['participants'] && @params['participants'].find{|att| att['email'] == get_from_email}
+        end
+
+        def get_from_email
+          from = @server_message['from']
+
+          if from.include?('<')
+            from.split('<')[-1].gsub('>', '')
+          else
+            from
+          end
         end
 
         def set_body

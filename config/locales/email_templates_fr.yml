@@ -49,9 +49,9 @@ fr:
     event_updated: "Merci, l'événement a bien été mis à jour."
 
     greetings:
-      M: 'M. %{client_name},'
-      F: 'Mme %{client_name},'
-      unknow: '%{client_name},'
+      male: 'M. %{client_name},'
+      female: 'Mme %{client_name},'
+      ?: '%{client_name},'
 
     common:
       hello: 'bonjour,'

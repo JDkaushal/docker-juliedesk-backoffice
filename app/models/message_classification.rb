@@ -150,8 +150,6 @@ class MessageClassification < ActiveRecord::Base
       )
     end
 
-
-
     result.save!
 
     result.append_julie_action

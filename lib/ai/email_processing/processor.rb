@@ -51,7 +51,7 @@ module Ai
 
           julia_response['julie_alias'] = julie_aliases.first
 
-          email_text = dispatch_request_type(julia_response)
+          email_text = dispatch_request_type(julia_response, new_julie_action)
 
           EmailServer.archive_thread(messages_thread_id: @message_thread.server_thread_id)
 
@@ -67,7 +67,7 @@ module Ai
 
       private
 
-      def dispatch_request_type(julia_response)
+      def dispatch_request_type(julia_response, new_julie_action)
 
         current_request = julia_response['request'].to_sym
         current_appointment_type = case current_request
@@ -81,52 +81,64 @@ module Ai
                                        :unknown_request
                                    end
 
-        text = EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response)
+        text = EmailTemplates::Generation::Generator.new(current_appointment_type).generate(julia_response, @server_message)
 
         # After email generation actions
         case current_request
           when :ask_availabilities
-            create_event(julia_response)
+            created_event_details = Ai::EmailProcessing::EventManager.new(@message_thread.calendar_login).create({
+                                                        thread_owner_account_email:@thread_owner_account.email,
+                                                        server_message_id:@message.server_message_id
+                                                     },julia_response)
+
+            new_julie_action.update(event_id: created_event_details['event_id'], calendar_id: created_event_details['calendar_id'], calendar_login_username: @message_thread.calendar_login['username'])
+          when :give_info
+            Ai::EmailProcessing::EventManager.new(@message_thread.calendar_login).update({
+                             messages_thread_event_data: @message_thread.event_data,
+                             thread_owner_account_email:@thread_owner_account.email,
+                             server_message_id:@message.server_message_id
+                         },julia_response)
+
         end
 
         text
       end
 
-      def create_event(julia_response)
-        confirmed_date = julia_response['validate']
-
-        if confirmed_date.present?
-          calendar_login = @message_thread.calendar_login
-
-          start_date = Time.parse(confirmed_date)
-          end_date = start_date + julia_response['duration'].minutes
-
-          create_params = {
-              email:@thread_owner_account.email,
-              calendar_login_username: calendar_login['username'],
-              all_day:false,
-              attendees:julia_response['participants'].map{|att| {email: att['email']}},
-              call_instructions:{},
-              description:"Event created By JuliA",
-              end:end_date,
-              end_timezone:julia_response['timezone'],
-              location:julia_response['location'],
-              meeting_room:{used: false},
-              private:false,
-              start:start_date,
-              start_timezone:julia_response['timezone']
-          }
-
-          create_params[:summary] = EventsManagement::Utilities::TitleGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
-          create_params[:description] = EventsManagement::Utilities::NotesGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
-
-          response = EventsManagement::Crud::Creator.new.process(create_params)['data']
-
-          unless response['success']
-            raise("Error while creating event from server_message_id: #{@message.server_message_id}")
-          end
-        end
-      end
+      # def create_event(julia_response)
+      #   confirmed_date = julia_response['validate']
+      #
+      #   if confirmed_date.present?
+      #     calendar_login = @message_thread.calendar_login
+      #
+      #     start_date = Time.parse(confirmed_date)
+      #     end_date = start_date + julia_response['duration'].minutes
+      #
+      #     create_params = {
+      #         email:@thread_owner_account.email,
+      #         calendar_login_username: calendar_login['username'],
+      #         all_day:false,
+      #         attendees:julia_response['participants'].map{|att| {email: att['email']}},
+      #         call_instructions:{},
+      #         description:"Event created By JuliA",
+      #         end:end_date,
+      #         end_timezone:julia_response['timezone'],
+      #         location:julia_response['location'],
+      #         meeting_room:{used: false},
+      #         private:false,
+      #         start:start_date,
+      #         start_timezone:julia_response['timezone']
+      #     }
+      #
+      #     create_params[:summary] = EventsManagement::Utilities::TitleGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
+      #     create_params[:description] = EventsManagement::Utilities::NotesGenerator.new(EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)).compute
+      #
+      #     response = EventsManagement::Crud::Creator.new.process(create_params)['data']
+      #
+      #     unless response['success']
+      #       raise("Error while creating event from server_message_id: #{@message.server_message_id}")
+      #     end
+      #   end
+      # end
 
       def send_response_email(email_text, julie_alias)
         initial_recipients = @message.initial_recipients
