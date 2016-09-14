@@ -419,7 +419,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 instance_id: request.instance_id
             }),
             success: function(e) {
-                if(window.threadComputedData.using_restaurant_booking && oldEvent) {
+
+                var restaurantBookingManager = $('#restaurant-booking-manager').scope();
+
+                if(restaurantBookingManager && restaurantBookingManager.getUsingRestaurantBooking() && oldEvent) {
                     $('#restaurant-booking-manager').scope().sendAdminEmail({
                         type: 'cancellation',
                         user_email: window.threadAccount.email,
