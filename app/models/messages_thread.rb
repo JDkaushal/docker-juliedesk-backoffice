@@ -543,6 +543,13 @@ class MessagesThread < ActiveRecord::Base
     account_emails
   end
 
+  # Used for debugging purposes
+  def get_event_data_julie
+    self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at).select{|ja|
+      ja.event_id
+    }.last
+  end
+
   def event_data
     julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at)
 
