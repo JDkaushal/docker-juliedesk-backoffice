@@ -38,6 +38,11 @@ window.trackFormSubmit = function(selector, event, params) {
 };
 
 function trackActionV2(type, extraParams, callback) {
+
+    // We don't track events when in review mode
+    if(window.isReviewMode)
+        return;
+
     callback = callback || function(){};
 
     //try {
