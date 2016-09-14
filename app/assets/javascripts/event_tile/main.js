@@ -1002,25 +1002,27 @@ EventTile.prototype.initActions = function() {
         $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
         meetingRoomsNode.scope().scaleEventTile();
 
-        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual){
-            var vmHelperNode = $('#event_update_vm_ctrl');
-            var scope = angular.element(vmHelperNode).scope();
+        if(currentAppointment) {
+            if(currentAppointment.appointment_kind_hash.is_virtual) {
+                var vmHelperNode = $('#event_update_vm_ctrl');
+                var scope = angular.element(vmHelperNode).scope();
 
-            if(!!scope)
-                scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
+                if(!!scope)
+                    scope.$apply(function(){scope.displayForm = true; scope.cacheCurrentInterlocutor(); scope.cacheCurrentConf();});
 
-            if(eventTile.mode != 'free_calendar') {
-                $('.event-tile-container .location').hide();
+                if(eventTile.mode != 'free_calendar') {
+                    $('.event-tile-container .location').hide();
+                }
+
+                vmHelperNode.closest('.event-tile-container').css('height', '810px');
+                vmHelperNode.closest('.created-event-panel').css('height', '790px');
+
+            }else{
+                $('.event-tile-container .location').show();
+                $('#event_tile_location_selector').html($('#location_nature').clone().prop('id', 'location_nature_event')).show();
+                $('#event_tile_location_selector option[value="' + $('#location_nature').val() + '"]').prop('selected', true);
+                $('.event-tile-container .create-event-restaurant-booking-manager').show();
             }
-
-            vmHelperNode.closest('.event-tile-container').css('height', '810px');
-            vmHelperNode.closest('.created-event-panel').css('height', '790px');
-
-        }else{
-            $('.event-tile-container .location').show();
-            $('#event_tile_location_selector').html($('#location_nature').clone().prop('id', 'location_nature_event')).show();
-            $('#event_tile_location_selector option[value="' + $('#location_nature').val() + '"]').prop('selected', true);
-            $('.event-tile-container .create-event-restaurant-booking-manager').show();
         }
 
         reProcessTitle();
@@ -1051,10 +1053,12 @@ EventTile.prototype.initActions = function() {
         $('.event-tile-container .location').show();
         $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();
 
-        if(window.threadComputedData && !window.threadComputedData.is_virtual_appointment){
-            $('#calling-infos-missing').hide();
-            $('.event-tile-container .create-event-restaurant-booking-manager').hide();
-            $('#event_tile_location_selector').hide();
+        if(window.threadComputedData) {
+            if(!window.threadComputedData.is_virtual_appointment) {
+                $('#calling-infos-missing').hide();
+                $('.event-tile-container .create-event-restaurant-booking-manager').hide();
+                $('#event_tile_location_selector').hide();
+            }
         }
 
         if(eventTile.event.beingAdded) {
