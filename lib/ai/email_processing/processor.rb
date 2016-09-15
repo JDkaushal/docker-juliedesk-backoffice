@@ -23,6 +23,8 @@ module Ai
           julia_response = AiProxy.new.build_request(:ask_julia, {id: @server_message_id})
           @message.message_interpretations.create(question: :full_ai, raw_response: julia_response.to_json)
 
+          suggested_current_status = @message_thread.suggested_current_status
+
           # this is used by JuliA later on to process the ask_availabilities request
           new_classif = @message.message_classifications.create({
                                                                   operator: 'julie_full_ai',
@@ -33,7 +35,8 @@ module Ai
                                                                   location: julia_response['location'],
                                                                   date_times: '[]',
                                                                   duration: julia_response['duration'],
-                                                                  timezone: julia_response['timezone']
+                                                                  timezone: julia_response['timezone'],
+                                                                  thread_status: suggested_current_status
                                                                 })
 
           # Manage the ClientContacts database entries
@@ -46,7 +49,7 @@ module Ai
                                       date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%S+00:00'), timezone: julia_response['timezone']}}.to_json
                                   })
 
-          @message_thread.update(status: @message_thread.suggested_current_status)
+          @message_thread.update(status: suggested_current_status)
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
           julia_response['julie_alias'] = julie_aliases.first
