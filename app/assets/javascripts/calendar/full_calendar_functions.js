@@ -106,38 +106,91 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
         calendar.$selector.find("#calendars-list-popup").toggle();
     });
 
+    if(calendar.isCurrentlyLoadingWeek(view.start.clone())) {
+        calendar.showLoadingEventsSpinner();
+    } else {
+        calendar.hideLoadingSpinner();
+    }
+
+    var currentBatches = [];
     var daysToFetch = 23;
+    var start, end;
 
     if (typeof calendar.dispStart === "undefined" || typeof calendar.dispEnd === "undefined") {
         calendar.dispStart = view.start.clone();
         calendar.dispEnd = view.end.clone();
-        calendar.dispEnd.add('d', daysToFetch - 7);
+        //calendar.dispEnd.add('d', daysToFetch - 7);
+        //calendar.dispEnd.add('w', 1);
 
-        calendar.$selector.find('#calendar').fullCalendar('removeEvents');
+        currentBatches.push(calendar.dispStart);
+        currentBatches.push(calendar.dispStart.clone().add(1, 'w'));
+        currentBatches.push(calendar.dispStart.clone().add(2, 'w'));
 
-        var start = calendar.dispStart.format() + "T00:00:00Z";
-        var end = calendar.dispEnd.format() + "T00:00:00Z";
+        //calendar.$selector.find('#calendar').fullCalendar('removeEvents');
 
-        calendar.fetchAllAccountsEvents(start, end);
+        start = calendar.dispStart.format() + "T00:00:00Z";
+        end = calendar.dispEnd.format() + "T00:00:00Z";
+
+        //calendar.fetchAllAccountsEvents(start, end);
+        var formattedBatchesDates = _.map(currentBatches, function(week) { return week.startOf('isoWeek').format('DD-MM-YYYY') });
+
+        trackActionV2("Calendar_start_loading", {
+            batch_type: '3x1',
+            weeks: formattedBatchesDates
+        });
+
+        _.each(currentBatches, function(batchStartDate) {
+            var start = batchStartDate.format() + "T00:00:00Z";
+            var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
+
+            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates});
+            calendar.addToFetchedWeek(batchStartDate);
+        })
     }
     else {
-        if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {
-            var start, end;
-            if(view.start.isBefore(calendar.dispStart)) {
-                end = calendar.dispStart.format() + "T00:00:00Z";
-                calendar.dispStart = view.start.clone();
-                calendar.dispStart.add('d', 8 - daysToFetch);
-                start = calendar.dispStart.format() + "T00:00:00Z";
-            }
-            else {
-                start = calendar.dispEnd.format() + "T00:00:00Z";
-                calendar.dispEnd = view.end.clone();
-                calendar.dispEnd.add('d', daysToFetch);
-                end = calendar.dispEnd.format() + "T00:00:00Z";
-            }
+        //if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {
 
-            calendar.fetchAllAccountsEvents(start, end);
+        //if(view.start.isSame(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {
+        start = view.start.clone();
+        var direction = 1;
+
+        if(view.start.isBefore(calendar.dispStart)) {
+            direction = -1;
         }
+
+        calendar.dispStart = _.min([calendar.dispStart, view.start.clone()]);
+        calendar.dispEnd = _.max([calendar.dispEnd, view.end.clone()]);
+
+        // Voir Retrait des semaines et comparaisons si on est en dehors de la fenetre déjà calculée
+        //    if(view.start.isBefore(calendar.dispStart)) {
+        //       // end = calendar.dispStart.format() + "T00:00:00Z";
+        //        //calendar.dispStart.add('d', 8 - daysToFetch);
+        //        //start = calendar.dispStart.format() + "T00:00:00Z";
+        //        calendar.dispStart = start.clone();
+        //    }
+        //    else if(view.start.isSame(calendar.dispEnd) || view.start.isAfter(calendar.dispEnd)){
+        //        //start = calendar.dispEnd + "T00:00:00Z";
+        //        start = view.start.clone();
+        //        calendar.dispEnd = view.end.clone();
+        //        //calendar.dispEnd.add('d', daysToFetch);
+        //        calendar.dispEnd.add('w', 1);
+        //        //end = calendar.dispEnd.format() + "T00:00:00Z";
+        //    }
+
+            currentBatches.push(start);
+            currentBatches.push(start.clone().add(direction * 1, 'w'));
+            currentBatches.push(start.clone().add(direction * 2, 'w'));
+            _.each(currentBatches, function(batchStartDate) {
+                var start = batchStartDate.format() + "T00:00:00Z";
+                var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
+
+                if(!calendar.alreadyFetchedWeek(batchStartDate)) {
+                    calendar.fetchAllAccountsEvents(start, end);
+                    calendar.addToFetchedWeek(batchStartDate);
+                }
+            });
+            //calendar.fetchAllAccountsEvents(start, end);
+        //}
     }
 };
 Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
@@ -238,7 +291,7 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, $element, $imgSpanNode
 Calendar.prototype.fullCalendarInit = function() {
     var calendarNode = $('#calendar');
     var calendar = this;
-    var defaultDate = moment();
+    var defaultDate = calendar.determineCalendarInitialStartDate();
     var travelTimeBackgroundColor = '#C27938';
     var travelTimeIsWarningBackgroundColor = '#CA6A65';
     var noMeetingRoomBackgroundColor = '#E37F7F';
@@ -247,36 +300,10 @@ Calendar.prototype.fullCalendarInit = function() {
 
     var columnWidth, columnWidthInt, offsetRowInt;
 
-    if(calendar.eventsToCheck.length > 0 && calendar.getMode() == "create_event") {
-        defaultDate = $.map(calendar.eventsToCheck, function(v, k) {
-           return v.start;
-        }).sort()[0];
-    }
-
-    if(calendar.getMode() == "suggest_dates" && calendar.initialData.constraintsData) {
-        var allEvents = [];
-        _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
-            var mNow = moment();
-            var mOneYearFromNow = moment();
-            mOneYearFromNow.add('y', 1);
-            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
-            _.each(events.cant, function(event) {
-                allEvents.push(event);
-            });
-        });
-        var i=0;
-        while(conflictingEvent = _.find(allEvents, function(event) {
-            return event.start <= defaultDate && event.end > defaultDate;
-        }) && i<100) {
-            i += 1;
-            defaultDate = conflictingEvent.end;
-        }
-    }
-
     //defaultDate = moment("2015-03-01");
     calendarNode.fullCalendar({
         header: {
-            left: 'today prevYear,prev,next,nextYear title',
+            left: 'today prev,next title',
             center: '',
             right: ''
         },
@@ -470,7 +497,7 @@ Calendar.prototype.fullCalendarInit = function() {
 
             currentAllDayMasks = [];
         },
-        viewRender: function(view, element) {
+        viewRender: function(view, element){
             columnWidth = $('.fc-col3.fc-widget-header').css('width');
             columnWidthInt = parseInt(columnWidth);
             offsetRowInt = parseInt($('.fc-agenda-axis').css('width'));
@@ -482,16 +509,34 @@ Calendar.prototype.fullCalendarInit = function() {
         }
     });
 
-    calendarNode.on('click', '.fc-button-prev, .fc-button-next', function(e) {
-        console.log('week btn click');
-        trackActionV2('Click_on_change_week', {ux_element: 'backoffice'});
+    calendarNode.on('click', '.fc-button-prev', function(e) {
+        trackActionV2('Click_on_change_week', {type: 'previous', value: 1, ux_element: 'backoffice'});
     });
 
-
-    calendarNode.on('click', '.fc-button-prevYear, .fc-button-nextYear', function(e) {
-        console.log('month btn click');
-        trackActionV2('Click_on_change_month', {ux_element: 'backoffice'});
+    calendarNode.on('click', '.fc-button-next', function(e) {
+        trackActionV2('Click_on_change_week', {type: 'next', value: -1, ux_element: 'backoffice'});
     });
+
+    $('.fc-button-next').after($('<input id="calendar_datepicker" type="text"/>'));
+
+    $('#calendar_datepicker').datepicker({
+        dateFormat: "dd-mm-yy",
+        minDate: new Date,
+        onSelect: function(dateText, inst){
+            var momentedDate = moment(dateText, 'DD-MM-YYYY');
+            var selectedWeek = momentedDate.clone().startOf('isoWeek');
+            var currentWeek = window.currentCalendar.$selector.find('#calendar').fullCalendar('getView').start;
+            var duration = moment.duration(selectedWeek.diff(currentWeek));
+            trackActionV2('Click_on_change_week', {type: 'date_picker', value: Math.round(duration.asWeeks()), ux_element: 'backoffice'});
+
+            window.currentCalendar.goToDateAndLoadEvents(momentedDate);
+        }
+    });
+
+    //calendarNode.on('click', '.fc-button-prevYear, .fc-button-nextYear', function(e) {
+    //    console.log('month btn click');
+    //    trackActionV2('Click_on_change_month', {ux_element: 'backoffice'});
+    //});
 
 };
 

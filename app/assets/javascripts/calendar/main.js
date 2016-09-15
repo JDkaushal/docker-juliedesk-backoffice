@@ -34,6 +34,13 @@ function Calendar($selector, params) {
 
     this.suggestedEvents = [];
 
+    // Used to know which weeks has already been fetched
+    this.weeksFetched = [];
+
+    this.currentlyFetchingWeeks = {};
+
+    this.eventsFetchedCount = 0;
+
     var calendar = this;
 
     // Event handlers
@@ -96,6 +103,58 @@ function Calendar($selector, params) {
         });
     });
 }
+
+Calendar.prototype.determineCalendarInitialStartDate = function() {
+    var calendar = this;
+    var initialStartDate = moment();
+
+    // When in an ask_availabilities flow, we will load the calendar from the currently selected date to verify
+    if(window.currentEventTile) {
+        var event = window.currentEventTile.event;
+        initialStartDate =  moment(event.start).tz(event.timezoneId);
+    } else if(window.newEventEventTiles) {
+        var orderedEvents = _.sortBy(_.map(window.newEventEventTiles, function(eventTile) {
+            return eventTile.event;
+        }), 'start');
+
+        if(orderedEvents && orderedEvents.length > 0) {
+            initialStartDate = orderedEvents[0].start.tz(orderedEvents[0].timezoneId);
+        }
+    } else if(window.classification == 'ask_availabilities') {
+        var dateToVerify = $('.suggested-date-times').data('date-times');
+
+        if(dateToVerify) {
+            initialStartDate = moment(dateToVerify[0].date).tz(dateToVerify[0].timezone);
+        }
+    } else {
+        if(calendar.eventsToCheck.length > 0 && calendar.getMode() == "create_event") {
+            initialStartDate = $.map(calendar.eventsToCheck, function(v, k) {
+                return v.start;
+            }).sort()[0];
+        }
+    }
+
+    if(calendar.getMode() == "suggest_dates" && calendar.initialData.constraintsData) {
+        var allEvents = [];
+        _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+            var mNow = moment();
+            var mOneYearFromNow = moment().add('y', 1);
+            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
+            _.each(events.cant, function(event) {
+                allEvents.push(event);
+            });
+        });
+        var i=0;
+        while(conflictingEvent = _.find(allEvents, function(event) {
+                return event.start <= initialStartDate && event.end > initialStartDate;
+            }) && i<100) {
+            i += 1;
+            initialStartDate = conflictingEvent.end;
+        }
+    }
+
+    return initialStartDate;
+};
 
 Calendar.prototype.refreshMeetingRoomSelectOptions = function() {
     $('#meeting-rooms-manager').scope().populateCreateEventRoomSelect();
@@ -170,6 +229,16 @@ Calendar.prototype.generateDelayTitle = function() {
     }).delay_between_appointments;
 
     return "Delay: " + delayB + "'";
+};
+
+Calendar.prototype.alreadyFetchedWeek = function(currentWeekStartDate) {
+    var calendar = this;
+
+    var alreadyFetched = _.find(calendar.weeksFetched, function(weekSDate) {
+        return currentWeekStartDate.isSame(weekSDate, 'day');
+    });
+
+    return !$.isEmptyObject(alreadyFetched);
 };
 
 Calendar.prototype.redrawCalendarsListPopup = function () {
@@ -386,6 +455,14 @@ Calendar.prototype.getEventsToCheck = function() {
 
 };
 
+Calendar.prototype.addToFetchedWeek = function(week) {
+    var calendar = this;
+
+    if(calendar.weeksFetched.indexOf(week) == -1) {
+        calendar.weeksFetched.push(week);
+    }
+};
+
 Calendar.prototype.addEventsToCheckIfNeeded = function() {
     var calendar = this;
     if(calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
@@ -396,24 +473,81 @@ Calendar.prototype.addEventsToCheckIfNeeded = function() {
     }
 };
 
-Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
+Calendar.prototype.checkHideLoadingSpinner = function(start) {
+    var calendar = this;
+    var currentView = calendar.$selector.find('#calendar').fullCalendar('getView');
+    var onView = currentView.start.isSame(start, 'd');
+
+    if(onView) {
+        calendar.hideLoadingSpinner();
+    }
+};
+
+Calendar.prototype.isCurrentlyLoadingWeek = function(week) {
+    var calendar = this;
+    week = moment(week.format() + "T00:00:00Z");
+
+    var fetchingStatus = calendar.currentlyFetchingWeeks[week.format()];
+    console.log(calendar.currentlyFetchingWeeks);
+    console.log(week.format());
+    console.log(calendar.currentlyFetchingWeeks[week.format()]);
+
+    return fetchingStatus && fetchingStatus > 0;
+};
+
+Calendar.prototype.showLoadingEventsSpinner = function() {
+    var calendar = this;
+    calendar.showLoadingSpinner("Loading events...");
+};
+
+Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions) {
     var calendar = this;
     var localWaitingAccounts = 0;
+    var momentedStart = moment(start);
+    var formattedStart = momentedStart.format();
+
+    trackingOptions = trackingOptions || {};
 
     var allEmailsForTracking = calendar.initialData.other_emails.slice();
     allEmailsForTracking.unshift(calendar.initialData.email);
 
-    calendar.showLoadingSpinner("Loading events...");
+    var currentView = calendar.$selector.find('#calendar').fullCalendar('getView');
+    var onView = currentView.start.isSame(momentedStart, 'd');
+
+    // We only display the loader if we are currently loading the week we are displaying
+    if(onView) {
+        calendar.showLoadingEventsSpinner();
+    }
+
+    calendar.currentlyFetchingWeeks[formattedStart] = 0;
 
     calendar.addCal(calendar.getConstraintsDataEvents(start, end));
+
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
 
-        calendar.fetchEvents(start, end, calendar.accountPreferences[email], function() {
+        calendar.currentlyFetchingWeeks[formattedStart] += 1;
+        calendar.fetchEvents(start, end, calendar.accountPreferences[email], function(responseItems) {
             localWaitingAccounts -= 1;
-            if(localWaitingAccounts == 0) {
-                calendar.hideLoadingSpinner();
+            calendar.currentlyFetchingWeeks[formattedStart] -= 1;
 
+            // We hide the spinner if we are currently the week that has finished being loaded
+            if(calendar.currentlyFetchingWeeks[formattedStart] == 0) {
+                delete calendar.currentlyFetchingWeeks[formattedStart];
+                calendar.checkHideLoadingSpinner(momentedStart);
+            }
+
+            if(trackingOptions.trackNetworkResponse) {
+                trackActionV2("Calendar_data_displayed", {
+                    calendar_id: email,
+                    batch_type: '3x1',
+                    week: momentedStart.format('DD-MM-YYYY'),
+                    events_count: responseItems.length
+                });
+            }
+
+            // Every calls have been finished
+            if($.isEmptyObject(calendar.currentlyFetchingWeeks)) {
                 if(calendar.initialData.calendarandEventsLoadedFirstTimeCallback) {
                     calendar.initialData.calendarandEventsLoadedFirstTimeCallback();
                     calendar.initialData.calendarandEventsLoadedFirstTimeCallback = null;
@@ -422,11 +556,34 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end) {
                 if(window.allCalendarEventsFetched) {
                     window.allCalendarEventsFetched();
                 }
-                trackActionV2("Calendar_loaded", {
-                    client_emails: allEmailsForTracking
-                });
+
+                if(trackingOptions.trackNetworkResponse) {
+                    trackActionV2("Calendar_loaded", {
+                        calendar_id: email,
+                        batch_type: '3x1',
+                        events_count: calendar.eventsFetchedCount,
+                        weeks: trackingOptions.formattedBatchesDates
+                    });
+                }
+
             }
-        });
+            //if(localWaitingAccounts == 0) {
+            //
+            //
+            //
+            //    if(calendar.initialData.calendarandEventsLoadedFirstTimeCallback) {
+            //        calendar.initialData.calendarandEventsLoadedFirstTimeCallback();
+            //        calendar.initialData.calendarandEventsLoadedFirstTimeCallback = null;
+            //    }
+            //
+            //    if(window.allCalendarEventsFetched) {
+            //        window.allCalendarEventsFetched();
+            //    }
+            //    trackActionV2("Calendar_loaded", {
+            //        client_emails: allEmailsForTracking
+            //    });
+            //}
+        }, trackingOptions.trackNetworkResponse);
     }
 };
 
@@ -435,7 +592,7 @@ Calendar.prototype.redrawFullCalendar = function() {
     calendar.$selector.find("#calendar").fullCalendar("render");
 };
 
-Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback) {
+Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback, trackNetworkReponse) {
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
@@ -445,6 +602,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     var allEvents = [];
     var meeting_rooms_to_show = {};
     var virtualResourcesToShow = [];
+    var momentedStart = moment(start);
 
     if(window.threadAccount) {
         if(accountPreferencesHash.email == window.threadAccount.email) {
@@ -479,6 +637,20 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         start: start,
         end: end
     }, function (response) {
+
+        if(trackNetworkReponse) {
+            var eventsCount = response.items.length;
+
+            calendar.eventsFetchedCount += eventsCount;
+
+            trackActionV2("Calendar_data_received", {
+                calendar_id: accountPreferencesHash.email,
+                batch_type: '3x1',
+                week: momentedStart.format('DD-MM-YYYY'),
+                events_count: eventsCount
+            });
+        }
+
         unavailableEvents = calendar.getNonAvailableEvents(start, end, accountPreferencesHash);
 
         calendar.addCal(unavailableEvents);
@@ -502,7 +674,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             virtualMeetingHelper.determineFirstAvailableVirtualResource();
         }
 
-        if(callback) callback();
+        if(callback) callback(response.items);
     });
 };
 Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
@@ -953,6 +1125,13 @@ Calendar.prototype.selectSuggestedEvent = function(dateTime) {
         calendar.addEvent(matchingEvents[0]);
         calendar.$selector.find("#calendar").fullCalendar('gotoDate', matchingEvents[0].start);
     }
+};
+
+Calendar.prototype.goToDateAndLoadEvents = function(momentDate) {
+    var calendar = this;
+
+    calendar.goToDateTime(momentDate);
+    calendar.$selector.find("#calendar").fullCalendar("render");
 };
 
 Calendar.prototype.refreshEvents = function() {
