@@ -45,7 +45,7 @@ module Ai
       end
 
       def update(params, julia_response)
-        event_data = self.fetch(params[:messages_thread_event_data].merge(email: params[:thread_owner_account_email]))['data']
+        event_data = self.fetch(params[:messages_thread_event_data].merge(email: params[:thread_owner_account_email]))
 
         event_data['email'] = params[:thread_owner_account_email]
         event_data['attendees'] = julia_response['participants'].map{|att| {email: att['email']}}
