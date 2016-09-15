@@ -47,12 +47,14 @@ module Ai
       def update(params, julia_response)
         event_data = self.fetch(params[:messages_thread_event_data].merge(email: params[:thread_owner_account_email]))
 
+        event_data['event_id'] = event_data['id']
         event_data['email'] = params[:thread_owner_account_email]
         event_data['attendees'] = julia_response['participants'].map{|att| {email: att['email']}}
         event_data['location'] = julia_response['location']
 
         current_start_date = event_data['start']['datetime'] || event_data['start']['date']
-        event_data['end'] = Time.parse(current_start_date) + julia_response['duration'].minutes
+        event_data['start'] = Time.parse(current_start_date)
+        event_data['end'] = event_data['start'] + julia_response['duration'].minutes
 
         params_handler = EmailTemplates::DataHandlers::ParametersHandler.new(julia_response)
         event_data[:summary] = EventsManagement::Utilities::TitleGenerator.new(params_handler).compute
