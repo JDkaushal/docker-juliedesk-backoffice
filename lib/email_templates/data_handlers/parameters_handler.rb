@@ -15,11 +15,11 @@ module EmailTemplates
       end
 
       def get_attendees_without_thread_owner
-        @params['participants'] && @params['participants'].reject{|att| att['is_thread_owner']}
+        @params['participants'] && @params['participants'].reject{|att| att['isThreadOwner']}
       end
 
       def get_thread_owner
-        @params['participants'] && @params['participants'].find{|att| att['is_thread_owner']}
+        @params['participants'] && @params['participants'].find{|att| att['isThreadOwner']}
       end
 
       def get_suggested_dates
@@ -31,7 +31,7 @@ module EmailTemplates
       end
 
       def get_clients
-        @params['participants'].select{|att| att['is_client']}
+        @params['participants'].select{|att| att['isClient']}
       end
 
       def get_clients_count
