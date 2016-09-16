@@ -196,7 +196,7 @@
                 };
 
                 $scope.changeCurrentVAConfig = function(configLabel){
-                    var everyConfig = window.threadAccount.virtual_appointments_support_config.concat(window.threadAccount.virtual_appointments_company_support_config);
+                    var everyConfig = _.compact(window.threadAccount.virtual_appointments_support_config.concat(window.threadAccount.virtual_appointments_company_support_config));
 
                     var config = _.filter(everyConfig, function(vaConfig){
                         return (vaConfig.label || vaConfig.resource_type).toLowerCase() == configLabel;
