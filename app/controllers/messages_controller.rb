@@ -89,7 +89,7 @@ class MessagesController < ApplicationController
 
       http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
                                                                                                     email: @message.messages_thread.account_email,
-                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
+                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: https://juliedesk-backoffice.herokuapp.com/review/messages_threads/#{@message.messages_thread_id}/review)"
                                                                                                 })
 
       # client = HTTPClient.new(default_header: {
