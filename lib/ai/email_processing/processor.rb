@@ -40,7 +40,7 @@ module Ai
                                                                 })
 
           # Manage the ClientContacts database entries
-          Ai::DataHandlers::AttendeesHandler.new(@thread_owner_account, (julia_response['participants'] || [])).handle
+          #Ai::DataHandlers::AttendeesHandler.new(@thread_owner_account, (julia_response['participants'] || [])).handle
 
           new_julie_action = new_classif.append_julie_action
           new_julie_action.update({
