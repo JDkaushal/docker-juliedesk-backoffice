@@ -185,7 +185,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "meeting_room_details"=>nil,
                                                               "using_restaurant_booking" => false,
                                                               "restaurant_booking_details" => nil,
-                                                              "location_changed" => nil
+                                                              "location_changed" => nil,
+                                                              "virtual_resource_used" => nil
                                                           }
                                                         }
                                                     }
