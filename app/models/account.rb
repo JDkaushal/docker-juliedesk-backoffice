@@ -37,7 +37,8 @@ class Account
                 :have_priority,
                 :auto_follow_up_enabled,
                 :restaurant_booking_enabled,
-                :julie_aliases
+                :julie_aliases,
+                :using_calendar_server
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -82,6 +83,7 @@ class Account
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
     account.restaurant_booking_enabled = data['restaurant_booking_enabled']
     account.julie_aliases = data['julie_aliases']
+    account.using_calendar_server = data['using_calendar_server']
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

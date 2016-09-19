@@ -51,8 +51,10 @@ function trackActionV2(type, extraParams, callback) {
         var messagesThreadId = messageContainerNode.data('messagesThreadId');
         var selectedMessage = $('.email.highlighted');
 
-        if(window.threadAccount)
+        if(window.threadAccount) {
             var currentAccountEmail = window.threadAccount.email;
+            var usingCalendarServer = window.threadAccount.using_calendar_server;
+        }
 
         var defaultParams = {
             operator_id: bodyNode.data('operatorId'),
@@ -60,6 +62,7 @@ function trackActionV2(type, extraParams, callback) {
             current_classification: window.classification,
             thread_id: messagesThreadId,
             account_name: currentAccountEmail,
+            using_calendar_server: usingCalendarServer,
             thread_messages_count: messageContainerNode.data('messagesCount'),
             bo_message_id: selectedMessage.data('messageId')
         };
