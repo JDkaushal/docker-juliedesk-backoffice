@@ -1,5 +1,4 @@
 (function(){
-
     var app = angular.module('dates-manager', ['dates-manager-services', 'dates-manager-controllers']);
 
     angular.element(document).ready(function () {

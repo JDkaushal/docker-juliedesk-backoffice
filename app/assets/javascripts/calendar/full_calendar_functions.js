@@ -510,11 +510,11 @@ Calendar.prototype.fullCalendarInit = function() {
     });
 
     calendarNode.on('click', '.fc-button-prev', function(e) {
-        trackActionV2('Click_on_change_week', {type: 'previous', value: 1, ux_element: 'backoffice'});
+        trackActionV2('Click_on_change_week', {type: 'previous', value: -1, ux_element: 'backoffice'});
     });
 
     calendarNode.on('click', '.fc-button-next', function(e) {
-        trackActionV2('Click_on_change_week', {type: 'next', value: -1, ux_element: 'backoffice'});
+        trackActionV2('Click_on_change_week', {type: 'next', value: 1, ux_element: 'backoffice'});
     });
 
     $('.fc-button-next').after($('<input id="calendar_datepicker" type="text"/>'));

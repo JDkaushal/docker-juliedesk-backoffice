@@ -587,6 +587,8 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     }
 };
 
+
+
 Calendar.prototype.redrawFullCalendar = function() {
     var calendar = this;
     calendar.$selector.find("#calendar").fullCalendar("render");
