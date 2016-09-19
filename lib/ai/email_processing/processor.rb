@@ -36,7 +36,6 @@ module Ai
                                                                   timezone: julia_response['timezone'],
                                                                 })
 
-          new_classif.update(thread_status: new_classif.computed_thread_status)
           # Manage the ClientContacts database entries
           #Ai::DataHandlers::AttendeesHandler.new(@thread_owner_account, (julia_response['participants'] || [])).handle
 
@@ -47,12 +46,15 @@ module Ai
                                       date_times: (julia_response['suggested_dates'] || []).map{|date| {date: Time.parse(date).strftime('%Y-%m-%dT%H:%M:%S+00:00'), timezone: julia_response['timezone']}}.to_json
                                   })
 
-          @message_thread.update(status: @message_thread.reload.suggested_current_status)
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
           julia_response['julie_alias'] = julie_aliases.first
 
           email_text = dispatch_request_type(julia_response, new_julie_action)
+
+          # After the event creation, we update the statuses
+          new_classif.update(thread_status: new_classif.computed_thread_status)
+          @message_thread.update(status: @message_thread.reload.suggested_current_status)
 
           EmailServer.archive_thread(messages_thread_id: @message_thread.server_thread_id)
 
