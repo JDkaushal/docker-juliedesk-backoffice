@@ -517,7 +517,11 @@ Calendar.prototype.fullCalendarInit = function() {
         trackActionV2('Click_on_change_week', {type: 'next', value: 1, ux_element: 'backoffice'});
     });
 
-    $('.fc-button-next').after($('<input id="calendar_datepicker" type="text"/>'));
+    $('.fc-button-next').after($('<input id="calendar_datepicker" type="text"/>').hide());
+
+    calendarNode.on('click', '.fc-header-title', function(e) {
+        $('#calendar_datepicker').datepicker('show');
+    });
 
     $('#calendar_datepicker').datepicker({
         dateFormat: "dd-mm-yy",
