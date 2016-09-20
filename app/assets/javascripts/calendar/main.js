@@ -41,6 +41,9 @@ function Calendar($selector, params) {
 
     this.eventsFetchedCount = 0;
 
+    this.meetingRoomsEvents = {};
+    this.virtualResourcesEvents = {};
+
     var calendar = this;
 
     // Event handlers
@@ -948,8 +951,11 @@ Calendar.prototype.computeIsLocated = function (event) {
 
 Calendar.prototype.addAllCals = function (calEvents) {
     var calendar = this;
-    calendar.meetingRoomsEvents = {};
-    calendar.virtualResourcesEvents = {};
+
+    var localMeetingRoomsEvents = {};
+    var localVirtualResourcesEvents = {};
+    // calendar.meetingRoomsEvents = {};
+    // calendar.virtualResourcesEvents = {};
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
     var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
 
@@ -957,7 +963,8 @@ Calendar.prototype.addAllCals = function (calEvents) {
     if(meetingRoomsManager) {
         _.each(meetingRoomsManager.availableRooms, function(mR) {
             meetingRoomsIds.push(mR.id);
-            calendar.meetingRoomsEvents[mR.id] = [];
+            localMeetingRoomsEvents[mR.id] = [];
+            calendar.meetingRoomsEvents[mR.id] = calendar.meetingRoomsEvents[mR.id] || [];
         });
     }
 
@@ -969,10 +976,10 @@ Calendar.prototype.addAllCals = function (calEvents) {
         if(virtualResources && virtualResources.length > 0) {
             _.each(virtualResources, function(vR) {
                 virtualResourcesIds.push(vR.id);
-                calendar.virtualResourcesEvents[vR.id] = [];
+                localVirtualResourcesEvents[vR.id] = [];
+                calendar.virtualResourcesEvents[vR.id] = calendar.virtualResourcesEvents[vR.id] || [];
             });
         }
-
     }
 
     _.each(calEvents, function(calEvent) {
@@ -988,8 +995,10 @@ Calendar.prototype.addAllCals = function (calEvents) {
 
         // We don't add the individual meeting rooms events to the displayed events on the calendar
         if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
+            localMeetingRoomsEvents[eventData.calId].push(eventData);
             calendar.meetingRoomsEvents[eventData.calId].push(eventData);
-        } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId)) {
+        } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId) > -1) {
+            localVirtualResourcesEvents[eventData.virtualResourceId].push(eventData);
             calendar.virtualResourcesEvents[eventData.virtualResourceId].push(eventData);
         } else {
             calendar.eventDataX.push(eventData);
@@ -997,11 +1006,11 @@ Calendar.prototype.addAllCals = function (calEvents) {
     });
 
     if(meetingRoomsManager) {
-        calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(calendar.meetingRoomsEvents));
+        calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(localMeetingRoomsEvents));
     }
 
     if(virtualMeetingHelper && virtualMeetingHelper.isCurrentAppointmentVirtual()) {
-        calendar.eventDataX = calendar.eventDataX.concat(virtualMeetingHelper.getOverlappingVirtualResourcesEvents(calendar.virtualResourcesEvents));
+        calendar.eventDataX = calendar.eventDataX.concat(virtualMeetingHelper.getOverlappingVirtualResourcesEvents(localVirtualResourcesEvents));
     }
 
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.eventDataX);
