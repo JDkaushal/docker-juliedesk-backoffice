@@ -34,6 +34,7 @@ module Ai
                                                                   date_times: '[]',
                                                                   duration: julia_response['duration'],
                                                                   timezone: julia_response['timezone'],
+                                                                  constraints_data: julia_response['constraints_data']
                                                                 })
 
           # Manage the ClientContacts database entries
