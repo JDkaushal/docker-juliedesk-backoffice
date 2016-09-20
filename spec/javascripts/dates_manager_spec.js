@@ -1,4 +1,4 @@
-//= require angular_dates_manager_app
+//= require angular_dates_manager_appp
 
 (function(){
 

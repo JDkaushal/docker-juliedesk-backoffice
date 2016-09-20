@@ -1,4 +1,4 @@
-//= require angular_AI_manager_app
+//= require angular_AI_manager_appp
 
 /* WARNING
     When using a 'beforeEach' make sure it is not empty like:

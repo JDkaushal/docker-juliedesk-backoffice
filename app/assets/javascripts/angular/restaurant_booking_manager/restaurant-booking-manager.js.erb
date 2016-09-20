@@ -138,20 +138,15 @@
                 };
 
                 $scope.functionnalityActive = function() {
-                    var active = window.threadAccount && window.threadAccount.restaurant_booking_enabled;
+                  var currentAppointment = window.getCurrentAppointment();
+                  var appointmentType = currentAppointment && currentAppointment.kind;
+                  var currentAddress = window.getCurrentAddressObject();
+                  var addressType = currentAddress && currentAddress.kind;
 
-                    if(active) {
-                        var currentAppointment = window.getCurrentAppointment();
-                        var appointmentType = currentAppointment && currentAppointment.kind;
-                        var currentAddress = window.getCurrentAddressObject();
-                        var addressType = currentAddress && currentAddress.kind;
-
-                        active = $scope.allowedAppointmentType.indexOf(appointmentType) > -1
-                                || $scope.allowedAddressType.indexOf(addressType) > -1
-                    }
-
-                    return active;
+                  return $scope.allowedAppointmentType.indexOf(appointmentType) > -1
+                      || $scope.allowedAddressType.indexOf(addressType) > -1
                 };
+
                 $scope.getUsingRestaurantBooking = function() {
                     return $scope.usingRestaurantBooking;
                 };
