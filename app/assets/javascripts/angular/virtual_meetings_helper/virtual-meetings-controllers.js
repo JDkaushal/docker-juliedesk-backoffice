@@ -803,7 +803,7 @@
                 };
 
                 $scope.isVirtualAppointment = function(){
-                    return ['call', 'confcall', 'skype', 'hangout', 'webex'].indexOf($("select#appointment_nature").val()) > -1;
+                    return ['call', 'confcall', 'skype', 'hangout', 'webex', 'visio'].indexOf($("select#appointment_nature").val()) > -1;
                 };
 
                 $scope.cacheCurrentInterlocutor = function(){
