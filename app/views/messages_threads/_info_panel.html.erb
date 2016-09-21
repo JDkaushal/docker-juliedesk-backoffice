@@ -983,7 +983,7 @@
 
         var appointment = getCurrentAppointment();
         if(appointment.appointment_kind_hash.is_virtual) {
-            if(appointment.kind == "call" || appointment.kind == "confcall") {
+            if(appointment.kind == "call" || appointment.kind == "confcall" || appointment.kind == "visio") {
                 $(".number-to-call-part-container").show();
             }
             else {
