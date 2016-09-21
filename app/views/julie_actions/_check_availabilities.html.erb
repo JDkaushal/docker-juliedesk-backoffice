@@ -409,10 +409,14 @@
                 data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
             }
 
-            if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
-                data.notes_updated = $('#notes').val();
-                data.virtual_resource_used = vmHelper.selectedVirtualResource;
-                virtualResourcesUsed = true;
+            data.virtual_resource_used = 'undefined';
+            if(vmHelper && vmHelper.isVirtualAppointment()) {
+                if(vmHelper.selectedVirtualResource !== undefined) {
+                  data.notes_updated = $('#notes').val();
+
+                  data.virtual_resource_used = vmHelper.selectedVirtualResource;
+                  virtualResourcesUsed = true;
+                }
             }
 
             if(window.threadComputedData.is_virtual_appointment){

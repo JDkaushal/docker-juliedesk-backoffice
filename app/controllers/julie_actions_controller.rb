@@ -126,9 +126,11 @@ class JulieActionsController < ApplicationController
     end
 
     if params[:virtual_resource_used].present?
-      message_classification_params_to_update[:virtual_resource_used] = params[:virtual_resource_used]
-    else
-      message_classification_params_to_update[:virtual_resource_used] = nil
+      if params[:virtual_resource_used] == 'undefined'
+        message_classification_params_to_update[:virtual_resource_used] = nil
+      else
+        message_classification_params_to_update[:virtual_resource_used] = params[:virtual_resource_used]
+      end
     end
 
     if message_classification_params_to_update.present?

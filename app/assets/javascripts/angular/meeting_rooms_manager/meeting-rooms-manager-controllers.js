@@ -540,7 +540,7 @@
 
                     location.push(window.threadComputedData.location);
 
-                    $('#event_location').val(location.join(', '));
+                    $('#event_location').val(_.without(location, '').join(', '));
                 };
 
                 $scope.setAddressValue = function() {
