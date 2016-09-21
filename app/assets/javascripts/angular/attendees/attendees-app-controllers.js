@@ -241,6 +241,7 @@
                 $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
                 $scope.lookupAttendeesMissingInfos();
                 $scope.setTitlePreference();
+                processAppointmentType();
                 //$scope.postProcessAttendees();
             }
         }, true);

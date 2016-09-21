@@ -263,9 +263,9 @@
             trackActionV2('Click_on_save_form', {first_time: !window.threadComputedData.appointment_nature, ux_element: 'form'});
         });
 
-        $("body").on("change", "input[type=checkbox]#attendee", function() {
-            processAppointmentType();
-        });
+//        $("body").on("change", "input[type=checkbox]#attendee", function() {
+//            processAppointmentType();
+//        });
 
         $(".data #add-attendee-button").click(function (e) {
             var email = $(".data #add_attendee").val();
