@@ -518,6 +518,7 @@ Calendar.prototype.fullCalendarInit = function() {
     });
 
     $('.fc-button-next').after($('<input id="calendar_datepicker" type="text"/>').hide());
+    $('.fc-header-title').prepend($('<span class="calendar-datepicker-sprite"></span>'));
 
     calendarNode.on('click', '.fc-header-title', function(e) {
         $('#calendar_datepicker').datepicker('show');

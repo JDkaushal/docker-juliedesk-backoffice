@@ -1,6 +1,37 @@
 .calendar-container {
     #calendar {
 
+      .calendar-datepicker-sprite {
+        background-image: url(<%= asset_path 'date_picker_blue.png' %>);
+        background-size: 18px 22px;
+        background-repeat: no-repeat;
+        width: 18px;
+        height: 22px;
+        position: relative;
+        left: -3px;
+        top: -1px;
+        display: inline-block;
+      }
+
+      .fc-header-title {
+        cursor: pointer;
+        padding: 8px !important;
+        height: 33px;
+
+        h2 {
+          display: inline-block;
+          font-weight: bold;
+          color: $blue;
+          position: relative;
+          top: -6px;
+        }
+
+        &:hover {
+          background-color: #F0F0F0;
+          text-decoration: underline;
+        }
+      }
+
         .fc-icon-left-single-arrow:after {
             /*content: "\02039";*/
             content: url("<%= asset_path "calendar/calendar_past_icon.png" %>");

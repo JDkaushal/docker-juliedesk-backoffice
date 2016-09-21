@@ -2,18 +2,6 @@ $blue: rgb(0,153, 204);
 
 .calendar-container {
 
-  .fc-header-title {
-    cursor: pointer;
-
-    h2 {
-      color: $blue;
-    }
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
   .global-loading {
     position: absolute;
     top: 0;
