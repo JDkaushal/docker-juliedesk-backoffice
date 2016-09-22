@@ -31,7 +31,7 @@ class MessagesController < ApplicationController
         new_email_received_date: @message.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
         thread_is_open_date: open_thread_date,
         thread_status: @message.messages_thread.status,
-        first_time: @message.messages_thread.messages.map(&:message_classifications).flatten.empty?
+        first_time: @message.messages_thread.messages.map(&:message_classifications).flatten.length <= 1
     })
     rescue
     end
