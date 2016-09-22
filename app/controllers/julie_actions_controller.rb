@@ -95,7 +95,7 @@ class JulieActionsController < ApplicationController
       begin
       if params[:event_id].present? && !julie_action.event_id
 
-        ClientSuccessTrackingHelpers.async_track("new_event", @messages_thread.account_email, {
+        ClientSuccessTrackingHelpers.async_track("new_event", messages_thread.account_email, {
             bo_thread_id: messages_thread.id,
             thread_messages_count: messages_thread.messages.count,
             thread_status: messages_thread.status,
