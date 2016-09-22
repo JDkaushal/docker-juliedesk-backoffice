@@ -81,6 +81,8 @@ module Ai
                                        :date_confirmation
                                      when :give_info
                                        :event_updated
+                                     when :wait_for_contact
+                                       :waiting_for_contact
                                      else
                                        :unknown_request
                                    end

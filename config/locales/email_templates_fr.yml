@@ -48,6 +48,10 @@ fr:
 
     event_updated: "Merci, l'événement a bien été mis à jour."
 
+    waiting_for_contact: |
+      Très bien, c'est noté.
+      %{attendees_names}, cela vous convient-il ?
+
     greetings:
       male: 'M. %{client_name},'
       female: 'Mme %{client_name},'

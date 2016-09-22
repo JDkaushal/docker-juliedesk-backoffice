@@ -405,7 +405,7 @@
 
                     $scope.callSupports = $scope.getSupports();
 
-                    
+
                     if(!$scope.$$phase){
                         $scope.$apply();
                     }
