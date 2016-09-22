@@ -17,6 +17,20 @@ class MessagesController < ApplicationController
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten.map(&:downcase)
 
+    begin
+    ClientSuccessTrackingHelpers.async_track("julie_action", @message.messages_thread.account_email, {
+        bo_thread_id:  @message.messages_thread_id,
+        bo_message_id:  @message.id,
+        thread_messages_count:  @message.messages_thread.messages.count,
+        current_classification: @classification,
+        new_email_received_date: @message.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
+        thread_is_open_date: DateTime.strptime("%s", params[:started_at]).strftime("%Y-%m-%dT%H:%M:%S"),
+        thread_status: @message.messages_thread.status
+    })
+    rescue
+    end
+
+
     if @classification == MessageClassification::FORWARD_TO_CLIENT ||
         @classification == MessageClassification::UNKNOWN ||
         @classification == MessageClassification::FORWARD_TO_SUPPORT ||
