@@ -147,8 +147,10 @@
             }
 
             if(threadOwner.email != 'pierre-louis@juliedesk.com') {
-                // We don't add the client email if we are already responding to one of its aliases
-                if(_.intersection(_.map($scope.ccs, function(cc){return cc.name;}), window.threadAccount.email_aliases).length == 0) {
+                // We don't add the client email if we are already responding to one of its aliases or it's main email
+                var threadOwnerEmailsInCcs = _.intersection(_.map($scope.ccs, function(cc){return cc.name;}), [window.threadAccount.email].concat(window.threadAccount.email_aliases));
+
+                if( threadOwnerEmailsInCcs.length == 0 ) {
                     $scope.ccs.push({name: threadOwner.email});
                 }
             }
@@ -182,7 +184,6 @@
         };
 
         function defaultRecipientsWhenNonClientAttendees(clientsAttendees, nonClientAttendees) {
-
             var partitionnedNonClientAttendees = _.partition(nonClientAttendees, function(a) {
                 return a.assisted && a.assistedBy && a.assistedBy.email;
             });
