@@ -14,7 +14,7 @@ class ClientSuccessTrackingHelpers
   end
 
   def self.track event_name, account_email, properties
-    puts "Going to track #{event_name} for user #{user.email}"
+    puts "Going to track #{event_name} for user #{account_email}"
     puts "Properties: #{properties}"
 
     tracker = Mixpanel::Tracker.new(ENV['MIXPANEL_FOR_CLIENT_SUCCESS_TOKEN'])
