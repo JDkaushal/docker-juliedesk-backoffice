@@ -9,8 +9,8 @@ class ClientSuccessTrackingHelpers
     end
   end
 
-  def self.async_track event_name, user, properties={}
-    ClientSuccessTrackingWorker.enqueue(event_name, user.id, properties.merge({time: Time.now.to_i}))
+  def self.async_track event_name, account_email, properties={}
+    ClientSuccessTrackingWorker.enqueue(event_name, account_email, properties.merge({time: Time.now.to_i}))
   end
 
   def self.track event_name, account_email, properties
@@ -19,7 +19,7 @@ class ClientSuccessTrackingHelpers
 
     tracker = Mixpanel::Tracker.new(ENV['MIXPANEL_FOR_CLIENT_SUCCESS_TOKEN'])
 
-    puts tracker.track("#{user.id}", event_name, properties)
+    puts tracker.track("#{account_email}", event_name, properties)
 
     puts "Done"
   end
