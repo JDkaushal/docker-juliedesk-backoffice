@@ -178,6 +178,7 @@ class MessageInterpretation < ActiveRecord::Base
     if server_message.present?
 
       body = {
+          'id' => mess.server_message_id,
           'parsed_html' => server_message['parsed_html'],
           'text' => server_message['text'],
           'sender' => server_message['from'],
