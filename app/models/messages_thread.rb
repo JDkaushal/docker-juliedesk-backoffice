@@ -305,7 +305,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.virtual_appointment_natures
-    ["skype", "call", "webex", "confcall", "hangout"]
+    %w(skype call webex confcall hangout visio)
   end
 
   def self.items_to_classify_count
