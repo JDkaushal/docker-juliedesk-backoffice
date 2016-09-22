@@ -48,6 +48,8 @@
 
     window.lastAppointmentType = '';
 
+    var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
+
     var notesSpacingRe = new RegExp(/(?:__n){3,}/g);
 
     $(document).ready(function() {
@@ -983,7 +985,7 @@
 
         var appointment = getCurrentAppointment();
         if(appointment.appointment_kind_hash.is_virtual) {
-            if(appointment.kind == "call" || appointment.kind == "confcall" || appointment.kind == "visio") {
+            if( showCallInstructionsFormFor.indexOf(appointment.kind) > -1 ) {
                 $(".number-to-call-part-container").show();
             }
             else {

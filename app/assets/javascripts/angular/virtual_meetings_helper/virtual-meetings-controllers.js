@@ -347,8 +347,6 @@
 
                     $scope.callTargets = $scope.getCallTargets();
 
-                    $scope.callSupports = $scope.getSupports();
-
                     var threadOwner = $scope.attendeesManagerCtrl.getThreadOwner();
 
                     var initialConfTarget;
@@ -405,6 +403,9 @@
 
                     $scope.currentConf = Object.assign($scope.currentConf, {target: initialConfTarget, targetInfos: initialTargetInfos, support: initialConfSupport, details: ''});
 
+                    $scope.callSupports = $scope.getSupports();
+
+                    
                     if(!$scope.$$phase){
                         $scope.$apply();
                     }
@@ -803,7 +804,10 @@
                 };
 
                 $scope.isVirtualAppointment = function(){
-                    return ['call', 'confcall', 'skype', 'hangout', 'webex', 'visio'].indexOf($("select#appointment_nature").val()) > -1;
+                    var currentAppointment = window.getCurrentAppointment();
+
+                    return currentAppointment && currentAppointment.appointment_kind_hash.is_virtual;
+                    //return ['call', 'confcall', 'skype', 'hangout', 'webex', 'visio'].indexOf($("select#appointment_nature").val()) > -1;
                 };
 
                 $scope.cacheCurrentInterlocutor = function(){
