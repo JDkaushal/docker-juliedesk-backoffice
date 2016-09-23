@@ -325,6 +325,8 @@ class MessagesThreadsController < ApplicationController
               DateTime.parse("2500-01-01")
         }
 
+        @messages_thread.reverse!
+
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
 

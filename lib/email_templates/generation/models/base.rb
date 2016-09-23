@@ -26,7 +26,7 @@ module EmailTemplates
           format_template_response
         end
 
-        private
+        protected
 
         def data_consistent?
           data_ok = false
@@ -72,8 +72,12 @@ END
           @params['participants'] && @params['participants'].reject{|att| att['isClient']}
         end
 
+        def get_attendees_without_thread_owner_count
+          @attendees_without_thread_owner_count = @params['participants'].reject{|att| att['isThreadOwner']}.size
+        end
+
         def get_attendees_without_thread_owner
-          @params['participants'] && @params['participants'].reject{|att| att['isThreadOwner']}
+          @attendees_without_thread_owner = @params['participants'] && @params['participants'].reject{|att| att['isThreadOwner']}
         end
 
         def get_thread_owner
@@ -119,7 +123,7 @@ END
         end
 
         def get_attendees_count
-          @params['participants'].size
+          @attendees_count = @params['participants'].size
         end
 
         def get_appointment_type
@@ -151,16 +155,24 @@ END
           @output_array.push(str)
         end
 
+        # This one is overriden for the dates_suggestion flow
+        # See in /lib/email_templates/generation/models/dates_suggestion.rb
         def set_greetings_sentence
           #write_to_output(I18n.translate("email_templates.greetings.#{@params.}", client_name: @params.))
           #add_to_output_array(I18n.translate("email_templates.greetings.M", client_name: 'Fred'))
           sender_attendee = get_attendee_who_sent_email
 
-          if sender_attendee.present?
-            add_to_output_array(I18n.translate("email_templates.greetings.#{sender_attendee['gender']}", client_name: sender_attendee['firstName']))
+          if get_attendees_without_thread_owner_count > 1
+            add_to_output_array(I18n.translate("email_templates.common.hello_only", count: get_attendees_without_thread_owner_count))
           else
-            add_to_output_array(I18n.translate("email_templates.common.hello").capitalize)
+            if sender_attendee.present?
+              #add_to_output_array(I18n.translate("email_templates.greetings.#{sender_attendee['gender']}", client_name: sender_attendee['firstName']))
+              add_to_output_array(I18n.translate("email_templates.greetings.unformal", client_name: sender_attendee['firstName']))
+            else
+              add_to_output_array(I18n.translate("email_templates.common.hello_only", count: get_attendees_without_thread_owner_count))
+            end
           end
+
         end
 
         def get_attendee_who_sent_email

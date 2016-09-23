@@ -56,9 +56,13 @@ fr:
       male: 'M. %{client_name},'
       female: 'Mme %{client_name},'
       ?: '%{client_name},'
+      unformal: '%{client_name},'
 
     common:
-      hello: 'bonjour,'
+      hello_only:
+        one: 'Bonjour,'
+        other: 'Bonjour à tous,'
+
       available:
         one: 'serait disponible'
         other: 'seraient disponibles'

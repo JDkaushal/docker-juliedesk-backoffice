@@ -19,6 +19,15 @@ module EmailTemplates
 
         private
 
+        # Override of /lib/email_templates/generation/models/base.rb
+        def set_greetings_sentence
+          if get_attendees_without_thread_owner_count > 1
+            add_to_output_array(I18n.translate("email_templates.common.hello_only", count: get_attendees_without_thread_owner_count))
+          else
+            add_to_output_array(I18n.translate("email_templates.greetings.unformal", client_name: get_attendees_without_thread_owner[0]['firstName']))
+          end
+        end
+
         def get_timezone
           @params['timezone']
         end
@@ -28,23 +37,6 @@ module EmailTemplates
             add_to_output_array("#{get_thread_owner['firstName']} #{I18n.translate('email_templates.common.available', count: get_clients_count)} #{I18n.translate('email_templates.common.for')} #{I18n.translate("email_templates.appointment_types.#{get_appointment_type}")} #{get_location}")
 
             get_suggested_dates.each do |date, times|
-              # current_date_string = "- #{I18n.localize(date, format: :date_suggestion).capitalize} #{I18n.translate('email_templates.common.at')} "
-              # current_times_count = times.size
-              # current_times_last_index = current_times_count - 1
-              # current_times_before_last_index = current_times_count - 2
-              #
-              # times.each_with_index do |time, index|
-              #   current_date_string += I18n.localize(time, format: :date_suggestion)
-              #
-              #   if current_times_count > 1 && index < current_times_last_index
-              #     if index < current_times_before_last_index
-              #       current_date_string += ', '
-              #     else
-              #       current_date_string += " #{I18n.translate('email_templates.common.or')} "
-              #     end
-              #   end
-              # end
-
               add_to_output_array(EmailTemplates::Generation::Models::Utilities.format_date_proposition_output(date, times))
             end
 

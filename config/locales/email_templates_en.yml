@@ -58,7 +58,10 @@ en:
       ?: '%{client_name},'
 
     common:
-      hello: 'hello,'
+      hello_only:
+        one: 'Hello,'
+        other: 'Hello everybody,'
+
       available:
         one: 'is available'
         other: 'are available'
