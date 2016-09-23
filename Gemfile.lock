@@ -139,6 +139,7 @@ GEM
     mime-types (2.99.1)
     mini_portile2 (2.0.0)
     minitest (5.8.4)
+    mixpanel-ruby (2.2.0)
     mono_logger (1.1.0)
     multi_json (1.11.2)
     newrelic_rpm (3.16.2.321)
@@ -295,6 +296,7 @@ DEPENDENCIES
   lograge
   mail (= 2.6.3)
   memory_profiler
+  mixpanel-ruby
   newrelic_rpm
   nokogiri
   pg

@@ -65,6 +65,8 @@ gem 'angular-rails-templates'
 #gem "httpclient"
 #gem "httpclient",    path: "../httpclient"
 gem "http"
+gem 'mixpanel-ruby'
+
 #gem "http", path: "../http"
 
 group :production do

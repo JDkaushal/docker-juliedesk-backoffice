@@ -99,6 +99,12 @@ class MessagesThreadsController < ApplicationController
 
     #JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('gregoire.lopez@tactill.com') || "{}")
 
+    ClientSuccessTrackingHelpers.async_track("open_thread", @messages_thread.account_email, {
+        bo_thread_id: @messages_thread.id,
+        thread_messages_count: @messages_thread.messages.count,
+        thread_status: @messages_thread.status
+    })
+
     print_time "Event title review"
 
     render :show

@@ -254,6 +254,13 @@ class Message < ActiveRecord::Base
                                                   account_name: account.try(:usage_name)
                                               })
           end
+
+          ClientSuccessTrackingHelpers.async_track("new_email_is_received", messages_thread.account_email, {
+              bo_thread_id: messages_thread.id,
+              thread_messages_count: messages_thread.messages.count + 1,
+              thread_status: messages_thread.status,
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
+          })
         else
           account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
           account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
@@ -262,6 +269,11 @@ class Message < ActiveRecord::Base
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
             messages_thread.delegate_to_support
           end
+
+          ClientSuccessTrackingHelpers.async_track("new_thread_created", account_email, {
+              bo_thread_id: messages_thread.id,
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
+          })
         end
 
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
