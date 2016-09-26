@@ -156,7 +156,7 @@ describe JulieActionsController, :type => :controller do
 
         ja1 = JulieAction.create(message_classification_id: mc1.id)
 
-        expect_any_instance_of(MessageClassification).to receive(:update).with(call_instructions: "{\"target\":\"interlocutor\",\"targetInfos\":{\"$$hashKey\":\"object:162\",\"displayName\":\"Pierre Jean (grepolide@gmail.com)\",\"email\":\"grepolide@gmail.com\",\"guid\":\"174\",\"name\":\"Pierre Jean\"},\"support\":\"\",\"details\":\"\",\"event_instructions\":\"\"}", :virtual_resource_used=>nil)
+        expect_any_instance_of(MessageClassification).to receive(:update).with(call_instructions: "{\"target\":\"interlocutor\",\"targetInfos\":{\"$$hashKey\":\"object:162\",\"displayName\":\"Pierre Jean (grepolide@gmail.com)\",\"email\":\"grepolide@gmail.com\",\"guid\":\"174\",\"name\":\"Pierre Jean\"},\"support\":\"\",\"details\":\"\",\"event_instructions\":\"\"}")
 
         put :update, id: ja1.id, call_instructions: {target: "interlocutor", targetInfos: {'$$hashKey' => "object:162", displayName: "Pierre Jean (grepolide@gmail.com)", email: "grepolide@gmail.com", guid: 174 ,name: "Pierre Jean"}, support: "", details: "", event_instructions: ""}
       end

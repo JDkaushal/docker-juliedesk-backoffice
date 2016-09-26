@@ -9,7 +9,8 @@ class Review::OperatorsPresenceController < ReviewController
     respond_to do |format|
       format.html {
         if params[:start]
-          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).includes(:operator_presences).sort_by{|o| [o.level, o.name]}
+          @operators = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2], active: true).sort_by{|o| [o.level, o.name]}
+          @operator_presences = OperatorPresence.where(operator_id: @operators.map(&:id)).where("date > ? AND date < ?", DateTime.parse(params[:start]) - 2.days, DateTime.parse(params[:start]) + 9.days)
           render "index.csv"
           return
         end
@@ -141,8 +142,8 @@ class Review::OperatorsPresenceController < ReviewController
           privilege: o.privilege,
           in_formation: o.in_formation,
           color: o.color,
-          presences: presences.select{|p| p.is_review == false}.map{|op| op.date.strftime("%Y%m%dT%H%M00")},
-          review_presences: presences.select{|p| p.is_review == false}.map{|op| op.date.strftime("%Y%m%dT%H%M00")}
+          presences: presences.select{|p| !p.is_review}.map{|op| op.date.strftime("%Y%m%dT%H%M00")},
+          review_presences: presences.select{|p| p.is_review}.map{|op| op.date.strftime("%Y%m%dT%H%M00")}
       }
     }
   end

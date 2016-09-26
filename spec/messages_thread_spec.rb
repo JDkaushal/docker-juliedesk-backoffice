@@ -89,7 +89,7 @@ describe MessagesThread, :type => :model do
   end
   describe "#virtual_appointment_natures" do
     it "should return virtual appointment natures" do
-      expect(MessagesThread.virtual_appointment_natures).to eq(["skype", "call", "webex", "confcall", "hangout"])
+      expect(MessagesThread.virtual_appointment_natures).to eq(["skype", "call", "webex", "confcall", "hangout", "visio"])
     end
   end
 

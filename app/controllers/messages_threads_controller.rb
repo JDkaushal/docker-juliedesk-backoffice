@@ -66,10 +66,8 @@ class MessagesThreadsController < ApplicationController
   end
 
   def show
-    # print_time "init"
     @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
 
-    print_time "DB"
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
                                          target: @messages_thread,
@@ -77,22 +75,15 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @messages_thread.id
                                      })
-    print_time "OA"
-
     # TODO Find way to reduce this time (3secs to timeout)
     @messages_thread.re_import
 
-    print_time "Reimport"
     @messages_thread.account
 
-    print_time "Account"
     @accounts_cache_light = Account.accounts_cache(mode: "light")
 
-    print_time "Account cache"
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    print_time "Julie aliases"
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
-    print_time "Client emails"
 
     # TODO Don't forget to check if "account_email" is usable in calendar_login when calling computed_data method in place of "client_email"
     @messages_thread.create_event_title_review_if_needed
@@ -105,25 +96,16 @@ class MessagesThreadsController < ApplicationController
         thread_status: @messages_thread.status
     })
 
-    print_time "Event title review"
-
     render :show
     #render nothing: true
-
-    print_time "Render"
-
-    print_all_times
   end
 
   def archive
 
-    print_time "init"
     messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(params[:id])
     messages = messages_thread.messages
-    print_time "Find messages thread"
 
     last_email_status = messages_thread.last_email_status({messages: messages})
-    print_time "get last email status"
 
     if last_email_status == "from_me"
       last_message_classification = messages_thread.last_message_classification
@@ -136,7 +118,6 @@ class MessagesThreadsController < ApplicationController
       message_classification = last_message.message_classifications.create_from_params classification: MessageClassification::NOTHING_TO_DO, operator: session[:user_username], thread_status: params[:thread_status]
       message_classification.julie_action.update_attribute :done, true
     end
-    print_time "Set New thread status"
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
@@ -146,7 +127,6 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: messages_thread.id
                                      })
-    print_time "Create and verify OperatorAction"
 
     should_update_reminder_date = params[:follow_up_reminder_enabled].present?
 
@@ -164,7 +144,6 @@ class MessagesThreadsController < ApplicationController
     else
 
       EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)
-      print_time "Email server archive thread"
 
       messages.update_all(archived: true)
 
@@ -179,7 +158,6 @@ class MessagesThreadsController < ApplicationController
       end
 
       messages_thread.update(data)
-      print_time "Update messages and messages thread"
 
       if ENV['PUSHER_APP_ID']
         Pusher.trigger('private-global-chat', 'archive', {
@@ -196,9 +174,6 @@ class MessagesThreadsController < ApplicationController
       # When the thread is archived we can redirect the operator to the threads list
       redirect_to action: :index
     end
-
-    print_time "Check if unarchive or not"
-    print_all_times
   end
 
   def split

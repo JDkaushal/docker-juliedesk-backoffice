@@ -34,12 +34,7 @@ class JulieActionsController < ApplicationController
   end
 
   def update
-    print_time "init"
     julie_action = JulieAction.includes(:message_classification).find(params[:id])
-    print_time "Find Julie Action"
-
-    print_time "Update messages thread"
-
     message_classification_params_to_update = {}
 
     if params[:timezone].present?
@@ -58,7 +53,6 @@ class JulieActionsController < ApplicationController
         }
       }
     end
-    print_time "Computing date times"
 
     begin
       if params[:event_id].present? && !julie_action.event_id
@@ -92,7 +86,6 @@ class JulieActionsController < ApplicationController
         event_from_invitation: params[:event_from_invitation],
         event_from_invitation_organizer: params[:event_from_invitation_organizer],
      })
-    print_time "Updating julie action"
 
     if params[:messages_thread_id].present?
       data = {last_operator_id: session[:operator_id]}
@@ -156,9 +149,6 @@ class JulieActionsController < ApplicationController
       julie_action.message_classification.update(message_classification_params_to_update)
     end
 
-
-    print_time "Updating message classification"
-
     render json: {
         status: "success",
         message: "",
@@ -166,9 +156,5 @@ class JulieActionsController < ApplicationController
 
         }
     }
-
-    print_time "Rendering view"
-
-    print_all_times
   end
 end
