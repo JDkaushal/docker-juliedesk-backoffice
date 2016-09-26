@@ -188,17 +188,18 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             tryCount : 0,
             retryLimit : 20,
             data: {
-                start: request.start,
-                end: request.end,
-                email: request.email,
-                calendar_ids: request.calendar_ids,
-                // This attribute allows us to complement the default calendars to show of a user with others calendars
-                // (Used primarily with the meeting rooms)
-                // As opposed to the calendar_ids attribute that will override them
-                meeting_rooms_to_show: request.meeting_rooms_to_show,
-                // Virtual resources bound to a User via its company, we fetch the events on the associated calendars and return them so we can compute them
-                // and display the duration that are busy on every single one
-                virtual_resources_to_show: request.virtual_resources_to_show
+              start: request.start,
+              end: request.end,
+              email: request.email,
+              calendar_ids: request.calendar_ids,
+              // This attribute allows us to complement the default calendars to show of a user with others calendars
+              // (Used primarily with the meeting rooms)
+              // As opposed to the calendar_ids attribute that will override them
+              meeting_rooms_to_show: request.meeting_rooms_to_show,
+              // Virtual resources bound to a User via its company, we fetch the events on the associated calendars and return them so we can compute them
+              // and display the duration that are busy on every single one
+              virtual_resources_to_show: request.virtual_resources_to_show,
+              parallelize: true
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);
