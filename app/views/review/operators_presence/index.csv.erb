@@ -14,18 +14,18 @@ Semaine <%= DateTime.parse(params[:start]).strftime("%W").to_i %>;<%= (DateTime.
 |day| day.strftime("%A")
 end.join(";;;") %>;;;Total
 <% @operators.each do |operator| %>
-    <% presences = @operator_presences.select{|op| op.operator_id == operator.id} %>
-    <%= [operator.stars, operator.name].compact.join(" ") %>;<% count = 0 %><%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).map do |day|
+<% presences = @operator_presences.select{|op| op.operator_id == operator.id} %>
+<%= [operator.stars, operator.name].compact.join(" ") %>;<% count = 0 %><%= (DateTime.parse(params[:start])..(DateTime.parse(params[:start]) + 6.days)).map do |day|
 
 
-  presences_for_day = operator.presences_for_day(day, presences)
-  night_hours = presences_for_day.select do |op|
-    hour = op.date.in_time_zone("Indian/Antananarivo").strftime("%H").to_i
-    hour < 6 || hour >= 23
-  end.length / 2.0
-  count += presences_for_day.length
-  day_hours = presences_for_day.length / 2.0 - night_hours
+presences_for_day = operator.presences_for_day(day, presences)
+night_hours = presences_for_day.select do |op|
+hour = op.date.in_time_zone("Indian/Antananarivo").strftime("%H").to_i
+hour < 6 || hour >= 23
+end.length / 2.0
+count += presences_for_day.length
+day_hours = presences_for_day.length / 2.0 - night_hours
 
-  "#{day_hours};#{night_hours};#{day_hours + night_hours}"
+"#{day_hours};#{night_hours};#{day_hours + night_hours}"
 end.join(";") %>;<%= count / 2.0 %>
 <% end %>

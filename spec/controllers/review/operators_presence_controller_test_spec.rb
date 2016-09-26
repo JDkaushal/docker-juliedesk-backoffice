@@ -69,13 +69,22 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
-Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Count
 #{@normal.name};;;;;;;;0.0
 #{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
 #{@op2.name};;15h00 - 15h30;;;;;;0.5
 #{@op5.name};;;;;;;;0.0
 * #{@op3.name};;;;;;;;0.0
 ** #{@op4.name};;;;;;;;0.0
+;
+;
+Semaine 36;Thursday;;;Friday;;;Saturday;;;Sunday;;;Monday;;;Tuesday;;;Wednesday;;;Total
+#{@normal.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+#{@op1.name};1.0;0.0;1.0;0.5;0.0;0.5;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.5
+#{@op2.name};0.0;0.0;0.0;0.5;0.0;0.5;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.5
+#{@op5.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+* #{@op3.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+** #{@op4.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
 END
 )
       end
@@ -116,13 +125,22 @@ END
 
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
         expect(response.body).to eq(<<END
-Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Thursday;Count
+Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Count
 #{@normal.name};;;;;;;;0.0
 #{@op1.name};13h00 - 14h00;15h00 - 15h30;;;;;;1.5
 #{@op2.name};;15h00 - 15h30;;;;;;0.5
 #{@op3.name};;;;;;;;0.0
 #{@op4.name};;;;;;;;0.0
 #{@op5.name};;;;;;;;0.0
+;
+;
+Semaine 36;Thursday;;;Friday;;;Saturday;;;Sunday;;;Monday;;;Tuesday;;;Wednesday;;;Total
+#{@normal.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+#{@op1.name};1.0;0.0;1.0;0.5;0.0;0.5;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;1.5
+#{@op2.name};0.0;0.0;0.0;0.5;0.0;0.5;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.5
+#{@op3.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+#{@op4.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
+#{@op5.name};0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0
 END
 )
       end

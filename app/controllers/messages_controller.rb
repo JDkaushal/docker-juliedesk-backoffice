@@ -89,13 +89,10 @@ class MessagesController < ApplicationController
   end
 
   def classify
-    print_time "init"
     @message = Message.find(params[:id])
-    print_time "Find message"
     params[:operator] = session[:user_username]
 
     @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
-    print_time "create message classification"
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
                                          target: @message_classification,
@@ -103,7 +100,6 @@ class MessagesController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @message.messages_thread_id
                                      })
-    print_time "create and verify operator action"
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
       http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
 
@@ -120,20 +116,15 @@ class MessagesController < ApplicationController
       #                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
       #                })
     end
-    print_time "send set awaiting current notes"
     messages_thread_params = {last_operator_id: session[:operator_id]}
     messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
     @message.messages_thread.update(messages_thread_params)
-    print_time "update message thread"
     render json: {
         status: "success",
         message: "",
         redirect_url: julie_action_path(@message_classification.julie_action),
         data: {}
     }
-    print_time "render view"
-
-    print_all_times
   end
 
   def generate_threads
@@ -203,9 +194,6 @@ class MessagesController < ApplicationController
     if ENV['STAGING_APP']
       email_params.merge!(message_thread_id: @message.messages_thread_id, server_thread_id: @message.messages_thread.server_thread_id)
     end
-
-    puts ENV['STAGING_APP']
-    puts email_params.inspect
 
     begin
       @new_server_message_id = EmailServer.deliver_message(email_params)['id']
