@@ -409,7 +409,6 @@
                     $scope.checkMeetingRoomAvailability(true);
                 };
 
-
                 $scope.checkIfDetectAvailabilities = function() {
                         $scope.checkMeetingRoomAvailability();
                     //if(window.classification == 'update_event' && $scope.computedDataSelectedRoom && $scope.computedDataSelectedRoom.id == 'attendees_count') {
@@ -426,6 +425,9 @@
                         if (window.classification == 'update_event') {
                             var selectedDateStartTime = window.currentEventTile.getEditedEvent().start;
                             var selectedDateEndTime = window.currentEventTile.getEditedEvent().end;
+                            var currentEventStartTime = window.currentEventTile.event.start;
+                            var currentEventEndTime = window.currentEventTile.event.end;
+                            var updateEventClassification = true;
                         } else {
 
                             if(specifiedDate) {
@@ -460,8 +462,23 @@
                                     var eventOnThisSchedule = _.find(meetingRoomEvents, function (event) {
                                         var currentStartDate = moment(event.start);
                                         var currentEndDate = moment(event.end);
+                                        var isOverlapping;
 
-                                        return $scope.eventIsOverlapping(selectedDateStartTime, selectedDateEndTime, currentStartDate, currentEndDate);
+                                        // In an update, the current event has been booked, so the related time period will be marked as busy for the selected
+                                        // meeting room
+                                        // As we don't want to display that the room is not available anymore on this period, we will ignore this particular period when checking for
+                                        // the meeting room availability
+                                        if(updateEventClassification) {
+                                            if(moment(currentEventStartTime).isSame(currentStartDate) && moment(currentEventEndTime).isSame(currentEndDate)) {
+                                                isOverlapping = false;
+                                            } else {
+                                                isOverlapping = $scope.eventIsOverlapping(selectedDateStartTime, selectedDateEndTime, currentStartDate, currentEndDate);
+                                            }
+                                        } else {
+                                            isOverlapping = $scope.eventIsOverlapping(selectedDateStartTime, selectedDateEndTime, currentStartDate, currentEndDate);
+                                        }
+
+                                        return isOverlapping;
                                     });
 
                                     if (eventOnThisSchedule) {
