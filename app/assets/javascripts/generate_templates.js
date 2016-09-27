@@ -684,7 +684,7 @@ function computeDatePart(date, timezone, locale) {
 };
 
 function extractCityFromTimezone(timezone) {
-  return timezone.split('/')[1];
+  return timezone.split('/')[1].replace(/_/g, " ");
 };
 
 function generateDatesForSingleTimezone(params) {

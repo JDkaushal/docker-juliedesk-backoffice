@@ -12,6 +12,7 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
 
     if(calendar.currentEvent.allDay) {
         $edc.find(".event-tile-container").css({
+            position: 'absolute',
             top: "auto",
             left: (calendar.$selector.width() - $edc.find(".event-tile-container").width()) / 2,
             right: "auto",
@@ -21,6 +22,7 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
     else {
         if(calendar.$currentEventTarget.offset().left < calendar.$selector.width() / 2) {
             $edc.find(".event-tile-container").css({
+                position: 'absolute',
                 top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
                 left: calendar.$currentEventTarget.offset().left + calendar.$currentEventTarget.width() + 10,
                 right: "auto",
@@ -29,6 +31,7 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
         }
         else {
             $edc.find(".event-tile-container").css({
+                position: 'absolute',
                 top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
                 right: $(".fixed-columns").width() - calendar.$currentEventTarget.offset().left + 10,
                 left: "auto",
