@@ -969,6 +969,11 @@ EventTile.prototype.hideRecurrenceContainer = function() {
     });
 };
 
+EventTile.prototype.enterEditMode = function() {
+    var eventTile = this;
+    eventTile.$selector.find("#event-edit-button").click();
+};
+
 EventTile.prototype.initActions = function() {
     var eventTile = this;
     var meetingRoomsNode = $('#meeting-rooms-manager');

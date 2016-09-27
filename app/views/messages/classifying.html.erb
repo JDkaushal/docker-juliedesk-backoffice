@@ -41,6 +41,21 @@
               return data.attendee_email;
           });
 
+          if(window.classification == "update_event") {
+            calendarParams.pickEventCallback = function (data) {
+              var duration = window.currentEventTile.event.end.diff(window.currentEventTile.event.start);
+
+              var mStartDate = data.start.clone();
+              var mEndDate = mStartDate.clone();
+              mEndDate.add(duration, "ms");
+              window.currentEventTile.event.start = mStartDate;
+              window.currentEventTile.event.end = mEndDate;
+              window.currentEventTile.redraw();
+
+              window.currentEventTile.enterEditMode();
+            };
+          }
+
           calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
           calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 

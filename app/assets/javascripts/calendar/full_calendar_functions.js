@@ -58,7 +58,12 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         calendar_login_email: calendar.initialData.email
     });
 
-
+    if(calendar.getMode() == "create_event" && calendar.initialData.pickEventCallback) {
+        var result = calendar.initialData.pickEventCallback({
+            start: moment.tz(eventData.start.format(), calendar.getCalendarTimezone()),
+            end: moment.tz(eventData.end.format(), calendar.getCalendarTimezone())
+        });
+    }
     if(calendar.getMode() == "create_events") {
         if(calendar.initialData.pickEventCallback) {
             calendar.initialData.pickEventCallback({
