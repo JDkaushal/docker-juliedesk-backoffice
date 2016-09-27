@@ -258,7 +258,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 if(e.status == "success") {
                     if(staging_mode){
                         saveAttendeesStaging(e.data.event_id, realAttendees);
-                        if(window.threadComputedData.using_restaurant_booking && request.location) {
+                        if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
                             $('#restaurant-booking-manager').scope().sendAdminEmail({
                                 type: 'booking',
                                 user_email: window.threadAccount.email,
@@ -273,7 +273,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     }else{
                         // We send the restaurant booking email to the admins only when using the functionnality and
                         // when a location is actually set
-                        if(window.threadComputedData.using_restaurant_booking && request.location) {
+                        if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
                             $('#restaurant-booking-manager').scope().sendAdminEmail({
                                 type: 'booking',
                                 user_email: window.threadAccount.email,
@@ -347,7 +347,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             success: function(e) {
                 var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
-                if(restaurantBookingManager.getUsingRestaurantBooking()) {
+                // We check if we are editing the correct event (not updating a busy/free event)
+                if(restaurantBookingManager.getUsingRestaurantBooking() && oldEvent.id == request.event_id) {
 
                     if(request.location) {
                         if(window.threadComputedData.restaurant_booking_details.restaurant == '') {
@@ -428,7 +429,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
                 var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
-                if(restaurantBookingManager && restaurantBookingManager.getUsingRestaurantBooking() && oldEvent) {
+                if(restaurantBookingManager && restaurantBookingManager.getUsingRestaurantBooking() && oldEvent.id == request.event_id) {
                     $('#restaurant-booking-manager').scope().sendAdminEmail({
                         type: 'cancellation',
                         user_email: window.threadAccount.email,

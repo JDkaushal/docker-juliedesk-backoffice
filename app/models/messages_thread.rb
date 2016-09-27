@@ -29,7 +29,6 @@ class MessagesThread < ActiveRecord::Base
     end.compact.sort_by do |dt|
       dt['date_with_timezone']
     end
-
   end
 
   def get_all_messages_recipients
