@@ -1029,20 +1029,10 @@ EventTile.prototype.initActions = function() {
 
         var vmHelperNode = $('#event_update_vm_ctrl');
         var scope = angular.element(vmHelperNode).scope();
-        var heightContainer = '535px';
-        var heightPanel = '515px';
 
         if(!!scope) {
             scope.$apply(function(){scope.displayForm = false; scope.restoreCachedInterlocutor(); scope.restoreCurrentConf();});
         }
-
-        if(eventTile.$selector.find('.minimize-button').length > 0) {
-            heightContainer = '575px';
-            heightPanel = '545px';
-
-        }
-        $('.event-tile-container').css('height', heightContainer);
-        $('.created-event-panel').css('height', heightPanel);
 
         $('.event-tile-container .location').show();
         $('.event-tile-container .create-event-meeting-rooms-wrapper').hide();

@@ -53,17 +53,22 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       mt.account && mt.account.have_priority
     }
 
+    operator_action_groups_count = OperatorActionsGroup.where("finished_at > ? AND finished_at < ?", DateTime.now - 30.minutes, DateTime.now).count
 
-    processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).count
+    #processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).count
     operator_presences = OperatorPresence.where("date >= ? AND date < ?", DateTime.now - 30.minutes, DateTime.now).where(is_review: false).count
+
+    messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", DateTime.now - 30.minutes, DateTime.now).where.not(request_at: nil)
+    current_delay = ((ApplicationHelper.percentile(messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0).round(0)
 
     render json: {
         status: "success",
         data: {
             count: inbox_messages_threads.length,
             admin_count: admin_messages_threads.length,
-            global_productivity: processed_emails * 2,
-            individual_productivity: (processed_emails * 2.0 / operator_presences).round(1),
+            global_productivity: operator_action_groups_count * 2,
+            individual_productivity: (operator_action_groups_count * 2.0 / operator_presences).round(1),
+            current_delay: current_delay,
             priority_count: priority_messages_threads.length,
             follow_up_messages_threads_priority: follow_up_messages_threads_priority.length,
             follow_up_messages_threads_main: follow_up_messages_threads.length -  follow_up_messages_threads_priority.length,
@@ -78,6 +83,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     incoming_messages = Message.where(from_me: false).where("received_at >= ? AND received_at <= ?", start_date, end_date).select(:received_at)
     messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", start_date, end_date).where.not(request_at: nil)
 
+    operator_action_groups = OperatorActionsGroup.where("finished_at >= ? AND finished_at <= ?", start_date, end_date)
     operator_presences = OperatorPresence.where(is_review: false).where("date >= ? AND date <= ?", start_date, end_date)
     current_start_date = start_date
 
@@ -93,12 +99,21 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       current_messages = messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}
       current_operator_presences = operator_presences.select{|operator_presence| operator_presence.date >= current_start_date && operator_presence.date < current_start_date + precision}
       incoming_count = incoming_messages.select{|message| message.received_at >= current_start_date && message.received_at < current_start_date + precision}.length
-      data[key] = {
-          count: incoming_count,
-          operators_count: current_operator_presences.length,
-          median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0,
-          forecast_count: forecast_count
-      }
+
+      operator_action_groups_count = operator_action_groups.select{|oag| oag.finished_at >= current_start_date && oag.finished_at < current_start_date + precision}.length
+      if current_start_date + precision < DateTime.now
+        data[key] = {
+            count: incoming_count,
+            operators_count: current_operator_presences.length,
+            operator_action_groups_count: operator_action_groups_count,
+            median_delay: (ApplicationHelper.percentile(current_messages.map{|m| m.received_at - m.request_at}, 0.5) || 0) / 60.0,
+            forecast_count: forecast_count
+        }
+      else
+        data[key] = {
+            forecast_count: forecast_count
+        }
+      end
       current_start_date += precision
     end
 
