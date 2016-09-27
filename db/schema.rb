@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160913161030) do
+ActiveRecord::Schema.define(version: 20160927130634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,6 +262,7 @@ ActiveRecord::Schema.define(version: 20160913161030) do
     t.string   "group_review_status"
     t.boolean  "duration_edited",         default: false
     t.integer  "reviewed_by_operator_id"
+    t.datetime "finished_at"
   end
 
   create_table "operator_presences", force: true do |t|

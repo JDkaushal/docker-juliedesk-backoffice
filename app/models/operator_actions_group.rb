@@ -79,6 +79,7 @@ class OperatorActionsGroup < ActiveRecord::Base
           target_id: target_id,
           target_type: target_type,
           initiated_at: open_thread_oa_initiated_at,
+          finished_at: archive_thread_oa.initiated_at,
           duration: archive_thread_oa.initiated_at - open_thread_oa_initiated_at
                                                            })
 
