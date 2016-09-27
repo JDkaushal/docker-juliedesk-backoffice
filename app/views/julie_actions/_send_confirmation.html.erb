@@ -1,13 +1,18 @@
 <script>
+    // Do not open calendars for the following classifications
+    window.do_not_open_calendar_classifications = ['give_info'];
+
     window.drawCalendarCallback = function(){
-        window.activateCalendarWithParams({
-            mode: "select_events",
-            date_times: [],
-            email: window.threadAccount.email,
-            duration: window.threadComputedData.duration
-        });
-        // We don't want to directly show the calendar when forwarding to a client
-        //$(".calendar-container").addClass("minimized");
+      window.activateCalendarWithParams({
+        mode: "select_events",
+        date_times: [],
+        email: window.threadAccount.email,
+        duration: window.threadComputedData.duration
+      });
+
+
+      if(window.do_not_open_calendar_classifications.indexOf(window.classification) != -1)
+        $(".calendar-container").addClass("minimized");
     };
 
     window.afterReplyBoxInitCallback = function(){

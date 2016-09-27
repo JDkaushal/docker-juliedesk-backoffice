@@ -337,7 +337,8 @@ class MessagesThread < ActiveRecord::Base
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
         ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
             ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
-            ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+            ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
+            ja.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
       }.map{ |ja|
         JSON.parse(ja.date_times || "[]")
       }
