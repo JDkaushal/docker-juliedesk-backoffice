@@ -126,7 +126,7 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
     } else if(window.classification == 'ask_availabilities') {
         var dateToVerify = $('.suggested-date-times').data('date-times');
 
-        if(dateToVerify) {
+        if(dateToVerify && dateToVerify.length > 0) {
             initialStartDate = moment(dateToVerify[0].date).tz(dateToVerify[0].timezone);
         }
     } else {
