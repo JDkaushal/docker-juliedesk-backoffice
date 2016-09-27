@@ -43,6 +43,7 @@ function Calendar($selector, params) {
 
     this.meetingRoomsEvents = {};
     this.virtualResourcesEvents = {};
+    this.calendarAllEvents = [];
 
     var calendar = this;
 
@@ -509,6 +510,10 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     var momentedStart = moment(start);
     var formattedStart = momentedStart.format();
 
+    var travelTimeCalculator = $('#travel_time_calculator').scope();
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+    var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
+
     trackingOptions = trackingOptions || {};
 
     var allEmailsForTracking = calendar.initialData.other_emails.slice();
@@ -530,7 +535,8 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
         localWaitingAccounts += 1;
 
         calendar.currentlyFetchingWeeks[formattedStart] += 1;
-        calendar.fetchEvents(start, end, calendar.accountPreferences[email], function(responseItems) {
+        var preferenceHash = calendar.accountPreferences[email];
+        calendar.fetchEvents(start, end, preferenceHash, function(responseItems) {
             localWaitingAccounts -= 1;
             calendar.currentlyFetchingWeeks[formattedStart] -= 1;
 
@@ -569,6 +575,18 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                     });
                 }
 
+                if(travelTimeCalculator) {
+                    travelTimeCalculator.processForClient(preferenceHash, _.flatten(calendar.calendarAllEvents));
+                }
+
+                if(meetingRoomsManager) {
+                    meetingRoomsManager.checkIfDetectAvailabilities();
+                }
+
+                if(virtualMeetingHelper.usingVirtualResources()) {
+                    virtualMeetingHelper.determineFirstAvailableVirtualResource();
+                }
+
             }
             //if(localWaitingAccounts == 0) {
             //
@@ -600,11 +618,9 @@ Calendar.prototype.redrawFullCalendar = function() {
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback, trackNetworkReponse) {
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
-    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
-    var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
     var currentAppointment = window.getCurrentAppointment();
     var unavailableEvents = [];
-    var allEvents = [];
+    //var allEvents = [];
     var meeting_rooms_to_show = {};
     var virtualResourcesToShow = [];
     var momentedStart = moment(start);
@@ -665,19 +681,11 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
         if(travelTimeCalculator) {
             // Allow us to detect easily if the events are following or followed by unavailable events
-            allEvents.push(response.items);
-            allEvents.push(unavailableEvents);
-
-            travelTimeCalculator.processForClient(accountPreferencesHash, _.flatten(allEvents));
+            calendar.calendarAllEvents.push(response.items);
+            calendar.calendarAllEvents.push(unavailableEvents);
         }
 
-        if(meetingRoomsManager) {
-            meetingRoomsManager.checkIfDetectAvailabilities();
-        }
 
-        if(virtualMeetingHelper.usingVirtualResources()) {
-            virtualMeetingHelper.determineFirstAvailableVirtualResource();
-        }
 
         if(callback) callback(response.items);
     });
