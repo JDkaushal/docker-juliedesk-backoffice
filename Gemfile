@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # Used to load .env file as environment variable when loading gemfile
 begin
-  File.read(".env").scan(/^([[A-Z]|_]+)\=?(.*)?$/).each do |env_variable|
+  File.read(".env").scan(/^([[A-Z0-9]|_]+)\=?(.*)?$/).each do |env_variable|
     ENV[env_variable[0]] = env_variable[1]
   end
 rescue Errno::ENOENT
@@ -15,6 +15,7 @@ ruby '2.2.0'
 
 
 if ENV['OVH_MODE']
+  gem 'capistrano', '3.6.0'
   gem 'capistrano-rails', group: :development
   gem 'capistrano-rvm', group: :development
 
