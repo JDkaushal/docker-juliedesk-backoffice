@@ -518,7 +518,6 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-
   def self.find_account_email server_thread, params={}
     account_emails = self.find_account_emails(server_thread, params)
     if account_emails.length == 1

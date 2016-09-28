@@ -43,7 +43,7 @@ function Calendar($selector, params) {
 
     this.meetingRoomsEvents = {};
     this.virtualResourcesEvents = {};
-    this.calendarAllEvents = [];
+    this.calendarAllEvents = {};
 
     var calendar = this;
 
@@ -576,7 +576,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                 }
 
                 if(travelTimeCalculator) {
-                    travelTimeCalculator.processForClient(preferenceHash, _.flatten(calendar.calendarAllEvents));
+                    travelTimeCalculator.processForClient(preferenceHash, _.flatten(calendar.calendarAllEvents[preferenceHash.email]));
                 }
 
                 if(meetingRoomsManager) {
@@ -587,6 +587,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                     virtualMeetingHelper.determineFirstAvailableVirtualResource();
                 }
 
+                calendar.calendarAllEvents[preferenceHash.email] = [];
             }
             //if(localWaitingAccounts == 0) {
             //
@@ -681,8 +682,8 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
         if(travelTimeCalculator) {
             // Allow us to detect easily if the events are following or followed by unavailable events
-            calendar.calendarAllEvents.push(response.items);
-            calendar.calendarAllEvents.push(unavailableEvents);
+            calendar.calendarAllEvents[accountPreferencesHash.email].push(response.items);
+            calendar.calendarAllEvents[accountPreferencesHash.email].push(unavailableEvents);
         }
 
 
@@ -1366,6 +1367,7 @@ Calendar.prototype.fetchAccountPreferences = function (callback) {
             email: email
         }, function (response) {
             calendar.accountPreferences[response.email] = response;
+            calendar.calendarAllEvents[response.email] = [];
 
             accountsToWait --;
             if(accountsToWait == 0 && callback) callback();
