@@ -240,6 +240,8 @@ describe MessagesController, :type => :controller do
         m1 = FactoryGirl.create(:message, messages_thread: mt1)
         mt2 = FactoryGirl.create(:messages_thread)
 
+        expect(GenerateFollowUpWorker).to receive(:enqueue).with("#{mt1.id}", "A relancer vite", @normal.id)
+
         post :generate_threads_for_follow_up, id: m1.id, follow_up_data: {
                                                 "0" => {
                                                     'messages_thread_id' => "#{mt1.id}",
@@ -247,16 +249,16 @@ describe MessagesController, :type => :controller do
                                                 }
                                             }
 
-        expect(MessagesThread.find(mt1.id).should_follow_up).to eq(true)
-        expect(MessagesThread.find(mt1.id).follow_up_instruction).to eq("A relancer vite")
-
-        expect(MessagesThread.find(mt2.id).should_follow_up).to eq(false)
-        expect(MessagesThread.find(mt2.id).follow_up_instruction).to eq(nil)
-
-        operator_action_groups = MessagesThread.find(mt1.id).operator_actions_groups
-        expect(operator_action_groups.length).to eq(1)
-        expect(operator_action_groups.first.label).to eq(OperatorActionsGroup::LABEL_SEND_TO_SUPPORT)
-        expect(operator_action_groups.first.operator_actions.select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message)).to eq("#FollowUp A relancer vite")
+        # expect(MessagesThread.find(mt1.id).should_follow_up).to eq(true)
+        # expect(MessagesThread.find(mt1.id).follow_up_instruction).to eq("A relancer vite")
+        #
+        # expect(MessagesThread.find(mt2.id).should_follow_up).to eq(false)
+        # expect(MessagesThread.find(mt2.id).follow_up_instruction).to eq(nil)
+        #
+        # operator_action_groups = MessagesThread.find(mt1.id).operator_actions_groups
+        # expect(operator_action_groups.length).to eq(1)
+        # expect(operator_action_groups.first.label).to eq(OperatorActionsGroup::LABEL_SEND_TO_SUPPORT)
+        # expect(operator_action_groups.first.operator_actions.select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message)).to eq("#FollowUp A relancer vite")
 
         expect(JSON.parse(response.body)).to eq({
                                                     "status" => "success",
