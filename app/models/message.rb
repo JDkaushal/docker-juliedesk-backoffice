@@ -432,7 +432,7 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.find_or_compute_request_date
+        messages_thread.update_attribute :request_date, messages_thread.compute_request_date
 
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
