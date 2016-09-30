@@ -388,7 +388,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                         }
                     } else {
                         if(window.threadComputedData.restaurant_booking_details.restaurant) {
-                            $('#restaurant-booking-manager').scope().sendAdminEmail({
+                            restaurantBookingManager.sendAdminEmail({
                                 type: 'cancellation',
                                 user_email: window.threadAccount.email,
                                 booking_date: request.start,
@@ -398,7 +398,18 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                         }
                     }
                 } else {
+                  // When uncheking the restaurant booking functionnality after having booked a restaurant
+                  if(window.threadComputedData.using_restaurant_booking) {
+                    restaurantBookingManager.sendAdminEmail({
+                      type: 'cancellation',
+                      user_email: window.threadAccount.email,
+                      booking_date: request.start,
+                      location: window.threadComputedData.restaurant_booking_details.restaurant,
+                      thread_id: window.processingMessageThreadId
+                    }, callback(e));
+                  } else {
                     callback(e);
+                  }
                 }
             },
             error: function(e) {
