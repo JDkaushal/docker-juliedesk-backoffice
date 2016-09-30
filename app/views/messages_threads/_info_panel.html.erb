@@ -511,36 +511,38 @@
 
     // Used to forcefully update the notes when creating an event to add the selected virtual resource call instructions
     function forceUpdateNotesCallingInfos() {
-        window.threadDataIsEditable = true
+
+      if(!window.threadDataIsEditable) {
+        window.threadDataIsEditable = true;
 
         var currentAppointment = window.getCurrentAppointment();
 
         if(window.threadDataIsEditable){
-            $('#notes').val('');
+          $('#notes').val('');
 
-            angular.element($('#attendeesCtrl')).scope().updateNotes();
-            var node = $('#virtual-meetings-helper');
+          angular.element($('#attendeesCtrl')).scope().updateNotes();
+          var node = $('#virtual-meetings-helper');
 
-            var vmHelper = angular.element(node).scope();
+          var vmHelper = angular.element(node).scope();
 
-            if(vmHelper){
-                if(currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
-                    vmHelper.setEventNotes();
-                }else {
-                    if(vmHelper.configLoaded)
-                        vmHelper.setEventNotes();
-                    else
-                        refreshVirtualAppointmentsHelper();
-                }
+          if(vmHelper){
+            if(currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual) {
+              vmHelper.setEventNotes();
+            }else {
+              if(vmHelper.configLoaded)
+                vmHelper.setEventNotes();
+              else
+                refreshVirtualAppointmentsHelper();
             }
+          }
         }
 
         if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+          var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
-            if(meetingRoomsManager) {
-                meetingRoomsManager.setMeetingRoomInfosInNotes();
-            }
+          if(meetingRoomsManager) {
+            meetingRoomsManager.setMeetingRoomInfosInNotes();
+          }
         }
 
         var notes = $('#notes').val().trim().replace(/\n/g, '__n');
@@ -548,9 +550,10 @@
         setNotes();
 
         if($('#event-cancel-button').css('display') == 'block')
-            updateCurrentEventNotes();
+          updateCurrentEventNotes();
 
         window.threadDataIsEditable = false;
+      }
     }
 
     function updateNotesCallingInfos() {
