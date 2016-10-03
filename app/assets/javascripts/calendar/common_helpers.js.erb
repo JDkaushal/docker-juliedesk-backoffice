@@ -203,6 +203,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);
+                if(request.trackingId) {
+                  xhr.setRequestHeader("X-JD-REQUEST-TRACKING-ID", request.trackingId);
+                }
             },
             success: function(data) {
                 if(data.status == "error" && data.code == "AccessExpired") {

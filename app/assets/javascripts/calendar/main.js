@@ -536,6 +536,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
         calendar.currentlyFetchingWeeks[formattedStart] += 1;
         var preferenceHash = calendar.accountPreferences[email];
+
         calendar.fetchEvents(start, end, preferenceHash, function(responseItems) {
             localWaitingAccounts -= 1;
             calendar.currentlyFetchingWeeks[formattedStart] -= 1;
@@ -605,7 +606,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
             //        client_emails: allEmailsForTracking
             //    });
             //}
-        }, trackingOptions.trackNetworkResponse);
+        }, trackingOptions);
     }
 };
 
@@ -616,7 +617,7 @@ Calendar.prototype.redrawFullCalendar = function() {
     calendar.$selector.find("#calendar").fullCalendar("render");
 };
 
-Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback, trackNetworkReponse) {
+Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback, trackingOptions) {
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
     var currentAppointment = window.getCurrentAppointment();
@@ -650,6 +651,21 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         }
     }
 
+    var requestTracked = new RequestTracking(moment().valueOf());
+
+    var requestTrackingId = requestTracked.create({
+        request_type: 'list_events',
+        properties: {
+            client_email: accountPreferencesHash.email,
+            request_strategy: '3X1',
+            request_group: trackingOptions.batchTrackingId,
+            start_date: start,
+            end_date: end,
+            provider: _.map((window.threadAccount.calendar_logins || []), function(cal) { return cal.type; }).join(', '),
+            using_calendar_server: window.threadAccount.using_calendar_server
+        }
+    });
+
     CommonHelpers.externalRequest({
         action: "events",
         email: accountPreferencesHash.email,
@@ -657,12 +673,12 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         meeting_rooms_to_show: meeting_rooms_to_show,
         virtual_resources_to_show: virtualResourcesToShow,
         start: start,
-        end: end
+        end: end,
+        trackingId: requestTrackingId
     }, function (response) {
+        var eventsCount = response.items.length;
 
-        if(trackNetworkReponse) {
-            var eventsCount = response.items.length;
-
+        if(trackingOptions.trackNetworkResponse) {
             calendar.eventsFetchedCount += eventsCount;
 
             trackActionV2("Calendar_data_received", {
@@ -672,6 +688,13 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
                 events_count: eventsCount
             });
         }
+
+        requestTracked.update({
+            network_finished_date: moment().valueOf(),
+            properties: {
+                events_count: eventsCount
+            }
+        });
 
         unavailableEvents = calendar.getNonAvailableEvents(start, end, accountPreferencesHash);
 
@@ -686,7 +709,9 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             calendar.calendarAllEvents[accountPreferencesHash.email].push(unavailableEvents);
         }
 
-
+        requestTracked.update({
+            global_finished_date: moment().valueOf()
+        });
 
         if(callback) callback(response.items);
     });
