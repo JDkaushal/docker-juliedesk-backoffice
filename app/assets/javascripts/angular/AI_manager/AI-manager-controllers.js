@@ -126,6 +126,7 @@
         $scope.currentlySelectedAppointmentType = undefined;
 
         var appointmentSelectNode = $('#appointment_family_nature');
+        var appointmentNatureNode = $('#appointment_nature');
 
         var messagesContainerNode = $('#messages_container');
         var messagesThreadId = messagesContainerNode.data('messages-thread-id');
@@ -171,6 +172,7 @@
             appointmentSelectNode.val($scope.currentAppointmentType);
             // To trigger the related events
             appointmentSelectNode.trigger('change');
+            appointmentNatureNode.trigger('change');
         };
 
         $scope.trackAppointmentTypeAIFeedback = function() {
