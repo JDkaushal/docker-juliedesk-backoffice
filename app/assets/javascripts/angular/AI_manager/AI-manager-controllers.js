@@ -172,7 +172,12 @@
             appointmentSelectNode.val($scope.currentAppointmentType);
             // To trigger the related events
             appointmentSelectNode.trigger('change');
-            appointmentNatureNode.trigger('change');
+
+            // setTimeout to wait for page to load and data to be available
+            setTimeout(function() {
+                appointmentNatureNode.trigger('change');
+            }, 500);
+
         };
 
         $scope.trackAppointmentTypeAIFeedback = function() {
