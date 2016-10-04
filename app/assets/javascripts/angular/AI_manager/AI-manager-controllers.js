@@ -151,7 +151,6 @@
             if(window.threadComputedData.appointment_nature === null) {
                 var mainInterpretation = messageInterpretationsService.getMainInterpretation();
 
-                console.log(mainInterpretation);
                 if(mainInterpretation && mainInterpretation.appointment_classif && mainInterpretation.appointment_proba >= 0.50) {
                     $scope.currentAppointmentType = mainInterpretation.appointment_classif;
                     $scope.setAppointmentType();
