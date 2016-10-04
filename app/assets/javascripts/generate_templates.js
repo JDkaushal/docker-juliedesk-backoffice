@@ -209,6 +209,8 @@ window.generateEmailTemplate = function (params) {
     }
     else if(params.action == "follow_up_contacts") {
         var afterDatesTemplate = '';
+        var beforeDatesTemplate = '';
+        var datesSuggestionsMessage = '';
 
         if(params.timezoneId != undefined){
             today = moment().tz(params.timezoneId);
@@ -224,15 +226,17 @@ window.generateEmailTemplate = function (params) {
         if(params.timeSlotsToSuggest.length > 0) {
 
             if(params.usedTimezones.length > 1) {
-                message += generateDatesForMultipleTimezones(params);
+                datesSuggestionsMessage = generateDatesForMultipleTimezones(params);
             }else {
-                message += generateDatesForSingleTimezone(params);
+                datesSuggestionsMessage = generateDatesForSingleTimezone(params);
             }
 
             var multipleDates = params.timeSlotsToSuggest.length > 1 || params.timeSlotsToSuggest[0][params.usedTimezones[0]].length > 1;
             if(multipleDates){
+                beforeDatesTemplate= "email_templates.follow_up_contacts.multiple_dates.before_dates";
                 afterDatesTemplate = "email_templates.follow_up_contacts.multiple_dates.after_dates";
             }else {
+                beforeDatesTemplate= "email_templates.follow_up_contacts.one_date.before_dates";
                 afterDatesTemplate = "email_templates.follow_up_contacts.one_date.after_dates";
             }
         } else {
@@ -240,6 +244,8 @@ window.generateEmailTemplate = function (params) {
         }
 
         attendeesSpecificConf = determineAttendeesSpecificConf("email_templates.follow_up_contacts", params.assistedAttendees, params.unassistedAttendees);
+        message += localize(beforeDatesTemplate);
+        message += datesSuggestionsMessage;
         message += localize(afterDatesTemplate + attendeesSpecificConf[0], attendeesSpecificConf[1]);
     }
     else if(params.action == "invites_sent") {

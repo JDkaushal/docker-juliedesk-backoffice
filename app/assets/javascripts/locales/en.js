@@ -37,7 +37,7 @@ window.wordings['en'] = {
             noted: "Thank you for the invite.\nI confirm, the event is in %{client}'s calendar for %{date}."
         },
         follow_up_contacts: {
-            before_dates: "Allow me to follow up regarding %{appointment_nature}%{location} with %{clients}.",
+            before_dates: "Allow me to follow up regarding %{appointment_nature}%{location} with %{clients}.\n\n",
             zero_dates: {
                 after_dates: {
                     single_attendee_unassisted: "\nCould you please provide me your availabilities?\nThank you.",
@@ -48,7 +48,7 @@ window.wordings['en'] = {
                 }
             },
             one_date: {
-                before_dates: "Here is an updated availability:\n",
+                before_dates: "Here is an updated availability:",
                 after_dates: {
                     single_attendee_unassisted: "\nWould that work for you?\nThank you.",
                     multiple_attendees_unassisted: "\n%{attendees}, would that work for you?\nThank you.",
@@ -58,7 +58,7 @@ window.wordings['en'] = {
                 }
             },
             multiple_dates: {
-                before_dates: "Here are updated availabilities:\n",
+                before_dates: "Here are updated availabilities:",
                 after_dates: {
                     single_attendee_unassisted: "\nCould you let me know your preference?\nThank you.",
                     multiple_attendees_unassisted: "\n%{attendees}, could you let me know your preference?\nThank you.",
