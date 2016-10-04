@@ -244,9 +244,13 @@ window.generateEmailTemplate = function (params) {
         }
 
         attendeesSpecificConf = determineAttendeesSpecificConf("email_templates.follow_up_contacts", params.assistedAttendees, params.unassistedAttendees);
-        message += localize(beforeDatesTemplate);
+        if(beforeDatesTemplate) {
+            message += localize(beforeDatesTemplate);
+        }
         message += datesSuggestionsMessage;
-        message += localize(afterDatesTemplate + attendeesSpecificConf[0], attendeesSpecificConf[1]);
+        if(afterDatesTemplate) {
+            message += localize(afterDatesTemplate + attendeesSpecificConf[0], attendeesSpecificConf[1]);
+        }
     }
     else if(params.action == "invites_sent") {
         var dateStringBuff = '';
