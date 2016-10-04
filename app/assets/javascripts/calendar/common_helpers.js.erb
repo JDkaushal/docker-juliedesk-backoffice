@@ -399,7 +399,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     }
                 } else {
                   // When uncheking the restaurant booking functionnality after having booked a restaurant
-                  if(window.threadComputedData.using_restaurant_booking) {
+                  if(window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
                     restaurantBookingManager.sendAdminEmail({
                       type: 'cancellation',
                       user_email: window.threadAccount.email,
