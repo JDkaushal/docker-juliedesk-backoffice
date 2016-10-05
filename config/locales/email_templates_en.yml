@@ -49,8 +49,8 @@ en:
     event_updated: "Thank you, the event was updated."
 
     waiting_for_contact: |
-      Ok I've got that.
-      %{attendees_names}, is it ok for you?
+      Thank you, I've made a note of that.
+      %{attendees_names}, could you send your availabilities?
 
     greetings:
       male: 'Mr. %{client_name},'

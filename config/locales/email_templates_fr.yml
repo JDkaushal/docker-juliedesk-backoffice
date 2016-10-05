@@ -49,8 +49,8 @@ fr:
     event_updated: "Merci, l'événement a bien été mis à jour."
 
     waiting_for_contact: |
-      Très bien, c'est noté.
-      %{attendees_names}, cela vous convient-il ?
+      Merci, c’est noté.
+      %{attendees_names}, pourriez-vous envoyer vos disponibilités ?
 
     greetings:
       male: 'M. %{client_name},'
@@ -84,7 +84,7 @@ fr:
           dinner: "Dîner"
           skype: "Skype"
           call: "Call"
-          confcall: Call"
+          confcall: "Call"
           drink: "Verre"
       notes:
         phone: 'Téléphone : %{phone_infos}'
