@@ -202,11 +202,11 @@ class Account
     info += "\nLandline: #{self.landline_number}" if self.landline_number.present?
     info += "\nSkype: #{self.skype}" if self.skype.present?
     info += "\nMeans of transport: #{self.means_of_transport}" if self.means_of_transport.present?
-    offices_addresses = self.addresses.select{|addr| addr['kind'] == "office"}.map do |add|
+    offices_addresses = self.addresses.select{|addr| addresse_kind_dispatcher(addr) == "office"}.map do |add|
       "\nOffice: #{add['address']}" if add['address'].present?
     end.compact.join('')
     info += offices_addresses
-    agencies_addresses = self.addresses.select{|addr| addr['kind'] == "agency"}.map do |add|
+    agencies_addresses = self.addresses.select{|addr| addresse_kind_dispatcher(addr) == "agency"}.map do |add|
       "\nAgency: #{add['address']}" if add['address'].present?
     end.compact.join('')
     info += agencies_addresses
@@ -318,6 +318,10 @@ class Account
   end
 
   private
+
+  def addresse_kind_dispatcher(address)
+    address['kind'] ||address['type']
+  end
 
   def self.get_account_details account_email, params={}
     if params[:accounts_cache]

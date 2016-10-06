@@ -404,7 +404,18 @@
         var locationInput = $('#location');
         var locationCoordinatesInput = $('#location_coordinates');
 
-        var autocomplete = new google.maps.places.Autocomplete(locationInput[0]);
+//        var defaultBounds = new google.maps.LatLngBounds();
+//
+//        defaultBounds.extend(new google.maps.LatLng(50.528372, 9.822633));
+//        defaultBounds.extend(new google.maps.LatLng(41.501254, -6.036905));
+
+//        var options = {
+//          //componentRestrictions: {country: 'fr'},
+//          bounds: defaultBounds
+//        };
+
+      //var autocomplete = new google.maps.places.Autocomplete(locationInput[0], options);
+      var autocomplete = new google.maps.places.Autocomplete(locationInput[0]);
 
         if(window.threadComputedData) {
             locationCoordinatesInput.val(JSON.stringify(window.threadComputedData.location_coordinates || []));
