@@ -182,7 +182,8 @@ class MessageInterpretation < ActiveRecord::Base
           'parsed_html' => server_message['parsed_html'],
           'text' => server_message['text'],
           'sender' => server_message['from'],
-          'date' => server_message['date']
+          'date' => server_message['date'],
+          'messages_count' => messages.size
       }
 
       response_body = AiProxy.new(format_response: false).build_request(:process_entity_entities, body).body
