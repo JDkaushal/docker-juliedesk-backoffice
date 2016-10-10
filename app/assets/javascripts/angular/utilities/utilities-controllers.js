@@ -114,7 +114,7 @@
 
                         if(nextEvent) {
                             // We don't add the gap between two events if they are bonded
-                            if(!currentEvent.end.isSame(nextEvent.start))
+                            if(!moment(currentEvent.end).isSame(moment(nextEvent.start)))
                                 busyResult.push($.extend({start: currentEvent.end, end: nextEvent.start}, extraEventsParams));
                         }
                     }
