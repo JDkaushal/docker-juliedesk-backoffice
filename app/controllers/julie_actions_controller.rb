@@ -48,7 +48,7 @@ class JulieActionsController < ApplicationController
 
       date_times = params[:date_times].map{|dt|
         {
-            timezone: message_classification_timezone,
+            timezone: message_classification_params_to_update[:timezone] || message_classification_timezone,
             date: DateTime.parse(dt).utc.to_s
         }
       }

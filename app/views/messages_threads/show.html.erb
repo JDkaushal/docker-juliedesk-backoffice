@@ -1,5 +1,4 @@
 <script>
-
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
     window.activateCalendarWithParams = function (calendarParams) {
@@ -54,7 +53,27 @@
                             setToBeMergedOnMessagesThread(messagesThreadId, false);
 
                             $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
-                                window.location = "/messages_threads/" + messagesThreadId;
+
+                              // Send an alert to operator dealing with target thread
+                              var mergeMessageData = {
+                                message: "Thread" + messagesThreadId + " merged.",
+                                sender: myName
+                              };
+
+                              if(typeof(pusher) != 'undefined') {
+                                var channel = pusher.subscribe('private-thread-' + messagesThreadId);
+                                channel.bind('pusher:subscription_succeeded', function() {
+                                  channel.trigger('client-merged', mergeMessageData);
+                                  channel.unsubscribe();
+                                });
+
+                              }
+                              else if(typeof(redsock) != 'undefined') {
+                                var threadChannel = 'thread-' + messagesThreadId;
+                                redsock.sendMessage(threadChannel, 'merged', mergeMessageData);
+                              }
+
+                              window.location = "/messages_threads/" + messagesThreadId;
                             });
                         }
 

@@ -90,6 +90,12 @@
                     $(".lock-container .unlock-btn").attr("href", "/messages_threads/" + window.processingMessageThreadId + "/unlock");
                     $(".lock-container").fadeIn(200);
                 });
+
+
+                var channel = pusher.subscribe("private-thread-" + processingMessageThreadId);
+                channel.bind('client-merged', function(message) {
+                  alert("You are on a thread that has just been merged by " + message.sender +".\nPlease reload this page.");
+                });
             }
 
 
@@ -170,6 +176,12 @@
 
                 redsock.subscribeToChannel('presence-thread-' + window.processingMessageThreadId, {
                     maxConnections: 1
+                });
+
+                var threadChannel = 'thread-' + window.processingMessageThreadId;
+                redsock.subscribeToChannel(threadChannel);
+                redsock.bindMessage(threadChannel, 'merged', function(message) {
+                  alert("You are on a thread that has just been merged by " + message.sender +".\nPlease reload this page.");
                 });
             }
 

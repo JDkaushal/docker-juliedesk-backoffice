@@ -6,6 +6,7 @@
 
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
+            suggestedDateTimes: suggestedDateTimes,
             mode: "suggest_dates",
             email: window.threadAccount.email,
             duration: window.threadComputedData.duration,
@@ -13,10 +14,6 @@
                 addSuggestedDatesToCalendar(suggestedDateTimes);
             }
         });
-
-        console.log(suggestedDateTimes);
-//        window.timeSlotsToSuggest = _.map(suggestedDateTimes, function(dateSlot) { return dateSlot.date; });
-//        window.redrawTimeSlotsToSuggestContainer();
     };
 
     var otherClients = function(){

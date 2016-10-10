@@ -292,7 +292,8 @@
                         processed_in: Date.now() - window.startedAt,
                         messages_thread_id: "<%= @messages_thread.id %>",
                         client_settings: window.getClientSettings(),
-                        date_times: window.timeSlotsToSuggest || []
+                        date_times: window.timeSlotsToSuggest || [],
+                        timezone: $('#dates_suggestion_timezone').val()
                     }
                 });
                 window.sendReply();
