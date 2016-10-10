@@ -113,7 +113,9 @@
                         nextEvent = freeResult[j + 1];
 
                         if(nextEvent) {
-                            busyResult.push($.extend({start: currentEvent.end, end: nextEvent.start}, extraEventsParams));
+                            // We don't add the gap between two events if they are bonded
+                            if(!currentEvent.end.isSame(nextEvent.start))
+                                busyResult.push($.extend({start: currentEvent.end, end: nextEvent.start}, extraEventsParams));
                         }
                     }
                 }
