@@ -175,6 +175,7 @@ describe ClientContactsController, :type => :controller do
 
       cc1 = ClientContact.create({
           client_email: 'client@mail.com',
+          company: 'Test company',
           email: 'testlklklk@test.com',
           first_name: 'fname',
           last_name: 'lname',
@@ -193,7 +194,7 @@ describe ClientContactsController, :type => :controller do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
       response = get :fetch_one, client_email: 'client@mail.com', email: cc1.email
 
-      expect(JSON.parse(response.body)).to eq({"email"=>"testlklklk@test.com", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>false})
+      expect(JSON.parse(response.body)).to eq({"email"=>"testlklklk@test.com", "company"=>"Test company", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>false})
     end
 
     it 'should return the correct infos about a requested contact when it is in its contacts network and is a client (main email used)' do
@@ -203,6 +204,7 @@ describe ClientContactsController, :type => :controller do
 
       cc1 = ClientContact.create({
                                      client_email: 'client@mail.com',
+                                     company: 'Test company',
                                      email: 'test@test.com',
                                      first_name: 'fname',
                                      last_name: 'lname',
@@ -221,7 +223,7 @@ describe ClientContactsController, :type => :controller do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
       response = get :fetch_one, client_email: 'client@mail.com', email: cc1.email
 
-      expect(JSON.parse(response.body)).to eq({"email"=>"test@test.com", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>true})
+      expect(JSON.parse(response.body)).to eq({"email"=>"test@test.com", "company"=>"Test company", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>true})
     end
 
     it 'should return the correct infos about a requested contact when it is in its contacts network and is a client (alias email used)' do
@@ -231,6 +233,7 @@ describe ClientContactsController, :type => :controller do
 
       cc1 = ClientContact.create({
                                      client_email: 'client@mail.com',
+                                     company: 'Test company',
                                      email: 'test@test.com',
                                      first_name: 'fname',
                                      last_name: 'lname',
@@ -249,7 +252,7 @@ describe ClientContactsController, :type => :controller do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
       response = get :fetch_one, client_email: 'client@mail.com', email: cc1.email
 
-      expect(JSON.parse(response.body)).to eq({"email"=>"test@test.com", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>true})
+      expect(JSON.parse(response.body)).to eq({"email"=>"test@test.com", "company"=>"Test company", "firstName"=>"fname", "lastName"=>"lname", "gender"=>"M", "usageName"=>"fname lname", "isAssistant"=>true, "assisted"=>nil, "assistedBy"=>"{\"email\":\"julie@juliedesk.com\",\"displayName\":\"Julie Desk\"}", "timezone"=>"America/Chicago", "landline"=>"0102030404", "mobile"=>"0646646464", "skypeId"=>"Skype ID", "confCallInstructions"=>"conf call", "isClient"=>true})
     end
 
     it 'should return an empty response' do

@@ -495,9 +495,7 @@
             var company = informations.company || '';
             var needAIConfirmation = informations.needAIConfirmation || false;
 
-            console.log(attendee.account_email, informations.aIHasBeenConfirmed);
             var aIHasBeenConfirmed = informations.aIHasBeenConfirmed || false;
-            console.log(attendee.account_email, aIHasBeenConfirmed);
 
             var validatedCompany = needAIConfirmation ? '' : company;
 

@@ -403,6 +403,8 @@ class MessagesThread < ActiveRecord::Base
     end
 
     self.messages = messages_thread_messages && existing_messages
+
+
   end
 
   def splitted_server_messages

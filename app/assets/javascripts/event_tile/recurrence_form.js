@@ -24,6 +24,18 @@ function RecurrenceForm($selector, params) {
         recurrenceForm.rule = RRule.fromString(params.rrule);
         var ruleOptions = recurrenceForm.rule.options;
 
+        // Means we have a recurrence string of the form : 'FREQ=WEEKLY'
+        // We need to determine the correct byday params since by default if it is not present it will use the current day as value
+        // We need to use the day of the week of the event start date instead
+        if(params.rrule.indexOf('WEEKLY') > -1 && params.rrule.indexOf('BYDAY') == -1) {
+            var currentDay = params.rstart.day();
+
+            // Sunday is 0, but for ruleOptions.byweekday, Sunday is 6
+            currentDay = currentDay == 0 ? 6 : currentDay - 1;
+
+            ruleOptions.byweekday = [currentDay];
+        }
+
         if(ruleOptions.freq == RRule.DAILY ||
             ruleOptions.freq == RRule.WEEKLY ||
             ruleOptions.freq == RRule.MONTHLY ||
