@@ -322,9 +322,10 @@
         };
 
         $scope.formatUsageName = function(attendee) {
-            if(window.threadAccount.language_level == 'soutenu') {
-                attendee.usageName = attendee.displayUsageNameSoutenu();
-            }
+            attendee.dispatchUsageName();
+            // if(window.threadAccount.language_level == 'soutenu') {
+            //     attendee.usageName = attendee.displayUsageNameSoutenu();
+            // }
         };
 
         this.callingInformationsChanged = function(){
@@ -530,7 +531,7 @@
                 missingInformationsTemp: {}
             });
 
-            if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
+            if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.lastName == undefined))
                 a.firstName = a.usageName;
 
             //We ask the AI only when we are classifying an email and if the attendee is not a client
@@ -623,7 +624,11 @@
 
             // We compute the usage name based on the client language level preference only in the first pass of the form filling
             if(!window.threadComputedData.appointment_nature) {
-                $scope.formatUsageName(a);
+                a.dispatchUsageName();
+            } else {
+                if(!a.usageName) {
+                    a.dispatchUsageName();
+                }
             }
 
             $scope.attendees.push(a);
@@ -1180,18 +1185,20 @@
                 that[key] = value;
             });
         },
+        dispatchUsageName: function() {
+            if(window.threadAccount.language_level == 'soutenu') {
+                this.usageName = this.displayUsageNameSoutenu();
+            } else {
+                this.setUsageName(this.firstName);
+            }
+        },
         firstLastNameKeyup: function(){
             if(window.formFirstPass || this.needAIConfirmation) {
-                if(window.threadAccount.language_level == 'soutenu') {
-                    this.usageName = this.displayUsageNameSoutenu();
-                } else {
-                    this.setUsageName(this.firstName);
-                }
+                this.dispatchUsageName();
             }
         },
         firstNameMirrored: function(){
             return (this.usageName == '' || this.usageName == undefined);
-
         },
         setUsageName: function(value) {
             if(this.firstNameMirrored){
