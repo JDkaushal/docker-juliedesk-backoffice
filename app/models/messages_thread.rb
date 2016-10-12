@@ -166,6 +166,11 @@ class MessagesThread < ActiveRecord::Base
             )
       }.min
       m.update_attribute :request_at, request_at
+
+      ClientSuccessTrackingHelpers.async_track("thread_is_processed", self.account_email, {
+          bo_thread_id:  self.id,
+          thread_process_delay: m.received_at - request_at
+      })
     end
   end
 

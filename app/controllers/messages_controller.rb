@@ -19,7 +19,7 @@ class MessagesController < ApplicationController
 
     begin
       open_thread_date = begin
-        DateTime.strptime(params[:started_at], "%s").strftime("%Y-%m-%dT%H:%M:%S")
+        DateTime.strptime(params[:started_at], "%Q").strftime("%Y-%m-%dT%H:%M:%S")
         rescue
           nil
       end
