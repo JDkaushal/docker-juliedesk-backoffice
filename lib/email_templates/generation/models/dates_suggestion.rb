@@ -32,9 +32,17 @@ module EmailTemplates
           @params['timezone']
         end
 
+        def first_time_suggesting?
+          @params['first_suggestion']
+        end
+
         def set_body
           if @params['suggested_dates'].present?
-            add_to_output_array("#{get_thread_owner['firstName']} #{I18n.translate('email_templates.common.available', count: get_clients_count)} #{I18n.translate('email_templates.common.for')} #{I18n.translate("email_templates.appointment_types.#{get_appointment_type}")} #{get_location}")
+            if first_time_suggesting?
+              add_to_output_array("#{get_thread_owner['firstName']} #{I18n.translate('email_templates.common.available', count: get_clients_count)} #{I18n.translate('email_templates.common.for')} #{I18n.translate("email_templates.appointment_types.#{get_appointment_type}")} #{get_location}")
+            else
+              add_to_output_array(I18n.translate('email_templates.date_confirmation.new_propositions', client_name: get_thread_owner['firstName'], appointment_type: I18n.translate("email_templates.appointment_types.#{get_appointment_type}"), location: get_location))
+            end
 
             get_suggested_dates.each do |date, times|
               add_to_output_array(EmailTemplates::Generation::Models::Utilities.format_date_proposition_output(date, times))
