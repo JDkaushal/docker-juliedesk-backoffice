@@ -67,6 +67,7 @@ gem 'angular-rails-templates'
 #gem "httpclient",    path: "../httpclient"
 gem "http"
 gem 'mixpanel-ruby'
+gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
 #gem "http", path: "../http"
 
