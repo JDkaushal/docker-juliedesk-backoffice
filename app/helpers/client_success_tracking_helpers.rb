@@ -1,5 +1,6 @@
 class ClientSuccessTrackingHelpers
   require 'mixpanel-ruby'
+  require 'segment/analytics'
 
 
   if Rails.env.development?
@@ -18,8 +19,10 @@ class ClientSuccessTrackingHelpers
     puts "Properties: #{properties}"
 
     tracker = Mixpanel::Tracker.new(ENV['MIXPANEL_FOR_CLIENT_SUCCESS_TOKEN'])
+    tracker.track("#{account_email}", event_name, properties)
 
-    puts tracker.track("#{account_email}", event_name, properties)
+    analytics = Segment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
+    analytics.track(user_id: "#{account_email}", event: event_name, properties: properties)
 
     puts "Done"
   end
