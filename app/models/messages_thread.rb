@@ -169,7 +169,7 @@ class MessagesThread < ActiveRecord::Base
 
       ClientSuccessTrackingHelpers.async_track("thread_is_processed", self.account_email, {
           bo_thread_id:  self.id,
-          thread_process_delay: m.received_at - request_at
+          thread_process_delay: (m.received_at || m.created_at) - request_at
       })
     end
   end
