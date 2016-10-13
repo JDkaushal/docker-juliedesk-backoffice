@@ -1,6 +1,5 @@
 class ClientSuccessTrackingHelpers
   require 'mixpanel-ruby'
-  require 'segment/analytics'
 
 
   if Rails.env.development?
