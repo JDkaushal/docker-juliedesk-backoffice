@@ -441,15 +441,28 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
                 if(restaurantBookingManager && restaurantBookingManager.getUsingRestaurantBooking() && oldEvent.id == request.event_id) {
-                    $('#restaurant-booking-manager').scope().sendAdminEmail({
-                        type: 'cancellation',
-                        user_email: window.threadAccount.email,
-                        booking_date: oldEvent.start.format(),
-                        location: window.threadComputedData.restaurant_booking_details.restaurant,
-                        thread_id: window.processingMessageThreadId
+                  if(window.threadComputedData.restaurant_booking_details.restaurant) {
+                    restaurantBookingManager.sendAdminEmail({
+                      type: 'cancellation',
+                      user_email: window.threadAccount.email,
+                      booking_date: oldEvent.start.format(),
+                      location: window.threadComputedData.restaurant_booking_details.restaurant,
+                      thread_id: window.processingMessageThreadId
                     }, callback(e));
+                  }
                 } else {
+                  // When uncheking the restaurant booking functionality then deleting the event
+                  if(window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
+                    restaurantBookingManager.sendAdminEmail({
+                      type: 'cancellation',
+                      user_email: window.threadAccount.email,
+                      booking_date: oldEvent.start.format(),
+                      location: window.threadComputedData.restaurant_booking_details.restaurant,
+                      thread_id: window.processingMessageThreadId
+                    }, callback(e));
+                  } else {
                     callback(e);
+                  }
                 }
             },
             error: function(e) {
