@@ -23,7 +23,7 @@ class ClientSuccessTrackingHelpers
 
     # puts "Mixpanel done, starting analytics"
     # puts ENV['SEGMENT_WRITE_KEY']
-    analytics = Segment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
+    analytics = SimpleSegment::Client.new({write_key: ENV['SEGMENT_WRITE_KEY']})
     #puts analytics
     result = analytics.track(user_id: "#{account_email}", event: event_name, properties: properties)
     #puts result
