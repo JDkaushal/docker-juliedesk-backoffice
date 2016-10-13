@@ -21,8 +21,12 @@ class ClientSuccessTrackingHelpers
     tracker = Mixpanel::Tracker.new(ENV['MIXPANEL_FOR_CLIENT_SUCCESS_TOKEN'])
     tracker.track("#{account_email}", event_name, properties)
 
+    puts "Mixpanel done, starting analytics"
+    puts ENV['SEGMENT_WRITE_KEY']
     analytics = Segment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
-    analytics.track(user_id: "#{account_email}", event: event_name, properties: properties)
+    puts analytics
+    result = analytics.track(user_id: "#{account_email}", event: event_name, properties: properties)
+    puts result
 
     puts "Done"
   end
