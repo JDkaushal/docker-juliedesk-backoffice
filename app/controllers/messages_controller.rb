@@ -23,7 +23,7 @@ class MessagesController < ApplicationController
         rescue
           nil
       end
-    ClientSuccessTrackingHelpers.async_track("julie_action", @message.messages_thread.account_email, {
+    ClientSuccessTrackingHelpers.async_track("Julie Made An Action", @message.messages_thread.account_email, {
         bo_thread_id:  @message.messages_thread_id,
         bo_message_id:  @message.id,
         thread_messages_count:  @message.messages_thread.messages.count,
