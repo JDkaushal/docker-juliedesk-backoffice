@@ -651,7 +651,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         }
     }
 
-    var requestTracked = new RequestTracking(moment().valueOf());
+    var requestTracked = new RequestTracking();
 
     var requestTrackingId = requestTracked.create({
         request_type: 'list_events',

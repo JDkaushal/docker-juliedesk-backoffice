@@ -39,14 +39,14 @@ window.trackFormSubmit = function(selector, event, params) {
 
 <% if ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>
 
-  function RequestTracking(id) {
-    this.id = id;
+  function RequestTracking() {
+    this.id = generateTrackingGuid();
 
     this.create = function(params) {
       var that = this;
 
       var currentParams = params;
-      currentParams.initiation_date = that.id;
+      currentParams.initiation_date = moment().valueOf();
       currentParams.id = that.id;
 
       $.ajax({
