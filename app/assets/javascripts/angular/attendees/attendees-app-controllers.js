@@ -206,7 +206,7 @@
         var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
         var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
-        var excludedAttendeesEmails = ['support@juliedesk.com'];
+        var excludedAttendeesEmails = ['support@juliedesk.com', 'hello@juliedesk.com'];
 
         $scope.displaySearchList = false;
         $scope.attendeeSearchFilter = '';

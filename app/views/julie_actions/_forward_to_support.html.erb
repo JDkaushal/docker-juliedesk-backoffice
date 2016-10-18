@@ -20,7 +20,7 @@
       window.templateManager = new TemplateManager({
           categories: ['send_to_support'],
           onItemSelected: function(clickedNode, template) {
-              window.setReplyMessage(template, "only_client", ["support@juliedesk.com"]);
+              window.setReplyMessage(template, "only_client", ['hello@juliedesk.com']);
           }
       });
 
@@ -58,7 +58,7 @@
 //    }
 
     window.afterReplyBoxInitCallback = function(){
-        window.setReplyMessage("", "only_client", ["support@juliedesk.com"]);
+        window.setReplyMessage("", "only_client", ['hello@juliedesk.com']);
 
         window.templateManager.fetchTemplates();
 
