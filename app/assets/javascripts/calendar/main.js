@@ -77,6 +77,7 @@ function Calendar($selector, params) {
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
+        var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
         calendar.fetchCalendars(function () {
             for(var i=0; i < calendar.initialData.date_times.length; i++) {
                 var dateObject = calendar.initialData.date_times[i];
@@ -102,7 +103,7 @@ function Calendar($selector, params) {
             }
 
             calendar.fullCalendarInit();
-
+            new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
             calendar.$selector.find(".global-loading").fadeOut();
         });
     });
@@ -716,10 +717,12 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         if(callback) callback(response.items);
     });
 };
-Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
+
+Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endTime) {
     var result = [];
     var calendar = this;
-    _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+
+    _.each(data, function(dataEntries, attendeeEmail) {
         var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
         _.each(eventsFromData.cant, function(ev) {
 
@@ -757,9 +760,57 @@ Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
         });
     });
 
-
     return result;
 };
+
+Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
+    var calendar = this;
+
+    return calendar.computeConstraintsDataEvents(calendar.initialData.constraintsData, startTime, endTime);
+    // var result = [];
+    // var calendar = this;
+    // _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+    //     var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
+    //     _.each(eventsFromData.cant, function(ev) {
+    //
+    //         var event = {
+    //             summary: attendeeEmail + " not available",
+    //             start: {
+    //                 dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
+    //             },
+    //             end: {
+    //                 dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
+    //             },
+    //             startEditable: false,
+    //             durationEditable: false,
+    //             calId: "juliedesk-strong-constraints",
+    //             isNotAvailableEvent: true
+    //         };
+    //         result.push(event);
+    //     });
+    //
+    //     _.each(eventsFromData.dontPrefer, function(ev) {
+    //         var event = {
+    //             summary: attendeeEmail + " prefers not",
+    //             start: {
+    //                 dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
+    //             },
+    //             end: {
+    //                 dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
+    //             },
+    //             startEditable: false,
+    //             durationEditable: false,
+    //             calId: "juliedesk-light-constraints",
+    //             isNotAvailableEvent: true
+    //         };
+    //         result.push(event);
+    //     });
+    // });
+    //
+    //
+    // return result;
+};
+
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
     var result = [];
@@ -929,6 +980,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         id: ev.id,
         title: ev.summary,
         allDay: ev.all_day,
+        isSuggestionFromAi: ev.isSuggestionFromAi,
         isTravelTime: ev.isTravelTime,
         isDefaultDelay: ev.isDefaultDelay,
         // Allow to know if the event is from a meeting room
@@ -963,7 +1015,9 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         calendar_login_username: ev.calendar_login_username,
         calendar_login_type: ev.calendar_login_type,
         busyLocked: ev.busyLocked,
-        organizerEmail: ev.organizer && ev.organizer.email
+        organizerEmail: ev.organizer && ev.organizer.email,
+        alreadySuggested: ev.alreadySuggested,
+        trackingId: ev.trackingId
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;

@@ -89,6 +89,51 @@
             // This min height prevents events shorter than 30 min to display correctly
             //min-height: 30px !important;
 
+            &.suggestion-from-ai {
+              background-color: $aiControlColor !important;
+
+              &:hover {
+                z-index:999;
+                min-width: 227px;
+                min-height: 45px;
+
+                .call-to-actions-wrapper {
+                  display: block;
+                }
+              }
+
+              .call-to-actions-wrapper {
+                display: none;
+                position: absolute;
+                right: 20px;
+                top: 10px;
+
+                .call-to-action {
+                  width: 25px;
+                  display: inline-block;
+                  height: 25px;
+                  position: relative;
+                  top: -1px;
+                  left: 10px;
+
+                  &.accept {
+                    @include ai-date-suggestion-sprite-accept();
+                  }
+
+                  &.reject {
+                    @include ai-date-suggestion-sprite-reject();
+                  }
+                }
+              }
+
+              .fc-event-inner {
+                
+                &.juliedesk-located-event {
+                  border: none !important;
+                }
+              }
+            }
+
             &.meeting-room-unavailable {
                 pointer-events: none;
                 z-index: 0 !important;

@@ -4,19 +4,220 @@
 
     app.controller('datesSuggestionsManager', ['$scope', 'attendeesService', function($scope, attendeesService) {
         $scope.timeSlotsSuggestions = {};
+        $scope.timeSlotsSuggestedByAi = [];
         $scope.usedTimezones = undefined;
         $scope.allUsedTimezones = undefined;
         $scope.outBoundSuggestionsCount = 0;
         $scope.displayDatesSuggestionManager = false;
 
+        $scope.showAiLoader = false;
+        $scope.aiErrorMessage = 'Jul.IA indisponible';
+        $scope.showAiError = false;
+        $scope.aiWarningMessage = "Jul.IA n'as pas trouvé de dates";
+        $scope.showAiWarning = false;
+
+        var aiDatesSuggestionManager = $('#ai_dates_suggestions_manager');
+
         $scope.init = function() {
             $scope.attachEventsToDom();
+            //$scope.fetchAiDatesSuggestions();
+        };
+
+        $scope.aiSuggestionsRemaining = function() {
+            return $scope.getTimeSlotsSuggestedByAi().length > 0;
+        };
+
+        $scope.nextBtnDisabled = function() {
+            return $scope.aiSuggestionsRemaining();
+        };
+
+        // Aggregate the current thread constraint with the current appointment default constraints
+        $scope.generateTimeConstraints = function() {
+            var calendar = window.currentCalendar;
+            var timezone = calendar.getCalendarTimezone();
+
+            var today = moment().startOf('day').tz(timezone);
+            var oneMonthLater = today.clone().add('month', 1);
+
+            //return timeConstraints.concat($('#appointment_times_constraints_helper').scope().getTimesConstraintsEventsForCurrentAppointment(moment(), moment().add('w', 3)));
+            return window.currentCalendar.getConstraintsDataEvents(today, oneMonthLater);
+        };
+
+        $scope.fetchAiDatesSuggestions = function(forceFetch) {
+            if(forceFetch || $scope.shouldFetchAiSuggestedDates()) {
+                var fetch = true;
+                var suggestionsToGet = 4;
+
+                if(window.classification == 'follow_up_contacts'){
+                    //var alreadySuggestedEvents = window.currentCalendar.$selector.find('#calendar').fullCalendar('clientEvents', function(ev) {return ev.alreadySuggested;});
+
+                    // suggestedDateTimes comes from julie_actions/_follow_up_contacts.html.erb
+                    var alreadySuggestedDates = suggestedDateTimes;
+                    // When in a follow up contacts scenario we only fetch AI suggestion when we have less than 4 already suggested dates
+                    // we complete it to 4 if it is not the case
+                    fetch = alreadySuggestedDates.length < 4;
+
+                    if(fetch) {
+                        suggestionsToGet -= alreadySuggestedDates.length;
+                    }
+                }
+
+                if(fetch) {
+
+                    var fetchParams = {
+                        account_email: window.threadAccount.email,
+                        appointment: window.threadComputedData.appointment_nature,
+                        location: window.threadComputedData.location,
+                        duration: window.threadComputedData.duration,
+                        time_constraints: $scope.generateTimeConstraints(),
+                        n_suggested_dates: suggestionsToGet
+                    };
+
+                    $scope.showAiLoader = true;
+                    $scope.displayDatesSuggestionManager = true;
+                    $scope.$apply();
+                    aiDatesSuggestionManager.scope().fetchSuggestedDatesByAi(fetchParams).then(function(response) {
+                        var data = response.data;
+
+                        _.each((data.suggested_dates || []), function(slot) {
+                            // We add a pureAi property to differentiate with the events that are handled as AI but are not
+                            // i.e: events that comes from contact follow ups
+                            $scope.addTimeSlotSuggestedByAI({value: moment(slot), fromAi: true, display: true, pureAi: true, trackingId: generateTrackingGuid()});
+                        });
+
+                        if($scope.timeSlotsSuggestedByAi.length > 0) {
+                            checkSendButtonAvailability();
+                            $scope.addSuggestedDatesByAiToCalendar();
+                            $scope.setSuggestions();
+                        } else {
+                            $scope.showAiWarning = true;
+                            $scope.$apply();
+                        }
+                    }, function(error) {
+                        //console.log('error', error);
+                        $scope.showAiError = true;
+                        $scope.$apply();
+                    }).finally(function() {
+                        $scope.showAiLoader = false;
+                        $scope.$apply();
+                    });
+
+                    if(!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                }
+            }
+        };
+
+        $scope.addSuggestedDatesByAiToCalendar = function() {
+            var calendar = window.currentCalendar;
+            var calendarCurrentDuration = calendar.getCurrentDuration();
+            var calendarDelayTitle = calendar.generateDelayTitle();
+
+            // We don't insert in the calendars the events that have already been inserted (i.e. in the follow_up_contacts
+            // scenario) we insert the previously suggested events (that are in the future etc..) with a special title
+            // and be treat them like they were Ai suggestions so we will not insert them again here
+            var slotsToInsertInCalendar = _.reject($scope.timeSlotsSuggestedByAi, function(slot) {
+                return slot.alreadyInsertedInCalendar;
+            });
+
+            window.currentCalendar.addCal(_.map(slotsToInsertInCalendar, function(date) {
+                var realStart = date.value.clone();
+                var realEnd = realStart.clone();
+                realEnd.add('m', calendarCurrentDuration);
+
+                return{
+                    summary: calendarDelayTitle,
+                    start: {dateTime: realStart},
+                    end: {dateTime: realEnd},
+                    isSuggestionFromAi: true,
+                    trackingId: date.trackingId
+                };
+            }));
+        };
+
+        $scope.removeAiEventFromCalendar = function(slot) {
+            window.currentCalendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
+                return ev.isSuggestionFromAi
+                    && ev.start.isSame(slot);
+            });
+        };
+
+        $scope.acceptAiSuggestion = function(slot) {
+            var calendar = window.currentCalendar;
+            var currentTimezone = calendar.getCalendarTimezone();
+
+            var slotToAccept = _.find($scope.timeSlotsSuggestedByAi, function(currentSlot) {
+                return currentSlot.value.isSame(slot);
+            });
+
+            // We don't display the slot anymore on the right because it will be replaced with a real suggestion as if
+            // the operator selected it (which will be binded to the calendar)
+            slotToAccept.display = false;
+            slotToAccept.accepted = true;
+            $scope.removeAiEventFromCalendar(slot);
+
+            var realStart = slotToAccept.value.clone().tz(currentTimezone);
+
+            var realEnd = realStart.clone();
+            realEnd.add('m', calendar.getCurrentDuration());
+
+            var eventData = calendar.generateEventData({
+                title: calendar.generateDelayTitle(),
+                start: realStart,
+                end: realEnd,
+                calendar_login_username: calendar.initialData.default_calendar_login_username,
+                calendar_login_type: calendar.initialData.default_calendar_login_type,
+                calendar_login_email: calendar.initialData.email,
+                trackingId: slotToAccept.trackingId
+            });
+
+            calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+            calendar.addEvent(eventData);
+            calendar.drawEventList();
+
+            checkSendButtonAvailability();
+        };
+
+        $scope.rejectAiSuggestion = function(slot) {
+            var slotToReject = _.find($scope.timeSlotsSuggestedByAi, function(currentSlot) {
+                return currentSlot.value.isSame(slot);
+            });
+
+            slotToReject.display = false;
+            slotToReject.rejected = true;
+            $scope.removeAiEventFromCalendar(slot);
+            window.currentCalendar.drawEventList();
+
+            checkSendButtonAvailability();
+        };
+
+        $scope.addTimeSlotSuggestedByAI = function(slot) {
+            $scope.timeSlotsSuggestedByAi.push(slot);
+            $scope.timeSlotsSuggestedByAi = _.uniq($scope.timeSlotsSuggestedByAi, function(ev) {
+                return ev.value.valueOf();
+            });
+            checkSendButtonAvailability();
+        };
+
+        $scope.getTimeSlotsSuggestedByAi = function() {
+            return _.filter($scope.timeSlotsSuggestedByAi, function(slot) {
+                return slot.display;
+            });
+        };
+
+        $scope.shouldFetchAiSuggestedDates = function() {
+            return ['ask_date_suggestions', 'follow_up_contacts'].indexOf(window.classification) > -1;
         };
 
         $scope.onMainTimezoneChange = function(selection) {
             window.threadComputedData.timezone = selection.value;
             $('#event_creation_timezone').val(window.threadComputedData.timezone);
             $scope.addTimezoneToCurrentCalendar(selection.value);
+            if($scope.timeSlotsSuggestedByAi.length > 0) {
+                $scope.addSuggestedDatesByAiToCalendar();
+            }
+
             $scope.setSuggestions();
         };
 
@@ -35,11 +236,18 @@
             $(".time-slots-to-suggest-list-container").on('click', '.suggest-dates-next-button', $scope.nextButtonClickAction);
         };
 
+        // We only display in the email template the dates selected by the operator and those coming from the AI and accepted
+        // by the operator
+        $scope.useSlotInTemplate = function(slot) {
+            return !slot.fromAi;
+        };
+
         $scope.getTimeSlotsSuggestionsForTemplate = function() {
             var result = [];
             var tmpResult = [];
             var subResult = {};
             var clientTimezoneGroupedDates = {};
+
             var clientTimezoneDates = _.map($scope.timeSlotsSuggestions[window.threadComputedData.timezone], function(timeSlot) { return timeSlot.value ; });
 
             clientTimezoneGroupedDates = _.groupBy(clientTimezoneDates, function(timeSlot) {
@@ -54,16 +262,21 @@
 
                     _.each($scope.allUsedTimezones, function(timezone) {
 
-                        currentSlot = $scope.timeSlotsSuggestions[timezone][currentIndex].value;
-                        if(!subResult[timezone]) {
-                            subResult[timezone] = [currentSlot];
-                        } else {
-                            subResult[timezone].push(currentSlot);
-                        }
+                        currentSlot = $scope.timeSlotsSuggestions[timezone][currentIndex];
 
+                        if($scope.useSlotInTemplate(currentSlot)) {
+                            if(!subResult[timezone]) {
+                                subResult[timezone] = [currentSlot.value];
+                            } else {
+                                subResult[timezone].push(currentSlot.value);
+                            }
+                        }
                     });
                 });
-                tmpResult.push(subResult);
+
+                if(!$.isEmptyObject(subResult)) {
+                    tmpResult.push(subResult);
+                }
             });
 
             var currentDay;
@@ -76,7 +289,6 @@
             var tmpSlotProp = {};
             var resultToAdd = {};
             var indexToSlice;
-            //console.log(tmpResult);
 
             _.each(tmpResult, function(slotProposition) {
                 // Allow destructive manipulation without affecting the main object (we are using slice)
@@ -87,15 +299,12 @@
 
                 _.each($scope.allUsedTimezones, function(timezone) {
                     var propositionInTimezone = slotProposition[timezone];
-                    //previousDay = null;
                     currentDay = moment(propositionInTimezone[0]);
 
                     for(var i=0; i<slotsNumber; i++) {
 
-                        //console.log(currentDay.format());
                         if(indexTouched.indexOf(i) == -1){
                             if(!moment(propositionInTimezone[i]).isSame(currentDay, 'day')) {
-                                //console.log(propositionInTimezone[i]);
                                 subResult = {};
                                 _.each($scope.allUsedTimezones, function(timezone) {
                                     // We remove the slot from each timezone and add it to the subResult
@@ -107,26 +316,19 @@
                                 indexTouched.push(i);
                             }
                         }
-
-                        //previousDay = currentDay;
                     }
-
-                    //console.log('---');
                 });
 
                 if(tmpSlotProp[referenceTimezone].length > 0) {
                     result.push(tmpSlotProp);
                 }
 
-                //console.log(resultToAdd);
                 resultToAdd  = _.compact(_.flatten(_.map(resultToAdd, function(v, _){ return v})));
-                //console.log(resultToAdd);
 
                 result = result.concat(resultToAdd);
                 resultToAdd = [];
                 indexTouched = [];
             });
-            //console.log(result);
             return result;
         };
 
@@ -145,13 +347,19 @@
             return $scope.outBoundSuggestionsCount > 0;
         };
 
+        $scope.getTimeSlotsToSuggest = function() {
+            return window.timeSlotsToSuggest.concat($scope.getTimeSlotsSuggestedByAi());
+        };
+
         $scope.setSuggestions = function(forceDisplayManager) {
             //forceDisplayManager is used in the follow_up_contacts flow, because in this one 0 propostions are a possible choice,
             // So we must display the 'Next' button to allow the operator to generate the template
 
             $scope.clearPreviousSuggestions();
 
-            var suggestions = window.timeSlotsToSuggest.slice(0);
+            var suggestions = _.sortBy($scope.getTimeSlotsToSuggest(), function(slot) {
+                return moment(slot.value || slot).valueOf();
+            });
 
             if(suggestions.length > 0 || forceDisplayManager) {
                 $scope.displayDatesSuggestionManager = true;
@@ -161,7 +369,7 @@
                 _.each(timezones, function(timezone) {
                     $scope.timeSlotsSuggestions[timezone] = [];
                     _.each(suggestions, function(suggestion) {
-                        $scope.timeSlotsSuggestions[timezone].push( $scope.addTimeSlotSuggestion(timezone, suggestion) );
+                        $scope.timeSlotsSuggestions[timezone].push( $scope.addTimeSlotSuggestion(timezone, angular.copy(suggestion)) );
                     });
                 });
             } else {
@@ -173,22 +381,30 @@
         };
 
         $scope.addTimeSlotSuggestion = function(timezone, suggestion) {
-            suggestion = moment(suggestion).tz(timezone);
+            // Initially, the suggestions are only dates represented as strings like "2016-10-19T15:30:00+02:00"
+            // But we can now also provide richer data by using objects. Note that the effective value of the suggestion must
+            // be passed as the 'value' property avec le object
+            if(angular.isString(suggestion)) {
+                suggestion = { value: moment(suggestion).tz(timezone) };
+            } else if(angular.isObject(suggestion)) {
+                suggestion.value = suggestion.value.tz(timezone);
+            }
 
-            var suggestionDisplayText = window.helpers.capitalize(suggestion.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")));
+            //suggestion = moment(suggestion).tz(timezone);
 
-            var suggestionData = {
-                value: suggestion,
+            var suggestionDisplayText = window.helpers.capitalize(suggestion.value.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")));
+
+            $.extend(suggestion, {
                 displayText: suggestionDisplayText,
                 isOutBound: false
-            };
+            });
 
-            if($scope.checkSuggestionTimeOutBound(suggestion)) {
-                suggestionData.isOutBound = true;
+            if($scope.checkSuggestionTimeOutBound(suggestion.value)) {
+                suggestion.isOutBound = true;
                 $scope.outBoundSuggestionsCount += 1;
             }
 
-            return suggestionData;
+            return suggestion;
         };
 
        $scope.getAppointmentWorkingHours = function() {
@@ -239,6 +455,61 @@
 
         $scope.getAttendeesApp = function() {
             return attendeesService.getAttendeesApp();
+        };
+
+        $scope.getPureAiSuggestions = function() {
+            return _.filter($scope.timeSlotsSuggestedByAi, function(slot) {
+                return slot.pureAi;
+            });
+        };
+
+        $scope.getValidatedAiSuggestions = function() {
+            return _.filter($scope.timeSlotsSuggestedByAi, function(slot) {
+                return slot.pureAi && slot.accepted;
+            });
+        };
+
+        $scope.computeLearningStatusOnSuggestion = function(suggestion) {
+            var status = undefined;
+            var result = {};
+
+            if(suggestion.rejected) {
+                status = false;
+            } else {
+                var currentEvent = currentCalendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                    return ev.trackingId == suggestion.trackingId;
+                })[0];
+
+                if(currentEvent) {
+                    status = currentEvent.start.isSame(suggestion.value) ? true : 'moved';
+                } else {
+                    status = 'removed';
+                }
+
+            }
+
+            result[suggestion.value.format()] = status;
+            return result;
+        };
+
+        $scope.sendLearningData = function() {
+            var data = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
+                return $scope.computeLearningStatusOnSuggestion(slot);
+            });
+
+            aiDatesSuggestionManager.scope().sendLearningData(data);
+        };
+
+        $scope.trackSuggestedDates = function() {
+            trackActionV2('dates_suggestions', {
+                calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;}),
+                ai_call_failed: $scope.showAiError,
+                ai_suggested_dates_count: $scope.getPureAiSuggestions().length,
+                validated_ai_dates_count: $scope.getValidatedAiSuggestions().length,
+                suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length
+            });
+
+            $scope.sendLearningData()
         };
 
         $scope.init();

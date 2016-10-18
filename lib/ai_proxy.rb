@@ -12,7 +12,10 @@ class AiProxy
       process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V2'] + '/entities/'}.freeze,
 
       get_company_name:       { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/companynames/' }.freeze,
-      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/parsersncf/'}.freeze
+      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/parsersncf/'}.freeze,
+
+      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/suggest_dates/' }.freeze,
+      send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/validated_dates/' }.freeze,
   }.freeze
 
   def self.get_endpoint(key)

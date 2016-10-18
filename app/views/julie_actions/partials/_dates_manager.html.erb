@@ -1,6 +1,5 @@
 <%= javascript_include_tag 'angular_dates_manager_appp'%>
 
-
 <div id="thread-header-other-entries-container">
   <div id="selected-events-container"></div>
 
@@ -9,17 +8,36 @@
       <%= label_tag :dates_suggestion_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
       <%= text_field_tag :dates_suggestion_timezone, @messages_thread.computed_data[:timezone] %>
       <div class="time-slots-to-suggest-title">Dates proposées</div>
+      <div class="ai-area">
+        <span class="ai-loader-area" ng-show="showAiLoader">
+          <span class="ai-loader"></span>
+          <span class="loader-text">Jul.IA réfléchie</span>
+        </span>
+        <span class="warning-area" ng-show="showAiWarning">
+          <span class="ai-warning-sprite"></span>
+          <span class="ai-warning" >{{aiWarningMessage}}</span>
+        </span>
+        <span class="error-area" ng-show="showAiError">
+          <span class="ai-error-sprite"></span>
+          <span class="ai-error" >{{aiErrorMessage}}</span>
+        </span>
+      </div>
       <div class="time-slots-to-suggest-outbound-count" ng-show="displayOutBoundCount()">{{outBoundSuggestionsCount}} proposition(s) anormale(s) détectée(s)</div>
       <div class="dates-suggestions-wrapper">
         <div class="timezoned-suggestions-area" ng-repeat="(timezone, suggestions) in timeSlotsSuggestions">
           <div class="timezone-title">{{timezone}}</div>
 
-          <div class="btn btn-sm btn-block time-slot-to-suggest" data-date-time="{{suggestion.value.format()}}" ng-class="suggestion.isOutBound ? 'btn-danger' : 'btn-primary'" ng-repeat="suggestion in suggestions">
+          <div class="btn btn-sm btn-block time-slot-to-suggest" data-date-time="{{suggestion.value.format()}}" ng-class="{'btn-danger':suggestion.isOutBound, 'btn-primary':!suggestion.isOutBound, 'from-ai':suggestion.fromAi && !suggestion.accepted}" ng-repeat="suggestion in suggestions">
             {{suggestion.displayText}}
+            <span class="ai-suggestion-action-wrapper" ng-show="suggestion.fromAi && !suggestion.accepted">
+              <span class="ai-suggestion-action accept"></span>
+              <span class="ai-suggestion-action reject"></span>
+            </span>
           </div>
         </div>
       </div>
-      <div class="btn btn-block btn-success suggest-dates-next-button">Next</div>
+      <div class="dates-suggestions-from-ai-remaining-warning" ng-show="aiSuggestionsRemaining()">Validez ou invalidez les propositions de l’AI avant envoie</div>
+      <div class="btn btn-block btn-success suggest-dates-next-button" ng-disabled="nextBtnDisabled()">Next</div>
     </div>
   </div>
 

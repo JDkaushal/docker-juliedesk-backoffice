@@ -19,7 +19,8 @@ Calendar.prototype.generateEventData = function(params) {
         beingAdded: true,
         calendar_login_username: params.calendar_login_username,
         calendar_login_type: params.calendar_login_type,
-        calendar_login_email: params.calendar_login_email
+        calendar_login_email: params.calendar_login_email,
+        trackingId: params.trackingId
     };
 };
 
@@ -79,7 +80,6 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         calendar.drawEventList();
 
         if(calendar.getMode() == "free_calendar") {
-
             calendar.showEventDetails(eventData, calendar.$selector.find(".fc-event.fc-event-draggable"));
         }
     }
@@ -307,6 +307,8 @@ Calendar.prototype.fullCalendarInit = function() {
 
     var columnWidth, columnWidthInt, offsetRowInt;
 
+    var suggestionDatesManager = $('#dates-suggestion-manager').scope();
+
     //defaultDate = moment("2015-03-01");
     calendarNode.fullCalendar({
         header: {
@@ -489,6 +491,31 @@ Calendar.prototype.fullCalendarInit = function() {
 
             if(event.isNotAvailableEvent) {
                 $element.addClass('not-available');
+            }
+
+            if(event.isSuggestionFromAi) {
+                $element.addClass('suggestion-from-ai');
+                var $callToActionsWrapper = $('<div class="call-to-actions-wrapper"></div>');
+                var $acceptSprite = $('<span class="call-to-action accept"></span>');
+                var $rejectSprite = $('<span class="call-to-action reject"></span>');
+
+                $callToActionsWrapper.append($acceptSprite).append($rejectSprite);
+
+                $element.find('.fc-event-inner').append($callToActionsWrapper);
+
+                $acceptSprite.click(function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    suggestionDatesManager.acceptAiSuggestion(event.start);
+                });
+
+                $rejectSprite.click(function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    suggestionDatesManager.rejectAiSuggestion(event.start);
+                });
             }
         },
         eventAfterAllRender: function(view) {

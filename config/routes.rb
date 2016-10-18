@@ -154,6 +154,15 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :ai do
+    namespace :dates_suggestions do
+      post :fetch
+      post :send_learning_data
+    end
+
+
+  end
+
 
 
   get "stats", controller: :stats, action: :index

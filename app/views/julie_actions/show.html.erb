@@ -68,6 +68,8 @@
         return result;
     };
 
+    var datesSuggestionManager = $('#dates-suggestion-manager');
+
     /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
     window.afterEventFetched = function () {
         // Add attendees as recipients if not present already
@@ -232,6 +234,36 @@
 
     }
 
+    // Allow to manage the disability of the send button (responsible for sending the email) based on the current classification
+    // and external conditions
+    function checkSendButtonAvailability() {
+      var disabled = false;
+      var warningText = '';
+
+      switch(window.classification) {
+
+        case 'follow_up_contacts':
+          //fall-through
+        case 'ask_availabilities':
+          //fall-through
+        case 'ask_date_suggestions':
+          var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+
+          disabled = datesSuggestionManager.aiSuggestionsRemaining();
+          warningText = datesSuggestionManager.getTimeSlotsSuggestedByAi().length + ' proposition(s) reste(nt) à (in)valider avant envoie';
+          $('#reply-button-popover-warning-details').text(warningText);
+          break;
+      }
+
+      if(disabled) {
+        $('#reply-button-popover-warning-details-wrapper').show();
+      } else {
+        $('#reply-button-popover-warning-details-wrapper').hide();
+      }
+
+      $('#reply-button').prop('disabled', disabled);
+    };
+
     $(function () {
         initTokenInputs();
         $("#show-calendar-button").click(function () {
@@ -245,10 +277,21 @@
                 window.showEditedEventInCalendar();
             }
         });
+
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action.accept", function (e) {
+          var dateTime = $(this).closest('.time-slot-to-suggest').data("date-time");
+          datesSuggestionManager.scope().acceptAiSuggestion(dateTime);
+        });
+
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action.reject", function (e) {
+          var dateTime = $(this).closest('.time-slot-to-suggest').data("date-time");
+          datesSuggestionManager.scope().rejectAiSuggestion(dateTime);
+        });
+
         $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function (e) {
-            var dateTime = $(this).data("date-time");
-            $(".calendar-container").removeClass("minimized");
-            window.currentCalendar.goToDateTime(dateTime);
+          var dateTime = $(this).data("date-time");
+          $(".calendar-container").removeClass("minimized");
+          window.currentCalendar.goToDateTime(dateTime);
         });
 
         $(".left-column").scroll(function () {
@@ -266,6 +309,8 @@
             });
             window.setSignatureAndFooter();
         });
+
+
 
         $("#reply-button").click(function () {
             var trackingData = {ux_element: 'email'};

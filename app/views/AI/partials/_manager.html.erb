@@ -1,7 +1,6 @@
 <%= javascript_include_tag 'angular_AI_manager_app' %>
 
 <div id="AI_manager">
-  <div id="locale_manager" ng-controller="localeManager"></div>
-  <div id="appointment_type_manager" ng-controller="appointmentTypeManager"></div>
-  <phone-skype-entities-manager/>
+  <!-- We add some controllers conditionally in app/assets/javascripts/angular/AI_manager/AI-app.js-->
+  <div id="ai_dates_suggestions_manager" ng-controller="datesSuggestionManager"></div>
 </div>

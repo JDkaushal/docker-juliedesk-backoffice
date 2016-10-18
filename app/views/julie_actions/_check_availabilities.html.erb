@@ -93,6 +93,8 @@
 
         $("#no-date-fits").click(function () {      
             window.timeSlotToCreate = null;
+            var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
+            aiDatesSuggestionsManager.fetchAiDatesSuggestions(true);
             $(".messages-thread-info-panel .create-event-panel").hide();
             clearDatesToCheck();
 
@@ -563,7 +565,11 @@
             });
         }
         else {
-            checkAvailabilitiesClassicReply();
+          if(window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
+            var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+            datesSuggestionManager.trackSuggestedDates();
+          }
+          checkAvailabilitiesClassicReply();
         }
     };
 

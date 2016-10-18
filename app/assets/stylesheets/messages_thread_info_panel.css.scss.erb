@@ -167,6 +167,11 @@
       .time-slots-to-suggest-list {
         padding: 10px 10px 30px 10px;
 
+        .dates-suggestions-from-ai-remaining-warning {
+          color: $aiControlColor;
+          text-align: center;
+        }
+
         .dates-suggestion-timezone-label {
           font-size: 11px;
           opacity: 0.8;
@@ -196,10 +201,99 @@
               margin-top: 2px;
               font-size: 15px;
               border-radius: 0;
+              text-align: left;
+            }
+
+            .from-ai {
+              background-color: $aiControlColor;
+              border-color: $aiControlInputBorderColor;
+            }
+
+            .ai-suggestion-action-wrapper {
+              position: absolute;
+              right: 40px;
+
+              .ai-suggestion-action {
+                width: 25px;
+                display: inline-block;
+                height: 25px;
+                position: relative;
+                top: -1px;
+                left: 10px;
+
+                &.accept {
+                  @include ai-date-suggestion-sprite-accept();
+                }
+
+                &.reject {
+                  @include ai-date-suggestion-sprite-reject();
+                }
+              }
             }
           }
         }
       }
+
+      .ai-area {
+        color: $aiControlColor;
+        font-weight: bold;
+
+        .ai-loader-area {
+          .ai-loader {
+            background-image: url(<%= asset_path 'ai_processing_loader.gif' %>);
+            background-repeat: no-repeat;
+            background-size: 25px 25px;
+            width: 25px;
+            display: inline-block;
+            height: 25px;
+            position: relative;
+            top: 6px;
+          }
+
+          .loader-text {
+            margin-left: 5px;
+          }
+        }
+
+        .warning-area {
+          color: $aiControlColor;
+
+          .ai-warning-sprite {
+            background-image: url(<%= asset_path 'warning2x.png' %>);
+            background-repeat: no-repeat;
+            background-size: 25px 25px;
+            width: 25px;
+            display: inline-block;
+            height: 25px;
+            position: relative;
+            top: 6px;
+          }
+
+          .ai-warning {
+            margin-left: 5px;
+          }
+        }
+
+        .error-area {
+          color: red;
+
+          .ai-error-sprite {
+            background-image: url(<%= asset_path 'warning_red2x.png' %>);
+            background-repeat: no-repeat;
+            background-size: 25px 25px;
+            width: 25px;
+            display: inline-block;
+            height: 25px;
+            position: relative;
+            top: 6px;
+          }
+
+          .ai-error {
+            margin-left: 5px;
+          }
+        }
+      }
+
       .time-slots-to-suggest-title {
         color: $darkBlue;
         margin: 10px 0 0;

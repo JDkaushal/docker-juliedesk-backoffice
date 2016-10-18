@@ -2,8 +2,43 @@
 
     var app = angular.module('AI-manager-services', []);
 
-    app.service('messageInterpretationsService', function(){
+    app.service('aIDatesSuggestionService', ['$http','$q', function($http, $q) {
+        this.fetch = function(params) {
+            return $http({
+                url: '/ai/dates_suggestions/fetch',
+                method: "POST",
+                data: params
+            }).then(
+                function(response) {
+                    console.log(response);
+                    return {
+                        data: response.data
+                    };
+                }, function(httpError) {
+                    console.log(httpError);
+                    return $q.reject(httpError);
+                });
+        };
 
+        this.sendLearningData = function(params) {
+            return $http({
+                url: '/ai/dates_suggestions/send_learning_data',
+                method: "POST",
+                data: params
+            }).then(
+                function(response) {
+                    console.log(response);
+                    return {
+                        data: response.data
+                    };
+                }, function(httpError) {
+                    console.log(httpError);
+                });
+
+        };
+    }]);
+
+    app.service('messageInterpretationsService', function(){
         this.getMainInterpretation = function(){
             var mainInterpretation = _.find(window.messageInterpretations, function(mI) {
                 return mI.question == "main";

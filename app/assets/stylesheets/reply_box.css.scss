@@ -72,6 +72,21 @@
     right: 5px;
   }
 
+  #reply-button-popover-warning-details-wrapper {
+    display: none;
+    position: absolute;
+    bottom: 42px;
+    right: 5px;
+  }
+
+  #reply-button-popover-warning-details {
+    //display: none;
+    background-color: $aiControlColor;
+    border-radius: 5px;
+    color: white;
+    padding: 7px;
+  }
+
   #forward-button {
     position: absolute;
     bottom: 5px;

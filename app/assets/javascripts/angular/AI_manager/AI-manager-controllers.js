@@ -506,4 +506,20 @@
         }
     });
 
+    app.controller('datesSuggestionManager', ['$scope', 'aIDatesSuggestionService', function($scope, aIDatesSuggestionService) {
+
+        $scope.init = function() {
+        };
+
+        $scope.fetchSuggestedDatesByAi = function(params) {
+            return aIDatesSuggestionService.fetch(params);
+        };
+
+        $scope.sendLearningData = function(params) {
+            return aIDatesSuggestionService.sendLearningData(params);
+        };
+
+        $scope.init();
+    }]);
+
 })();

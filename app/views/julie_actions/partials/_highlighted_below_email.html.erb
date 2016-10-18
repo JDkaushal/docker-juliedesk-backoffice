@@ -45,7 +45,13 @@
         <%= check_box_tag :quote_message, "", !@is_discussion_client_julie_only %>
         <%= I18n.t "common.quote_message" %>
       </div>
-      <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
+
+      <span>
+        <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
+        <div id="reply-button-popover-warning-details-wrapper">
+          <div id="reply-button-popover-warning-details"></div>
+        </div>
+      </span>
       <button class="btn btn-success" id="forward-button"><%= I18n.t("common.forward") %></button>
       <div id="callback-message"></div>
     </div>

@@ -2,7 +2,8 @@
 <script>
     window.leftColumnMessage = "Suggest dates";
     <% now = Time.now %>
-    var suggestedDateTimes = <%== @messages_thread.suggested_date_times.select{|dt| dt['date'] && dt['date'] >= now}.map{|dt| dt['date']}.to_json %>
+    var suggestedDateTimes = <%== @messages_thread.suggested_date_times.select{|dt| dt['date'] && dt['date'] >= now}.map{|dt| dt['date']}.uniq.to_json %>
+    //var suggestedDateTimes = ['2016-10-19T23:00:00+0000', '2016-10-20T10:00:00+0000'];
 
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
@@ -13,10 +14,6 @@
                 addSuggestedDatesToCalendar(suggestedDateTimes);
             }
         });
-
-        console.log(suggestedDateTimes);
-//        window.timeSlotsToSuggest = _.map(suggestedDateTimes, function(dateSlot) { return dateSlot.date; });
-//        window.redrawTimeSlotsToSuggestContainer();
     };
 
     var otherClients = function(){
@@ -36,7 +33,6 @@
             locale: threadComputedData.locale,
             appointment: window.getCurrentAppointment(),
             timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
-            //timeSlotsToSuggest: window.timeSlotsToSuggest,
             usedTimezones: datesSuggestionsManager.getUsedTimezones(),
             threadMainTimezone: threadComputedData.timezone,
             client: window.threadAccount.usage_name,
@@ -63,7 +59,7 @@
             window.redrawTimeSlotsToSuggestContainer({forceDisplayManager: true});
             followUpContactsSetReplyMessage();
 
-            // Scroll top on the right column to the dates propostion area
+            // Scroll top on the right column to the dates propositions area
             $('.messages-thread-info-panel').animate({
                 scrollTop: 0
             });
@@ -74,31 +70,73 @@
         var eventData, end;
         var currentEventDuration = currentCalendar.getCurrentDuration();
         var currentTimezone = currentCalendar.getCalendarTimezone();
+        var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
+      if(window.featuresHelper.isFeatureActive('ai_dates_suggestions')) {
+        currentCalendar.addCal(_.map(dates, function(date) {
+          date = moment(date).tz(currentTimezone);
+
+          end = date.clone();
+          end.add('m', currentEventDuration);
+
+          datesSuggestionManager.addTimeSlotSuggestedByAI({value: date, fromAi: true, display: true, alreadyInsertedInCalendar: true});
+
+          return {
+            summary: 'Already Suggested',
+            start: {dateTime: date},
+            end: {dateTime: end},
+            isSuggestionFromAi: true,
+            alreadySuggested: true
+          }
+        }));
+      } else {
         var currentCalendarUsername = currentCalendar.initialData.default_calendar_login_username;
         var currentLoginType = currentCalendar.initialData.default_calendar_login_type;
         var currentLoginEmail = currentCalendar.initialData.email;
 
         _.each(dates, function(date) {
-            date = moment(date).tz(currentTimezone);
-
-            end = date.clone();
-            end.add('m', currentEventDuration);
-
-            eventData = currentCalendar.generateEventData({
-                title: 'Already Suggested',
-                start: date,
-                end: end,
-                calendar_login_username: currentCalendarUsername,
-                calendar_login_type: currentLoginType,
-                calendar_login_email: currentLoginEmail
-            });
-
-            currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
-            currentCalendar.addEvent(eventData);
+          date = moment(date).tz(currentTimezone);
+          end = date.clone();
+          end.add('m', currentEventDuration);
+          eventData = currentCalendar.generateEventData({
+            title: 'Already Suggested',
+            start: date,
+            end: end,
+            calendar_login_username: currentCalendarUsername,
+            calendar_login_type: currentLoginType,
+            calendar_login_email: currentLoginEmail
+          });
+          currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+          currentCalendar.addEvent(eventData);
         });
+      }
 
-        currentCalendar.drawEventList();
+      currentCalendar.drawEventList();
+    };
+
+    var contactsFollowUpReplyFunction = function() {
+      $.ajax({
+        url: "/julie_actions/<%= @julie_action.id %>/update",
+        method: "post",
+        data: {
+          text: $("textarea#reply-text").val(),
+          generated_text: window.currentFullMessageWithFooter,
+          to: window.currentRecipients().to,
+          cc: window.currentRecipients().cc,
+          done: true,
+          processed_in: Date.now() - window.startedAt,
+          messages_thread_id: "<%= @messages_thread.id %>",
+          client_settings: window.getClientSettings(),
+          date_times: window.timeSlotsToSuggest || []
+        }
+      });
+      window.sendReply();
+    };
+
+    window.clickReplyButton = function() {
+      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+      datesSuggestionManager.trackSuggestedDates();
+      contactsFollowUpReplyFunction();
     };
 
 </script>

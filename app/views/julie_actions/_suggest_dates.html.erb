@@ -183,14 +183,16 @@
     };
 
     window.clickReplyButton = function() {
-        if(isPostpone) {
-            window.deleteEventBeforeReply(function() {
-                suggestDateReplyFunction();
-            });
-        }
-        else {
-            suggestDateReplyFunction()
-        }
+      if(isPostpone) {
+          window.deleteEventBeforeReply(function() {
+              suggestDateReplyFunction();
+          });
+      }
+      else {
+        var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+        datesSuggestionManager.trackSuggestedDates();
+        suggestDateReplyFunction()
+      }
 
     };
 

@@ -2,6 +2,102 @@
 
     var app = angular.module('utilities-controllers', []);
 
+    app.controller('appointmentsTimesConstraintsHelper', ['$scope', function($scope) {
+
+        $scope.getTimesConstraintsEventsForCurrentAppointment = function(start, end) {
+           return window.currentCalendar.computeConstraintsDataEvents($scope.getGroupedTimesConstraintsForCurrentAppointment(), start, end);
+        };
+
+        $scope.getGroupedTimesConstraintsForCurrentAppointment = function() {
+            return _.groupBy($scope.getTimesConstraintsForCurrentAppointment(), function(data) {
+               return data.attendee_email;
+            });
+        };
+
+        $scope.getTimesConstraintsForCurrentAppointment = function() {
+            return $scope.timesConstraintsForAppointmentType(window.threadComputedData.appointment_nature);
+        };
+
+        $scope.timesConstraintsForAppointmentType = function(appointmentType) {
+            var constraints = [];
+
+            var functionToExecute = $scope[appointmentType + 'Constraints'];
+
+            if(functionToExecute) {
+                constraints = functionToExecute();
+            } else {
+                constraints = $scope.defaultAppointmentsConstraints();
+            }
+
+            return _.map(constraints, function(constraint) {
+                return $scope.generateConstraintForCurrentClient(constraint);
+            });
+
+            //return constraints;
+        };
+
+        $scope.breakfastConstraints = function() {
+            return [$scope.generateTimeHash('08:00', '09:30')];
+        };
+
+        $scope.lunchConstraints = function() {
+            var constraints = [];
+
+            if(window.threadAccount.locale == 'fr'){
+                constraints = [$scope.generateTimeHash('12:30', '14:00')];
+            } else {
+                constraints = [$scope.generateTimeHash('12:00', '13:30')];
+            }
+
+            return constraints;
+        };
+
+        $scope.coffeeConstraints = function() {
+            return [$scope.generateTimeHash('09:00', '12:00'), $scope.generateTimeHash('14:00', '18:00')];
+        };
+
+        $scope.drinkConstraints = function() {
+            return [$scope.generateTimeHash('18:00', '21:00')];
+        };
+
+        $scope.dinnerConstraints = function() {
+            var constraints = [];
+
+            if(window.threadAccount.locale == 'fr'){
+                constraints = [$scope.generateTimeHash('19:30', '21:30')];
+            } else {
+                constraints = [$scope.generateTimeHash('18:30', '20:30')];
+            }
+
+            return constraints;
+        };
+
+        $scope.defaultAppointmentsConstraints = function() {
+            return [$scope.generateTimeHash('08:00', '12:00'), $scope.generateTimeHash('14:30', '19:30')];
+        };
+
+
+
+        $scope.generateTimeHash = function(start, end) {
+          return {
+              startTime: start,
+              endTime: end
+          };
+        };
+
+        $scope.generateConstraintForCurrentClient = function(params) {
+            return {
+                attendee_email: window.threadAccount.email,
+                constraint_nature: 'can',
+                constraint_when_nature: 'always',
+                days_of_weeks: ["0", "1", "2", "3", "4", "5", "6"],
+                start_time: params.startTime,
+                end_time: params.endTime,
+                timezone: window.threadComputedData.timezone
+            }
+        };
+    }]);
+
     app.controller('eventsAvailabilitiesMethods', ['$scope', function($scope) {
 
         $scope.getFreeSlotsByRooms = function(groupedEvents) {
