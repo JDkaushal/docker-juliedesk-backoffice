@@ -388,6 +388,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                                 location: request.location,
                                 thread_id: window.processingMessageThreadId
                             }, callback(e));
+                        } else {
+                          callback(e);
                         }
                     } else {
                         if(window.threadComputedData.restaurant_booking_details.restaurant) {
