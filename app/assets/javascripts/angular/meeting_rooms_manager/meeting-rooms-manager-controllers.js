@@ -179,8 +179,9 @@
 
                 $scope.refreshRoomsList = function() {
                     var address = window.getCurrentAddressObject();
+                    var currentAppointment = window.getCurrentAppointment();
 
-                    if(address && address.meeting_rooms_enabled) {
+                    if(currentAppointment && currentAppointment.meeting_room_used && address && address.meeting_rooms_enabled) {
                         $scope.displayForm = true;
                         $scope.usingMeetingRoom = true;
                         $scope.availableRooms = address.available_meeting_rooms;
