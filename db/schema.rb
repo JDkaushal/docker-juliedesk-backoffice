@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161003090314) do
+ActiveRecord::Schema.define(version: 20161020120400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,6 +189,8 @@ ActiveRecord::Schema.define(version: 20161003090314) do
     t.json     "virtual_resource_used"
   end
 
+  add_index "message_classifications", ["message_id"], name: "index_message_classifications_on_message_id", using: :btree
+
   create_table "message_interpretations", force: true do |t|
     t.string   "question"
     t.text     "raw_response"
@@ -197,6 +199,8 @@ ActiveRecord::Schema.define(version: 20161003090314) do
     t.datetime "updated_at"
     t.boolean  "error"
   end
+
+  add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree
 
   create_table "messages", force: true do |t|
     t.integer  "messages_thread_id"
@@ -209,6 +213,8 @@ ActiveRecord::Schema.define(version: 20161003090314) do
     t.integer  "server_message_id"
     t.datetime "request_at"
   end
+
+  add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
 
   create_table "messages_threads", force: true do |t|
     t.string   "account_email"
