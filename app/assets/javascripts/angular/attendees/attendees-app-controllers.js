@@ -500,7 +500,13 @@
 
             var validatedCompany = needAIConfirmation ? '' : company;
 
-            var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
+            var attendeesLength = window.threadComputedData.attendees.length;
+
+            var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && attendeesLength == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
+
+            if(attendeesLength > 0) {
+                var alreadyPresent = window.currentToCC.indexOf(informations.email.toLowerCase()) > -1;
+            }
 
             var a = new Attendee({
                 accountEmail: attendee.account_email,
@@ -522,7 +528,7 @@
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
                 isPresent: isPresent,
-                alreadySetPresent: isPresent,
+                alreadySetPresent: isPresent || alreadyPresent,
                 isClient: informations.isClient == "true",
                 needAIConfirmation: needAIConfirmation,
                 aIHasBeenConfirmed: aIHasBeenConfirmed,
