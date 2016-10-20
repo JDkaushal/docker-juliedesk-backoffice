@@ -504,7 +504,7 @@
 
             var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && attendeesLength == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
 
-            if(attendeesLength > 0) {
+            if(attendeesLength > 0 && informations.email) {
                 var alreadyPresent = window.currentToCC.indexOf(informations.email.toLowerCase()) > -1;
             }
 
