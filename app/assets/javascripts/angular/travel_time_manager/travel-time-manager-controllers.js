@@ -187,7 +187,9 @@
         };
 
         $scope.selectEventsToCompute = function(email) {
-            var needTravelTime = $scope.originCoordinates && $scope.originCoordinates.length > 0;
+            // If originCoordinates is an array, check that is is not empty, if it is an object (instance of google LatLng class) check that property lat() is not undefined
+            // this means that the object is correct
+            var needTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()));
             var startDateSortedEventsAsc = $scope.sortEventsStartDate($scope.events[email]);
             // Make a copy of the array so we can safely reverse it then use both later on
             var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
