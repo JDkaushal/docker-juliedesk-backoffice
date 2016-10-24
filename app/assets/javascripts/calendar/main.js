@@ -103,7 +103,9 @@ function Calendar($selector, params) {
             }
 
             calendar.fullCalendarInit();
-            new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
+            if(aiDatesSuggestionsManager) {
+                new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
+            }
             calendar.$selector.find(".global-loading").fadeOut();
         });
     });

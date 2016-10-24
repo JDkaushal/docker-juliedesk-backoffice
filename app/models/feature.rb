@@ -16,7 +16,6 @@ class Feature < ActiveRecord::Base
       else
         false
     end
-
   end
 
   def self.active_for_operator operator_id, operator_privilege
