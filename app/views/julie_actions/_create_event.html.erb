@@ -363,6 +363,7 @@
 
         $container = $("#thread-header-other-entries-container");
 
+
         $.ajax({
             url: "/api/v1/messages_threads/parse_ticket",
             method: 'post',
@@ -370,7 +371,7 @@
                 html_message: window.currentHtmlMessage
             },
             beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "<%= ENV['JULIEDESK_APP_API_KEY'] %>");
+                xhr.setRequestHeader("Authorization", "<%= ENV['API_KEY'] %>");
             },
             success: function (response) {
                 if(response['Status'] == "Success") {

@@ -121,6 +121,8 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
     var daysToFetch = 23;
     var start, end;
 
+    var currentBatchTrackingId = generateTrackingGuid();
+
     if (typeof calendar.dispStart === "undefined" || typeof calendar.dispEnd === "undefined") {
         calendar.dispStart = view.start.clone();
         calendar.dispEnd = view.end.clone();
@@ -148,7 +150,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
             var start = batchStartDate.format() + "T00:00:00Z";
             var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
 
-            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates});
+            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates, batchTrackingId: currentBatchTrackingId});
             calendar.addToFetchedWeek(batchStartDate);
         })
     }
@@ -190,7 +192,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
                 var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
 
                 if(!calendar.alreadyFetchedWeek(batchStartDate)) {
-                    calendar.fetchAllAccountsEvents(start, end);
+                    calendar.fetchAllAccountsEvents(start, end, {batchTrackingId: currentBatchTrackingId});
                     calendar.addToFetchedWeek(batchStartDate);
                 }
             });

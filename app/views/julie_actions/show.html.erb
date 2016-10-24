@@ -99,7 +99,7 @@
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
 
     <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
-        initial_recipients[:cc] << "support@juliedesk.com"
+        initial_recipients[:cc] << 'hello@juliedesk.com'
     end %>
 
     function emailSender() {
@@ -217,7 +217,7 @@
                 // If the operator then add a recipient (either To or Cc), we uncheck the quote message checkbox, because
                 // the previous message is obviously containing informations only destined to Julie or the client
                 if (toRecipients.length > 1 || ccRecipients.filter(function(item) {
-                            return item.name != "support@juliedesk.com";
+                            return item.name != "support@juliedesk.com" && item.name != "hello@juliedesk.com";
                         }).length > 0 || toRecipients.filter(function (item) {
                             return (clientAllEmails.indexOf(item.name) > -1);
                         }).length == 0)

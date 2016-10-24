@@ -203,6 +203,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);
+                if(request.trackingId) {
+                  xhr.setRequestHeader("X-JD-REQUEST-TRACKING-ID", request.trackingId);
+                }
             },
             success: function(data) {
                 if(data.status == "error" && data.code == "AccessExpired") {
@@ -385,6 +388,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                                 location: request.location,
                                 thread_id: window.processingMessageThreadId
                             }, callback(e));
+                        } else {
+                          callback(e);
                         }
                     } else {
                         if(window.threadComputedData.restaurant_booking_details.restaurant) {
@@ -441,15 +446,28 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
                 if(restaurantBookingManager && restaurantBookingManager.getUsingRestaurantBooking() && oldEvent.id == request.event_id) {
-                    $('#restaurant-booking-manager').scope().sendAdminEmail({
-                        type: 'cancellation',
-                        user_email: window.threadAccount.email,
-                        booking_date: oldEvent.start.format(),
-                        location: window.threadComputedData.restaurant_booking_details.restaurant,
-                        thread_id: window.processingMessageThreadId
+                  if(window.threadComputedData.restaurant_booking_details.restaurant) {
+                    restaurantBookingManager.sendAdminEmail({
+                      type: 'cancellation',
+                      user_email: window.threadAccount.email,
+                      booking_date: oldEvent.start.format(),
+                      location: window.threadComputedData.restaurant_booking_details.restaurant,
+                      thread_id: window.processingMessageThreadId
                     }, callback(e));
+                  }
                 } else {
+                  // When uncheking the restaurant booking functionality then deleting the event
+                  if(window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
+                    restaurantBookingManager.sendAdminEmail({
+                      type: 'cancellation',
+                      user_email: window.threadAccount.email,
+                      booking_date: oldEvent.start.format(),
+                      location: window.threadComputedData.restaurant_booking_details.restaurant,
+                      thread_id: window.processingMessageThreadId
+                    }, callback(e));
+                  } else {
                     callback(e);
+                  }
                 }
             },
             error: function(e) {

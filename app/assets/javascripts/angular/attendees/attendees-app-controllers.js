@@ -206,7 +206,7 @@
         var contactInfosReFr = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
         var contactInfosReEn = new RegExp("-" + localize("events.call_instructions.contacts_infos", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
 
-        var excludedAttendeesEmails = ['support@juliedesk.com'];
+        var excludedAttendeesEmails = ['support@juliedesk.com', 'hello@juliedesk.com'];
 
         $scope.displaySearchList = false;
         $scope.attendeeSearchFilter = '';
@@ -322,9 +322,10 @@
         };
 
         $scope.formatUsageName = function(attendee) {
-            if(window.threadAccount.language_level == 'soutenu') {
-                attendee.usageName = attendee.displayUsageNameSoutenu();
-            }
+            attendee.dispatchUsageName();
+            // if(window.threadAccount.language_level == 'soutenu') {
+            //     attendee.usageName = attendee.displayUsageNameSoutenu();
+            // }
         };
 
         this.callingInformationsChanged = function(){
@@ -495,13 +496,17 @@
             var company = informations.company || '';
             var needAIConfirmation = informations.needAIConfirmation || false;
 
-            console.log(attendee.account_email, informations.aIHasBeenConfirmed);
             var aIHasBeenConfirmed = informations.aIHasBeenConfirmed || false;
-            console.log(attendee.account_email, aIHasBeenConfirmed);
 
             var validatedCompany = needAIConfirmation ? '' : company;
 
-            var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && window.threadComputedData.attendees.length == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
+            var attendeesLength = window.threadComputedData.attendees.length;
+
+            var isPresent = attendee.isPresent == "true" || (window.threadDataIsEditable && attendeesLength == 0 && window.currentToCC.indexOf(informations.email.toLowerCase()) > -1);
+
+            if(attendeesLength > 0 && informations.email) {
+                var alreadyPresent = window.currentToCC.indexOf(informations.email.toLowerCase()) > -1;
+            }
 
             var a = new Attendee({
                 accountEmail: attendee.account_email,
@@ -523,7 +528,7 @@
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
                 isPresent: isPresent,
-                alreadySetPresent: isPresent,
+                alreadySetPresent: isPresent || alreadyPresent,
                 isClient: informations.isClient == "true",
                 needAIConfirmation: needAIConfirmation,
                 aIHasBeenConfirmed: aIHasBeenConfirmed,
@@ -532,7 +537,7 @@
                 missingInformationsTemp: {}
             });
 
-            if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.firstName == undefined))
+            if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.lastName == undefined))
                 a.firstName = a.usageName;
 
             //We ask the AI only when we are classifying an email and if the attendee is not a client
@@ -625,7 +630,11 @@
 
             // We compute the usage name based on the client language level preference only in the first pass of the form filling
             if(!window.threadComputedData.appointment_nature) {
-                $scope.formatUsageName(a);
+                a.dispatchUsageName();
+            } else {
+                if(!a.usageName) {
+                    a.dispatchUsageName();
+                }
             }
 
             $scope.attendees.push(a);
@@ -1182,18 +1191,20 @@
                 that[key] = value;
             });
         },
+        dispatchUsageName: function() {
+            if(window.threadAccount.language_level == 'soutenu') {
+                this.usageName = this.displayUsageNameSoutenu();
+            } else {
+                this.setUsageName(this.firstName);
+            }
+        },
         firstLastNameKeyup: function(){
             if(window.formFirstPass || this.needAIConfirmation) {
-                if(window.threadAccount.language_level == 'soutenu') {
-                    this.usageName = this.displayUsageNameSoutenu();
-                } else {
-                    this.setUsageName(this.firstName);
-                }
+                this.dispatchUsageName();
             }
         },
         firstNameMirrored: function(){
             return (this.usageName == '' || this.usageName == undefined);
-
         },
         setUsageName: function(value) {
             if(this.firstNameMirrored){

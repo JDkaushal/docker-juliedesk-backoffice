@@ -13,6 +13,5 @@ class ClientSuccessTrackingWorker
       print "TRACKING WORKER EXCEPTION\n"
       raise e
     end
-
   end
 end

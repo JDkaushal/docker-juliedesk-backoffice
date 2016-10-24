@@ -58,14 +58,14 @@ class JulieActionsController < ApplicationController
       if params[:event_id].present? && !julie_action.event_id
 
         messages_thread = julie_action.message_classification.message.messages_thread
-        ClientSuccessTrackingHelpers.async_track("new_event", messages_thread.account_email, {
+        ClientSuccessTrackingHelpers.async_track("Event Was Created", messages_thread.account_email, {
             bo_thread_id: messages_thread.id,
             thread_messages_count: messages_thread.messages.count,
             thread_status: messages_thread.status,
             bo_message_id: julie_action.message_classification.message_id,
-            current_classificatio: julie_action.message_classification.classification,
+            current_classification: julie_action.message_classification.classification,
             first_time: messages_thread.messages.map(&:message_classifications).flatten.empty?,
-            new_email_received_at: julie_action.message_classification.message.created_at.strftime("%Y-%m-%dT%H:%M:%S")
+            new_email_received_date: julie_action.message_classification.message.created_at.strftime("%Y-%m-%dT%H:%M:%S")
         })
       end
     rescue

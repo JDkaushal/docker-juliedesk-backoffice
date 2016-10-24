@@ -280,7 +280,7 @@ window.wordings['fr'] = {
         },
         follow_up_confirmation: {
             header: "C'est noté, je vais relancer :\n",
-            item: "- %{label}\n"
+            item: "%{label}\n"
         },
         utilities: {
             timezone_display: "heure de %{city}"

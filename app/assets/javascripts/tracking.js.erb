@@ -37,6 +37,88 @@ window.trackFormSubmit = function(selector, event, params) {
     //TODO: Implement
 };
 
+<% if ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>
+
+  function RequestTracking() {
+    this.id = generateTrackingGuid();
+
+    this.create = function(params) {
+      var that = this;
+
+      var currentParams = params;
+      currentParams.initiation_date = moment().valueOf();
+      currentParams.id = that.id;
+
+      $.ajax({
+        type: 'POST',
+        url: '<%= ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>/api/v1/requests',
+        crossDomain: true,
+        data: {request: currentParams},
+        beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
+        dataType: 'json',
+        success: function(responseData, textStatus, jqXHR) {
+          console.log(responseData);
+        },
+        error: function (responseData, textStatus, errorThrown) {
+          console.log(responseData);
+        }
+      });
+
+      return that.id;
+    };
+
+    this.update = function(params) {
+      var that = this;
+
+      $.ajax({
+        type: 'PUT',
+        url: '<%= ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>/api/v1/requests/' + that.id,
+        crossDomain: true,
+        data: {request: params},
+        beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
+        dataType: 'json',
+        success: function(responseData, textStatus, jqXHR) {
+          console.log(responseData);
+        },
+        error: function (responseData, textStatus, errorThrown) {
+          console.log(responseData);
+        }
+      });
+
+      return that.id;
+    }
+  }
+
+<% end %>
+
+
+//function createTrackedRequest(params) {
+  <!--<% if ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>-->
+//    // Get current timestamp in milliseconds
+//    var currentTimestampMs = moment().valueOf();
+//
+//    params.initiation_date = currentTimestampMs;
+//    params.id = currentTimestampMs;
+//
+//    $.ajax({
+//      type: 'POST',
+//      url: '<%= ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>/api/v1/requests',
+//      crossDomain: true,
+//      data: {request: params},
+//      beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
+//      dataType: 'json',
+//      success: function(responseData, textStatus, jqXHR) {
+//        callback();
+//      },
+//      error: function (responseData, textStatus, errorThrown) {
+//        callback();
+//      }
+//    });
+//
+//    return currentTimestampMs;
+  <!--<% end %>-->
+//}
+
 function trackActionV2(type, extraParams, callback) {
 
     // We don't track events when in review mode
@@ -72,4 +154,14 @@ function trackActionV2(type, extraParams, callback) {
 //    catch(err) {
 //        console.log(err);
 //    }
+}
+
+function generateTrackingGuid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
 }

@@ -67,6 +67,7 @@ gem 'angular-rails-templates'
 #gem "httpclient",    path: "../httpclient"
 gem "http"
 gem 'mixpanel-ruby'
+gem 'simple_segment'
 
 #gem "http", path: "../http"
 

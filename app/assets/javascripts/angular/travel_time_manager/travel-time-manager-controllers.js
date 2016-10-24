@@ -91,11 +91,18 @@
 
         var googleMatrixDestinationLimitNumber = 25;
         var googleUsedTravelModeForMax = ['driving', 'transit'];
+        var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent'];
         // Allow us to prevent having to recalculate this fixed length every time
         var googleUsedTravelModeForMaxCount = 2;
 
         $scope.events = {};
         $scope.eventsToCompute = {};
+        $scope.eventsWithDefaultTime = {};
+
+        // Used to store the events we will not process ofr time related infos
+        // we will only use them to find if they overlapp with the processed ones
+        $scope.otherEvents = {};
+
         $scope.originCoordinates = [];
         $scope.preferedMeanOfTransport = undefined;
         $scope.googleMatrixService = undefined;
@@ -132,60 +139,86 @@
             $scope.travelTimeEvents[email] = [];
             $scope.defaultDelayEvents[email] = [];
             $scope.eventsToCompute[email] = [];
+            $scope.eventsWithDefaultTime[email] = [];
+            $scope.otherEvents[email] = [];
             $scope.events[email] = [];
         };
 
         $scope.processForClient = function(clientPrefs, events) {
             var email = clientPrefs.email;
-            var displayDefaultDelayFallback = true;
 
             $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments;
 
             $scope.resetForClient(email);
-
             $scope.setEvents(email, events);
 
-            if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) {
-                $scope.selectEventsToCompute(email);
-                if($scope.eventsToCompute[email].length > 0) {
-                    displayDefaultDelayFallback = false;
-                    $scope.calculate(email);
-                }
+            $scope.selectEventsToCompute(email);
+
+            if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0 && $scope.eventsToCompute[email].length > 0) {
+                $scope.calculate(email);
+            } else {
+                // This method is called by subfunctions of 'calculate' at the end of the process to display default time
+                // to events for which Google could not calculate a travel time
+
+                // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
+                $scope.computeDefaultAppointmentDelay(email);
             }
 
-            if(displayDefaultDelayFallback)
-                $scope.computeDefaultAppointmentDelay(email);
         };
 
         $scope.setEvents = function(email, events) {
-            // We don't take into account the all day events and the events coming from the meeting rooms
+            // We don't take into account for travel time (and default time):
+            //  - All day events
             $scope.events[email] = _.reject(events, function(e) {
-                return e.all_day || e.is_meeting_room || e.is_virtual_resource;
+                return e.all_day;
             });
         };
 
-        $scope.selectEventsToCompute = function(email) {
+        $scope.shouldComputeEvent = function(e) {
+            var ignore = false;
 
+            _.each(eventsToIgnore, function(toIgnoreAttr) {
+                if(e[toIgnoreAttr]) {
+                    ignore = true;
+                }
+            });
+
+            return !ignore;
+        };
+
+        $scope.selectEventsToCompute = function(email) {
+            // If originCoordinates is an array, check that is is not empty, if it is an object (instance of google LatLng class) check that property lat() is not undefined
+            // this means that the object is correct
+            var needTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()));
             var startDateSortedEventsAsc = $scope.sortEventsStartDate($scope.events[email]);
             // Make a copy of the array so we can safely reverse it then use both later on
             var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
 
             _.each($scope.events[email], function(e) {
-                if(!!e.location) {
+                if($scope.shouldComputeEvent(e)) {
+                    e.toProcess = true;
 
                     $scope.detectAvailableEdges(email, e, {
                         startDateSortedEventsDesc: startDateSortedEventsDesc,
                         startDateSortedEventsAsc: startDateSortedEventsAsc
                     });
 
-                    e.calculateTravelTime = !e.lowerEdgeBusy || !e.upperEdgeBusy;
-                } else {
-                    e.calculateTravelTime = false;
+                    var shouldComputeTime = !e.lowerEdgeBusy || !e.upperEdgeBusy;
+
+                    if(needTravelTime && e.location) {
+                        e.calculateTravelTime = shouldComputeTime;
+                    } else {
+                        e.displayDefaultTime = shouldComputeTime;
+                    }
                 }
             });
 
             $scope.eventsToCompute[email] = _.filter($scope.events[email], function(e) {
-                return e.calculateTravelTime;
+                return e.toProcess && e.calculateTravelTime;
+            });
+
+            $scope.eventsWithDefaultTime[email] = _.filter($scope.events[email], function(e) {
+                return e.toProcess && e.displayDefaultTime;
             });
         };
 
@@ -198,17 +231,7 @@
         $scope.calculate = function(email) {
             var eventsToCompute = angular.copy($scope.eventsToCompute[email]);
 
-            // If there are no events to compute ofr the travel time, we still be displayed the appointments default delay
-
             $scope.computeEvents(email, eventsToCompute);
-
-            // else {
-            //     if($scope.defaultDelayByClient[email] && $scope.defaultDelayByClient[email] > 0) {
-            //         $scope.travelTimeEvents[email] = [];
-            //         $scope.computeDefaultAppointmentDelay(email);
-            //     }
-            // }
-
         };
 
         $scope.computeEvents = function(email, events) {
@@ -290,42 +313,25 @@
         $scope.handleGoogleMatrixResponse = function(response, status, events, email) {
             $scope.pendingGoogleMatrixCall[email] -= 1;
 
-            //console.log('Google Matrix Response ' + email, response);
-
             if (status == google.maps.DistanceMatrixStatus.OK) {
-                //var currentDuration;
                 var currentIndex = 0;
-                var currentEvent, currentEventId, currentDestination;
+                var currentEvent, currentDestination;
                 var destinations = response.destinationAddresses;
 
                 _.each(response.rows[0].elements, function(element) {
-                    //currentDuration = null;
                     currentEvent = events[currentIndex];
-                    //currentEventId = currentEvent.id;
                     currentDestination = destinations[currentIndex];
 
                     $scope.handleResponseElement(email, element, currentEvent, currentDestination);
-
-                    //if(element.status == google.maps.DistanceMatrixStatus.OK) {
-                    //    currentDuration = element.duration;
-                    //    if(currentDuration) {
-                    //        currentDuration = Math.floor(currentDuration.value / 60);
-                    //        // Element.duration.value is an integer representing the duration in seconds
-                    //        // We divide it by 60 then floor it to obtain an approximated duration in minutes
-                    //        $scope.addCurrentDurationToMaxTmp(email, currentEventId, currentDuration);
-                    //    }
-                    //} else {
-                    //    $scope.addCurrentDurationToMaxTmp(email, currentEventId, currentDuration);
-                    //}
-                    //
-                    //$scope.getMaxDurationForEventThenCompute(email, currentEvent, currentDestination);
                     currentIndex += 1;
                 });
             }
 
-            //console.log($scope.events);
-            //console.log($scope.maxDistanceTmp);
             if($scope.pendingGoogleMatrixCall[email] == 0) {
+                // We display all the computed events on the calendar after having finished every process
+                // It includes:
+                //  - Travel time events
+                //  - Default Time events (for when Google could not calculate a proper travel timeà
                 $scope.addTravelTimeEventsToCalendar(email);
                 $scope.computeDefaultAppointmentDelay(email);
             }
@@ -354,16 +360,12 @@
             var eventId = event.id;
             var maxDistanceData = $scope.maxDistanceTmp[email];
 
-            //console.log(maxDistanceData);
-
             // In the case where we want the max value for the travel time duration, we  don't do anything until we have all the duration data for this event
             if($scope.preferedMeanOfTransport == 'max') {
                 if(!maxDistanceData[eventId]) {
-                    //console.log(email, 'here 1');
                     return;
                 }
                 if(maxDistanceData[eventId].length != googleUsedTravelModeForMaxCount) {
-                    //console.log(email, 'here 2');
                     return;
                 }
             }
@@ -372,7 +374,9 @@
 
             if(max) {
                 $scope.buildInfoEvent(email, 'travelTime', event, max, destination);
-                //$scope.computeTravelTimeWithEvent(email, event, max);
+            } else {
+                // We will display the default appointment time for this event instead of the travel time
+                $scope.eventsWithDefaultTime[email].push(event);
             }
         };
 
@@ -403,7 +407,7 @@
 
             var nextEvent, previousEvent;
 
-// Calendar server return the start and end date as {date: XXX} whereas multi_calendar return {dateTime: XXX}
+            // Calendar server return the start and end date as {date: XXX} whereas multi_calendar return {dateTime: XXX}
 
             if(!e.all_day && !e.isNotAvailableEvent) {
                 e.start.dateTime = e.start.dateTime || e.start.date;
@@ -541,38 +545,32 @@
         };
 
         $scope.computeDefaultAppointmentDelay = function(email) {
-            if(($scope.defaultDelayByClient[email] || 0) <= 0) {
+            if(($scope.defaultDelayByClient[email] || 0) <= 0 || $scope.eventsWithDefaultTime[email].length == 0) {
                 return;
             }
 
             // We retrieve the events for which we didn't had to calculate the travelTime
-            //var events = _.filter($scope.events[email], function(event) { return !event.calculateTravelTime });
-            var allEvents = $scope.events[email].concat($scope.travelTimeEvents[email]);
-            allEvents = _.compact(allEvents);
-
-            var startDateSortedEventsAsc = $scope.sortEventsStartDate(allEvents);
-
-            var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
+            // var events = _.filter($scope.events[email], function(event) { return !event.calculateTravelTime });
+            var allEvents = angular.copy($scope.eventsWithDefaultTime[email]);
+            //allEvents = _.compact(allEvents);
+            //
+            // var startDateSortedEventsAsc = $scope.sortEventsStartDate(allEvents);
+            //
+            // var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
 
             var timeDuration = $scope.defaultDelayByClient[email];
 
             _.each(allEvents, function(e) {
+                // $scope.detectAvailableEdges(email, e, {
+                //     startDateSortedEventsDesc: startDateSortedEventsDesc,
+                //     startDateSortedEventsAsc: startDateSortedEventsAsc
+                // });
 
-                // We don't compute default appointment delay for holiday + unavailable events + already computed travel times events + events having a travel time
-                if(!e.isTravelTime && !e.calculateTravelTime && !e.isNotAvailableEvent && !e.is_meeting_room && !e.is_virtual_resource) {
+                //e.displayDefaultDelay = !e.lowerEdgeBusy || !e.upperEdgeBusy;
 
-                    $scope.detectAvailableEdges(email, e, {
-                        startDateSortedEventsDesc: startDateSortedEventsDesc,
-                        startDateSortedEventsAsc: startDateSortedEventsAsc
-                    });
-
-                    e.displayDefaultDelay = !e.lowerEdgeBusy || !e.upperEdgeBusy;
-
-                    if(e.displayDefaultDelay) {
-                        $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
-                    }
-                }
-
+                //if(e.displayDefaultDelay) {
+                    $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
+                //}
             });
 
             $scope.addDefaultDelayEventsToCalendar(email);

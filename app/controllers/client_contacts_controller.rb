@@ -220,6 +220,7 @@ class ClientContactsController < ApplicationController
     if @contact
       response = {
         email: @contact.email,
+        company: @contact.company,
         firstName: @contact.first_name,
         lastName: @contact.last_name,
         gender: @contact.gender,
