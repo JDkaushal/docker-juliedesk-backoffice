@@ -705,7 +705,8 @@ function generateDatesForSingleTimezone(params) {
     params.timezoneId = params.usedTimezones[0];
 
     if (params.timezoneId != params.defaultTimezoneId || params.isVirtualAppointment) {
-        message += "\n" + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
+        message += "\n" + '(' + localize("email_templates.utilities.timezone_display", {city: extractCityFromTimezone(params.timezoneId)}) + ')';
+
     }
 
     _.each(params.timeSlotsToSuggest, function(hash) {
@@ -835,7 +836,7 @@ window.getScheduledEventDateString = function(params) {
     }
 
     if(params.timezoneId != params.defaultTimezoneId) {
-        dateString += " " + localize("email_templates.common.timezone_precision", {timezone: params.timezoneId.replace("_", " ")});
+        dateString += " " + '(' + localize("email_templates.utilities.timezone_display", {city: extractCityFromTimezone(params.timezoneId)}) + ')';
     }
     return dateString;
 };

@@ -107,6 +107,7 @@ function Calendar($selector, params) {
             calendar.$selector.find(".global-loading").fadeOut();
         });
     });
+
 }
 
 Calendar.prototype.determineCalendarInitialStartDate = function() {
@@ -139,24 +140,44 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
         }
     }
 
-    if(calendar.getMode() == "suggest_dates" && calendar.initialData.constraintsData) {
-        var allEvents = [];
-        _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
-            var mNow = moment();
-            var mOneYearFromNow = moment().add('y', 1);
-            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
-            _.each(events.cant, function(event) {
-                allEvents.push(event);
+    if(calendar.getMode() == "suggest_dates") {
+
+        if(calendar.initialData.constraintsData) {
+            var allEvents = [];
+            _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
+                var mNow = moment();
+                var mOneYearFromNow = moment().add('y', 1);
+                var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
+                _.each(events.cant, function (event) {
+                    allEvents.push(event);
+                });
             });
-        });
-        var i=0;
-        while(conflictingEvent = _.find(allEvents, function(event) {
-                return event.start <= initialStartDate && event.end > initialStartDate;
-            }) && i<100) {
-            i += 1;
-            initialStartDate = conflictingEvent.end;
+
+            var i = 0;
+            while (conflictingEvent = _.find(allEvents, function (event) {
+                    return event.start <= initialStartDate && event.end > initialStartDate;
+                })) {
+                if((++i) >= 100) break;
+                initialStartDate = conflictingEvent.end;
+            }
+        }
+
+
+
+        if(calendar.initialData.suggestedDateTimes) {
+            var found = false;
+            _.each(calendar.initialData.suggestedDateTimes, function(suggestedDateTime) {
+                if(found) return;
+                var suggested = moment(suggestedDateTime);
+                if(suggested > initialStartDate) {
+                    initialStartDate = suggested;
+                    found = true;
+                }
+
+            });
         }
     }
+
 
     return initialStartDate;
 };

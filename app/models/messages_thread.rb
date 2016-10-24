@@ -341,7 +341,7 @@ class MessagesThread < ActiveRecord::Base
       }.map{ |ja|
         JSON.parse(ja.date_times || "[]")
       }
-    }.flatten
+    }.flatten.uniq
   end
 
   def all_timezones
@@ -532,6 +532,7 @@ class MessagesThread < ActiveRecord::Base
 
   def self.find_account_emails server_thread, params={}
     first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
+    return [] if first_email.nil?
     email = ApplicationHelper.strip_email(first_email['from'])
     account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
 
