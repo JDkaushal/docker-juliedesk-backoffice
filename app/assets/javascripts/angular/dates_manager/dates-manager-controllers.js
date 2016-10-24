@@ -70,7 +70,8 @@
                         location: window.threadComputedData.location,
                         duration: window.threadComputedData.duration,
                         time_constraints: $scope.generateTimeConstraints(),
-                        n_suggested_dates: suggestionsToGet
+                        n_suggested_dates: suggestionsToGet,
+                        timezones: $scope.getUsedTimezones()
                     };
 
                     $scope.showAiLoader = true;
