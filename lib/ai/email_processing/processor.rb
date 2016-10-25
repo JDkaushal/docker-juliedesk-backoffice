@@ -50,6 +50,7 @@ module Ai
           julie_aliases = Message.julie_aliases_from_server_message(@server_message, {julie_aliases: @julie_aliases_cache})
 
           julia_response['julie_alias'] = julie_aliases.first
+          julia_response['message_id'] = @message.id
 
           email_text = dispatch_request_type(julia_response, new_julie_action)
 
@@ -165,7 +166,7 @@ module Ai
       end
 
       def text_to_html text
-        text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
+        text.split("\n").map{|line| "<div>#{(line.present?)?line:"<br>"}</div>"}.join("\n")
       end
 
       def error_response_template

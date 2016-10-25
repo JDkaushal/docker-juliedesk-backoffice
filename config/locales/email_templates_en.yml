@@ -83,7 +83,7 @@ en:
           dinner: "Dinner"
           skype: "Skype"
           call: "Call"
-          confcall: Call"
+          confcall: "Call"
           drink: "Drink"
       notes:
         phone: 'Phone Number: %{phone_infos}'
@@ -93,3 +93,6 @@ en:
 
     missing_informations:
       phone_number: "%{attendees_names}, please provide the number on which you will be reachable."
+
+    review:
+      form: "Did I do anything wrong ? You can help me improving by correcting me <a href='https://ai.juliedesk.com/api/v1/review/form/?message_id=%{message_id}'>here</a>!"

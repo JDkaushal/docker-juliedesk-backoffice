@@ -199,6 +199,11 @@ END
           if @params['julie_alias'].present?
             add_to_output_array(get_julie_alias_footer)
           end
+          add_to_output_array(get_review_link)
+        end
+
+        def get_review_link
+          I18n.translate('email_templates.review.form', message_id: @params['message_id'])
         end
 
         def format_template_response
