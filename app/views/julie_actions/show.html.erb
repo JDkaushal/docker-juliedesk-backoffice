@@ -307,7 +307,7 @@
             window.julieAlias = _.find(window.julieAliases, function(julieAlias) {
                return julieAlias.email == $("select#julie-alias-select").val();
             });
-            window.setSignatureAndFooter();
+            window.assignCurrentReplyMessage();
         });
 
 
@@ -373,10 +373,12 @@
 
         $(".reply-to-all-button").click(function() {
             window.setReplyRecipients("all");
+            window.assignCurrentReplyMessage()
         });
 
         $(".reply-to-client-button").click(function() {
             window.setReplyRecipients("only_client");
+          window.assignCurrentReplyMessage()
         });
 
         window.deleteEventBeforeReply = function (callback) {
@@ -462,67 +464,76 @@
         return signature;
     };
 
+
     window.setReplyMessage = function (message, recipients, otherRecipients) {
-
         window.setReplyRecipients(recipients, otherRecipients);
-        setCurrentLocale(window.threadComputedData.locale);
-
-        var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
-        var fullMessage = "";
-
-        var recipientsTos = $('#recipients-to-input').tokenInput('get');
-
-        if(shouldSayHi) {
-            if(recipientsTos.length == 1) {
-                var attendeesApp = $('#attendeesCtrl').scope();
-
-                if(attendeesApp) {
-                    var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-                    if(attendee && attendee.usageName)
-                        fullMessage += localize("email_templates.common.hello_named", {name: attendee.usageName});
-                    else
-                        fullMessage += localize("email_templates.common.hello_only");
-                } else {
-                    fullMessage += localize("email_templates.common.hello_only");
-                }
-            }
-            else {
-                fullMessage += localize("email_templates.common.hello_all");
-            }
-        } else {
-            if(recipientsTos.length == 1) {
-                var attendeesApp = $('#attendeesCtrl').scope();
-                if(attendeesApp) {
-                    var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-                    if (attendee && attendee.usageName)
-                        fullMessage += localize("email_templates.common.interlocutor_name", {name: attendee.usageName});
-                }
-            }
-        }
-        fullMessage += message;
-
-        window.currentFullMessage = fullMessage;
-
-        setCurrentLocale("<%= I18n.locale %>");
-
-        window.setSignatureAndFooter();
+        window.currentFullMessage = message;
+        window.assignCurrentReplyMessage();
     };
-    window.setSignatureAndFooter = function() {
-        setCurrentLocale(window.threadComputedData.locale);
-        var signature = window.julieAlias.signature_en;
-        var footer = window.julieAlias.footer_en;
 
-        if(getCurrentLocale() == "fr") {
-            signature = window.julieAlias.signature_fr;
-            footer = window.julieAlias.footer_fr;
+    window.computeSalutation = function() {
+      var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
+      var recipientsTos = $('#recipients-to-input').tokenInput('get');
+
+      if(shouldSayHi) {
+        if(recipientsTos.length == 1) {
+          var attendeesApp = $('#attendeesCtrl').scope();
+
+          if(attendeesApp) {
+            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            if(attendee && attendee.usageName)
+              return localize("email_templates.common.hello_named", {name: attendee.usageName});
+            else
+              return localize("email_templates.common.hello_only");
+          } else {
+            return localize("email_templates.common.hello_only");
+          }
         }
-        signature = window.processSignature(signature);
+        else {
+          return localize("email_templates.common.hello_all");
+        }
+      } else {
+        if(recipientsTos.length == 1) {
+          var attendeesApp = $('#attendeesCtrl').scope();
+          if(attendeesApp) {
+            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            if (attendee && attendee.usageName)
+              return localize("email_templates.common.interlocutor_name", {name: attendee.usageName});
+          }
+        }
+      }
+      return "";
+    };
 
-        $("textarea#reply-text").val(window.currentFullMessage + footer);
+    window.computeFooter = function() {
+      if(window.threadComputedData.locale == "fr") {
+        return window.julieAlias.footer_fr;
+      }
+      else {
+        return window.julieAlias.footer_en;
+      }
+    };
+
+    window.computeSignature = function() {
+      var signature = window.julieAlias.signature_en;
+      if(window.threadComputedData.locale == "fr") {
+        signature = window.julieAlias.signature_fr;
+      }
+      return window.processSignature(signature);
+    };
+
+    window.assignCurrentReplyMessage = function() {
+        setCurrentLocale(window.threadComputedData.locale);
+
+        var salutation = window.computeSalutation();
+        var footer = window.computeFooter();
+        var signature = window.computeSignature();
+
+        window.currentFullMessageWithFooter = salutation + window.currentFullMessage + footer;
+
+        $("textarea#reply-text").val(window.currentFullMessageWithFooter);
         $("textarea#reply-text").elastic();
         $("div#reply-text-signature").html(signature);
-
-        window.currentFullMessageWithFooter = window.currentFullMessage + footer;
 
         setCurrentLocale("<%= I18n.locale %>");
     };
