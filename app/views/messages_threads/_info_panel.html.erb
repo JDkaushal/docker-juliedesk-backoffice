@@ -173,7 +173,8 @@
             $(".add-constraint-button").show();
         }
         else {
-            $(".data input, .data textarea, .data select").prop('disabled', true);
+            $('.data input, .data textarea').prop('readOnly', true);
+            $(".data select").prop('disabled', true);
             $(".data .input-like").addClass('disabled');
 
             $(".data-entry .add-attendee-container").hide();
@@ -1320,7 +1321,7 @@
                    end
                 %>
 
-                <%= text_area_tag :current_notes, notes, class: "current-notes form-control", disabled: true %>
+                <%= text_area_tag :current_notes, notes, class: "current-notes form-control", readOnly: true %>
             <% end %>
 
             <% if @messages_thread.delegated_to_founders %>
