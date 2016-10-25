@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     operator = Operator.find_by_email(email)
     MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
     reset_session
-    redirect_to "https://#{email}@#{ENV['DOMAIN_NAME']}"
+    redirect_to "https://#{email}@#{request.env['HTTP_HOST']}"
   end
 
   # Add X-Request-ID to logs
