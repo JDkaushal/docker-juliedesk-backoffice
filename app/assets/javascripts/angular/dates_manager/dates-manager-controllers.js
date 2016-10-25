@@ -63,6 +63,11 @@
                 }
 
                 if(fetch) {
+                    var timezones = $scope.getUsedTimezones();
+                    if(timezones && timezones.length > 0) {
+                        // for AI, we send only additional timezones (additional to the thread main timezone)
+                        timezones = _.without(timezones, window.threadComputedData.timezone);
+                    }
 
                     var fetchParams = {
                         account_email: window.threadAccount.email,
@@ -71,7 +76,7 @@
                         duration: window.threadComputedData.duration,
                         time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
-                        timezones: $scope.getUsedTimezones()
+                        timezones: timezones
                     };
 
                     $scope.showAiLoader = true;
