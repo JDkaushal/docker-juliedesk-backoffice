@@ -140,6 +140,7 @@ describe ApplicationController, :type => :controller do
 
       it 'should redirect to the correct url' do
         @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@op1.email,'password')
+        @request.env['HTTP_HOST'] = "test-backoffice.herokuapp.com"
 
         get :logout
 
