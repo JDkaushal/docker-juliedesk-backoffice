@@ -63,20 +63,12 @@
                 }
 
                 if(fetch) {
-                    var timezones = $scope.getUsedTimezones();
-                    if(timezones && timezones.length > 0) {
-                        // for AI, we send only additional timezones (additional to the thread main timezone)
-                        timezones = _.without(timezones, window.threadComputedData.timezone);
-                    }
-
                     var fetchParams = {
                         account_email: window.threadAccount.email,
-                        appointment: window.threadComputedData.appointment_nature,
-                        location: window.threadComputedData.location,
-                        duration: window.threadComputedData.duration,
+                        thread_data: window.threadComputedData,
                         time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
-                        timezones: timezones
+                        attendees: $('#attendeesCtrl').scope().attendees
                     };
 
                     $scope.showAiLoader = true;
