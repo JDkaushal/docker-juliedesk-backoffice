@@ -382,14 +382,21 @@ Calendar.prototype.fetchCalendars = function (callback) {
 
                 if(currentAddress) {
 
-                    var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
+                    var meetingRooms = angular.copy(currentAddress.available_meeting_rooms);
+                    _.each(meetingRooms, function(mR) {
                         mR.is_resource = true;
                         mR.groupEmail = 'Meeting Rooms';
                         mR.email = calendar.initialData.email;
-                        return mR.calendar_login_username == "ews_company_meeting_room";
                     });
 
-                    calendar.calendars = calendar.calendars.concat(ewsMeetingRooms);
+                    // var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
+                    //     mR.is_resource = true;
+                    //     mR.groupEmail = 'Meeting Rooms';
+                    //     mR.email = calendar.initialData.email;
+                    //     return mR.calendar_login_username == "ews_company_meeting_room";
+                    // });
+
+                    calendar.calendars = calendar.calendars.concat(meetingRooms);
                 }
             }
 
