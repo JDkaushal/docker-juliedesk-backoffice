@@ -760,7 +760,8 @@ Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endT
                 startEditable: false,
                 durationEditable: false,
                 calId: "juliedesk-strong-constraints",
-                isNotAvailableEvent: true
+                isNotAvailableEvent: true,
+                constraintType: 'cant'
             };
             result.push(event);
         });
@@ -777,7 +778,8 @@ Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endT
                 startEditable: false,
                 durationEditable: false,
                 calId: "juliedesk-light-constraints",
-                isNotAvailableEvent: true
+                isNotAvailableEvent: true,
+                constraintType: 'dontPrefer'
             };
             result.push(event);
         });
