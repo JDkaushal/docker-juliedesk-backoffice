@@ -987,7 +987,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
 
 
     // Dont zone non-booking hours and all day events
-    if (calendar.isFakeCalendarId(ev.calId) || ev.all_day) {
+    if(ev.calendar_login_type != 'EwsLogin' && (calendar.isFakeCalendarId(ev.calId) || (ev.all_day))) {
         sstartTime = startTime;
         sendTime = endTime;
     }
