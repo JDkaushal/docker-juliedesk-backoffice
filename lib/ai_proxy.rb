@@ -76,7 +76,7 @@ class AiProxy
 
   def format_response(result)
     #JSON.parse(result)
-    if result.code >= 200 && result.code =< 299
+    if result.code >= 200 && result.code <= 299
       result.parse
     else
       {
