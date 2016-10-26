@@ -162,7 +162,8 @@ EventTile.prototype.enableAll = function() {
 
     var vmHelper = angular.element($('#event_update_vm_ctrl')).scope();
 
-    eventTile.$selector.find("input, textarea, select").prop('disabled', false);
+    eventTile.$selector.find("input, textarea").prop('readOnly', false);
+    eventTile.$selector.find("select").prop('disabled', false);
     eventTile.$selector.find(".recurrence-link-container").addClass("enabled");
 
     if(vmHelper && vmHelper.currentConf.target == 'client')
@@ -171,7 +172,8 @@ EventTile.prototype.enableAll = function() {
 
 EventTile.prototype.disableAll = function() {
     var eventTile = this;
-    eventTile.$selector.find("input, textarea, select").prop("disabled", true);
+    eventTile.$selector.find("input, textarea").prop("readOnly", true);
+    eventTile.$selector.find("select").prop("disabled", true);
     eventTile.$selector.find(".recurrence-link-container").removeClass("enabled");
 
     // To be able to interact with the missing call instructions form
