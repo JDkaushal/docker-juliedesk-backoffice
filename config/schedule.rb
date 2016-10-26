@@ -22,9 +22,9 @@
 set :output, File.join('log', 'cron.log')
 
 every 1.day, :at => '1am', :roles => [:tasker] do
-  rake 'rake operator_stats:compute'
+  rake 'operator_stats:compute'
 end
 
 every 1.hour, :roles => [:tasker] do
-  rake 'rake messages_threads:follow_up_check_routine'
+  rake 'messages_threads:follow_up_check_routine'
 end
