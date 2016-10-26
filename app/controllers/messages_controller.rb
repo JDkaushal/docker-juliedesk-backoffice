@@ -105,16 +105,8 @@ class MessagesController < ApplicationController
 
       http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
                                                                                                     email: @message.messages_thread.account_email,
-                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: https://juliedesk-backoffice.herokuapp.com/review/messages_threads/#{@message.messages_thread_id}/review)"
+                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
                                                                                                 })
-
-      # client = HTTPClient.new(default_header: {
-      #                             "Authorization" => ENV['JULIEDESK_APP_API_KEY']
-      #                         })
-      # client.post("https://juliedesk-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", {
-      #                    email: @message.messages_thread.account_email,
-      #                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (message_thread id: #{@message.messages_thread_id})"
-      #                })
     end
     messages_thread_params = {last_operator_id: session[:operator_id]}
     messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
