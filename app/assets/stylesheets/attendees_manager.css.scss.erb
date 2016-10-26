@@ -13,6 +13,7 @@
 
     .need-ai-confirmation {
         .gender-radio-btn{
+          outline: none;
             &:checked{
                 background-color: $aiControlColor;
                 &:after{
@@ -22,7 +23,7 @@
         }
     }
 
-    .gender-radio-btn{
+    .gender-radio-btn {
         height: 35px;
         width: 36px;
         display: inline-block;
@@ -79,6 +80,10 @@
         float: right;
         color: white;
 
+      border: none;
+      padding: 5px 10px;
+      @include border-radius(4px);
+      outline: none;
     }
     .ai-confirm-btn-form {
         background-color: $aiControlColor !important;
@@ -313,6 +318,8 @@
             font-style: italic;
             font-size: 12px;
         }
+
+
     }
     .attendee-update-button-container{
         display: table-cell;
@@ -552,5 +559,23 @@
             margin-bottom: 10px;
             line-height: 1;
         }
+    }
+
+    .usage-name-input-container {
+      padding: 10px 0 20px 0 !important;
+      clear: left;
+      label {
+        font-weight: 200;
+        font-size: 12px;
+        color: #aaa;
+        margin: 0;
+      }
+
+      input {
+        border: 1px solid #ccc;
+        box-shadow: none;
+        outline: none;
+        padding: 5px 8px;
+      }
     }
 }
