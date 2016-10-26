@@ -1192,11 +1192,17 @@
             });
         },
         dispatchUsageName: function() {
+            if(this.usageNameManuallyModified) {
+                return;
+            }
             if(window.threadAccount.language_level == 'soutenu') {
                 this.usageName = this.displayUsageNameSoutenu();
             } else {
                 this.setUsageName(this.firstName);
             }
+        },
+        usageNameKeyup: function() {
+          this.usageNameManuallyModified = true;
         },
         firstLastNameKeyup: function(){
             if(window.formFirstPass || this.needAIConfirmation) {
@@ -1209,6 +1215,10 @@
         setUsageName: function(value) {
             if(this.firstNameMirrored){
                 this.usageName = value;
+                this.usageNameManuallyModified = false;
+            }
+            else {
+                this.usageNameManuallyModified = true;
             }
         },
         confirmAI: function() {

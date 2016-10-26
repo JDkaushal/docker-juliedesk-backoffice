@@ -57,7 +57,7 @@
     </div>
     <div class="col-xs-12 usage-name-input-container">
       <%= label_tag :usage_name %>
-      <%= text_field_tag :usage_name, "",{'ng-model' => 'attendee.usageName', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
+      <%= text_field_tag :usage_name, "",{'ng-model' => 'attendee.usageName', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true, 'ng-keyup' => 'attendee.usageNameKeyup()'} %>
     </div>
 
     <div class="col-xs-12 need-ai-confirmation" style="padding-left: 0; padding-right:0;">
