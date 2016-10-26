@@ -15,9 +15,9 @@
 
                     // In case of error, we reject the deferred object
                     if(response.data.error) {
-                        result = $q.reject(result);
+                        result = $q.reject(response.data);
                     } else {
-                        result = { data: result };
+                        result = { data: response.data };
                     }
 
                     return result;
