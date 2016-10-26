@@ -199,28 +199,6 @@ class MessageInterpretation < ActiveRecord::Base
           continue = false
         end
       end
-      # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
-      # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
-      #
-      #
-      #
-      # response = http.post(url, json: body)
-
-      # client = HTTPClient.new(default_header: {
-      #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
-      #                         })
-      #
-      # client.ssl_config.verify_mode = 0
-      # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V2']}/#{self.question}/"
-
-      # body = {
-      #     'parsed_html' => server_message['parsed_html'],
-      #     'text' => server_message['text'],
-      #     'sender' => server_message['from'],
-      #     'date' => server_message['date']
-      # }.to_json
-
-      #response = client.post(url, body)
 
       self.raw_response = response_body_str
       begin

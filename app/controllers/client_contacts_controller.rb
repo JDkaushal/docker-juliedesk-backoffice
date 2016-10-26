@@ -266,14 +266,16 @@ class ClientContactsController < ApplicationController
     else
       result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
 
-      # When the call fail, we store an empty string to avoid calling the API against on subsequent calls
-      company_name = if result['identification'] == 'fail'
-                       ''
-                     else
-                      result['company']
-                     end
+      unless result[:error]
+        # When the call fail, we store an empty string to avoid calling the API against on subsequent calls
+        company_name = if result['identification'] == 'fail'
+                         ''
+                       else
+                        result['company']
+                       end
 
-      CompanyDomainAssociation.create(domain: domain, company_name: company_name)
+        CompanyDomainAssociation.create(domain: domain, company_name: company_name)
+      end
     end
 
     render json: result

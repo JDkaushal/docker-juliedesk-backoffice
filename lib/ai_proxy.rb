@@ -76,11 +76,16 @@ class AiProxy
 
   def format_response(result)
     #JSON.parse(result)
-    if result.code < 200 || result.code >299
-      raise AIError.new("#{result.status} \n\n #{result.body}")
+    if result.code > 200 && result.code < 299
+      result.parse
+    else
+      {
+          error: true,
+          http_status: result.code
+      }
+      #raise AIError.new("#{result.status} \n\n #{result.body}")
     end
 
-    result.parse
   end
 
   def execute_get_request(http_client, params)

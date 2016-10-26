@@ -39,33 +39,19 @@ class Review::OperatorsPresenceController < ReviewController
 
     date = DateTime.parse params[:start]
 
-    # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
-    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/planning/?date=#{date.strftime('%Y-%m-%d')}"
-    #
-    # response = http.get(url)
     json_response = AiProxy.new.build_request(:fetch_forecast, { date: date.strftime('%Y-%m-%d')})['planning']
 
+    unless json_response[:error]
+      @operators = json_response.map do |name, data|
+        o = Operator.new(name: name)
+        first_date = date.in_time_zone("Indian/Antananarivo").change(hour: 6)
+        o.operator_presences = data.flatten.map.with_index{|bit, i|
+          bit == 1 ? OperatorPresence.new(date: first_date + (i * 30.minutes)) : nil
+        }.compact
 
-    # client = HTTPClient.new(default_header: {
-    #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
-    #                         })
-    # client.ssl_config.verify_mode = 0
-    #
-    # response = client.get(url)
-
-    #json_response = JSON.parse(response.body)['planning']
-    #json_response = response.parse['planning']
-
-    @operators = json_response.map do |name, data|
-      o = Operator.new(name: name)
-      first_date = date.in_time_zone("Indian/Antananarivo").change(hour: 6)
-      o.operator_presences = data.flatten.map.with_index{|bit, i|
-        bit == 1 ? OperatorPresence.new(date: first_date + (i * 30.minutes)) : nil
-      }.compact
-
-      o
+        o
+      end
     end
-
   end
 
   def add
@@ -111,8 +97,10 @@ class Review::OperatorsPresenceController < ReviewController
 
       result = AiProxy.new.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
 
-      result.merge!('start_date' => params[:start_date])
-      handle_planning_ai_data(result)
+      unless result[:error]
+        result.merge!('start_date' => params[:start_date])
+        handle_planning_ai_data(result)
+      end
     end
 
     render json: result.merge(filename: filename)
@@ -121,8 +109,12 @@ class Review::OperatorsPresenceController < ReviewController
   def get_planning_from_ai
 
     result = AiProxy.new.build_request(:fetch_planning, { date: params[:start_date], filename: params[:filename], productivity: params[:productivity] })
-    result.merge!('start_date' => params[:start_date])
-    handle_planning_ai_data(result)
+
+    unless result[:error]
+      result.merge!('start_date' => params[:start_date])
+      handle_planning_ai_data(result)
+    end
+
 
     render json: result
   end

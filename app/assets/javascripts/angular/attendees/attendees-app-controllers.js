@@ -576,7 +576,7 @@
                         }
 
                         $scope.trackFetchFirstNameLastNameEvent({
-                            is_error: (response.data.status == 'error' || response.data.status == 'invalid' || response.status == 'invalid'),
+                            is_error: (response.data.status == 'error' || response.data.status == 'invalid' || response.status == 'invalid' || response.data.error),
                             error_message: response.data.message,
                             contact_full_name: fullName,
                             contact_email_address: a.email,
@@ -602,7 +602,7 @@
                         method: "POST",
                         data: { contact_address: a.email, message_text: messageText }
                     }).then(function success(response) {
-                        if(response.data.identification != "fail") {
+                        if(response.data.identification != "fail" && !response.data.error) {
                             a.company = response.data.company;
                             a.needAIConfirmation = true;
                             a.validatedCompany = '';
@@ -612,7 +612,7 @@
 
                         $scope.trackGetCompanyNameEvent({
                             identification: response.data.identification,
-                            is_error: response.data.status == 'error' || response.data.status == 'invalid',
+                            is_error: response.data.status == 'error' || response.data.status == 'invalid' || response.data.error,
                             error_message: response.data.message,
                             contact_email_address: a.email,
                             message_text: messageText,

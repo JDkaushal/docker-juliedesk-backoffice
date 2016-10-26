@@ -21,6 +21,12 @@ module Ai
       def process
         begin
           julia_response = AiProxy.new.build_request(:ask_julia, {id: @server_message_id})
+
+          if julia_response[:error]
+            # Raise error so we go execute the catch code
+            raise RuntimeError('AI bugged')
+          end
+
           @message.message_interpretations.create(question: :full_ai, raw_response: julia_response.to_json)
 
           # this is used by JuliA later on to process the ask_availabilities request

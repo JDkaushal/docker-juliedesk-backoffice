@@ -25,8 +25,8 @@ window.generateEmailTemplate = function (params) {
             else {
                 locationInTemplate = " " + params.address.address_in_template[params.locale];
             }
-            isAskInterlocutor = (params.address.type == "ask_interlocuter");
-            isClientWillDefine = (params.address.type == "client_will_define");
+            isAskInterlocutor = (params.address.kind == "ask_interlocuter");
+            isClientWillDefine = (params.address.kind == "client_will_define");
         }
         else {
             if (params.action != "suggest_dates") {

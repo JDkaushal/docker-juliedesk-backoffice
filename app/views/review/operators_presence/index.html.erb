@@ -530,10 +530,16 @@
                     // This call can return success of fail when the planning has already been generated
                     // If not, it will take several minutes (~10) to complete. This means that we will check regularly
                     // if it has completed
-                    if(response.status != 'success' && response.status != 'fail') {
-                        $scope.fetchPlanning(formattedStartDate, response.filename);
+                    if(response.data.error) {
+                      console.log(response);
+                      $scope.loading = false;
+                      $scope.displaySaveFailedLabel();
                     } else {
+                      if(response.status != 'success' && response.status != 'fail') {
+                        $scope.fetchPlanning(formattedStartDate, response.filename);
+                      } else {
                         $scope.applyPlanningData(response);
+                      }
                     }
                 },
                 error: function(jqXHR, textStatus, errorMessage) {
@@ -583,14 +589,21 @@
                     productivity: $scope.operatorEmailByHourRate
                 }
             }).then(function(response) {
-                if(response.data.status == "processing") {
+                if(response.data.error) {
+                  console.log(response);
+                  $scope.loading = false;
+                  $scope.displaySaveFailedLabel();
+                } else {
+                  if(response.data.status == "processing") {
                     console.log('processing');
                     // Until the planning has been generated or has fail to be generated (status != procesing) we fetch
                     // every 30 seconds (see $scope.fetchPlanning)
                     callback();
-                } else {
+                  } else {
                     $scope.applyPlanningData(response.data);
+                  }
                 }
+
             }, function(response) {
                 $scope.loading = false;
                 $scope.displaySaveFailedLabel();

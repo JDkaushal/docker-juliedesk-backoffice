@@ -11,9 +11,16 @@
             }).then(
                 function(response) {
                     console.log(response);
-                    return {
-                        data: response.data
-                    };
+                    var result = {};
+
+                    // In case of error, we reject the deferred object
+                    if(response.data.error) {
+                        result = $q.reject(result);
+                    } else {
+                        result = { data: result };
+                    }
+
+                    return result;
                 }, function(httpError) {
                     console.log(httpError);
                     return $q.reject(httpError);
