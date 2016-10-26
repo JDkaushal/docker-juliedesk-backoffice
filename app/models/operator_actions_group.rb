@@ -53,7 +53,7 @@ class OperatorActionsGroup < ActiveRecord::Base
       oa.initiated_at > open_thread_oa_initiated_at &&
           (oa.is_archive_thread? || oa.is_send_to_support?)
     }
-    archive_thread_oa_initiated_at = archive_thread_oa.initiated_at
+
     # If found, creates corresponding group
     if archive_thread_oa
       to_group_operator_actions = [open_thread_oa, archive_thread_oa] + operator_actions_sorted.select { |oa|
