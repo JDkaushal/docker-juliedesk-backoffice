@@ -68,7 +68,8 @@
                         thread_data: window.threadComputedData,
                         time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
-                        attendees: $('#attendeesCtrl').scope().attendees
+                        attendees: $('#attendeesCtrl').scope().attendees,
+                        message_id: $('.email.highlighted').data('message-id')
                     };
 
                     $scope.showAiLoader = true;
