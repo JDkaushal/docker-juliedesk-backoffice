@@ -16,6 +16,8 @@
         $scope.aiWarningMessage = "Jul.IA n'as pas trouvé de dates";
         $scope.showAiWarning = false;
 
+        $scope.AIsuggestionsTrackingId = undefined;
+
         var aiDatesSuggestionManager = $('#ai_dates_suggestions_manager');
 
         $scope.init = function() {
@@ -77,6 +79,8 @@
                     $scope.$apply();
                     aiDatesSuggestionManager.scope().fetchSuggestedDatesByAi(fetchParams).then(function(response) {
                         var data = response.data;
+
+                        $scope.AIsuggestionsTrackingId = data.suggested_dates_id;
 
                         _.each((data.suggested_dates || []), function(slot) {
                             // We add a pureAi property to differentiate with the events that are handled as AI but are not
@@ -492,9 +496,14 @@
         };
 
         $scope.sendLearningData = function() {
-            var data = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
+            var suggestionsStatus = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
                 return $scope.computeLearningStatusOnSuggestion(slot);
             });
+
+            var data = {
+                suggestions_status: suggestionsStatus,
+                id: $scope.AIsuggestionsTrackingId
+            };
 
             aiDatesSuggestionManager.scope().sendLearningData(data);
         };
