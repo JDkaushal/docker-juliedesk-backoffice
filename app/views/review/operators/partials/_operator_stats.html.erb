@@ -14,7 +14,7 @@
 <br>
 
 <%
-   my_stats = JSON.parse DATA_CACHE_REDIS["operator_stats-#{@operator.id}"]
+   my_stats = JSON.parse(DATA_CACHE_REDIS["operator_stats-#{@operator.id}"] || "{}")
    team_stats = JSON.parse DATA_CACHE_REDIS["operator_stats_team"]
    level_1_stats = JSON.parse DATA_CACHE_REDIS["operator_stats_level_1"]
 %>

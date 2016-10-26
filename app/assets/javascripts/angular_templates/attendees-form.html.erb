@@ -65,7 +65,7 @@
       <div class="row">
         <div class="col-xs-12">
         <%= label_tag :usage_name %>
-        <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', class: 'form-control', capitalize:true} %>
+        <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', 'ng-keyup' => 'attendee.usageNameKeyup()', class: 'form-control', capitalize:true} %>
         </div>
       </div>
 
