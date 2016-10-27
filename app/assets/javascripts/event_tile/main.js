@@ -168,7 +168,7 @@ EventTile.prototype.enableAll = function() {
 
     if(vmHelper && vmHelper.currentConf.target == 'client')
         $('#event_update_vm_ctrl').find('input').prop('disabled', true);
-}
+};
 
 EventTile.prototype.disableAll = function() {
     var eventTile = this;
