@@ -183,14 +183,17 @@
 
                     if(currentAppointment && currentAppointment.meeting_room_used && address && address.meeting_rooms_enabled) {
                         $scope.usingMeetingRoom = true;
-                        $scope.availableRooms = address.available_meeting_rooms;
-                        $scope.setRoomsList();
-                        $scope.setDefaultSelectedRoom();
+                        // $scope.availableRooms = address.available_meeting_rooms;
+                        // $scope.setRoomsList();
+                        // $scope.setDefaultSelectedRoom();
                         //$scope.setSelectedRoom();
                     }
 
                     if(currentAppointment && currentAppointment.meeting_room_used || address && address.meeting_rooms_enabled) {
                         $scope.displayForm = true;
+                        $scope.availableRooms = address.available_meeting_rooms;
+                        $scope.setRoomsList();
+                        $scope.setDefaultSelectedRoom();
                     } else {
                         $scope.clear();
                     }
