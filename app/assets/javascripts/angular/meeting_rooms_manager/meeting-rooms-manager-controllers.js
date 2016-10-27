@@ -187,6 +187,8 @@
                         // $scope.setRoomsList();
                         // $scope.setDefaultSelectedRoom();
                         //$scope.setSelectedRoom();
+                    } else {
+                        $scope.usingMeetingRoom = false;
                     }
 
                     if(currentAppointment && currentAppointment.meeting_room_used || address && address.meeting_rooms_enabled) {
@@ -224,7 +226,7 @@
 
                     if(currentAddress) {
 
-                        $scope.usingMeetingRoom = currentAddress.meeting_rooms_enabled;
+                        $scope.usingMeetingRoom = currentAddress.meeting_rooms_enabled && currentAppointment.meeting_room_used;
 
                         if($scope.usingMeetingRoom) {
                             var selectedMeetingRoom = currentAppointment.selected_meeting_room;
