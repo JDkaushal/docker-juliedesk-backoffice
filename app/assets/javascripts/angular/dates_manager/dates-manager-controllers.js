@@ -85,7 +85,7 @@
                         _.each((data.suggested_dates || []), function(slot) {
                             // We add a pureAi property to differentiate with the events that are handled as AI but are not
                             // i.e: events that comes from contact follow ups
-                            $scope.addTimeSlotSuggestedByAI({value: moment(slot), fromAi: true, display: true, pureAi: true, trackingId: generateTrackingGuid()});
+                            $scope.addTimeSlotSuggestedByAI({value: moment(slot), pristineValue: slot, fromAi: true, display: true, pureAi: true, trackingId: generateTrackingGuid()});
                         });
 
                         if($scope.timeSlotsSuggestedByAi.length > 0) {
@@ -491,7 +491,7 @@
 
             }
 
-            result[suggestion.value.format()] = status;
+            result[suggestion.pristineValue] = status;
             return result;
         };
 
