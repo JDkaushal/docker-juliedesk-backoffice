@@ -278,12 +278,12 @@
             }
         });
 
-        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action.accept", function (e) {
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action-item-container.accept", function (e) {
           var dateTime = $(this).closest('.time-slot-to-suggest').data("date-time");
           datesSuggestionManager.scope().acceptAiSuggestion(dateTime);
         });
 
-        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action.reject", function (e) {
+        $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest .ai-suggestion-action-item-container.reject", function (e) {
           var dateTime = $(this).closest('.time-slot-to-suggest').data("date-time");
           datesSuggestionManager.scope().rejectAiSuggestion(dateTime);
         });

@@ -207,19 +207,62 @@
             .from-ai {
               background-color: $aiControlColor;
               border-color: $aiControlInputBorderColor;
+              padding:0;
+
+              &:hover {
+                background-color: $aiControlHighlightedColor;
+              }
+
+              &.highlighted {
+                background-color: $aiControlHighlightedColor;
+              }
+
+              .date-text {
+                padding: 6px 12px;
+              }
             }
 
             .ai-suggestion-action-wrapper {
-              position: absolute;
-              right: 40px;
+              /*position: absolute;*/
+              /*right: 40px;*/
+              border-top: solid 1px;
+              height: 30px;
+
+              .ai-suggestion-action-item-container {
+                display: inline-block;
+                width: 50%;
+                text-align: center;
+                height: 100%;
+
+                &:hover {
+                  background-color: white;
+                  .ai-suggestion-action {
+
+                    &.accept {
+                      background-image: url(<%= asset_path 'validate_purple.png' %>);
+                    }
+
+                    &.reject {
+                      background-image: url(<%= asset_path 'unvalidate_purple.png' %>);
+                    }
+                  }
+                }
+
+                &:first-child {
+                  border-right:solid 1px;
+                }
+
+                &:last-child {
+                  margin-left: -4px;
+                }
+              }
 
               .ai-suggestion-action {
-                width: 25px;
                 display: inline-block;
-                height: 25px;
+                height: 16px;
                 position: relative;
-                top: -1px;
-                left: 10px;
+                width: 16px;
+                top: 25%;
 
                 &.accept {
                   @include ai-date-suggestion-sprite-accept();

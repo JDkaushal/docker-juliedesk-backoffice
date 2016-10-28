@@ -7,6 +7,7 @@ $borderGrey: #ccc;
 $darkBlue: #0099CC;
 $lightBlue: #E7F2F5;
 $aiControlColor: #9013FE;
+$aiControlHighlightedColor: #5F09AA;
 $aiControlInputBorderColor: #D9AEFF;
 
 html {
@@ -104,8 +105,7 @@ body {
   margin: 0 auto;
 }
 
-
-@mixin ai-date-suggestion-sprite-accept() {
+@mixin ai-date-suggestion-sprite-accept-circled() {
   cursor: pointer;
   background-image: url(<%= asset_path 'validate.png' %>);
   background-repeat: no-repeat;
@@ -116,7 +116,7 @@ body {
   }
 }
 
-@mixin ai-date-suggestion-sprite-reject() {
+@mixin ai-date-suggestion-sprite-reject-circled() {
   cursor: pointer;
   background-image: url(<%= asset_path 'invalidate.png' %>);
   background-repeat: no-repeat;
@@ -125,4 +125,26 @@ body {
   &:hover {
     background-image: url(<%= asset_path 'invalidate_hover.png' %>);
   }
+}
+
+@mixin ai-date-suggestion-sprite-accept() {
+  cursor: pointer;
+  background-image: url(<%= asset_path 'validate_white.png' %>);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+
+  /*&:hover {*/
+    /*background-image: url(<%= asset_path 'validate_purple.png' %>);*/
+  /*}*/
+}
+
+@mixin ai-date-suggestion-sprite-reject() {
+  cursor: pointer;
+  background-image: url(<%= asset_path 'unvalidate_white.png' %>);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+
+  /*&:hover {*/
+    /*background-image: url(<%= asset_path 'unvalidate_purple.png' %>);*/
+  /*}*/
 }

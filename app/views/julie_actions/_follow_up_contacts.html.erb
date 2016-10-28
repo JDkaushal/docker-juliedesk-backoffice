@@ -73,24 +73,24 @@
         var currentTimezone = currentCalendar.getCalendarTimezone();
         var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
-      if(window.featuresHelper.isFeatureActive('ai_dates_suggestions')) {
-        currentCalendar.addCal(_.map(dates, function(date) {
-          date = moment(date).tz(currentTimezone);
-
-          end = date.clone();
-          end.add('m', currentEventDuration);
-
-          datesSuggestionManager.addTimeSlotSuggestedByAI({value: date, fromAi: true, display: true, alreadyInsertedInCalendar: true});
-
-          return {
-            summary: 'Already Suggested',
-            start: {dateTime: date},
-            end: {dateTime: end},
-            isSuggestionFromAi: true,
-            alreadySuggested: true
-          }
-        }));
-      } else {
+//      if(window.featuresHelper.isFeatureActive('ai_dates_suggestions')) {
+//        currentCalendar.addCal(_.map(dates, function(date) {
+//          date = moment(date).tz(currentTimezone);
+//
+//          end = date.clone();
+//          end.add('m', currentEventDuration);
+//
+//          datesSuggestionManager.addTimeSlotSuggestedByAI({value: date, fromAi: true, display: true, alreadyInsertedInCalendar: true});
+//
+//          return {
+//            summary: 'Already Suggested',
+//            start: {dateTime: date},
+//            end: {dateTime: end},
+//            isSuggestionFromAi: true,
+//            alreadySuggested: true
+//          }
+//        }));
+//      } else {
         var currentCalendarUsername = currentCalendar.initialData.default_calendar_login_username;
         var currentLoginType = currentCalendar.initialData.default_calendar_login_type;
         var currentLoginEmail = currentCalendar.initialData.email;
@@ -110,7 +110,7 @@
           currentCalendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
           currentCalendar.addEvent(eventData);
         });
-      }
+//      }
 
       currentCalendar.drawEventList();
     };

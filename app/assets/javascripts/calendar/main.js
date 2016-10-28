@@ -103,7 +103,7 @@ function Calendar($selector, params) {
             }
 
             calendar.fullCalendarInit();
-            if(aiDatesSuggestionsManager) {
+            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
                 new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
             }
             calendar.$selector.find(".global-loading").fadeOut();
@@ -1307,6 +1307,11 @@ Calendar.prototype.addEvent = function (event) {
         calendar.updateEventCreation();
 
     }
+};
+
+Calendar.prototype.reRenderEvents = function() {
+    var calendar = this;
+    calendar.$selector.find('#calendar').fullCalendar('rerenderEvents');
 };
 
 Calendar.prototype.getLocale = function () {

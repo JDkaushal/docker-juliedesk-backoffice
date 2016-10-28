@@ -45,6 +45,48 @@
             return window.currentCalendar.getConstraintsDataEvents(today, oneMonthLater);
         };
 
+        $scope.mouseEnterSuggestionNode = function(suggestion) {
+            if(suggestion.fromAi) {
+                var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
+                eventInCalendar.isHighlighted = true;
+                window.currentCalendar.reRenderEvents();
+            }
+        };
+
+        $scope.mouseLeaveSuggestionNode = function(suggestion) {
+            if(suggestion.fromAi) {
+                var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
+                eventInCalendar.isHighlighted = false;
+                window.currentCalendar.reRenderEvents();
+            }
+        };
+
+        $scope.actionOnAiSuggestion = function(trackingId, type) {
+            var event = _.find($scope.timeSlotsSuggestedByAi, function(ev) {
+                return ev.trackingId == trackingId;
+            });
+
+            switch(type) {
+                case 'highlight':
+                    event.isHighlighted = true;
+                    break;
+                case 'unhighlight':
+                    event.isHighlighted = false;
+                    break;
+            }
+
+            $scope.setSuggestions();
+        };
+
+        $scope.highlightAiSuggestion = function(trackingId) {
+            var eventTo
+
+        };
+
+        $scope.unhighlightAiSuggestion = function(trackingId) {
+
+        };
+
         $scope.fetchAiDatesSuggestions = function(forceFetch) {
             if(forceFetch || $scope.shouldFetchAiSuggestedDates()) {
                 var fetch = true;
@@ -472,6 +514,12 @@
             });
         };
 
+        $scope.findAiEventInCalendar = function(slot) {
+            return currentCalendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                return ev.trackingId == slot.trackingId;
+            })[0];
+        };
+
         $scope.computeLearningStatusOnSuggestion = function(suggestion) {
             var status = undefined;
             var result = {};
@@ -479,9 +527,7 @@
             if(suggestion.rejected) {
                 status = false;
             } else {
-                var currentEvent = currentCalendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
-                    return ev.trackingId == suggestion.trackingId;
-                })[0];
+                var currentEvent = $scope.findAiEventInCalendar(suggestion);
 
                 if(currentEvent) {
                     status = currentEvent.start.isSame(suggestion.value) ? true : 'moved';

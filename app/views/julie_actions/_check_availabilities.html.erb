@@ -94,7 +94,10 @@
         $("#no-date-fits").click(function () {      
             window.timeSlotToCreate = null;
             var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
-            aiDatesSuggestionsManager.fetchAiDatesSuggestions(true);
+
+            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
+              new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions(true);
+            }
             $(".messages-thread-info-panel .create-event-panel").hide();
             clearDatesToCheck();
 

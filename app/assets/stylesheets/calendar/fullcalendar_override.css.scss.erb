@@ -91,22 +91,47 @@
 
             &.suggestion-from-ai {
               background-color: $aiControlColor !important;
+              overflow: visible !important;
+
+              &:hover {
+                background-color: $aiControlHighlightedColor !important;
+
+                .call-to-actions-wrapper {
+                  background-color: $aiControlHighlightedColor;
+                }
+              }
+
+              &.highlighted {
+                background-color: $aiControlHighlightedColor !important;
+
+                .call-to-actions-wrapper {
+                  background-color: $aiControlHighlightedColor;
+                }
+              }
 
               &:hover {
                 z-index:999;
                 min-width: 227px;
                 min-height: 45px;
 
-                .call-to-actions-wrapper {
-                  display: block;
-                }
+                /*.call-to-actions-wrapper {*/
+                  /*display: block;*/
+                /*}*/
+              }
+              .fc-event-inner {
+                background-color: inherit;
+                overflow: visible;
               }
 
               .call-to-actions-wrapper {
-                display: none;
+                //display: none;
                 position: absolute;
-                right: 20px;
-                top: 10px;
+                padding-top: 5px;
+                right: 0px;
+                top: 0px;
+                min-height: 35px;
+                width:65px;
+                background-color: $aiControlColor;
 
                 .call-to-action {
                   width: 25px;
@@ -117,11 +142,11 @@
                   left: 10px;
 
                   &.accept {
-                    @include ai-date-suggestion-sprite-accept();
+                    @include ai-date-suggestion-sprite-accept-circled();
                   }
 
                   &.reject {
-                    @include ai-date-suggestion-sprite-reject();
+                    @include ai-date-suggestion-sprite-reject-circled();
                   }
                 }
               }

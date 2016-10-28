@@ -493,6 +493,8 @@ Calendar.prototype.fullCalendarInit = function() {
 
             if(event.isSuggestionFromAi) {
                 $element.addClass('suggestion-from-ai');
+                if(event.isHighlighted)
+                    $element.addClass('highlighted');
                 var $callToActionsWrapper = $('<div class="call-to-actions-wrapper"></div>');
                 var $acceptSprite = $('<span class="call-to-action accept"></span>');
                 var $rejectSprite = $('<span class="call-to-action reject"></span>');
@@ -513,6 +515,14 @@ Calendar.prototype.fullCalendarInit = function() {
                     e.stopPropagation();
 
                     suggestionDatesManager.rejectAiSuggestion(event.start);
+                });
+
+                $element.mouseenter(function(e) {
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'highlight');
+                });
+
+                $element.mouseleave(function(e) {
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'unhighlight');
                 });
             }
         },
