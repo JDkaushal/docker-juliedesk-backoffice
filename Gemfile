@@ -14,16 +14,8 @@ gem 'rails', '4.1.15'
 ruby '2.2.0'
 
 
-if ENV['OVH_MODE']
-  gem 'capistrano', '3.6.0'
-  gem 'capistrano-rails', group: :development
-  gem 'capistrano-rvm', group: :development
-
-  #Error tracking
-  gem 'airbrake', '~> 5.0'
-else
-  gem 'newrelic_rpm'
-end
+#Error tracking
+gem 'airbrake', '~> 5.0'
 
 # Use postgresql as the database for Active Record
 gem 'pg'
@@ -79,6 +71,9 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'railroady'
+  gem 'capistrano', '3.6.0'
+  gem 'capistrano-rails'
+  gem 'capistrano-rvm'
 end
 
 group :test, :development do
