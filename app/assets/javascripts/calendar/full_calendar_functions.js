@@ -416,7 +416,6 @@ Calendar.prototype.fullCalendarInit = function() {
             }
 
             if(event.isMeetingRoom) {
-                var currentPos = $element.position().left;
                 //var meetingRoomBusyDiv = $('<div class="meeting-room-busy"><div class="fc-event-title">No meeting Rooms</div></div>');
                 $element.addClass('meeting-room-unavailable');
                 //$element.append(meetingRoomBusyDiv);
@@ -424,11 +423,10 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.width(columnWidth);
 
                 // Allow to stick the meeting room label on the left of the row
-                $element.css('left', (columnWidthInt * parseInt(currentPos / columnWidthInt) + offsetRowInt) + 'px');
+                $element.css('left', (columnWidthInt * (event.start.day() - 1) + offsetRowInt) + 'px');
             }
 
             if(event.isVirtualResource) {
-                var currentPos = $element.position().left;
                 //var meetingRoomBusyDiv = $('<div class="meeting-room-busy"><div class="fc-event-title">No meeting Rooms</div></div>');
                 $element.addClass('meeting-room-unavailable');
                 //$element.append(meetingRoomBusyDiv);
@@ -436,7 +434,7 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.width(columnWidth);
 
                 // Allow to stick the meeting room label on the left of the row
-                $element.css('left', (columnWidthInt * parseInt(currentPos / columnWidthInt) + offsetRowInt) + 'px');
+                $element.css('left', (columnWidthInt * (event.start.day() - 1) + offsetRowInt) + 'px');
             }
 
             if(event.isLocated && event.location) {
