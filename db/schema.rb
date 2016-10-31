@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161020120400) do
+ActiveRecord::Schema.define(version: 20161031113813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,8 @@ ActiveRecord::Schema.define(version: 20161020120400) do
     t.boolean  "event_from_invitation",           default: false
     t.string   "event_from_invitation_organizer"
   end
+
+  add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
 
   create_table "julie_aliases", force: true do |t|
     t.string   "email"
