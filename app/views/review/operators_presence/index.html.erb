@@ -530,7 +530,7 @@
                     // This call can return success of fail when the planning has already been generated
                     // If not, it will take several minutes (~10) to complete. This means that we will check regularly
                     // if it has completed
-                    if(response.data.error) {
+                    if(response.error) {
                       console.log(response);
                       $scope.loading = false;
                       $scope.displaySaveFailedLabel();
