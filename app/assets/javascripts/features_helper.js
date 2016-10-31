@@ -15,6 +15,10 @@ var Feature = function(featureName, obj) {
                 if(!window.featuresHelper.isFeatureActive(featureName)) {
                     return;
                 }
+
+                if(typeof(args) != Array) {
+                    args = [args];
+                }
                 return origMethod.apply(this, args);
             }
         }
