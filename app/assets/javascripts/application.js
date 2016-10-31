@@ -76,3 +76,5 @@
 //= require tracking
 
 //= require smart_listing
+
+//= require clipboard.min

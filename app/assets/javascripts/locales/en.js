@@ -294,7 +294,13 @@ window.wordings['en'] = {
         phone: "Phone:",
         egalement: "also",
         mister: 'Mr.',
-        madam: 'Ms.'
+        madam: 'Ms.',
+        on: 'on',
+        from_hour: 'from',
+        from_date: 'from',
+        to_hour: 'to',
+        to_date: 'to',
+        at: 'at'
     },
     events: {
         new_event: "New event",

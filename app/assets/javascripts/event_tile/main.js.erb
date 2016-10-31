@@ -28,6 +28,9 @@ function EventTile($selector, params) {
         this.calendarLoginUsername = params.event.calendar_login_username;
     }
 
+    //this.firstTimeCopiedInfos = true;
+    this.uxElement = params.uxElement;
+
     var eventTile = this;
 
     eventTile.render();
@@ -1179,6 +1182,34 @@ EventTile.prototype.initActions = function() {
         eventTile.hideRecurrenceContainer();
     });
 
+    var copyBtn = eventTile.$selector.find('.copy-event-data-btn');
+
+    if(window.featuresHelper.isFeatureActive('copy_paste_event_data')) {
+      copyBtn.tooltip({});
+
+      new Clipboard(copyBtn[0], {
+        text: function(trigger) {
+          var $trigger = $(trigger);
+          $trigger.addClass('copying');
+          var $imgNode = $trigger.find('img');
+          $imgNode.prop('src', '<%= asset_path 'checkbox.gif' %>');
+          $imgNode.show();
+          setTimeout(function() { $trigger.prop('title', 'Copié'); $trigger.tooltip( "close" ); $trigger.tooltip( "open" ); }, 1000);
+          setTimeout(function() { $imgNode.removeAttr('src') ; $imgNode.hide(); $trigger.removeClass('copying'); $trigger.prop('title', 'Copier les infos'); $trigger.tooltip( "close" ); }, 2000);
+
+          return eventTile.getEventFormattedInfos();
+        }
+      });
+    } else {
+      copyBtn.hide();
+    }
+
+
+    // eventTile.$selector.find('.copy-event-data-btn').click(function() {
+    //     console.log(eventTile.getEventFormattedInfos());
+    //
+    // });
+
     eventTile.$selector.find(".recurrence-link-container").click(function() {
         if($(this).hasClass("enabled")) {
             var calendarLoginTypeActivatedForRecurrence =  ["GoogleLogin"];
@@ -1222,4 +1253,60 @@ EventTile.prototype.initActions = function() {
         eventTile.redrawAttendeesCountBadge();
         e.stopPropagation();
     });
+};
+
+EventTile.prototype.formatMoment = function(momentObject, format) {
+    return momentObject.locale(window.currentLocale).format(format);
+};
+
+EventTile.prototype.getEventFormattedInfos = function() {
+    var eventTile = this;
+    var event = eventTile.event;
+    var infos = [];
+  console.log(eventTile);
+
+    var singleDayEvent = Math.floor(moment.duration(event.end.diff(event.start)).asDays()) <= 1;
+    var eventAllDay = event.allDay;
+
+    var start = event.start.clone();
+    var end = event.end.clone();
+
+    infos.push(event.title);
+
+    var timeStr = '';
+
+    trackActionV2('Click_on_copy_event_features', {ux_element: eventTile.uxElement});
+
+    if(singleDayEvent) {
+        timeStr = localize('common.on') + ' ' + eventTile.formatMoment(start, 'dddd Do MMMM');
+
+        if(!eventAllDay) {
+            timeStr += ' ' + localize('common.from_hour') + ' ' + eventTile.formatMoment(start, 'LT') + ' ' + localize('common.to_hour') + ' ' + eventTile.formatMoment(end, 'LT');
+        }
+
+        infos.push(timeStr);
+    } else {
+        timeStr = localize('common.from_date') + ' ' + eventTile.formatMoment(start, 'dddd Do MMMM');
+
+        if(!eventAllDay) {
+            timeStr += ' ' + localize('common.at') + ' ' + eventTile.formatMoment(start, 'LT');
+        }
+
+        if(eventAllDay) {
+            timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end.add('d', -1), 'dddd Do MMMM');
+        } else {
+            timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end, 'dddd Do MMMM');
+            timeStr += ' ' + localize('common.at') + ' ' + eventTile.formatMoment(end, 'LT');
+        }
+
+        infos.push(timeStr);
+    }
+
+    if(event.location) {
+        infos.push('@' + event.location);
+    }
+
+    //eventTile.firstTimeCopiedInfos = false;
+
+    return infos.join(', ');
 };

@@ -41,15 +41,57 @@
         background: #fff;
     }
 
+  .copy-event-data-btn {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    width: 33px;
+    height: 39px;
+
+    /*img {*/
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      background: url(<%= asset_path 'bouton_copie_event.png' %>);
+      background-size: 33px 39px;
+      background-repeat: no-repeat;
+    /*}*/
+
+    &:hover {
+      /*img {*/
+        background: url(<%= asset_path 'bouton_copie_event_hover.png' %>);
+        background-size: 33px 39px;
+        background-repeat: no-repeat;
+      /*}*/
+    }
+
+    &.copying {
+      /*img {*/
+      background: none;
+      img {
+        width: 33px;
+        height: 39px;
+      }
+      /*}*/
+      /*img {*/
+        /*background: url(<%= asset_path 'checkbox.gif' %>);*/
+        /*background-size: 33px 33px;*/
+        /*background-repeat: no-repeat;*/
+      /*}*/
+    }
+  }
+
 
 
     .title {
-        margin: 0px 0 5px 0;
-        padding: 5px;
-        width: 100%;
-        border: 1px solid #ddd;
-        outline: none;
-        font-size: 17px;
+      margin: 0px 0 5px 0;
+      padding: 5px;
+      width: 100%;
+      border: 1px solid #ddd;
+      outline: none;
+      font-size: 17px;
+      position: relative;
+      left: -40px;
     }
     .date-container {
         position: relative;

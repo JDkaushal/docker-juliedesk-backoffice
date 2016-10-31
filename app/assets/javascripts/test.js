@@ -33,7 +33,7 @@
 //= require rrule
 //= require nlp
 
-//= require event_tile/main
+//= require event_tile/main.js.erb
 //= require event_tile/recurrence_form
 //= require constraint_tile/main
 //= require calendar_tile/main

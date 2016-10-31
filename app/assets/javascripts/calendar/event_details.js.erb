@@ -55,6 +55,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         eventUrl: event.url,
         calendarId: event.calId,
         accountEmail: calendar.findAccountEmailForEvent(event),
+        uxElement: 'calendar',
         locale: window.threadComputedData.locale,
         selectEventCallback: function() {
             // - - - - - - - - - - - - - - - - - -

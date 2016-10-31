@@ -54,6 +54,8 @@
 
     $(document).ready(function() {
 
+      //$( document ).tooltip();
+
         if(window.threadComputedData.locale)
             window.currentLocale = window.threadComputedData.locale;
 
@@ -306,7 +308,7 @@
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",
             eventFromInvitationOrganizer: "<%= messages_thread.event_data[:event_from_invitation_organizer] %>",
-
+            uxElement: 'form',
             doneEditingCallback: function() {
 
             }
@@ -343,7 +345,8 @@
                     calendarId: eventData.calendar_id,
                     accountEmail: window.threadAccount.email,
                     calendarLoginUsername: eventData.calendar_login_username,
-                    locale: window.threadComputedData.locale
+                    locale: window.threadComputedData.locale,
+                    uxElement: 'form'
                 });
                 eventTile.redraw();
                 eventTile.fetchEvent(function(data) {
