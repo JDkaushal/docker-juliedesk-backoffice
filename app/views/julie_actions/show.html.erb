@@ -299,7 +299,8 @@
                 $(".julie-action-title").css({top: 40});
             }
             else {
-                $(".julie-action-title").css({top: $(this).scrollTop()});
+              var currentScrollTop = $(this).scrollTop();
+                $(".julie-action-title").css({top: currentScrollTop});
             }
         });
 

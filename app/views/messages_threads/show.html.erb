@@ -228,6 +228,21 @@
         $('#cancel_to_be_merged_button').click(function() {
             setToBeMergedOnMessagesThread(<%= @messages_thread.id %>, false);
         });
+
+        $(".left-column").scroll(function () {
+          var $node = $(".thread-actions");
+          var $that = $(this);
+
+          if ($that.scrollTop() < 40) {
+            $node.css({top: -60});
+            $node.removeClass('bordered');
+          }
+          else {
+            var currentScrollTop = $that.scrollTop();
+            $node.css({top: currentScrollTop - 60});
+            $node.addClass('bordered');
+          }
+        });
     });
 //    $(window).unload(function() {
 //        console.log('Handler for .unload() called.');
@@ -266,39 +281,40 @@
       </div>
 
 
+      <div class="thread-actions">
+        <div class="split-buttons-container">
+          <div class="btn btn-default cancel-split-button"><%= I18n.t("common.cancel") %></div>
+          <div class="btn btn-warning actually-split-button"><%= I18n.t("common.split") %></div>
+        </div>
 
-      <div class="split-buttons-container">
-        <div class="btn btn-default cancel-split-button"><%= I18n.t("common.cancel") %></div>
-        <div class="btn btn-warning actually-split-button"><%= I18n.t("common.split") %></div>
-      </div>
+        <div class="merge-buttons-container">
+          <div class="btn btn-default cancel-merge-button"><%= I18n.t("common.cancel") %></div>
+        </div>
 
-      <div class="merge-buttons-container">
-        <div class="btn btn-default cancel-merge-button"><%= I18n.t("common.cancel") %></div>
-      </div>
+        <div class="thread-buttons">
 
-      <div class="thread-buttons">
+          <% if session[:privilege] == Operator::PRIVILEGE_OPERATOR && !@messages_thread.to_be_merged %>
+              <%= link_to set_to_be_merged_messages_thread_path(id: @messages_thread.id, to_merge: true), class: 'to-be-merged-link', method: :post do %>
+                  <div class="to-be-merged-button"><%= I18n.t("common.to_be_merged") %><span class="to-be-merged-sprite"></span></div>
+              <% end %>
+          <% end %>
 
-        <% if session[:privilege] == Operator::PRIVILEGE_OPERATOR && !@messages_thread.to_be_merged %>
-            <%= link_to set_to_be_merged_messages_thread_path(id: @messages_thread.id, to_merge: true), class: 'to-be-merged-link', method: :post do %>
-                <div class="to-be-merged-button"><%= I18n.t("common.to_be_merged") %><span class="to-be-merged-sprite"></span></div>
-            <% end %>
-        <% end %>
-
-        <% if @messages_thread.to_be_merged && (session[:privilege] == Operator::PRIVILEGE_ADMIN ||
-                session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
-                session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2) %>
-                <div class="cancel-to-merge-button"><span class="cancel-to-merge-sprite"></span><span class="to-merge-text"><%= I18n.t("common.cancel_to_merge", operator_name: @messages_thread.to_be_merged_operator.name) %></span><span class="cancel-to-be-merged-sprite" id="cancel_to_be_merged_button"></span></div>
-        <% end %>
+          <% if @messages_thread.to_be_merged && (session[:privilege] == Operator::PRIVILEGE_ADMIN ||
+              session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
+              session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2) %>
+              <div class="cancel-to-merge-button"><span class="cancel-to-merge-sprite"></span><span class="to-merge-text"><%= I18n.t("common.cancel_to_merge", operator_name: @messages_thread.to_be_merged_operator.name) %></span><span class="cancel-to-be-merged-sprite" id="cancel_to_be_merged_button"></span></div>
+          <% end %>
 
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>
           <% if session[:privilege] == Operator::PRIVILEGE_ADMIN ||
-                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
-                  session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 %>
-            <div class="merge-into-thread-button thread-button"><%= I18n.t("common.merge") %></div>
+              session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
+              session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 %>
+              <div class="merge-into-thread-button thread-button"><%= I18n.t("common.merge") %></div>
           <% end %>
           <div class="split-thread-button thread-button"><%= I18n.t("common.split") %></div>
 
           <% button_to I18n.t("common.archive"), archive_messages_thread_path(id: @messages_thread.id), class: "archive-button" %>
+        </div>
       </div>
 
       <%= render 'messages/partials/list', locals: {type: :messages_threads_show} %>

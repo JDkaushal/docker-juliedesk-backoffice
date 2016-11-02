@@ -125,7 +125,20 @@ class MessagesThreadsController < ApplicationController
     should_update_reminder_date = params[:follow_up_reminder_enabled].present?
 
     # Voir pertinence à ce moment, on le fait sur l'index déjà normalement
-    if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
+
+    refreshed_messages = messages_thread.server_thread(force_refresh: true)['messages']
+
+    if params[:current_messages_ids].present?
+      current_messages_ids = params[:current_messages_ids].split(',')
+      refreshed_messages_ids = refreshed_messages.map{|m| m['id'].to_s}
+
+      missing_messages_ids = refreshed_messages_ids - current_messages_ids
+    end
+
+    # Check if number of message has growth in the meantime (which would mean that we received a new message)
+    if missing_messages_ids && missing_messages_ids.size > 0
+      #if messages_thread.server_thread(force_refresh: true)['messages'].find{|m| m['read']}.present?
+      #if messages_thread.server_thread(force_refresh: true)['messages'].map{|m| m['read']}.select{|read| !read}.length > 0
       # We should not have to do that now, because we only archive it when no unread messages are present
       # EmailServer.unarchive_thread(messages_thread_id: messages_thread.server_thread_id)
 
@@ -134,7 +147,7 @@ class MessagesThreadsController < ApplicationController
       end
       # We redirect the operator to the current thread show action, so he can continue to work on the thread
       # And we scroll to the bottom of the page to show the new message to the operator
-      redirect_to messages_thread_path(messages_thread, scroll_to_bottom: true)
+      redirect_to messages_thread_path(messages_thread, scroll_to_bottom: true, not_read_messages: missing_messages_ids)
     else
 
       EmailServer.archive_thread(messages_thread_id: messages_thread.server_thread_id)

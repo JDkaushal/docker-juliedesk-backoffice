@@ -11,6 +11,9 @@
       opacity: 0.5;
     }
 
+    &.not-read {
+      border-left: solid 4px #CF3E3E;
+    }
 
     .full-review-container {
         position: relative;
@@ -301,6 +304,10 @@
             background: rgb(191, 228, 240);
             padding: 2px 5px;
         }
+        .attendee-highlighted {
+          background: #ABE3C2;
+          padding: 2px 5px;
+        }
         .julie-highlighted {
             background: #F3B9D2;
             padding: 2px 5px;
@@ -531,6 +538,64 @@
 }
 
 .left-column {
+
+  .unread-email-container {
+    position: relative;
+    top: -70px;
+
+    .unreal-email-wrapper {
+      position: absolute;
+      z-index: 3;
+      background-color: white;
+      border: solid 1px #787878;
+      height: 70px;
+      border-radius: 4px;
+      box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.10);
+
+      .left-side {
+        display: inline-block;
+        border-right: solid 1px #787878;
+        font-size: 13px;
+        height: 100%;
+
+        .left-side-wrapper {
+          .header-div {
+            background-color: #CF3E3E;
+            color: white;
+            font-size: 15px;
+            padding: 0px 10px;
+          }
+
+          .unread-email-div {
+            padding: 5px 10px;
+          }
+        }
+      }
+
+      .right-side {
+        display: inline-block;
+        width: 65px;
+        height: 100%;
+        position: relative;
+        top: -26px;
+        left: -4px;
+        font-size: 13px;
+        background-color: #D8D8D8;
+        cursor: pointer;
+        margin-right: -4px;
+
+        &:hover {
+          background-color: #B4B4B4;
+        }
+
+        .unread-messages-closing-text {
+          position: relative;
+          top: 25px;
+          left: 20px;
+        }
+      }
+    }
+  }
     .email {
         .operator-and-action-container {
             position: absolute;

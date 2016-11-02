@@ -334,14 +334,31 @@ class MessagesThread < ActiveRecord::Base
   def suggested_date_times
     messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
-        ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
+        (ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
             ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
             ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
-            ja.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
+            ja.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS)
       }.map{ |ja|
         JSON.parse(ja.date_times || "[]")
       }
     }.flatten.uniq
+  end
+
+  def last_suggested_date_times
+    sorted_jas = messages.map{ |m|
+      m.message_classifications.map(&:julie_action).compact.select{ |ja|
+        (ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
+            ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
+            ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
+            ja.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS) && ja.date_times.present? && ja.date_times != '[]'
+      }
+    }.flatten.uniq.sort_by(&:created_at)
+
+    if sorted_jas.present?
+      JSON.parse(sorted_jas.last.date_times || '[]')
+    else
+      []
+    end
   end
 
   def all_timezones

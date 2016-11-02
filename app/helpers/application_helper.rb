@@ -163,9 +163,13 @@ module ApplicationHelper
   def check_highlighting_in_recipients(string)
     sanitized_email = sanitize_email_address(string).downcase
 
+    @computed_present_attendee_emails ||= @messages_thread.computed_data[:attendees].select{|att| att['isPresent'] == 'true'}.map{|att| att['email']}
+
     if @client_emails.include?(sanitized_email)
       #we gsub the < for its html unicode equivalent to prevent it from beeing interpreted as a balise
       "<span class='highlighted'>#{CGI::escapeHTML(string)}</span>"
+    elsif @computed_present_attendee_emails.include?(sanitized_email)
+      "<span class='attendee-highlighted'>#{CGI::escapeHTML(string)}</span>"
     elsif @julie_emails.include?(sanitized_email)
       "<span class='julie-highlighted'>#{CGI::escapeHTML(string)}</span>"
     else

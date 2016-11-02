@@ -90,6 +90,23 @@
   function emailSender() {
       return <%== {name: @message.get_email_sender}.to_json %>;
   }
+
+  $(function () {
+    $(".left-column").scroll(function () {
+      var $node = $(".classification-actions");
+      var $that = $(this);
+
+      if ($that.scrollTop() < 40) {
+        $node.css({top: 40});
+        $node.removeClass('bordered');
+      }
+      else {
+        var currentScrollTop = $that.scrollTop();
+        $node.css({top: currentScrollTop});
+        $node.addClass('bordered');
+      }
+    });
+  });
 </script>
 
 <div class="fixed-columns">
@@ -98,16 +115,22 @@
   <div class="left-column">
 
     <%= render partial: "common/classification_action_header", locals: {messages_thread: @messages_thread} %>
+
+    <div class="classification-actions">
+      <% if @display_calendar %>
+          <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
+      <% end %>
+      <div id="back-button" class="btn btn-link" style="top: 0px; position: relative; left: -95%; padding: 0px;">< <%= I18n.t("common.back")%></div>
+    </div>
+
     <% if @display_calendar %>
-        <div id="show-calendar-button" class="btn btn-sm btn-default in-classify"><%= I18n.t("actions.show_calendar") %></div>
         <%= render template: "calendar/calendar" %>
     <% end %>
+
     <div class="julie-action-fantom"></div>
 
     <div class="messages-thread-emails">
       <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
-
-      <div id="back-button" class="btn btn-link">< <%= I18n.t("common.back")%></div>
 
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>

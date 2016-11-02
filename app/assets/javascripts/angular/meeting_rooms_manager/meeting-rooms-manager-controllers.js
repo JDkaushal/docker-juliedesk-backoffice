@@ -18,6 +18,8 @@
                 $scope.selectedAttendeesNb = "2";
                 $scope.formDisabled = !window.threadDataIsEditable;
 
+                $scope.noFittingRooms = false;
+
                 $scope.unavailableMessageDisplayed = false;
 
                 $scope.computedDataSelectedRoom;
@@ -63,7 +65,10 @@
                             updateNotesCallingInfos();
                         }
                     }
+                });
 
+                $scope.$watchGroup(['useAttendeesCountFilter', 'useCanConfCallFilter', 'useCanVisioFilter'], function(newValues, oldValues, scope) {
+                    $scope.determineFittingMeetingRooms();
                 });
 
                 $scope.$watch('displayForm', function(newVal, oldVal) {
@@ -378,6 +383,11 @@
 
                     if(selectedRoomToUnshift)
                         filteredAvailableRooms.unshift($scope.selectedRoom);
+
+                    $scope.noFittingRooms = filteredAvailableRooms.length == 0;
+                    if(!$scope.$$phase)
+                        $scope.$apply();
+
 
                     return filteredAvailableRooms;
                 };

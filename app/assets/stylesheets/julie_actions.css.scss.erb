@@ -60,23 +60,36 @@
         cursor: pointer;
         @include box-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
     }
+    .template-manager-search {
+      position: relative;
+      top: 37px;
+
+      input {
+        width: 100%;
+      }
+    }
+
     .template-manager-menu {
-        position: relative;
-        top: 37px;
-        background: white;
-        border-top: 1px solid #ddd;
-        border-left: 1px solid #ddd;
-        border-right: 1px solid #ddd;
+      position: relative;
+      top: 37px;
+      background: white;
+      border-top: 1px solid #ddd;
+      border-left: 1px solid #ddd;
+      border-right: 1px solid #ddd;
+      z-index: 2;
 
-        .template-manager-menu-item {
-            border-bottom: 1px solid #ddd;
-            width: 300px;
-            padding: 5px 20px;
-            cursor: pointer;
+      max-height: 380px;
+      overflow: auto;
 
-            &:hover {
-                background-color: #fafafa;
-            }
-        }
+      .template-manager-menu-item {
+          border-bottom: 1px solid #ddd;
+          width: 500px;
+          padding: 5px 20px;
+          cursor: pointer;
+
+          &:hover {
+              background-color: #fafafa;
+          }
+      }
     }
 }

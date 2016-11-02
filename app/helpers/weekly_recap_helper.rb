@@ -34,7 +34,7 @@ module WeeklyRecapHelper
 
   # Returns the date of the last message received as string
   def self.build_last_message_received_at mt
-    mt.messages.select { |m| !m.from_me }.map(&:received_at).max.to_s
+    mt.messages.select { |m| !m.from_me }.map(&:received_at).max
   end
 
   # Returns the attendees in format {name: STRING, company: STRING}
@@ -114,19 +114,67 @@ module WeeklyRecapHelper
                                                                                        }) }
     }.flatten
 
+    still_scheduling = []
+    aborted_scheduling = []
+
     scheduling_mts = self.get_messages_threads({
                                                    account_email: params[:account_email],
-                                                   start_of_week: params[:start_of_week] - 1.weeks,
+                                                   start_of_week: params[:start_of_week] - 3.weeks,
                                                    thread_statuses: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT],
                                                    dont_check_status_has_changed_this_week: true
                                                })
 
-    scheduling_aborted_mts = self.get_messages_threads({
-                                                           account_email: params[:account_email],
-                                                           start_of_week: params[:start_of_week] - 3.weeks,
-                                                           thread_statuses: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT],
-                                                           dont_check_status_has_changed_this_week: true
-                                                       }) - scheduling_mts
+
+    scheduling_mts.each do |mt|
+      last_message_received_at = self.build_last_message_received_at(mt)
+      computed_data_light = mt.computed_data_light
+      attendees = self.build_attendees_array(mt, params[:account_email])
+
+      # If the thread last message is less than 14 days olds we considere it is still scheduling
+      # If not we consider it has been aborted
+
+      puts (params[:start_of_week] - last_message_received_at.to_datetime).to_i
+      if (params[:start_of_week] - last_message_received_at.to_datetime).to_i <= 14
+        still_scheduling <<
+          {
+            account_email: params[:account_email],
+            status: "scheduling",
+            subject: computed_data_light[:summary],
+            thread_subject: mt.subject,
+            other: {
+              id: mt.id,
+              server_thread_id: mt.server_thread_id,
+              waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
+              valid_suggestions_count: computed_data_light[:date_times].select { |dt|
+                begin
+                  DateTime.parse(dt['date']) > DateTime.now
+                rescue
+                  false
+                end
+              }.length,
+              suggestions_count: computed_data_light[:date_times].length,
+              appointment_nature: computed_data_light[:appointment_nature],
+              attendees: attendees,
+              last_message_received_at: last_message_received_at.to_s
+            }
+          }
+      else
+        aborted_scheduling <<
+          {
+            account_email: params[:account_email],
+            status: "aborted",
+            subject: computed_data_light[:summary],
+            thread_subject: mt.subject,
+            other: {
+                id: mt.id,
+                server_thread_id: mt.server_thread_id,
+                last_message_received_at: last_message_received_at.to_s,
+                appointment_nature: computed_data_light[:appointment_nature],
+                attendees: attendees
+            }
+          }
+      end
+    end
 
     aborted_mts = self.get_messages_threads({
                                                 account_email: params[:account_email],
@@ -134,6 +182,23 @@ module WeeklyRecapHelper
                                                 thread_statuses: [MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED]
                                             })
 
+
+
+    aborted_scheduling += aborted_mts.map{ |mt|
+      {
+          account_email: params[:account_email],
+          status: "aborted",
+          subject: mt.computed_data_light[:summary],
+          thread_subject: mt.subject,
+          other: {
+              id: mt.id,
+              server_thread_id: mt.server_thread_id,
+              last_message_received_at: self.build_last_message_received_at(mt).to_s,
+              appointment_nature: mt.computed_data_light[:appointment_nature],
+              attendees: self.build_attendees_array(mt, params[:account_email])
+          }
+      }
+    }
 
     scheduled_mts.map { |mt|
       {
@@ -146,7 +211,7 @@ module WeeklyRecapHelper
               server_thread_id: mt.server_thread_id,
               event: mt.event_data,
               attendees: self.build_attendees_array(mt, params[:account_email]),
-              last_message_received_at: self.build_last_message_received_at(mt),
+              last_message_received_at: self.build_last_message_received_at(mt).to_s,
           }
       }
     } + events_creation_data.map { |event|
@@ -161,43 +226,44 @@ module WeeklyRecapHelper
               attendees: []
           }
       }
-    } + scheduling_mts.map { |mt|
-      {
-          account_email: params[:account_email],
-          status: "scheduling",
-          subject: mt.computed_data_light[:summary],
-          thread_subject: mt.subject,
-          other: {
-              id: mt.id,
-              server_thread_id: mt.server_thread_id,
-              waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
-              valid_suggestions_count: mt.computed_data_light[:date_times].select { |dt|
-                begin
-                  DateTime.parse(dt['date']) > DateTime.now
-                rescue
-                  false
-                end
-              }.length,
-              suggestions_count: mt.computed_data_light[:date_times].length,
-              appointment_nature: mt.computed_data_light[:appointment_nature],
-              attendees: self.build_attendees_array(mt, params[:account_email]),
-              last_message_received_at: self.build_last_message_received_at(mt)
-          }
-      }
-    } + (aborted_mts + scheduling_aborted_mts).map { |mt|
-      {
-          account_email: params[:account_email],
-          status: "aborted",
-          subject: mt.computed_data_light[:summary],
-          thread_subject: mt.subject,
-          other: {
-              id: mt.id,
-              server_thread_id: mt.server_thread_id,
-              last_message_received_at: self.build_last_message_received_at(mt),
-              appointment_nature: mt.computed_data_light[:appointment_nature],
-              attendees: self.build_attendees_array(mt, params[:account_email])
-          }
-      }
-    }
+    } + still_scheduling + aborted_scheduling
+    # + scheduling_mts.map { |mt|
+    #   {
+    #       account_email: params[:account_email],
+    #       status: "scheduling",
+    #       subject: mt.computed_data_light[:summary],
+    #       thread_subject: mt.subject,
+    #       other: {
+    #           id: mt.id,
+    #           server_thread_id: mt.server_thread_id,
+    #           waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
+    #           valid_suggestions_count: mt.computed_data_light[:date_times].select { |dt|
+    #             begin
+    #               DateTime.parse(dt['date']) > DateTime.now
+    #             rescue
+    #               false
+    #             end
+    #           }.length,
+    #           suggestions_count: mt.computed_data_light[:date_times].length,
+    #           appointment_nature: mt.computed_data_light[:appointment_nature],
+    #           attendees: self.build_attendees_array(mt, params[:account_email]),
+    #           last_message_received_at: self.build_last_message_received_at(mt)
+    #       }
+    #   }
+    # } + (aborted_mts).map { |mt|
+    #   {
+    #       account_email: params[:account_email],
+    #       status: "aborted",
+    #       subject: mt.computed_data_light[:summary],
+    #       thread_subject: mt.subject,
+    #       other: {
+    #           id: mt.id,
+    #           server_thread_id: mt.server_thread_id,
+    #           last_message_received_at: self.build_last_message_received_at(mt),
+    #           appointment_nature: mt.computed_data_light[:appointment_nature],
+    #           attendees: self.build_attendees_array(mt, params[:account_email])
+    #       }
+    #   }
+    # }
   end
 end

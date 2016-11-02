@@ -142,6 +142,7 @@
         </select>
 
         <%= render partial: 'common/messages_thread_reminder_widget', locals: {messages_thread: local_assigns[:messages_thread]} %>
+        <%= hidden_field_tag :current_messages_ids, @messages_thread.messages.map{|m| m.server_message['id'] }.join(',') %>
 
         <%= submit_tag "Finish", class: "finish-buttons-finish-button" %>
         <div class="finish-buttons-cancel-button">x</div>

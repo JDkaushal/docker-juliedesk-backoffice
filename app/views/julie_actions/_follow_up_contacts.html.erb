@@ -2,7 +2,7 @@
 <script>
     window.leftColumnMessage = "Suggest dates";
     <% now = Time.now %>
-    var suggestedDateTimes = <%== @messages_thread.suggested_date_times.select{|dt| dt['date'] && dt['date'] >= now}.map{|dt| dt['date']}.uniq.to_json %>
+    var suggestedDateTimes = <%== @messages_thread.last_suggested_date_times.select{|dt| dt['date'] && dt['date'] >= now}.map{|dt| dt['date']}.uniq.to_json %>
     //var suggestedDateTimes = ['2016-10-19T23:00:00+0000', '2016-10-20T10:00:00+0000'];
 
     window.drawCalendarCallback = function(){

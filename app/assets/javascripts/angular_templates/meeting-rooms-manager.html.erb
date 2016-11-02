@@ -22,7 +22,9 @@
       <%= check_box_tag :meeting_rooms_custom_can_visio, false, {}, {'ng-model' => 'useCanVisioFilter', 'ng-disabled' => 'formDisabled'} %>
       <%= label_tag :meeting_rooms_custom_can_visio, 'Matériel de Visio'%>
     </div>
+
+    <div class="meeting-rooms-warning-area">
+      <div id="no_fitting_rooms" ng-show="noFittingRooms">Aucune salle de disponible suivant ces filtres</div>
+    </div>
   </div>
-
-
 </div>

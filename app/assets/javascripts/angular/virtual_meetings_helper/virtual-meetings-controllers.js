@@ -162,6 +162,8 @@
                                 return {email: a.email, name: a.displayNormalizedName(), guid: a.guid, displayName: $scope.computeOptionText({name: a.displayNormalizedName(), email: a.email})};
                             });
 
+                            $scope.updateSelectedCallTargetInfos();
+
                             $scope.computeCallDetails();
 
                         }else{
@@ -335,6 +337,23 @@
                         $scope.otherForm.configLoaded = true;
 
                     updateNotesCallingInfos();
+                };
+
+                $scope.updateSelectedCallTargetInfos = function() {
+                    if($scope.currentConf.target == 'interlocutor') {
+                        if($scope.callTargetsInfos.length == 1) {
+                            var selectedTargetInfos =  $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
+                            var selectedSupport = $scope.determineDefaultSupport(findTargetAttendee($scope.currentConf.targetInfos));
+
+                            $scope.currentConf = Object.assign($scope.currentConf, {targetInfos: selectedTargetInfos, support: selectedSupport});
+
+                            //$scope.computeCallDetails(true);
+                            //Set the correct attendee in the targetInfos select if there is one
+                            //$scope.updateTargetInfosSelect();
+
+                            //updateNotesCallingInfos();
+                        }
+                    }
                 };
 
                 $scope.loadDefaultConfig = function(refreshCallDetails){

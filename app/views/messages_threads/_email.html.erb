@@ -1,7 +1,57 @@
 <% email = message.server_message %>
 <% operator_actions_group = (message.from_me)?message.generator_operator_actions_group(local_assigns[:operator_actions_groups]):nil %>
 
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %>" id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
+<% message_not_read = params[:not_read_messages].present? && params[:not_read_messages].include?(message.server_message_id.to_s) %>
+
+<% if params[:not_read_messages].present? && params[:not_read_messages][0].to_i == message.server_message_id %>
+    <div class="unread-email-container">
+      <div class="unreal-email-wrapper">
+        <div class="left-side">
+          <div class="left-side-wrapper">
+            <div class="header-div">
+              Attention
+            </div>
+            <div class="unread-email-div">
+              <%= "#{params[:not_read_messages].size} email(s) non traité(s) reçu(s) entre temps" %>
+            </div>
+          </div>
+        </div>
+        <div class="right-side close-unread-messages-popup">
+          <div class="right-side-wrapper">
+            <div class="closing-area">
+              <span class="unread-messages-closing-text">OK</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(function() {
+        window.unreadMessages = true;
+        // Scroll to tehe popup
+        scrollToUnreadAlert();
+
+        $('.finish-buttons-finish-button').click(function(e) {
+          if(window.unreadMessages) {
+            e.preventDefault();
+            scrollToUnreadAlert();
+          }
+        });
+
+        $('.close-unread-messages-popup').click(function(e) {
+          window.unreadMessages = false;
+          $('.unread-email-container').hide()
+        });
+      });
+
+        function scrollToUnreadAlert() {
+          var currentPos = $(".left-column").scrollTop();
+          $(".left-column").animate({scrollTop: currentPos + $('.unread-email-container').offset().top - 40}, 300);
+        };
+    </script>
+<% end %>
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %>" id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
       <div class="full-review-container <%= (notation != 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">

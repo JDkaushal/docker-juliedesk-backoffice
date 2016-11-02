@@ -27,11 +27,39 @@
     }
   }
 
-  .thread-buttons {
+  .thread-actions {
     position: absolute;
-    top: -30px;
-    right: 0px;
+    top: -60px;
+    width: 100%;
+    padding: 25px 20px 5px;
+    z-index: 3;
+    background-color: white;
+
+    &.bordered {
+      border-bottom: solid 1px #ccc;
+    }
+  }
+
+  .split-buttons-container, .merge-buttons-container {
+    //position: absolute;
+    //top: -40px;
+    display: none;
+
+    background: white;
+    //width: 600px;
     text-align: right;
+    height: 40px;
+    z-index: 3;
+    right: 0;
+  }
+
+  .thread-buttons {
+    text-align: right;
+    z-index: 2;
+
+    width: 100%;
+    /*padding: 25px 20px 5px;*/
+    background-color: white;
 
     .to-be-merged-link {
       text-decoration: none;
@@ -161,20 +189,11 @@
     }
   }
 
-  .split-buttons-container, .merge-buttons-container {
-    position: absolute;
-    top: -31px;
-    display: none;
-
-    background: white;
-    width: 600px;
-    text-align: right;
-    height: 40px;
-    z-index: 2;
-    right: 0;
-  }
-
   &.splitting {
+    .thread-buttons {
+      display: none;
+    }
+    
     .split-buttons-container {
       display: block;
     }
@@ -192,6 +211,10 @@
 
   &.merging {
     margin-right: 200px;
+
+    .thread-buttons {
+      display: none;
+    }
     .merge-buttons-container {
       display: block;
     }

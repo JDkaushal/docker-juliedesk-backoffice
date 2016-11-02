@@ -222,9 +222,8 @@
 
 
         angular.element(document).ready(function () {
-            $scope.virtualAppointmentsHelper = angular.element($('#virtual-meetings-helper')).scope();
+            $scope.virtualAppointmentsHelper = $('#virtual-meetings-helper').scope();
             $scope.messageBuilder = $scope.messageBuilder || $('#reply-area').scope();
-
         });
 
         this.loaded = false;

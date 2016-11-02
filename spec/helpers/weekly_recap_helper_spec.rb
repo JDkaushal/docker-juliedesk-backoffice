@@ -629,7 +629,7 @@ describe WeeklyRecapHelper do
                                                                         ]
                                                                     })
 
-        @correct_scheduling_aborted_mt = FactoryGirl.create(:messages_thread, {
+        @correct_scheduling_aborted_mt1 = FactoryGirl.create(:messages_thread, {
                                                                         account_email: "nicolas@juliedesk.com",
                                                                         subject: "Subject scheduling aborted mt",
                                                                         server_thread_id: 1,
@@ -662,6 +662,39 @@ describe WeeklyRecapHelper do
                                                                         ]
                                                                     })
 
+        @correct_scheduling_aborted_mt2 = FactoryGirl.create(:messages_thread, {
+            account_email: "nicolas@juliedesk.com",
+            subject: "Subject scheduling aborted mt 2",
+            server_thread_id: 1,
+            messages: [
+                FactoryGirl.create(:message, {
+                    received_at: "2016-01-17",
+                    message_classifications: [
+                        FactoryGirl.create(:message_classification, {
+                            classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                            created_at: "2016-01-17",
+                            summary: "Skype scheduled on 2016-01-17",
+                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+                            appointment_nature: "skype",
+                            attendees: [
+                                {
+                                    'email' => "nmarlier@gmail.com",
+                                    'isPresent' => 'true',
+                                    'firstName' => "Nico",
+                                    'lastName' => "M",
+                                    'company' => "JD"
+                                }
+                            ].to_json,
+                            julie_action: FactoryGirl.create(:julie_action, {
+                                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                                done: true,
+                            })
+                        })
+                    ]
+                })
+            ]
+        })
+
       end
       it "should behave correctly" do
         data = WeeklyRecapHelper.get_weekly_recap_data({
@@ -689,14 +722,31 @@ describe WeeklyRecapHelper do
                                },
                                {
                                    :account_email=>"nicolas@juliedesk.com",
-                                   :status=>"aborted",
-                                   :subject=>"Skype scheduled on 2016-01-20",
+                                   :status => "scheduling",
+                                   :subject => "Skype scheduled on 2016-01-20",
                                    :thread_subject => "Subject scheduling aborted mt",
+                                   :other =>
+                                       {
+                                           :id => @correct_scheduling_aborted_mt1.id,
+                                           :server_thread_id => 1,
+                                           :waiting_for => "contact",
+                                           :valid_suggestions_count => 0,
+                                           :suggestions_count => 0,
+                                           :appointment_nature => "skype",
+                                           :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
+                                           :last_message_received_at => "2016-01-20 00:00:00 UTC"
+                                       }
+                               },
+                               {
+                                   :account_email=>"nicolas@juliedesk.com",
+                                   :status=>"aborted",
+                                   :subject=>"Skype scheduled on 2016-01-17",
+                                   :thread_subject => "Subject scheduling aborted mt 2",
                                    :other=>
                                        {
-                                           :id=>@correct_scheduling_aborted_mt.id,
+                                           :id=>@correct_scheduling_aborted_mt2.id,
                                            :server_thread_id => 1,
-                                           :last_message_received_at=>"2016-01-20 00:00:00 UTC",
+                                           :last_message_received_at=>"2016-01-17 00:00:00 UTC",
                                            :appointment_nature=>"skype",
                                            :attendees=>[
                                                {email: "nmarlier@gmail.com", :name=>"Nico M", :company=>"JD"}
