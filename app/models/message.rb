@@ -325,6 +325,7 @@ class Message < ActiveRecord::Base
     server_thread_ids_to_create = []
 
     server_threads.each do |server_thread|
+
       messages_thread = inbox_messages_threads.find{|mt| mt.server_thread_id == server_thread['id']}
       if messages_thread
         if "#{messages_thread.server_version}" == "#{server_thread['version']}"
@@ -341,7 +342,17 @@ class Message < ActiveRecord::Base
       return []
     end
 
-    server_threads = EmailServer.list_messages_threads(specific_ids: server_thread_ids_to_update + server_thread_ids_to_create, limit: 1000, full: true)
+    #puts server_thread_ids_to_update + server_thread_ids_to_create
+    ids_to_fetch = server_thread_ids_to_update + server_thread_ids_to_create
+
+    server_threads = []
+    if ids_to_fetch.size > 200
+      ids_to_fetch.each_slice(200) do |ids|
+        server_threads += EmailServer.list_messages_threads(specific_ids: ids, limit: 1000, full: true)
+      end
+    end
+
+    #server_threads = EmailServer.list_messages_threads(specific_ids: server_thread_ids_to_update + server_thread_ids_to_create, limit: 1000, full: true)
 
     # Julie aliases in cache
     julie_aliases = JulieAlias.all
