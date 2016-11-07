@@ -249,7 +249,7 @@
         $(".submit-classification").click(function () {
             var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
-            if(meetingRoomsManager && meetingRoomsManager.noFittingRooms) {
+            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.noFittingRooms) {
               alert("Aucune salle de réunion ne correspond à ces filtres. Merci de modifier les filtres avant d'enregistrer.");
               return;
             }
