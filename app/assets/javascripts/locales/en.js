@@ -42,7 +42,7 @@ window.wordings['en'] = {
                 after_dates: {
                     single_attendee_unassisted: "\nCould you please provide me your availabilities?\nThank you.",
                     multiple_attendees_unassisted: "\n%{attendees}, could you please provide me your availabilities? \nThank you.",
-                    single_attendee_assisted: "\nCould you please prodive me the availabilities of %{assisted_attendee}?\nThank you.",
+                    single_attendee_assisted: "\nCould you please provide me the availabilities of %{assisted_attendee}?\nThank you.",
                     multiple_attendees_assisted: "\nCould you please provide me the availabilities of %{assisted_attendees}?\nThank you.",
                     multiple_attendees_mix: "\nCould you please provide me your availabilities?\nThank you."
                 }
