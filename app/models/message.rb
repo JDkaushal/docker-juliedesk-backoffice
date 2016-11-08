@@ -346,10 +346,8 @@ class Message < ActiveRecord::Base
     ids_to_fetch = server_thread_ids_to_update + server_thread_ids_to_create
 
     server_threads = []
-    if ids_to_fetch.size > 200
-      ids_to_fetch.each_slice(200) do |ids|
-        server_threads += EmailServer.list_messages_threads(specific_ids: ids, limit: 1000, full: true)
-      end
+    ids_to_fetch.each_slice(200) do |ids|
+      server_threads += EmailServer.list_messages_threads(specific_ids: ids, limit: 1000, full: true)
     end
 
     #server_threads = EmailServer.list_messages_threads(specific_ids: server_thread_ids_to_update + server_thread_ids_to_create, limit: 1000, full: true)
