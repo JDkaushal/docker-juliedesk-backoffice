@@ -188,10 +188,10 @@ window.wordings['en'] = {
                 }
             }
         },
-        forward_to_client: "Please allow me to forward you this email.\nI remain at your disposal.",
+        forward_to_client: "Please allow me to forward you this email.\nLet me know if I can be of any other assistance.",
         wait_for_contact: {
             postpone: "Pending your contact's response, before rescheduling I will cancel %{appointment_nature} scheduled %{date}.",
-            no_postpone: "Pending your contact's response, I remain at your disposal if you need me to suggest your availabilities beforehand."
+            no_postpone: "Pending your contact's response, let me know if you need me to suggest your availabilities beforehand."
         },
         common: {
             default_appointment_designation_in_email: "the meeting",
