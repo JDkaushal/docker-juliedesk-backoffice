@@ -126,6 +126,8 @@
                     aiDatesSuggestionManager.scope().fetchSuggestedDatesByAi(fetchParams).then(function(response) {
                         var data = response.data;
 
+                        data.suggested_dates = _.sortBy(data.suggested_dates);
+
                         $scope.AIsuggestionsTrackingId = data.suggested_dates_id;
 
                         _.each((data.suggested_dates || []), function(slot) {
