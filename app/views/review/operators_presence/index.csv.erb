@@ -20,8 +20,8 @@ end.join(";;;") %>;;;Total
 
 presences_for_day = operator.presences_for_day(day, presences)
 night_hours = presences_for_day.select do |op|
-hour = op.date.in_time_zone("Indian/Antananarivo").strftime("%H").to_i
-hour < 6 || hour >= 23
+hour = op.date.in_time_zone("Europe/Paris").strftime("%H").to_i
+hour < 6 || hour >= 22
 end.length / 2.0
 count += presences_for_day.length
 day_hours = presences_for_day.length / 2.0 - night_hours
