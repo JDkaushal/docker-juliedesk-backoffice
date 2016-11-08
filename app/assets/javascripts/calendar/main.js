@@ -363,8 +363,9 @@ Calendar.prototype.fetchCalendars = function (callback) {
             action: "calendars",
             email: email
         }, function (response) {
-            if(response.sync_status == 'synced') {
-
+            if(response.sync_status && response.sync_status == 'sync_failed') {
+                alert('Problems with calendars: ' + response.sync_status);
+            } else {
                 for(var j=0; j < response.items.length; j++) {
                     var calendarItem = response.items[j];
                     calendarItem.email = response.email;
@@ -432,8 +433,6 @@ Calendar.prototype.fetchCalendars = function (callback) {
                     calendar.redrawCalendarsListPopup();
                     if (callback) callback();
                 }
-            } else {
-                alert('Problems with calendars: ' + response.sync_status);
             }
                 
         });
