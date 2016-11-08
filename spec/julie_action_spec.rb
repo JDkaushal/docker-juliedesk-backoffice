@@ -66,14 +66,16 @@ describe JulieAction do
 
   describe 'get_suggested_dates_barycentre' do
 
-    context 'no suggested dates' do
+    context 'when no suggested dates' do
       before(:each) do
         @ja = FactoryGirl.create(:julie_action, date_times: '[]')
 
       end
 
-      it 'should return nil' do
-        expect(@ja.send(:get_suggested_dates_barycentre)).to be(nil)
+      it 'default barycentre is Now + 3 days' do
+        now = DateTime.new(2016, 01, 01)
+        allow(Time).to receive(:now).and_return(now)
+        expect(@ja.send(:get_suggested_dates_barycentre)).to eq(now + 3.days)
       end
     end
 
