@@ -493,15 +493,18 @@ Calendar.prototype.fullCalendarInit = function() {
 
             if(event.isSuggestionFromAi) {
                 $element.addClass('suggestion-from-ai');
-                if(event.isHighlighted)
-                    $element.addClass('highlighted');
+
+                // Used to optimize the retrieval of the node in the DOM to highlight it when needed
+                $element.attr('id', event.trackingId);
+                // if(event.isHighlighted)
+                //     $element.addClass('highlighted');
                 var $callToActionsWrapper = $('<div class="call-to-actions-wrapper"></div>');
                 var $acceptSprite = $('<span class="call-to-action accept"></span>');
                 var $rejectSprite = $('<span class="call-to-action reject"></span>');
 
                 $callToActionsWrapper.append($acceptSprite).append($rejectSprite);
 
-                $element.find('.fc-event-inner').append($callToActionsWrapper);
+                $element.append($callToActionsWrapper);
 
                 $acceptSprite.click(function(e) {
                     e.preventDefault();

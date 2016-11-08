@@ -47,17 +47,21 @@
 
         $scope.mouseEnterSuggestionNode = function(suggestion) {
             if(suggestion.fromAi) {
-                var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
-                eventInCalendar.isHighlighted = true;
-                window.currentCalendar.reRenderEvents();
+                $('#' + suggestion.trackingId).addClass('highlighted');
+                // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
+                // eventInCalendar.isHighlighted = true;
+                // console.log('here');
+                // window.currentCalendar.reRenderEvents();
+                // console.log('rerender');
             }
         };
 
         $scope.mouseLeaveSuggestionNode = function(suggestion) {
             if(suggestion.fromAi) {
-                var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
-                eventInCalendar.isHighlighted = false;
-                window.currentCalendar.reRenderEvents();
+                $('#' + suggestion.trackingId).removeClass('highlighted');
+                // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
+                // eventInCalendar.isHighlighted = false;
+                // window.currentCalendar.reRenderEvents();
             }
         };
 
@@ -134,6 +138,7 @@
                             checkSendButtonAvailability();
                             $scope.addSuggestedDatesByAiToCalendar();
                             $scope.setSuggestions();
+                            window.currentCalendar.goToDateTime($scope.timeSlotsSuggestedByAi[0].value);
                         } else {
                             $scope.showAiWarning = true;
                             $scope.$apply();
