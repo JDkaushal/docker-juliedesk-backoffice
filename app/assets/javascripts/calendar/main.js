@@ -363,73 +363,79 @@ Calendar.prototype.fetchCalendars = function (callback) {
             action: "calendars",
             email: email
         }, function (response) {
-            for(var j=0; j < response.items.length; j++) {
-                var calendarItem = response.items[j];
-                calendarItem.email = response.email;
-                if(calendarItem.is_resource) {
-                    calendarItem.groupEmail = 'Meeting Rooms';
-                }else {
-                    calendarItem.groupEmail = response.email;
+            if(response.sync_status == 'synced') {
+
+                for(var j=0; j < response.items.length; j++) {
+                    var calendarItem = response.items[j];
+                    calendarItem.email = response.email;
+                    if(calendarItem.is_resource) {
+                        calendarItem.groupEmail = 'Meeting Rooms';
+                    }else {
+                        calendarItem.groupEmail = response.email;
+                    }
+                    calendar.calendars.push(calendarItem);
                 }
-                calendar.calendars.push(calendarItem);
-            }
 
-            // Here we are setting the Ews meeting rooms in the calendars property to handle them as normal calendars
-            // This way they will appear in the meeting rooms section in the calendar selection Popup of the display calendar
-            if(getCurrentAddressObject) {
+                // Here we are setting the Ews meeting rooms in the calendars property to handle them as normal calendars
+                // This way they will appear in the meeting rooms section in the calendar selection Popup of the display calendar
+                if(getCurrentAddressObject) {
 
-                var currentAddress = getCurrentAddressObject();
+                    var currentAddress = getCurrentAddressObject();
 
-                if(currentAddress) {
+                    if(currentAddress) {
 
-                    var meetingRooms = angular.copy(currentAddress.available_meeting_rooms);
-                    _.each(meetingRooms, function(mR) {
-                        mR.is_resource = true;
-                        mR.groupEmail = 'Meeting Rooms';
-                        mR.email = calendar.initialData.email;
+                        var meetingRooms = angular.copy(currentAddress.available_meeting_rooms);
+                        _.each(meetingRooms, function(mR) {
+                            mR.is_resource = true;
+                            mR.groupEmail = 'Meeting Rooms';
+                            mR.email = calendar.initialData.email;
+                        });
+
+                        // var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
+                        //     mR.is_resource = true;
+                        //     mR.groupEmail = 'Meeting Rooms';
+                        //     mR.email = calendar.initialData.email;
+                        //     return mR.calendar_login_username == "ews_company_meeting_room";
+                        // });
+
+                        calendar.calendars = calendar.calendars.concat(meetingRooms);
+                    }
+                }
+
+                accountsToWait --;
+                if(accountsToWait == 0) {
+                    calendar.hideLoadingSpinner();
+
+                    calendar.calendars.push({
+                        id: "juliedesk-unavailable",
+                        summary: "Non-working hours",
+                        colorId: "0"
+                    });
+                    calendar.calendars.push({
+                        id: "juliedesk-strong-constraints",
+                        summary: "Contacts strong constraints",
+                        colorId: "30"
+                    });
+                    calendar.calendars.push({
+                        id: "juliedesk-light-constraints",
+                        summary: "Contacts light constraints",
+                        colorId: "31"
                     });
 
-                    // var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
-                    //     mR.is_resource = true;
-                    //     mR.groupEmail = 'Meeting Rooms';
-                    //     mR.email = calendar.initialData.email;
-                    //     return mR.calendar_login_username == "ews_company_meeting_room";
-                    // });
+                    calendar.calendars.push({
+                        id: "juliedesk-public-holidays",
+                        summary: "Public holidays",
+                        colorId: "0"
+                    });
 
-                    calendar.calendars = calendar.calendars.concat(meetingRooms);
+                    calendar.redrawTimeZoneSelector();
+                    calendar.redrawCalendarsListPopup();
+                    if (callback) callback();
                 }
+            } else {
+                alert('Problems with calendars: ' + response.sync_status);
             }
-
-            accountsToWait --;
-            if(accountsToWait == 0) {
-                calendar.hideLoadingSpinner();
-
-                calendar.calendars.push({
-                    id: "juliedesk-unavailable",
-                    summary: "Non-working hours",
-                    colorId: "0"
-                });
-                calendar.calendars.push({
-                    id: "juliedesk-strong-constraints",
-                    summary: "Contacts strong constraints",
-                    colorId: "30"
-                });
-                calendar.calendars.push({
-                    id: "juliedesk-light-constraints",
-                    summary: "Contacts light constraints",
-                    colorId: "31"
-                });
-
-                calendar.calendars.push({
-                    id: "juliedesk-public-holidays",
-                    summary: "Public holidays",
-                    colorId: "0"
-                });
-
-                calendar.redrawTimeZoneSelector();
-                calendar.redrawCalendarsListPopup();
-                if (callback) callback();
-            }
+                
         });
     }
 };

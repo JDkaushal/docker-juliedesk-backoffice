@@ -174,8 +174,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             success: function(data) {
                 callback({
-                    items: data.items,
-                    email: request.email
+                  items: data.items,
+                  email: request.email,
+                  sync_status: data.sync_status
                 });
             }
         });
