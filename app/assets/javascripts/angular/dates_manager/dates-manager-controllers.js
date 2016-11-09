@@ -110,7 +110,6 @@
         };
 
         $scope.actionOnAiSuggestion = function(trackingId, type, event) {
-            console.log(event);
             var highlightAccept = false;
             var highlightReject = false;
 
@@ -134,9 +133,7 @@
                     event.highlightReject = false;
                     break;
             }
-
-            console.log(event);
-
+            
             $scope.setSuggestions();
         };
 

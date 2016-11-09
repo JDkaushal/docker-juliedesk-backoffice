@@ -521,7 +521,7 @@ Calendar.prototype.fullCalendarInit = function() {
                 });
 
                 $element.mouseenter(function(e) {
-                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'highlight');
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'highlight', e);
                 });
 
                 $element.find('.call-to-action.accept, .call-to-action.reject').mouseenter(function(e) {
@@ -529,7 +529,7 @@ Calendar.prototype.fullCalendarInit = function() {
                 });
 
                 $element.mouseleave(function(e) {
-                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'unhighlight');
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'unhighlight', e);
                 });
 
                 $element.find('.call-to-action.accept, .call-to-action.reject').mouseleave(function(e) {
