@@ -502,7 +502,7 @@ Calendar.prototype.fullCalendarInit = function() {
                 var $acceptSprite = $('<span class="call-to-action accept"></span>');
                 var $rejectSprite = $('<span class="call-to-action reject"></span>');
 
-                $callToActionsWrapper.append($acceptSprite).append($rejectSprite);
+                $callToActionsWrapper.append($rejectSprite).append($acceptSprite);
 
                 $element.append($callToActionsWrapper);
 
