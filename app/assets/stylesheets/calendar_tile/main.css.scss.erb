@@ -3,7 +3,7 @@
   //width: 322px;
   height: 250px;
 
-  width: 329px;
+  width: 100%;
   margin: 0 0 0 -4px;
   position: relative;
 
@@ -60,13 +60,14 @@
   }
 
   .day-names-container {
-    width: 320px;
+    width: 100%;
     height: 30px;
     padding: 5px 0 5px 40px;
 
     .day-name {
-      float: left;
-      width: 40px;
+      display: inline-block;
+      width: 30px;
+      margin: 0 2px;
       height: 20px;
       font-size: 12px;
       text-align: center;
@@ -77,7 +78,7 @@
 
 
   .days-container {
-    width: 320px;
+    width: 100%;
     height: 150px;
 
     .week-container {
@@ -109,8 +110,9 @@
       }
 
       .day {
-        float: left;
-        width: 36px;
+        display: inline-block;
+        vertical-align: top;
+        width: 30px;
         height: 26px;
         text-align: center;
         line-height: 26px;
