@@ -445,6 +445,7 @@ describe WeeklyRecapHelper do
                                                                         account_email: "nicolas@juliedesk.com",
                                                                         subject: "Subject scheduling mt",
                                                                         server_thread_id: 1,
+                                                                        follow_up_reminder_date: DateTime.parse("2016-02-10 00:00:00 UTC"),
                                                                         messages: [
                                                                             FactoryGirl.create(:message, {
                                                                                                            received_at: "2016-02-03",
@@ -504,8 +505,8 @@ describe WeeklyRecapHelper do
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
                                            :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
-                                           :last_message_received_at => "2016-02-03 00:00:00 UTC"
-
+                                           :last_message_received_at => "2016-02-03 00:00:00 UTC",
+                                           :follow_up_reminder_date => "2016-02-10 00:00:00 UTC"
                                        }
                                }
                            ])
@@ -577,7 +578,8 @@ describe WeeklyRecapHelper do
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
                                            :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
-                                           :last_message_received_at => "2016-02-03 00:00:00 UTC"
+                                           :last_message_received_at => "2016-02-03 00:00:00 UTC",
+                                           :follow_up_reminder_date => nil
 
                                        }
                                }
@@ -717,7 +719,8 @@ describe WeeklyRecapHelper do
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
                                            :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
-                                           :last_message_received_at => "2016-02-03 00:00:00 UTC"
+                                           :last_message_received_at => "2016-02-03 00:00:00 UTC",
+                                           :follow_up_reminder_date => nil
                                        }
                                },
                                {
@@ -734,7 +737,8 @@ describe WeeklyRecapHelper do
                                            :suggestions_count => 0,
                                            :appointment_nature => "skype",
                                            :attendees => [{email: "nmarlier@gmail.com", name: "Nico M", company: "JD"}],
-                                           :last_message_received_at => "2016-01-20 00:00:00 UTC"
+                                           :last_message_received_at => "2016-01-20 00:00:00 UTC",
+                                           :follow_up_reminder_date => nil
                                        }
                                },
                                {

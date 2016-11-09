@@ -352,5 +352,8 @@ DEPENDENCIES
   websocket-client-simple
   whenever
 
+RUBY VERSION
+   ruby 2.2.0p0
+
 BUNDLED WITH
-   1.13.4
+   1.13.6

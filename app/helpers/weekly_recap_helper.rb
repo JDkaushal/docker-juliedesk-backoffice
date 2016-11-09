@@ -133,7 +133,7 @@ module WeeklyRecapHelper
       # If the thread last message is less than 14 days olds we considere it is still scheduling
       # If not we consider it has been aborted
 
-      puts (params[:start_of_week] - last_message_received_at.to_datetime).to_i
+
       if (params[:start_of_week] - last_message_received_at.to_datetime).to_i <= 14
         still_scheduling <<
           {
@@ -155,7 +155,8 @@ module WeeklyRecapHelper
               suggestions_count: computed_data_light[:date_times].length,
               appointment_nature: computed_data_light[:appointment_nature],
               attendees: attendees,
-              last_message_received_at: last_message_received_at.to_s
+              last_message_received_at: last_message_received_at.to_s,
+              follow_up_reminder_date: mt.follow_up_reminder_date ? mt.follow_up_reminder_date.to_s : nil
             }
           }
       else
