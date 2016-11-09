@@ -289,9 +289,19 @@
         });
 
         $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function (e) {
-          var dateTime = $(this).data("date-time");
+          var that = $(this);
+          var dateTime = that.data("date-time");
           $(".calendar-container").removeClass("minimized");
           window.currentCalendar.goToDateTime(dateTime);
+
+          if(that.hasClass('from-ai')) {
+            $('#dates-suggestion-manager').scope().scrollToAiSuggestionInCalendar(dateTime);
+            // Get the scrollable div that contains all the events
+//            var calendarEventContainer = window.currentCalendar.$selector.find('.fc-agenda-divider').next();
+//            var currentPos = calendarEventContainer.scrollTop();
+//            calendarEventContainer.animate({scrollTop: currentPos + $('.unread-email-container').offset().top - 40}, 300);
+          }
+
         });
 
         $(".left-column").scroll(function () {

@@ -25,6 +25,23 @@
             //$scope.fetchAiDatesSuggestions();
         };
 
+        $scope.scrollToAiSuggestionInCalendar = function(suggestedDate) {
+            var calendarEventContainer = window.currentCalendar.$selector.find('.fc-agenda-divider').next();
+            var currentPos = calendarEventContainer.scrollTop();
+
+            var aiSuggestion = _.find($scope.timeSlotsSuggestedByAi, function(suggestion) {
+               return suggestion.value.isSame(suggestedDate);
+            });
+
+            if(aiSuggestion) {
+                var newPost = currentPos + $('#' + aiSuggestion.trackingId).offset().top - calendarEventContainer.height();
+                calendarEventContainer.animate({scrollTop: newPost}, 300);
+
+                $scope.handleAiSuggestionInCalendar(aiSuggestion.trackingId, 'highlight');
+            }
+
+        };
+
         $scope.aiSuggestionsRemaining = function() {
             return $scope.getTimeSlotsSuggestedByAi().length > 0;
         };
@@ -45,9 +62,18 @@
             return window.currentCalendar.getConstraintsDataEvents(today, oneMonthLater);
         };
 
-        $scope.mouseEnterSuggestionNode = function(suggestion) {
+        $scope.mouseEnterSuggestionNode = function(suggestion, $event) {
             if(suggestion.fromAi) {
-                $('#' + suggestion.trackingId).addClass('highlighted');
+                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'highlight');
+                var node = $($event.currentTarget);
+                var $nodeInCalendar = $('#' + suggestion.trackingId);
+
+                if(node.hasClass('reject')) {
+                    $nodeInCalendar.find('.call-to-action.reject').addClass('highlighted');
+                } else if(node.hasClass('accept')) {
+                    $nodeInCalendar.find('.call-to-action.accept').addClass('highlighted');
+                }
+                //$('#' + suggestion.trackingId).addClass('highlighted');
                 // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
                 // eventInCalendar.isHighlighted = true;
                 // console.log('here');
@@ -56,16 +82,42 @@
             }
         };
 
-        $scope.mouseLeaveSuggestionNode = function(suggestion) {
+        $scope.mouseLeaveSuggestionNode = function(suggestion, $event) {
             if(suggestion.fromAi) {
-                $('#' + suggestion.trackingId).removeClass('highlighted');
+                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'unhighlight');
+                var node = $($event.currentTarget);
+                var $nodeInCalendar = $('#' + suggestion.trackingId);
+
+                if(node.hasClass('reject')) {
+                    $nodeInCalendar.find('.call-to-action.reject').removeClass('highlighted');
+                } else if(node.hasClass('accept')) {
+                    $nodeInCalendar.find('.call-to-action.accept').removeClass('highlighted');
+                }
+                //$('#' + suggestion.trackingId).removeClass('highlighted');
                 // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
                 // eventInCalendar.isHighlighted = false;
                 // window.currentCalendar.reRenderEvents();
             }
         };
 
-        $scope.actionOnAiSuggestion = function(trackingId, type) {
+        $scope.handleAiSuggestionInCalendar = function(trackingId, action) {
+            if(action == 'highlight') {
+                $('#' + trackingId).addClass('highlighted');
+            } else {
+                $('#' + trackingId).removeClass('highlighted');
+            }
+
+        };
+
+        $scope.actionOnAiSuggestion = function(trackingId, type, event) {
+            console.log(event);
+            var highlightAccept = false;
+            var highlightReject = false;
+
+            var $clickedNode = $(event.currentTarget);
+            highlightAccept = $clickedNode.hasClass('call-to-action accept');
+            highlightReject = $clickedNode.hasClass('call-to-action reject');
+
             var event = _.find($scope.timeSlotsSuggestedByAi, function(ev) {
                 return ev.trackingId == trackingId;
             });
@@ -73,11 +125,17 @@
             switch(type) {
                 case 'highlight':
                     event.isHighlighted = true;
+                    event.highlightAccept = highlightAccept;
+                    event.highlightReject = highlightReject;
                     break;
                 case 'unhighlight':
                     event.isHighlighted = false;
+                    event.highlightAccept = false;
+                    event.highlightReject = false;
                     break;
             }
+
+            console.log(event);
 
             $scope.setSuggestions();
         };
@@ -549,16 +607,19 @@
         };
 
         $scope.sendLearningData = function() {
-            var suggestionsStatus = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
-                return $scope.computeLearningStatusOnSuggestion(slot);
-            });
+            if($scope.timeSlotsSuggestedByAi && $scope.timeSlotsSuggestedByAi.length > 0) {
+                var suggestionsStatus = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
+                    return $scope.computeLearningStatusOnSuggestion(slot);
+                });
 
-            var data = {
-                suggestions_status: suggestionsStatus,
-                id: $scope.AIsuggestionsTrackingId
-            };
+                var data = {
+                    suggestions_status: suggestionsStatus,
+                    id: $scope.AIsuggestionsTrackingId
+                };
 
-            aiDatesSuggestionManager.scope().sendLearningData(data);
+                aiDatesSuggestionManager.scope().sendLearningData(data);
+            }
+            
         };
 
         $scope.trackSuggestedDates = function() {

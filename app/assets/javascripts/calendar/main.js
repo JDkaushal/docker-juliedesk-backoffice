@@ -439,7 +439,6 @@ Calendar.prototype.fetchCalendars = function (callback) {
     }
 };
 
-
 Calendar.prototype.showLoadingSpinner = function (message) {
     if (!message) message = "Loading...";
     this.$selector.find(".local-loading-message").html(message);

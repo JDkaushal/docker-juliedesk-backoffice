@@ -524,9 +524,18 @@ Calendar.prototype.fullCalendarInit = function() {
                     suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'highlight');
                 });
 
+                $element.find('.call-to-action.accept, .call-to-action.reject').mouseenter(function(e) {
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'highlight', e);
+                });
+
                 $element.mouseleave(function(e) {
                     suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'unhighlight');
                 });
+
+                $element.find('.call-to-action.accept, .call-to-action.reject').mouseleave(function(e) {
+                    suggestionDatesManager.actionOnAiSuggestion(event.trackingId, 'unhighlight', e);
+                });
+
             }
         },
         eventAfterAllRender: function(view) {

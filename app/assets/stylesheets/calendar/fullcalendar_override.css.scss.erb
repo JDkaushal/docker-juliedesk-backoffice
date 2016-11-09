@@ -94,18 +94,18 @@
               overflow: visible !important;
 
               &:hover {
-                background-color: $aiControlHighlightedColor !important;
+                background-color: $aiEventsHighlightedColor !important;
 
                 .call-to-actions-wrapper {
-                  background-color: $aiControlHighlightedColor;
+                  background-color: $aiEventsHighlightedColor;
                 }
               }
 
               &.highlighted {
-                background-color: $aiControlHighlightedColor !important;
+                background-color: $aiEventsHighlightedColor !important;
 
                 .call-to-actions-wrapper {
-                  background-color: $aiControlHighlightedColor;
+                  background-color: $aiEventsHighlightedColor;
                 }
               }
 
@@ -144,10 +144,26 @@
 
                   &.accept {
                     @include ai-date-suggestion-sprite-accept-circled();
+
+                    &:hover {
+                      background-image: url(<%= asset_path 'validate_hover.png' %>);
+                    }
+
+                    &.highlighted {
+                      background-image: url(<%= asset_path 'validate_hover.png' %>);
+                    }
                   }
 
                   &.reject {
                     @include ai-date-suggestion-sprite-reject-circled();
+
+                    &:hover {
+                      background-image: url(<%= asset_path 'invalidate_hover.png' %>);
+                    }
+
+                    &.highlighted {
+                      background-image: url(<%= asset_path 'invalidate_hover.png' %>);
+                    }
                   }
                 }
               }

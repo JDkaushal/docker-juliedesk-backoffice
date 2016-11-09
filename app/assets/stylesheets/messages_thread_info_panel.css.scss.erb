@@ -210,11 +210,11 @@
               padding:0;
 
               &:hover {
-                background-color: $aiControlHighlightedColor;
+                background-color: $aiEventsHighlightedColor;
               }
 
               &.highlighted {
-                background-color: $aiControlHighlightedColor;
+                background-color: $aiEventsHighlightedColor;
               }
 
               .date-text {
@@ -233,6 +233,20 @@
                 width: 50%;
                 text-align: center;
                 height: 100%;
+
+                &.highlight {
+                  background-color: white;
+                  .ai-suggestion-action {
+
+                    &.accept {
+                      background-image: url(<%= asset_path 'validate_purple.png' %>);
+                    }
+
+                    &.reject {
+                      background-image: url(<%= asset_path 'unvalidate_purple.png' %>);
+                    }
+                  }
+                }
 
                 &:hover {
                   background-color: white;
