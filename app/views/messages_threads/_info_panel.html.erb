@@ -817,10 +817,25 @@
                 action: "show_account",
                 email: otherAccountEmail
             }, function (sae) {
+                var offices_addresses = sae.data.addresses
+                    .filter(function(addr) { return (addr.kind == 'office' || addr.type == 'office')})
+                    .map(function(addr) { return addr.address });
+
                 $(".other-accounts").show();
                 var $otherAccount = $("<div>").addClass("other-account");
                 $otherAccount.append($("<div>").addClass("other-account-name").html(sae.data.full_name));
                 $otherAccount.append($("<div>").addClass("other-account-email").html(sae.data.email));
+                if(sae.data.company_hash && sae.data.company_hash.name)
+                  $otherAccount.append($("<div>").addClass("other-account-info other-account-company").html("Company: " + sae.data.company_hash.name));
+                if(typeof(sae.data.delay_between_appointments))
+                  $otherAccount.append($("<div>").addClass("other-account-info other-account-delay").html("Meeting delay: " + sae.data.delay_between_appointments));
+                if(sae.data.landline_number)
+                  $otherAccount.append($("<div>").addClass("other-account-info other-account-landline").html("Landline: " + sae.data.landline_number));
+                if(sae.data.means_of_transport)
+                  $otherAccount.append($("<div>").addClass("other-account-info other-account-transport").html("Means of transport: " + sae.data.means_of_transport));
+                if(offices_addresses.length > 0)
+                  $otherAccount.append($("<div>").addClass("other-account-info other-account-office").html("Office: " + offices_addresses.join('\n')));
+
                 $otherAccount.append($("<div>").addClass("other-account-timezone").html("Default timezone: " +  sae.data.default_timezone_id));
                 $otherAccount.append($("<div>").addClass("other-account-current-notes").html(sae.data.current_notes));
                 $(".other-accounts-list").append($otherAccount);
