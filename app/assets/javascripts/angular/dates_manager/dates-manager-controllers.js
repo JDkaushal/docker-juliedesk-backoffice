@@ -35,7 +35,7 @@
 
             if(aiSuggestion) {
                 var newPost = currentPos + $('#' + aiSuggestion.trackingId).offset().top - calendarEventContainer.height();
-                calendarEventContainer.animate({scrollTop: newPost}, 300);
+                calendarEventContainer.animate({scrollTop: newPost + 220}, 300);
 
                 $scope.handleAiSuggestionInCalendar(aiSuggestion.trackingId, 'highlight');
             }
@@ -133,7 +133,7 @@
                     event.highlightReject = false;
                     break;
             }
-            
+
             $scope.setSuggestions();
         };
 
