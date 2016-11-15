@@ -127,14 +127,17 @@ class Operator < ActiveRecord::Base
     end.join(" & ")
   end
 
-  def presences_for_day day, presences=nil
-    start_date = (day.in_time_zone("Indian/Antananarivo").beginning_of_day + 6.hours)
+  def presences_for_day_custom day, presences, timezone, start_hour_of_day
+    start_date = (day.in_time_zone(timezone).beginning_of_day + start_hour_of_day.hours)
     end_date = start_date + 24.hours
 
     (presences || operator_presences).select{|op|
       op.date >= start_date &&
           op.date < end_date
     }
+  end
+  def presences_for_day day, presences=nil
+    presences_for_day_custom day, presences, "Indian/Antananarivo", 6
   end
 
   def self.generate_operator first_name
