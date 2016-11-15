@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161031113813) do
+ActiveRecord::Schema.define(version: 20161115092941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -217,6 +217,7 @@ ActiveRecord::Schema.define(version: 20161031113813) do
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
+  add_index "messages", ["server_message_id"], name: "index_messages_on_server_message_id", using: :btree
 
   create_table "messages_threads", force: true do |t|
     t.string   "account_email"
@@ -262,6 +263,8 @@ ActiveRecord::Schema.define(version: 20161031113813) do
     t.text     "message"
   end
 
+  add_index "operator_actions", ["operator_actions_group_id"], name: "index_operator_actions_on_operator_actions_group_id", using: :btree
+
   create_table "operator_actions_groups", force: true do |t|
     t.integer  "operator_id"
     t.integer  "messages_thread_id"
@@ -280,6 +283,8 @@ ActiveRecord::Schema.define(version: 20161031113813) do
     t.integer  "reviewed_by_operator_id"
     t.datetime "finished_at"
   end
+
+  add_index "operator_actions_groups", ["operator_id"], name: "index_operator_actions_groups_on_operator_id", using: :btree
 
   create_table "operator_presences", force: true do |t|
     t.integer  "operator_id"
