@@ -203,11 +203,11 @@ class Account
     info += "\nSkype: #{self.skype}" if self.skype.present?
     info += "\nMeans of transport: #{self.means_of_transport}" if self.means_of_transport.present?
     offices_addresses = self.addresses.select{|addr| addresse_kind_dispatcher(addr) == "office"}.map do |add|
-      "\nOffice: #{add['address']}" if add['address'].present?
+      "\nOffice: #{add['address']} #{add['is_main_address'] ? '#Main' : ''}" if add['address'].present?
     end.compact.join('')
     info += offices_addresses
     agencies_addresses = self.addresses.select{|addr| addresse_kind_dispatcher(addr) == "agency"}.map do |add|
-      "\nAgency: #{add['address']}" if add['address'].present?
+      "\nAgency: #{add['address']} #{add['is_main_address'] ? '#Main' : ''}" if add['address'].present?
     end.compact.join('')
     info += agencies_addresses
     utc_offset = ActiveSupport::TimeZone.new(self.default_timezone_id).utc_offset/3600.0
