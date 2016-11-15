@@ -34,6 +34,7 @@ class Account
                 :travel_time_transport_mode,
                 :language_level,
                 :delay_between_appointments,
+                :default_commuting_time,
                 :have_priority,
                 :auto_follow_up_enabled,
                 :restaurant_booking_enabled,
@@ -79,6 +80,7 @@ class Account
     account.travel_time_transport_mode = data['travel_time_transport_mode']
     account.language_level = data['language_level']
     account.delay_between_appointments = data['delay_between_appointments']
+    account.default_commuting_time = data['default_commuting_time']
     account.have_priority = data['have_priority']
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
     account.restaurant_booking_enabled = data['restaurant_booking_enabled']
