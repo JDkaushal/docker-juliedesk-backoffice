@@ -56,10 +56,24 @@
             var timezone = calendar.getCalendarTimezone();
 
             var today = moment().startOf('day').tz(timezone);
-            var oneMonthLater = today.clone().add('month', 1);
+            var allConstraints = _.flatten(_.values(calendar.initialData.constraintsData || {}));
+            var allConstraintsDates = _.map(allConstraints, function(constraint){
+                    return _.map(constraint.dates, function(date) {
+                        var time = constraint.end_time == '' ? '' : 'T' + constraint.end_time;
+                        return moment(date + time);
+                    })
+                }
+            );
+
+            var maximumConstraintDate = null;
+            if(allConstraintsDates && allConstraintsDates.size > 0) {
+                maximumConstraintDate = _.max(_.flatten(allConstraintsDates), function(date) {return date.valueOf()});
+            }
+
+            var upperLimit = (maximumConstraintDate || moment()).clone().add(1, 'month');
 
             //return timeConstraints.concat($('#appointment_times_constraints_helper').scope().getTimesConstraintsEventsForCurrentAppointment(moment(), moment().add('w', 3)));
-            return window.currentCalendar.getConstraintsDataEvents(today, oneMonthLater);
+            return window.currentCalendar.getConstraintsDataEvents(today, upperLimit);
         };
 
         $scope.mouseEnterSuggestionNode = function(suggestion, $event) {
