@@ -1275,6 +1275,24 @@ Calendar.prototype.refreshEvents = function() {
     calendar.fetchAllAccountsEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
 };
 
+Calendar.prototype.triggerCalendarsSync = function() {
+    var calendar = this;
+
+    for(var email in calendar.accountPreferences) {
+        var preferenceHash = calendar.accountPreferences[email];
+
+        CommonHelpers.externalRequest({
+            action: "events",
+            email: preferenceHash.email,
+            calendar_ids: preferenceHash.calendar_ids_to_show_override,
+            meeting_rooms_to_show: [],
+            virtual_resources_to_show: [],
+            start: moment().format() + "T00:00:00Z",
+            end: moment().add(1, 's').format() + "T00:00:00Z"
+        }, function() {});
+    }
+};
+
 Calendar.prototype.addEvent = function (event) {
     var calendar = this;
     if (calendar.getMode() == "suggest_dates") {

@@ -592,6 +592,9 @@ Calendar.prototype.fullCalendarInit = function() {
         }
     });
 
+    // Trigger a light events list request to synchronize the clients calendars and ask the AI the metadata about the newly synced events
+    window.currentCalendar.triggerCalendarsSync();
+
     //calendarNode.on('click', '.fc-button-prevYear, .fc-button-nextYear', function(e) {
     //    console.log('month btn click');
     //    trackActionV2('Click_on_change_month', {ux_element: 'backoffice'});
