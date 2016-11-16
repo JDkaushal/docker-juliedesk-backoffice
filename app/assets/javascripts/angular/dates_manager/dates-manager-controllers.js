@@ -66,7 +66,7 @@
             );
 
             var maximumConstraintDate = null;
-            if(allConstraintsDates && allConstraintsDates.size > 0) {
+            if(allConstraintsDates && allConstraintsDates.length > 0) {
                 maximumConstraintDate = _.max(_.flatten(allConstraintsDates), function(date) {return date.valueOf()});
             }
 
