@@ -39,7 +39,8 @@ class Account
                 :auto_follow_up_enabled,
                 :restaurant_booking_enabled,
                 :julie_aliases,
-                :using_calendar_server
+                :using_calendar_server,
+                :main_address
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -110,6 +111,11 @@ class Account
 
     if params[:messages_threads_from_today].present?
       account.compute_threads_count_today(params[:messages_threads_from_today])
+    end
+
+
+    if account.addresses.present?
+      account.main_address = account.addresses.find{|add| add['is_main_address']}
     end
 
     account

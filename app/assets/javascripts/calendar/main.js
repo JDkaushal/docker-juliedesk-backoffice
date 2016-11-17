@@ -78,6 +78,7 @@ function Calendar($selector, params) {
     this.fetchAccountPreferences(function () {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
+        var timeTravelManager = $('#travel_time_calculator').scope();
         calendar.fetchCalendars(function () {
             for(var i=0; i < calendar.initialData.date_times.length; i++) {
                 var dateObject = calendar.initialData.date_times[i];
@@ -105,6 +106,10 @@ function Calendar($selector, params) {
             calendar.fullCalendarInit();
             if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
                 new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
+            }
+            
+            if(timeTravelManager) {
+                timeTravelManager.computeSchedulingEventClientsMainAddresses();
             }
             calendar.$selector.find(".global-loading").fadeOut();
         });
@@ -557,6 +562,8 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     var currentView = calendar.$selector.find('#calendar').fullCalendar('getView');
     var onView = currentView.start.isSame(momentedStart, 'd');
 
+    var allClientsPreferencesHash = [];
+
     // We only display the loader if we are currently loading the week we are displaying
     if(onView) {
         calendar.showLoadingEventsSpinner();
@@ -571,6 +578,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
         calendar.currentlyFetchingWeeks[formattedStart] += 1;
         var preferenceHash = calendar.accountPreferences[email];
+        allClientsPreferencesHash.push(preferenceHash);
 
         calendar.fetchEvents(start, end, preferenceHash, function(responseItems) {
             localWaitingAccounts -= 1;
@@ -612,7 +620,9 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                 }
 
                 if(travelTimeCalculator) {
-                    travelTimeCalculator.processForClient(preferenceHash, _.flatten(calendar.calendarAllEvents[preferenceHash.email]));
+                    _.each(allClientsPreferencesHash, function(currentPrefHash) {
+                        travelTimeCalculator.processForClient(currentPrefHash, _.flatten(calendar.calendarAllEvents[currentPrefHash.email]));
+                    });
                 }
 
                 if(meetingRoomsManager) {
@@ -1017,6 +1027,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         title: ev.summary,
         aiMetadata: ev.ai_metadata,
         allDay: ev.all_day,
+        aiMetadata: ev.ai_metadata || {},
         isSuggestionFromAi: ev.isSuggestionFromAi,
         isTravelTime: ev.isTravelTime,
         isDefaultDelay: ev.isDefaultDelay,

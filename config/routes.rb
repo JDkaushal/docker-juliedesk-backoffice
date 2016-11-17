@@ -164,10 +164,10 @@ Rails.application.routes.draw do
       post :send_learning_data
     end
 
-
+    namespace :events_metadata do
+      post :fetch
+    end
   end
-
-
 
   get "stats", controller: :stats, action: :index
   get "stats/volume", controller: :stats, action: :volume

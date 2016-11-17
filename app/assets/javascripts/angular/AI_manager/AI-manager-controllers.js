@@ -522,4 +522,32 @@
         $scope.init();
     }]);
 
+    app.controller('eventsMetadataManager', ['$scope', '$q', 'eventsMetadataService', function($scope, $q, eventsMetadataService) {
+
+        $scope.init = function() {
+        };
+
+        $scope.fetchMetadata = function(params) {
+            return eventsMetadataService.fetch(params).then(function(response) {
+                return JSON.parse(response.data.calendar);
+            })
+        };
+        
+        $scope.fetchSchedulingEventMetadata = function() {
+            return $scope.fetchMetadata({
+                events: [{
+                    id: 'scheduling_event',
+                    summary: window.threadComputedData.summary,
+                    attendees: window.threadComputedData.attendees,
+                    location: window.threadComputedData.location
+                }],
+                calendar_login_username: window.threadComputedData.calendar_login_username
+                }
+            );
+        };
+
+
+        $scope.init();
+    }]);
+
 })();

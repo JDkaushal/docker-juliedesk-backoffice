@@ -97,6 +97,7 @@
 
         $scope.events = {};
         $scope.eventsToCompute = {};
+        $scope.eventsWithDefaultCommutingTime = {};
         $scope.eventsWithDefaultTime = {};
 
         // Used to store the events we will not process ofr time related infos
@@ -109,6 +110,7 @@
         $scope.travelTimeEvents = {};
         $scope.defaultDelayEvents = {};
         $scope.defaultDelayByClient = {};
+        $scope.defaultCommutingTimeByClient = {};
 
         // Used when the window.threadAccount.travel_time_transport_mode is set to 'max'.
         // In this mode we take the longest duration between the driving one and the transit one
@@ -118,6 +120,8 @@
         // Handle the multiple asynchronous requests
         $scope.pendingGoogleMatrixCall = {};
         // -----------------------------------------
+        $scope.schedulingEventProperties = {};
+        $scope.referenceLocation = {};
 
         $scope.init = function() {
             if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) {
@@ -133,6 +137,104 @@
                     $scope.originCoordinates = new google.maps.LatLng($scope.originCoordinates[0], $scope.originCoordinates[1]);
                 }
             }
+
+            $scope.getSchedulingEvent();
+        };
+        
+        $scope.getMainClientMainAddress = function() {
+          return $scope.schedulingEventProperties.clientsMainAddresses[window.threadAccount.email].address;
+        };
+
+        $scope.schedulingEventLocationMatrix = function(email) {
+            return {
+                virtual: function() {
+                    return $scope.schedulingEventProperties.aiMetadata.sanitized_location || $scope.schedulingEventProperties.location || $scope.schedulingEventProperties.clientsMainAddresses[email].address;
+                },
+                external: function() {
+                    return $scope.schedulingEventProperties.aiMetadata.sanitized_location || $scope.schedulingEventProperties.location || null;
+                },
+                meeting: function() {
+                    return $scope.schedulingEventProperties.aiMetadata.sanitized_location || $scope.schedulingEventProperties.location || $scope.schedulingEventProperties.clientsMainAddresses[email].address;
+                }
+            };
+        };
+
+        $scope.calendarEventLocationMatrix = function(event, mainClientMainAddress) {
+            return {
+                virtual: function() {
+                    return mainClientMainAddress;
+                },
+                internal: function() {
+                    return event.ai_metadata.sanitized_location || mainClientMainAddress;
+                },
+                external: function() {
+                    return event.ai_metadata.sanitized_location || null;
+                },
+                reminder: function() {
+                    return event.ai_metadata.sanitized_location || mainClientMainAddress;
+                },
+                other: function() {
+                    return event.ai_metadata.sanitized_location || null;
+                }
+            }
+        };
+
+        $scope.computeSchedulingEventClientsMainAddresses = function() {
+            var allClients = window.currentCalendar.accountPreferences;
+            var clientsMainAddresses = {};
+
+            _.each(allClients, function(prefs) {
+               clientsMainAddresses[prefs.email] = _.find(prefs.addresses, function(address) {
+                   return address.is_main_address;
+               })
+            });
+            $scope.schedulingEventProperties.clientsMainAddresses = clientsMainAddresses;
+        };
+
+        $scope.computeCalendarEventLocation = function(event, mainClientMainAddress) {
+            // For events coming from the calendar server, the metadata property is called ai_metadata with an underscore
+            // If no event type is found returned by the AI, we will consider it as an external event
+            var eventType = event.ai_metadata.event_type || 'external';
+
+            var locationMethod = $scope.calendarEventLocationMatrix(event, mainClientMainAddress)[eventType];
+            var result = null;
+            if(locationMethod) {
+                result = locationMethod();
+            }
+            return  result;
+        };
+
+        $scope.computeSchedulingEventLocationForClient = function(email) {
+          return  $scope.schedulingEventLocationMatrix(email)[$scope.schedulingEventProperties.event_type]();
+        };
+
+        $scope.getSchedulingEvent = function() {
+            $scope.schedulingEventProperties.aiMetadata = {};
+            $scope.schedulingEventProperties.location = window.threadComputedData.location;
+            
+            $scope.computeSchedulingEventType();
+            $scope.fetchSchedulingEventMetadata();
+        };
+        
+        // We are using less detailled status than those returned by the AI when classifying the scheduling event
+        $scope.computeSchedulingEventType = function() {
+            if(window.threadComputedData.appointment_nature == 'meeting') {
+                $scope.schedulingEventProperties.event_type = 'meeting';
+            } else if(window.threadComputedData.is_virtual_appointment) {
+                $scope.schedulingEventProperties.event_type = 'virtual';
+            } else {
+                $scope.schedulingEventProperties.event_type = 'external';
+            }
+        };
+
+        $scope.fetchSchedulingEventMetadata = function() {
+            var aiEventsMetadataManager = $('#ai_events_metadata_manager').scope();
+
+            if(aiEventsMetadataManager) {
+                aiEventsMetadataManager.fetchSchedulingEventMetadata().then(function(response) {
+                    $scope.schedulingEventProperties.aiMetadata = response.scheduling_event;
+                })
+            }
         };
 
         $scope.resetForClient = function(email) {
@@ -140,19 +242,26 @@
             $scope.defaultDelayEvents[email] = [];
             $scope.eventsToCompute[email] = [];
             $scope.eventsWithDefaultTime[email] = [];
+            $scope.eventsWithDefaultCommutingTime[email] = [];
             $scope.otherEvents[email] = [];
             $scope.events[email] = [];
+        };
+
+        $scope.computeReferenceLocationForClient = function(email) {
+            $scope.referenceLocation[email] = $scope.computeSchedulingEventLocationForClient(email);
         };
 
         $scope.processForClient = function(clientPrefs, events) {
             var email = clientPrefs.email;
 
             $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments;
+            $scope.defaultCommutingTimeByClient[email] = clientPrefs.default_commuting_time;
 
             $scope.resetForClient(email);
             $scope.setEvents(email, events);
 
             $scope.selectEventsToCompute(email);
+            $scope.computeReferenceLocationForClient(email);
 
             if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0 && $scope.eventsToCompute[email].length > 0) {
                 $scope.calculate(email);
@@ -161,16 +270,16 @@
                 // to events for which Google could not calculate a travel time
 
                 // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
-                $scope.computeDefaultAppointmentDelay(email);
+                $scope.computeDefaultCommutingTime(email);
+                $scope.addTravelTimeEventsToCalendar(email);
             }
-
         };
 
         $scope.setEvents = function(email, events) {
             // We don't take into account for travel time (and default time):
             //  - All day events
             $scope.events[email] = _.reject(events, function(e) {
-                return e.all_day;
+                return e.all_day || e.isNotAvailableEvent;
             });
         };
 
@@ -189,10 +298,12 @@
         $scope.selectEventsToCompute = function(email) {
             // If originCoordinates is an array, check that is is not empty, if it is an object (instance of google LatLng class) check that property lat() is not undefined
             // this means that the object is correct
-            var needTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()));
+            var canComputeTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()));
             var startDateSortedEventsAsc = $scope.sortEventsStartDate($scope.events[email]);
             // Make a copy of the array so we can safely reverse it then use both later on
             var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
+
+            var mainClientMainAddress = $scope.getMainClientMainAddress();
 
             _.each($scope.events[email], function(e) {
                 if($scope.shouldComputeEvent(e)) {
@@ -204,22 +315,33 @@
                     });
 
                     var shouldComputeTime = !e.lowerEdgeBusy || !e.upperEdgeBusy;
+                    e.location = $scope.computeCalendarEventLocation(e, mainClientMainAddress);
 
-                    if(needTravelTime && e.location) {
-                        e.calculateTravelTime = shouldComputeTime;
+                    if(e.ai_metadata.event_type == 'virtual' && $scope.schedulingEventProperties.event_type == 'virtual') {
+                        e.calculateTravelTime = true;
+                        e.forceTravelTimeDurationValue = 0;
                     } else {
-                        e.displayDefaultTime = shouldComputeTime;
+                        if(canComputeTravelTime && e.location) {
+                            e.calculateTravelTime = shouldComputeTime;
+                        } else {
+                            e.displayDefaultTime = shouldComputeTime;
+                        }
                     }
                 }
             });
+
 
             $scope.eventsToCompute[email] = _.filter($scope.events[email], function(e) {
                 return e.toProcess && e.calculateTravelTime;
             });
 
-            $scope.eventsWithDefaultTime[email] = _.filter($scope.events[email], function(e) {
+            $scope.eventsWithDefaultCommutingTime[email] = _.filter($scope.events[email], function(e) {
                 return e.toProcess && e.displayDefaultTime;
             });
+
+            // $scope.eventsWithDefaultTime[email] = _.filter($scope.events[email], function(e) {
+            //     return e.toProcess && e.displayDefaultTime;
+            // });
         };
 
         $scope.sortEventsStartDate = function(events) {
@@ -297,8 +419,6 @@
             if($scope.googleMatrixService) {
                 $scope.pendingGoogleMatrixCall[email] += 1;
 
-                //console.log(travelMode);
-
                 $scope.googleMatrixService.getDistanceMatrix(
                     {
                         origins: origins,
@@ -331,9 +451,10 @@
                 // We display all the computed events on the calendar after having finished every process
                 // It includes:
                 //  - Travel time events
-                //  - Default Time events (for when Google could not calculate a proper travel timeà
+                //  - Default Time events (for when Google could not calculate a proper travel time
+                $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
-                $scope.computeDefaultAppointmentDelay(email);
+                $scope.addDefaultDelayEventsToCalendar(email);
             }
         };
 
@@ -345,12 +466,20 @@
                 currentDuration = element.duration;
                 if(currentDuration) {
                     currentDuration = Math.floor(currentDuration.value / 60);
+
+                    if(currentDuration > 180) {
+                        currentDuration = $scope.defaultCommutingTimeByClient[email];
+                    }
+                    
+                    if(event.forceTravelTimeDurationValue) {
+                        currentDuration = event.forceTravelTimeDurationValue;
+                    }
                     // Element.duration.value is an integer representing the duration in seconds
                     // We divide it by 60 then floor it to obtain an approximated duration in minutes
                     $scope.addCurrentDurationToMaxTmp(email, currentEventId, currentDuration);
                 }
             } else {
-                $scope.addCurrentDurationToMaxTmp(email, currentEventId, currentDuration);
+                $scope.addCurrentDurationToMaxTmp(email, currentEventId, $scope.defaultCommutingTimeByClient[email]);
             }
 
             $scope.getMaxDurationForEventThenCompute(email, event, destination);
@@ -376,6 +505,7 @@
                 $scope.buildInfoEvent(email, 'travelTime', event, max, destination);
             } else {
                 // We will display the default appointment time for this event instead of the travel time
+                //$scope.eventsWithDefaultCommutingTime[email].push(event);
                 $scope.eventsWithDefaultTime[email].push(event);
             }
         };
@@ -467,28 +597,54 @@
             return currentStartDate.isBetween(eventStartDate, eventEndDate, 'minute', '(]');
         };
 
+        // Modified it beyond initial expectations, should probably refactor it by splitting logic into separate functions for each event types (travelTime and defaultDelay)
         $scope.buildInfoEvent = function(email, eventType, event, timeDuration, destination) {
-            var referenceDate, travelTimeBefore, travelTimeAfter;
+            var referenceDate, travelTimeBefore, travelTimeAfter, remainingTime, newRefDate, displayedTime;
+
+            var usedEventType = eventType;
+            var usedTravelTimeAfter;
 
             if(!event.lowerEdgeBusy) {
-                referenceDate = event.start;
+                referenceDate = (event.start.dateTime || event.start.date);
                 travelTimeBefore = timeDuration;
 
-                if(travelTimeBefore > event.lowerEdgeMaxTimeDisplay)
+                if(travelTimeBefore > event.lowerEdgeMaxTimeDisplay) {
                     travelTimeBefore = event.lowerEdgeMaxTimeDisplay;
+                } else {
+                    if(eventType == 'travelTime') {
+                        remainingTime = event.lowerEdgeMaxTimeDisplay - travelTimeBefore;
+                        newRefDate = moment(referenceDate).clone().add(-travelTimeBefore, 'm');
+                        displayedTime = $scope.defaultDelayByClient[email] > remainingTime ? remainingTime : $scope.defaultDelayByClient[email];
+                        $scope.createInfoEvent(email, 'defaultDelay', 'before', newRefDate, $scope.defaultDelayByClient[email], displayedTime, destination);
+                    }
+                }
 
-                $scope.createInfoEvent(email, eventType, 'before', (referenceDate.dateTime || referenceDate.date), timeDuration, travelTimeBefore, destination);
+                $scope.createInfoEvent(email, usedEventType, 'before', referenceDate, timeDuration, travelTimeBefore, destination);
             }
 
             if(!event.upperEdgeBusy) {
-                referenceDate = event.end;
+                referenceDate = (event.end.dateTime || event.end.date);
                 travelTimeAfter = timeDuration;
+                usedTravelTimeAfter = travelTimeAfter;
 
-                if(travelTimeAfter > event.upperEdgeMaxTimeDisplay)
+                if(eventType == 'travelTime') {
+                    travelTimeAfter = $scope.defaultDelayByClient[email];
+                    timeDuration = travelTimeAfter;
+                    usedEventType = 'defaultDelay';
+                }
+
+                if(travelTimeAfter > event.upperEdgeMaxTimeDisplay) {
                     travelTimeAfter = event.upperEdgeMaxTimeDisplay;
+                } else {
+                    if(eventType == 'travelTime') {
+                        remainingTime = event.upperEdgeMaxTimeDisplay - travelTimeAfter;
+                        newRefDate = moment(referenceDate).clone().add(travelTimeAfter, 'm');
+                        displayedTime = usedTravelTimeAfter > remainingTime ? remainingTime : usedTravelTimeAfter;
+                        $scope.createInfoEvent(email, 'travelTime', 'after', newRefDate, usedTravelTimeAfter, displayedTime, destination);
+                    }
+                }
 
-
-                $scope.createInfoEvent(email, eventType, 'after', (referenceDate.dateTime || referenceDate.date), timeDuration, travelTimeAfter, destination);
+                $scope.createInfoEvent(email, usedEventType, 'after', referenceDate, timeDuration, travelTimeAfter, destination);
             }
         };
 
@@ -544,33 +700,30 @@
             }
         };
 
+        $scope.computeDefaultCommutingTime = function(email) {
+            if(($scope.defaultCommutingTimeByClient[email] || 0) <= 0 || $scope.defaultCommutingTimeByClient[email].length == 0) {
+                return;
+            }
+
+            var allEvents = angular.copy($scope.eventsWithDefaultCommutingTime[email]);
+            var timeDuration = $scope.defaultCommutingTimeByClient[email];
+
+            _.each(allEvents, function(e) {
+                $scope.buildInfoEvent(email, 'travelTime', e, timeDuration, null);
+            });
+        };
+
         $scope.computeDefaultAppointmentDelay = function(email) {
             if(($scope.defaultDelayByClient[email] || 0) <= 0 || $scope.eventsWithDefaultTime[email].length == 0) {
                 return;
             }
 
-            // We retrieve the events for which we didn't had to calculate the travelTime
-            // var events = _.filter($scope.events[email], function(event) { return !event.calculateTravelTime });
             var allEvents = angular.copy($scope.eventsWithDefaultTime[email]);
-            //allEvents = _.compact(allEvents);
-            //
-            // var startDateSortedEventsAsc = $scope.sortEventsStartDate(allEvents);
-            //
-            // var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
 
             var timeDuration = $scope.defaultDelayByClient[email];
 
             _.each(allEvents, function(e) {
-                // $scope.detectAvailableEdges(email, e, {
-                //     startDateSortedEventsDesc: startDateSortedEventsDesc,
-                //     startDateSortedEventsAsc: startDateSortedEventsAsc
-                // });
-
-                //e.displayDefaultDelay = !e.lowerEdgeBusy || !e.upperEdgeBusy;
-
-                //if(e.displayDefaultDelay) {
-                    $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
-                //}
+                $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
             });
 
             $scope.addDefaultDelayEventsToCalendar(email);

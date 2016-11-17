@@ -16,6 +16,8 @@ class AiProxy
 
       fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/suggest_dates/' }.freeze,
       send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/validated_dates/' }.freeze,
+
+      calendar_classification: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/classification/' }.freeze,
   }.freeze
 
   def self.get_endpoint(key)

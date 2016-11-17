@@ -60,6 +60,33 @@
         };
     });
 
+    app.service('eventsMetadataService', ['$http', '$q', function($http, $q){
+        this.fetch = function(params){
+            return $http({
+                url: '/ai/events_metadata/fetch',
+                method: "POST",
+                timeout: 3000,
+                data: params
+            }).then(
+                function(response) {
+                    var result = {};
+
+                    if(response.data.error) {
+                        console.log(response.data);
+                        result = $q.reject(response.data);
+                    } else {
+                        result = { data: response.data };
+                    }
+
+                    return result;
+                }, function(httpError) {
+                    console.log(httpError);
+                    return $q.reject()
+                }
+            );
+        };
+    }]);
+
     app.service('attendeesService', ['$rootScope', function($rootScope){
         var attendeesApp;
         var that = this;
