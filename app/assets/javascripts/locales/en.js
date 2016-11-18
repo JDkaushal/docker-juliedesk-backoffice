@@ -37,7 +37,7 @@ window.wordings['en'] = {
             noted: "Thank you for the invite.\nI confirm, the event is in %{client}'s calendar for %{date}."
         },
         follow_up_contacts: {
-            before_dates: "Allow me to follow up regarding %{appointment_nature}%{location} with %{clients}.\n\n",
+            before_dates: "Allow me to follow up regarding %{appointment_nature}%{location} with %{clients}.\n",
             zero_dates: {
                 after_dates: {
                     single_attendee_unassisted: "\nCould you please provide me your availabilities?\nThank you.",
