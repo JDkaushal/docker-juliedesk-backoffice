@@ -10,7 +10,7 @@
 
             account.setCurrentTime = function () {
                 var thisAccount = this;
-                thisAccount.currentTime = moment().tz(thisAccount.default_timezone_id).format("ddd, MMM d, HH:mm:ss") + " (" + thisAccount.default_timezone_id.split("/")[1].replace("_", " ") + ")";
+                thisAccount.currentTime = moment().tz(thisAccount.default_timezone_id).format("ddd, MMM D, HH:mm:ss") + " (" + thisAccount.default_timezone_id.split("/")[1].replace("_", " ") + ")";
             };
 
 
