@@ -1,7 +1,7 @@
 (function () {
     var clientAccountTileApp = angular.module('client-account-tile-app', []);
 
-    clientAccountTileApp.controller("client-account-tile-controller", function ($scope, $interval, $http) {
+    clientAccountTileApp.controller("client-account-tile-controller", ['$scope', '$interval', '$http', function ($scope, $interval, $http) {
         $scope.changeAccountLoading = false;
         $scope.processAccount = function (account) {
             account.infoExtended = false;
@@ -60,7 +60,7 @@
                 });
             });
         };
-    });
+    }]);
 
     $(function () {
         var setupAutocompleteAssociateAccount = function () {
