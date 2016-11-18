@@ -639,7 +639,8 @@
                 ai_call_failed: $scope.showAiError,
                 ai_suggested_dates_count: $scope.getPureAiSuggestions().length,
                 validated_ai_dates_count: $scope.getValidatedAiSuggestions().length,
-                suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length
+                suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length,
+                operator_id: $('body').data('operatorId')
             });
 
             $scope.sendLearningData()
