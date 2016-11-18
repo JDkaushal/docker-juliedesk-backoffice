@@ -1,0 +1,221 @@
+#accounts-list-section {
+  margin: -20px -10px 0 -10px;
+
+
+  .change-account-container {
+    padding: 10px;
+    background: #fafafa;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+
+    .change-account-spinner {
+      width: 20px;
+      position: absolute;
+      top: 14px;
+      right: 40px;
+    }
+
+    input#change-account-input {
+      width: 250px;
+      vertical-align: top;
+      position: relative;
+      top: 0;
+      outline: none;
+      font-size: 14px;
+      padding: 3px;
+    }
+  }
+}
+
+
+
+.account-section {
+  background: #F0F8FA;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+
+  .account-inside-separator {
+    border-bottom: 1px solid #ddd;
+    margin: 10px -8px;
+  }
+
+  .account-status {
+    font-size: 16px;
+    color: #3c7d94;
+    font-weight: normal;
+    text-transform: uppercase;
+  }
+
+  .account-name-container {
+    .account-name {
+      font-size: 18px;
+      font-weight: normal;
+    }
+    .change-account-link {
+      color: #3c7d94;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0 6px;
+      vertical-align: top;
+      position: relative;
+      top: 6px;
+    }
+  }
+  .account-current-time-container {
+
+    .account-current-time-label {
+      font-weight: bold;
+      font-size: 13px;
+      color: #4A4A4A;
+    }
+
+    .account-current-time {
+      font-size: 13px;
+      color: #4A4A4A;
+    }
+  }
+
+  .account-activated-features-container {
+    .account-feature {
+      background-color: #DCDCDC;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 8px;
+      margin: 3px 3px 3px 0;
+      display: inline-block;
+
+      .icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        vertical-align: bottom;
+      }
+
+      &.follow-up {
+        .icon {
+          @include common-sprite(restaurant_booking);
+        }
+        &.activated {
+          background-color: #FB9053;
+        }
+      }
+
+      &.restaurant-booking {
+        .icon {
+          @include common-sprite(restaurant_booking);
+        }
+        &.activated {
+          background-color: #56953D;
+        }
+      }
+      &.activated-since {
+        background-color: #FB9053;
+      }
+
+    }
+
+  }
+
+  .account-current-notes-container {
+    background: #ffd087;
+    padding: 10px;
+    white-space: pre-wrap;
+  }
+
+  .account-client-info-container {
+    background: white;
+    margin: 10px 0;
+    padding: 10px;
+    max-height: 45px;
+    overflow: hidden;
+    @include single-transition(max-height, 0.2s);
+
+    .account-client-info-header {
+      font-size: 18px;
+      color: #4A4A4A;
+      font-weight: normal;
+      cursor: pointer;
+      user-select: none;
+
+      .extended-arrow {
+        @include common-sprite(arrow_right);
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        @include single-transition(transform, 0.2s);
+      }
+
+    }
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &.extended {
+      background: white;
+      max-height: 600px;
+
+      .extended-arrow {
+        @include rotate(90deg);
+      }
+    }
+  }
+
+  .client-info-container {
+    margin: 10px 0 20px 0;
+
+    .client-info-title {
+      color: #3c7d94;
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .client-info-details {
+      margin: 0 0 10px 0;
+
+      .client-info-contact-info-container {
+        position: relative;
+        min-height: 16px;
+        margin: 0 0 4px 0;
+        line-height: 16px;
+
+        .client-info-contact-info-label {
+          position: absolute;
+          width: 50px;
+          top: 2px;
+          left: 0;
+          font-weight: 600;
+          font-size: 11px;
+        }
+        .client-info-contact-info-value {
+          margin: 0 0 0 50px;
+          font-size: 14px;
+
+          &.pre {
+            white-space: pre-wrap;
+          }
+        }
+      }
+
+      .address-name {
+        font-weight: bold;
+      }
+      .main-address-tag {
+        background: #FB9053;
+        color: white;
+        padding: 3px 5px;
+        font-size: 11px;
+        border-radius: 8px;
+        margin: 0 0 0 5px;
+        vertical-align: top;
+        position: relative;
+        top: 2Px;
+      }
+    }
+  }
+}
+
+
+
+

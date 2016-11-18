@@ -39,6 +39,7 @@
     window.formFirstPass = !window.threadComputedData.appointment_nature;
 
     window.threadAccount = <%== @messages_thread.account.to_json %>;
+    window.threadId = <%= @messages_thread.id %>;
 
     window.otherAttendeesWithoutAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
         return !attendee.account_email;
@@ -186,31 +187,6 @@
         if (window.afterFormLoadedCallback) {
             window.afterFormLoadedCallback();
         }
-
-        $(".change-account-init-button").click(function() {
-            $(this).hide();
-            setupAutocompleteAssociateAccount();
-            $(".change-account-container").show();
-        });
-
-        $(".change-account-button").click(function() {
-            $(".change-account-spinner").css({display: "block"});
-            $(".change-account-container").hide();
-            $.ajax({
-                url: "/messages_threads/<%= messages_thread.id %>/associate_to_account",
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    account_email: $("#change-account-input").val()
-                }),
-                success: function() {
-                    window.location = window.location;
-                },
-                error: function () {
-                    window.location = window.location;
-                }
-            })
-        });
 
         $("input[name='locale']").change(function () {
             window.setCurrentLocale($(this).val());
@@ -449,8 +425,7 @@
         });
     }
 
-    function setupAutocompleteAssociateAccount() {
-        var accountsAutocompleteSource = <%==
+    window.accountsAutocompleteSource = <%==
         (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
             [{
                 email: contact['email'],
@@ -468,49 +443,6 @@
         end.flatten.to_json
         %>;
 
-        $("#change-account-input").autocomplete({
-            source: function(request, callback) {
-                callback(
-                        _.union(
-                                _.filter(accountsAutocompleteSource, function (contact) {
-                                    return (
-                                                    contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                    contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                    contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
-                                            ) &&
-                                            contact.email_alias == null;
-                                }),
-                                _.filter(accountsAutocompleteSource, function (contact) {
-                                    return contact.email_alias &&
-                                            contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                            contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
-                                })
-                        )
-                );
-            },
-            focus: function (event, ui) {
-                $("#change-account-input").val(ui.item.email);
-                return false;
-            },
-            select: function (event, ui) {
-                $("#change-account-input").val(ui.item.email);
-                return false;
-            },
-            delay: 0,
-            minLength: 0
-        }).data("ui-autocomplete")._renderItem = function (ul, item) {
-            return $("<li>")
-                    .addClass("contact-autocomplete-item")
-                    .data("item.autocomplete", item)
-                    .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
-                    .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
-                    .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
-                    .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
-                    .appendTo(ul);
-        };
-    }
 
     function refreshDisplayedAttendeesInfos() {
         var attendeesManager = angular.element($('#attendeesCtrl')).scope();
@@ -804,44 +736,6 @@
                 if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
                     $('.event-tile-panel .title').val(newTitle);
             }
-        }
-    }
-
-    function fetchOtherAccounts() {
-        $(".other-accounts").hide();
-        $(".other-accounts-list").html("");
-        console.log('fetch', window.otherAccountEmails);
-        for (var i in window.otherAccountEmails) {
-            var otherAccountEmail = window.otherAccountEmails[i];
-            CommonHelpers.externalRequest({
-                action: "show_account",
-                email: otherAccountEmail
-            }, function (sae) {
-                var offices_addresses = sae.data.addresses
-                    .filter(function(addr) { return (addr.kind == 'office' || addr.type == 'office')})
-                    .map(function(addr) { return addr.address });
-
-                $(".other-accounts").show();
-                var $otherAccount = $("<div>").addClass("other-account");
-                $otherAccount.append($("<div>").addClass("other-account-name").html(sae.data.full_name));
-                $otherAccount.append($("<div>").addClass("other-account-email").html(sae.data.email));
-                if(sae.data.company_hash && sae.data.company_hash.name)
-                  $otherAccount.append($("<div>").addClass("other-account-info other-account-company").html("Company: " + sae.data.company_hash.name));
-                if(typeof(sae.data.delay_between_appointments))
-                  $otherAccount.append($("<div>").addClass("other-account-info other-account-delay").html("Meeting delay: " + sae.data.delay_between_appointments));
-                if(sae.data.landline_number)
-                  $otherAccount.append($("<div>").addClass("other-account-info other-account-landline").html("Landline: " + sae.data.landline_number));
-                if(sae.data.means_of_transport)
-                  $otherAccount.append($("<div>").addClass("other-account-info other-account-transport").html("Means of transport: " + sae.data.means_of_transport));
-                if(offices_addresses.length > 0)
-                  $otherAccount.append($("<div>").addClass("other-account-info other-account-office").html("Office: " + offices_addresses.join('\n')));
-
-                $otherAccount.append($("<div>").addClass("other-account-timezone").html("Default timezone: " +  sae.data.default_timezone_id));
-                $otherAccount.append($("<div>").addClass("other-account-current-notes").html(sae.data.current_notes));
-                $(".other-accounts-list").append($otherAccount);
-            }, function (sae) {
-
-            });
         }
     }
 
@@ -1276,7 +1170,6 @@
           <!--{{suggestion.date}}-->
         <!--</div>-->
       <!--</div>-->
-
     <!--</div>-->
   <!--</div>-->
 
@@ -1313,58 +1206,13 @@
 
   <div class="classic-info-panel">
 
+    <%= render partial: "client_account_tiles" %>
 
-    <div class="account">
-      <% account = messages_thread.account %>
-      <% if account %>
-          <div class="full-name"><%= account.full_name %></div>
-          <div class="account-email"><%= messages_thread.account.email %></div>
-          <div class="client-current-date">Client current time: <span class="client-current-time"></span></div>
-          <div class="client-for-date <%= (account.created_at > DateTime.now - 14.days)?"warning":"" %>">Has been client for <span><%= distance_of_time_in_words_to_now(account.created_at) %></span></div>
-          <% if account.complaints_count > 0 %>
-              <div class="complaints-count"><%= account.complaints_count %> complaints</div>
-          <% end %>
-
-          <div class="change-account-init-button">Change</div>
-          <%= image_tag "ajax-loader.gif", class: "change-account-spinner" %>
-          <div class="change-account-container">
-            <input id="change-account-input">
-            <div class="change-account-button btn btn-sm btn-success">Change</div>
-          </div>
-
-          <div class="account-details">
-            <%= simple_format account.client_info %>
-
-
-            <div class="auto-follow-up-badge <%=account.auto_follow_up_enabled ? '' : 'disabled' %>"><span class="sprite"></span>Auto Follow up</div>
-
-            <div class="restaurant-booking-badge <%=account.restaurant_booking_enabled ? '' : 'disabled' %>"><span class="sprite"></span>Restaurant Booking</div>
-
-            <% if account.current_notes.present? || account.awaiting_current_notes.present? %>
-                <%
-                   notes = account.current_notes
-                   if account.awaiting_current_notes.present?
-                    notes += "\n#{I18n.t("info_box.new_preferences")} #{account.awaiting_current_notes}"
-                   end
-                %>
-
-                <%= text_area_tag :current_notes, notes, class: "current-notes form-control", readOnly: true %>
-            <% end %>
-
-            <% if @messages_thread.delegated_to_founders %>
-                <div class="to-founders-message-div">
-                  <%= (@messages_thread.operator_actions_groups.sort_by(&:created_at).select{|oag| oag.label == OperatorActionsGroup::LABEL_SEND_TO_SUPPORT}.last.try(:operator_actions) || []).select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message) %>
-                </div>
-            <% end %>
-          </div>
-          <div class="other-accounts">
-            <div class="other-accounts-title">Other accounts</div>
-            <div class="other-accounts-list"></div>
-          </div>
-      <% else %>
-          <%= I18n.t("info_box.no_account_found") %>
-      <% end %>
-    </div>
+    <% if @messages_thread.delegated_to_founders %>
+        <div class="to-founders-message-div">
+          <%= (@messages_thread.operator_actions_groups.sort_by(&:created_at).select{|oag| oag.label == OperatorActionsGroup::LABEL_SEND_TO_SUPPORT}.last.try(:operator_actions) || []).select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message) %>
+        </div>
+    <% end %>
 
 
     <div class="data">
