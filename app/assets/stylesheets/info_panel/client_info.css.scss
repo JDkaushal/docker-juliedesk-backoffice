@@ -94,10 +94,11 @@
 
       &.follow-up {
         .icon {
-          @include common-sprite(restaurant_booking);
+          @include common-sprite(follow_up);
         }
         &.activated {
           background-color: #FB9053;
+
         }
       }
 
@@ -121,6 +122,7 @@
     background: #ffd087;
     padding: 10px;
     white-space: pre-wrap;
+    @include border-radius(2px);
   }
 
   .account-client-info-container {
@@ -130,6 +132,8 @@
     max-height: 45px;
     overflow: hidden;
     @include single-transition(max-height, 0.2s);
+    @include border-radius(2px);
+    border: 1px solid #ddd;
 
     .account-client-info-header {
       font-size: 18px;
