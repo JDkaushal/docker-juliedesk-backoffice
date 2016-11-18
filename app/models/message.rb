@@ -45,6 +45,39 @@ class Message < ActiveRecord::Base
     end
   end
 
+
+  def async_auto_reply_mailing_list
+    AutoReplyMailingListWorker.enqueue(self.id)
+  end
+
+  def auto_reply_mailing_list
+    account = self.messages_thread.account
+    I18n.locale = account.locale
+
+    text = I18n.t("automatic_reply_emails.mailing_list.text", client_name: account.usage_name)
+
+    julie_alias = JulieAlias.find_by_email("julie@juliedesk.com")
+    html_signature = julie_alias.signature_en
+    text_signature = julie_alias.footer_en
+    if "#{I18n.locale}" == "fr"
+      html_signature = julie_alias.signature_fr
+      text_signature = julie_alias.footer_fr
+    end
+
+    email_params = {
+        subject: "Re: #{"#{self.messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
+        from: julie_alias.generate_from,
+        to: account.email,
+        cc: "",
+        text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
+        html: "#{text_to_html("#{text}#{text_signature}")}#{html_signature}",
+        quote_replied_message: true,
+        reply_to_message_id:  self.server_message_id
+    }
+
+    EmailServer.deliver_message(email_params)['id']
+  end
+
   def initial_recipients params={}
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
 
@@ -412,10 +445,20 @@ class Message < ActiveRecord::Base
 
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
-            unless m.from_me
-              ConscienceWorker.enqueue m.id
 
+            unless m.from_me
+              if server_message['from'].include?("nmarlier@gmail") && server_thread['labels'].include?("MAILING_LIST")
+                messages_thread.update(handled_by_automation: true)
+                if messages_thread.account
+                  message.async_auto_reply_mailing_list
+                end
+                messages_thread.async_archive
+              end
+
+              ConscienceWorker.enqueue m.id
               updated_messages_thread_ids << messages_thread.id
+
+
             end
 
             if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))

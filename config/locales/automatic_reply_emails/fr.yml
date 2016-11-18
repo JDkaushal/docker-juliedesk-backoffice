@@ -1,0 +1,15 @@
+fr:
+  automatic_reply_emails:
+    mailing_list:
+      text: |
+        Bonjour %{client_name},
+
+        Je ne reconnais pas l'email avec lequel vous m'avez contacté, je ne pourrai donc malheureusement pas traiter cet email.
+
+        1. Si vous m'avez contacté en me mettant en copie cachée, merci de me mettre en copie non-cachée de l'email.
+
+        2. Si vous pensez que je devrais traiter cet email, merci de prendre contact avec l'équipe Julie Desk à hello@juliedesk.com pour qu'ils vous aident à configurer dans notre système l'email que vous avez utilisé pour me contacter. Sinon merci d'utiliser mon adresse générique: julie@juliedesk.com.
+
+        3. Si je dois bien ignorer cet email, merci de me supprimer de la mailing list associée pour ne plus recevoir ce message à l'avenir.
+
+        Merci de votre compréhension,

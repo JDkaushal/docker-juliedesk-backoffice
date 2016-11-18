@@ -66,6 +66,14 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def async_archive
+    ArchiveMessagesThreadWorker.enqueue(self.id)
+  end
+
+  def archive
+    EmailServer.archive_thread(messages_thread_id: self.server_thread_id)
+  end
+
 
   def delegate_to_founders params={}
     self.update_attributes({

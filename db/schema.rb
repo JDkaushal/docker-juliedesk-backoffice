@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161118095112) do
+ActiveRecord::Schema.define(version: 20161118182019) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -240,6 +240,7 @@ ActiveRecord::Schema.define(version: 20161118095112) do
     t.boolean  "handled_by_ai",            default: false
     t.datetime "request_date"
     t.integer  "messages_count",           default: 0
+    t.boolean  "handled_by_automation",    default: false
   end
 
   create_table "operator_actions", force: true do |t|

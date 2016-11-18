@@ -130,7 +130,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "follow_up_reminder_date"=>nil,
                                                       "handled_by_ai"=>false,
                                                       "request_date"=>nil,
-                                                      "messages_count"=>0
+                                                      "messages_count"=>0,
+                                                      "handled_by_automation"=>false
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
