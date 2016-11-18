@@ -41,8 +41,11 @@ Rails.application.routes.draw do
       get "unlock", action: :unlock
       get "history", action: :history
       get "preview", action: :preview
+
     end
   end
+
+  get "accounts", controller: :accounts, action: :show
 
   resources :julie_aliases, only: [:index, :create, :edit, :new, :show, :update]
 
@@ -113,6 +116,7 @@ Rails.application.routes.draw do
         get "/forecast", action: :forecast
       end
     end
+
 
     resources :messages_threads, only: [] do
       member do

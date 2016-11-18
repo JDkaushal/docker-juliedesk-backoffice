@@ -730,8 +730,8 @@
             window.otherAccountEmails = _.map(window.otherAttendeesWithAccount, function (attendee) {
                 return attendee.accountEmail;
             });
-
-            window.fetchOtherAccounts();
+            
+            window.clientAccountTilesScope.fetchOtherAccounts();
 
             if(window.drawCalendarCallback)
                 window.drawCalendarCallback();
