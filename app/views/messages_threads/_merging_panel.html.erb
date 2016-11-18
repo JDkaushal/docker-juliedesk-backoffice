@@ -68,14 +68,14 @@
                                         event_url: messagesThread.event_data.event_url,
                                         calendar_id: messagesThread.event_data.calendar_id
                                     }, function(eventGetResponse) {
-                                        var startDate = eventGetResponse.data.start.dateTime;
-                                        var allDay = false;
-                                        if(!startDate) {
-                                            eventGetResponse.data.start.date;
-                                            allDay = true
-                                        }
-                                        var endDate = eventGetResponse.data.end.dateTime;
-                                        if(!endDate) eventGetResponse.data.end.date;
+                                        var startDate = eventGetResponse.data.start.dateTime || eventGetResponse.data.start.date;
+                                        var allDay = eventGetResponse.all_day;
+//                                        if(!startDate) {
+//                                            startDate = eventGetResponse.data.start.date;
+//                                            allDay = true
+//                                        }
+                                        var endDate = eventGetResponse.data.end.dateTime || eventGetResponse.data.end.date;
+                                        //if(!endDate) eventGetResponse.data.end.date;
 
                                         messagesThread.event_data.date = $sce.trustAsHtml(CommonHelpers.formatDateTimeRange(startDate, endDate, "en", messagesThread.computed_data.timezone, allDay));
                                         messagesThread.event_data.summary = eventGetResponse.data.summary;

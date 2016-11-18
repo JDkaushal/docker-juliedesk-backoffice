@@ -600,10 +600,10 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         sendTime = moment(endTime).tz(eventTile.getTimezoneId());
     }
 
-
     eventData = {
         id: ev.id,
         title: ev.summary,
+        aiMetadata: ev.ai_metadata,
         allDay: ev.all_day,
         start: sstartTime,
         end: sendTime,
@@ -1262,8 +1262,8 @@ EventTile.prototype.formatMoment = function(momentObject, format) {
 EventTile.prototype.getEventFormattedInfos = function() {
     var eventTile = this;
     var event = eventTile.event;
+    var eventType = event.aiMetadata && event.aiMetadata.event_type || 'external';
     var infos = [];
-  console.log(eventTile);
 
     var singleDayEvent = Math.floor(moment.duration(event.end.diff(event.start)).asDays()) <= 1;
     var eventAllDay = event.allDay;
@@ -1283,8 +1283,6 @@ EventTile.prototype.getEventFormattedInfos = function() {
         if(!eventAllDay) {
             timeStr += ' ' + localize('common.from_hour') + ' ' + eventTile.formatMoment(start, 'LT') + ' ' + localize('common.to_hour') + ' ' + eventTile.formatMoment(end, 'LT');
         }
-
-        infos.push(timeStr);
     } else {
         timeStr = localize('common.from_date') + ' ' + eventTile.formatMoment(start, 'dddd Do MMMM');
 
@@ -1295,14 +1293,21 @@ EventTile.prototype.getEventFormattedInfos = function() {
         if(eventAllDay) {
             timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end.add('d', -1), 'dddd Do MMMM');
         } else {
-            timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end, 'dddd Do MMMM');
-            timeStr += ' ' + localize('common.at') + ' ' + eventTile.formatMoment(end, 'LT');
+          timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end, 'dddd Do MMMM');
+          timeStr += ' ' + localize('common.at') + ' ' + eventTile.formatMoment(end, 'LT');
         }
-
-        infos.push(timeStr);
     }
 
-    if(event.location) {
+    if(timeStr) {
+      var currentTimezone = window.currentCalendar && window.currentCalendar.getCalendarTimezone();
+      if(currentTimezone) {
+        timeStr += ' (' + localize('email_templates.utilities.timezone_display', {city: currentTimezone.split('/').slice(-1)[0]}) + ')';
+      }
+
+      infos.push(timeStr);
+    }
+
+    if(event.location && eventType != 'virtual') {
         infos.push('@' + event.location);
     }
 

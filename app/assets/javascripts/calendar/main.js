@@ -1015,6 +1015,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     eventData = {
         id: ev.id,
         title: ev.summary,
+        aiMetadata: ev.ai_metadata,
         allDay: ev.all_day,
         isSuggestionFromAi: ev.isSuggestionFromAi,
         isTravelTime: ev.isTravelTime,
