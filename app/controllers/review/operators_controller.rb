@@ -7,7 +7,7 @@ class Review::OperatorsController < ReviewController
 
   def my_stats
     @operator = Operator.find session[:operator_id]
-    @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).size
+    @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).size
 
     @errors_url = my_errors_review_operators_path
   end
@@ -33,7 +33,7 @@ class Review::OperatorsController < ReviewController
       @operator = nil
     else
       @operator = Operator.find params[:id]
-      @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).size
+      @previous_errors_count = @operator.operator_actions_groups.where('review_notation < ?', 5).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).size
       @errors_url = errors_review_operator_path(@operator)
     end
 
@@ -42,11 +42,11 @@ class Review::OperatorsController < ReviewController
   def index
     reference_date_month = DateTime.now - 30.days
 
-    operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month)
+    operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     reviewed_count_month = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
     total_count_month = operator_actions.count
 
-    operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days)
+    operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
     total_count_week = operator_actions_week.count
 
@@ -58,7 +58,7 @@ class Review::OperatorsController < ReviewController
 
     flag_server_message_ids = result['messages']['ids']
     flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id).uniq
-    flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).count
+    flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count
 
     counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_flagged = operator_actions.where(messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
@@ -129,7 +129,7 @@ class Review::OperatorsController < ReviewController
         main_coverage_week: reviewed_count_week * 1.0 / total_count_week,
         review_count_week: reviewed_count_week,
         flag_to_review_count: flag_count,
-        to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).count,
+        to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count,
         total_count: total_count_month,
         total_duration_for_all_operators_in_seconds: operators_data.inject(0) {|sum, oa| sum + oa[:total_duration_in_seconds]},
         total_percentage_coverage_for_all_operators: counts_by_operator_reviewed.inject(0) {|sum, oa| sum + oa.count}.to_f / total_count_month,

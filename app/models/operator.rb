@@ -30,7 +30,7 @@ class Operator < ActiveRecord::Base
 
     # Stock this in Redis for the day ?
     worked_hours = self.operator_presences.where('date >= ? AND date < ?', start_date, end_date).size / 2.0
-    requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('initiated_at >= ? AND initiated_at <= ?', start_date, end_date)
+    requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('initiated_at >= ? AND initiated_at <= ?', start_date, end_date).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     requests_handled_for_the_day_count = requests_handled_for_the_day.size
 
     uniq_clients = requests_handled_for_the_day.map do |r|
@@ -162,7 +162,7 @@ class Operator < ActiveRecord::Base
   end
 
   def self.generate_stats_data operator_ids, flagged_messages_thread_ids=nil
-    operator_actions_groups = OperatorActionsGroup.where(operator_id: operator_ids)
+    operator_actions_groups = OperatorActionsGroup.where(operator_id: operator_ids).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     dates = {}
     (0..3).each do |i|
       dates["S#{(DateTime.now - i.weeks).strftime("%V")}"] = {start: (DateTime.now - i.weeks).beginning_of_week, end: (DateTime.now - i.weeks).end_of_week}

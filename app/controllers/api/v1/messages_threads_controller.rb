@@ -53,7 +53,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       mt.account && mt.account.have_priority
     }
 
-    operator_action_groups_count = OperatorActionsGroup.where("finished_at > ? AND finished_at < ?", DateTime.now - 30.minutes, DateTime.now).count
+    operator_action_groups_count = OperatorActionsGroup.where("finished_at > ? AND finished_at < ?", DateTime.now - 30.minutes, DateTime.now).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count
 
     #processed_emails = Message.where(from_me: true).where("received_at >= ? AND received_at < ?", DateTime.now - 30.minutes, DateTime.now).count
     operator_presences = OperatorPresence.where("date >= ? AND date < ?", DateTime.now - 30.minutes, DateTime.now).where(is_review: false).count
@@ -83,7 +83,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     incoming_messages = Message.where(from_me: false).where("received_at >= ? AND received_at <= ?", start_date, end_date).select(:received_at)
     messages = Message.where(from_me: true).where("received_at >= ? AND received_at <= ?", start_date, end_date).where.not(request_at: nil)
 
-    operator_action_groups = OperatorActionsGroup.where("finished_at >= ? AND finished_at <= ?", start_date, end_date)
+    operator_action_groups = OperatorActionsGroup.where("finished_at >= ? AND finished_at <= ?", start_date, end_date).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     operator_presences = OperatorPresence.where(is_review: false).where("date >= ? AND date <= ?", start_date, end_date)
     current_start_date = start_date
 
