@@ -57,11 +57,12 @@ class Message < ActiveRecord::Base
     text = I18n.t("automatic_reply_emails.mailing_list.text", client_name: account.usage_name)
 
     julie_alias = JulieAlias.find_by_email("julie@juliedesk.com")
-    html_signature = julie_alias.signature_en
-    text_signature = julie_alias.footer_en
+    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
+    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+
     if "#{I18n.locale}" == "fr"
-      html_signature = julie_alias.signature_fr
-      text_signature = julie_alias.footer_fr
+      html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
+      text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
     end
 
     email_params = {
