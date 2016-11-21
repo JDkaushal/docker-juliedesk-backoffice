@@ -455,8 +455,8 @@
                 //  - Travel time events
                 //  - Default Time events (for when Google could not calculate a proper travel time
                 $scope.computeDefaultCommutingTime(email);
-                $scope.computeDefaultAppointmentDelay(email);
                 $scope.addTravelTimeEventsToCalendar(email);
+                $scope.computeDefaultAppointmentDelay(email);
                 //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
