@@ -16,6 +16,10 @@ class MessagesThread < ActiveRecord::Base
 
   attr_writer :account
 
+  def deassociate_event
+    self.get_event_data_julie.clear_event_data
+  end
+
   def get_dates_to_verify
     thread_locale = self.computed_data[:locale]
     now = DateTime.now

@@ -29,6 +29,11 @@ class JulieAction < ActiveRecord::Base
   JD_ACTION_FOLLOW_UP_CLIENT         = "follow_up_client"
   JD_ACTION_FOLLOW_UP_CONTACTS       = "follow_up_contacts"
 
+  # Allow to delete avery event related informations from the julie action (used mostly to de-associate an event from a Thread)
+  def clear_event_data
+    self.update(event_id: nil, calendar_login_username: nil, calendar_id: nil)
+  end
+
   def self.available_actions
 
     [
