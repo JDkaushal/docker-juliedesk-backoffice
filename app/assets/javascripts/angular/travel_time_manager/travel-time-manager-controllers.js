@@ -272,7 +272,8 @@
                 // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
                 $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
-                $scope.addDefaultDelayEventsToCalendar(email);
+                $scope.computeDefaultAppointmentDelay(email);
+                //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
 
@@ -454,8 +455,9 @@
                 //  - Travel time events
                 //  - Default Time events (for when Google could not calculate a proper travel time
                 $scope.computeDefaultCommutingTime(email);
+                $scope.computeDefaultAppointmentDelay(email);
                 $scope.addTravelTimeEventsToCalendar(email);
-                $scope.addDefaultDelayEventsToCalendar(email);
+                //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
 
