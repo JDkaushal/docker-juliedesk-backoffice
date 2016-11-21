@@ -456,7 +456,7 @@
                 //  - Default Time events (for when Google could not calculate a proper travel time
                 $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
-                $scope.computeDefaultAppointmentDelay(email);
+                $scope.displayDefaultAppointmentDelay(email);
                 //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
@@ -717,6 +717,15 @@
             _.each(allEvents, function(e) {
                 $scope.buildInfoEvent(email, 'travelTime', e, timeDuration, null);
             });
+        };
+
+        // ALlow to display the events if not events are needed to compute or compute the one that needs it then display them
+        $scope.displayDefaultAppointmentDelay = function(email) {
+            if($scope.eventsWithDefaultTime[email].length > 0) {
+                $scope.computeDefaultAppointmentDelay(email);
+            } else {
+                $scope.addDefaultDelayEventsToCalendar(email);
+            }
         };
 
         $scope.computeDefaultAppointmentDelay = function(email) {
