@@ -272,6 +272,7 @@
                 // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
                 $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
+                $scope.addDefaultDelayEventsToCalendar(email);
             }
         };
 
@@ -678,8 +679,11 @@
 
             if(eventType == 'travelTime') {
                 infoEvent.isTravelTime = true;
-                infoEvent.travelTimeGoogleDestinationUrl = 'https://www.google.com/maps/dir/' + $scope.originCoordinates.lat() + ',' + $scope.originCoordinates.lng() + '/' + encodeURIComponent(destination);
-
+                // We only compute the Google URL if we have a woring Google LatLng object
+                // It may not be available because no origin Coordinates where found when filling the form
+                if($scope.originCoordinates && $scope.originCoordinates.lat) {
+                    infoEvent.travelTimeGoogleDestinationUrl = 'https://www.google.com/maps/dir/' + $scope.originCoordinates.lat() + ',' + $scope.originCoordinates.lng() + '/' + encodeURIComponent(destination);
+                }
                 $scope.travelTimeEvents[email].push(infoEvent);
             }else if(eventType == 'defaultDelay') {
                 infoEvent.isDefaultDelay = true;
