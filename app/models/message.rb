@@ -721,5 +721,11 @@ class Message < ActiveRecord::Base
     message.get_email_body
   end
 
+  private
+
+  def text_to_html text
+    text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
+  end
+
 
 end
