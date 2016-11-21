@@ -448,7 +448,7 @@ class Message < ActiveRecord::Base
             # We don't consider that a email sent by Julie means that the thread was updated
 
             unless m.from_me
-              if server_message['from'].include?("nmarlier@gmail") && server_thread['labels'].include?("MAILING_LIST")
+              if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
                 if messages_thread.account
                   m.async_auto_reply_mailing_list
@@ -458,8 +458,6 @@ class Message < ActiveRecord::Base
 
               ConscienceWorker.enqueue m.id
               updated_messages_thread_ids << messages_thread.id
-
-
             end
 
             if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
