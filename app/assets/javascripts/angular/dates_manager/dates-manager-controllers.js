@@ -625,7 +625,8 @@
 
                 var data = {
                     suggestions_status: suggestionsStatus,
-                    id: $scope.AIsuggestionsTrackingId
+                    id: $scope.AIsuggestionsTrackingId,
+                    operator_id: $('body').data('operatorId')
                 };
 
                 aiDatesSuggestionManager.scope().sendLearningData(data);
