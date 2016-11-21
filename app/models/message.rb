@@ -294,7 +294,7 @@ class Message < ActiveRecord::Base
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
 
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
-            messages_thread.delegate_to_support
+            messages_thread.tag_as_multi_clients
           end
 
           ClientSuccessTrackingHelpers.async_track("New Request Sent", account_email, {
@@ -335,7 +335,7 @@ class Message < ActiveRecord::Base
 
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
-          messages_thread.delegate_to_support
+          messages_thread.tag_as_multi_clients
         end
       end
     end
@@ -424,7 +424,7 @@ class Message < ActiveRecord::Base
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
 
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
-            messages_thread.delegate_to_support
+            messages_thread.tag_as_multi_clients
           end
 
           ClientSuccessTrackingHelpers.async_track("New Request Sent", account_email, {
@@ -484,7 +484,7 @@ class Message < ActiveRecord::Base
 
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
-          messages_thread.delegate_to_support
+          messages_thread.tag_as_multi_clients
         end
       end
     end

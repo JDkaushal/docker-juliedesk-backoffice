@@ -48,8 +48,8 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::TO_FOUNDERS
-      delegation_message = params[:to_founders_message]
-      @message.messages_thread.delegate_to_founders message: delegation_message, operator: session[:user_name]
+      delegation_message = params[:to_admin_message]
+      @message.messages_thread.send_to_admin message: delegation_message, operator: session[:user_name]
 
       OperatorAction.create_and_verify({
                                            initiated_at: DateTime.now,
@@ -65,7 +65,7 @@ class MessagesController < ApplicationController
     end
 
     if @classification == MessageClassification::CANCEL_TO_FOUNDERS
-      @message.messages_thread.undelegate_to_founders
+      @message.messages_thread.undelegate_to_admin
       redirect_to messages_thread_path(@message.messages_thread)
       return
     end

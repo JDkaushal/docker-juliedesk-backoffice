@@ -1211,7 +1211,7 @@
 
     <%= render partial: "messages_threads/client_account_tiles" %>
 
-    <% if @messages_thread.delegated_to_founders %>
+    <% if @messages_thread.sent_to_admin %>
         <div class="to-founders-message-div">
           <%= (@messages_thread.operator_actions_groups.sort_by(&:created_at).select{|oag| oag.label == OperatorActionsGroup::LABEL_SEND_TO_SUPPORT}.last.try(:operator_actions) || []).select{|oa| oa.nature == OperatorAction::NATURE_SEND_TO_SUPPORT}.first.try(:message) %>
         </div>

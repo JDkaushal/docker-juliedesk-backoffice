@@ -16,6 +16,32 @@ class MessagesThread < ActiveRecord::Base
 
   attr_writer :account
 
+  def self.basic_operator_check_thread_to_reject(messages_thread)
+    !messages_thread.account ||
+        messages_thread.sent_to_admin ||
+        messages_thread.delegated_to_support ||
+        messages_thread.account.only_admin_can_process ||
+        messages_thread.account.only_support_can_process ||
+        messages_thread.to_be_merged
+  end
+
+  def self.super_operator_level_1_check_thread_to_reject(messages_thread)
+    messages_thread.sent_to_admin ||
+        (messages_thread.account && messages_thread.account.only_admin_can_process)
+  end
+
+  def self.filter_on_privileges(privilege, messages_threads)
+    if privilege == Operator::PRIVILEGE_OPERATOR
+      messages_threads.reject!{ |mt|
+        self.basic_operator_check_thread_to_reject(mt)
+      }
+    elsif privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+      messages_threads.reject!{ |mt|
+        self.super_operator_level_1_check_thread_to_reject(mt)
+      }
+    end
+  end
+
   def deassociate_event
     self.get_event_data_julie.clear_event_data
   end
@@ -75,10 +101,10 @@ class MessagesThread < ActiveRecord::Base
   end
 
 
-  def delegate_to_founders params={}
+  def send_to_admin params={}
     self.update_attributes({
-                               delegated_to_founders: true,
-                               to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
+                               sent_to_admin: true,
+                               to_admin_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
@@ -89,9 +115,9 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def undelegate_to_founders params={}
+  def undelegate_to_admin params={}
     self.update_attributes({
-                               delegated_to_founders: false
+                               sent_to_admin: false
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
@@ -102,11 +128,27 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def tag_as_multi_clients
+    self.update_attributes(
+        {
+            is_multi_clients: true,
+            delegated_to_support: true
+        }
+    )
+
+    if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
+      EmailServer.add_and_remove_labels({
+                                            messages_thread_ids: [self.server_thread_id],
+                                            labels_to_add: ["Support"],
+                                            labels_to_remove: []
+                                        })
+    end
+  end
 
   def delegate_to_support params={}
     self.update_attributes({
                                delegated_to_support: true,
-                               to_founders_message: "#{params[:message]}\n\n#{params[:operator]}"
+                               to_admin_message: "#{params[:message]}\n\n#{params[:operator]}"
                            })
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({

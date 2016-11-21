@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'threads_tags_management/manager' %>
 <script>
     var app = angular.module("backofficeApp", []);
     window.currentOperatorId = <%= session[:operator_id] %>;
@@ -173,47 +174,50 @@
         };
 
         $scope.labelInRow = function(messagesThread) {
-            var infos = {cssClass: ''};
+          TagsManager.getInstance().handleThread(messagesThread);
 
-            if(messagesThread.delegated_to_founders) {
-                infos.text = "Founders";
-            }
-            else {
-                if(messagesThread.delegated_to_support) {
-                    infos.text = "Support";
-                }
-                else {
-                    if(messagesThread.account) {
-                        if(messagesThread.account.office_365_refresh_token_expired) {
-                            infos.text = "Tkn expird";
-                        }
-                        else {
-                            if(messagesThread.account.only_admin_can_process) {
-                                infos.text = "Admin only";
-                            }
-                            else {
-                                if(messagesThread.account.only_support_can_process) {
-                                    infos.text = "VIP";
-                                    infos.cssClass = 'vip';
-                                }
-                                else {
-                                    if(messagesThread.to_be_merged) {
-                                        infos.text = 'To merge';
-                                        infos.cssClass = 'to-be-merged';
-                                    }else {
-                                        infos.text = null;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        infos.text = "Support";
-                    }
-                }
-            }
-
-            return infos;
+//          var infos = {cssClass: ''};
+//
+//           if(messagesThread.sent_to_admin) {
+//               infos.text = "Founders";
+//           }
+//           else {
+//               if(messagesThread.delegated_to_support) {
+//                   infos.text = "Support";
+//               }
+//               else {
+//                   if(messagesThread.account) {
+//                       if(messagesThread.account.office_365_refresh_token_expired) {
+//                           infos.text = "Tkn expird";
+//                       }
+//                       else {
+//                           if(messagesThread.account.only_admin_can_process) {
+//                               infos.text = "Admin only";
+//                           }
+//                           else {
+//                               if(messagesThread.account.only_support_can_process) {
+//                                   infos.text = "VIP";
+//                                   infos.cssClass = 'vip';
+//                               }
+//                               else {
+//                                   if(messagesThread.to_be_merged) {
+//                                       infos.text = 'To merge';
+//                                       infos.cssClass = 'to-be-merged';
+//                                   }else {
+//                                       infos.text = null;
+//                                   }
+//                               }
+//                           }
+//                       }
+//                   }
+//                   else {
+//                       infos.text = "Support";
+//                   }
+//               }
+//           }
+//
+//           return infos;
+          return messagesThread.tags[0];
         };
 
         $scope.shouldProcessLater = function(messagesThread) {

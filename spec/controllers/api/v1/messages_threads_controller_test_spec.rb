@@ -35,11 +35,11 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
     end
 
     it 'should return the messages threads for admin count when there are threads in inbox that are delegated to founders' do
-      mt1 = FactoryGirl.create(:messages_thread_for_inbox_count_delegated_to_founders_in_inbox)
-      mt2 = FactoryGirl.create(:messages_thread_for_inbox_count_delegated_to_founders_in_inbox)
-      mt3 = FactoryGirl.create(:messages_thread_for_inbox_count_delegated_to_founders_in_inbox)
-      mt4 = FactoryGirl.create(:messages_thread_for_inbox_count_delegated_to_founders_in_inbox)
-      mt5 = FactoryGirl.create(:messages_thread_for_inbox_count_delegated_to_founders_in_inbox)
+      mt1 = FactoryGirl.create(:messages_thread_for_inbox_count_sent_to_admin_in_inbox)
+      mt2 = FactoryGirl.create(:messages_thread_for_inbox_count_sent_to_admin_in_inbox)
+      mt3 = FactoryGirl.create(:messages_thread_for_inbox_count_sent_to_admin_in_inbox)
+      mt4 = FactoryGirl.create(:messages_thread_for_inbox_count_sent_to_admin_in_inbox)
+      mt5 = FactoryGirl.create(:messages_thread_for_inbox_count_sent_to_admin_in_inbox)
 
       get :inbox_count
 
@@ -112,8 +112,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "subject" => @mt1.subject,
                                                       "snippet" => @mt1.snippet,
                                                       "account_name" => @mt1.account_name,
-                                                      "delegated_to_founders" => @mt1.delegated_to_founders,
-                                                      "to_founders_message" => @mt1.to_founders_message,
+                                                      "sent_to_admin" => @mt1.sent_to_admin,
+                                                      "to_admin_message" => @mt1.to_admin_message,
                                                       "locked_by_operator_id" => @mt1.locked_by_operator_id,
                                                       "locked_at" => @mt1.locked_at,
                                                       "server_thread_id" => @mt1.server_thread_id,
@@ -131,7 +131,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "handled_by_ai"=>false,
                                                       "request_date"=>nil,
                                                       "messages_count"=>0,
-                                                      "handled_by_automation"=>false
+                                                      "handled_by_automation"=>false,
+                                                      "is_multi_clients"=>false
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {

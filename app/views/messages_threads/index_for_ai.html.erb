@@ -188,8 +188,8 @@
         $scope.labelInRow = function(messagesThread) {
             var infos = {cssClass: ''};
 
-            if(messagesThread.delegated_to_founders) {
-                infos.text = "Founders";
+            if(messagesThread.sent_to_admin) {
+                infos.text = "Admin";
             }
             else {
                 if(messagesThread.delegated_to_support) {
@@ -221,7 +221,7 @@
                         }
                     }
                     else {
-                        infos.text = "Support";
+                        infos.text = "Unknown client";
                     }
                 }
             }

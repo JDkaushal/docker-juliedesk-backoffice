@@ -18,8 +18,8 @@ FactoryGirl.define do
     factory :messages_thread_for_inbox_count do
       account_email
 
-      trait :is_delegated_to_founders do
-        delegated_to_founders true
+      trait :is_sent_to_admin do
+        sent_to_admin true
       end
 
       trait :in_in_inbox do
@@ -27,8 +27,8 @@ FactoryGirl.define do
       end
 
       factory :messages_thread_for_inbox_count_in_inbox, traits: [:in_in_inbox]
-      factory :messages_thread_for_inbox_count_delegated_to_founders_in_inbox, traits: [:is_delegated_to_founders, :in_in_inbox]
-      factory :messages_thread_for_inbox_count_delegated_to_founders_not_in_inbox, traits: [:is_delegated_to_founders]
+      factory :messages_thread_for_inbox_count_sent_to_admin_in_inbox, traits: [:is_sent_to_admin, :in_in_inbox]
+      factory :messages_thread_for_inbox_count_sent_to_admin_not_in_inbox, traits: [:is_sent_to_admin]
 
     end
 

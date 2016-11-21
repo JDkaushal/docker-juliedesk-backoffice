@@ -30,13 +30,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     end
 
     inbox_messages_threads = messages_threads.select{ |mt|
-      !mt.delegated_to_founders &&
+      !mt.sent_to_admin &&
           mt.account &&
           !mt.account.only_admin_can_process
     }
 
     admin_messages_threads = messages_threads.select{ |mt|
-      mt.delegated_to_founders ||
+      mt.sent_to_admin ||
           !mt.account ||
           mt.account.only_admin_can_process
     }

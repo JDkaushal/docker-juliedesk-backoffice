@@ -81,7 +81,7 @@ describe MessagesController, :type => :controller do
 
           mt1.messages << m1
 
-          expect_any_instance_of(MessagesThread).to receive(:delegate_to_founders).with(message: 'delegation message', operator: @normal.name)
+          expect_any_instance_of(MessagesThread).to receive(:send_to_admin).with(message: 'delegation message', operator: @normal.name)
           expect(OperatorAction).to receive(:create_and_verify).with({
                                                                          initiated_at: DateTime.new(2015, 10, 10, 12, 00, 00),
                                                                          target: mt1,
@@ -91,7 +91,7 @@ describe MessagesController, :type => :controller do
                                                                          message: 'delegation message'
                                                                      })
 
-          post :classifying, id: m1.id, classification: MessageClassification::TO_FOUNDERS, to_founders_message: 'delegation message'
+          post :classifying, id: m1.id, classification: MessageClassification::TO_FOUNDERS, to_admin_message: 'delegation message'
 
           expect(response).to redirect_to(messages_threads_path)
         end
@@ -103,7 +103,7 @@ describe MessagesController, :type => :controller do
 
           mt1.messages << m1
 
-          expect_any_instance_of(MessagesThread).to receive(:undelegate_to_founders)
+          expect_any_instance_of(MessagesThread).to receive(:undelegate_to_admin)
           post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_FOUNDERS
 
           expect(response).to redirect_to(messages_thread_path(mt1))

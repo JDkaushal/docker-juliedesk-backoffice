@@ -22,7 +22,7 @@
 </script>
 <% message_id = local_assigns[:messages_thread].messages.last.id %>
 
-<% if messages_thread.delegated_to_founders %>
+<% if messages_thread.sent_to_admin %>
     <%= button_to("Remove admin delegation", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_FOUNDERS }, class: "unsend-to-support-button btn btn-success btn-sm") %>
 <% elsif messages_thread.delegated_to_support %>
     <%= button_to("Remove support delegation", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_SUPPORT }, class: "unsend-to-support-button btn btn-success btn-sm") %>
@@ -35,7 +35,7 @@
 
 
         <%= form_tag url_for({ controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::TO_FOUNDERS }) do |f| %>
-        <textarea id="send_to_support_message" name="to_founders_message"></textarea>
+        <textarea id="send_to_support_message" name="to_admin_message"></textarea>
 
         <div class="send-to-support-buttons">
           <div class="btn btn-default send-to-support-cancel">Cancel</div>

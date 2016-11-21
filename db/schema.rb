@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161118182019) do
+ActiveRecord::Schema.define(version: 20161122110625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,13 @@ ActiveRecord::Schema.define(version: 20161118182019) do
     t.text     "description"
     t.string   "active_mode", default: "none"
     t.text     "active_data"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "global_settings", force: true do |t|
+    t.string   "name",       null: false
+    t.string   "value",      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -221,8 +228,8 @@ ActiveRecord::Schema.define(version: 20161118182019) do
     t.text     "subject"
     t.text     "snippet"
     t.string   "account_name"
-    t.boolean  "delegated_to_founders",    default: false
-    t.text     "to_founders_message"
+    t.boolean  "sent_to_admin",            default: false
+    t.text     "to_admin_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
     t.integer  "server_thread_id"
@@ -241,6 +248,7 @@ ActiveRecord::Schema.define(version: 20161118182019) do
     t.datetime "request_date"
     t.integer  "messages_count",           default: 0
     t.boolean  "handled_by_automation",    default: false
+    t.boolean  "is_multi_clients",         default: false
   end
 
   create_table "operator_actions", force: true do |t|
@@ -316,5 +324,19 @@ ActiveRecord::Schema.define(version: 20161118182019) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

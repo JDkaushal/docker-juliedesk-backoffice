@@ -318,7 +318,7 @@ class MessagesThreadsController < ApplicationController
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
 
-        data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
+        data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
 
         render json: {
                    status: "success",
@@ -348,22 +348,24 @@ class MessagesThreadsController < ApplicationController
         accounts_cache = Account.accounts_cache(mode: "light")
         @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
 
-        if session[:privilege] == Operator::PRIVILEGE_OPERATOR
-          @messages_thread.select!{ |mt|
-            !mt.delegated_to_founders &&
-                !mt.delegated_to_support &&
-                mt.account &&
-                !mt.account.only_admin_can_process &&
-                !mt.account.only_support_can_process &&
-                !mt.to_be_merged
-          }
-        elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
-          @messages_thread.select!{ |mt|
-            !mt.delegated_to_founders &&
-                (!mt.account || !mt.account.only_admin_can_process)
-          }
-        end
-        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :delegated_to_founders, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
+        MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)
+
+        # if session[:privilege] == Operator::PRIVILEGE_OPERATOR
+        #   @messages_thread.select!{ |mt|
+        #     !mt.delegated_to_founders &&
+        #         !mt.delegated_to_support &&
+        #         mt.account &&
+        #         !mt.account.only_admin_can_process &&
+        #         !mt.account.only_support_can_process &&
+        #         !mt.to_be_merged
+        #   }
+        # elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+        #   @messages_thread.select!{ |mt|
+        #     !mt.delegated_to_founders &&
+        #         (!mt.account || !mt.account.only_admin_can_process)
+        #   }
+        # end
+        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients])
         operators_data = @operators_on_planning.as_json
 
         render json: {
