@@ -450,7 +450,7 @@ class Message < ActiveRecord::Base
               if server_message['from'].include?("nmarlier@gmail") && server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
                 if messages_thread.account
-                  message.async_auto_reply_mailing_list
+                  m.async_auto_reply_mailing_list
                 end
                 messages_thread.async_archive
               end
