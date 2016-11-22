@@ -6,6 +6,7 @@ class Api::V1::JulieAliasesController < Api::ApiV1Controller
 
     all_emails = julie_aliases.map{|julie_alias_hash| julie_alias_hash['email']}
     db_julie_aliases = JulieAlias.where(email: all_emails)
+
     julie_aliases.each do |julie_alias_hash|
       julie_alias = db_julie_aliases.select{|julie_alias| julie_alias.email == julie_alias_hash['email']}.first
       if julie_alias
@@ -20,6 +21,7 @@ class Api::V1::JulieAliasesController < Api::ApiV1Controller
           julie_alias.save
         end
       else
+
         JulieAlias.create({
                                           email: julie_alias_hash['email'],
                                           name:         [julie_alias_hash['first_name'], julie_alias_hash['last_name']].select(&:present?).join(" "),

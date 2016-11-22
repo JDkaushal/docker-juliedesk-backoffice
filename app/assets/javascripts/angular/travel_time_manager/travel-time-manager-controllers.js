@@ -263,7 +263,7 @@
             $scope.selectEventsToCompute(email);
             $scope.computeReferenceLocationForClient(email);
 
-            if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0 && $scope.eventsToCompute[email].length > 0) {
+            if( ( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0 ) {
                 $scope.calculate(email);
             } else {
                 // This method is called by subfunctions of 'calculate' at the end of the process to display default time
@@ -272,7 +272,9 @@
                 // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
                 $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
-                $scope.computeDefaultAppointmentDelay(email);
+                $scope.displayDefaultAppointmentDelay(email);
+                // $scope.computeDefaultAppointmentDelay(email);
+                // $scope.addDefaultDelayEventsToCalendar(email);
                 //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
@@ -410,6 +412,9 @@
         $scope.performGoogleRequests = function(email, groupedEvents, travelMode) {
             var currentDestinations = [];
             var origin = $scope.originCoordinates;
+
+            if($scope.originCoordinates.length == 0)
+                origin = $scope.referenceLocation[email];
 
             _.each(groupedEvents, function(events) {
                 currentDestinations = _.map(events, function(e) { return e.location; });
@@ -723,9 +728,8 @@
         $scope.displayDefaultAppointmentDelay = function(email) {
             if($scope.eventsWithDefaultTime[email].length > 0) {
                 $scope.computeDefaultAppointmentDelay(email);
-            } else {
-                $scope.addDefaultDelayEventsToCalendar(email);
             }
+            $scope.addDefaultDelayEventsToCalendar(email);
         };
 
         $scope.computeDefaultAppointmentDelay = function(email) {
@@ -740,8 +744,6 @@
             _.each(allEvents, function(e) {
                 $scope.buildInfoEvent(email, 'defaultDelay', e, timeDuration, null);
             });
-
-            $scope.addDefaultDelayEventsToCalendar(email);
         };
 
         $scope.addDefaultDelayEventsToCalendar = function(email) {
