@@ -447,16 +447,22 @@ class Message < ActiveRecord::Base
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
 
+
+            should_call_conscience = false
+
             unless m.from_me
+              should_call_conscience = true
+
               if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
                 if messages_thread.account
                   m.async_auto_reply_mailing_list
                 end
                 messages_thread.async_archive
+              else
+                should_call_conscience = true
               end
 
-              ConscienceWorker.enqueue m.id
               updated_messages_thread_ids << messages_thread.id
             end
 
@@ -464,6 +470,11 @@ class Message < ActiveRecord::Base
               #m.server_message = server_message
               messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
+              should_call_conscience = false  
+            end
+
+            if should_call_conscience
+              ConscienceWorker.enqueue m.id
             end
 
           end
