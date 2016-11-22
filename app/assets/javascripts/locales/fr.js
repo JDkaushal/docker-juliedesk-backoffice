@@ -75,8 +75,8 @@ window.wordings['fr'] = {
             },
             before_dates: {
                 new_appointment: {
-                    one_client: "%{client} serait disponible pour %{appointment_nature}%{location} :",
-                    many_clients: "%{other_clients} et %{client} seraient disponibles pour %{appointment_nature}%{location} :",
+                    one_client: "Permettez-moi de vous proposer la disponibilité de %{client} pour %{appointment_nature}%{location} :",
+                    many_clients: "Permettez-moi de vous proposer la disponibilité de %{other_clients} et %{client} pour %{appointment_nature}%{location} :"
                 },
                 postpone: "Voici de nouvelles disponibilités pour %{appointment_nature}%{location} :"
             },
