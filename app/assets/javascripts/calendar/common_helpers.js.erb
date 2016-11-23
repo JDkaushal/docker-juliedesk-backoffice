@@ -187,7 +187,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             // We need to use a post request here because when there are many meeting rooms the request entity becomes too large
             type: "POST",
             tryCount : 0,
-            retryLimit : 20,
+            retryLimit : 5,
             data: {
               start: request.start,
               end: request.end,
