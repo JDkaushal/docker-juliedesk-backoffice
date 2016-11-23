@@ -213,10 +213,14 @@ class Operator < ActiveRecord::Base
       reviewed_non_flagged_count = reviewed_count - reviewed_flagged_count
       errors_non_flagged_count = errors_count - errors_flagged_count
 
-      errors_rate = (
-      (errors_flagged_count * actions_flagged_count * 1.0 / (reviewed_flagged_count + 1)) +
-          (errors_non_flagged_count * actions_non_flagged_count * 1.0 / (reviewed_non_flagged_count + 1))
-      ) / actions_count
+      errors_rate = begin
+        (
+        (errors_flagged_count * actions_flagged_count * 1.0 / reviewed_flagged_count) +
+            (errors_non_flagged_count * actions_non_flagged_count * 1.0 / reviewed_non_flagged_count)
+        ) / actions_count
+      rescue ZeroDivisionError
+        0
+      end
 
       [k, {
           operator_action_groups_by_hour_ratio: operator_action_groups_by_hour_ratio,
