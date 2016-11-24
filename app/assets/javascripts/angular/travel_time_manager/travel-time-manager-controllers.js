@@ -160,21 +160,23 @@
         };
 
         $scope.calendarEventLocationMatrix = function(event, mainClientMainAddress) {
+            var sanitizedLocation = (event.ai_metadata && event.ai_metadata.sanitized_location);
+            
             return {
                 virtual: function() {
                     return mainClientMainAddress;
                 },
                 internal: function() {
-                    return event.ai_metadata.sanitized_location || mainClientMainAddress;
+                    return sanitizedLocation || mainClientMainAddress;
                 },
                 external: function() {
-                    return event.ai_metadata.sanitized_location || null;
+                    return sanitizedLocation || null;
                 },
                 reminder: function() {
-                    return event.ai_metadata.sanitized_location || mainClientMainAddress;
+                    return sanitizedLocation || mainClientMainAddress;
                 },
                 other: function() {
-                    return event.ai_metadata.sanitized_location || null;
+                    return sanitizedLocation || null;
                 }
             }
         };
