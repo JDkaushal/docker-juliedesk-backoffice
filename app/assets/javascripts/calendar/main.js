@@ -620,8 +620,13 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                 }
 
                 if(travelTimeCalculator) {
+                    // var currentLastIndex = calendar.calendarAllEvents[currentPrefHash.email].length - 1;
+                    //
+                    // var lastBatchResult  = calendar.calendarAllEvents[currentPrefHash.email][currentLastIndex];
                     _.each(allClientsPreferencesHash, function(currentPrefHash) {
                         travelTimeCalculator.processForClient(currentPrefHash, _.flatten(calendar.calendarAllEvents[currentPrefHash.email]));
+                        // Clear the array for next batch
+                        calendar.calendarAllEvents[currentPrefHash.email] = [];
                     });
                 }
 
