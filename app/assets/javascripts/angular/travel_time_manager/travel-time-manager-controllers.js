@@ -323,7 +323,7 @@
                     var shouldComputeTime = !e.lowerEdgeBusy || !e.upperEdgeBusy;
                     e.location = $scope.computeCalendarEventLocation(e, mainClientMainAddress);
 
-                    if(e.ai_metadata.event_type == 'virtual' && $scope.schedulingEventProperties.event_type == 'virtual') {
+                    if(e.ai_metadata && e.ai_metadata.event_type == 'virtual' && $scope.schedulingEventProperties.event_type == 'virtual') {
                         e.calculateTravelTime = true;
                         e.forceTravelTimeDurationValue = 0;
                     } else {
