@@ -194,7 +194,7 @@
         $scope.computeCalendarEventLocation = function(event, mainClientMainAddress) {
             // For events coming from the calendar server, the metadata property is called ai_metadata with an underscore
             // If no event type is found returned by the AI, we will consider it as an external event
-            var eventType = event.ai_metadata.event_type || 'external';
+            var eventType =  (event.ai_metadata && event.ai_metadata.event_type) || 'external';
 
             var locationMethod = $scope.calendarEventLocationMatrix(event, mainClientMainAddress)[eventType];
             var result = null;
