@@ -66,8 +66,12 @@
             );
 
             var maximumConstraintDate = null;
-            if(allConstraintsDates && allConstraintsDates.length > 0) {
-                maximumConstraintDate = _.max(_.flatten(allConstraintsDates), function(date) {return date.valueOf()});
+            if(allConstraintsDates) {
+                var flattenedConstraintsDates = _.flatten(allConstraintsDates);
+
+                if(flattenedConstraintsDates.length > 0) {
+                    maximumConstraintDate = _.max(flattenedConstraintsDates, function(date) {return date.valueOf()});
+                }
             }
 
             var upperLimit = (maximumConstraintDate || moment()).clone().add(1, 'month');

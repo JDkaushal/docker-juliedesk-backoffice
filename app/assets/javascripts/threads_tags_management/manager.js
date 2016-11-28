@@ -120,7 +120,7 @@ var TagsManager = (function() {
                 tags.push(new Tag({name: UNKNOWN_CLIENT_TAG}));
             }
 
-            return _.sortBy(tags, function(tag) {return tag.priority;});;
+            return _.sortBy(tags, function(tag) {return tag.priority;});
         }
 
         return {
