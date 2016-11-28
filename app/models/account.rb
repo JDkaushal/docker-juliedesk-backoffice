@@ -188,9 +188,9 @@ class Account
 
   def self.get_active_account_emails params={}
     if params[:detailed]
-      self.accounts_cache.values
+      self.accounts_cache(mode: "light").values
     else
-      self.accounts_cache.keys
+      self.accounts_cache(mode: "light").keys
     end
   end
 
