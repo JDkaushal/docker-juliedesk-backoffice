@@ -17,7 +17,7 @@ window.generateEmailTemplateViaService = function(params, callback) {
 
     $.ajax({
         type : "POST",
-        url :  "http://template-generator.juliedesk.net/api/v1/templates/suggest_dates",
+        url :  "https://template-generator.juliedesk.net/api/v1/templates/suggest_dates",
         dataType: 'json',
         contentType: 'application/json',
         data : JSON.stringify(dataForService),
