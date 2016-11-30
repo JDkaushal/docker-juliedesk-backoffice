@@ -87,13 +87,16 @@
         }
     });
 
-    app.controller('travelTimeCalculator', ['$scope', function($scope) {
+    app.controller('travelTimeCalculator', ['$scope', '$timeout', function($scope, $timeout) {
 
         var googleMatrixDestinationLimitNumber = 25;
         var googleUsedTravelModeForMax = ['driving', 'transit'];
         var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent'];
         // Allow us to prevent having to recalculate this fixed length every time
-        var googleUsedTravelModeForMaxCount = 2;
+        var googleUsedTravelModeForMaxCount = googleUsedTravelModeForMax.length;
+
+        // Used to introduce a delay between the multiple batch calls when using the max time travel (to compute it we need to get the travel time in the driving mode and also the transit mode, chaining the calls result in a query limit threshold beeing triggered)
+        var currentGoogleFetchIteration = 0;
 
         $scope.events = {};
         $scope.eventsToCompute = {};
@@ -362,30 +365,6 @@
             $scope.computeEvents(email, eventsToCompute);
         };
 
-        $scope.computeEvents = function(email, events) {
-            $scope.maxDistanceTmp[email] = {};
-            $scope.pendingGoogleMatrixCall[email] = 0;
-
-            var groupedEvents = $scope.decomposeEventsIntoFittingGroups(events);
-
-            if($scope.preferedMeanOfTransport == 'max') {
-                //console.log('MAX of the means of transport');
-                _.each(googleUsedTravelModeForMax, function(travelMode) {
-                    $scope.simpleGoogleMatrixRequest(email, groupedEvents, travelMode);
-                });
-            } else {
-                $scope.simpleGoogleMatrixRequest(email, groupedEvents, $scope.preferedMeanOfTransport);
-            }
-        };
-
-        $scope.simpleGoogleMatrixRequest = function(email, groupedEvents, travelMode) {
-            $scope.performGoogleRequests(
-                email,
-                groupedEvents,
-                $scope.getGoogleTravelMode(travelMode)
-            );
-        };
-
         $scope.getGoogleTravelMode = function(rawTravelMode) {
             var travelMode = google.maps.TravelMode.DRIVING;
 
@@ -411,6 +390,46 @@
                         .value();
         };
 
+        $scope.computeEvents = function(email, events) {
+            $scope.maxDistanceTmp[email] = {};
+            $scope.pendingGoogleMatrixCall[email] = 0;
+
+            var groupedEvents = $scope.decomposeEventsIntoFittingGroups(events);
+
+            currentGoogleFetchIteration = 0;
+            if($scope.preferedMeanOfTransport == 'max') {
+                //console.log('MAX of the means of transport');
+                // _.each(googleUsedTravelModeForMax, function(travelMode) {
+                //     $timeout(function(){
+                //         console.log('started:' + travelMode);
+                //         $scope.simpleGoogleMatrixRequest(email, groupedEvents, travelMode)
+                //     }, 5000);
+                // });
+                $scope.pendingGoogleMatrixCall[email] = groupedEvents.length * googleUsedTravelModeForMaxCount;
+                $scope.computeEventsToGetMax(email, groupedEvents);
+            } else {
+                $scope.pendingGoogleMatrixCall[email] = groupedEvents.length;
+                $scope.simpleGoogleMatrixRequest(email, groupedEvents, $scope.preferedMeanOfTransport);
+            }
+        };
+
+        // We need to introduce a delay between the multiple batchs to Google Matrx API because if we don't we get a QUERY_LIMIT_REACHED error and we get no results
+        $scope.computeEventsToGetMax = function(email, groupedEvents) {
+            $scope.simpleGoogleMatrixRequest(email, groupedEvents, googleUsedTravelModeForMax[currentGoogleFetchIteration]);
+            currentGoogleFetchIteration++;
+            if( currentGoogleFetchIteration < googleUsedTravelModeForMaxCount ){
+                $timeout( function(){$scope.computeEventsToGetMax(email, groupedEvents);}, 3000 );
+            }
+        };
+
+        $scope.simpleGoogleMatrixRequest = function(email, groupedEvents, travelMode) {
+            $scope.performGoogleRequests(
+                email,
+                groupedEvents,
+                $scope.getGoogleTravelMode(travelMode)
+            );
+        };
+
         $scope.performGoogleRequests = function(email, groupedEvents, travelMode) {
             var currentDestinations = [];
             var origin = $scope.originCoordinates;
@@ -426,8 +445,7 @@
 
         $scope.makeGoogleMatrixRequest = function(email, travelMode, origins, destinations, events) {
             if($scope.googleMatrixService) {
-                $scope.pendingGoogleMatrixCall[email] += 1;
-
+                //$scope.pendingGoogleMatrixCall[email] += 1;
                 $scope.googleMatrixService.getDistanceMatrix(
                     {
                         origins: origins,
@@ -441,6 +459,8 @@
 
         $scope.handleGoogleMatrixResponse = function(response, status, events, email) {
             $scope.pendingGoogleMatrixCall[email] -= 1;
+
+            console.log('Matrix API status: ' + status);
 
             if (status == google.maps.DistanceMatrixStatus.OK) {
                 var currentIndex = 0;

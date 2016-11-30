@@ -614,7 +614,6 @@
                 } else {
                     status = 'removed';
                 }
-
             }
 
             result[suggestion.pristineValue] = status;

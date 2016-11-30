@@ -314,8 +314,17 @@ EventTile.prototype.redraw = function() {
 
 
     if(!eventTile.event.beingAdded) {
+      // The all day dates are UTC no no need to timezone it, it causes problems
+
+      if(eventTile.event.calendar_login_type == "GoogleLogin") {
+        if(!eventTile.event.allDay) {
+          mStartDate = mStartDate.tz(eventTile.getTimezoneId());
+          mEndDate = mEndDate.tz(eventTile.getTimezoneId());
+        }
+      } else {
         mStartDate = mStartDate.tz(eventTile.getTimezoneId());
         mEndDate = mEndDate.tz(eventTile.getTimezoneId());
+      }
     }
 
     if(eventTile.event.allDay) {
