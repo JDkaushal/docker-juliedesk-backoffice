@@ -460,6 +460,7 @@ class Message < ActiveRecord::Base
                 end
                 messages_thread.async_archive
               else
+                messages_thread.update(handled_by_automation: false)
                 should_call_conscience = true
               end
 
