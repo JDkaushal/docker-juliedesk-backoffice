@@ -21,7 +21,7 @@ class Message < ActiveRecord::Base
   def get_reply_all_recipients_emails
     recipients = JSON.parse(self.reply_all_recipients)
 
-    recipients["to"].map{|r| r["email"]} + recipients["cc"].map{|r| r["email"]}
+    recipients["to"].map{|r| r["email"].try(:downcase)} + recipients["cc"].map{|r| r["email"].try(:downcase)}
   end
 
   def clean_delete
@@ -82,11 +82,11 @@ class Message < ActiveRecord::Base
   def initial_recipients params={}
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
 
-    initial_to_emails = reply_all_recipients['to'].map{|c| c['email']}
-    initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email']}
+    initial_to_emails = reply_all_recipients['to'].map{|c| c['email'].try(:downcase)}
+    initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email'].try(:downcase)}
 
-    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
-    attendee_emails = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' }.map{|a| a['email']}
+    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email].try(:downcase) }
+    attendee_emails = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' }.map{|a| a['email'].try(:downcase)}
 
     all_client_emails = self.messages_thread.account.try(:all_emails) || []
     client_email = ((initial_to_emails + initial_cc_emails + attendee_emails) & all_client_emails).first || self.messages_thread.client_email

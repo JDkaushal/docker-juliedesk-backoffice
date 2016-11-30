@@ -13,7 +13,14 @@
                 thisAccount.currentTime = moment().tz(thisAccount.default_timezone_id).format("ddd, MMM D, HH:mm:ss") + " (" + thisAccount.default_timezone_id.split("/")[1].replace("_", " ") + ")";
             };
 
+            account.hasMeetingRooms = function() {
+                return this.addresses.filter(function(address) {
+                    return !!address.meeting_rooms_enabled;
+                }).length > 0
+            };
 
+
+            account.has_meeting_rooms = account.hasMeetingRooms();
             account.isMain = window.threadAccount.email == account.email;
 
             account.setCurrentTime();

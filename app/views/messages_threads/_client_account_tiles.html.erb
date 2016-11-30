@@ -25,6 +25,7 @@
       <br>
       <span class="account-feature follow-up {{ account.auto_follow_up_enabled ? 'activated' : '' }}"><span class="icon"></span>Auto follow-up</span>
       <span class="account-feature restaurant-booking {{ account.restaurant_booking_enabled ? 'activated' : '' }}"><span class="icon"></span>Restaurant booking</span>
+      <span class="account-feature meeting-room {{ account.has_meeting_rooms ? 'activated' : '' }}"><span class="icon"></span>Meeting Room</span>
     </div>
 
     <div class="account-client-info-container" ng-class="account.infoExtended ? 'extended' : ''">
