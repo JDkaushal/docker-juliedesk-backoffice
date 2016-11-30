@@ -204,6 +204,7 @@ window.wordings['fr'] = {
             hello_named: "Bonjour %{name},\n\n",
             before: "Bonjour,\n\n",
             before_only_client: "Bonjour %{client_name},\n\n",
+            names_list_and: '%{first_name} et %{last_name}',
             full_date_format: "dddd D MMMM YYYY à H[h]mm",
             full_time_format: "H[h]mm",
             only_date_format: "dddd D MMMM YYYY",
