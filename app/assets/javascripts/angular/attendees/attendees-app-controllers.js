@@ -1013,6 +1013,45 @@
             return result;
         };
 
+        // By Nico on Nov 30, 2016
+        // To get missing contact info (new rules from spec https://trello.com/c/eAt0Uzvt/137-3-julie-demande-le-numero-ou-le-lieu-en-avance-de-phase-pour-tous-les-types-de-rendez-vous)
+        // Returns null | "mobile" | "skype" | "landline_or_mobile"
+        // Returns a non-null value if and only if each one the attendees from other companies miss the required_additional information of the current appointment
+        $scope.missingContactInfo = function() {
+            // First, get contact info that
+            var contactInfoNature = window.getCurrentAppointment().required_additional_informations;
+            var methodToCheck;
+            var result;
+            switch(contactInfoNature){
+                case 'mobile_only':
+                    methodToCheck = 'has_mobile';
+                    result = "mobile";
+                    break;
+                case 'skype_only':
+                    methodToCheck = 'has_skype';
+                    result = "skype";
+                    break;
+                case 'landline_or_mobile':
+                    methodToCheck = 'has_mobile_or_landline';
+                    result = "landline_or_mobile";
+                    break;
+                default:
+                    // If no information required, returns null
+                    return null;
+                    break;
+            }
+            var presentAttendeesFromOtherCompanies = $scope.getPresentAttendeesFromOtherCompanies();
+            if(presentAttendeesFromOtherCompanies.length == 0) {
+                return null;
+            }
+            if(_.find(presentAttendeesFromOtherCompanies, function(a){
+                return a[methodToCheck]();
+            })) {
+                return null
+            }
+            return result;
+        };
+
         $scope.checkMissingInformations = function(params){
             params = params || {};
             var check = true;

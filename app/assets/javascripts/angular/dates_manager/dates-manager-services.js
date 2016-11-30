@@ -29,6 +29,7 @@
 
         this.setup = function() {
             attendeesApp = that.getAttendeesApp();
+            usedTimezones = undefined;
         };
 
         this.getAttendeesApp = function() {

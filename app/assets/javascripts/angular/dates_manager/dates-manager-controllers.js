@@ -16,6 +16,8 @@
         $scope.aiWarningMessage = "Jul.IA n'as pas trouvé de dates";
         $scope.showAiWarning = false;
 
+        $scope.attendeesService = attendeesService;
+
         $scope.AIsuggestionsTrackingId = undefined;
 
         var aiDatesSuggestionManager = $('#ai_dates_suggestions_manager');
@@ -567,6 +569,7 @@
             //}
             //
             //return $scope.allUsedTimezones;
+
             var result = attendeesService.getUsedTimezones();
 
             if(result) {

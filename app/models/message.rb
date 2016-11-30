@@ -471,7 +471,7 @@ class Message < ActiveRecord::Base
               #m.server_message = server_message
               messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
-              should_call_conscience = false  
+              should_call_conscience = false
             end
 
             if should_call_conscience

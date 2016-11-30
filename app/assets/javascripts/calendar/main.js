@@ -99,7 +99,6 @@ function Calendar($selector, params) {
                 });
                 eventData.editable = false;
                 eventData.color = "#ccc";
-                console.log('events to check', eventData);
                 calendar.eventsToCheck.push(eventData);
             }
 
@@ -532,10 +531,6 @@ Calendar.prototype.isCurrentlyLoadingWeek = function(week) {
     week = moment(week.format() + "T00:00:00Z");
 
     var fetchingStatus = calendar.currentlyFetchingWeeks[week.format()];
-    console.log(calendar.currentlyFetchingWeeks);
-    console.log(week.format());
-    console.log(calendar.currentlyFetchingWeeks[week.format()]);
-
     return fetchingStatus && fetchingStatus > 0;
 };
 
@@ -677,44 +672,54 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     var virtualResourcesToShow = [];
     var momentedStart = moment(start);
 
-    if(window.threadAccount) {
-        if(accountPreferencesHash.email == window.threadAccount.email) {
-            _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function(c) {
-               var calendarItemNode = $(c).closest('.calendar-item');
+    if (window.threadAccount) {
+        if (accountPreferencesHash.email == window.threadAccount.email) {
+            _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
+                var calendarItemNode = $(c).closest('.calendar-item');
 
                 meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
                 meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
             });
         }
 
-        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
-        window.threadComputedData && window.threadComputedData.call_instructions) {
-          var virtualAppoinementCompanySupport = _.find(window.threadAccount.virtual_appointments_company_support_config, function(support) {
-             return support.resource_type == window.threadComputedData.call_instructions.support
-          });
+        if (currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
+            window.threadComputedData && window.threadComputedData.call_instructions) {
+            var virtualAppoinementCompanySupport = _.find(window.threadAccount.virtual_appointments_company_support_config, function (support) {
+                return support.resource_type == window.threadComputedData.call_instructions.support
+            });
 
-            if(virtualAppoinementCompanySupport && virtualAppoinementCompanySupport.virtual_resources) {
-                virtualResourcesToShow = _.map(virtualAppoinementCompanySupport.virtual_resources, function(resource) {
+            if (virtualAppoinementCompanySupport && virtualAppoinementCompanySupport.virtual_resources) {
+                virtualResourcesToShow = _.map(virtualAppoinementCompanySupport.virtual_resources, function (resource) {
                     return resource.id;
                 });
             }
         }
     }
 
-    var requestTracked = new RequestTracking();
+    var requestTrackingId = null;
+    var requestTracked = null;
+    if (typeof RequestTracking === 'undefined' || RequestTracking == null) {
 
-    var requestTrackingId = requestTracked.create({
-        request_type: 'list_events',
-        properties: {
-            client_email: accountPreferencesHash.email,
-            request_strategy: '3X1',
-            request_group: trackingOptions.batchTrackingId,
-            start_date: start,
-            end_date: end,
-            provider: _.map((window.threadAccount.calendar_logins || []), function(cal) { return cal.type; }).join(', '),
-            using_calendar_server: window.threadAccount.using_calendar_server
-        }
-    });
+    }
+    else {
+
+        requestTracked = new RequestTracking();
+
+        requestTrackingId = requestTracked.create({
+            request_type: 'list_events',
+            properties: {
+                client_email: accountPreferencesHash.email,
+                request_strategy: '3X1',
+                request_group: trackingOptions.batchTrackingId,
+                start_date: start,
+                end_date: end,
+                provider: _.map((window.threadAccount.calendar_logins || []), function (cal) {
+                    return cal.type;
+                }).join(', '),
+                using_calendar_server: window.threadAccount.using_calendar_server
+            }
+        });
+    }
 
     CommonHelpers.externalRequest({
         action: "events",
@@ -739,12 +744,17 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             });
         }
 
-        requestTracked.update({
-            network_finished_date: moment().valueOf(),
-            properties: {
-                events_count: eventsCount
-            }
-        });
+        if (typeof requestTracked === 'undefined' || requestTracked == null) {
+
+        }
+        else {
+            requestTracked.update({
+                network_finished_date: moment().valueOf(),
+                properties: {
+                    events_count: eventsCount
+                }
+            });
+        }
 
         unavailableEvents = calendar.getNonAvailableEvents(start, end, accountPreferencesHash);
 
@@ -759,9 +769,14 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             calendar.calendarAllEvents[accountPreferencesHash.email].push(unavailableEvents);
         }
 
-        requestTracked.update({
-            global_finished_date: moment().valueOf()
-        });
+        if (typeof requestTracked === 'undefined' || requestTracked == null) {
+
+        }
+        else {
+            requestTracked.update({
+                global_finished_date: moment().valueOf()
+            });
+        }
 
         if(callback) callback(response.items);
     });
@@ -1026,7 +1041,6 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         color = calendar.getCalendarColor(eventCalendar);
     }
 
-    //console.log(ev);
     eventData = {
         id: ev.id,
         title: ev.summary,
@@ -1475,7 +1489,6 @@ Calendar.prototype.redrawTimeZoneSelector = function () {
         allTimeZones.push(account.default_timezone_id);
     });
 
-    console.log('here', allTimeZones);
     // Add all calendars timezones
     $(calendar.calendars).each(function (k, calendarItem) {
         if (calendar.shouldDisplayCalendarItem(calendarItem)) {

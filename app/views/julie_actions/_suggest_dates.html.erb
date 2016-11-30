@@ -60,14 +60,15 @@
 
             var messageBuilder = $('#reply-area').scope();
 
+            // Dont generate template via Service for now here, as isPostpone is false
             window.setReplyMessage(
-                    messageBuilder.generateReply({
-                        action: "suggest_dates",
-                        client_agreement: false,
-                        isPostpone: isPostpone,
-                        locale: window.threadComputedData.locale
-                    }),
-                    "only_client"
+                messageBuilder.generateReply({
+                  action: "suggest_dates",
+                  client_agreement: false,
+                  isPostpone: isPostpone,
+                  locale: window.threadComputedData.locale
+                }),
+                "only_client"
             );
         }
     };
@@ -90,45 +91,100 @@
         var threadComputedData = window.threadComputedData;
         var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
 
+
+      if(window.featuresHelper.isFeatureActive("template_generation_v2") && !isPostpone) {
+
+        var clientNames = [window.threadAccount.usage_name];
+        _.each(otherClients(), function(attendee) {
+          var names = attendee.usageName.split(" ");
+          if(names.length > 0) {
+            clientNames.push(window.helpers.capitalize(names[0]));
+          }
+        });
+
+        var attendeesForService = [];
+        _.each(attendees(), function(attendee) {
+          if (attendee.usageName) {
+            var names = attendee.usageName.split(" ");
+            if (names.length > 0 && !attendee.isAssistant) {
+              var assistedByName = null;
+              if(attendee.assistedBy) {
+                assistedByName = attendee.assistedBy.displayName;
+              }
+              attendeesForService.push({
+                name: window.helpers.capitalize(names[0]),
+                assisted_by_name: assistedByName
+              });
+            }
+          }
+        });
+
+        var locationInEmail = {};
+        if(window.getCurrentAddress()) {
+          locationInEmail = {
+            en: window.getCurrentAddress().address_in_template.en,
+            fr: window.getCurrentAddress().address_in_template.fr,
+          }
+        }
+        window.generateEmailTemplateViaService({
+          client_names: clientNames,
+          dates: window.timeSlotsToSuggest,
+          timezones: datesSuggestionsManager.getUsedTimezones(),
+          default_timezone: window.threadAccount.default_timezone_id,
+          locale: threadComputedData.locale,
+          is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+          attendees: attendeesForService,
+          appointment_in_email: {
+            en: window.getCurrentAppointment().title_in_email.en,
+            fr: window.getCurrentAppointment().title_in_email.fr
+          },
+          location_in_email: locationInEmail,
+          should_ask_location: window.shouldAskLocation(),
+          missing_contact_info: $('#attendeesCtrl').scope().missingContactInfo()
+        }, function(generatedTemplate) {
+          window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+        });
+      }
+      else {
         message += messageBuilder.generateReply({
-            action: "suggest_dates",
-            client_agreement: true,
-            isPostpone: isPostpone,
-            attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
-            previousAppointment: previousAppointment,
-            currentEventData: window.currentEventData,
-            locale: threadComputedData.locale,
-            appointment: window.getCurrentAppointment(),
-            address: window.getCurrentAddress(),
-            timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
-            //timeSlotsToSuggest: window.timeSlotsToSuggest,
-            usedTimezones: datesSuggestionsManager.getUsedTimezones(),
-            threadMainTimezone: threadComputedData.timezone,
-            client: window.threadAccount.usage_name,
-            other_clients: _.filter(_.map(otherClients(), function(attendee) {
-                var names = attendee.usageName.split(" ");
-                if(names.length > 0) {
-                    return window.helpers.capitalize(names[0]);
-                }
-                return null;
-            }), function(name) {
-                return name;
-            }),
-            attendees: _.filter(_.map(attendees(), function(attendee) {
-                if(attendee.usageName)
-                {
-                    var names = attendee.usageName.split(" ");
-                    if(names.length > 0) {
-                        return window.helpers.capitalize(names[0]);
-                    }
-                }
-                return null;
-            }), function(name) {
-                return name;
-            }),
-            timezoneId: threadComputedData.timezone,
-            defaultTimezoneId: window.threadAccount.default_timezone_id,
-            callInstructions: threadComputedData.call_instructions
+          action: "suggest_dates",
+          client_agreement: true,
+          isPostpone: isPostpone,
+          attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
+          previousAppointment: previousAppointment,
+          currentEventData: window.currentEventData,
+          locale: threadComputedData.locale,
+          appointment: window.getCurrentAppointment(),
+          address: window.getCurrentAddress(),
+          timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
+          //timeSlotsToSuggest: window.timeSlotsToSuggest,
+          usedTimezones: datesSuggestionsManager.getUsedTimezones(),
+          threadMainTimezone: threadComputedData.timezone,
+          client: window.threadAccount.usage_name,
+          other_clients: _.filter(_.map(otherClients(), function(attendee) {
+            var names = attendee.usageName.split(" ");
+            if(names.length > 0) {
+              return window.helpers.capitalize(names[0]);
+            }
+            return null;
+          }), function(name) {
+            return name;
+          }),
+          attendees: _.filter(_.map(attendees(), function(attendee) {
+            if(attendee.usageName)
+            {
+              var names = attendee.usageName.split(" ");
+              if(names.length > 0) {
+                return window.helpers.capitalize(names[0]);
+              }
+            }
+            return null;
+          }), function(name) {
+            return name;
+          }),
+          timezoneId: threadComputedData.timezone,
+          defaultTimezoneId: window.threadAccount.default_timezone_id,
+          callInstructions: threadComputedData.call_instructions
         });
 
         var currentAppointment = window.getCurrentAppointment();
@@ -137,28 +193,28 @@
         var attendeesMng = $('#attendeesCtrl').scope();
 
         if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !threadComputedData.call_instructions.details){
-            var messageParams = {
-                action: 'send_call_instructions',
-                callInstructions: threadComputedData.call_instructions,
-                locale: threadComputedData.locale,
-                askCallInstructions: attendeesMng.mustAskCallInstructions(currentAppointmentKind),
-                askingEarly: true
-            };
+          var messageParams = {
+            action: 'send_call_instructions',
+            callInstructions: threadComputedData.call_instructions,
+            locale: threadComputedData.locale,
+            askCallInstructions: attendeesMng.mustAskCallInstructions(currentAppointmentKind),
+            askingEarly: true
+          };
 
-            if(messageParams.askCallInstructions) {
-                message += "\n";
-                message += messageBuilder.generateReply(messageParams);
-            }
+          if(messageParams.askCallInstructions) {
+            message += "\n";
+            message += messageBuilder.generateReply(messageParams);
+          }
         }
 
         if(firstDateSuggestion && currentAppointment && (currentAppointmentKind == 'skype' || currentAppointmentKind == 'call')) {
-            var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.appointment_kind_hash.family_kind == 'call'});
-            if(missingInfosMessage != ''){
-                message += missingInfosMessage;
-            }
+          var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.appointment_kind_hash.family_kind == 'call'});
+          if(missingInfosMessage != ''){
+            message += missingInfosMessage;
+          }
         }
-
         window.setReplyMessage(message, "all", window.otherEmails);
+      }
     };
 
     var suggestDateReplyFunction = function() {
