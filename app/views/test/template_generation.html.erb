@@ -1,0 +1,320 @@
+<%= javascript_include_tag 'application' %>
+<%= javascript_include_tag 'angular_dates_manager_appp' %>
+
+<script>
+  var templateTesterApp = angular.module("templateTesterApp", []);
+
+  templateTesterApp.controller("templateTesterController", ['$scope', '$http', function ($scope, $http) {
+    $scope.clients = [];
+    $scope.attendees = [];
+    $scope.dates = [];
+    $scope.isVirtual = true;
+    $scope.defaultTimezone = "Europe/Paris";
+    $scope.timezones = [];
+    $scope.locale = "en";
+    $scope.missingContactInfo = null;
+    $scope.locationInEmail = {
+      en: "at the office",
+      fr: "au bureau"
+    };
+    $scope.appointmentInEmail = {
+      en: "a coffee",
+      fr: "un café"
+    };
+
+    $scope.addAttendee = function () {
+      $scope.attendees.push({
+        name: "Bill",
+        assisted_by_name: "Amy"
+      });
+      $scope.refreshTemplates();
+    };
+    $scope.removeAttendee = function (index) {
+      $scope.attendees.splice(index, 1);
+      $scope.refreshTemplates();
+    };
+
+    $scope.addClient = function () {
+      $scope.clients.push({name: "John"});
+      $scope.refreshTemplates();
+    };
+    $scope.removeClient = function (index) {
+      if ($scope.clients.length > 1) {
+        $scope.clients.splice(index, 1);
+        $scope.refreshTemplates();
+      }
+    };
+    $scope.addDate = function () {
+      $scope.dates.push({date: "2016-01-01T12:00"});
+      $scope.refreshTemplates();
+    };
+    $scope.removeDate = function (index) {
+      if ($scope.dates.length > 1) {
+        $scope.dates.splice(index, 1);
+        $scope.refreshTemplates();
+      }
+    };
+
+    $scope.addTimezone = function () {
+      $scope.timezones.push({timezone: "Europe/Paris"});
+      $scope.refreshTemplates();
+    };
+    $scope.removeTimezone = function (index) {
+      if ($scope.timezones.length > 1) {
+        $scope.timezones.splice(index, 1);
+        $scope.refreshTemplates();
+      }
+    };
+
+    $scope.cleanContext = function () {
+      return {
+        client_names: _.map($scope.clients, "name"),
+        dates: _.map($scope.dates, function (dateHash) {
+          return moment.tz(dateHash.date, "utc").format();
+        }),
+        timezones: _.map($scope.timezones, "timezone"),
+        default_timezone: $scope.defaultTimezone,
+        appointment_in_email: $scope.appointmentInEmail,
+        location_in_email: $scope.locationInEmail,
+        is_virtual: $scope.isVirtual,
+        attendees: $scope.attendees,
+        locale: $scope.locale,
+        should_ask_location: $scope.shouldAskLocation,
+        missing_contact_info: $scope.missingContactInfo
+      };
+    };
+
+    // Watchers
+
+    $scope.$watch("shouldAskLocation", function (oldValue, newValue) {
+      $scope.refreshTemplates();
+    });
+
+    $scope.$watch("missingContactInfo", function (oldValue, newValue) {
+      $scope.refreshTemplates();
+    });
+
+    $scope.$watch("isVirtual", function (oldValue, newValue) {
+      $scope.refreshTemplates();
+    });
+
+    $scope.$watch("locale", function (oldValue, newValue) {
+      $scope.refreshTemplates();
+    });
+
+    $scope.refreshTemplates = function () {
+      var $template = $(".template");
+
+
+      window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
+        $template.find(".service-generated-template").html(serviceGeneratedTemplate);
+      });
+    };
+
+    $scope.addClient();
+    $scope.addAttendee();
+    $scope.addDate();
+    $scope.addTimezone();
+  }]);
+  angular.element(document).ready(function () {
+    angular.bootstrap(document.getElementById("templateTesterContainer"), ['templateTesterApp']);
+  });
+
+</script>
+
+
+<style>
+  body {
+    width: 1200px;
+    margin: 0 auto;
+  }
+
+  .template {
+    background: #eee;
+    padding: 20px;
+    white-space: pre-wrap;
+  }
+
+  .borderless > tbody > tr > td {
+    border-top: none;
+  }
+
+  td {
+    width: 33%;
+  }
+</style>
+
+<div id="templateTesterContainer" ng-controller="templateTesterController">
+
+  <table class="table borderless">
+    <tr>
+      <td>
+        <form>
+          <label>Clients</label>
+          <div class="client-name-container" ng-repeat="client in clients track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Name</div>
+                <input ng-model="client.name" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeClient($index)">
+                  <span class="glyphicon glyphicon-remove"></span></div>
+              </div>
+            </div>
+
+
+          </div>
+          <br>
+          <div class="btn btn-sm btn-primary" ng-click="addClient()">add client</div>
+
+          <br>
+          <br>
+
+          <label>Attendees</label>
+          <div ng-repeat="attendee in attendees track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Name</div>
+                <input ng-model="attendee.name" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon">Assisted by</div>
+                <input ng-model="attendee.assisted_by_name" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeAttendee($index)">
+							<span class="glyphicon glyphicon-remove">
+						</span>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <br>
+          <div class="btn btn-sm btn-primary" ng-click="addAttendee()">Add attendee</div>
+        </form>
+      </td>
+
+      <td class="active">
+        <div class="form-group">
+          <label>Appointment designation</label>
+          <form class="form-inline">
+            <input ng-model="appointmentInEmail.en" class="form-control" ng-change="refreshTemplates()">
+            <input ng-model="appointmentInEmail.fr" class="form-control" ng-change="refreshTemplates()">
+          </form>
+        </div>
+        <div class="form-group">
+          <label>Location designation</label>
+          <form class="form-inline">
+            <input ng-model="locationInEmail.en" class="form-control" ng-change="refreshTemplates()">
+            <input ng-model="locationInEmail.fr" class="form-control" ng-change="refreshTemplates()">
+          </form>
+        </div>
+
+
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="isVirtual ? '' : 'active btn-success'">
+              <input type="radio" ng-model="isVirtual" data-ng-value="false"> Physical
+            </label>
+            <label class="btn btn-default" ng-class="isVirtual ? 'active btn-success' : ''">
+              <input type="radio" ng-model="isVirtual" data-ng-value="true"> Virtual
+            </label>
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="shouldAskLocation ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="shouldAskLocation"> Should ask location
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="missingContactInfo == 'landline_or_mobile' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="missingContactInfo" data-ng-value="'landline_or_mobile'"> Mobile or landline
+            </label>
+            <label class="btn btn-default" ng-class="missingContactInfo == 'mobile' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="missingContactInfo" data-ng-value="'mobile'"> Mobile
+            </label>
+            <label class="btn btn-default" ng-class="missingContactInfo == 'skype' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="missingContactInfo" data-ng-value="'skype'"> Skype
+            </label>
+            <label class="btn btn-default" ng-class="missingContactInfo == null ? 'active btn-success' : ''">
+              <input type="radio" ng-model="missingContactInfo" data-ng-value="null"> None
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="locale == 'en' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locale" value="en"> EN
+            </label>
+            <label class="btn btn-default" ng-class="locale == 'fr' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locale" value="fr"> FR
+            </label>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <form>
+          <label>Dates</label>
+          <div class="client-date-container" ng-repeat="date in dates track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <input ng-model="date.date" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeDate($index)">
+							<span class="glyphicon glyphicon-remove">
+						</span>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="btn btn-sm btn-primary" ng-click="addDate()">add date</div>
+        </form>
+
+        <br>
+        <br>
+
+        <form>
+          <label>Timezones</label>
+          <div class="form-group">
+            <div class="input-group">
+              <span class="input-group-addon">Default</span>
+              <input ng-model="defaultTimezone" class="form-control" ng-change="refreshTemplates()">
+            </div>
+          </div>
+
+          <div class="client-date-container" ng-repeat="timezone in timezones track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <input ng-model="timezone.timezone" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeTimezone($index)">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <span class="btn btn-sm btn-primary" ng-click="addTimezone()">add timezone</span>
+        </form>
+      </td>
+    </tr>
+  </table>
+
+
+</div>
+
+<div class="template">
+  <div class="service-generated-template"></div>
+</div>
+
+<div id="thread-header-other-entries-container">
+  <div id="dates-suggestion-manager" class="time-slots-to-suggest-list-container" ng-controller="datesSuggestionsManager as datesSuggestionsMng" ng-show="displayDatesSuggestionManager"></div>
+</div>
+
+<div id="attendeesCtrl" ng-controller="isolated-controller"></div>

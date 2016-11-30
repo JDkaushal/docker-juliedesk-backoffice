@@ -65,40 +65,51 @@ describe JulieAction do
   end
 
   describe 'get_suggested_dates_barycentre' do
+    let(:now) { DateTime.new(2016, 01, 01) }
+    before { allow(Time).to receive(:now).and_return(now) }
+    subject {  julie_action.send(:get_suggested_dates_barycentre).try(:to_s) }
 
     context 'when no suggested dates' do
-      before(:each) do
-        @ja = FactoryGirl.create(:julie_action, date_times: '[]')
-
-      end
+      let(:julie_action) { create(:julie_action, date_times: '[]') }
 
       it 'default barycentre is Now + 3 days' do
-        now = DateTime.new(2016, 01, 01)
-        allow(Time).to receive(:now).and_return(now)
-        expect(@ja.send(:get_suggested_dates_barycentre)).to eq(now + 3.days)
+        is_expected.to eq("2016-01-04T00:00:00+00:00")
       end
     end
 
     context '1 date' do
-      before(:each) do
-        allow(Time).to receive(:now).and_return(DateTime.new(2016, 01, 01))
-        @ja = FactoryGirl.create(:julie_action, date_times: "[{\"date\":\"2016-06-30T12:15:00+00:00\"}]")
-      end
+      let(:julie_action) { create(:julie_action, date_times: "[{\"date\":\"2016-06-30T12:15:00+00:00\"}]") }
 
       it 'should return the correct date' do
-        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-03-31T18:15:00+00:00")
+        is_expected.to eq("2016-03-31T18:15:00+00:00")
       end
     end
 
     context 'multiple dates' do
-      before(:each) do
-        allow(Time).to receive(:now).and_return(DateTime.new(2016, 01, 01))
-        @ja = FactoryGirl.create(:julie_action, date_times: "[{\"date\":\"2016-06-30T12:15:00+00:00\"}, {\"date\":\"2016-07-04T14:15:00+00:00\"}, {\"date\":\"2016-07-10T19:55:00+00:00\"}]")
-      end
+      let(:date_times) { "[{\"date\":\"2016-06-30T12:15:00+00:00\"}, {\"date\":\"2016-07-04T14:15:00+00:00\"}, {\"date\":\"2016-07-10T19:55:00+00:00\"}]" }
+      let(:julie_action) { create(:julie_action, date_times: date_times) }
 
       it 'should return the correct date' do
-        expect(@ja.send(:get_suggested_dates_barycentre).to_s).to eq("2016-04-03T20:15:00+00:00")
+        is_expected.to eq("2016-04-03T20:15:00+00:00")
       end
     end
+
+    context 'action nature is JulieAction::JD_ACTION_CHECK_AVAILABILITIES' do
+      let(:julie_action) { create(:check_availabilities_action) }
+
+      it 'returns nil' do
+        is_expected.to be_nil
+      end
+    end
+
+    context 'action nature is JulieAction::JD_ACTION_CHECK_AVAILABILITIES with suggested date_times' do
+      let(:date_times) { "[{\"date\":\"2016-06-30T12:15:00+00:00\"}, {\"date\":\"2016-07-04T14:15:00+00:00\"}, {\"date\":\"2016-07-10T19:55:00+00:00\"}]"}
+      let(:julie_action) { create(:check_availabilities_action, date_times: date_times) }
+
+      it 'returns barycentre of suggested dates' do
+        is_expected.to eq("2016-04-03T20:15:00+00:00")
+      end
+    end
+
   end
 end

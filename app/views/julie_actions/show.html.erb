@@ -486,16 +486,31 @@
       var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
       var recipientsTos = $('#recipients-to-input').tokenInput('get');
 
-      if(shouldSayHi) {
-        if(recipientsTos.length == 1) {
-          var attendeesApp = $('#attendeesCtrl').scope();
 
-          if(attendeesApp) {
-            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-            if(attendee && attendee.usageName)
-              return localize("email_templates.common.hello_named", {name: attendee.usageName});
-            else
-              return localize("email_templates.common.hello_only");
+      var recipientsToName = null;
+      var attendeesApp = $('#attendeesCtrl').scope();
+      if(attendeesApp) {
+        if (recipientsTos.length == 1) {
+          var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+          if (attendee && attendee.usageName) {
+            recipientsToName = attendee.usageName;
+          }
+        }
+        else if (recipientsTos.length == 2) {
+          var firstAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+          var secondAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[1].name);
+          if (firstAttendee && firstAttendee.usageName && secondAttendee && secondAttendee.usageName) {
+            recipientsToName = localize("email_templates.common.names_list_and", {
+              first_name: firstAttendee.usageName,
+              last_name: secondAttendee.usageName
+            });
+          }
+        }
+      }
+      if(shouldSayHi) {
+        if(recipientsTos.length < 3) {
+          if(recipientsToName) {
+            return localize("email_templates.common.hello_named", {name: recipientsToName});
           } else {
             return localize("email_templates.common.hello_only");
           }
@@ -503,15 +518,10 @@
         else {
           return localize("email_templates.common.hello_all");
         }
-      } else {
-        if(recipientsTos.length == 1) {
-          var attendeesApp = $('#attendeesCtrl').scope();
-          if(attendeesApp) {
-            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-            if (attendee && attendee.usageName)
-              return localize("email_templates.common.interlocutor_name", {name: attendee.usageName});
+      } else if(recipientsTos.length < 3) {
+          if(recipientsToName) {
+            return localize("email_templates.common.interlocutor_name", {name: recipientsToName});
           }
-        }
       }
       return "";
     };

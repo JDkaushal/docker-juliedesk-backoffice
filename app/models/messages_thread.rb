@@ -64,7 +64,7 @@ class MessagesThread < ActiveRecord::Base
   def get_all_messages_recipients
     recipients_emails = []
     messages.each{|m| recipients_emails.push(m.get_reply_all_recipients_emails)}
-    recipients_emails.flatten
+    recipients_emails.flatten.uniq
   end
 
   def server_thread params={}

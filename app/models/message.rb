@@ -21,7 +21,7 @@ class Message < ActiveRecord::Base
   def get_reply_all_recipients_emails
     recipients = JSON.parse(self.reply_all_recipients)
 
-    recipients["to"].map{|r| r["email"]} + recipients["cc"].map{|r| r["email"]}
+    recipients["to"].map{|r| r["email"].try(:downcase)} + recipients["cc"].map{|r| r["email"].try(:downcase)}
   end
 
   def clean_delete
@@ -80,31 +80,38 @@ class Message < ActiveRecord::Base
   end
 
   def initial_recipients params={}
+    # Get basic reply all recipients (details in message#generate_reply_all_recipients)
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
 
-    initial_to_emails = reply_all_recipients['to'].map{|c| c['email']}
-    initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email']}
+    initial_to_emails = reply_all_recipients['to'].map{|c| c['email'].try(:downcase)}
+    initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email'].try(:downcase)}
 
-    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email] }
-    attendee_emails = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' }.map{|a| a['email']}
+    # Get all emails present in an email of the thread
+    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email].try(:downcase) }
 
+    # Get all present attendees emails
+    present_attendees = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}
+    attendee_emails = present_attendees.map{|a| a['email'].try(:downcase)}
+
+    # Get main client email in this thread
     all_client_emails = self.messages_thread.account.try(:all_emails) || []
     client_email = ((initial_to_emails + initial_cc_emails + attendee_emails) & all_client_emails).first || self.messages_thread.client_email
 
+    # List all possible emails
     possible_emails = (initial_to_emails +
         initial_cc_emails +
         attendee_emails +
         contact_emails +
         [client_email]).uniq
-
-
     possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
     possible_emails.reject! { |c| c.blank? }
+
 
     if params[:only_reply_all]
       computed_initial_to_emails = initial_to_emails.uniq
       computed_initial_cc_emails = initial_cc_emails.uniq
 
+      # If client email not present in computed TO or CC, we add it to CC, or even TO if TO is empty
       unless client_email.blank? || ((computed_initial_to_emails + computed_initial_cc_emails).include? client_email)
         if computed_initial_to_emails.empty?
           computed_initial_to_emails += [client_email]
@@ -120,9 +127,16 @@ class Message < ActiveRecord::Base
           possible: possible_emails.sort
       }
     else
+      # This case is used for suggest_dates action
+
+      present_attendees =
+      unassisted_attendee_emails = present_attendees.select{|att| att['assisted'] != 'true'}.map{|att| att['email'].try(:downcase)}
+      assistant_attendee_emails = present_attendees.select{|att| att['isAssistant'] == 'true'}.map{|att| att['email'].try(:downcase)}
+      client_attendee_emails = present_attendees.select{|att| att['isClient'] == 'true'}.map{|att| att['email'].try(:downcase)}
+
       # Need to reject empty string because there can be some if the operator enter an email then don't suppress it appropriately
-      computed_initial_to_emails = (attendee_emails.uniq - all_client_emails).reject { |c| c.blank? }
-      computed_initial_cc_emails = ((initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails).reject { |c| c.blank? }
+      computed_initial_to_emails = ((unassisted_attendee_emails + assistant_attendee_emails).uniq - all_client_emails).reject { |c| c.blank? }
+      computed_initial_cc_emails = ((client_attendee_emails + initial_to_emails + initial_cc_emails).uniq - computed_initial_to_emails - all_client_emails).reject { |c| c.blank? }
 
       if computed_initial_to_emails.empty?
         result = {
@@ -460,6 +474,7 @@ class Message < ActiveRecord::Base
                 end
                 messages_thread.async_archive
               else
+                messages_thread.update(handled_by_automation: false)
                 should_call_conscience = true
               end
 
@@ -470,7 +485,7 @@ class Message < ActiveRecord::Base
               #m.server_message = server_message
               messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
-              should_call_conscience = false  
+              should_call_conscience = false
             end
 
             if should_call_conscience

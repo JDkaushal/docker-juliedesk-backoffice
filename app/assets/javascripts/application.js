@@ -60,6 +60,7 @@
 //= require jquery.cookie
 
 //= require generate_templates
+//= require generate_template_via_service
 
 //= require message_classification_forms/classification_form
 //= require message_classification_forms/ask_date_suggestions

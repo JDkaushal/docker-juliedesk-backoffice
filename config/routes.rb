@@ -174,6 +174,7 @@ Rails.application.routes.draw do
 
   get "test/js" => "test#js"
   get "test/templates" => "test#templates"
+  get "test/template_generation" => "test#template_generation"
 
   post "pusher/auth/", to: "pusher#auth"
   post "pusher/webhooks/", to: "pusher#webhooks"

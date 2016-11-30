@@ -50,7 +50,12 @@ describe Message do
         )
         expect(messages_thread).to receive(:contacts).with(with_client: true).and_return([])
         expect(messages_thread).to receive(:computed_data).and_return({
-                                                                          attendees: [{'email' => "elrandil1@gmail.com", 'isPresent' => 'true'}, {'email' => "notThere@gmail.com", 'isPresent' => 'false'}]
+                                                                          attendees: [
+                                                                              {'email' => "elrandil1@gmail.com", 'isPresent' => 'true'},
+                                                                              {'email' => "notThere@gmail.com", 'isPresent' => 'false'},
+                                                                              {'email' => "boss@company.com", "assisted" => "true", 'assistant' => 'false', 'isPresent' => 'true'},
+                                                                              {'email' => "sec@company.com", "assisted" => "false", 'assistant' => 'true', 'isPresent' => 'true'}
+                                                                          ]
                                                                       })
         expect(messages_thread).to receive_message_chain(:account, :all_emails).and_return(["nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"])
         allow(messages_thread).to receive(:client_email).and_return("nmarlier@gmail.com")
@@ -59,10 +64,10 @@ describe Message do
       end
       it "should return a hash with initial recipients" do
         expect(@message.initial_recipients).to eq({
-                                                      to: ["elrandil1@gmail.com"].sort,
+                                                      to: ["elrandil1@gmail.com", "sec@company.com"].sort,
                                                       cc: ["nmarlier@gmail.com", "elrandil2@gmail.com"].sort,
                                                       client: "nmarlier@gmail.com",
-                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                      possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr", "boss@company.com", "sec@company.com"].sort
 
                                                   })
       end
@@ -72,7 +77,7 @@ describe Message do
                                                                             to: ["elrandil1@gmail.com", "nmarlier@gmail.com"].sort,
                                                                             cc: ["elrandil2@gmail.com", "nicolas.marlier@wanadoo.fr"].sort,
                                                                             client: "nmarlier@gmail.com",
-                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr"].sort
+                                                                            possible: ["elrandil1@gmail.com", "elrandil2@gmail.com", "julie@juliedesk.com", "nmarlier@gmail.com", "nicolas.marlier@wanadoo.fr", "boss@company.com", "sec@company.com"].sort
 
                                                                         })
       end

@@ -104,7 +104,7 @@ class JulieAction < ActiveRecord::Base
     # When there are no date_times proposed, it means it was an event creation
     # So we will not set a reminder
     if self.date_times == "[]"
-      Time.now + 3.days
+      self.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ? nil : Time.now + 3.days
     else
       parsed_dates = JSON.parse(self.date_times).map{|d| d['date']}
       barycentre = DateTime.parse(parsed_dates.shift)

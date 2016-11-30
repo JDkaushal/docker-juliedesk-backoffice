@@ -110,6 +110,19 @@
           background-color: #56953D;
         }
       }
+
+      &.meeting-room {
+        .icon {
+          @include common-sprite(meeting_room_disabled);
+        }
+        &.activated {
+          background-color: #C76650;
+        }
+        &.activated > .icon {
+          @include common-sprite(meeting_room_enabled);
+        }
+      }
+
       &.activated-since {
         background-color: #FB9053;
       }
