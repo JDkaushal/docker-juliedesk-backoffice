@@ -307,7 +307,7 @@
         $scope.selectEventsToCompute = function(email) {
             // If originCoordinates is an array, check that is is not empty, if it is an object (instance of google LatLng class) check that property lat() is not undefined
             // this means that the object is correct
-            var canComputeTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()));
+            var canComputeTravelTime = ($scope.originCoordinates && $scope.originCoordinates.length > 0 || (typeof($scope.originCoordinates) == 'object' && $scope.originCoordinates.lat && $scope.originCoordinates.lat()) || $scope.referenceLocation[email]);
             var startDateSortedEventsAsc = $scope.sortEventsStartDate($scope.events[email]);
             // Make a copy of the array so we can safely reverse it then use both later on
             var startDateSortedEventsDesc = Array.prototype.slice.call(startDateSortedEventsAsc).reverse();
@@ -433,6 +433,7 @@
         $scope.performGoogleRequests = function(email, groupedEvents, travelMode) {
             var currentDestinations = [];
             var origin = $scope.originCoordinates;
+
 
             if($scope.originCoordinates.length == 0)
                 origin = $scope.referenceLocation[email];
