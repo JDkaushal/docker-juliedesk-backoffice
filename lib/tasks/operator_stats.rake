@@ -5,7 +5,7 @@ namespace :operator_stats do
 
     puts "Computing flagged messages_thread_ids..."
     flagged_server_messages_ids = []
-    (0..3).each do |i|
+    (0..6).each do |i|
       start_date = (DateTime.now - i.months).beginning_of_month
       end_date = (DateTime.now - i.months).end_of_month
 
