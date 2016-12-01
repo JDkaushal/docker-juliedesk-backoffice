@@ -962,7 +962,7 @@
         var currentAddressObject = window.getCurrentAddressObject();
         if(currentAddressObject) {
           var currentAddress = currentAddressObject.address;
-          return (address && address != "") || currentAddress.kind == "client_will_define";
+          return (currentAddress.address && currentAddress.address != "") || currentAddress.kind == "client_will_define";
         }
         else {
           return false;
