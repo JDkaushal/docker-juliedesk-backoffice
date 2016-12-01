@@ -128,8 +128,6 @@ class Message < ActiveRecord::Base
       }
     else
       # This case is used for suggest_dates action
-
-      present_attendees =
       unassisted_attendee_emails = present_attendees.select{|att| att['assisted'] != 'true'}.map{|att| att['email'].try(:downcase)}
       assistant_attendee_emails = present_attendees.select{|att| att['isAssistant'] == 'true'}.map{|att| att['email'].try(:downcase)}
       client_attendee_emails = present_attendees.select{|att| att['isClient'] == 'true'}.map{|att| att['email'].try(:downcase)}
