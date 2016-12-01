@@ -5,14 +5,44 @@
   var templateTesterApp = angular.module("templateTesterApp", []);
 
   templateTesterApp.controller("templateTesterController", ['$scope', '$http', function ($scope, $http) {
+
+    $scope.examples = {
+      clients: ["Charles", "Cecile", "Connie", "Cedric"],
+      attendees: [
+          {
+            name: "Antoine",
+            assisted_by_name: "Sarah"
+          },
+        {
+          name: "Abe",
+          assisted_by_name: ""
+        },
+        {
+          name: "Aurore",
+          assisted_by_name: "Sulimane"
+        },
+        {
+          name: "Andre",
+          assisted_by_name: "Steve"
+        }
+      ],
+      dates: ["2016-01-01T12:00:00", "2016-01-01T02:00:00", "2016-01-03T02:00:00", "2016-01-04T23:00:00"],
+      timezones: ["Europe/Paris", "America/Los_Angeles", "Asia/Kolkata", "Europe/London"]
+    };
+
+    $scope.template = "suggest_dates";
     $scope.clients = [];
     $scope.attendees = [];
     $scope.dates = [];
     $scope.isVirtual = true;
-    $scope.defaultTimezone = "Europe/Paris";
+    $scope.defaultTimezone = $scope.examples.timezones[0];
     $scope.timezones = [];
     $scope.locale = "en";
     $scope.missingContactInfo = null;
+    $scope.readyToRenderTemplate = false;
+    $scope.date = $scope.examples.dates[0];
+    $scope.locationKind = "skype";
+
     $scope.locationInEmail = {
       en: "at the office",
       fr: "au bureau"
@@ -23,10 +53,8 @@
     };
 
     $scope.addAttendee = function () {
-      $scope.attendees.push({
-        name: "Bill",
-        assisted_by_name: "Amy"
-      });
+      var attendee = $scope.examples.attendees[$scope.attendees.length % $scope.examples.attendees.length];
+      $scope.attendees.push(attendee);
       $scope.refreshTemplates();
     };
     $scope.removeAttendee = function (index) {
@@ -35,7 +63,8 @@
     };
 
     $scope.addClient = function () {
-      $scope.clients.push({name: "John"});
+      var clientName = $scope.examples.clients[$scope.clients.length % $scope.examples.clients.length];
+      $scope.clients.push({name: clientName});
       $scope.refreshTemplates();
     };
     $scope.removeClient = function (index) {
@@ -45,7 +74,8 @@
       }
     };
     $scope.addDate = function () {
-      $scope.dates.push({date: "2016-01-01T12:00"});
+      var date = $scope.examples.dates[$scope.dates.length % $scope.examples.dates.length];
+      $scope.dates.push({date: date});
       $scope.refreshTemplates();
     };
     $scope.removeDate = function (index) {
@@ -56,7 +86,8 @@
     };
 
     $scope.addTimezone = function () {
-      $scope.timezones.push({timezone: "Europe/Paris"});
+      var timezone = $scope.examples.timezones[$scope.timezones.length % $scope.examples.timezones.length];
+      $scope.timezones.push({timezone: timezone});
       $scope.refreshTemplates();
     };
     $scope.removeTimezone = function (index) {
@@ -68,10 +99,12 @@
 
     $scope.cleanContext = function () {
       return {
+        template: $scope.template,
         client_names: _.map($scope.clients, "name"),
         dates: _.map($scope.dates, function (dateHash) {
           return moment.tz(dateHash.date, "utc").format();
         }),
+        date: $scope.date,
         timezones: _.map($scope.timezones, "timezone"),
         default_timezone: $scope.defaultTimezone,
         appointment_in_email: $scope.appointmentInEmail,
@@ -80,41 +113,40 @@
         attendees: $scope.attendees,
         locale: $scope.locale,
         should_ask_location: $scope.shouldAskLocation,
-        missing_contact_info: $scope.missingContactInfo
+        missing_contact_info: $scope.missingContactInfo,
+        location_kind: $scope.locationKind
       };
     };
 
     // Watchers
 
-    $scope.$watch("shouldAskLocation", function (oldValue, newValue) {
-      $scope.refreshTemplates();
+    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind"];
+    _.each(varsToWatch, function(varToWatch) {
+      $scope.$watch(varToWatch, function (oldValue, newValue) {
+        $scope.refreshTemplates();
+      });
     });
 
-    $scope.$watch("missingContactInfo", function (oldValue, newValue) {
-      $scope.refreshTemplates();
-    });
-
-    $scope.$watch("isVirtual", function (oldValue, newValue) {
-      $scope.refreshTemplates();
-    });
-
-    $scope.$watch("locale", function (oldValue, newValue) {
-      $scope.refreshTemplates();
-    });
 
     $scope.refreshTemplates = function () {
-      var $template = $(".template");
+      if($scope.readyToRenderTemplate) {
+        var $template = $(".template");
 
-
-      window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
-        $template.find(".service-generated-template").html(serviceGeneratedTemplate);
-      });
+        window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
+          $template.find(".service-generated-template").html(serviceGeneratedTemplate);
+        });
+      }
     };
 
     $scope.addClient();
     $scope.addAttendee();
     $scope.addDate();
     $scope.addTimezone();
+    setTimeout(function() {
+      $scope.readyToRenderTemplate = true;
+      $scope.refreshTemplates();
+    }, 200);
+
   }]);
   angular.element(document).ready(function () {
     angular.bootstrap(document.getElementById("templateTesterContainer"), ['templateTesterApp']);
@@ -124,6 +156,12 @@
 
 
 <style>
+  .templates-bar {
+    padding: 20px;
+    background: #eee;
+    border-top: 1px solid #ddd;
+    margin: 20px 0 20px 0;
+  }
   body {
     width: 1200px;
     margin: 0 auto;
@@ -146,6 +184,18 @@
 
 <div id="templateTesterContainer" ng-controller="templateTesterController">
 
+  <div class="templates-bar">
+    <div class="form-group">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default" ng-class="template == 'suggest_dates' ? 'active btn-success' : ''">
+          <input type="radio" ng-model="template" data-ng-value="'suggest_dates'"> Suggest dates
+        </label>
+        <label class="btn btn-default" ng-class="template == 'send_invitations' ? 'active btn-success' : ''">
+          <input type="radio" ng-model="template" data-ng-value="'send_invitations'"> Send invitations
+        </label>
+      </div>
+    </div>
+  </div>
   <table class="table borderless">
     <tr>
       <td>
@@ -219,6 +269,24 @@
           </div>
         </div>
 
+        <div class="form-group" ng-show="isVirtual">
+          <div class="btn-group" role="group" aria-label="Third group">
+            <div type="button" class="btn btn-secondary" disabled>Support</div>
+          </div>
+
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="locationKind == 'skype' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locationKind" data-ng-value="'skype'"> Skype
+            </label>
+            <label class="btn btn-default" ng-class="locationKind == 'confcall' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locationKind" data-ng-value="'confcall'"> Confcall
+            </label>
+            <label class="btn btn-default" ng-class="locationKind == 'phone_number' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locationKind" data-ng-value="'phone_number'"> Phone number
+            </label>
+          </div>
+        </div>
+
 
         <div class="form-group">
           <div class="btn-group" data-toggle="buttons">
@@ -229,9 +297,12 @@
         </div>
 
         <div class="form-group">
+          <div class="btn-group" role="group" aria-label="Third group">
+            <div type="button" class="btn btn-secondary" disabled>Missing info</div>
+          </div>
           <div class="btn-group" data-toggle="buttons">
             <label class="btn btn-default" ng-class="missingContactInfo == 'landline_or_mobile' ? 'active btn-success' : ''">
-              <input type="radio" ng-model="missingContactInfo" data-ng-value="'landline_or_mobile'"> Mobile or landline
+              <input type="radio" ng-model="missingContactInfo" data-ng-value="'landline_or_mobile'"> Mob/land
             </label>
             <label class="btn btn-default" ng-class="missingContactInfo == 'mobile' ? 'active btn-success' : ''">
               <input type="radio" ng-model="missingContactInfo" data-ng-value="'mobile'"> Mobile
@@ -258,7 +329,7 @@
       </td>
 
       <td>
-        <form>
+        <form ng-show="template == 'suggest_dates'">
           <label>Dates</label>
           <div class="client-date-container" ng-repeat="date in dates track by $index">
             <div class="form-group">
@@ -274,6 +345,13 @@
 
           </div>
           <div class="btn btn-sm btn-primary" ng-click="addDate()">add date</div>
+        </form>
+
+        <form ng-show="template == 'send_invitations'">
+          <label>Date</label>
+            <div class="form-group">
+                <input ng-model="date" class="form-control" ng-change="refreshTemplates()">
+            </div>
         </form>
 
         <br>
