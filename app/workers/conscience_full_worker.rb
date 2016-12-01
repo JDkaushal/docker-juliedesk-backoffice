@@ -8,6 +8,9 @@ class ConscienceFullWorker
   end
 
   def self.perform (id)
+    # We introduce a sleep of 2 sec to mitigate the problems the AI encounter when the DB follower is too slow to replicate the master
+    # This result in the AI producing and error because the requested data is not yet available
+    sleep(2)
     Ai::EmailProcessing::Processor.new(id, nil).process
   end
 end
