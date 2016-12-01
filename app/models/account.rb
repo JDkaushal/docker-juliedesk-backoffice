@@ -40,7 +40,8 @@ class Account
                 :restaurant_booking_enabled,
                 :julie_aliases,
                 :using_calendar_server,
-                :main_address
+                :main_address,
+                :calendar_access_lost
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -48,6 +49,7 @@ class Account
 
   def self.create_from_email email, params={}
     cache = params[:accounts_cache]# || self.accounts_cache
+    users_access_lost_cache = params[:users_access_lost_cache] || self.users_with_lost_access
     return nil unless email.present?
     data = get_account_details(email, {accounts_cache: cache})
     return nil unless data.present?
@@ -87,6 +89,8 @@ class Account
     account.restaurant_booking_enabled = data['restaurant_booking_enabled']
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
+
+    account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
 
     begin
       account.created_at = DateTime.parse(data['created_at'])
@@ -241,6 +245,10 @@ class Account
     else
       JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get("accounts_cache") || "{}")
     end
+  end
+
+  def self.users_with_lost_access
+    Set.new(REDIS_FOR_ACCOUNTS_CACHE.smembers('users_calendar_access_lost'))
   end
 
   def self.accounts_cache_for_email email

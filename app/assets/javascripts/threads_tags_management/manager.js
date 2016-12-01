@@ -15,12 +15,14 @@ var TagsManager = (function() {
     const VIP_TAG = 'only_support_can_process';
     const TO_MERGE_TAG = 'to_be_merged';
     const TOKEN_EXPIRED_TAG = 'office_365_refresh_token_expired';
+    const CALENDAR_ACCESS_EXPIRED_TAG = 'thread_blocked';
 
-    const THREAD_TAGS = [ADMIN_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG];
+    const THREAD_TAGS = [ADMIN_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG, CALENDAR_ACCESS_EXPIRED_TAG];
     const ACCOUNT_TAGS = [ADMIN_ONLY_TAG, VIP_TAG, TOKEN_EXPIRED_TAG];
 
     const TAGS_PRIORITY = {};
 
+    TAGS_PRIORITY[CALENDAR_ACCESS_EXPIRED_TAG] = 1;
     TAGS_PRIORITY[ADMIN_TAG] = 1;
     TAGS_PRIORITY[ADMIN_ONLY_TAG] = 2;
     TAGS_PRIORITY[TOKEN_EXPIRED_TAG] = 3;
@@ -63,6 +65,9 @@ var TagsManager = (function() {
                     break;
                 case VIP_TAG:
                     that.textToDisplay = 'VIP';
+                    break;
+                case CALENDAR_ACCESS_EXPIRED_TAG:
+                    that.textToDisplay = 'Lost Access';
                     break;
             }
         };

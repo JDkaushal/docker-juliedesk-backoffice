@@ -342,11 +342,17 @@ class MessagesThreadsController < ApplicationController
         @operators_on_planning = Operator.select('operators.id, operators.name, operators.color').joins(:operator_presences).where('operator_presences.date >= ? AND operator_presences.date <= ?', now.beginning_of_hour, now.end_of_hour)
         @messages_threads_from_today = MessagesThread.distinct.where('date(created_at) = ?', now.to_date).group('account_email').count
 
-        @messages_thread = MessagesThread.where("(in_inbox = TRUE OR should_follow_up = TRUE) AND handled_by_ai = FALSE AND handled_by_automation = FALSE").includes(locked_by_operator: {}).sort_by{|mt|
+        @messages_thread = MessagesThread.where("(in_inbox = TRUE OR should_follow_up = TRUE) AND handled_by_ai = FALSE AND handled_by_automation = FALSE").includes(locked_by_operator: {}, messages: :message_classifications).sort_by{|mt|
           mt.find_or_compute_request_date
         }
+
         accounts_cache = Account.accounts_cache(mode: "light")
-        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
+        users_access_lost_cache = Account.users_with_lost_access
+
+        @messages_thread.each do |mt|
+          mt.check_if_blocked(users_access_lost_cache)
+          mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
+        end
 
         MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)
 
@@ -365,7 +371,7 @@ class MessagesThreadsController < ApplicationController
         #         (!mt.account || !mt.account.only_admin_can_process)
         #   }
         # end
-        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients])
+        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients])
         operators_data = @operators_on_planning.as_json
 
         render json: {

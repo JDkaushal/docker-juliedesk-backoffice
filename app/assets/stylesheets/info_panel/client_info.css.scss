@@ -76,6 +76,46 @@
     }
   }
 
+  .account-warnings-container {
+    margin-top: 10px;
+
+    .account-warning {
+      background-color: #DCDCDC;
+      position: relative;
+      color: white;
+      padding: 3px 10px;
+      margin: 3px 3px 3px 0;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      height: 50px;
+      font-size:  20px;
+      font-weight: bold;
+
+      .icon {
+        display: inline-block;
+        width: 20px;
+        height: 24px;
+        vertical-align: bottom;
+      }
+
+      .text {
+        position: relative;
+        top: 8px;
+      }
+
+      &.calendar-access-lost {
+        .icon {
+          position: relative;
+          left: -28px;
+          top: 6px;
+          @include common-sprite(lost_calendar_access);
+        }
+        background-color: #CF3E3E;
+      }
+    }
+  }
+
   .account-activated-features-container {
     .account-feature {
       background-color: #DCDCDC;

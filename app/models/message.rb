@@ -400,6 +400,10 @@ class Message < ActiveRecord::Base
 
     # Julie aliases in cache
     julie_aliases = JulieAlias.all
+    julie_aliases_emails = julie_aliases.map(&:email)
+
+    users_with_lost_access = Set.new(REDIS_FOR_ACCOUNTS_CACHE.smembers('users_calendar_access_lost'))
+
     # Accounts in cache (light mode)
     accounts_cache = Account.accounts_cache(mode: "light")
 
@@ -420,6 +424,7 @@ class Message < ActiveRecord::Base
       end
 
       if should_update_thread
+        thread_recipients = Set.new
 
         if messages_thread
           if messages_thread.account_email == nil
@@ -449,11 +454,14 @@ class Message < ActiveRecord::Base
 
         server_thread['messages'].each do |server_message|
           message = Message.find_by_server_message_id server_message['id']
+          message_recipients = Message.generate_reply_all_recipients(server_message, julie_aliases_emails)
+
+          thread_recipients.merge((message_recipients[:from] + message_recipients[:to] + message_recipients[:cc]).map{|recipient| recipient[:email]})
 
           unless message
             m = messages_thread.messages.create server_message_id: server_message['id'],
                                                 received_at: DateTime.parse(server_message['date']),
-                                                reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
+                                                reply_all_recipients: message_recipients.to_json,
                                                 from_me: server_message['from_me']
 
             # Added by Nico to interprete
@@ -493,7 +501,8 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.update_attribute :request_date, messages_thread.compute_request_date
+        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
+        messages_thread.update_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
@@ -506,8 +515,8 @@ class Message < ActiveRecord::Base
   end
 
 
-  def self.generate_reply_all_recipients(server_message)
-    julie_aliases = JulieAlias.all.map(&:email)
+  def self.generate_reply_all_recipients(server_message, julie_aliases_emails = nil)
+    julie_aliases = julie_aliases_emails || JulieAlias.all.map(&:email)
     from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses.select{|address| address.address && address.address.include?("@")}
     to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address && address.address.include?("@")}
 

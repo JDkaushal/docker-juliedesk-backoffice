@@ -15,6 +15,9 @@ class MessagesThread < ActiveRecord::Base
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
 
   attr_writer :account
+  attr_accessor :thread_blocked
+
+  BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
 
   def self.basic_operator_check_thread_to_reject(messages_thread)
     !messages_thread.account ||
@@ -81,7 +84,36 @@ class MessagesThread < ActiveRecord::Base
     @server_thread
   end
 
+  def blocking_users(recipients, users_with_lost_access)
+    recipients & users_with_lost_access
+  end
 
+  def check_if_blocked(users_with_lost_access)
+    thread_computed_data_attendees = self.computed_data_only_attendees
+    true_str = 'true'
+    attendees_emails = self.computed_recipients
+
+    if thread_computed_data_attendees && thread_computed_data_attendees[:attendees].size > 0
+      attendees = thread_computed_data_attendees[:attendees]
+      attendees_emails = attendees.select{|att| att['isClient'] == true_str && att['isPresent'] == true_str}.map{|att| att['email']}
+    end
+
+    self.thread_blocked = blocking_users(Set.new(attendees_emails), users_with_lost_access).size > 0
+  end
+
+  def handle_recipients_lost_access(recipients, users_with_lost_access)
+    # recipients et users_with_lost_access sont des Set
+    # on récupère les éléments en commun entre ces deux sets en utilisant l'opérateur '&'
+    # Les éléments en commun sont les récipiendaires qui sont clients chez nous et dont on a perdu les accès à l'un de leurs calendriers
+    recipients_with_lost_access = blocking_users(recipients, users_with_lost_access)
+
+    # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
+    if recipients_with_lost_access.size > 0
+      client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
+      body = {blocking_users_emails: recipients_with_lost_access}
+      client.post(BLOCKED_THREAD_NOTIFY_URL, json: body)
+    end
+  end
 
   def account params={}
     if @account.present? || @account_fetched
