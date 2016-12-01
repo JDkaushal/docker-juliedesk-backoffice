@@ -960,8 +960,14 @@
       }
       else {
         var currentAddressObject = window.getCurrentAddressObject();
-        var currentAddress = currentAddressObject.address;
-        return (address && address != "") || currentAddress.kind == "client_will_define";
+        if(currentAddressObject) {
+          var currentAddress = currentAddressObject.address;
+          return (address && address != "") || currentAddress.kind == "client_will_define";
+        }
+        else {
+          return false;
+        }
+
       }
     }
 
