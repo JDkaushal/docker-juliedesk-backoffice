@@ -471,9 +471,9 @@ class Message < ActiveRecord::Base
                   m.async_auto_reply_mailing_list
                 end
                 messages_thread.async_archive
+                should_call_conscience = false
               else
                 messages_thread.update(handled_by_automation: false)
-                should_call_conscience = true
               end
 
               updated_messages_thread_ids << messages_thread.id
