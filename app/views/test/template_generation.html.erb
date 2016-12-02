@@ -31,6 +31,8 @@
     };
 
     $scope.template = "suggest_dates";
+    $scope.mainClientCompany = "E-corp";
+    $scope.meetingRoomName = "Malmo";
     $scope.clients = [];
     $scope.attendees = [];
     $scope.dates = [];
@@ -42,6 +44,8 @@
     $scope.readyToRenderTemplate = false;
     $scope.date = $scope.examples.dates[0];
     $scope.locationKind = "skype";
+    $scope.restaurantBookingActivated = false;
+    $scope.meetingRoomBooked = false;
 
     $scope.locationInEmail = {
       en: "at the office",
@@ -108,19 +112,23 @@
         timezones: _.map($scope.timezones, "timezone"),
         default_timezone: $scope.defaultTimezone,
         appointment_in_email: $scope.appointmentInEmail,
-        location_in_email: $scope.locationInEmail,
+        location_in_email: $scope.shouldAskLocation ? {} : $scope.locationInEmail,
         is_virtual: $scope.isVirtual,
         attendees: $scope.attendees,
         locale: $scope.locale,
         should_ask_location: $scope.shouldAskLocation,
         missing_contact_info: $scope.missingContactInfo,
-        location_kind: $scope.locationKind
+        location_kind: $scope.locationKind,
+        restaurant_booking_activated: $scope.restaurantBookingActivated,
+        main_client_company: $scope.mainClientCompany,
+        meeting_room_booked: $scope.meetingRoomBooked,
+        meeting_room_name: $scope.meetingRoomName
       };
     };
 
     // Watchers
 
-    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind"];
+    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind", "restaurantBookingActivated", "meetingRoomBooked"];
     _.each(varsToWatch, function(varToWatch) {
       $scope.$watch(varToWatch, function (oldValue, newValue) {
         $scope.refreshTemplates();
@@ -180,6 +188,10 @@
   td {
     width: 33%;
   }
+
+  .invisible {
+    visibility: hidden;
+  }
 </style>
 
 <div id="templateTesterContainer" ng-controller="templateTesterController">
@@ -201,13 +213,19 @@
       <td>
         <form>
           <label>Clients</label>
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-addon">Main client company</div>
+              <input ng-model="mainClientCompany" class="form-control" ng-change="refreshTemplates()">
+            </div>
+          </div>
+
           <div class="client-name-container" ng-repeat="client in clients track by $index">
             <div class="form-group">
               <div class="input-group">
                 <div class="input-group-addon">Name</div>
                 <input ng-model="client.name" class="form-control" ng-change="refreshTemplates()">
-                <div class="input-group-addon btn" ng-click="removeClient($index)">
-                  <span class="glyphicon glyphicon-remove"></span></div>
+                <div class="input-group-addon btn" ng-click="removeClient($index)"><span class="glyphicon glyphicon-remove"></span></div>
               </div>
             </div>
 
@@ -227,9 +245,7 @@
                 <input ng-model="attendee.name" class="form-control" ng-change="refreshTemplates()">
                 <div class="input-group-addon">Assisted by</div>
                 <input ng-model="attendee.assisted_by_name" class="form-control" ng-change="refreshTemplates()">
-                <div class="input-group-addon btn" ng-click="removeAttendee($index)">
-							<span class="glyphicon glyphicon-remove">
-						</span>
+                <div class="input-group-addon btn" ng-click="removeAttendee($index)"><span class="glyphicon glyphicon-remove"></span>
                 </div>
               </div>
             </div>
@@ -242,21 +258,52 @@
       </td>
 
       <td class="active">
+        <label>Appointment designation</label>
         <div class="form-group">
-          <label>Appointment designation</label>
-          <form class="form-inline">
+          <div class="input-group" data-toggle="buttons">
             <input ng-model="appointmentInEmail.en" class="form-control" ng-change="refreshTemplates()">
+            <div class="input-group-addon" ng-class="'invisible'"></div>
             <input ng-model="appointmentInEmail.fr" class="form-control" ng-change="refreshTemplates()">
-          </form>
-        </div>
-        <div class="form-group">
-          <label>Location designation</label>
-          <form class="form-inline">
-            <input ng-model="locationInEmail.en" class="form-control" ng-change="refreshTemplates()">
-            <input ng-model="locationInEmail.fr" class="form-control" ng-change="refreshTemplates()">
-          </form>
+          </div>
+
         </div>
 
+        <label>Location designation</label>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="shouldAskLocation ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="shouldAskLocation"> Should ask location
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" ng-show="!shouldAskLocation">
+          <div class="input-group" data-toggle="buttons">
+            <input ng-model="locationInEmail.en" class="form-control" ng-change="refreshTemplates()">
+            <div class="input-group-addon" ng-class="'invisible'"></div>
+            <input ng-model="locationInEmail.fr" class="form-control" ng-change="refreshTemplates()">
+          </div>
+
+        </div>
+
+
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+          <label class="button-group-addon btn btn-default" ng-class="meetingRoomBooked ? 'active btn-success': ''">
+            <input type="checkbox" ng-model="meetingRoomBooked"> Meeting room booked
+          </label>
+          </div>
+        </div>
+        <div class="form-group" ng-show="meetingRoomBooked">
+          <div class="input-group">
+            <label class="input-group-addon">Meeting room name</label>
+            <input ng-model="meetingRoomName" class="form-control">
+          </div>
+        </div>
+
+        <br/>
 
         <div class="form-group">
           <div class="btn-group" data-toggle="buttons">
@@ -282,22 +329,32 @@
               <input type="radio" ng-model="locationKind" data-ng-value="'confcall'"> Confcall
             </label>
             <label class="btn btn-default" ng-class="locationKind == 'phone_number' ? 'active btn-success' : ''">
-              <input type="radio" ng-model="locationKind" data-ng-value="'phone_number'"> Phone number
+              <input type="radio" ng-model="locationKind" data-ng-value="'phone_number'"> Phone
             </label>
+            <label class="btn btn-default" ng-class="locationKind == 'phone_number' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locationKind" data-ng-value="'resource_visio'"> Visio res
+            </label>
+
           </div>
         </div>
 
-
-        <div class="form-group">
+        <div class="form-group" ng-show="!isVirtual">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default" ng-class="shouldAskLocation ? 'active btn-success': ''">
-              <input type="checkbox" ng-model="shouldAskLocation"> Should ask location
+            <label class="btn btn-default" ng-class="restaurantBookingActivated ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="restaurantBookingActivated"> Restaurant booking activated
             </label>
           </div>
         </div>
 
+
+
+
+
+
+        <br/>
+
         <div class="form-group">
-          <div class="btn-group" role="group" aria-label="Third group">
+          <div class="btn-group">
             <div type="button" class="btn btn-secondary" disabled>Missing info</div>
           </div>
           <div class="btn-group" data-toggle="buttons">
@@ -315,6 +372,8 @@
             </label>
           </div>
         </div>
+
+        <br/>
 
         <div class="form-group">
           <div class="btn-group" data-toggle="buttons">
@@ -335,9 +394,7 @@
             <div class="form-group">
               <div class="input-group">
                 <input ng-model="date.date" class="form-control" ng-change="refreshTemplates()">
-                <div class="input-group-addon btn" ng-click="removeDate($index)">
-							<span class="glyphicon glyphicon-remove">
-						</span>
+                <div class="input-group-addon btn" ng-click="removeDate($index)"><span class="glyphicon glyphicon-remove"></span>
                 </div>
               </div>
             </div>
