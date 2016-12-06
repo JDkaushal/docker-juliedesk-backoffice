@@ -264,9 +264,9 @@
 
             $scope.resetForClient(email);
             $scope.setEvents(email, events);
+            $scope.computeReferenceLocationForClient(email);
 
             $scope.selectEventsToCompute(email);
-            $scope.computeReferenceLocationForClient(email);
 
             if( ( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0 ) {
                 $scope.calculate(email);
