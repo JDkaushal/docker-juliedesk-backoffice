@@ -11,7 +11,7 @@ module ApplicationHelper
     # Seems like an email contained in a string like "gtrgrt, hyth <frf.ff@ff.com>" will not be found
     # Instead it will return "gtrgrt", removing the comma fixes it
     begin
-      Mail::Address.new(contact.gsub(',', '')).address
+      Mail::Address.new(contact.to_ascii.gsub(',', '')).address
       #ApplicationHelper.find_addresses(contact).addresses.first.address
     rescue
       nil
