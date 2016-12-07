@@ -637,6 +637,7 @@ class MessagesThread < ActiveRecord::Base
     first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
     return [] if first_email.nil?
     email = ApplicationHelper.strip_email(first_email['from'])
+
     account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
 
     # Account is not the sender

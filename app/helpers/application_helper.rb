@@ -8,8 +8,11 @@ module ApplicationHelper
     }
   end
   def self.strip_email contact
+    # Seems like an email contained in a string like "gtrgrt, hyth <frf.ff@ff.com>" will not be found
+    # Instead it will return "gtrgrt", removing the comma fixes it
     begin
-      ApplicationHelper.find_addresses(contact).addresses.first.address
+      Mail::Address.new(contact.gsub(',', '')).address
+      #ApplicationHelper.find_addresses(contact).addresses.first.address
     rescue
       nil
     end
