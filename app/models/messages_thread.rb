@@ -25,12 +25,12 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.delegated_to_support ||
         messages_thread.account.only_admin_can_process ||
         messages_thread.account.only_support_can_process ||
-        messages_thread.to_be_merged
+        messages_thread.to_be_merged || messages_thread.thread_blocked
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
     messages_thread.sent_to_admin ||
-        (messages_thread.account && messages_thread.account.only_admin_can_process)
+        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
@@ -382,7 +382,8 @@ class MessagesThread < ActiveRecord::Base
           meeting_room_details: last_message_classification.try(:meeting_room_details),
           using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
           restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
-          virtual_resource_used: last_message_classification.try(:virtual_resource_used)
+          virtual_resource_used: last_message_classification.try(:virtual_resource_used),
+          thread_recipients: self.computed_recipients
       }
     end
 
