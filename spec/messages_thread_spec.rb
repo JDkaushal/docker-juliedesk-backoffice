@@ -128,7 +128,8 @@ describe MessagesThread, :type => :model do
                                                         :meeting_room_details=>nil,
                                                         :using_restaurant_booking=>nil,
                                                         :restaurant_booking_details=>nil,
-                                                        :virtual_resource_used=>nil
+                                                        :virtual_resource_used=>nil,
+                                                        :thread_recipients=>[]
                                                     })
       end
     end
@@ -167,7 +168,8 @@ describe MessagesThread, :type => :model do
                                                         :meeting_room_details=>nil,
                                                         :using_restaurant_booking=>nil,
                                                         :restaurant_booking_details=>nil,
-                                                        :virtual_resource_used=>nil
+                                                        :virtual_resource_used=>nil,
+                                                        :thread_recipients=>[]
                                                     })
       end
     end
@@ -209,7 +211,8 @@ describe MessagesThread, :type => :model do
                                                         :meeting_room_details=>nil,
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
-                                                        :virtual_resource_used=>nil
+                                                        :virtual_resource_used=>nil,
+                                                        :thread_recipients=>[]
                                                     })
       end
     end
@@ -252,7 +255,8 @@ describe MessagesThread, :type => :model do
                                                         :meeting_room_details=>nil,
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
-                                                        :virtual_resource_used=>nil
+                                                        :virtual_resource_used=>nil,
+                                                        :thread_recipients=>[]
                                                     })
       end
     end
@@ -296,7 +300,8 @@ describe MessagesThread, :type => :model do
                                                         :meeting_room_details=>nil,
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
-                                                        :virtual_resource_used=>nil
+                                                        :virtual_resource_used=>nil,
+                                                        :thread_recipients=>[]
                                                     })
       end
     end
