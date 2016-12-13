@@ -281,7 +281,14 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.find params[:id]
     messages_thread.operator_actions_groups.destroy_all
     messages_thread.mt_operator_actions.destroy_all
-    messages_thread.update_attribute :was_merged, true
+    # We reset the eventual auto matic follow up date, so it doesn't trigger in the future
+    # We also
+    messages_thread.update_attributes(
+        was_merged: true,
+        follow_up_reminder_date: nil,
+        in_inbox: false
+    )
+
     if ENV['PUSHER_APP_ID']
       Pusher.trigger('private-global-chat', 'archive', {
                                               :message => 'archive',
