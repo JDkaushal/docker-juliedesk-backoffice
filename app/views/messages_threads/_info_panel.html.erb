@@ -395,6 +395,7 @@
 
         var options = {};
 
+        // When we have a main address for the client and have geocoded it, we will ask google to suggest places in a 20kms radius around this address in priority
         if(window.threadAccount && window.threadAccount.main_address && window.threadAccount.main_address.latitude && window.threadAccount.main_address.longitude) {
           var referencePoint = new google.maps.LatLng(window.threadAccount.main_address.latitude, window.threadAccount.main_address.longitude);
           var circle = new google.maps.Circle({radius: 20000, center: referencePoint});

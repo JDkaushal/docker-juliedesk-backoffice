@@ -352,8 +352,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
                 // We check if we are editing the correct event (not updating a busy/free event)
-                if(restaurantBookingManager.getUsingRestaurantBooking() && oldEvent.id == request.event_id) {
-
+                if(restaurantBookingManager.getUsingRestaurantBooking()) {
+                  if(oldEvent.id == request.event_id) {
                     if(request.location) {
                         if(window.threadComputedData.restaurant_booking_details.restaurant == '') {
                             restaurantBookingManager.sendAdminEmail({
@@ -401,8 +401,13 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                                 location: window.threadComputedData.restaurant_booking_details.restaurant,
                                 thread_id: window.processingMessageThreadId
                             }, callback(e));
+                        } else {
+                          callback(e);
                         }
                     }
+                  } else {
+                    callback(e);
+                  }
                 } else {
                   // When uncheking the restaurant booking functionnality after having booked a restaurant
                   if(window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
