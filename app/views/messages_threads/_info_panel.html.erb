@@ -393,18 +393,22 @@
         var locationInput = $('#location');
         var locationCoordinatesInput = $('#location_coordinates');
 
-//        var defaultBounds = new google.maps.LatLngBounds();
+        var options = {};
+
+        if(window.threadAccount && window.threadAccount.main_address && window.threadAccount.main_address.latitude && window.threadAccount.main_address.longitude) {
+          var referencePoint = new google.maps.LatLng(window.threadAccount.main_address.latitude, window.threadAccount.main_address.longitude);
+          var circle = new google.maps.Circle({radius: 20000, center: referencePoint});
+
+//          var defaultBounds = new google.maps.LatLngBounds();
 //
-//        defaultBounds.extend(new google.maps.LatLng(50.528372, 9.822633));
-//        defaultBounds.extend(new google.maps.LatLng(41.501254, -6.036905));
+//          defaultBounds.extend(new google.maps.LatLng(50.528372, 9.822633));
+//          defaultBounds.extend(new google.maps.LatLng(41.501254, -6.036905));
 
-//        var options = {
-//          //componentRestrictions: {country: 'fr'},
-//          bounds: defaultBounds
-//        };
+          options.bounds = circle.getBounds();
+        }
 
-      //var autocomplete = new google.maps.places.Autocomplete(locationInput[0], options);
-      var autocomplete = new google.maps.places.Autocomplete(locationInput[0]);
+        var autocomplete = new google.maps.places.Autocomplete(locationInput[0], options);
+        //var autocomplete = new google.maps.places.Autocomplete(locationInput[0]);
 
         if(window.threadComputedData) {
             locationCoordinatesInput.val(JSON.stringify(window.threadComputedData.location_coordinates || []));
