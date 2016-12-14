@@ -24,7 +24,7 @@ module Ai
 
           if julia_response[:error]
             # Raise error so we go execute the catch code
-            raise RuntimeError('AI bugged')
+            raise RuntimeError.new("AI returned error with response => #{julia_response}")
           end
 
           @message.message_interpretations.create(question: :full_ai, raw_response: julia_response.to_json)
