@@ -2,6 +2,15 @@
 
 <div id="accounts-list-section" ng-controller="client-account-tile-controller" ng-cloak>
 
+  <div id="julie-should-not-work-now-panel" ng-show="!julieCanWorkNow">
+    <div class="julie-should-not-work-now-popup">
+      Julie should not work at this time for this client. Please go back to inbox.
+      <br>
+      <br>
+      <%= link_to "Go back to index", "/", class: "btn" %>
+    </div>
+  </div>
+
   <div class="change-account-container" ng-show="changingAccount">
     <input id="change-account-input">
     <div class="change-account-button btn btn-sm btn-success" ng-click="changeMainAccount()" ng-hide="changeAccountLoading">Change</div>

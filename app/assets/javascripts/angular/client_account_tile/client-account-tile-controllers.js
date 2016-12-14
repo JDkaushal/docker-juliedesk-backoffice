@@ -3,6 +3,7 @@
 
     clientAccountTileApp.controller("client-account-tile-controller", ['$scope', '$interval', '$http', function ($scope, $interval, $http) {
         $scope.changeAccountLoading = false;
+        $scope.julieCanWorkNow = true;
         $scope.processAccount = function (account) {
             account.infoExtended = false;
 
@@ -23,10 +24,36 @@
             account.has_meeting_rooms = account.hasMeetingRooms();
             account.isMain = window.threadAccount.email == account.email;
 
+            if(account.isMain) {
+                $scope.julieCanWorkNow = $scope.canJulieWorkNowForAccount(account);
+            }
+
             account.setCurrentTime();
             $interval(function() {
                 account.setCurrentTime();
             }, 1000);
+        };
+
+        $scope.canJulieWorkNowForAccount = function(mainAccount) {
+            if(mainAccount.company_hash) {
+                var mDate = moment().tz(mainAccount.company_hash.timezone);
+                var localizedDayString = mDate.format("ddd").toLowerCase();
+                var workingHours = mainAccount.company_hash.working_hours[localizedDayString];
+                if(workingHours) {
+                    var hourInteger = parseInt(mDate.format("HHmm"), 10);
+                    return _.some(workingHours, function(workingHourArray) {
+                        var minHour = parseInt(workingHourArray[0], 10);
+                        var maxHour = parseInt(workingHourArray[1], 10);
+                        return (minHour <= hourInteger && hourInteger <= maxHour);
+                    });
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
         };
 
         $scope.changeMainAccount = function () {

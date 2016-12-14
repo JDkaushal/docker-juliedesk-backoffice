@@ -25,6 +25,30 @@
       padding: 3px;
     }
   }
+
+  #julie-should-not-work-now-panel {
+    position: fixed;
+    z-index: 200;
+    background: rgba(0,0,0,0.6);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .julie-should-not-work-now-popup {
+      position: absolute;
+      left: 50%;
+      margin: 50px 0 0 -200px;
+      width: 400px;
+      height: 180px;
+      padding: 50px;
+      text-align: center;
+      color: #c50000;
+      font-size: 16px;
+      background: white;
+    }
+  }
+
 }
 
 
