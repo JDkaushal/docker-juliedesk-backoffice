@@ -3,6 +3,7 @@ module Ai
     class Processor
       include ActionView::Helpers::TextHelper
       include ERB::Util
+      include Rails.application.routes.url_helpers
 
       def initialize(message_id, julie_aliases_cache)
         @message = Message.find(message_id)
@@ -70,6 +71,7 @@ module Ai
         rescue => e
           if Rails.env.production?
             send_response_email(error_response_template, JulieAlias.find_by(email: 'jul.ia@juliedesk.com'))
+            send_error_email_to_ai_team
           else
             raise e
           end
@@ -152,6 +154,22 @@ module Ai
       #     end
       #   end
       # end
+
+      def send_error_email_to_ai_team
+        text = "JulIA error on the thread #{messages_thread_url(@message_thread.id, host: 'backoffice.juliedesk.net')}"
+        email_params = {
+            subject: 'JulIA - Error while handling a request',
+            from: 'jul.ia@juliedesk.com',
+            to: 'ferdinand@juliedesk.com',
+            cc: nil,
+            text: text,
+            html: "#{text_to_html(text)}",
+            quote_replied_message: false,
+            quote_forward_message: false,
+        }
+
+        EmailServer.deliver_message(email_params)
+      end
 
       def send_response_email(email_text, julie_alias)
         initial_recipients = @message.initial_recipients
