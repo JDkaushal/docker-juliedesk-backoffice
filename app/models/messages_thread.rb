@@ -266,7 +266,7 @@ class MessagesThread < ActiveRecord::Base
       !forbidden_emails.map(&:downcase).include?(contact.address.try(:downcase))
     }.map{ |contact|
       {
-          email: contact.address,
+          email: contact.address.downcase,
           name: contact.name
       }
     }.group_by{ |contact|

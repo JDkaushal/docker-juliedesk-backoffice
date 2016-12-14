@@ -7,6 +7,7 @@ module ApplicationHelper
         name: self.strip_contact_name(contact)
     }
   end
+
   def self.strip_email contact
     # Seems like an email contained in a string like "gtrgrt, hyth <frf.ff@ff.com>" will not be found
     # Instead it will return "gtrgrt", removing the comma fixes it
@@ -19,6 +20,11 @@ module ApplicationHelper
   end
 
   def self.find_addresses str
+    # Necessary because Mail::AddressList.new decompose "Simon, Matthieu <Matthieu.Simon@rolandberger.com>" into two mails "Simon" and "Matthieu <Matthieu.Simon@rolandberger.com>"
+    # So we need to remove non email string from the fieald for example
+    # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
+    str = str.split(',').reject{|s| !s.include?('@')}.join(',')
+
     begin
       Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1'))
     rescue
