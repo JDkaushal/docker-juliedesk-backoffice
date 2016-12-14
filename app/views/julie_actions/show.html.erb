@@ -236,9 +236,13 @@
 
     // Allow to manage the disability of the send button (responsible for sending the email) based on the current classification
     // and external conditions
-    function checkSendButtonAvailability() {
-      var disabled = false;
+    function checkSendButtonAvailability(params) {
+      var disabled_by_ai = false;
+      var disabled_by_invalid_recipients = $('.token-input-token-facebook.juliedesk-unauthorized-email').length > 0;
       var warningText = '';
+      var replyButtonNode = $('#reply-button');
+
+      var currentTooltips = [];
 
       switch(window.classification) {
 
@@ -249,19 +253,41 @@
         case 'ask_date_suggestions':
           var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
-          disabled = datesSuggestionManager.aiSuggestionsRemaining();
+          disabled_by_ai = datesSuggestionManager.aiSuggestionsRemaining();
           warningText = datesSuggestionManager.getTimeSlotsSuggestedByAi().length + ' proposition(s) reste(nt) à (in)valider avant envoie';
           $('#reply-button-popover-warning-details').text(warningText);
           break;
       }
 
-      if(disabled) {
+      if(disabled_by_ai) {
         $('#reply-button-popover-warning-details-wrapper').show();
       } else {
         $('#reply-button-popover-warning-details-wrapper').hide();
       }
 
-      $('#reply-button').prop('disabled', disabled);
+      if(disabled_by_invalid_recipients) {
+        currentTooltips.push("Veuillez n'entrer que des adresses figurant dans l'un des emails du client ou de ses contacts")
+      }
+
+      var disabled =
+          disabled_by_ai
+          || disabled_by_invalid_recipients;
+
+      if(currentTooltips) {
+        var sendEmailTooltipHolderNode = $('#send-email-tooltip-holder');
+        sendEmailTooltipHolderNode.attr('title', currentTooltips.join("\n"));
+
+        if(currentTooltips.length > 0) {
+          sendEmailTooltipHolderNode.width(replyButtonNode.innerWidth());
+          sendEmailTooltipHolderNode.height(replyButtonNode.innerHeight());
+          sendEmailTooltipHolderNode.css(replyButtonNode.position());
+          sendEmailTooltipHolderNode.show();
+        } else {
+          sendEmailTooltipHolderNode.hide();
+        }
+      }
+
+      replyButtonNode.prop('disabled', disabled);
     };
 
     $(function () {

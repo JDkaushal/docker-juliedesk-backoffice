@@ -19,7 +19,9 @@
 
         $scope.init = function() {
             // Maybe define this function directly here
-            initTokenInputs();
+            //if(!window.currentEventTile) {
+            $scope.initTokenInputs();
+            //}
 
             if(window.threadAccount)
                 setDefaultRecipientsOther();
@@ -239,15 +241,29 @@
                 $scope.ccs.push({name: assisted.email});
         };
 
-        function initTokenInputs() {
+        $scope.setRecipientTokenState = function(email, rootNode) {
+            var isValidEmail = window.isAuthorizedAttendee(email);
+            var tokenNode = rootNode.siblings('.token-input-list-facebook').find(".token-input-token-facebook p:contains('" + email + "')").closest('li');
+
+            if(isValidEmail) {
+                tokenNode.removeClass('juliedesk-unauthorized-email');
+            } else {
+                tokenNode.addClass('juliedesk-unauthorized-email');
+                tokenNode.attr('title', 'Adresse email non autorisée');
+            }
+        };
+
+        $scope.initTokenInputs = function() {
 
             if (window.tokenInputsInitialized) {
-                return;
+                $toTokenNode.siblings('.token-input-list-facebook').remove();
+                $ccTokenNode.siblings('.token-input-list-facebook').remove();
             }
-
             window.tokenInputsInitialized = true;
+            var allowedEmailsSuggestions = _.map(window.allowedAttendeesEmails, function(email) { return {name: email}});
+
             $toTokenNode.tokenInput(
-                window.possibleRecipients(),
+                allowedEmailsSuggestions,
                 {
                     searchDelay: 0,
                     enableFreeInput: true,
@@ -260,13 +276,16 @@
                     theme: 'facebook',
                     onAdd: function (item) {
                         window.toRecipientAdded(item);
+                        $scope.setRecipientTokenState(item.name, $toTokenNode);
+                        window.checkSendButtonAvailability();
                     },
                     onDelete: function (item) {
                         window.toRecipientDeleted(item);
+                        window.checkSendButtonAvailability();
                     }
                 });
             $ccTokenNode.tokenInput(
-                window.possibleRecipients(),
+                allowedEmailsSuggestions,
                 {
                     searchDelay: 0,
                     enableFreeInput: true,
@@ -279,9 +298,12 @@
                     theme: 'facebook',
                     onAdd: function (item) {
                         window.ccRecipientAdded(item);
+                        $scope.setRecipientTokenState(item.name, $ccTokenNode);
+                        window.checkSendButtonAvailability();
                     },
                     onDelete: function (item) {
                         window.ccRecipientDeleted(item);
+                        window.checkSendButtonAvailability();
                     }
 
                 });

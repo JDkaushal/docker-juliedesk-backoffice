@@ -266,7 +266,7 @@
                 right: 3px;
                 height: 20px;
                 width: 50px;
-                background: #2891D2;
+                background: $invalidButtonColor;
                 text-align: center;
                 cursor: pointer;
                 color: white;
@@ -274,6 +274,22 @@
                 line-height: 20px;
                 font-size: 11px;
             }
+
+          .error-area {
+            color: $errorColor;
+            font-style: italic;
+            font-size: 12px;
+
+            #email-invalid {
+              display: none;
+            }
+          }
+
+          #add_attendee_input {
+            &.invalid {
+              border-color: $errorColor;
+            }
+          }
         }
         .attendees-list {
 

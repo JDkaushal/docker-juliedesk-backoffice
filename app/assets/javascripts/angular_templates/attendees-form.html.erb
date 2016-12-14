@@ -33,7 +33,7 @@
         <div class="row" style="margin-top: 0px;">
           <div class="col-xs-12">
             <%= label_tag :email %>
-            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
+            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', 'email-allowed' => true, class: 'form-control'} %>
           </div>
         </div>
       </div>
@@ -47,7 +47,12 @@
       </div>
       <div class="attendee-details" ng-class="{'col-xs-12': !attendeesFormCtrl.attendeeInForm.isClient, 'col-xs-10 new-attendee-details-client': attendeesFormCtrl.attendeeInForm.isClient}" style="padding-left: 15px;">
           <%= label_tag :email %>
-          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', class: 'form-control'} %>
+          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', 'email-allowed' => true, class: 'form-control'} %>
+          <%= image_tag 'tooltip.svg', {class: 'email-tooltip-img', title: "Veuillez entrer une adresse figurant dans l'un des emails du client ou de ses contacts", 'ng-show' => 'attendeesForm.email.$error.emailAllowed'} %>
+
+          <div class="error-area-below-field" ng-messages="attendeesForm.email.$error" role="alert" ng-show="attendeesForm.email.$viewValue.length > 0">
+            <div ng-message="emailAllowed">Adresse email non autorisée.</div>
+          </div>
       </div>
     </div>
 
@@ -168,9 +173,8 @@
       </div>
       <div class="row error-area" ng-messages="attendeesForm.email.$error" style="color:grey" role="alert" id="email-error-area">
         <div class="col-xs-12">
-          <div ng-message="required" ng-hide="attendeesForm.attendeeInForm.isAssistant">Ce contact a besoin d'avoir une adresse email ou un nom d'usage afin d'être enregistré.</div>
-          <div ng-message="required" ng-show="attendeesForm.attendeeInForm.isAssistant">Ce contact a besoin d'avoir une adresse email ou un nom d'usage afin d'être enregistré.</div>
-          <div ng-message="email">Veuillez spécifier un email valide.</div>
+          <div ng-message="required" ng-show="attendeesForm.attendeeInForm.isAssistant">Ce contact a besoin d'avoir une adresse email autorisée ou un nom d'usage pour être enregistré.</div>
+          <div ng-message="email">Ce contact a besoin d'avoir une adresse email autorisée ou un nom d'usage pour être enregistré.</div>
         </div>
       </div>
 
@@ -182,17 +186,15 @@
           </button>
 
           <span ng-if="attendeesFormCtrl.attendeeInForm.needAIConfirmation">
-            <%= submit_tag 'Confirm', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', class: 'ai-confirm-btn-form'} %>
+            <%= submit_tag 'Confirm', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', class: 'ai-confirm-btn-form attendees-form-submit-btn', 'title' => "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts"} %>
           </span>
 
           <span ng-if="!attendeesFormCtrl.attendeeInForm.needAIConfirmation">
-            <%= submit_tag 'Ok', {'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)'} %>
+            <%= submit_tag 'Ok', {'title' => "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts", 'class' => 'attendees-form-submit-btn', 'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', 'ng-class' => "{'btn-success': attendeesFormCtrl.isFormValid(attendeesForm), 'form-submit-invalid': !attendeesFormCtrl.isFormValid(attendeesForm)}"} %>
           </span>
-
         </div>
         <div ng-if="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">
-
-          <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()' style="background-color: #0099CC;">
+          <button type="button" class="cancel-btn" ng-click='attendeesFormCtrl.cancelAttendeeForm()' style="background-color: #cacece;">
             OK
           </button>
         </div>

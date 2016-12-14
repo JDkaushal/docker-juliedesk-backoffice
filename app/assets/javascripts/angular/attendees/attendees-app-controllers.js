@@ -45,6 +45,10 @@
                     $('.messages-thread-info-panel').removeClass('scrollable').addClass('frozen');
                 });
 
+                $scope.init = function() {
+                    $('#attendees_form_submit_btn').tooltip({});
+                };
+
                 this.sanitizeContent = function(attribute){
                     this.attendeeInForm[attribute] = this.attendeeInForm[attribute].trim();
                 };
@@ -115,6 +119,10 @@
                         $('#email-error-area').addClass('highlighted');
                 };
 
+                this.isFormValid = function(attendeesForm) {
+                   return jQuery.isEmptyObject(attendeesForm.email.$error);
+                };
+
                 this.checkAssistantConditions = function(attendeesForm){
                     if(this.attendeeInForm.email == '' || this.attendeeInForm.email == undefined || !$.isEmptyObject(attendeesForm.email.$error))
                     {
@@ -179,7 +187,12 @@
                         url: '/client_contacts/fetch_one?client_email=' + attendeesFormCtrl.getThreadOwner().email + '&email=' + attendeesFormCtrl.attendeeInForm.email,
                         method: "GET"
                     }).then(function success(response) {
-                        attendeesFormCtrl.setAttendeeInFormDetails(response.data);
+                        if(response.data.error) {
+                            attendeesFormCtrl.setAttendeeInFormDetails({email: attendeesFormCtrl.attendeeInForm.email});
+                        } else {
+                            attendeesFormCtrl.setAttendeeInFormDetails(response.data);
+                        }
+
                     }, function error(response){
                         console.log("Error: ", response);
                     });
@@ -195,6 +208,8 @@
                         attendeeDetails.assistedBy = JSON.parse(attendeeDetails.assistedBy);
                     Object.assign(attendeesFormCtrl.attendeeInForm, attendeeDetails);
                 };
+                
+                $scope.init();
 
             }],
             controllerAs: 'attendeesFormCtrl'
@@ -1169,7 +1184,12 @@
 
         this.getEmailsSuggestions = function(subString){
             return $http.get("/client_contacts/emails_suggestions?sub_string=" + subString).then(function(response){
-                return response.data;
+                var suggestions = response.data;
+
+                suggestions = _.filter(suggestions, function(suggestion) { return window.allowedAttendeesEmails.indexOf(suggestion) > -1; });
+                suggestions = _.uniq(suggestions.concat(_.filter(window.allowedAttendeesEmails, function(allowedEmail) { return allowedEmail.indexOf(subString) > -1; })));
+                
+                return suggestions;
             });
         };
 

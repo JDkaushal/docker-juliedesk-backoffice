@@ -1144,12 +1144,23 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find(".add-attendee-button").click(function(e) {
+      if(eventTile.checkAttendeeEmailAuthorized()) {
         addAttendee();
+        $('.add-attendee-button').removeClass('btn-success');
+      }
     });
 
     eventTile.$selector.find("#add_attendee_input").keyup(function(e) {
+        var emailValid = eventTile.newAttendeeEmailActions();
         if(e.which == 13) {
-            addAttendee();
+            if(emailValid) {
+              addAttendee();
+            }
+        }
+
+        if(e.target.value.length == 0) {
+          $('#add_attendee_input').removeClass('invalid');
+          $('.add-attendee-container #email-invalid').hide();
         }
     });
 
@@ -1262,7 +1273,77 @@ EventTile.prototype.initActions = function() {
         eventTile.redrawAttendeesCountBadge();
         e.stopPropagation();
     });
+
 };
+
+EventTile.prototype.initAttendeesAutomplete = function() {
+  var eventTile = this;
+
+  eventTile.$selector.find('#add_attendee_input').autocomplete({
+    source: window.allowedAttendeesEmails,
+    delay: 0,
+    select: function(event, ui) {
+      eventTile.newAttendeeEmailActions(ui.item.value);
+    }
+  });
+};
+
+EventTile.prototype.newAttendeeEmailActions = function(email) {
+  var eventTile = this;
+  var isValid = eventTile.checkAttendeeEmailAuthorized(email);
+  eventTile.attendeeEmailActions(isValid);
+
+  return isValid;
+};
+
+EventTile.prototype.checkAttendeeEmailAuthorized = function(email) {
+  var eventTile = this;
+
+  var email = email || eventTile.$selector.find("#add_attendee_input").val();
+  var validEmail = window.isAuthorizedAttendee(email);
+
+//  if(validEmail) {
+//    eventTile.validAttendeeEmailActions();
+//  } else {
+//    eventTile.invalidAttendeeEmailActions();
+//  }
+
+  return validEmail;
+};
+
+EventTile.prototype.attendeeEmailActions = function(validEmail) {
+  var eventTile = this;
+
+  if(validEmail) {
+    eventTile.validAttendeeEmailActions();
+  } else {
+    eventTile.invalidAttendeeEmailActions();
+  }
+};
+
+EventTile.prototype.validAttendeeEmailActions = function() {
+  var addAttendeeBtn = $('.add-attendee-button');
+  var addAttendeeInput = $('#add_attendee_input');
+  var emailInvalidError = $('.add-attendee-container #email-invalid');
+
+  addAttendeeBtn.addClass('btn-success');
+  addAttendeeInput.removeClass('invalid');
+  emailInvalidError.hide();
+  addAttendeeBtn.prop('title', '');
+
+};
+
+EventTile.prototype.invalidAttendeeEmailActions = function() {
+  var addAttendeeBtn = $('.add-attendee-button');
+  var addAttendeeInput = $('#add_attendee_input');
+  var emailInvalidError = $('.add-attendee-container #email-invalid');
+
+  addAttendeeBtn.removeClass('btn-success');
+  addAttendeeInput.addClass('invalid');
+  emailInvalidError.show();
+  addAttendeeBtn.prop('title', 'Veuillez entrer une adresse figurant dans un email du thread');
+};
+
 
 EventTile.prototype.formatMoment = function(momentObject, format) {
     return momentObject.locale(window.currentLocale).format(format);

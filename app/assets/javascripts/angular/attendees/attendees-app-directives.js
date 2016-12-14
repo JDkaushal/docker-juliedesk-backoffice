@@ -73,5 +73,35 @@
         };
     });
 
+    app.directive("emailAllowed", function() {
+        return {
+            restrict: "A",
+
+            require: "ngModel",
+
+            link: function(scope, element, attributes, ngModel) {
+                ngModel.$validators.emailAllowed = function(modelValue) {
+                    var valid = false;
+                    var submitTooltip =  "";
+
+                    if(window.allowedAttendeesEmails) {
+                        valid = window.isAuthorizedAttendee(modelValue);
+                    }
+
+                    if(!valid) {
+                        submitTooltip = "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts";
+                    }
+                    $('.attendees-form-submit-btn').attr('title', submitTooltip);
+
+                    if(scope.attendeesFormCtrl.attendeeInForm.usageName && scope.attendeesFormCtrl.attendeeInForm.usageName.length > 0 && (!modelValue || modelValue.length == 0)) {
+                        valid = true
+                    }
+
+                    return valid;
+                }
+            }
+        };
+    });
+
 
 })();

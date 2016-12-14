@@ -46,8 +46,11 @@
     });
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
+    window.julie_alias_emails = <%== @julie_emails.to_json %>;
 
     window.lastAppointmentType = '';
+
+    window.allowedAttendeesEmails = [];
 
     var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
 
@@ -55,7 +58,7 @@
 
     $(document).ready(function() {
 
-      //$( document ).tooltip();
+      $( document ).tooltip();
 
         if(window.threadComputedData.locale)
             window.currentLocale = window.threadComputedData.locale;
@@ -299,9 +302,16 @@
         $(".messages-thread-info-panel .created-event-panel").show();
         window.currentEventTile.redraw();
         window.currentEventTile.fetchEvent(function(data) {
+          var recipientManager = $('#recipients-manager').scope();
             window.currentEventTile.displayCallingInfosForm();
             window.currentEventData = data;
             window.currentEventTile.redraw();
+            window.initAllowedAttendeesEmails();
+            window.currentEventTile.initAttendeesAutomplete();
+            if(recipientManager) {
+              recipientManager.initTokenInputs();
+            }
+
             if(window.afterEventFetched) {
                 window.afterEventFetched();
             }
@@ -342,7 +352,28 @@
 
 
         initGooglePlacesAutoCompleteOnLocationField();
+        initAllowedAttendeesEmails();
     });
+
+    // Compute the list of allowed attendees from their emails
+    window.initAllowedAttendeesEmails = function() {
+      window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
+          // The thread main account email
+          .concat(window.threadAccount.email)
+          // The thread main account aliases
+          .concat(window.threadAccount.email_aliases)
+          // The emails detected in the emails bodies by the AI
+          .concat(_.map($( "a[href*='mailto']" ), function(node){ return $(node).text()}))
+          // The attendees of the event if any
+          .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
+
+
+      window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+    };
+
+    window.isAuthorizedAttendee = function(attendeeEmail) {
+      return  window.allowedAttendeesEmails.indexOf(attendeeEmail) > -1;
+    };
 
     window.getCurrentAppointment = function() {
         return $.grep(window.threadAccount.appointments,function(v) {

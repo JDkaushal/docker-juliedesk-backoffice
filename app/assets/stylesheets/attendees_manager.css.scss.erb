@@ -6,6 +6,10 @@
     transform: translateY($translateY);
 }
 
+$errorColor: #EA5959;
+$validColor: #62AF0A;
+$invalidButtonColor: #cacece;
+
 .attendees-manager{
 
     margin-top: 30px;
@@ -351,7 +355,8 @@
 
     .ng-invalid{
         &.ng-dirty{
-            border-color: #cacece;
+          border-color: $errorColor;
+          border-width: 2px;
         }
     }
 
@@ -544,7 +549,7 @@
         }
 
         .cancel-btn{
-            background-color: #EA5959;
+            background-color: $errorColor;
             color: white;
             width: 80px;
             border: none;
@@ -553,12 +558,38 @@
 
         .error-area{
             &.highlighted{
-                color: #EA5959 !important;
+                color: $errorColor !important;
             }
             margin-top: 10px;
             margin-bottom: 10px;
             line-height: 1;
         }
+
+
+      .form-submit-valid {
+        background-color: $invalidButtonColor;
+      }
+
+      .form-submit-invalid {
+        background-color: $invalidButtonColor !important;
+      }
+
+      .ng-valid-email-allowed {
+        border-color: $validColor !important;
+        border-width: 2px;
+      }
+
+      .email-tooltip-img {
+        position: absolute;
+        top: 28px;
+        left: 285px;
+      }
+
+      .error-area-below-field {
+        color: $errorColor;
+        font-style: italic;
+        font-size: 12px;
+      }
     }
 
     .usage-name-input-container {

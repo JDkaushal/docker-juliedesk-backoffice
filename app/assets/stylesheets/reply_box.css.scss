@@ -70,6 +70,11 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
+
+    &:disabled {
+      background-color: $invalidButtonColor !important;
+      border-color: $invalidButtonColor !important;
+    }
   }
 
   #reply-button-popover-warning-details-wrapper {
@@ -85,6 +90,12 @@
     border-radius: 5px;
     color: white;
     padding: 7px;
+  }
+
+  #send-email-tooltip-holder {
+    position: absolute;
+    display: none;
+    z-index: 3;
   }
 
   #forward-button {
