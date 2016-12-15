@@ -104,6 +104,7 @@
         initial_recipients[:cc] << 'hello@juliedesk.com'
     end %>
 
+
     function emailSender() {
         return <%== {name: @message.get_email_sender}.to_json %>;
     }

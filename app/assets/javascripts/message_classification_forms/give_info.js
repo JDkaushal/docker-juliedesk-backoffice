@@ -7,12 +7,25 @@ window.classificationForms.giveInfoForm = function (params) {
 
     window.submitClassification = function () {
         if(window.currentEventTile && window.currentEventTile.isEditing()) {
+            var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
+            var data = {event: window.currentEventTile.event};
+            data.appointment = window.threadComputedData.appointment_nature;
+            data.attendees = window.threadComputedData.attendees;
+
+            // if(virtualMeetingHelper) {
+            //     // Looking for differences in details should be enough to tell if the call instructions changed
+            //     data.call_instructions_details = virtualMeetingHelper.currentConf.details;
+            // }
+            var beforeUpdateData = JSON.stringify(data);
+
             window.currentEventTile.doneEditingCallback = function() {
                 $("#summary").val(window.currentEventTile.event.title);
                 $("#location").val(window.currentEventTile.event.location);
                 $("#other_notes").val(window.currentEventTile.event.description);
 
-                giveInfoForm.sendForm();
+                giveInfoForm.sendForm({
+                    before_update_data: beforeUpdateData
+                });
             };
             window.currentEventTile.saveEvent();
         }

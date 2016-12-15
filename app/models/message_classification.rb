@@ -148,7 +148,8 @@ class MessageClassification < ActiveRecord::Base
           using_restaurant_booking: params[:using_restaurant_booking] || false,
           restaurant_booking_details: (params[:restaurant_booking_details] || {}).to_json,
           location_changed: params[:location_changed],
-          virtual_resource_used: params[:virtual_resource_used]
+          virtual_resource_used: params[:virtual_resource_used],
+          before_update_data: params[:before_update_data]
       )
     end
 

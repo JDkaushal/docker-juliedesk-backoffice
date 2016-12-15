@@ -1,6 +1,12 @@
 <script>
     // Do not open calendars for the following classifications
     window.do_not_open_calendar_classifications = ['give_info', 'update_event'];
+    window.beforeUpdateData = <%== @message_classification.before_update_data.to_json %>
+    var useTemplateGenerationService = false;
+
+    $(function() {
+      useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2") && window.classification == 'update_event';
+    });
 
     window.drawCalendarCallback = function(){
       window.activateCalendarWithParams({
@@ -15,22 +21,125 @@
         $(".calendar-container").addClass("minimized");
     };
 
-    window.afterReplyBoxInitCallback = function(){
-        var messageBuilder = $('#reply-area').scope();
+    window.getEventModifications = function() {
+      // When the event has not been updated (no click on the 'edit' button in the event tile, then the beforeUpdateData will be null
+      // We can skip this part as we know that no changes have been made
+      if(!window.beforeUpdateData) {
+        return {};
+      }
+
+      var beforeUpdateEvent = window.beforeUpdateData.event;
+      var updatedEventData = window.currentEventTile.event;
+      var beforeUpdateAttendees = window.beforeUpdateData.attendees;
+      var updatedAttendees = window.threadComputedData.attendees;
+
+      beforeUpdateEvent.appointment = window.beforeUpdateData.appointment;
+      updatedEventData.appointment = window.threadComputedData.appointment_nature;
+
+      beforeUpdateEvent.call_instructions_details = beforeUpdateEvent.call_instructions.details;
+      updatedEventData.call_instructions_details = updatedEventData.call_instructions.details;
+
+      var eventOrganizationAttributes = {
+        timezoneId: 'string',
+        start: 'date',
+        end: 'date',
+        location: 'string',
+        appointment: 'string'
+      };
+
+      var eventAnnexeAttributes = ['call_instructions_details', 'title', 'private', 'description'];
+      var attendeesUntouched = JSON.stringify(beforeUpdateAttendees) == JSON.stringify(updatedAttendees);
+      var eventOrganizationUpdated = false;
+      var eventAnnexeAttributesChanged = [];
+      var addedAttendees = [];
+
+      _.each(eventOrganizationAttributes, function(val, key) {
+        if(val == 'date') {
+          if(!moment(updatedEventData[key]).isSame(moment(beforeUpdateEvent[key]))) {
+            eventOrganizationUpdated = true;
+          }
+        } else {
+          if(updatedEventData[key] != beforeUpdateEvent[key]) {
+            eventOrganizationUpdated = true;
+          }
+        }
+      });
+
+      var updatedEventAttendees = _.map(updatedEventData.attendees, function(attendee) { return attendee.email; });
+      var beforeUpdateEventAttendees = _.map(beforeUpdateEvent.attendees, function(attendee) { return attendee.email; });
+
+      var removedAttendees = _.difference(beforeUpdateEventAttendees, updatedEventAttendees);
+
+      if(removedAttendees.length == 0) {
+        addedAttendees = _.difference(updatedEventAttendees, beforeUpdateEventAttendees);
+      }
+
+      _.each(eventAnnexeAttributes, function(attr) {
+        if(updatedEventData[attr] != beforeUpdateEvent[attr]) {
+          // We update the description only when neither the attendees nor the call instructions where updated
+          if(attr == 'description') {
+            if(attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1) {
+              eventAnnexeAttributesChanged.push(attr);
+            }
+          } else {
+            eventAnnexeAttributesChanged.push(attr);
+          }
+        }
+      });
+
+      if(removedAttendees.length > 0) {
+        eventAnnexeAttributesChanged.push('attendees');
+      }
+
+      return {
+        event_organization_updated: eventOrganizationUpdated,
+        removed_attendees: removedAttendees,
+        added_attendees: addedAttendees,
+        event_annexe_attributes_changed: eventAnnexeAttributesChanged
+      };
+    };
+
+    window.setReplyMessageActions = function() {
+      var messageBuilder = $('#reply-area').scope();
+
+      if(useTemplateGenerationService) {
+        var serviceParams = {
+          template: 'update_event',
+          locale: window.threadComputedData.locale,
+          appointment_nature: window.threadComputedData.appointment_nature,
+          event: window.currentEventTile.event,
+          modifications: window.getEventModifications()
+        };
+
+        new TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function(generatedTemplate) {
+          window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+        });
+      } else {
 
         var params = {
-            action: "send_confirmation",
-            origin: window.classification,
-            locale: window.threadComputedData.locale
+          action: "send_confirmation",
+          origin: window.classification,
+          locale: window.threadComputedData.locale
         };
 
         if(window.classification == 'update_event') {
-            params.locationUpdated = window.locationHasBeenChanged;
-            params.usingRestaurantBooking =  $('#restaurant-booking-manager').scope().getUsingRestaurantBooking();
-            params.location = window.threadComputedData.location;
+          params.locationUpdated = window.locationHasBeenChanged;
+          params.usingRestaurantBooking =  $('#restaurant-booking-manager').scope().getUsingRestaurantBooking();
+          params.location = window.threadComputedData.location;
         }
 
         window.setReplyMessage(messageBuilder.generateReply(params), "all");
+      }
+    };
+
+    window.afterEventFetched = function() {
+      window.setReplyMessageActions();
+    };
+
+    window.afterReplyBoxInitCallback = function() {
+      if(!useTemplateGenerationService) {
+        window.setReplyMessageActions();
+      }
     };
 
 </script>

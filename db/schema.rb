@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161205101705) do
+ActiveRecord::Schema.define(version: 20161216110803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -189,6 +189,7 @@ ActiveRecord::Schema.define(version: 20161205101705) do
     t.json     "restaurant_booking_details"
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
+    t.json     "before_update_data"
   end
 
   add_index "message_classifications", ["message_id"], name: "index_message_classifications_on_message_id", using: :btree

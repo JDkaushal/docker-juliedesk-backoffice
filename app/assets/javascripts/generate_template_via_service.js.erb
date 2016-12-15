@@ -1,3 +1,86 @@
+var TemplateServiceManager = (function() {
+  var instance;
+
+  function init() {
+    var that = this;
+
+    const REQUIRED_PARAMS = {
+      suggest_dates: ['client_names', 'timezones', 'default_timezone', 'locale', 'is_virtual', 'attendees', 'appointment_in_email', 'location_in_email', 'should_ask_location', 'missing_contact_info', 'dates'],
+      send_invitations: ['client_names', 'timezones', 'default_timezone', 'locale', 'is_virtual', 'attendees', 'appointment_in_email', 'location_in_email', 'should_ask_location', 'missing_contact_info', 'date', 'location_kind', 'restaurant_booking_activated', 'main_client_company', 'meeting_room_booked', 'meeting_room_name'],
+      update_event: ['event', 'modifications', 'appointment_nature']
+    };
+
+    function TemplateNotSupportedException(templateName) {
+      this.message = '*' + templateName  + '* is not currently supported by the Template Generator Service.';
+      this.name = "TemplateNotSupportedException";
+    }
+    function RequiredParameterMissingException(param) {
+      this.message = '*' + param  + '* is required but is missing.';
+      this.name = "RequiredParameterMissingException";
+    }
+
+    this.validateParams = function(params) {
+      var validatedParams = {
+        template: params.template,
+        locale: params.locale
+      };
+
+      var requiredParams = REQUIRED_PARAMS[params.template];
+
+      if(!requiredParams) {
+        throw new TemplateNotSupportedException(params.template);
+      }
+
+      _.each(REQUIRED_PARAMS[params.template], function(param) {
+        if(params[param] === undefined) {
+          throw new RequiredParameterMissingException(param);
+        } else {
+          validatedParams[param] = params[param];
+        }
+
+      });
+
+      return validatedParams;
+    };
+
+    function generateTemplate(templateData) {
+      return window.generateEmailTemplateViaServicev2(that.validateParams(templateData));
+    }
+
+    return {
+      generateTemplate: function(templateData) {
+        return generateTemplate(templateData);
+      }
+    };
+  }
+
+  return {
+    getInstance: function() {
+      if(!instance) {
+        instance = init();
+      }
+
+      return instance;
+    }
+  };
+})();
+
+window.generateEmailTemplateViaServicev2 = function (params) {
+  var templateName = params.template;
+  delete params['template'];
+
+  return Promise.resolve($.ajax({
+    type: "POST",
+
+    url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + templateName,
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify(params)
+  })).then(function(response) {
+    return response.data;
+  });
+};
+
 window.generateEmailTemplateViaService = function (params, callback) {
 
   var dataForService = {};
@@ -39,9 +122,13 @@ window.generateEmailTemplateViaService = function (params, callback) {
       meeting_room_name: params.meeting_room_name
     }
   }
+  else if (params.template == "update_event") {
+    dataForService = params;
+  }
   else {
     return null;
   }
+
 
   $.ajax({
     type: "POST",
@@ -53,6 +140,4 @@ window.generateEmailTemplateViaService = function (params, callback) {
       callback(response.data);
     }
   });
-
-
 };

@@ -47,6 +47,23 @@
     $scope.restaurantBookingActivated = false;
     $scope.meetingRoomBooked = false;
 
+    $scope.event = {
+      start: '2016-12-19T18:00:00+01:00',
+      end: '2016-12-19T19:00:00+01:00',
+      location: '9 rue Maurice 9 Rue Maurice Grandcoing, 94200 Ivry-sur-Seine'
+    };
+    $scope.appointment_nature = 'appointment';
+    $scope.eventModifications = {
+      event_organization_updated: true
+    };
+    $scope.eventAddedAttendeesCount = 0;
+    $scope.eventAnnexeModifications = {
+      title: true,
+      description: true,
+      call_instructions_details: true,
+      attendees: true
+    };
+
     $scope.locationInEmail = {
       en: "at the office",
       fr: "au bureau"
@@ -101,7 +118,7 @@
       }
     };
 
-    $scope.cleanContext = function () {
+    $scope.contextForsuggest_dates = function() {
       return {
         template: $scope.template,
         client_names: _.map($scope.clients, "name"),
@@ -116,7 +133,7 @@
         is_virtual: $scope.isVirtual,
         attendees: $scope.attendees,
         locale: $scope.locale,
-        should_ask_location: $scope.shouldAskLocation,
+        should_ask_location: $scope.shouldAskLocation || false,
         missing_contact_info: $scope.missingContactInfo,
         location_kind: $scope.locationKind,
         restaurant_booking_activated: $scope.restaurantBookingActivated,
@@ -126,23 +143,112 @@
       };
     };
 
+    $scope.contextForsend_invitations = function() {
+      return {
+        template: $scope.template,
+        client_names: _.map($scope.clients, "name"),
+        dates: _.map($scope.dates, function (dateHash) {
+          return moment.tz(dateHash.date, "utc").format();
+        }),
+        date: $scope.date,
+        timezones: _.map($scope.timezones, "timezone"),
+        default_timezone: $scope.defaultTimezone,
+        appointment_in_email: $scope.appointmentInEmail,
+        location_in_email: $scope.shouldAskLocation ? {} : $scope.locationInEmail,
+        is_virtual: $scope.isVirtual,
+        attendees: $scope.attendees,
+        locale: $scope.locale,
+        should_ask_location: $scope.shouldAskLocation || false,
+        missing_contact_info: $scope.missingContactInfo,
+        location_kind: $scope.locationKind,
+        restaurant_booking_activated: $scope.restaurantBookingActivated,
+        main_client_company: $scope.mainClientCompany,
+        meeting_room_booked: $scope.meetingRoomBooked,
+        meeting_room_name: $scope.meetingRoomName
+      };
+    };
+
+    $scope.contextForupdate_event = function() {
+      var eventAnnexeAttributesChanged = [];
+      _.each($scope.eventAnnexeModifications, function(val, k) {
+        if(val){
+          eventAnnexeAttributesChanged.push(k);
+        }
+      });
+
+      var modifications = $scope.eventModifications;
+      modifications.event_annexe_attributes_changed = eventAnnexeAttributesChanged;
+      modifications.added_attendees = [];
+
+      for(var i=0; i<$scope.eventAddedAttendeesCount ; i++) {
+        modifications.added_attendees.push(i)
+      }
+
+      var params = {
+        template: $scope.template,
+        appointment_nature: $scope.appointment_nature,
+        locale: $scope.locale,
+        event: $scope.event,
+        modifications: modifications
+      };
+
+      return params;
+    };
+
+    $scope.cleanContext = function () {
+      return $scope['contextFor' + $scope.template]();
+
+
+//      return {
+//        template: $scope.template,
+//        client_names: _.map($scope.clients, "name"),
+//        dates: _.map($scope.dates, function (dateHash) {
+//          return moment.tz(dateHash.date, "utc").format();
+//        }),
+//        date: $scope.date,
+//        timezones: _.map($scope.timezones, "timezone"),
+//        default_timezone: $scope.defaultTimezone,
+//        appointment_in_email: $scope.appointmentInEmail,
+//        location_in_email: $scope.shouldAskLocation ? {} : $scope.locationInEmail,
+//        is_virtual: $scope.isVirtual,
+//        attendees: $scope.attendees,
+//        locale: $scope.locale,
+//        should_ask_location: $scope.shouldAskLocation,
+//        missing_contact_info: $scope.missingContactInfo,
+//        location_kind: $scope.locationKind,
+//        restaurant_booking_activated: $scope.restaurantBookingActivated,
+//        main_client_company: $scope.mainClientCompany,
+//        meeting_room_booked: $scope.meetingRoomBooked,
+//        meeting_room_name: $scope.meetingRoomName
+//      };
+    };
+
     // Watchers
 
-    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind", "restaurantBookingActivated", "meetingRoomBooked"];
+    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind", "restaurantBookingActivated", "meetingRoomBooked", "eventAddedAttendeesCount", "appointment_nature"];
     _.each(varsToWatch, function(varToWatch) {
       $scope.$watch(varToWatch, function (oldValue, newValue) {
         $scope.refreshTemplates();
       });
     });
 
+    var objectsToWatch = ["eventAnnexeModifications", "eventModifications", "event"];
+    _.each(objectsToWatch, function(objectToWatch) {
+      $scope.$watch(objectToWatch, function (oldValue, newValue) {
+        $scope.refreshTemplates();
+      }, true);
+    });
 
     $scope.refreshTemplates = function () {
       if($scope.readyToRenderTemplate) {
         var $template = $(".template");
 
-        window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
-          $template.find(".service-generated-template").html(serviceGeneratedTemplate);
+        TemplateServiceManager.getInstance().generateTemplate($scope.cleanContext(), 'all', window.otherEmails).then(function(generatedTemplate) {
+          $template.find(".service-generated-template").html(generatedTemplate);
         });
+//        window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
+//          $template.find(".service-generated-template").html(serviceGeneratedTemplate);
+//        });
       }
     };
 
@@ -205,10 +311,13 @@
         <label class="btn btn-default" ng-class="template == 'send_invitations' ? 'active btn-success' : ''">
           <input type="radio" ng-model="template" data-ng-value="'send_invitations'"> Send invitations
         </label>
+        <label class="btn btn-default" ng-class="template == 'update_event' ? 'active btn-success' : ''">
+          <input type="radio" ng-model="template" data-ng-value="'update_event'"> Update event
+        </label>
       </div>
     </div>
   </div>
-  <table class="table borderless">
+  <table class="table borderless" ng-hide="template == 'update_event'">
     <tr>
       <td>
         <form>
@@ -346,11 +455,6 @@
           </div>
         </div>
 
-
-
-
-
-
         <br/>
 
         <div class="form-group">
@@ -432,11 +536,127 @@
                 </div>
               </div>
             </div>
-
-
           </div>
           <span class="btn btn-sm btn-primary" ng-click="addTimezone()">add timezone</span>
         </form>
+      </td>
+    </tr>
+  </table>
+
+  <table class="table borderless" ng-show="template == 'update_event'">
+    <tr>
+      <td>
+        <label>Appointment Nature</label>
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <select class="data-entry form-control" ng-model="appointment_nature">
+              <option value="appointment">appointment</option>
+              <option value="breakfast">breakfast</option>
+              <option value="call">call</option>
+              <option value="coffee">coffee</option>
+              <option value="dinner">dinner</option>
+              <option value="drink">drink</option>
+              <option value="hangout">hangout</option>
+              <option value="lunch">lunch</option>
+              <option value="meeting">meeting</option>
+              <option value="skype">skype</option>
+              <option value="visio">visio</option>
+              <option value="webex">webex</option>
+              <option value="work_session">work_session</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Locale</label>
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="locale == 'en' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locale" value="en"> EN
+            </label>
+            <label class="btn btn-default" ng-class="locale == 'fr' ? 'active btn-success' : ''">
+              <input type="radio" ng-model="locale" value="fr"> FR
+            </label>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        <label>Event data</label>
+
+        <form>
+          <label>Start Date</label>
+          <div class="form-group">
+            <input ng-model="event.start" class="form-control" ng-change="refreshTemplates()">
+          </div>
+          <label>End Date</label>
+          <div class="form-group">
+            <input ng-model="event.end" class="form-control" ng-change="refreshTemplates()">
+          </div>
+          <label>Location</label>
+          <div class="form-group">
+            <input ng-model="event.location" class="form-control" ng-change="refreshTemplates()">
+          </div>
+        </form>
+      </td>
+
+      <td>
+        <label>Event Macro Modifications Made</label>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventModifications.event_organization_updated ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventModifications.event_organization_updated"> Event organization updated
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default" ng-class="eventAddedAttendeesCount == 0 ? 'active btn-success' : ''">
+            <input type="radio" ng-model="eventAddedAttendeesCount" data-ng-value="0"> No added attendees
+          </label>
+          <label class="btn btn-default" ng-class="eventAddedAttendeesCount == 1 ? 'active btn-success' : ''">
+            <input type="radio" ng-model="eventAddedAttendeesCount" data-ng-value="1"> 1 added attendees
+          </label>
+          <label class="btn btn-default" ng-class="eventAddedAttendeesCount == 2 ? 'active btn-success' : ''">
+            <input type="radio" ng-model="eventAddedAttendeesCount" data-ng-value="2"> Multiple added attendees
+          </label>
+        </div>
+
+
+        <label>Event Micro Modifications Made</label>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventAnnexeModifications.title ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventAnnexeModifications.title"> Title updated
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventAnnexeModifications.description ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventAnnexeModifications.description"> Notes updated
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventAnnexeModifications.call_instructions_details ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventAnnexeModifications.call_instructions_details"> Call instructions updated
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventAnnexeModifications.attendees ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventAnnexeModifications.attendees"> Attendees updated
+            </label>
+          </div>
+        </div>
+
       </td>
     </tr>
   </table>

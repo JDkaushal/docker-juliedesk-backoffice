@@ -110,7 +110,7 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
     });
 };
 
-window.classificationForms.classificationForm.prototype.sendForm = function () {
+window.classificationForms.classificationForm.prototype.sendForm = function (params = {}) {
     var classificationForm = this;
     var meetingRoomManager = $('#meeting-rooms-manager').scope();
     var restaurantBookingManager = $('#restaurant-booking-manager').scope();
@@ -161,7 +161,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function () {
         // on the model without having to link into the JSON
         using_restaurant_booking: restaurantBookingManager.getUsingRestaurantBooking() || undefined,
         restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
-        location_changed: window.threadComputedData.location != $("#location").val()
+        location_changed: window.threadComputedData.location != $("#location").val(),
+        before_update_data: params.before_update_data
     };
 
     if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
