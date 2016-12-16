@@ -134,7 +134,6 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 //        }
 
         if(request.action == "create_event" || request.action == "update_event"){
-            console.log('attendees', request.attendees);
             var realAttendees = request.attendees;
             request.attendees = [];
         }

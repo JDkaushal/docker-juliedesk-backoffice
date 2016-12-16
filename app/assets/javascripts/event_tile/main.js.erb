@@ -493,7 +493,7 @@ EventTile.prototype.getEditedEvent = function() {
         title: eventTile.$selector.find("input.title").val(),
         description: description,
         location: location,
-        private: false,
+        private: $('#private').is(':checked'),
         all_day: allDay,
         start: mStart,
         end: mEnd,
