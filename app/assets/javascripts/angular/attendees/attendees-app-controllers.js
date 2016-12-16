@@ -720,7 +720,7 @@
             return _.filter($scope.attendees, function(a) {
                 var computedSearchContent = [a.firstName, a.lastName, a.email].join(' ');
 
-                var filtered = computedSearchContent.indexOf(filter) > -1;
+                var filtered = computedSearchContent.indexOf(filter) > -1 && window.isAuthorizedAttendee(a.email);
                 //_.each([a.firstName, a.lastName, a.email], function(attribut) {
                 //   if(attribut && !filtered) {
                 //       filtered = attribut.indexOf(filter) > -1;
