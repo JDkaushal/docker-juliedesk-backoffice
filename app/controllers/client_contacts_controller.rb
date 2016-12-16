@@ -41,6 +41,7 @@ class ClientContactsController < ApplicationController
           account = {
               id: contact.id,
               client_email: contact.client_email,
+              email_aliases: cache['email_aliases'],
               email: contact.email,
               firstName: fullname_splitted[0],
               lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
@@ -100,6 +101,7 @@ class ClientContactsController < ApplicationController
             fullname_splitted = cache['full_name'].split(' ')
             @contacts_infos.push({
                  client_email: params['client_email'],
+                 email_aliases: cache['email_aliases'],
                  email: contact_email,
                  firstName: fullname_splitted[0],
                  lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),

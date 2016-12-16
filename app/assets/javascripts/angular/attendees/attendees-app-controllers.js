@@ -526,6 +526,7 @@
                 accountEmail: attendee.account_email,
                 guid: informations.id || $scope.guid(),
                 email: informations.email ? informations.email.toLowerCase() : undefined,
+                email_aliases: informations.email_aliases || [],
                 firstName: informations.firstName,
                 lastName: informations.lastName,
                 name: (informations.firstName + ' ' + informations.lastName).trim(),
@@ -717,17 +718,25 @@
         $scope.getRegisteredAvailableAttendees = function() {
             var filter = $scope.attendeeSearchFilter.toLowerCase();
 
-            return _.filter($scope.attendees, function(a) {
+            var filteredAttendees = _.filter($scope.attendees, function(a) {
                 var computedSearchContent = [a.firstName, a.lastName, a.email].join(' ');
 
-                var filtered = computedSearchContent.indexOf(filter) > -1 && window.isAuthorizedAttendee(a.email);
-                //_.each([a.firstName, a.lastName, a.email], function(attribut) {
-                //   if(attribut && !filtered) {
-                //       filtered = attribut.indexOf(filter) > -1;
-                //   }
-                //});
+                var filtered = computedSearchContent.indexOf(filter) > -1;
 
-               return !a.alreadySetPresent && filtered && a.company && !a.isPresent;
+                return !a.alreadySetPresent && filtered && a.company && !a.isPresent;
+            });
+
+            return _.filter(filteredAttendees, function(a) {
+                var allEmails = a.email_aliases.concat(a.email);
+
+                var authorizedEmail = false;
+                _.each(allEmails, function(email) {
+                    if(window.isAuthorizedAttendee(email)) {
+                        authorizedEmail = true;
+                    }
+                });
+
+               return authorizedEmail;
             });
         };
 
