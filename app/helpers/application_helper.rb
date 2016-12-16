@@ -24,7 +24,8 @@ module ApplicationHelper
     # So we need to remove non email string from the fieald for example
     # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
     if str.present?
-      str = str.split(',').reject{|s| !s.include?('@')}.join(',')
+      # Remove quotes as it cause bugs when parsing the emails with Mail::AddressList.new()
+      str = str.gsub('"', '').split(',').reject{|s| !s.include?('@')}.join(',')
     end
 
     begin
