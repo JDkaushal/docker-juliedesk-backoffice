@@ -36,10 +36,14 @@
             });
 
             if(aiSuggestion) {
-                var newPost = currentPos + $('#' + aiSuggestion.trackingId).offset().top - calendarEventContainer.height();
-                calendarEventContainer.animate({scrollTop: newPost + 220}, 300);
+                var node = $('#' + aiSuggestion.trackingId);
 
-                $scope.handleAiSuggestionInCalendar(aiSuggestion.trackingId, 'highlight');
+                if(node.length > 0) {
+                    var newPost = currentPos + node.offset().top - calendarEventContainer.height();
+                    calendarEventContainer.animate({scrollTop: newPost + 220}, 300);
+                    $scope.handleAiSuggestionInCalendar(aiSuggestion.trackingId, 'highlight');
+
+                }
             }
 
         };
@@ -104,6 +108,7 @@
 
         $scope.mouseLeaveSuggestionNode = function(suggestion, $event) {
             if(suggestion.fromAi) {
+                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'unhighlight');
                 var node = $($event.currentTarget);
                 var $nodeInCalendar = $('#' + suggestion.trackingId);
 
@@ -112,9 +117,6 @@
                 } else if(node.hasClass('accept')) {
                     $nodeInCalendar.find('.call-to-action.accept').removeClass('highlighted');
                 }
-                
-                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'unhighlight');
-
                 //$('#' + suggestion.trackingId).removeClass('highlighted');
                 // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
                 // eventInCalendar.isHighlighted = false;
