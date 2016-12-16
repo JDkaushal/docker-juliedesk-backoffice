@@ -155,6 +155,11 @@ EventTile.prototype.getTimezoneId = function() {
     return timezone;
 };
 
+EventTile.prototype.getTimezoneIdForStartDate = function() {
+  var eventTile = this;
+  return eventTile.$selector.find("input.event-timezone-picker").val();
+};
+
 EventTile.prototype.getTimezoneIdForEndDate = function() {
     var eventTile = this;
     return eventTile.$selector.find("input.event-timezone-for-end-date-picker").val();
@@ -445,7 +450,7 @@ EventTile.prototype.getEditedEvent = function() {
         mEnd.add("d", 1);
     }
     else {
-        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneId());
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneIdForStartDate());
         mStart.set('h', eventTile.$selector.find("input.start-hours").val());
         mStart.set('m', eventTile.$selector.find("input.start-minutes").val());
 
@@ -501,7 +506,7 @@ EventTile.prototype.getEditedEvent = function() {
         recurrence: _.filter(eventTile.$selector.find(".recurrence-rule").val().split("\n"), function(rule) {
                 return rule.length > 0;
             }),
-        start_timezone: eventTile.getTimezoneId(),
+        start_timezone: eventTile.getTimezoneIdForStartDate(),
         end_timezone: eventTile.getTimezoneIdForEndDate(),
         utc_offset: mStart.zone() / 60.0
     }
