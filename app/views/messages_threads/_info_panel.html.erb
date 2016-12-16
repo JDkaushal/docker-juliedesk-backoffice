@@ -362,8 +362,9 @@
           .concat(window.threadAccount.email)
           // The thread main account aliases
           .concat(window.threadAccount.email_aliases)
-          // The emails detected in the emails bodies by the AI
-          .concat(_.map($( "a[href*='mailto']" ), function(node){ return $(node).text()}))
+          // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
+          // So we can look for them with Jquery using the regex function '*=' on the href attribute value
+          .concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
           // The attendees of the event if any
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
