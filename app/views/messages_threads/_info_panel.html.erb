@@ -366,6 +366,7 @@
           .concat(_.map($( "a[href*='mailto']" ), function(node){ return $(node).text()}))
           // The attendees of the event if any
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
+          .concat(['hello@juliedesk.com']);
 
 
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
