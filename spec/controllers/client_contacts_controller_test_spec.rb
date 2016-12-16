@@ -39,6 +39,7 @@ describe ClientContactsController, :type => :controller do
       expect(assigns(:contacts_infos)).to eq([{
                                                 :id=>cc1.id,
                                                 :client_email=>"client@test.com",
+                                                :email_aliases=>["alias1@alias.com", "alias2@alias.com"],
                                                 :email=>cc1.email,
                                                 :firstName=>'f',
                                                 :lastName=>'n',
