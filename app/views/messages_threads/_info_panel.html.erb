@@ -369,12 +369,12 @@
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
-
+      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 
-    window.isAuthorizedAttendee = function(attendeeEmail) {
-      return  window.allowedAttendeesEmails.indexOf(attendeeEmail) > -1;
+    window.isAuthorizedAttendee = function(attendeeEmail = '') {
+      return  window.allowedAttendeesEmails.indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
     window.getCurrentAppointment = function() {
