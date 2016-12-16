@@ -104,7 +104,6 @@
 
         $scope.mouseLeaveSuggestionNode = function(suggestion, $event) {
             if(suggestion.fromAi) {
-                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'unhighlight');
                 var node = $($event.currentTarget);
                 var $nodeInCalendar = $('#' + suggestion.trackingId);
 
@@ -113,6 +112,9 @@
                 } else if(node.hasClass('accept')) {
                     $nodeInCalendar.find('.call-to-action.accept').removeClass('highlighted');
                 }
+                
+                $scope.handleAiSuggestionInCalendar(suggestion.trackingId, 'unhighlight');
+
                 //$('#' + suggestion.trackingId).removeClass('highlighted');
                 // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
                 // eventInCalendar.isHighlighted = false;
