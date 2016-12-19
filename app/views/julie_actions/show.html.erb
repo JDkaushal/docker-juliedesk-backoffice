@@ -120,6 +120,10 @@
         return <%== initial_recipients[:possible].map{|c| {name: c}}.to_json %>;
     }
 
+    function extractEmails(text) {
+      return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+    };
+
     window.currentRecipients = function () {
         return {
             to: $.map($("#recipients-to-input").tokenInput("get"), function (elt) {

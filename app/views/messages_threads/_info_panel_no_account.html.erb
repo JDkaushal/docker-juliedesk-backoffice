@@ -6,6 +6,17 @@
     });
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
+
+    function extractEmails(text) {
+      return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+    };
+
+    window.isAuthorizedAttendee = function(attendeeEmail) {
+      var allowedAttendees = window.threadComputedData.attendees.map(function(attendee) { return attendee.email });
+      allowedAttendees =  allowedAttendees.concat(extractEmails($('#messages_container .email .body').text()) || []).concat(['hello@juliedesk.com']);
+      return  allowedAttendees.indexOf(attendeeEmail.toLowerCase()) > -1;
+    };
+
 $(function() {
     var accountsAutocompleteSource = <%==
         (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
@@ -24,6 +35,8 @@ $(function() {
             end
         end.flatten.to_json
         %>;
+
+
 
     $("#account-email-input").autocomplete({
         source: function(request, callback) {
