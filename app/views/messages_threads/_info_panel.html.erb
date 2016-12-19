@@ -377,6 +377,11 @@
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
+      if(window.threadAccount && window.threadAccount.current_notes) {
+        // Extract emails from current thread account current notes
+        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(extractEmails(window.threadAccount.current_notes))
+      }
+
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
