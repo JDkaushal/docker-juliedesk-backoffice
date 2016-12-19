@@ -12,8 +12,11 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail) {
-      var allowedAttendees = window.threadComputedData.attendees.map(function(attendee) { return attendee.email });
-      allowedAttendees =  allowedAttendees.concat(extractEmails($('#messages_container .email .body').text()) || []).concat(['hello@juliedesk.com']);
+      var allowedAttendees = window.threadComputedData.attendees.map(function(attendee) { return attendee.email })
+          .concat(extractEmails($('#messages_container .email .body').text()) || [])
+          .concat(window.threadComputedData.thread_recipients)
+          .concat(['hello@juliedesk.com']);
+
       return  allowedAttendees.indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
