@@ -35,7 +35,7 @@
 
             // To refresh allowed attendees with eventual emails present in their current notes
             if(window.addAllowedAttendeesEmailsFromCurrentNotes) {
-                $timeout(window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes), 500);
+                window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes);
             }
         };
 

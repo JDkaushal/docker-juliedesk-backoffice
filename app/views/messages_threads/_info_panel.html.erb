@@ -306,7 +306,8 @@
             window.currentEventTile.displayCallingInfosForm();
             window.currentEventData = data;
             window.currentEventTile.redraw();
-            window.initAllowedAttendeesEmails();
+            //_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()})
+            window.addAllowedAttendeesEmails(_.map(data.attendees, function(attendee) { return attendee.email;}));
             window.currentEventTile.initAttendeesAutomplete();
             if(recipientManager) {
               recipientManager.initTokenInputs();
@@ -365,9 +366,13 @@
 
       if(emails) {
         emails = _.map(emails, function(email) { return email.toLowerCase(); });
-        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
-        window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+        window.addAllowedAttendeesEmails(emails);
       }
+    };
+
+    window.addAllowedAttendeesEmails = function(emails) {
+      window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+      window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 
     // Compute the list of allowed attendees from their emails
@@ -383,7 +388,7 @@
           // Extract emails from emails bodies
           .concat(extractEmails($('#messages_container .email .body').text()) || [])
           // The attendees of the event if any
-          .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
+          //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
 //      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
