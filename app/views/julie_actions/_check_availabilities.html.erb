@@ -563,14 +563,16 @@
 
 
     window.clickReplyButton = function () {
+      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+
         if(isPostpone && window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
             window.deleteEventBeforeReply(function() {
-                checkAvailabilitiesClassicReply();
+              datesSuggestionManager.trackSuggestedDates();
+              checkAvailabilitiesClassicReply();
             });
         }
         else {
           if(window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
-            var datesSuggestionManager = $('#dates-suggestion-manager').scope();
             datesSuggestionManager.trackSuggestedDates();
           }
           checkAvailabilitiesClassicReply();

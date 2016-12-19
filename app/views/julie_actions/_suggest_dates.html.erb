@@ -240,13 +240,15 @@
     };
 
     window.clickReplyButton = function() {
+      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+
       if(isPostpone) {
           window.deleteEventBeforeReply(function() {
-              suggestDateReplyFunction();
+            datesSuggestionManager.trackSuggestedDates();
+            suggestDateReplyFunction();
           });
       }
       else {
-        var datesSuggestionManager = $('#dates-suggestion-manager').scope();
         datesSuggestionManager.trackSuggestedDates();
         suggestDateReplyFunction()
       }
