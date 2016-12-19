@@ -1030,7 +1030,7 @@
         var currentAddressObject = window.getCurrentAddressObject();
         if(currentAddressObject) {
           var currentAddress = currentAddressObject.address;
-          return (currentAddress.address && currentAddress.address != "") || currentAddress.kind == "client_will_define";
+          return (currentAddress && currentAddress != "") || currentAddressObject.kind == "client_will_define";
         }
         else {
           return false;
