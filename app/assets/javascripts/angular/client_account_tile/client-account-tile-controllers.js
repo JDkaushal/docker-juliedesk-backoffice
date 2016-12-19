@@ -36,6 +36,7 @@
             // To refresh allowed attendees with eventual emails present in their current notes
             if(window.addAllowedAttendeesEmailsFromCurrentNotes) {
                 window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes);
+                window.addAllowedAttendeesEmailsFromCurrentNotes(account.awaiting_current_notes);
             }
         };
 
