@@ -360,7 +360,6 @@
       return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
     };
 
-
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
@@ -375,12 +374,9 @@
           .concat(extractEmails($('#messages_container .email .body').text()) || [])
           // The attendees of the event if any
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
-          .concat(['hello@juliedesk.com']);
+          .concat(['hello@juliedesk.com'])
+          .concat(extractEmails($('.account-current-notes-container').text()));
 
-      if(window.threadAccount && window.threadAccount.current_notes) {
-        // Extract emails from current thread account current notes
-        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(extractEmails(window.threadAccount.current_notes))
-      }
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
