@@ -378,7 +378,10 @@
 
       var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
       if(clientsAccountsCurrentNotesNodes.length > 0) {
-        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(extractEmails(clientsAccountsCurrentNotesNodes.text()));
+        var emails = extractEmails(clientsAccountsCurrentNotesNodes.text());
+        if(emails) {
+          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+        }
       }
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
