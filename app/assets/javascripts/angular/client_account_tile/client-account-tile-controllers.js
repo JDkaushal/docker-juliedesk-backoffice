@@ -1,7 +1,7 @@
 (function () {
     var clientAccountTileApp = angular.module('client-account-tile-app', []);
 
-    clientAccountTileApp.controller("client-account-tile-controller", ['$scope', '$interval', '$http', function ($scope, $interval, $http) {
+    clientAccountTileApp.controller("client-account-tile-controller", ['$scope', '$interval', '$http', '$timeout', function ($scope, $interval, $http, $timeout) {
         $scope.changeAccountLoading = false;
         $scope.julieCanWorkNow = true;
         $scope.processAccount = function (account) {
@@ -35,7 +35,7 @@
 
             // To refresh allowed attendees with eventual emails present in their current notes
             if(window.addAllowedAttendeesEmailsFromCurrentNotes) {
-                window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes);
+                $timeout(window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes), 500);
             }
         };
 
