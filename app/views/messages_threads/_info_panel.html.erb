@@ -374,8 +374,8 @@
           .concat(extractEmails($('#messages_container .email .body').text()) || [])
           // The attendees of the event if any
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
-          .concat(['hello@juliedesk.com'])
-          .concat(extractEmails($('.account-current-notes-container').text()));
+          .concat(['hello@juliedesk.com']);
+          //.concat(extractEmails($('.account-current-notes-container').text()));
 
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
