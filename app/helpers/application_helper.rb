@@ -25,7 +25,8 @@ module ApplicationHelper
     # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
     if str.present?
       # Remove quotes as it cause bugs when parsing the emails with Mail::AddressList.new()
-      str = str.gsub('"', '').split(',').reject{|s| !s.include?('@')}.join(',')
+      # Remove '[' and ']'
+      str = str.gsub('"', '').gsub(/[\[|\]]/, '').split(',').reject{|s| !s.include?('@')}.join(',')
     end
 
     begin
