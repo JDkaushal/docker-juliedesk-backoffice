@@ -360,6 +360,16 @@
       return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
     };
 
+    window.addAllowedAttendeesEmailsFromCurrentNotes = function(currentNotes) {
+      var emails = extractEmails(currentNotes);
+
+      if(emails) {
+        emails = _.map(emails, function(email) { return email.toLowerCase(); });
+        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+        window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+      }
+    };
+
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
@@ -376,13 +386,13 @@
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
-      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
-      if(clientsAccountsCurrentNotesNodes.length > 0) {
-        var emails = extractEmails(clientsAccountsCurrentNotesNodes.text());
-        if(emails) {
-          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
-        }
-      }
+//      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
+//      if(clientsAccountsCurrentNotesNodes.length > 0) {
+//        var emails = extractEmails(clientsAccountsCurrentNotesNodes.text());
+//        if(emails) {
+//          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+//        }
+//      }
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);

@@ -32,6 +32,11 @@
             $interval(function() {
                 account.setCurrentTime();
             }, 1000);
+
+            // To refresh allowed attendees with eventual emails present in their current notes
+            if(window.addAllowedAttendeesEmailsFromCurrentNotes) {
+                window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes);
+            }
         };
 
         $scope.canJulieWorkNowForAccount = function(mainAccount) {
@@ -88,10 +93,6 @@
                     var account = response.data.account;
                     $scope.processAccount(account);
                     $scope.accounts.push(account);
-                    // To refresh allowed attendees with eventual emails present in their current notes
-                    if(window.initAllowedAttendeesEmails) {
-                        window.initAllowedAttendeesEmails();
-                    }
                 }, function (response) {
                     console.log("Error while getting account " + otherAccountEmail + " : " + response.message)
                 });
