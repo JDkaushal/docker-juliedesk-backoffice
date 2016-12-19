@@ -375,8 +375,11 @@
           // The attendees of the event if any
           .concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
-          //.concat(extractEmails($('.account-current-notes-container').text()));
 
+      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
+      if(clientsAccountsCurrentNotesNodes.length > 0) {
+        window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(extractEmails(clientsAccountsCurrentNotesNodes.text()));
+      }
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
