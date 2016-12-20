@@ -404,7 +404,7 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
-      return  window.allowedAttendeesEmails.indexOf(attendeeEmail.toLowerCase()) > -1;
+      return window.allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
     window.getCurrentAppointment = function() {
