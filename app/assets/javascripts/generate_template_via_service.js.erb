@@ -71,6 +71,7 @@ window.generateEmailTemplateViaServicev2 = function (params) {
 
   return Promise.resolve($.ajax({
     type: "POST",
+
     url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + templateName,
     dataType: 'json',
     contentType: 'application/json',

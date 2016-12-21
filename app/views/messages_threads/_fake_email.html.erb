@@ -64,7 +64,7 @@
         <% end %>
 
         <div class="operator-and-action-container">
-          <% if local_assigns[:reviewing_status] && local_assigns[:reviewing_status] == "review" && session[:can_see_operators_in_review]  && operator_actions_group.operator.id != session[:operator_id] %>
+          <% if (local_assigns[:reviewing_status] && (local_assigns[:reviewing_status] == "review" && session[:can_see_operators_in_review]))  || operator_actions_group.operator.id == session[:operator_id] %>
                <div class="operator"><%= operator_actions_group.operator.name %></div>
           <% end %>
           <div class="nature"><%= operator_actions_group.label_to_display %> (<%= display_duration(operator_actions_group.duration) %>)</div>
