@@ -110,7 +110,8 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
     });
 };
 
-window.classificationForms.classificationForm.prototype.sendForm = function (params = {}) {
+window.classificationForms.classificationForm.prototype.sendForm = function (params) {
+    params = params || {};
     var classificationForm = this;
     var meetingRoomManager = $('#meeting-rooms-manager').scope();
     var restaurantBookingManager = $('#restaurant-booking-manager').scope();
