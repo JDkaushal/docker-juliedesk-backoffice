@@ -108,7 +108,14 @@
             var names = attendee.usageName.split(" ");
             if (names.length > 0 && !attendee.isAssistant) {
               var assistedByName = null;
-              if(attendee.assistedBy) {
+              var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
+              if(isCurrentlyAssisted) {
+                isCurrentlyAssisted = _.some(attendees(), function(attendeeObject) {
+                  return attendeeObject.guid == attendee.assistedBy.guid
+                });
+              }
+
+              if(isCurrentlyAssisted) {
                 assistedByName = attendee.assistedBy.displayName;
               }
               attendeesForService.push({
