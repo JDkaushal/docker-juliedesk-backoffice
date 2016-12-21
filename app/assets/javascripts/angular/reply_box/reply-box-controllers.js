@@ -259,54 +259,63 @@
                 $toTokenNode.siblings('.token-input-list-facebook').remove();
                 $ccTokenNode.siblings('.token-input-list-facebook').remove();
             }
-            window.tokenInputsInitialized = true;
             var allowedEmailsSuggestions = _.map(window.allowedAttendeesEmails, function(email) { return {name: email}});
 
-            $toTokenNode.tokenInput(
-                allowedEmailsSuggestions,
-                {
-                    searchDelay: 0,
-                    enableFreeInput: true,
-                    hintText: '',
-                    noResultsText: '',
-                    searchingText: '',
-                    animateDropdown: false,
-                    prePopulate: window.initialToRecipients(),
-                    preventDuplicates: true,
-                    theme: 'facebook',
-                    onAdd: function (item) {
-                        window.toRecipientAdded(item);
-                        $scope.setRecipientTokenState(item.name, $toTokenNode);
-                        window.checkSendButtonAvailability();
-                    },
-                    onDelete: function (item) {
-                        window.toRecipientDeleted(item);
-                        window.checkSendButtonAvailability();
-                    }
-                });
-            $ccTokenNode.tokenInput(
-                allowedEmailsSuggestions,
-                {
-                    searchDelay: 0,
-                    enableFreeInput: true,
-                    hintText: '',
-                    noResultsText: '',
-                    searchingText: '',
-                    animateDropdown: false,
-                    prePopulate: window.initialCcRecipients(),
-                    preventDuplicates: true,
-                    theme: 'facebook',
-                    onAdd: function (item) {
-                        window.ccRecipientAdded(item);
-                        $scope.setRecipientTokenState(item.name, $ccTokenNode);
-                        window.checkSendButtonAvailability();
-                    },
-                    onDelete: function (item) {
-                        window.ccRecipientDeleted(item);
-                        window.checkSendButtonAvailability();
-                    }
+            // var prePopulateTo = window.initialToRecipients();
+            // var prePopulateCc = window.initialCcRecipients();
+            var toParams = {
+                searchDelay: 0,
+                enableFreeInput: true,
+                hintText: '',
+                noResultsText: '',
+                searchingText: '',
+                animateDropdown: false,
+                prePopulate: window.initialToRecipients(),
+                preventDuplicates: true,
+                theme: 'facebook',
+                onAdd: function (item) {
+                    window.toRecipientAdded(item);
+                    $scope.setRecipientTokenState(item.name, $toTokenNode);
+                    window.checkSendButtonAvailability();
+                },
+                onDelete: function (item) {
+                    window.toRecipientDeleted(item);
+                    window.checkSendButtonAvailability();
+                }
+            };
 
-                });
+            var ccParams = {
+                searchDelay: 0,
+                enableFreeInput: true,
+                hintText: '',
+                noResultsText: '',
+                searchingText: '',
+                animateDropdown: false,
+                prePopulate: window.initialCcRecipients(),
+                preventDuplicates: true,
+                theme: 'facebook',
+                onAdd: function (item) {
+                    window.ccRecipientAdded(item);
+                    $scope.setRecipientTokenState(item.name, $ccTokenNode);
+                    window.checkSendButtonAvailability();
+                },
+                onDelete: function (item) {
+                    window.ccRecipientDeleted(item);
+                    window.checkSendButtonAvailability();
+                }
+            };
+             // As we call this method again after fetching the event if any, we would override the default recipients for the forward_to_client and the free reply
+            // We call this method after fetching the event to refresh the autocomplete with the new allowed attendees coming from the event attendees
+            if(window.tokenInputsInitialized && (window.classification == 'forward_to_client' || window.classification == 'unknown')) {
+                ccParams.prePopulate = $ccTokenNode.tokenInput('get');
+                toParams.prePopulate = $toTokenNode.tokenInput('get');
+             }
+
+
+            $toTokenNode.tokenInput(allowedEmailsSuggestions, toParams);
+            $ccTokenNode.tokenInput(allowedEmailsSuggestions, ccParams);
+
+            window.tokenInputsInitialized = true;
         };
 
         angular.element(document).ready(function () {
