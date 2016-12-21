@@ -44,6 +44,6 @@ class Admin::OperatorsController < AdminController
   private
 
   def operators_params
-    params.require(:operator).permit(:email, :name, :ips_whitelist_enabled, :active, :password, :privilege, :color, :planning_access, :in_formation, :manager_access, :operator_of_the_month)
+    params.require(:operator).permit(:email, :name, :ips_whitelist_enabled, :active, :password, :privilege, :color, :planning_access, :in_formation, :manager_access, :operator_of_the_month, :can_see_operators_in_review)
   end
 end

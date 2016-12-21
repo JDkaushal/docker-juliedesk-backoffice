@@ -57,6 +57,14 @@
 
     <div class="form-group">
 
+      <%= f.label :can_see_operators_in_review %>
+      <div class="form-control">
+        <%= f.check_box :can_see_operators_in_review %> can see operators in review
+      </div>
+    </div>
+
+    <div class="form-group">
+
       <%= f.label :madagascar_ip_restriction %>
       <div class="form-control">
         <%= f.check_box :ips_whitelist_enabled %> restriction enabled
