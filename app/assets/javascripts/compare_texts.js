@@ -2,8 +2,13 @@
 function compareArrays(arrayA, arrayB, startIndexA) {
     var startIndexB = arrayB.indexOf(arrayA[startIndexA]);
     if(startIndexB > -1) {
-        var [minIndexA, minIndexB] = findSimilaritiesUpOrDown(arrayA, arrayB, startIndexA, startIndexB, -1);
-        var [maxIndexA, maxIndexB] = findSimilaritiesUpOrDown(arrayA, arrayB, startIndexA, startIndexB, 1);
+        var minIndex = findSimilaritiesUpOrDown(arrayA, arrayB, startIndexA, startIndexB, -1);
+        var minIndexA = minIndex[0];
+        var minIndexB = minIndex[1];
+        var maxIndex = findSimilaritiesUpOrDown(arrayA, arrayB, startIndexA, startIndexB, 1);
+        var maxIndexA = maxIndex[0];
+        var maxIndexB = maxIndex[1];
+
         return [
             [
                 [minIndexA, maxIndexA],
@@ -14,8 +19,8 @@ function compareArrays(arrayA, arrayB, startIndexA) {
     else {
         return [];
     }
-
 }
+
 function go(arrayA, arrayB, complexity) {
     var indexesA = chooseIndexes(arrayA.length, complexity);
     var totalCorrectIndexes = [];
