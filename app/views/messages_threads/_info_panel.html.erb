@@ -180,6 +180,10 @@
         }
         else {
             $('.data input, .data textarea').prop('readOnly', true);
+            $notes = $('.data textarea.constraints');
+            if($notes.val() == '')
+              $notes.parent().hide();
+
             $(".data select").prop('disabled', true);
             $(".data .input-like").addClass('disabled');
 
@@ -1320,6 +1324,12 @@
 
     <div class="data">
       <div class="data-entry linear-form-entry locale-selection">
+        <div class="data-entry">
+          <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
+          <%= text_area_tag :constraints, messages_thread.computed_data[:constraints],
+                            class: "data-entry form-control constraints" %>
+        </div>
+
         <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
         <div class="semi-data-entry">
           <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.french") %>
@@ -1362,9 +1372,7 @@
       <%= render partial: "messages_threads/partials/attendees", locals: {messages_thread: messages_thread} %>
 
       <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
-        <%= text_area_tag :constraints, messages_thread.computed_data[:constraints], class: "data-entry form-control" %>
-
+        <div class="data-entry-name"><%= I18n.t("info_box.time_constraints") %></div>
         <div class="constraint-tiles-container">
 
         </div>
