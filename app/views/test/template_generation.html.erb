@@ -50,7 +50,8 @@
     $scope.event = {
       start: '2016-12-19T18:00:00+01:00',
       end: '2016-12-19T19:00:00+01:00',
-      location: '9 rue Maurice 9 Rue Maurice Grandcoing, 94200 Ivry-sur-Seine'
+      location: '9 rue Maurice 9 Rue Maurice Grandcoing, 94200 Ivry-sur-Seine',
+      timezoneId: 'Europe/Paris'
     };
     $scope.appointment_nature = 'appointment';
     $scope.eventModifications = {
@@ -595,6 +596,11 @@
           <label>Location</label>
           <div class="form-group">
             <input ng-model="event.location" class="form-control" ng-change="refreshTemplates()">
+          </div>
+
+          <label>Timezone</label>
+          <div class="form-group">
+            <input ng-model="event.timezoneId" class="form-control" ng-change="refreshTemplates()">
           </div>
         </form>
       </td>

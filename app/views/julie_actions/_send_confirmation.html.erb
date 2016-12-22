@@ -36,8 +36,13 @@
       beforeUpdateEvent.appointment = window.beforeUpdateData.appointment;
       updatedEventData.appointment = window.threadComputedData.appointment_nature;
 
-      beforeUpdateEvent.call_instructions_details = beforeUpdateEvent.call_instructions.details;
-      updatedEventData.call_instructions_details = updatedEventData.call_instructions.details;
+      beforeUpdateEvent.call_instructions_details = '';
+      updatedEventData.call_instructions_details = '';
+
+      if(beforeUpdateEvent.call_instructions && updatedEventData.call_instructions) {
+        beforeUpdateEvent.call_instructions_details = beforeUpdateEvent.call_instructions.details;
+        updatedEventData.call_instructions_details = updatedEventData.call_instructions.details;
+      }
 
       var eventOrganizationAttributes = {
         timezoneId: 'string',
