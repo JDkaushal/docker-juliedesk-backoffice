@@ -5,7 +5,7 @@
     var useTemplateGenerationService = false;
 
     $(function() {
-      useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2") && window.classification == 'update_event';
+      useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2_for_update_event") && window.classification == 'update_event';
     });
 
     window.drawCalendarCallback = function(){
