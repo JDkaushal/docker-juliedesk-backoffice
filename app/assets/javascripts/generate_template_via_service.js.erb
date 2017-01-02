@@ -22,7 +22,8 @@ var TemplateServiceManager = (function() {
     this.validateParams = function(params) {
       var validatedParams = {
         template: params.template,
-        locale: params.locale
+        locale: params.locale,
+        current_appointment_is_virtual: params.current_appointment_is_virtual
       };
 
       var requiredParams = REQUIRED_PARAMS[params.template];

@@ -3,9 +3,11 @@
     window.do_not_open_calendar_classifications = ['give_info', 'update_event'];
     window.beforeUpdateData = <%== @message_classification.before_update_data.to_json %>
     var useTemplateGenerationService = false;
+    var currentAppointmentIsVirtual = false;
 
     $(function() {
       useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2_for_update_event") && window.classification == 'update_event';
+      currentAppointmentIsVirtual = window.getCurrentAppointment().appointment_kind_hash.is_virtual;
     });
 
     window.drawCalendarCallback = function(){
@@ -48,7 +50,6 @@
         timezoneId: 'string',
         start: 'date',
         end: 'date',
-        location: 'string',
         appointment: 'string'
       };
 
@@ -57,6 +58,11 @@
       var eventOrganizationUpdated = false;
       var eventAnnexeAttributesChanged = [];
       var addedAttendees = [];
+
+      // We only take the location into account to notify the event organization infos update when we are not in a virtual appointment
+      if(!currentAppointmentIsVirtual) {
+        eventOrganizationAttributes.location = 'string';
+      }
 
       _.each(eventOrganizationAttributes, function(val, key) {
         if(val == 'date') {
@@ -81,13 +87,13 @@
 
       _.each(eventAnnexeAttributes, function(attr) {
         if(updatedEventData[attr] != beforeUpdateEvent[attr]) {
-          // We update the description only when neither the attendees nor the call instructions where updated
+          // We update the description only when neither the attendees nor the call instructions where updated and when no organization infos have been updated
           if(attr == 'description') {
-            if(attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1) {
+            if(attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1 && !eventOrganizationUpdated) {
               eventAnnexeAttributesChanged.push(attr);
             }
           } else {
-            eventAnnexeAttributesChanged.push(attr);
+              eventAnnexeAttributesChanged.push(attr);
           }
         }
       });
@@ -113,6 +119,7 @@
           locale: window.threadComputedData.locale,
           appointment_nature: window.threadComputedData.appointment_nature,
           event: window.currentEventTile.event,
+          current_appointment_is_virtual: currentAppointmentIsVirtual,
           modifications: window.getEventModifications()
         };
 

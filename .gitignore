@@ -13,3 +13,4 @@ coverage
 doc
 script/start_resque.sh
 script/stop_resque.sh
+/node_modules
