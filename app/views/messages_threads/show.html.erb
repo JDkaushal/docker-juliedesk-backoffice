@@ -302,7 +302,7 @@
           <% if @messages_thread.to_be_merged && (session[:privilege] == Operator::PRIVILEGE_ADMIN ||
               session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 ||
               session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2) %>
-              <div class="cancel-to-merge-button"><span class="cancel-to-merge-sprite"></span><span class="to-merge-text"><%= I18n.t("common.cancel_to_merge", operator_name: @messages_thread.to_be_merged_operator.name) %></span><span class="cancel-to-be-merged-sprite" id="cancel_to_be_merged_button"></span></div>
+              <div class="cancel-to-merge-button"><span class="cancel-to-merge-sprite"></span><span class="to-merge-text"><%= I18n.t("common.cancel_to_merge", operator_name: @messages_thread.to_be_merged_operator.try(:name)) %></span><span class="cancel-to-be-merged-sprite" id="cancel_to_be_merged_button"></span></div>
           <% end %>
 
           <div id="show-calendar-button" class="thread-button btn btn-sm btn-default"><%= I18n.t("actions.show_calendar") %></div>

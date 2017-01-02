@@ -47,4 +47,5 @@ Rails.application.configure do
   ENV['DOMAIN_NAME'] = 'test-backoffice.herokuapp.com'
 
   ENV['STAGING_APP'] = nil
+  ENV['REDIS_URL_FOR_ACCOUNTS_CACHE'] = 'redis://127.0.0.1/0'
 end

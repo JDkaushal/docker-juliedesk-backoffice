@@ -37,9 +37,11 @@ RSpec.configure do |config|
 
   config.before(:each) do
     DatabaseCleaner.start
+    REDIS_FOR_ACCOUNTS_CACHE.flushall
   end
 
   config.after(:each) do
     DatabaseCleaner.clean
+    REDIS_FOR_ACCOUNTS_CACHE.flushall
   end
 end

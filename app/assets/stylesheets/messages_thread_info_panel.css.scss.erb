@@ -42,6 +42,11 @@
     line-height: 30px;
     display: none;
     z-index: 2;
+
+    &.no-account-page {
+      top: 40px;
+      display: block;
+    }
   }
 
   #thread-header-other-entries-container {
@@ -682,7 +687,13 @@
 
 }
 
-li.contact-autocomplete-item {
+li{
+  &.contact-autocomplete-item {
+  }
+  &.contact-autocomplete-empty {
+    color: red;
+  }
+
   .contact-autocomplete-name {
     font-size: 14px !important;
   }
@@ -698,14 +709,102 @@ li.contact-autocomplete-item {
 }
 
 .associate-to-account-container {
-  border: 1px solid #ccc;
-  padding: 10px;
   margin: 20px 0 0 0;
   input#account-email-input {
     font-size: 14px;
     width: 100%;
     padding: 5px;
     margin: 10px 0 20px 0;
+  }
+  
+  .explanation {
+    background-color: #F6A1A1;
+    padding: 10px;
+  }
+
+  .account-association-no-suggestion-container {
+    padding: 10px;
+    .explanation {
+      margin-bottom: 10px;
+    }
+  }
+
+  .account-association-candidates {
+    border: 1px solid #8C8C8C;
+    margin-bottom: 10px;
+    max-height: 400px;
+    overflow: auto;
+
+    .account-association-candidate {
+      border-bottom: 1px solid #8C8C8C;
+      padding: 5px;
+      cursor: pointer;
+
+      .candidate-name {
+        font-weight:bold;
+        font-size:14px;
+      }
+      .candidate-email {
+        font-weight:bold;
+      }
+
+      .no-results-error {
+        color: red;
+        cursor: default;
+      }
+
+      &.highlighted {
+        color: white;
+        background-color: $darkBlue;
+      }
+
+      &:hover {
+        background-color: #ccc;
+      }
+
+      &.no-results {
+        &:hover {
+          background-color: inherit;
+        }
+      }
+    }
+  }
+
+  .merging-options-container {
+    margin-top: 30px;
+
+    .merge-thread-button {
+      margin: 10px 0;
+      background-color: white;
+      border-color: #ddd;
+    }
+  }
+
+  .or {
+    text-align: center;
+  }
+
+  .not-enough-infos-to-associate-button {
+    margin: 10px 0;
+    background-color: white;
+    border-color: #ddd;
+  }
+
+  .associate-to-account-button {
+    clear: both;
+    &[disabled] {
+      background-color: #8C8C8C !important;
+      border-color: #8C8C8C !important;
+    }
+  }
+
+  .no-account-tooltip {
+    width: 330px;
+    height: 34px;
+    position: relative;
+    float: left;
+    top: 34px;
+    margin-top: -34px;
   }
 }
 

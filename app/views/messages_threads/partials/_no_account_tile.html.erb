@@ -1,0 +1,69 @@
+<%= javascript_include_tag 'angular_no_account_tile_app' %>
+
+<div id="no_account_tile" ng-controller="no-account-tile-controller" ng-cloak>
+
+  <div class="associate-to-account-container">
+
+    <div ng-show="accountsAutocompleteSource.length > 0">
+      <div class="merging-options-container" ng-show="threadToMerge">
+        <div ng-hide="inJulieAction">
+          <div class="explanation">
+            <span class="text">Aucun client auquel associer le thread n'a été détecté mais l'un des interlocuteurs a participé récemment à un autre thread. Choisissez l'action qui convient :</span>
+          </div>
+          <div class="merge-thread-button btn btn-block" ng-click="clickOnMergeThread()">Associer à un autre thread</div>
+          <div class="or">OU</div>
+          <div class="not-enough-infos-to-associate-button btn btn-block" ng-click="clickOnNotEnoughInfos()">Demander plus d'infos sur le client</div>
+        </div>
+
+        <div ng-show="inJulieAction">
+          <div class="explanation">
+            <span class="text">Les infos présentes dans le thread ne permettent pas de l'associer à un client.<br><br>Veuillez demander à l'interlocuteur de donner le nom, le prénom et l'adresse email du client concerné ou de le mettre en copie afin de lui associer le thread.</span>
+          </div>
+        </div>
+      </div>
+
+      <div ng-hide="threadToMerge">
+        <input id="account-email-input" ng-model="searchTerm" placeholder="Filtrer sur le nom, le prénom ou l'email"/>
+
+        <div class="account-association-candidates">
+
+          <div class="account-association-candidate" ng-hide="accountsCandidates.length == 0" ng-repeat="candidate in accountsCandidates track by $index" ng-class="{'highlighted':candidate.highlighted}" ng-click="highlightCandidate(candidate)">
+            <div class="candidate-name">{{candidate.name}}</div>
+            <div class="candidate-email">{{candidate.email}}</div>
+            <div class="candidate-company">{{candidate.company}}</div>
+            <div class="candidate-alias">{{candidate.email_alias}}</div>
+          </div>
+
+          <div ng-show="accountsCandidates.length == 0">
+            <div class="account-association-candidate no-results">
+              <div class="no-results-error">Pas de résultats</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="no-account-tooltip" ng-show="!accountIsAllowed" title="Sélectionnez dans la liste le client auquel associer le thread"></div>
+          <div class="associate-to-account-button btn btn-block btn-success" ng-disabled="!accountIsAllowed" ng-click="clickOnAssociate()">Associate</div>
+        </div>
+
+        <div class="not-enough-infos-to-associate-button btn btn-block" ng-click="clickOnNotEnoughInfos()" ng-hide="inJulieAction">Not enough info to associate</div>
+      </div>
+    </div>
+
+    <div class="account-association-no-suggestion-container" ng-show="accountsAutocompleteSource.length == 0">
+      <div ng-hide="inJulieAction">
+        <div class="explanation" >
+          <span class="text">Aucun client auquel associer le thread n'a été détecté. Veuillez demander plus d'infos sur le client.</span>
+        </div>
+
+        <div class="not-enough-infos-to-associate-button btn btn-block" ng-click="clickOnNotEnoughInfos()">Demander plus d'infos sur le client</div>
+      </div>
+
+      <div ng-show="inJulieAction">
+        <div class="explanation" >
+          <span class="text">Les infos présentes dans le thread ne permettent pas de l'associer à un client.<br><br>Veuillez demander à l'interlocuteur de donner le nom, le prénom et l'adresse email du client concerné ou de le mettre en copie afin de lui associer le thread.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

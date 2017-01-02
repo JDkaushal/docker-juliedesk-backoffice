@@ -1,9 +1,12 @@
 <%= javascript_include_tag 'angular_dependencies' %>
 <script>
+    window.threadId = <%= @messages_thread.id %>;
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.otherAccountEmails = _.filter(window.otherAccountEmails, function (email) {
         return email && email != "<%= @messages_thread.account_email %>";
     });
+
+    window.threadToMerge = <%= @messages_thread.to_be_merged %>;
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 
@@ -21,117 +24,30 @@
       return  allowedAttendees.indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
-$(function() {
-    var accountsAutocompleteSource = <%==
-        (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
-            [{
-                email: contact['email'],
-                name: contact['full_name'],
-                company: "#{contact['company_hash'].try(:[], 'name')}"
-            }] +
-            (contact['email_aliases'] || []).map do |email_alias|
-            {
-                email: contact['email'],
-                name: contact['full_name'],
-                company: "#{contact['company_hash'].try(:[], 'name')}",
-                email_alias: email_alias
-            }
-            end
-        end.flatten.to_json
-        %>;
+    window.accountsAutocompleteSource = <%==
+      @messages_thread.accounts_candidates.map{ |candidate_email| Account.create_for_autocomplete(candidate_email, {accounts_cache: local_assigns[:accounts_cache_light]})}.flatten.to_json
+    %>;
 
+    window.allowedAccountsEmails = _.uniq(
+        _.compact(
+            _.flatten(
+                _.map(window.accountsAutocompleteSource, function(account) { return [account.email, account.email_alias]; })
+            )
+        )
+    );
 
-
-    $("#account-email-input").autocomplete({
-        source: function(request, callback) {
-            callback(
-                    _.union(
-                            _.filter(accountsAutocompleteSource, function (contact) {
-                                return (
-                                                contact.name.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                contact.email.toLowerCase().indexOf(request.term.toLowerCase()) > -1 ||
-                                                contact.company.toLowerCase().indexOf(request.term.toLowerCase()) > -1
-                                        ) &&
-                                        contact.email_alias == null;
-                            }),
-                            _.filter(accountsAutocompleteSource, function (contact) {
-                                return contact.email_alias &&
-                                        contact.email.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                        contact.name.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                        contact.company.toLowerCase().indexOf(request.term.toLowerCase()) == -1 &&
-                                        contact.email_alias.toLowerCase().indexOf(request.term.toLowerCase()) > -1;
-                            })
-                    )
-            );
-        },
-        focus: function (event, ui) {
-            $("#account-email-input").val(ui.item.email);
-            return false;
-        },
-        select: function (event, ui) {
-            $("#account-email-input").val(ui.item.email);
-            return false;
-        },
-        delay: 0,
-        minLength: 0
-    }).data("ui-autocomplete")._renderItem = function (ul, item) {
-        return $("<li>")
-                .addClass("contact-autocomplete-item")
-                .data("item.autocomplete", item)
-                .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
-                .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
-                .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
-                .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
-                .appendTo(ul);
-    };
-
-    $(".ui-autocomplete").css({
-        maxHeight: 200,
-        width: 200,
-        fontSize: 12,
-        overflowY: "scroll",
-        overflowX: "hidden"
-    });
-    $(".associate-to-account-button").click(function() {
-        $.ajax({
-            url: "/messages_threads/<%= messages_thread.id %>/associate_to_account",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                account_email: $("#account-email-input").val()
-            }),
-            success: function() {
-                window.location = window.location;
-            },
-            error: function () {
-                window.location = window.location;
-            }
-        })
-    });
-})
+  $(function() {
+    $( document ).tooltip();
+  })
 </script>
 
 <div class="messages-thread-info-panel">
-
-  <div class="message-container"></div>
+  <div class="message-container no-account-page"><%= controller_name == "julie_actions" ? "Demandez plus d'infos sur le client" : "Associez le thread à un client" %></div>
 
   <div id="thread-header-other-entries-container"></div>
 
 
   <div class="classic-info-panel">
-
-
-    <div class="account">
-      <div class="no-account-detected">
-        <%= I18n.t("info_box.no_account_found") %>
-        <div class="no-account-email"><%= messages_thread.messages.sort_by(&:received_at).first.server_message['from'] %></div>
-      </div>
-
-      <div class="associate-to-account-container">
-        <input id="account-email-input"/>
-
-        <div class="associate-to-account-button btn btn-block btn-success">Associate to account</div>
-      </div>
-    </div>
+    <%= render 'messages_threads/partials/no_account_tile' %>
   </div>
 </div>

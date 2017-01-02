@@ -23,7 +23,33 @@
       outline: none;
       font-size: 14px;
       padding: 3px;
+      
+      &.invalid {
+        border-color: red;
+      }
     }
+
+    .account-association-button {
+      &.change-account-button {
+        &[disabled] {
+          background-color: #8C8C8C !important;
+          border-color: #8C8C8C !important;
+        }
+      }
+    }
+
+    .account-association-error-area {
+      color: red;
+    }
+
+    .account-association-tooltip {
+      width: 74px;
+      height: 30px;
+      position: absolute;
+      top: 10px;
+      left: 264px;
+    }
+
   }
 
   #julie-should-not-work-now-panel {

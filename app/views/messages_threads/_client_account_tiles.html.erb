@@ -14,8 +14,10 @@
   <% end %>
 
   <div class="change-account-container" ng-show="changingAccount">
-    <input id="change-account-input">
-    <div class="change-account-button btn btn-sm btn-success" ng-click="changeMainAccount()" ng-hide="changeAccountLoading">Change</div>
+    <input id="change-account-input" ng-keyup="checkNewAccountValidity()" ng-paste="checkNewAccountValidity()" ng-class="{invalid: !accountIsAllowed}">
+    <div class="account-association-button change-account-button btn btn-sm btn-success" ng-click="changeMainAccount()" ng-hide="changeAccountLoading" ng-disabled="!accountIsAllowed">Change</div>
+    <div class="account-association-tooltip" ng-show="!accountIsAllowed" title="{{accountChangeTooltipMessage}}"></div>
+    <div class="account-association-error-area" ng-show="!accountIsAllowed" title="{{accountChangeTooltipMessage}}">email client non autorisé</div>
     <%= image_tag "ajax-loader.gif", class: "change-account-spinner", :"ng-show" =>"changeAccountLoading" %>
   </div>
 

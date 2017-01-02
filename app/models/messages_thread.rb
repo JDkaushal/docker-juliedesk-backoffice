@@ -22,6 +22,26 @@ class MessagesThread < ActiveRecord::Base
 
   BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
 
+  def archive
+    EmailServer.archive_thread(messages_thread_id: self.server_thread_id)
+    self.update({
+                 should_follow_up: false,
+                 in_inbox: false
+               })
+
+    if ENV['PUSHER_APP_ID']
+      Pusher.trigger('private-global-chat', 'archive', {
+          :message => 'archive',
+          :message_thread_id => self.id
+      })
+    elsif ENV['RED_SOCK_URL']
+      RedSock.trigger "private-global-chat", 'archive', {
+          message: "archive",
+          :message_thread_id => self.id
+      }
+    end
+  end
+
   def self.basic_operator_check_thread_to_reject(messages_thread)
     !messages_thread.account ||
         messages_thread.sent_to_admin ||
@@ -208,8 +228,8 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def julie_alias
-    real_julie_aliases = self.julie_aliases
+  def julie_alias(params={})
+    real_julie_aliases = self.julie_aliases(params)
     if real_julie_aliases.empty?
       JulieAlias.find_by_email("julie@juliedesk.com")
     else
@@ -288,7 +308,7 @@ class MessagesThread < ActiveRecord::Base
       }
     }.group_by{ |contact|
       contact[:email]
-    }.map{ |email, contacts|
+    }.map{ |_, contacts|
       contacts.max{|contact| "#{contact[:name]}".length}
     }
   end
@@ -647,31 +667,37 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  # <b>DEPRECATED:</b> All thread accounts associations have been moved to ThreadAccountAssociation::Manager.
+  # Not used anymore
   def self.find_account_email server_thread, params={}
-    account_emails = self.find_account_emails(server_thread, params)
-    if account_emails.length == 1
-      account_emails[0]
-    else
-      nil
-    end
+    raise Exceptions::ThreadAccountAssociation::MigratedMethodError
+
+    # account_emails = self.find_account_emails(server_thread, params)
+    # if account_emails.length == 1
+    #   account_emails[0]
+    # else
+    #   nil
+    # end
   end
 
-
+  # <b>DEPRECATED:</b> All thread accounts associations have been moved to ThreadAccountAssociation::Manager.
   def self.find_account_emails server_thread, params={}
-    first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
-    return [] if first_email.nil?
-    email = ApplicationHelper.strip_email(first_email['from'])
+    raise Exceptions::ThreadAccountAssociation::MigratedMethodError
 
-    account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
-
-    # Account is not the sender
-    if account_emails.empty?
-      contacts = self.contacts(server_messages_to_look: [first_email])
-      other_emails = contacts.map{|contact| contact[:email]}
-      account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
-    end
-
-    account_emails
+    # first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
+    # return [] if first_email.nil?
+    # email = ApplicationHelper.strip_email(first_email['from'])
+    #
+    # account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
+    #
+    # # Account is not the sender
+    # if account_emails.empty?
+    #   contacts = self.contacts(server_messages_to_look: [first_email])
+    #   other_emails = contacts.map{|contact| contact[:email]}
+    #   account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+    # end
+    #
+    # account_emails
   end
 
   # Used for debugging purposes

@@ -1,5 +1,16 @@
 en:
   automatic_reply_emails:
+    target_account_precisions:
+      text:
+        with_julie_alias: |
+          Hello,
+
+          To avoid any confusion, please indicate the full name and email address of the person you are trying to connect with or add them in copy (in CC) in your email.
+        without_julie_alias: |
+          Hello,
+
+          I looked up your email address and I couldn't find it in the list of the executives I work with, nor as a guest in a meeting that I'm scheduling.
+          If you would like to set up a meeting with one of the executives I work with, please CC them in your request email.
     mailing_list:
       text: |
         Hi %{client_name},

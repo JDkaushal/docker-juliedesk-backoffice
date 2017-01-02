@@ -4,6 +4,13 @@
     clientAccountTileApp.controller("client-account-tile-controller", ['$scope', '$interval', '$http', '$timeout', function ($scope, $interval, $http, $timeout) {
         $scope.changeAccountLoading = false;
         $scope.julieCanWorkNow = true;
+        $scope.newAccountEmail = null;
+        $scope.accountChangeTooltipMessage = '';
+        $scope.accountIsAllowed = false;
+
+        var $changeAccountButton = $('.change-account-button');
+        var $changeAccountInput = $('#change-account-input');
+
         $scope.processAccount = function (account) {
             account.infoExtended = false;
 
@@ -38,6 +45,20 @@
                 window.addAllowedAttendeesEmailsFromCurrentNotes(account.current_notes);
                 window.addAllowedAttendeesEmailsFromCurrentNotes(account.awaiting_current_notes);
             }
+        };
+
+        $scope.$watch('accountIsAllowed', function(newVal, oldVal) {
+            if(!newVal) {
+                $scope.accountChangeTooltipMessage = "L'adresse email du client n'apparait pas dans le thread";
+            }
+        });
+
+        $scope.checkNewAccountValidity = function() {
+            $scope.accountIsAllowed = $scope.isNewAccountAllowed($changeAccountInput.val());
+        };
+
+        $scope.isNewAccountAllowed = function(accountEmail) {
+          return window.allowedAccountsEmails.indexOf(accountEmail) > -1;
         };
 
         $scope.canJulieWorkNowForAccount = function(mainAccount) {
@@ -126,12 +147,14 @@
                 },
                 focus: function (event, ui) {
                     $("#change-account-input").val(ui.item.email);
-                    angular.element($("#change-account-input")[0]).scope().newAccountEmail = ui.item.email;
+                    window.clientAccountTilesScope.newAccountEmail = ui.item.email;
+                    window.clientAccountTilesScope.checkNewAccountValidity(ui.item.email);
                     return false;
                 },
                 select: function (event, ui) {
                     $("#change-account-input").val(ui.item.email);
-                    angular.element($("#change-account-input")[0]).scope().newAccountEmail = ui.item.email;
+                    window.clientAccountTilesScope.newAccountEmail = ui.item.email;
+                    window.clientAccountTilesScope.checkNewAccountValidity(ui.item.email);
                     return false;
                 },
                 delay: 0,

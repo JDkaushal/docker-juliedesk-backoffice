@@ -141,6 +141,28 @@ class Account
     nil
   end
 
+  def self.create_for_autocomplete(email, params)
+    cache = params[:accounts_cache]
+    found_accounts = []
+    data = get_account_details(email, {accounts_cache: cache})
+
+    company_name = data['company_hash'].try(:[], 'name')
+    main_account = {email: data['email'], name: data['full_name'], company: company_name}
+
+    found_accounts.push(main_account)
+    data['email_aliases'].each do |email_alias|
+      alias_account = main_account.dup
+      alias_account[:email_alias] = email_alias
+      found_accounts.push(alias_account)
+    end
+
+    found_accounts
+  end
+
+  def company
+    self.company_hash.try(:[], 'name')
+  end
+
   # Maybe not the correct way
   def compute_threads_count_today(messages_threads_from_today)
     today_threads_count = messages_threads_from_today[self.email]

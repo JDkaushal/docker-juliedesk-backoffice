@@ -22,6 +22,8 @@ var TemplateManager = function(params){
         {value: window.getCurrentAppointment && window.getCurrentAppointment() && window.getCurrentAppointment().designation_in_email, localized: true}
     ];
 
+    this.defaultTemplate = window.helpers.getQueryParams(window.location.search).default_template;
+
     this.menuPanelWrapperNode.hide();
 
     this.currentQuery = '';
@@ -51,9 +53,20 @@ var TemplateManager = function(params){
                 });
 
                 setTimeout(function() {
-                    if(!that.skipDefaultItem) {
-                        that.clickOnTemplateItem(that.templates[0]);
+                  var templateSet = false;
+                  if(that.defaultTemplate) {
+                    var foundTemplate = _.find(that.templates, function(template) {
+                      return template.text().toLowerCase() == that.defaultTemplate.toLowerCase();
+                    });
+                    if(foundTemplate) {
+                      that.clickOnTemplateItem(foundTemplate);
+                      templateSet = true;
                     }
+                  }
+
+                  if(!templateSet && !that.skipDefaultItem) {
+                    that.clickOnTemplateItem(that.templates[0]);
+                  }
                 }, 500);
             }
         });

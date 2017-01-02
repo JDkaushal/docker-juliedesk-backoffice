@@ -80,6 +80,41 @@ class Message < ActiveRecord::Base
     EmailServer.deliver_message(email_params)['id']
   end
 
+  def auto_reply_target_account_precisions_email
+   self.interprete
+
+   locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
+   current_messages_thread = self.messages_thread
+   current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+
+   julie_alias = JulieAlias.find_by_email("julie@juliedesk.com")
+   using_julie_alias = true
+
+   html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
+   text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+   text = I18n.t("automatic_reply_emails.target_account_precisions.text.#{using_julie_alias ? 'with_julie_alias' : 'without_julie_alias'}", locale: locale_to_use)
+
+   if locale_to_use == "fr"
+     html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
+     text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
+   end
+
+    email_params = {
+      subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
+      from: julie_alias.generate_from,
+      to: [current_reply_all_recipients['from'].first['email']],
+      cc: [],
+      text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
+      html: "#{text_to_html("#{text}#{text_signature}")}#{html_signature}",
+      quote_replied_message: true,
+      reply_to_message_id:  self.server_message_id
+    }
+
+   current_messages_thread.update(account_request_auto_email_sent: true)
+
+   EmailServer.deliver_message(email_params)['id']
+  end
+
   def initial_recipients params={}
     # Get basic reply all recipients (details in message#generate_reply_all_recipients)
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
@@ -409,6 +444,8 @@ class Message < ActiveRecord::Base
     # Accounts in cache (light mode)
     accounts_cache = Account.accounts_cache(mode: "light")
 
+    account_association_data_holder = ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, julie_aliases_emails)
+
     # Store the messages_thread_ids that will be updated by this method
     updated_messages_thread_ids = []
 
@@ -430,23 +467,36 @@ class Message < ActiveRecord::Base
 
         if messages_thread
           if messages_thread.account_email == nil
-            account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-            account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-            messages_thread.update_attributes({
-                                                  account_email: account_email,
-                                                  account_name: account.try(:usage_name)
-                                              })
+            # account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
+            # account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+            # messages_thread.update_attributes({
+            #                                       account_email: account_email,
+            #                                       account_name: account.try(:usage_name)
+            #                                   })
+            ThreadAccountAssociation::Manager.new(
+                data_holder: account_association_data_holder,
+                messages_thread: messages_thread,
+                server_thread: server_thread
+            ).compute_association
           end
         else
-          account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-          account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
+          # account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
+          # account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+          # messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
+
+          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
+
+          ThreadAccountAssociation::Manager.new(
+              data_holder: account_association_data_holder,
+              messages_thread: messages_thread,
+              server_thread: server_thread
+          ).compute_association
 
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
             messages_thread.tag_as_multi_clients
           end
 
-          ClientSuccessTrackingHelpers.async_track("New Request Sent", account_email, {
+          ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
               bo_thread_id: messages_thread.id,
               julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
           })
