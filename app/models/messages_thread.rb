@@ -209,7 +209,16 @@ class MessagesThread < ActiveRecord::Base
     if real_julie_aliases.empty?
       JulieAlias.find_by_email("julie@juliedesk.com")
     else
-      real_julie_aliases.first
+      selected_real_julie_alias = nil
+
+      # When there is an account linked to the thread, we will try to use the julie alias of him in priority if multiple julie account are available
+      if account_email.present?
+        account = self.account
+        thread_owner_julie_aliases = account.julie_aliases || []
+        selected_real_julie_alias = (thread_owner_julie_aliases & real_julie_aliases).first
+      end
+
+      selected_real_julie_alias || real_julie_aliases.first
     end
   end
 
