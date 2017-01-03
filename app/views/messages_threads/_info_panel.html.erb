@@ -1031,14 +1031,15 @@
         return (callInstructionsDetails && callInstructionsDetails != "") || callInstructionsTarget == "later";
       }
       else {
-        var currentAddressObject = window.getCurrentAddressObject();
-        if(currentAddressObject) {
-          var currentAddress = currentAddressObject.address;
-          return (currentAddress && currentAddress != "") || currentAddressObject.kind == "client_will_define";
-        }
-        else {
-          return false;
-        }
+        return ($('input#location').val()).trim().length > 0
+//        var currentAddressObject = window.getCurrentAddressObject();
+//        if(currentAddressObject) {
+//          var currentAddress = currentAddressObject.address;
+//          return (currentAddress && currentAddress != "") || currentAddressObject.kind == "client_will_define";
+//        }
+//        else {
+//          return false;
+//        }
 
       }
     }
