@@ -215,7 +215,10 @@ class MessagesThread < ActiveRecord::Base
       if account_email.present?
         account = self.account
         thread_owner_julie_aliases = account.julie_aliases || []
-        selected_real_julie_alias = (thread_owner_julie_aliases & real_julie_aliases).first
+        selected_real_julie_alias = (thread_owner_julie_aliases & real_julie_aliases.map(&:email)).first
+        if selected_real_julie_alias.present?
+          selected_real_julie_alias = JulieAlias.find_by_email(selected_real_julie_alias)
+        end
       end
 
       selected_real_julie_alias || real_julie_aliases.first
