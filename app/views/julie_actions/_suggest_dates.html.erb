@@ -142,11 +142,13 @@
           locale: threadComputedData.locale,
           is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
           attendees: attendeesForService,
+          appointment_type: window.getCurrentAppointment().kind,
           appointment_in_email: {
             en: window.getCurrentAppointment().title_in_email.en,
             fr: window.getCurrentAppointment().title_in_email.fr
           },
           designation_in_email: window.getCurrentAppointment().designation_in_email,
+
           location_in_email: locationInEmail,
           should_ask_location: window.shouldAskLocation(),
           missing_contact_info: $('#attendeesCtrl').scope().missingContactInfo()

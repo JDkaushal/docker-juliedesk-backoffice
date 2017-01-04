@@ -1028,10 +1028,10 @@
       if(isCurrentAppointmentVirtual()) {
         var callInstructionsDetails = window.threadComputedData.call_instructions.details;
         var callInstructionsTarget = window.threadComputedData.call_instructions.target;
-        return (callInstructionsDetails && callInstructionsDetails != "") || callInstructionsTarget == "later";
+        return (callInstructionsDetails && callInstructionsDetails != "") || callInstructionsTarget == "later" || window.getCurrentAppointment().kind == 'skype';
       }
       else {
-        return ($('input#location').val()).trim().length > 0
+        return ($('input#location').val()).trim().length > 0;
 //        var currentAddressObject = window.getCurrentAddressObject();
 //        if(currentAddressObject) {
 //          var currentAddress = currentAddressObject.address;

@@ -74,6 +74,11 @@
       fr: "un café"
     };
 
+    $scope.designationInEmail = {
+      en: "the coffee",
+      fr: "le café"
+    };
+
     $scope.addAttendee = function () {
       var attendee = $scope.examples.attendees[$scope.attendees.length % $scope.examples.attendees.length];
       $scope.attendees.push(attendee);
@@ -130,6 +135,7 @@
         timezones: _.map($scope.timezones, "timezone"),
         default_timezone: $scope.defaultTimezone,
         appointment_in_email: $scope.appointmentInEmail,
+        appointment_type: $scope.appointment_nature,
         location_in_email: $scope.shouldAskLocation ? {} : $scope.locationInEmail,
         is_virtual: $scope.isVirtual,
         attendees: $scope.attendees,
@@ -368,6 +374,37 @@
       </td>
 
       <td class="active">
+        <label>Appointment Nature</label>
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <select class="data-entry form-control" ng-model="appointment_nature">
+              <option value="appointment">appointment</option>
+              <option value="breakfast">breakfast</option>
+              <option value="call">call</option>
+              <option value="coffee">coffee</option>
+              <option value="dinner">dinner</option>
+              <option value="drink">drink</option>
+              <option value="hangout">hangout</option>
+              <option value="lunch">lunch</option>
+              <option value="meeting">meeting</option>
+              <option value="skype">skype</option>
+              <option value="visio">visio</option>
+              <option value="webex">webex</option>
+              <option value="work_session">work_session</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Designation in email</label>
+        <div class="form-group">
+          <div class="input-group" data-toggle="buttons">
+            <input ng-model="designationInEmail.en" class="form-control" ng-change="refreshTemplates()">
+            <div class="input-group-addon" ng-class="'invisible'"></div>
+            <input ng-model="designationInEmail.fr" class="form-control" ng-change="refreshTemplates()">
+          </div>
+
+        </div>
+
         <label>Appointment designation</label>
         <div class="form-group">
           <div class="input-group" data-toggle="buttons">
