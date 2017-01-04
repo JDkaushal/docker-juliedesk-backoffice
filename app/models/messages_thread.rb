@@ -112,6 +112,7 @@ class MessagesThread < ActiveRecord::Base
       client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
       body = {blocking_users_emails: recipients_with_lost_access}
       client.post(BLOCKED_THREAD_NOTIFY_URL, json: body)
+      Rails.logger.info "Sent Blocked users for thread #{self.id}"
     end
   end
 

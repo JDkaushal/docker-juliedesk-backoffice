@@ -356,6 +356,8 @@ class Message < ActiveRecord::Base
   end
 
   def self.import_emails(notify_access_lost = false)
+    Rails.logger.info "Importing emails with notify access lost : #{notify_access_lost}"
+
     # Get server threads in inbox, only versions (quick call)
     server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 1000, only_version: true)
     inbox_server_thread_ids = server_threads.map{|st| st['id']}
@@ -499,7 +501,7 @@ class Message < ActiveRecord::Base
 
           end
         end
-
+        
         messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access) if notify_access_lost
         messages_thread.update_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
