@@ -213,11 +213,12 @@ class MessagesThread < ActiveRecord::Base
 
       # When there is an account linked to the thread, we will try to use the julie alias of him in priority if multiple julie account are available
       if account_email.present?
-        account = self.account
-        thread_owner_julie_aliases = account.julie_aliases || []
-        selected_real_julie_alias = (thread_owner_julie_aliases & real_julie_aliases.map(&:email)).first
-        if selected_real_julie_alias.present?
-          selected_real_julie_alias = JulieAlias.find_by_email(selected_real_julie_alias)
+        if account = self.account
+          thread_owner_julie_aliases = account.julie_aliases || []
+          selected_real_julie_alias = (thread_owner_julie_aliases & real_julie_aliases.map(&:email)).first
+          if selected_real_julie_alias.present?
+            selected_real_julie_alias = JulieAlias.find_by_email(selected_real_julie_alias)
+          end
         end
       end
 
