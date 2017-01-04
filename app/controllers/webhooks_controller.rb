@@ -3,7 +3,7 @@ class WebhooksController < ApplicationController
   protect_from_forgery except: :new_email
 
   def new_email
-    updated_messages_thread_ids = Message.import_emails
+    updated_messages_thread_ids = Message.import_emails(true)
     if ENV['PUSHER_APP_ID']
       Pusher.trigger('private-global-chat', 'new-email', {
           :message => 'new_email',
