@@ -367,8 +367,17 @@ Calendar.prototype.fetchCalendars = function (callback) {
             action: "calendars",
             email: email
         }, function (response) {
-            if(response.sync_status && response.sync_status == 'sync_failed') {
-                alert('Problems with calendars: ' + response.sync_status);
+            var failedCalendarsLogins = [];
+
+            for(var k=0; k < response.statuses.length; k++) {
+                var currentResponseStatus = response.statuses[k];
+                if(currentResponseStatus.sync_status == "sync_failed") {
+                    failedCalendarsLogins.push(currentResponseStatus.calendar_login_username);
+                }
+            }
+
+            if(failedCalendarsLogins.length > 0) {
+                alert('Calendars sync failed for: ' + failedCalendarsLogins.join(', '));
             } else {
                 for(var j=0; j < response.items.length; j++) {
                     var calendarItem = response.items[j];
