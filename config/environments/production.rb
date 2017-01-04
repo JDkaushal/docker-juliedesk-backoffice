@@ -42,8 +42,8 @@ Rails.application.configure do
   config.force_ssl = true
 
   # Logs
-  config.log_level = ENV.fetch("LOG_LEVEL", "INFO")
-  config.logger = Logger.new(STDOUT)
+  config.log_level = :info
+  #config.logger = Logger.new(STDOUT)
   # Use SimpleFormatter so that PID and timestamp are suppressed = pure JSON
   config.logger.formatter = ActiveSupport::Logger::SimpleFormatter.new
 
