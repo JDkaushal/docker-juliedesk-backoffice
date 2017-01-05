@@ -183,6 +183,9 @@
             $notes = $('.data textarea.constraints');
             if($notes.val() == '')
               $notes.parent().hide();
+            else if($notes[0]){
+              $notes.height($notes[0].scrollHeight);
+            }
 
             $(".data select").prop('disabled', true);
             $(".data .input-like").addClass('disabled');
