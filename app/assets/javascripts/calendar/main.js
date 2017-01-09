@@ -644,22 +644,6 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
                 calendar.calendarAllEvents[preferenceHash.email] = [];
             }
-            //if(localWaitingAccounts == 0) {
-            //
-            //
-            //
-            //    if(calendar.initialData.calendarandEventsLoadedFirstTimeCallback) {
-            //        calendar.initialData.calendarandEventsLoadedFirstTimeCallback();
-            //        calendar.initialData.calendarandEventsLoadedFirstTimeCallback = null;
-            //    }
-            //
-            //    if(window.allCalendarEventsFetched) {
-            //        window.allCalendarEventsFetched();
-            //    }
-            //    trackActionV2("Calendar_loaded", {
-            //        client_emails: allEmailsForTracking
-            //    });
-            //}
         }, trackingOptions);
     }
 };
@@ -1455,9 +1439,13 @@ Calendar.prototype.drawEventList = function () {
 Calendar.prototype.drawExternalEventsList = function () {
     var calendar = this;
     if (calendar.getMode() != "suggest_dates") return;
-    var dateTimes = calendar.events.sort(function (a, b) {
+
+    var dateTimes = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+        return ev.beingAdded;
+    }).sort(function (a, b) {
         if (a.start.isAfter(b.start))return 1; else return -1;
     });
+
     dateTimes = $.map(dateTimes, function (v) {
         return moment.tz(v.start.format(), calendar.getCalendarTimezone()).format();
     });

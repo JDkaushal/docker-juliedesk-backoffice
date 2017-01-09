@@ -211,14 +211,19 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
         if (event.beingAdded) {
             if(calendar.getMode() == "suggest_dates" && event.editable) {
 
-                for(var k=0; k<calendar.events.length; k++){
-                    if(calendar.events[k].start.isSame(event.start)){
-                        calendar.events.splice(k, 1);
-                    }
-                }
+                // Not using calendar.events anymore
+                // for(var k=0; k<calendar.events.length; k++){
+                //     if(calendar.events[k].start.isSame(event.start)){
+                //         calendar.events.splice(k, 1);
+                //     }
+                // }
+                // calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
+                //     return toremove.start.isSame(event.start)
+                //         && toremove.beingAdded;
+                // });
+
                 calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
-                    return toremove.start.isSame(event.start)
-                        && toremove.beingAdded;
+                    return toremove.beingAdded && toremove._id == event._id;
                 });
                 calendar.drawEventList();
             }

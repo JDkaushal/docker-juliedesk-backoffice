@@ -393,7 +393,7 @@
           // So we can look for them with Jquery using the regex function '*=' on the href attribute value
           //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
           // Extract emails from emails bodies
-          .concat(extractEmails($('#messages_container .email .body').text()) || [])
+          .concat(extractEmails($('#messages_container .email:not(".from-me") .body').text()) || [])
           // The attendees of the event if any
           //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);

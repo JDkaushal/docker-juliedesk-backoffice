@@ -114,6 +114,7 @@
         $scope.defaultDelayEvents = {};
         $scope.defaultDelayByClient = {};
         $scope.defaultCommutingTimeByClient = {};
+        $scope.destinationsResults = {};
 
         // Used when the window.threadAccount.travel_time_transport_mode is set to 'max'.
         // In this mode we take the longest duration between the driving one and the transit one
@@ -250,6 +251,7 @@
             $scope.eventsWithDefaultCommutingTime[email] = [];
             $scope.otherEvents[email] = [];
             $scope.events[email] = [];
+            $scope.destinationsResults[email] = {};
         };
 
         $scope.computeReferenceLocationForClient = function(email) {
@@ -347,10 +349,6 @@
             $scope.eventsWithDefaultCommutingTime[email] = _.filter($scope.events[email], function(e) {
                 return e.toProcess && e.displayDefaultTime;
             });
-
-            // $scope.eventsWithDefaultTime[email] = _.filter($scope.events[email], function(e) {
-            //     return e.toProcess && e.displayDefaultTime;
-            // });
         };
 
         $scope.sortEventsStartDate = function(events) {
@@ -390,26 +388,31 @@
                         .value();
         };
 
+        $scope.getAllDestinations = function(events) {
+            return _.compact(_.uniq(_.map(events, function(event) { return event.location; })));
+        };
+
         $scope.computeEvents = function(email, events) {
             $scope.maxDistanceTmp[email] = {};
             $scope.pendingGoogleMatrixCall[email] = 0;
+            $scope.destinationsResults[email] = {};
 
-            var groupedEvents = $scope.decomposeEventsIntoFittingGroups(events);
+            //var groupedEvents = $scope.decomposeEventsIntoFittingGroups(events);
+            var allDestinations = $scope.getAllDestinations(events);
+
+            _.each(allDestinations, function(destination) {
+                $scope.destinationsResults[email][destination] = null;
+            });
+
+            var groupedDestinations = $scope.decomposeEventsIntoFittingGroups(allDestinations);
 
             currentGoogleFetchIteration = 0;
             if($scope.preferedMeanOfTransport == 'max') {
-                //console.log('MAX of the means of transport');
-                // _.each(googleUsedTravelModeForMax, function(travelMode) {
-                //     $timeout(function(){
-                //         console.log('started:' + travelMode);
-                //         $scope.simpleGoogleMatrixRequest(email, groupedEvents, travelMode)
-                //     }, 5000);
-                // });
-                $scope.pendingGoogleMatrixCall[email] = groupedEvents.length * googleUsedTravelModeForMaxCount;
-                $scope.computeEventsToGetMax(email, groupedEvents);
+                $scope.pendingGoogleMatrixCall[email] = groupedDestinations.length * googleUsedTravelModeForMaxCount;
+                $scope.computeEventsToGetMax(email, groupedDestinations);
             } else {
-                $scope.pendingGoogleMatrixCall[email] = groupedEvents.length;
-                $scope.simpleGoogleMatrixRequest(email, groupedEvents, $scope.preferedMeanOfTransport);
+                $scope.pendingGoogleMatrixCall[email] = groupedDestinations.length;
+                $scope.simpleGoogleMatrixRequest(email, groupedDestinations, $scope.preferedMeanOfTransport);
             }
         };
 
@@ -434,14 +437,30 @@
             var currentDestinations = [];
             var origin = $scope.originCoordinates;
 
-
             if($scope.originCoordinates.length == 0)
                 origin = $scope.referenceLocation[email];
 
-            _.each(groupedEvents, function(events) {
-                currentDestinations = _.map(events, function(e) { return e.location; });
-                $scope.makeGoogleMatrixRequest(email, travelMode, [origin], currentDestinations, events);
+            _.each(groupedEvents, function(destinations) {
+                $scope.makeGoogleMatrixRequestAlt(email, travelMode, [origin], destinations);
             });
+            // _.each(groupedEvents, function(events) {
+            //     currentDestinations = _.map(events, function(e) { return e.location; });
+            //     $scope.makeGoogleMatrixRequest(email, travelMode, [origin], currentDestinations, events);
+            // });
+        };
+
+        $scope.makeGoogleMatrixRequestAlt = function(email, travelMode, origins, destinations) {
+            if($scope.googleMatrixService) {
+                //$scope.pendingGoogleMatrixCall[email] += 1;
+                $scope.googleMatrixService.getDistanceMatrix(
+                    {
+                        origins: origins,
+                        destinations: destinations,
+                        travelMode: travelMode
+                    }, function(response, status) {
+                        $scope.handleGoogleMatrixResponseAlt(response, destinations, status, email)
+                    });
+            }
         };
 
         $scope.makeGoogleMatrixRequest = function(email, travelMode, origins, destinations, events) {
@@ -455,6 +474,37 @@
                     }, function(response, status) {
                         $scope.handleGoogleMatrixResponse(response, status, events, email)
                     });
+            }
+        };
+
+        $scope.handleGoogleMatrixResponseAlt = function(response, destinations, status, email) {
+            $scope.pendingGoogleMatrixCall[email] -= 1;
+
+            console.log('Matrix API status: ' + status);
+
+            if (status == google.maps.DistanceMatrixStatus.OK) {
+                var currentIndex = 0;
+                var currentDestination, currentResponseDestination;
+                var responseDestinations = response.destinationAddresses;
+
+                _.each(response.rows[0].elements, function(element) {
+                    //currentResponseDestination = responseDestinations[currentIndex];
+
+                    $scope.handleResponseElementAlt(email, element, destinations[currentIndex] , responseDestinations[currentIndex]);
+                    currentIndex += 1;
+                });
+            }
+
+            if($scope.pendingGoogleMatrixCall[email] == 0) {
+                // We display all the computed events on the calendar after having finished every process
+                // It includes:
+                //  - Travel time events
+                //  - Default Time events (for when Google could not calculate a proper travel time
+                $scope.computeEventsTravelTimeValue(email);
+                $scope.computeDefaultCommutingTime(email);
+                $scope.addTravelTimeEventsToCalendar(email);
+                $scope.displayDefaultAppointmentDelay(email);
+                //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
 
@@ -487,6 +537,33 @@
                 $scope.displayDefaultAppointmentDelay(email);
                 //$scope.addDefaultDelayEventsToCalendar(email);
             }
+        };
+
+        $scope.handleResponseElementAlt = function(email, element, destination, responseDestination) {
+            var currentDuration = null;
+            //var currentEventId = event.id;
+
+            if(element.status == google.maps.DistanceMatrixStatus.OK) {
+                currentDuration = element.duration;
+                if(currentDuration) {
+                    currentDuration = Math.floor(currentDuration.value / 60);
+
+                    if(currentDuration > 180) {
+                        currentDuration = $scope.defaultCommutingTimeByClient[email];
+                    }
+
+                    // if(event.forceTravelTimeDurationValue) {
+                    //     currentDuration = event.forceTravelTimeDurationValue;
+                    // }
+                    // Element.duration.value is an integer representing the duration in seconds
+                    // We divide it by 60 then floor it to obtain an approximated duration in minutes
+                    $scope.addCurrentDurationToMaxTmpAlt(email, destination, currentDuration);
+                }
+            } else {
+                $scope.addCurrentDurationToMaxTmpAlt(email, destination, $scope.defaultCommutingTimeByClient[email]);
+            }
+
+            //$scope.getMaxDurationForEventThenCompute(email, destination, responseDestination);
         };
 
         $scope.handleResponseElement = function(email, element, event, destination) {
@@ -552,6 +629,40 @@
                 result = Math.ceil(maxDetails.duration + (0.25 * maxDetails.duration));
 
             return result;
+        };
+
+        $scope.addCurrentDurationToMaxTmpAlt = function(email, destination, duration) {
+            var currentDuration = $scope.destinationsResults[email][destination];
+
+            if(currentDuration) {
+                if(duration > currentDuration) {
+                    currentDuration = duration;
+                }
+            } else {
+                currentDuration = duration;
+            }
+
+            $scope.destinationsResults[email][destination] = currentDuration;
+        };
+
+        $scope.computeEventsTravelTimeValue = function(email) {
+            var currentDuration = null;
+            var currentDestinationTravelTimeValue = null;
+
+            _.each($scope.eventsToCompute[email], function(event) {
+                currentDestinationTravelTimeValue = $scope.destinationsResults[email][event.location];
+                if(event.forceTravelTimeDurationValue) {
+                    currentDestinationTravelTimeValue = event.forceTravelTimeDurationValue;
+                }
+
+                if(currentDestinationTravelTimeValue) {
+                    $scope.buildInfoEvent(email, 'travelTime', event, currentDestinationTravelTimeValue, event.location);
+                } else {
+                    // We will display the default appointment time for this event instead of the travel time
+                    //$scope.eventsWithDefaultCommutingTime[email].push(event);
+                    $scope.eventsWithDefaultTime[email].push(event);
+                }
+            });
         };
 
         $scope.addCurrentDurationToMaxTmp = function(email, eventId, duration) {

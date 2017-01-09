@@ -24,7 +24,6 @@
 
         $scope.init = function() {
             $scope.attachEventsToDom();
-            //$scope.fetchAiDatesSuggestions();
         };
 
         $scope.scrollToAiSuggestionInCalendar = function(suggestedDate) {
@@ -42,10 +41,8 @@
                     var newPost = currentPos + node.offset().top - calendarEventContainer.height();
                     calendarEventContainer.animate({scrollTop: newPost + 220}, 300);
                     $scope.handleAiSuggestionInCalendar(aiSuggestion.trackingId, 'highlight');
-
                 }
             }
-
         };
 
         $scope.aiSuggestionsRemaining = function() {
@@ -159,15 +156,6 @@
             }
 
             $scope.setSuggestions();
-        };
-
-        $scope.highlightAiSuggestion = function(trackingId) {
-            var eventTo
-
-        };
-
-        $scope.unhighlightAiSuggestion = function(trackingId) {
-
         };
 
         $scope.fetchAiDatesSuggestions = function(forceFetch) {
@@ -557,23 +545,6 @@
         };
 
         $scope.getUsedTimezones = function() {
-             //Allow to refresh the thread timezone if it was updated
-            //$scope.allUsedTimezones = [window.threadComputedData.timezone];
-            //
-            //if(window.threadComputedData.is_virtual_appointment) {
-            //    if(!$scope.usedTimezones) {
-            //        $scope.usedTimezones = attendeesService.getUsedTimezones().allUsedTimezones;
-            //    }
-            //
-            //    if($scope.usedTimezones.length > 0) {
-            //        $scope.allUsedTimezones = _.uniq($scope.allUsedTimezones.concat($scope.usedTimezones));
-            //    }
-            //}else {
-            //    $scope.usedTimezones = [];
-            //}
-            //
-            //return $scope.allUsedTimezones;
-
             var result = attendeesService.getUsedTimezones();
 
             if(result) {
