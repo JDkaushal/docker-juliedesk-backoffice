@@ -494,9 +494,9 @@ class MessagesThread < ActiveRecord::Base
     all_messages.select do |server_message|
       server_message['messages_thread_id'] == self.server_thread_id
     end.each do |server_message|
-      server_message['from'].gsub!('?', '')
-      server_message['cc'].gsub!('?', '')
-      server_message['to'].gsub!('?', '')
+      # server_message['from'].gsub!('?', '')
+      # server_message['cc'].gsub!('?', '')
+      # server_message['to'].gsub!('?', '')
 
 
       message = messages_thread_messages.find{|m| m.server_message_id == server_message['id']}
