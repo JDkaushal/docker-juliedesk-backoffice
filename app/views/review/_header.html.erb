@@ -1,11 +1,25 @@
 <div class="header jd-global-header review <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>">
-  <%= link_to "/review" do %>
-      JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
+  <% if params[:action] == "review_turing" %>
+      <%= link_to action: :review_turing_index do %>
+          Julie Desk Backoffice <span class="dot ai"></span> Turing Review
+      <% end %>
+  <% else %>
+    <%= link_to "/review" do %>
+        JulieDesk Backoffice - Review <%= "<GROUP REVIEW>" if params[:action] == "group_review" %>
+    <% end %>
   <% end %>
 
   <% if params[:action] == "review" && !params[:no_next].present? %>
       (<%= @to_review_count %>)
       <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
+          <%= hidden_field_tag :data %>
+          <%= submit_tag "Next", class: "btn btn-success" %>
+      <% end %>
+  <% end %>
+
+  <% if params[:action] == "review_turing" %>
+      <%= form_tag({action: :submit_turing_notation}, method: "post", id: 'review-form') do |f| %>
+          <%= hidden_field_tag :id, params[:id] %>
           <%= hidden_field_tag :data %>
           <%= submit_tag "Next", class: "btn btn-success" %>
       <% end %>

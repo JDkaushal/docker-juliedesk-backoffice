@@ -5,6 +5,7 @@ class Message < ActiveRecord::Base
 
   belongs_to :messages_thread
   has_many :message_classifications
+  has_one :auto_message_classification
   has_many :message_interpretations
 
   attr_accessor :server_message

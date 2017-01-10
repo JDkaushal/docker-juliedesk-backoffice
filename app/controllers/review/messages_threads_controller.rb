@@ -118,7 +118,52 @@ class Review::MessagesThreadsController < ReviewController
     redirect_to action: :review
   end
 
+  def review_turing_index
+    @count_to_review = AutoMessageClassification.where.not(message_id: nil).where(notation: nil).count
+    @auto_message_classifications = AutoMessageClassification.where.not(message_id: nil).where.not(notation: nil).includes(message: :messages_thread).sort_by(&:notation).reverse
+  end
+
+  def review_turing_next
+    redirect_to action: :review_turing, id: find_next_messages_thread_id_to_turing_review
+  end
+
+  def review_turing
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
+    @messages_thread.re_import
+    @messages_thread.mock_conscience_first_message
+
+
+    @messages_thread.account
+
+    @turing_mode = "machine"
+
+    @accounts_cache_light = Account.accounts_cache(mode: "light")
+    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
+  end
+
+  def submit_turing_notation
+    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
+    amc = @messages_thread.messages.sort_by(&:received_at).first.auto_message_classification
+    data = JSON.parse(params[:data]).with_indifferent_access
+    amc.update_attributes({
+        notation: data[:notation],
+        notation_comments: data[:comments],
+                          })
+    next_id = find_next_messages_thread_id_to_turing_review
+    if next_id
+      redirect_to action: :review_turing, id: next_id
+    else
+      redirect_to action: :review_turing_index
+    end
+  end
+
   private
+
+  def find_next_messages_thread_id_to_turing_review
+    AutoMessageClassification.where.not(message_id: nil).where(notation: nil).first.try(:message).try(:messages_thread_id)
+  end
 
   def group_review_next_messages_thread
     oag = OperatorActionsGroup.order("initiated_at ASC").find_by_group_review_status(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)

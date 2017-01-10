@@ -1,0 +1,54 @@
+<div class="col-md-8 col-md-offset-2">
+  <h1>Turing review</h1>
+
+  <h2><%= @auto_message_classifications.count %> reviewed / <%= @count_to_review %> to review</h2>
+
+  <br>
+  <br>
+  <br>
+
+  <% if @count_to_review > 0 %>
+    <%= link_to "Review next", {action: :review_turing_next}, class: "btn btn-primary" %>
+  <% else %>
+      <p>Perfect, everything reviewed.</p>
+  <% end %>
+
+
+  <% if false %>
+
+      <h2>Reviewed:</h2>
+    <table class="table text-center">
+      <tr>
+      <td class="success col-md-3">
+        <h3><%= number_to_percentage(@auto_message_classifications.select{|amc| amc.notation == 5}.length * 100.0 / @auto_message_classifications.length, precision: 1) %> Correct</h3>
+      </td>
+      <td class="warning col-md-3">
+        <h3><%= number_to_percentage(@auto_message_classifications.select{|amc| amc.notation > 2 && amc.notation < 5}.length * 100.0 / @auto_message_classifications.length, precision: 1) %> Not far</h3>
+      </td>
+      <td class="danger col-md-3">
+        <h3><%= number_to_percentage(@auto_message_classifications.select{|amc| amc.notation <= 2}.length * 100.0 / @auto_message_classifications.length, precision: 1) %> Completely wrong</h3>
+      </td>
+      </tr>
+    </table>
+
+
+    <table class="table table-striped">
+      <% @auto_message_classifications.each do |amc| %>
+          <% klass = {
+              1 => "danger",
+              2 => "danger",
+              3 => "warning",
+              4 => "warning",
+              5 => "success"
+          }[amc.notation] %>
+      <tr class="<%= klass %>">
+        <td><%= amc.message.messages_thread.account_email %></td>
+        <td><%= link_to amc.message.messages_thread.subject, {action: :review_turing, id: amc.message.messages_thread.id}, target: "_blank" %></td>
+        <td><%= amc.notation %>/5</td>
+        <td><%= amc.notation_comments %></td>
+      </tr>
+
+    <% end %>
+    </table>
+  <% end %>
+</div>

@@ -3,7 +3,7 @@ function ownClass(element, classes){
 }
 
 function setNotation($email, notation) {
-    if(!$email.find(".full-review-container").hasClass("enabled")) {
+    if(!$email.find(".full-review-container").hasClass("enabled") && !$email.find(".notation-turing-container")) {
         return;
     }
 
@@ -214,45 +214,45 @@ function IcsManager() {
 }
 
 $(function () {
-    var $messagesContainerNode = $('#messages_container');
+  var $messagesContainerNode = $('#messages_container');
 
-    $messagesContainerNode.click(function(e){
-        if(e.target !== e.currentTarget) {
-            var target = e.target;
-            var $target = $(target);
-            var $email = $target.closest('.email');
+  $messagesContainerNode.click(function (e) {
+    if (e.target !== e.currentTarget) {
+      var target = e.target;
+      var $target = $(target);
+      var $email = $target.closest('.email');
 
-            if(ownClass($target, '.actions-menu-button')) {
-                $email.find(".actions-menu-positioner").toggleClass("visible");
-            }else if(ownClass($target, '.notation-option')) {
-                var notation = $target.data('value');
-                setNotation($email, notation);
-            }else if(ownClass($target, '.to-learn-button')) {
-                setNotation($email, 4);
-            }else if(ownClass($target, '.action')){
-                e.preventDefault();
-                trackAction($target, $email);
-            }else if(ownClass($target, '.actions-menu')){
-                // We do nothing, so we don't trigger the default action (toggle the message)
-            }else if(ownClass($target, '.email-flag')){
-                flagMessage($target, $email);
-            }else if(ownClass($target, '.expand-quotes-button')){
-                toggleEmailQuote($email);
-            }else if($target.parents('.suggested-action-by-julie').length > 0){
-                julieSuggestionClickHandler($target, $email);
-            }else if($target.parents('.actions-menu').length > 0){
-                // We do nothing, so we don't trigger the default action (toggle the message)
-            }else{
-                if($target.parents('.retracted,.retractable').length > 0) {
-                    $email.toggleClass("extended");
-                }
-
-                $email.find(".actions-menu-positioner").removeClass("visible");
-            }
+      if (ownClass($target, '.actions-menu-button')) {
+        $email.find(".actions-menu-positioner").toggleClass("visible");
+      } else if (ownClass($target, '.notation-option')) {
+        var notation = $target.data('value');
+        setNotation($email, notation);
+      } else if (ownClass($target, '.to-learn-button')) {
+        setNotation($email, 4);
+      } else if (ownClass($target, '.action')) {
+        e.preventDefault();
+        trackAction($target, $email);
+      } else if (ownClass($target, '.actions-menu')) {
+        // We do nothing, so we don't trigger the default action (toggle the message)
+      } else if (ownClass($target, '.email-flag')) {
+        flagMessage($target, $email);
+      } else if (ownClass($target, '.expand-quotes-button')) {
+        toggleEmailQuote($email);
+      } else if ($target.parents('.suggested-action-by-julie').length > 0) {
+        julieSuggestionClickHandler($target, $email);
+      } else if ($target.parents('.actions-menu').length > 0) {
+        // We do nothing, so we don't trigger the default action (toggle the message)
+      } else {
+        if ($target.parents('.retracted,.retractable').length > 0) {
+          $email.toggleClass("extended");
         }
 
-        e.stopPropagation();
-    });
+        $email.find(".actions-menu-positioner").removeClass("visible");
+      }
+    }
+
+    e.stopPropagation();
+  });
 
 });
 

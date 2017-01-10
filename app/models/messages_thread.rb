@@ -17,6 +17,9 @@ class MessagesThread < ActiveRecord::Base
   attr_writer :account
   attr_accessor :thread_blocked
 
+  include ApplicationHelper
+  include TemplateGeneratorHelper
+
   BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
 
   def self.basic_operator_check_thread_to_reject(messages_thread)
@@ -340,13 +343,15 @@ class MessagesThread < ActiveRecord::Base
     message_classifications.last
   end
 
-  def computed_data
+  def computed_data message_classifications=nil
 
     if @computed_data.blank?
 
-      message_classifications = messages.map{|m|
-        m.message_classifications
-      }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+      unless message_classifications
+        message_classifications = messages.map{|m|
+          m.message_classifications
+        }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
+      end
 
       last_message_classification = message_classifications.last
       appointment_nature = last_message_classification.try(:appointment_nature)
@@ -677,37 +682,40 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def event_data
-    julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at)
+    if @event_data.blank?
+      julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at)
 
-    last_cancellation = julie_actions.select{|ja|
-      ja.deleted_event
-    }.last
+      last_cancellation = julie_actions.select{|ja|
+        ja.deleted_event
+      }.last
 
-    last_creation = julie_actions.select{|ja|
-      ja.event_id
-    }.last
+      last_creation = julie_actions.select{|ja|
+        ja.event_id
+      }.last
 
-    if last_creation && (last_cancellation.nil? || julie_actions.index(last_creation) > julie_actions.index(last_cancellation))
-      {
-          event_id: last_creation.event_id,
-          event_url: last_creation.event_url,
-          calendar_id: last_creation.calendar_id,
-          appointment_nature: last_creation.message_classification.appointment_nature,
-          calendar_login_username: last_creation.calendar_login_username,
-          event_from_invitation: last_creation.event_from_invitation,
-          event_from_invitation_organizer: last_creation.event_from_invitation_organizer
-      }
-    else
-      {
-          event_id: nil,
-          calendar_id: nil,
-          event_url: nil,
-          appointment_nature: nil,
-          calendar_login_username: nil,
-          event_from_invitation: false,
-          event_from_invitation_organizer: nil
-      }
+      @event_data = if last_creation && (last_cancellation.nil? || julie_actions.index(last_creation) > julie_actions.index(last_cancellation))
+                      {
+                          event_id: last_creation.event_id,
+                          event_url: last_creation.event_url,
+                          calendar_id: last_creation.calendar_id,
+                          appointment_nature: last_creation.message_classification.appointment_nature,
+                          calendar_login_username: last_creation.calendar_login_username,
+                          event_from_invitation: last_creation.event_from_invitation,
+                          event_from_invitation_organizer: last_creation.event_from_invitation_organizer
+                      }
+                    else
+                      {
+                          event_id: nil,
+                          calendar_id: nil,
+                          event_url: nil,
+                          appointment_nature: nil,
+                          calendar_login_username: nil,
+                          event_from_invitation: false,
+                          event_from_invitation_organizer: nil
+                      }
+                    end
     end
+    @event_data
   end
 
   def created_events_data
@@ -871,6 +879,32 @@ class MessagesThread < ActiveRecord::Base
         messages_thread_id: mt.id
       }
     }
+  end
+
+  def only_human_first_message
+    first_message = self.messages.sort_by(&:received_at).first
+    ja = first_message.message_classifications.map(&:julie_action).compact.first
+    julie_message = self.messages.find{|m| m.server_message_id == ja.server_message_id}
+    julie_message.server_message['read'] = false
+
+    self.messages = [first_message, julie_message]
+
+    self.computed_data(first_message.message_classifications.sort_by(&:updated_at).select(&:has_data?).compact.first(1))
+  end
+
+  def mock_conscience_first_message
+    first_message = self.messages.sort_by(&:received_at).first
+    auto_message_classification = first_message.auto_message_classification
+    self.instance_variable_set(:@event_data, {
+        event_id: nil,
+        calendar_id: nil,
+        event_url: nil,
+        appointment_nature: nil,
+        calendar_login_username: nil,
+        event_from_invitation: false,
+        event_from_invitation_organizer: nil
+    })
+    self.computed_data([auto_message_classification])
   end
 
   # def self.migrate_to_new_email_system threads_filename, messages_filename

@@ -17,6 +17,15 @@
         DateTime.parse(item['date'])
       end
     end
+  elsif locals[:type] == :messages_threads_turing
+
+    first_message = @messages_thread.messages.sort_by(&:received_at).first
+    if locals[:turing_mode] == "machine"
+      julie_message = first_message.auto_message_classification.mock_julie_message (first_message.server_message)
+    else
+      julie_message = @messages_thread.messages.find{|m| m.server_message_id == first_message.message_classifications.map(&:julie_action).select(&:done).first.server_message_id}
+    end
+    items = [first_message, julie_message]
   else
     items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
         if item.class == Message
@@ -104,6 +113,18 @@
                             no_account: @messages_thread.account_email.nil?,
                             reviewing_status: "review",
                             operator_actions_groups: operator_actions_groups
+                         }
+                       when :messages_threads_turing
+                         {
+                             message: item,
+                             timezone: @messages_thread.computed_data[:timezone],
+                             actions_available: false,
+                             expend: false,
+                             last: false,
+                             no_account: @messages_thread.account_email.nil?,
+                             reviewing_status: "review",
+                             operator_actions_groups: operator_actions_groups,
+                             turing_mode: locals[:turing_mode]
                          }
                      end
           %>

@@ -130,6 +130,10 @@ Rails.application.routes.draw do
         post "learnt", action: :learnt
 
         post "change_messages_thread_status", action: :change_messages_thread_status
+
+
+        get "review_turing", action: :review_turing
+        post "submit_turing_notation", action: :submit_turing_notation
       end
 
       collection do
@@ -137,6 +141,9 @@ Rails.application.routes.draw do
         get "review_next", action: :review_next
         get "learn_next", action: :learn_next
         get "group_review_next", action: :group_review_next
+
+        get "review_turing", action: :review_turing_index
+        get "review_turing_next", action: :review_turing_next
       end
     end
 

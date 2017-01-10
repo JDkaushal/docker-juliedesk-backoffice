@@ -1,5 +1,7 @@
 <% email = message.server_message %>
-<% operator_actions_group = (message.from_me)?message.generator_operator_actions_group(local_assigns[:operator_actions_groups]):nil %>
+<% operator_actions_group = (message.from_me) ? message.generator_operator_actions_group(local_assigns[:operator_actions_groups]) : nil %>
+
+<% auto_message_classification = message.instance_variable_get(:@auto_message_classification_id) ? AutoMessageClassification.find(message.instance_variable_get(:@auto_message_classification_id)) : nil %>
 
 <% message_not_read = params[:not_read_messages].present? && params[:not_read_messages].include?(message.server_message_id.to_s) %>
 
@@ -74,6 +76,19 @@
       </div>
   <% end %>
 
+  <% if local_assigns[:turing_mode] == "machine" && auto_message_classification %>
+    <div class="notation-turing-container expanded">
+      <div class="notation-container notation-<%= auto_message_classification.notation %>" data-value="<%= auto_message_classification.notation %>">
+        <div class="notation-option" data-value="1"></div>
+        <div class="notation-option" data-value="2"></div>
+        <div class="notation-option" data-value="3"></div>
+        <div class="notation-option" data-value="4"></div>
+        <div class="notation-option" data-value="5"></div>
+      </div>
+      <textarea id="turing-notation-comments"><%= auto_message_classification.notation_comments %></textarea>
+    </div>
+  <% end %>
+
   <% filtered_email_data = email.select{|key, _| key == 'id' || key == 'attachments_data' }%>
   <%= hidden_field_tag :email_data, filtered_email_data.to_json%>
   <%= hidden_field_tag :has_attachment, filtered_email_data['attachments_data'].present?, class: 'attachments-detector' %>
@@ -139,6 +154,10 @@
                           <div class="operator"><%= operator_actions_group.operator.name %></div>
                       <% end %>
                       <div class="nature"><%= operator_actions_group.label %> (<%= display_duration(operator_actions_group.duration) %>)</div>
+                    </div>
+                <% elsif auto_message_classification %>
+                    <div class="operator-and-action-container">
+                      <div class="nature"><%= auto_message_classification.classification %></div>
                     </div>
                 <% end %>
             <% end %>

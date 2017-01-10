@@ -2,7 +2,7 @@
 
 <div id="accounts-list-section" ng-controller="client-account-tile-controller" ng-cloak>
 
-  <% if params[:action] != "review" %>
+  <% if params[:action] != "review" && params[:action] != "review_turing" %>
     <div id="julie-should-not-work-now-panel" ng-show="!julieCanWorkNow">
       <div class="julie-should-not-work-now-popup">
         Julie should not work at this time for this client. Please go back to inbox.

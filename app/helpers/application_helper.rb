@@ -1,6 +1,7 @@
 module ApplicationHelper
 
-
+  include ActionView::Helpers::TextHelper
+  include ERB::Util
   def self.hash_from_parenthesized_contact contact
     {
         email: contact.split(" ").last.gsub("(", "").gsub(")", ""),
@@ -224,5 +225,17 @@ module ApplicationHelper
 
       block.call(glyphicon_class)
     end
+  end
+
+  def text_to_html text
+    text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
+  end
+
+  def pp arg
+    if arg.class == String
+      arg = JSON.parse(arg)
+    end
+
+    puts(JSON.pretty_generate(arg))
   end
 end

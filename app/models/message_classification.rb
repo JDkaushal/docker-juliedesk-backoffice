@@ -182,7 +182,7 @@ class MessageClassification < ActiveRecord::Base
     review_status || "To review"
   end
 
-  def append_julie_action
+  def computed_julie_action_nature
     julie_action_nature = nil
 
     case self.classification
@@ -230,7 +230,12 @@ class MessageClassification < ActiveRecord::Base
         julie_action_nature = JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS
     end
 
-    create_julie_action action_nature: julie_action_nature
+    julie_action_nature
+  end
+  def append_julie_action
+
+
+    create_julie_action action_nature: computed_julie_action_nature
 
     # if    self.classification == MessageClassification::ASK_DATE_SUGGESTIONS
     #   create_julie_action action_nature: JulieAction::JD_ACTION_SUGGEST_DATES

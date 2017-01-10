@@ -1,0 +1,47 @@
+<script>
+  $(function() {
+    $("#review-form").submit(function() {
+      var data = turingReviewData();
+      if(data.notation == "") {
+        return false;
+      }
+      else {
+        $("form#review-form input[name='data']").val(JSON.stringify(data));
+        return true;
+      }
+    });
+  });
+
+
+  function turingReviewData() {
+      return {
+        notation: $(".notation-turing-container .notation-container").data('value'),
+        comments: $(".notation-turing-container textarea").val()
+      };
+  }
+</script>
+<%= render partial: "review/header" %>
+
+<div class="fixed-columns">
+  <div class="left-column review">
+
+    <div class="messages-thread-status-for-review turing"></div>
+
+    <div class="messages-thread-emails">
+      <div class="messages-thread-subject"><%= @messages_thread.subject %></div>
+      <%= render 'messages/partials/list', locals: {type: :messages_threads_turing, turing_mode: @turing_mode} %>
+    </div>
+  </div>
+
+  <%= render partial: "common/footer" %>
+</div>
+<% if @messages_thread.account %>
+    <%= render partial: "messages_threads/info_panel", locals: {messages_thread: @messages_thread} %>
+<% else %>
+    <%= render partial: "messages_threads/info_panel_no_account", locals: {messages_thread: @messages_thread} %>
+<% end %>
+
+
+
+
+
