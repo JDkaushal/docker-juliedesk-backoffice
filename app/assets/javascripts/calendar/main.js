@@ -1440,8 +1440,9 @@ Calendar.prototype.drawExternalEventsList = function () {
     var calendar = this;
     if (calendar.getMode() != "suggest_dates") return;
 
+    // We return only events added by clicking
     var dateTimes = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
-        return ev.beingAdded;
+        return ev.beingAdded && ev.editable;
     }).sort(function (a, b) {
         if (a.start.isAfter(b.start))return 1; else return -1;
     });
