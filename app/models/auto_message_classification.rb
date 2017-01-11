@@ -2,8 +2,17 @@ class AutoMessageClassification < MessageClassification
 
   include ApplicationHelper
   extend TemplateGeneratorHelper
+  has_many :auto_message_classification_reviews
 
   self.table_name = "auto_message_classifications"
+
+  def notation operator_id
+    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}"}.try(:notation)
+  end
+
+  def notation_comments operator_id
+    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}"}.try(:comments)
+  end
 
   def self.build_from_operator message_id, params={}
     m = Message.find(message_id)
@@ -19,7 +28,7 @@ class AutoMessageClassification < MessageClassification
 
   def self.build_from_conscience message_id, params={}
     m = Message.find(message_id)
-    previous_comments = m.auto_message_classification.try(:notation_comments)
+
     m.messages_thread.re_import
 
     processing_date = m.received_at + 5.minutes
@@ -94,7 +103,6 @@ class AutoMessageClassification < MessageClassification
                                             timezone: client_preferences[:timezone],
                                             constraints_data: interpretation[:constraints_data].to_json,
                                             duration: found_duration || appointment['duration'],
-                                            notation_comments: previous_comments,
                                             call_instructions: {
                                                 target: target,
                                                 support: "mobile",
@@ -175,13 +183,19 @@ class AutoMessageClassification < MessageClassification
   end
 
   def mock_julie_message original_server_message
-julie_alias = self.message.messages_thread.julie_alias
+    julie_alias = self.message.messages_thread.julie_alias
     footer_and_signature = julie_alias.generate_footer_and_signature(self.locale)
 
     initial_recipients_only_reply_all = self.message.initial_recipients only_reply_all: true
     initial_recipients = self.message.initial_recipients
 
     should_quote = ((initial_recipients[:to] + initial_recipients[:cc]) - initial_recipients_only_reply_all[:to] - initial_recipients_only_reply_all[:cc]).length == 0
+
+    if self.from_ai
+      text_in_email = "#{self.julie_action.text}#{footer_and_signature[:text_footer]}"
+    else
+      text_in_email = "#{self.julie_action.text}"
+    end
 
     m = Message.new({
                     from_me: true,
@@ -191,7 +205,7 @@ julie_alias = self.message.messages_thread.julie_alias
                         "cc" => initial_recipients[:cc].join(", "),
                         "labels" => "",
                         "snippet" => "#{self.julie_action.text.first(30)}...",
-                        "parsed_html" => text_to_html("#{self.julie_action.text}#{footer_and_signature[:text_footer]}") + footer_and_signature[:html_signature].html_safe + (should_quote ? "<blockquote>#{original_server_message['parsed_html']}</blockquote>" : "").html_safe,
+                        "parsed_html" => text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe + (should_quote ? "<blockquote>#{original_server_message['parsed_html']}</blockquote>" : "").html_safe,
                         'date' => (self.message.received_at + (3 * 60 + self.id % (5 * 60)).seconds).to_s,
 
                     },

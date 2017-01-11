@@ -78,14 +78,14 @@
 
   <% if local_assigns[:turing_mode] == "machine" && auto_message_classification %>
     <div class="notation-turing-container expanded">
-      <div class="notation-container notation-<%= auto_message_classification.notation %>" data-value="<%= auto_message_classification.notation %>">
+      <div class="notation-container notation-<%= auto_message_classification.notation(params[:operator_id] || session[:operator_id]) %>" data-value="<%= auto_message_classification.notation(params[:operator_id] || session[:operator_id]) %>">
         <div class="notation-option" data-value="1"></div>
         <div class="notation-option" data-value="2"></div>
         <div class="notation-option" data-value="3"></div>
         <div class="notation-option" data-value="4"></div>
         <div class="notation-option" data-value="5"></div>
       </div>
-      <textarea id="turing-notation-comments"><%= auto_message_classification.notation_comments %></textarea>
+      <textarea id="turing-notation-comments"><%= auto_message_classification.notation_comments(params[:operator_id] || session[:operator_id]) %></textarea>
     </div>
   <% end %>
 

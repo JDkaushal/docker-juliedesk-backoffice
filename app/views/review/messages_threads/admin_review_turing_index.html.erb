@@ -1,0 +1,69 @@
+<div class="col-md-8 col-md-offset-2">
+  <h1>Turing review</h1>
+
+  <h2>Set size: <%= @amc_count %></h2>
+
+  <br>
+
+
+
+
+<% data_to_show = [
+      {
+          label: "Machine",
+          auto_message_classification_reviews: @auto_message_classification_reviews.select { |amcr| amcr.auto_message_classification.from_ai}
+      },
+      {
+          label: "Human",
+          auto_message_classification_reviews: @auto_message_classification_reviews.select { |amcr| !amcr.auto_message_classification.from_ai}
+      }
+  ] %>
+
+  <h2>Reviewed:</h2>
+
+  <div class="row">
+    <% data_to_show.each do |data_hash| %>
+        <div class="col">
+          <h4><%= data_hash[:label] %></h4>
+          <table class="table text-center">
+            <tr>
+              <td class="success col-md-3">
+                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation == 5 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
+                  Correct</h3>
+              </td>
+              <td class="warning col-md-3">
+                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation > 2 && amc.notation < 5 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
+                  Not far</h3>
+              </td>
+              <td class="danger col-md-3">
+                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation <= 2 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
+                  Completely wrong</h3>
+              </td>
+            </tr>
+          </table>
+
+
+          <table class="table table-striped">
+            <% data_hash[:auto_message_classification_reviews].each do |amc| %>
+                <% klass = {
+                    1 => "danger",
+                    2 => "danger",
+                    3 => "warning",
+                    4 => "warning",
+                    5 => "success"
+                }[amc.notation] %>
+                <tr class="<%= klass %>">
+                  <td><%= amc.auto_message_classification.message.messages_thread.account_email %></td>
+                  <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review_turing, id: amc.auto_message_classification.message.messages_thread.id, operator_id: amc.operator_id}, target: "_blank" %></td>
+                  <td><%= amc.notation %>/5</td>
+                  <td><%= amc.comments %></td>
+                  <td><%= amc.operator.name %></td>
+                </tr>
+
+            <% end %>
+          </table>
+        </div>
+    <% end %>
+  </div>
+
+</div>

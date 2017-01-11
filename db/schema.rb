@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170104112228) do
+ActiveRecord::Schema.define(version: 20170111105224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,16 @@ ActiveRecord::Schema.define(version: 20170104112228) do
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
     t.integer  "count"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "auto_message_classification_reviews", force: true do |t|
+    t.integer  "auto_message_classification_id"
+    t.integer  "operator_id"
+    t.integer  "notation"
+    t.text     "comments"
+    t.text     "tags"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -60,9 +70,6 @@ ActiveRecord::Schema.define(version: 20170104112228) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
-    t.integer  "notation"
-    t.text     "notation_tags"
-    t.text     "notation_comments"
     t.boolean  "from_ai",                    default: true
     t.datetime "created_at"
     t.datetime "updated_at"

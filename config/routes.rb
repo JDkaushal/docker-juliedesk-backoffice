@@ -143,6 +143,7 @@ Rails.application.routes.draw do
         get "group_review_next", action: :group_review_next
 
         get "review_turing", action: :review_turing_index
+        get "admin_review_turing", action: :admin_review_turing_index
         get "review_turing_next", action: :review_turing_next
       end
     end

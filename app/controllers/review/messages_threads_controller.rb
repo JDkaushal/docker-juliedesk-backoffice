@@ -2,6 +2,7 @@ class Review::MessagesThreadsController < ReviewController
 
   skip_before_filter :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
   before_filter :only_mine, only: [:learn, :learnt, :learn_next]
+  before_filter :only_admin, only: [:admin_review_turing_index]
 
   def review
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
@@ -119,8 +120,13 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def review_turing_index
-    @count_to_review = AutoMessageClassification.where.not(message_id: nil).where(notation: nil).count
-    @auto_message_classifications = AutoMessageClassification.where.not(message_id: nil).where.not(notation: nil).includes(message: :messages_thread).sort_by(&:notation).reverse
+    @reviewed_by_me_count = AutoMessageClassificationReview.where(operator_id: session[:operator_id]).count
+    @count_to_review = AutoMessageClassification.where.not(message_id: nil).count - @reviewed_by_me_count
+  end
+
+  def admin_review_turing_index
+    @amc_count = AutoMessageClassification.where.not(message_id: nil).count
+    @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil}).includes(auto_message_classification: {message: :messages_thread}, operator: {}).sort_by(&:notation).reverse
   end
 
   def review_turing_next
@@ -147,10 +153,12 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
     amc = @messages_thread.messages.sort_by(&:received_at).first.auto_message_classification
     data = JSON.parse(params[:data]).with_indifferent_access
-    amc.update_attributes({
-        notation: data[:notation],
-        notation_comments: data[:comments],
-                          })
+    amc.auto_message_classification_reviews.where(operator_id: session[:operator_id]).destroy_all
+    amc.auto_message_classification_reviews << AutoMessageClassificationReview.new({
+                                                                                       notation: data[:notation],
+                                                                                       comments: data[:comments],
+                                                                                       operator_id: session[:operator_id]
+                                                                                   })
     next_id = find_next_messages_thread_id_to_turing_review
     if next_id
       redirect_to action: :review_turing, id: next_id
@@ -162,7 +170,8 @@ class Review::MessagesThreadsController < ReviewController
   private
 
   def find_next_messages_thread_id_to_turing_review
-    AutoMessageClassification.where.not(message_id: nil).where(notation: nil).first.try(:message).try(:messages_thread_id)
+    reviewed_by_me_amc_ids = AutoMessageClassificationReview.where(operator_id: session[:operator_id]).map(&:auto_message_classification_id)
+    AutoMessageClassification.where.not(message_id: nil).where.not(id: reviewed_by_me_amc_ids).first.try(:message).try(:messages_thread_id)
   end
 
   def group_review_next_messages_thread
