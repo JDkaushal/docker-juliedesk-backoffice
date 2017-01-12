@@ -102,8 +102,9 @@ class Message < ActiveRecord::Base
     email_params = {
       subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
       from: julie_alias.generate_from,
-      to: [current_reply_all_recipients['from'].first['email']],
-      cc: [],
+      to: [current_reply_all_recipients['from'].first['email']].join(','),
+      cc: [].join(','),
+      bcc: ["hello@juliedesk.com"].join(','),
       text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
       html: "#{text_to_html("#{text}#{text_signature}")}#{html_signature}",
       quote_replied_message: true,

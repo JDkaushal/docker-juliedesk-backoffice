@@ -64,6 +64,7 @@ module EmailServer
             from: opts[:from],
             to: opts[:to],
             cc: opts[:cc],
+            bcc: opts[:bcc],
             text: opts[:text],
             html: opts[:html],
             quote_replied_message: opts[:quote_replied_message],
