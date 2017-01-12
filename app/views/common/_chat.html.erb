@@ -6,7 +6,8 @@
 
     var myName = "<%= session[:user_name] %>";
 
-    <% if Rails.env.production? && ENV['PUSHER_APP_ID'] %>
+
+    <% if ENV['PUSHER_APP_ID'] %>
         var pusher = new Pusher('<%= Pusher.key %>');
     <% elsif ENV['RED_SOCK_URL'] %>
         var redsock = new RedSock("<%= ENV['RED_SOCK_URL'] %>", {
@@ -20,7 +21,8 @@
 //    }
     $(function () {
 
-        <% if Rails.env.production? && ENV['PUSHER_APP_ID'] %>
+
+        <% if ENV['PUSHER_APP_ID'] %>
             var presenceChannel = pusher.subscribe('presence-global');
             presenceChannel.bind('pusher:subscription_succeeded', function (members) {
                 connectedMembers = members.members;

@@ -143,7 +143,6 @@ class Message < ActiveRecord::Base
     possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
     possible_emails.reject! { |c| c.blank? }
 
-
     if params[:only_reply_all]
       computed_initial_to_emails = initial_to_emails.uniq
       computed_initial_cc_emails = initial_cc_emails.uniq
@@ -392,8 +391,8 @@ class Message < ActiveRecord::Base
     updated_messages_thread_ids.uniq
   end
 
-  def self.import_emails(notify_access_lost = false)
-    Rails.logger.info "Importing emails with notify access lost : #{notify_access_lost}"
+  def self.import_emails
+    Rails.logger.info "Importing emails"
 
     # Get server threads in inbox, only versions (quick call)
     server_threads = EmailServer.list_messages_threads(filter: "INBOX", limit: 1000, only_version: true)
@@ -496,7 +495,6 @@ class Message < ActiveRecord::Base
 
               if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
-
                 if messages_thread.account
                   m.async_auto_reply_mailing_list
                 else
@@ -533,7 +531,7 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access) if notify_access_lost
+        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
         messages_thread.update_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
         # Check if there are several julie aliases only if there was a new message

@@ -107,3 +107,7 @@ gem "rails-settings-cached"
 
 # Expose the AWS SDK to ruby with a easy wrapper
 gem 'aws-sdk', '~> 2'
+
+# Allow to lock a Worker, executing only one instance of it at any given time, pushing back to queue others that would be otherwise executed
+# Used for the ImportEmailsWorker, to prevent multiple paralleled treatments of same threads
+gem 'resque-workers-lock'

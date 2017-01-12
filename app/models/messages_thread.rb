@@ -566,20 +566,22 @@ class MessagesThread < ActiveRecord::Base
         message_ids: server_message_ids
                       })
 
-    updated_messages_thread_ids = Message.import_emails
-    if ENV['PUSHER_APP_ID']
-      Pusher.trigger('private-global-chat', 'new-email', {
-          :message => 'new_email',
-          :messages_threads_count => MessagesThread.items_to_classify_count,
-          :updated_messages_thread_ids => updated_messages_thread_ids
-      })
-    elsif ENV['RED_SOCK_URL']
-      RedSock.trigger 'private-global-chat', 'new-email', {
-                                               :message => 'new_email',
-                                               :messages_threads_count => MessagesThread.items_to_classify_count,
-                                               :updated_messages_thread_ids => updated_messages_thread_ids
-                                           }
-    end
+    ImportEmailsWorker.enqueue
+    # updated_messages_thread_ids = Message.import_emails
+    # WebSockets::Manager.trigger_new_email(updated_messages_thread_ids)
+    # if ENV['PUSHER_APP_ID']
+    #   Pusher.trigger('private-global-chat', 'new-email', {
+    #       :message => 'new_email',
+    #       :messages_threads_count => MessagesThread.items_to_classify_count,
+    #       :updated_messages_thread_ids => updated_messages_thread_ids
+    #   })
+    # elsif ENV['RED_SOCK_URL']
+    #   RedSock.trigger 'private-global-chat', 'new-email', {
+    #                                            :message => 'new_email',
+    #                                            :messages_threads_count => MessagesThread.items_to_classify_count,
+    #                                            :updated_messages_thread_ids => updated_messages_thread_ids
+    #                                        }
+    # end
   end
 
   def has_already_processed_action_once(action_type)

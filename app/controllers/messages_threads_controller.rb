@@ -50,7 +50,8 @@ class MessagesThreadsController < ApplicationController
   end
 
   def index_with_import
-    Message.import_emails
+    ImportEmailsWorker.enqueue
+    #Message.import_emails
     render_messages_threads
   end
 
@@ -166,17 +167,18 @@ class MessagesThreadsController < ApplicationController
 
       messages_thread.update(data)
 
-      if ENV['PUSHER_APP_ID']
-        Pusher.trigger('private-global-chat', 'archive', {
-            :message => 'archive',
-            :message_thread_id => messages_thread.id
-        })
-      elsif ENV['RED_SOCK_URL']
-        RedSock.trigger "private-global-chat", 'archive', {
-                                                 message: "archive",
-                                                 :message_thread_id => messages_thread.id
-                                             }
-      end
+      WebSockets::Manager.trigger_archive(messages_thread.id)
+      # if ENV['PUSHER_APP_ID']
+      #   Pusher.trigger('private-global-chat', 'archive', {
+      #       :message => 'archive',
+      #       :message_thread_id => messages_thread.id
+      #   })
+      # elsif ENV['RED_SOCK_URL']
+      #   RedSock.trigger "private-global-chat", 'archive', {
+      #                                            message: "archive",
+      #                                            :message_thread_id => messages_thread.id
+      #                                        }
+      # end
 
       # When the thread is archived we can redirect the operator to the threads list
       redirect_to action: :index
@@ -245,17 +247,18 @@ class MessagesThreadsController < ApplicationController
     messages_thread = MessagesThread.find(params[:id])
     messages_thread.update_attribute :locked_by_operator_id, nil
 
-    if ENV['PUSHER_APP_ID']
-      Pusher.trigger('private-global-chat', 'locks-changed', {
-          :message => 'locks_changed',
-          :locks_statuses => MessagesThread.get_locks_statuses_hash
-      })
-    elsif ENV['RED_SOCK_URL']
-      RedSock.trigger 'private-global-chat', 'locks-changed', {
-                                               :message => 'locks_changed',
-                                               :locks_statuses => MessagesThread.get_locks_statuses_hash
-                                           }
-    end
+    WebSockets::Manager.trigger_locks_changed
+    # if ENV['PUSHER_APP_ID']
+    #   Pusher.trigger('private-global-chat', 'locks-changed', {
+    #       :message => 'locks_changed',
+    #       :locks_statuses => MessagesThread.get_locks_statuses_hash
+    #   })
+    # elsif ENV['RED_SOCK_URL']
+    #   RedSock.trigger 'private-global-chat', 'locks-changed', {
+    #                                            :message => 'locks_changed',
+    #                                            :locks_statuses => MessagesThread.get_locks_statuses_hash
+    #                                        }
+    # end
 
     redirect_to messages_thread
   end
@@ -291,17 +294,18 @@ class MessagesThreadsController < ApplicationController
         in_inbox: false
     )
 
-    if ENV['PUSHER_APP_ID']
-      Pusher.trigger('private-global-chat', 'archive', {
-                                              :message => 'archive',
-                                              :message_thread_id => messages_thread.id
-                                          })
-    elsif ENV['RED_SOCK_URL']
-      RedSock.trigger 'private-global-chat', 'archive', {
-                                               :message => 'archive',
-                                               :message_thread_id => messages_thread.id
-                                           }
-    end
+    WebSockets::Manager.trigger_archive(messages_thread.id)
+    # if ENV['PUSHER_APP_ID']
+    #   Pusher.trigger('private-global-chat', 'archive', {
+    #                                           :message => 'archive',
+    #                                           :message_thread_id => messages_thread.id
+    #                                       })
+    # elsif ENV['RED_SOCK_URL']
+    #   RedSock.trigger 'private-global-chat', 'archive', {
+    #                                            :message => 'archive',
+    #                                            :message_thread_id => messages_thread.id
+    #                                        }
+    # end
 
     render json: {
                status: "success",
@@ -365,21 +369,6 @@ class MessagesThreadsController < ApplicationController
 
         MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)
 
-        # if session[:privilege] == Operator::PRIVILEGE_OPERATOR
-        #   @messages_thread.select!{ |mt|
-        #     !mt.delegated_to_founders &&
-        #         !mt.delegated_to_support &&
-        #         mt.account &&
-        #         !mt.account.only_admin_can_process &&
-        #         !mt.account.only_support_can_process &&
-        #         !mt.to_be_merged
-        #   }
-        # elsif session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || session[:privilege] == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
-        #   @messages_thread.select!{ |mt|
-        #     !mt.delegated_to_founders &&
-        #         (!mt.account || !mt.account.only_admin_can_process)
-        #   }
-        # end
         data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients])
         operators_data = @operators_on_planning.as_json
 

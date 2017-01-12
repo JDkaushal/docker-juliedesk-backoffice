@@ -97,16 +97,18 @@ class PusherController < ApplicationController
   private
 
   def send_lock_changed
-    if Rails.env.production? && ENV['PUSHER_APP_ID']
-      Pusher.trigger('private-global-chat', 'locks-changed', {
-          :message => 'locks_changed',
-          :locks_statuses => MessagesThread.get_locks_statuses_hash
-      })
-    elsif ENV['RED_SOCK_URL']
-      RedSock.trigger('private-global-chat', 'locks-changed', {
-                                               :message => 'locks_changed',
-                                               :locks_statuses => MessagesThread.get_locks_statuses_hash
-                                           })
-    end
+    WebSockets::Manager.trigger_locks_changed
+
+    # if Rails.env.production? && ENV['PUSHER_APP_ID']
+    #   Pusher.trigger('private-global-chat', 'locks-changed', {
+    #       :message => 'locks_changed',
+    #       :locks_statuses => MessagesThread.get_locks_statuses_hash
+    #   })
+    # elsif ENV['RED_SOCK_URL']
+    #   RedSock.trigger('private-global-chat', 'locks-changed', {
+    #                                            :message => 'locks_changed',
+    #                                            :locks_statuses => MessagesThread.get_locks_statuses_hash
+    #                                        })
+    # end
   end
 end
