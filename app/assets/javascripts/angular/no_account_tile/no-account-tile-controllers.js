@@ -29,9 +29,9 @@
         $scope.init = function() {
             $scope.initiateAccountsCandidates();
 
-            if($scope.accountsAutocompleteSource.length == 0 && !$scope.inJulieAction) {
-                $scope.clickOnNotEnoughInfos();
-            }
+            // if($scope.accountsAutocompleteSource.length == 0 && !$scope.inJulieAction) {
+            //     $scope.clickOnNotEnoughInfos();
+            // }
         };
 
         $scope.initiateAccountsCandidates = function() {
