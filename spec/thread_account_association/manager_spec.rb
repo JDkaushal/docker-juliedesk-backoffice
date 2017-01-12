@@ -112,6 +112,7 @@ describe ThreadAccountAssociation::Manager do
       context 'when clients email alias is present in `to` field of an email sent by Julie' do
         let(:server_message_attributes) { {'from' => 'Julie <julie@ups.com>', 'to' => "Bruce Lee <bruce.lee@yopmail.com>", 'from_me' =>true } }
         it do
+          pending 'To reactivate when we will not look in julie emails anymore'
           expect(messages_thread.account_email).to be_nil
         end
       end
@@ -150,6 +151,7 @@ describe ThreadAccountAssociation::Manager do
       context 'when client email is present in `cc` field of an email sent by Julie' do
         let(:server_message_attributes) { { 'cc' => "Bruce lee <bruce.lee@ups.com>", 'from_me' => true } }
         it do
+          pending 'To reactivate when we will not look in julie emails anymore'
           expect(messages_thread.account_email).to be_nil
         end
       end
@@ -162,6 +164,7 @@ describe ThreadAccountAssociation::Manager do
       context 'when client email alias is present in `cc` field of an email sent by Julie' do
         let(:server_message_attributes) { { 'cc' => "Bruce lee <bruce.lee@yopmail.com>", 'from_me' => true } }
         it do
+          pending 'To reactivate when we will not look in julie emails anymore'
           expect(messages_thread.account_email).to be_nil
         end
       end
@@ -220,6 +223,7 @@ describe ThreadAccountAssociation::Manager do
         }
 
         it do
+          pending 'To reactivate when we will not look in julie emails anymore'
           expect(messages_thread.accounts_candidates).to eql([])
         end
 
@@ -245,6 +249,7 @@ describe ThreadAccountAssociation::Manager do
         }
 
         it 'add client as potential thread account' do
+          pending 'To reactivate when we will not look in julie emails anymore'
           expect(messages_thread.accounts_candidates).to eql([])
         end
 

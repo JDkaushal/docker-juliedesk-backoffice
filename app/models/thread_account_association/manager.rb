@@ -30,7 +30,8 @@ module ThreadAccountAssociation
     private
 
     def get_server_messages
-      @server_messages ||= @server_thread['messages'].reject{|m| m['from_me']}
+      #@server_messages ||= @server_thread['messages'].reject{|m| m['from_me']}
+      @server_messages ||= @server_thread['messages']
     end
 
     def get_thread_emails_bodies
