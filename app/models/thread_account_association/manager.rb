@@ -44,7 +44,7 @@ module ThreadAccountAssociation
 
       accounts_candidates = accounts_candidates_in_bodies += get_accounts_emails(@messages_thread.computed_recipients)
       if accounts_candidates.present?
-        @messages_thread.update(accounts_candidates: accounts_candidates.uniq.to_a)
+        @messages_thread.update(accounts_candidates: accounts_candidates.to_a.uniq)
       end
     end
     
