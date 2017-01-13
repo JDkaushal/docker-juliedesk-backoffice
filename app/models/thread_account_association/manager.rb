@@ -10,7 +10,9 @@ module ThreadAccountAssociation
                 :first_thread_message,
 
                 :recipients_emails,
-                :used_julie
+                :used_julie,
+                :clients_found_in_bodies,
+                :users_associated_with_julie_alias
 
     def initialize(params)
       @data_holder = params[:data_holder]
@@ -23,26 +25,28 @@ module ThreadAccountAssociation
 
     def compute_association
       compute_recipients_emails
+      compute_accounts_candidates(@recipients_emails)
 
       process_association
     end
 
-    def compute_accounts_candidates
+    def compute_accounts_candidates(recipients)
       #compute_recipients_emails
 
       accounts_candidates_in_bodies = []
 
       if using_julie_alias
         @logger.debug("-- Entrering flow => using_julie_alias --")
-        used_julie_alias = get_used_julie.email
-        users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
-        accounts_candidates_in_bodies = lookup_clients_with_julie_alias(users_associated_with_julie_alias).map{ |u| u['email'] }
+        # used_julie_alias = get_used_julie.email
+        # users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
+        #accounts_candidates_in_bodies = lookup_clients_with_julie_alias(users_associated_with_julie_alias).map{ |u| u['email'] }
+        accounts_candidates_in_bodies = find_clients_with_julie_alias
       else
         @logger.debug("-- Entrering flow => using main julie --")
         accounts_candidates_in_bodies = find_clients_with_main_julie[:association_candidates]
       end
 
-      accounts_candidates = accounts_candidates_in_bodies += get_accounts_emails(@messages_thread.computed_recipients)
+      accounts_candidates = accounts_candidates_in_bodies += get_accounts_emails(recipients)
       if accounts_candidates.present?
         @messages_thread.update(accounts_candidates: accounts_candidates.to_a.uniq)
       end
@@ -108,39 +112,44 @@ module ThreadAccountAssociation
         @logger.debug("-- associating #{clients_emails[0]} --")
         result = associate_client_to_thread(clients_emails[0])
       else
-        # When no clients in recipients, use Julie method
-        if using_julie_alias
-          @logger.debug("-- Entrering flow => using_julie_alias --")
-          result = find_clients_with_julie_alias
-        else
-          @logger.debug("-- Entrering flow => using main julie --")
-          result = find_clients_with_main_julie
+        if using_julie_alias && @users_associated_with_julie_alias.present? && @users_associated_with_julie_alias.size == 1
+          @logger.debug("-- Entrering flow => Associating #{@clients_found_in_bodies.first.inspect} --")
+          result = associate_client_to_thread(@users_associated_with_julie_alias.first['email'])
+
+          # When no clients in recipients, use Julie method
+          # if using_julie_alias
+          #   @logger.debug("-- Entrering flow => using_julie_alias --")
+          #   result = find_clients_with_julie_alias
+          # else
+          #   @logger.debug("-- Entrering flow => using main julie --")
+          #   result = find_clients_with_main_julie
+          # end
         end
       end
 
       # If we could not find a proper account to associate to the thread
-      unless result[:associated]
+      if !result[:associated] && @messages_thread.accounts_candidates.blank?
         @logger.debug("-- Entrering flow => Thread still not associated --")
 
-        if result[:association_candidates].present?
-          @logger.debug("-- Found some association candidates => #{result[:association_candidates].inspect} --")
-          @logger.debug("-- Associating possible candidates to thread --")
-          @messages_thread.update(accounts_candidates: result[:association_candidates].to_a)
-        else
-          @logger.debug("-- Trying to find merging candidate... --")
+        # if @messages_thread.accounts_candidates.present?
+        #   @logger.debug("-- Found some association candidates => #{result[:association_candidates].inspect} --")
+        #   @logger.debug("-- Associating possible candidates to thread --")
+        #   @messages_thread.update(accounts_candidates: result[:association_candidates].to_a)
+        # else
+        @logger.debug("-- Trying to find merging candidate... --")
 
-          # If no candidates found by any means in the current thread, we will check if any of the recipients in the thread is present in a thread from the last 3 weeks
-          try_to_merge = check_possible_merging
-          @logger.debug("-- will try to merge => #{try_to_merge} --")
-          @logger.debug("-- automatic email already sent => #{@messages_thread.account_request_auto_email_sent} --")
+        # If no candidates found by any means in the current thread, we will check if any of the recipients in the thread is present in a thread from the last 3 weeks
+        try_to_merge = check_possible_merging
+        @logger.debug("-- will try to merge => #{try_to_merge} --")
+        @logger.debug("-- automatic email already sent => #{@messages_thread.account_request_auto_email_sent} --")
 
-          if !try_to_merge && !@messages_thread.account_request_auto_email_sent
-            @logger.debug("-- Sending automatic request account then archiving --")
-            send_account_request_email
-            @messages_thread.archive
-          end
+        if !try_to_merge && !@messages_thread.account_request_auto_email_sent
+          @logger.debug("-- Sending automatic request account then archiving --")
+          send_account_request_email
+          @messages_thread.archive
         end
       end
+
       # If we could not find any recipients in the last 3 weeks threads
       # We will send an automatic email to the sender asking him to precise its demand then archive the thread
       # We do this only if we didn't already send it previously
@@ -180,9 +189,9 @@ module ThreadAccountAssociation
     end
 
     def find_clients_with_main_julie
-      found_clients = look_up_clients_in_emails_bodies(@data_holder.get_clients_emails)
+      @found_clients_in_bodies = look_up_clients_in_emails_bodies(@data_holder.get_clients_emails)
 
-      {associated: false, association_candidates: found_clients}
+      {associated: false, association_candidates: @found_clients_in_bodies}
     end
 
     def lookup_clients_with_julie_alias(users_associated_with_julie_alias)
@@ -190,35 +199,39 @@ module ThreadAccountAssociation
       found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
       found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
 
-      association_candidates = Set.new
-      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
-      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
-      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
+      @clients_found_in_bodies = Set.new
+      @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
+      @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
+      @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
 
-      association_candidates
+      @clients_found_in_bodies = @clients_found_in_bodies.map{ |u| u['email']}
     end
 
     def find_clients_with_julie_alias
+      # used_julie_alias = get_used_julie.email
+      # users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
+      # result = {}
+      #
+      # if users_associated_with_julie_alias.size == 1
+      #   result = associate_client_to_thread(users_associated_with_julie_alias.first['email'])
+      # else
+      #   # found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.compact)
+      #   # found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
+      #   # found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
+      #   #
+      #   # association_candidates = Set.new
+      #   # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
+      #   # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
+      #   # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
+      #   association_candidates = lookup_clients_with_julie_alias(users_associated_with_julie_alias)
+      #   result = { associated: false, association_candidates: association_candidates }
+      # end
+      #
+      # result
+
       used_julie_alias = get_used_julie.email
-      users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
-      result = {}
-
-      if users_associated_with_julie_alias.size == 1
-        result = associate_client_to_thread(users_associated_with_julie_alias.first['email'])
-      else
-        # found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.compact)
-        # found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
-        # found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
-        #
-        # association_candidates = Set.new
-        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
-        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
-        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
-        association_candidates = lookup_clients_with_julie_alias(users_associated_with_julie_alias)
-        result = {associated: false, association_candidates: association_candidates.map{ |u| u['email'] }}
-      end
-
-      result
+      @users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
+      lookup_clients_with_julie_alias(@users_associated_with_julie_alias)
     end
 
     def check_possible_merging

@@ -550,7 +550,7 @@ class Message < ActiveRecord::Base
           if messages_thread.account_email == nil
             thread_account_association_manager.compute_association
           else
-            thread_account_association_manager.compute_accounts_candidates
+            thread_account_association_manager.compute_accounts_candidates(messages_thread.computed_recipients)
           end
         else
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
