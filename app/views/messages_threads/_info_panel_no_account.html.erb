@@ -28,13 +28,18 @@
       @messages_thread.accounts_candidates.map{ |candidate_email| Account.create_for_autocomplete(candidate_email, {accounts_cache: local_assigns[:accounts_cache_light]})}.flatten.to_json
     %>;
 
-    window.allowedAccountsEmails = _.uniq(
-        _.compact(
-            _.flatten(
-                _.map(window.accountsAutocompleteSource, function(account) { return [account.email, account.email_alias]; })
-            )
-        )
-    );
+    <% if @messages_thread.to_be_merged %>
+      window.allowedAccountsEmails = <%== @messages_thread.accounts_candidates %>;
+
+    <% else %>
+      window.allowedAccountsEmails = _.uniq(
+          _.compact(
+              _.flatten(
+                  _.map(window.accountsAutocompleteSource, function(account) { return [account.email, account.email_alias]; })
+              )
+          )
+      );
+    <% end %>
 
   $(function() {
     $( document ).tooltip();

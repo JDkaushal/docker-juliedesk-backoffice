@@ -146,14 +146,16 @@ class Account
     found_accounts = []
     data = get_account_details(email, {accounts_cache: cache})
 
-    company_name = data['company_hash'].try(:[], 'name')
-    main_account = {email: data['email'], name: data['full_name'], company: company_name}
+    if data.present?
+      company_name = data['company_hash'].try(:[], 'name')
+      main_account = {email: data['email'], name: data['full_name'], company: company_name}
 
-    found_accounts.push(main_account)
-    data['email_aliases'].each do |email_alias|
-      alias_account = main_account.dup
-      alias_account[:email_alias] = email_alias
-      found_accounts.push(alias_account)
+      found_accounts.push(main_account)
+      data['email_aliases'].each do |email_alias|
+        alias_account = main_account.dup
+        alias_account[:email_alias] = email_alias
+        found_accounts.push(alias_account)
+      end
     end
 
     found_accounts
