@@ -8,6 +8,7 @@
         $scope.searchTerm = '';
 
         $scope.accountsAutocompleteSource = window.accountsAutocompleteSource;
+        $scope.allowedAccountsEmails = window.allowedAccountsEmails;
         $scope.threadToMerge = window.threadToMerge;
 
         $scope.inJulieAction = !!window.classification;

@@ -4,7 +4,7 @@
 
   <div class="associate-to-account-container">
 
-    <div ng-show="accountsAutocompleteSource.length > 0">
+    <div ng-show="allowedAccountsEmails.length > 0">
       <div class="merging-options-container" ng-show="threadToMerge">
         <div ng-hide="inJulieAction">
           <div class="explanation">
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="account-association-no-suggestion-container" ng-show="accountsAutocompleteSource.length == 0">
+    <div class="account-association-no-suggestion-container" ng-show="allowedAccountsEmails.length == 0">
       <div ng-hide="inJulieAction">
         <div class="explanation" >
           <span class="text">Aucun client auquel associer le thread n'a été détecté. Veuillez demander plus d'infos sur le client.</span>
