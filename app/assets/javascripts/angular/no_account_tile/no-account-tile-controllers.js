@@ -95,7 +95,7 @@
         $scope.clickOnMergeThread = function() {
             var threadMergingPanel = $('#merging-panel').scope();
 
-            threadMergingPanel.queryTags = [{text: $scope.accountsAutocompleteSource[0].email}];
+            threadMergingPanel.queryTags = [{text: $scope.allowedAccountsEmails[0]}];
             threadMergingPanel.$apply();
 
             $('.merge-into-thread-button').click();
