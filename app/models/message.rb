@@ -457,6 +457,7 @@ class Message < ActiveRecord::Base
         should_update_thread = false
       else
         messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
+
         if messages_thread
           should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
           messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
@@ -466,41 +467,8 @@ class Message < ActiveRecord::Base
       if should_update_thread
         thread_recipients = Set.new
 
-        if messages_thread
-          if messages_thread.account_email == nil
-            # account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-            # account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-            # messages_thread.update_attributes({
-            #                                       account_email: account_email,
-            #                                       account_name: account.try(:usage_name)
-            #                                   })
-            ThreadAccountAssociation::Manager.new(
-                data_holder: account_association_data_holder,
-                messages_thread: messages_thread,
-                server_thread: server_thread
-            ).compute_association
-          end
-        else
-          # account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-          # account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-          # messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
-
+        unless messages_thread
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
-
-          ThreadAccountAssociation::Manager.new(
-              data_holder: account_association_data_holder,
-              messages_thread: messages_thread,
-              server_thread: server_thread
-          ).compute_association
-
-          if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
-            messages_thread.tag_as_multi_clients
-          end
-
-          ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
-              bo_thread_id: messages_thread.id,
-              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
-          })
         end
 
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
@@ -528,8 +496,19 @@ class Message < ActiveRecord::Base
 
               if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
+
                 if messages_thread.account
                   m.async_auto_reply_mailing_list
+                else
+                  account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
+                  if account_email
+                    account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+                    messages_thread.update_attributes({
+                                                          account_email: account_email,
+                                                          account_name: account.try(:usage_name)
+                                                      })
+                    m.async_auto_reply_mailing_list
+                  end
                 end
                 messages_thread.async_archive
                 should_call_conscience = false
@@ -560,6 +539,36 @@ class Message < ActiveRecord::Base
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
           messages_thread.tag_as_multi_clients
+        end
+
+        if messages_thread
+          thread_account_association_manager = ThreadAccountAssociation::Manager.new(
+              data_holder: account_association_data_holder,
+              messages_thread: messages_thread,
+              server_thread: server_thread
+          )
+          if messages_thread.account_email == nil
+            thread_account_association_manager.compute_association
+          else
+            thread_account_association_manager.compute_accounts_candidates
+          end
+        else
+          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
+
+          ThreadAccountAssociation::Manager.new(
+              data_holder: account_association_data_holder,
+              messages_thread: messages_thread,
+              server_thread: server_thread
+          ).compute_association
+
+          if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
+            messages_thread.tag_as_multi_clients
+          end
+
+          ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
+              bo_thread_id: messages_thread.id,
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
+          })
         end
       end
     end

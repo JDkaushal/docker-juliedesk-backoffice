@@ -26,6 +26,27 @@ module ThreadAccountAssociation
 
       process_association
     end
+
+    def compute_accounts_candidates
+      #compute_recipients_emails
+
+      accounts_candidates_in_bodies = []
+
+      if using_julie_alias
+        @logger.debug("-- Entrering flow => using_julie_alias --")
+        used_julie_alias = get_used_julie.email
+        users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
+        accounts_candidates_in_bodies = lookup_clients_with_julie_alias(users_associated_with_julie_alias).map{ |u| u['email'] }
+      else
+        @logger.debug("-- Entrering flow => using main julie --")
+        accounts_candidates_in_bodies = find_clients_with_main_julie[:association_candidates]
+      end
+
+      accounts_candidates = accounts_candidates_in_bodies += get_accounts_emails(@messages_thread.computed_recipients)
+      if accounts_candidates.present?
+        @messages_thread.update(accounts_candidates: accounts_candidates.uniq.to_a)
+      end
+    end
     
     private
 
@@ -164,6 +185,19 @@ module ThreadAccountAssociation
       {associated: false, association_candidates: found_clients}
     end
 
+    def lookup_clients_with_julie_alias(users_associated_with_julie_alias)
+      found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.compact)
+      found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
+      found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
+
+      association_candidates = Set.new
+      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
+      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
+      association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
+
+      association_candidates
+    end
+
     def find_clients_with_julie_alias
       used_julie_alias = get_used_julie.email
       users_associated_with_julie_alias = get_company_users(@data_holder.get_julie_aliases_company_association_cache[used_julie_alias])
@@ -172,15 +206,15 @@ module ThreadAccountAssociation
       if users_associated_with_julie_alias.size == 1
         result = associate_client_to_thread(users_associated_with_julie_alias.first['email'])
       else
-        found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.compact)
-        found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
-        found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
-
-        association_candidates = Set.new
-        association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
-        association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
-        association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
-
+        # found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.compact)
+        # found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.compact)
+        # found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.compact)
+        #
+        # association_candidates = Set.new
+        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
+        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
+        # association_candidates.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
+        association_candidates = lookup_clients_with_julie_alias(users_associated_with_julie_alias)
         result = {associated: false, association_candidates: association_candidates.map{ |u| u['email'] }}
       end
 

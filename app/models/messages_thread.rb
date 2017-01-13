@@ -670,34 +670,34 @@ class MessagesThread < ActiveRecord::Base
   # <b>DEPRECATED:</b> All thread accounts associations have been moved to ThreadAccountAssociation::Manager.
   # Not used anymore
   def self.find_account_email server_thread, params={}
-    raise Exceptions::ThreadAccountAssociation::MigratedMethodError
+    #raise Exceptions::ThreadAccountAssociation::MigratedMethodError
 
-    # account_emails = self.find_account_emails(server_thread, params)
-    # if account_emails.length == 1
-    #   account_emails[0]
-    # else
-    #   nil
-    # end
+    account_emails = self.find_account_emails(server_thread, params)
+    if account_emails.length == 1
+      account_emails[0]
+    else
+      nil
+    end
   end
 
   # <b>DEPRECATED:</b> All thread accounts associations have been moved to ThreadAccountAssociation::Manager.
   def self.find_account_emails server_thread, params={}
-    raise Exceptions::ThreadAccountAssociation::MigratedMethodError
+    #raise Exceptions::ThreadAccountAssociation::MigratedMethodError
 
-    # first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
-    # return [] if first_email.nil?
-    # email = ApplicationHelper.strip_email(first_email['from'])
-    #
-    # account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
-    #
-    # # Account is not the sender
-    # if account_emails.empty?
-    #   contacts = self.contacts(server_messages_to_look: [first_email])
-    #   other_emails = contacts.map{|contact| contact[:email]}
-    #   account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
-    # end
-    #
-    # account_emails
+    first_email = server_thread['messages'].sort_by{|m| DateTime.parse(m['date'])}.first
+    return [] if first_email.nil?
+    email = ApplicationHelper.strip_email(first_email['from'])
+
+    account_emails = [Account.find_account_email(email, {accounts_cache: params[:accounts_cache]})].compact
+
+    # Account is not the sender
+    if account_emails.empty?
+      contacts = self.contacts(server_messages_to_look: [first_email])
+      other_emails = contacts.map{|contact| contact[:email]}
+      account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+    end
+
+    account_emails
   end
 
   # Used for debugging purposes
