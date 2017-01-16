@@ -617,16 +617,19 @@
         };
 
         $scope.trackSuggestedDates = function() {
-            trackActionV2('dates_suggestions', {
-                calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;}),
-                ai_call_failed: $scope.showAiError,
-                ai_suggested_dates_count: $scope.getPureAiSuggestions().length,
-                validated_ai_dates_count: $scope.getValidatedAiSuggestions().length,
-                suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length,
-                operator_id: $('body').data('operatorId')
-            });
+            if($scope.timeSlotsSuggestions && Object.keys($scope.timeSlotsSuggestions).length > 0) {
+                trackActionV2('dates_suggestions', {
+                    calendars_types: _.map(window.threadAccount.calendar_logins, function(cal) {return cal.type;}),
+                    ai_call_failed: $scope.showAiError,
+                    ai_suggested_dates_count: $scope.getPureAiSuggestions().length,
+                    validated_ai_dates_count: $scope.getValidatedAiSuggestions().length,
+                    suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length,
+                    operator_id: $('body').data('operatorId')
+                });
 
-            $scope.sendLearningData()
+                $scope.sendLearningData()
+            }
+            
         };
 
         $scope.init();
