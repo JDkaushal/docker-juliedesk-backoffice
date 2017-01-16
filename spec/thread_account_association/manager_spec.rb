@@ -268,7 +268,7 @@ describe ThreadAccountAssociation::Manager do
         end
 
         it 'set messages thread as to be merged' do
-          expect(messages_thread.to_be_merged).to eq(true)
+          expect(messages_thread.account_association_merging_possible).to eq(true)
         end
 
         it 'doe not associate thread to anyone' do
