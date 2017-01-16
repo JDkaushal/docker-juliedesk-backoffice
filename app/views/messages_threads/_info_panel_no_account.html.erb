@@ -10,6 +10,9 @@
 
     window.virtualAppointmentNatures = <%== MessagesThread.virtual_appointment_natures.to_json %>;
 
+    window.allowedAttendeesEmails = [];
+    window.julie_alias_emails = <%== @julie_emails.to_json %>;
+
     function extractEmails(text) {
       return text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
     };
@@ -43,7 +46,61 @@
 
   $(function() {
     $( document ).tooltip();
+
+    initAllowedAttendeesEmails();
   })
+
+
+    function extractEmails(text)
+    {
+      return text.match(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi);
+    };
+
+    window.addAllowedAttendeesEmailsFromCurrentNotes = function(currentNotes) {
+      var emails = extractEmails(currentNotes);
+
+      if(emails) {
+        emails = _.map(emails, function(email) { return email.toLowerCase(); });
+        window.addAllowedAttendeesEmails(emails);
+      }
+    };
+
+    window.addAllowedAttendeesEmails = function(emails) {
+      window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+      window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+    };
+
+    // Compute the list of allowed attendees from their emails
+    window.initAllowedAttendeesEmails = function() {
+      window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
+      // The thread main account email
+          //.concat(window.threadAccount.email)
+          // The thread main account aliases
+          //.concat(window.threadAccount.email_aliases)
+          // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
+          // So we can look for them with Jquery using the regex function '*=' on the href attribute value
+          //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
+          // Extract emails from emails bodies
+          .concat(extractEmails($('#messages_container .email:not(".from-me") .body').text()) || [])
+          // The attendees of the event if any
+          //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
+          .concat(['hello@juliedesk.com']);
+
+//      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
+//      if(clientsAccountsCurrentNotesNodes.length > 0) {
+//        var emails = extractEmails(clientsAccountsCurrentNotesNodes.text());
+//        if(emails) {
+//          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
+//        }
+//      }
+
+      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
+      window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+    };
+
+    window.isAuthorizedAttendee = function(attendeeEmail = '') {
+      return window.allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
+    };
 </script>
 
 <div class="messages-thread-info-panel">
