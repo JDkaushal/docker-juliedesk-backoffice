@@ -11,8 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 20170111105224) do
+ActiveRecord::Schema.define(version: 20170116113038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -274,37 +273,38 @@ ActiveRecord::Schema.define(version: 20170111105224) do
 
   create_table "messages_threads", force: true do |t|
     t.string   "account_email"
-    t.boolean  "in_inbox",                        default: false
+    t.boolean  "in_inbox",                             default: false
     t.string   "locale"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "subject"
     t.text     "snippet"
     t.string   "account_name"
-    t.boolean  "sent_to_admin",                   default: false
+    t.boolean  "sent_to_admin",                        default: false
     t.text     "to_admin_message"
     t.integer  "locked_by_operator_id"
     t.datetime "locked_at"
     t.integer  "server_thread_id"
     t.string   "server_version"
-    t.boolean  "delegated_to_support",            default: false
-    t.boolean  "should_follow_up",                default: false
+    t.boolean  "delegated_to_support",                 default: false
+    t.boolean  "should_follow_up",                     default: false
     t.text     "follow_up_instruction"
     t.integer  "last_operator_id"
     t.datetime "event_booked_date"
     t.string   "status"
-    t.boolean  "to_be_merged",                    default: false
+    t.boolean  "to_be_merged",                         default: false
     t.integer  "to_be_merged_operator_id"
-    t.boolean  "was_merged",                      default: false
+    t.boolean  "was_merged",                           default: false
     t.datetime "follow_up_reminder_date"
-    t.boolean  "handled_by_ai",                   default: false
+    t.boolean  "handled_by_ai",                        default: false
     t.datetime "request_date"
-    t.integer  "messages_count",                  default: 0
-    t.boolean  "handled_by_automation",           default: false
-    t.boolean  "is_multi_clients",                default: false
-    t.string   "computed_recipients",             default: [],    array: true
-    t.string   "accounts_candidates",             default: [],    array: true
-    t.boolean  "account_request_auto_email_sent", default: false
+    t.integer  "messages_count",                       default: 0
+    t.boolean  "handled_by_automation",                default: false
+    t.boolean  "is_multi_clients",                     default: false
+    t.string   "computed_recipients",                  default: [],    array: true
+    t.string   "accounts_candidates",                  default: [],    array: true
+    t.boolean  "account_request_auto_email_sent",      default: false
+    t.boolean  "account_association_merging_possible", default: false
   end
 
   create_table "operator_actions", force: true do |t|

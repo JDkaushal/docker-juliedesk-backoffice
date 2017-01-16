@@ -9,7 +9,7 @@
 
         $scope.accountsAutocompleteSource = window.accountsAutocompleteSource;
         $scope.allowedAccountsEmails = window.allowedAccountsEmails;
-        $scope.threadToMerge = window.threadToMerge;
+        $scope.accountAssociationMergingPossible = window.accountAssociationMergingPossible;
 
         $scope.inJulieAction = !!window.classification;
 

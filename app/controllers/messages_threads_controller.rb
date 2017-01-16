@@ -201,7 +201,9 @@ class MessagesThreadsController < ApplicationController
     if account
       messages_thread.update_attributes({
        account_email: account.email,
-       account_name: account.usage_name})
+       account_name: account.usage_name,
+       account_association_merging_possible: false
+                                        })
 
       render json: {
           status: "success",

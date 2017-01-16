@@ -5,7 +5,7 @@
   <div class="associate-to-account-container">
 
     <div ng-show="allowedAccountsEmails.length > 0">
-      <div class="merging-options-container" ng-show="threadToMerge">
+      <div class="merging-options-container" ng-show="accountAssociationMergingPossible">
         <div ng-hide="inJulieAction">
           <div class="explanation">
             <span class="text">Aucun client auquel associer le thread n'a été détecté mais l'un des interlocuteurs a participé récemment à un autre thread. Choisissez l'action qui convient :</span>
@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <div ng-hide="threadToMerge">
+      <div ng-hide="accountAssociationMergingPossible">
         <input id="account-email-input" ng-model="searchTerm" placeholder="Filtrer sur le nom, le prénom ou l'email"/>
 
         <div class="account-association-candidates">

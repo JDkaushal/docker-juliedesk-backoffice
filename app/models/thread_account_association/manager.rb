@@ -239,7 +239,7 @@ module ThreadAccountAssociation
       recipients_in_previous_threads = (@data_holder.get_last_3_weeks_threads_recipients(except) & @messages_thread.computed_recipients)
       to_merge = recipients_in_previous_threads.present?
       if to_merge
-        @messages_thread.update(to_be_merged: true, accounts_candidates: recipients_in_previous_threads)
+        @messages_thread.update(account_association_merging_possible: true, accounts_candidates: recipients_in_previous_threads)
       end
 
       to_merge
