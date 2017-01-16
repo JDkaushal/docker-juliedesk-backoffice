@@ -6,7 +6,7 @@ class ImportEmailsWorker
 
   # Queues priority are alphabetically defined
   # So we prepend a 'a' to make this worker a high priority
-  @queue = :a_import_emails
+  @queue = :aa_import_emails
 
   def self.lock_workers
     :import_emails
