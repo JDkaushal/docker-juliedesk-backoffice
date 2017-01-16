@@ -144,17 +144,21 @@ class Account
   def self.create_for_autocomplete(email, params)
     cache = params[:accounts_cache]
     found_accounts = []
-    data = get_account_details(email, {accounts_cache: cache})
+    account_email = self.find_account_email(email, accounts_cache: cache)
 
-    if data.present?
-      company_name = data['company_hash'].try(:[], 'name')
-      main_account = {email: data['email'], name: data['full_name'], company: company_name}
+    if account_email.present?
+      data = get_account_details(account_email, {accounts_cache: cache})
 
-      found_accounts.push(main_account)
-      data['email_aliases'].each do |email_alias|
-        alias_account = main_account.dup
-        alias_account[:email_alias] = email_alias
-        found_accounts.push(alias_account)
+      if data.present?
+        company_name = data['company_hash'].try(:[], 'name')
+        main_account = {email: data['email'], name: data['full_name'], company: company_name}
+
+        found_accounts.push(main_account)
+        data['email_aliases'].each do |email_alias|
+          alias_account = main_account.dup
+          alias_account[:email_alias] = email_alias
+          found_accounts.push(alias_account)
+        end
       end
     end
 
