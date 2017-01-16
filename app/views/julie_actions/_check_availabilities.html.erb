@@ -410,8 +410,9 @@
             };
 
             if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
-                data.using_meeting_room = true;
-                data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+              data.using_meeting_room = true;
+              //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+              data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
             }
 
             data.virtual_resource_used = 'undefined';

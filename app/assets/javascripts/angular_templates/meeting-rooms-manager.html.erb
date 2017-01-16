@@ -3,7 +3,7 @@
     <input type="checkbox" ng-model="usingMeetingRoom" ng-disabled="formDisabled">
     <label>Salle de réunion</label>
   </div>
-  <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="selectedRoom" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
+  <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="roomsSelectionMode" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
 
   <div ng-show="displayCustomSelectionFilters && usingMeetingRoom">
 
