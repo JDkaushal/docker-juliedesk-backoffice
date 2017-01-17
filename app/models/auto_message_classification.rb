@@ -7,7 +7,7 @@ class AutoMessageClassification < MessageClassification
   self.table_name = "auto_message_classifications"
 
   def notation operator_id
-    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}"}.try(:notation)
+    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}" }.try(:notation)
   end
 
   def notation_comments operator_id
@@ -128,7 +128,7 @@ class AutoMessageClassification < MessageClassification
       })
 
       date_suggestions = date_suggestions_response["suggested_dates"]
-      amc.date_times = date_suggestions.to_json
+      amc.date_times = (date_suggestions || []).to_json
 
       client_names = interpretation[:attendees].select{|att| att['isPresent'] && att['account_email']}.map do |att|
         att['usageName']
@@ -204,7 +204,7 @@ class AutoMessageClassification < MessageClassification
                         "to" => initial_recipients[:to].join(", "),
                         "cc" => initial_recipients[:cc].join(", "),
                         "labels" => "",
-                        "snippet" => "#{self.julie_action.text.first(30)}...",
+                        "snippet" => "#{"#{self.julie_action.text}".first(30)}...",
                         "parsed_html" => text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe + (should_quote ? "<blockquote>#{original_server_message['parsed_html']}</blockquote>" : "").html_safe,
                         'date' => (self.message.received_at + (3 * 60 + self.id % (5 * 60)).seconds).to_s,
 
