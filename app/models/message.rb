@@ -451,6 +451,7 @@ class Message < ActiveRecord::Base
 
     server_threads.each do |server_thread|
       should_update_thread = true
+      new_thread = false
 
       if server_thread['subject'].include? "MB5jB- Julie alias test".freeze
         should_update_thread = false
@@ -468,6 +469,7 @@ class Message < ActiveRecord::Base
 
         unless messages_thread
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
+          new_thread = true
         end
 
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
@@ -539,7 +541,7 @@ class Message < ActiveRecord::Base
           messages_thread.tag_as_multi_clients
         end
 
-        if messages_thread
+        if messages_thread && !messages_thread.handled_by_automation
           thread_account_association_manager = ThreadAccountAssociation::Manager.new(
               data_holder: account_association_data_holder,
               messages_thread: messages_thread,
@@ -550,19 +552,13 @@ class Message < ActiveRecord::Base
           else
             thread_account_association_manager.compute_accounts_candidates(messages_thread.computed_recipients)
           end
-        else
-          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
-
-          ThreadAccountAssociation::Manager.new(
-              data_holder: account_association_data_holder,
-              messages_thread: messages_thread,
-              server_thread: server_thread
-          ).compute_association
 
           if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
             messages_thread.tag_as_multi_clients
           end
+        end
 
+        if new_thread && messages_thread.account_email.present?
           ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
               bo_thread_id: messages_thread.id,
               julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
