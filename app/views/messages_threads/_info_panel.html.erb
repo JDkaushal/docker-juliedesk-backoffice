@@ -384,6 +384,7 @@
 
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
+      var messageBodies = $.map($('#messages_container .email:not(".from-me") .body'), function(el, _) { return el.innerText }).join("\n");
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
           // The thread main account email
           .concat(window.threadAccount.email)
@@ -393,7 +394,7 @@
           // So we can look for them with Jquery using the regex function '*=' on the href attribute value
           //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
           // Extract emails from emails bodies
-          .concat(extractEmails($('#messages_container .email:not(".from-me") .body').text()) || [])
+          .concat(extractEmails(messageBodies) || [])
           // The attendees of the event if any
           //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
