@@ -236,6 +236,7 @@ module ThreadAccountAssociation
 
     def check_possible_merging
       except = @messages_thread.id
+
       recipients_in_previous_threads = (@data_holder.get_last_3_weeks_threads_recipients(except) & @messages_thread.computed_recipients)
       to_merge = recipients_in_previous_threads.present?
       if to_merge

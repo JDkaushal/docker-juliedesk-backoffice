@@ -10,6 +10,10 @@
             aiManagerNode.append($('<div id="locale_manager" ng-controller="localeManager"></div>'));
             aiManagerNode.append($('<div id="appointment_type_manager" ng-controller="appointmentTypeManager"></div>'));
             aiManagerNode.append($('<phone-skype-entities-manager/>'));
+
+            if(window.classification == 'ask_availabilities') {
+                aiManagerNode.append($('<div id="ai_dates_verification_manager" ng-controller="datesVerificationManager"></div>'));
+            }
         }
 
         angular.bootstrap(document.getElementById("AI_manager"),['AI-manager']);

@@ -163,7 +163,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         using_restaurant_booking: restaurantBookingManager.getUsingRestaurantBooking() || undefined,
         restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
         location_changed: window.threadComputedData.location != $("#location").val(),
-        before_update_data: params.before_update_data
+        before_update_data: params.before_update_data,
+        verified_dates_by_ai: params.verifiedDatesByAI
     };
 
     if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {

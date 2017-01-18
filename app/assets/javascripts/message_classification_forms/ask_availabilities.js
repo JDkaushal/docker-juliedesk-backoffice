@@ -8,9 +8,95 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     window.leftColumnMessage = localize("classification_forms.ask_availabilities.dates_identification");
 
+    function showAiThinkingLoader() {
+        $('.submit-classification').hide();
+        $('.ai-thinking-loader').show();
+    };
+
+    function hideAiThinkingLoader() {
+        $('.submit-classification').show();
+        $('.ai-thinking-loader').hide();
+    };
+
+    function getAppointmentType(appointment) {
+      return appointment.appointment_kind_hash.is_virtual;
+    };
+
+    function canVerifyWithAi() {
+        var appointmentTypeIsSame =  getAppointmentType((window.getAppointment(window.threadComputedData.appointment_nature))) == getAppointmentType(window.getCurrentAppointment());
+        var durationIsSame = window.threadComputedData.duration == $("#duration").val();
+        var locationIsSame = window.threadComputedData.location == $("#location").val();
+        var timezoneIsSame = window.threadComputedData.timezone == $("#timezone").val().trim();
+        var attendeesWithinLimit = window.presentAttendees().length == 2;
+        var notUsingMeetingRooms = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
+        var notUsingVirtualResources = !$('#virtual-meetings-helper').scope().usingVirtualResources();
+        var verifyingPreviouslySuggestedDates = !$('#dates-identifications-manager').scope().showDetectedDatesArea;
+
+        return (
+            appointmentTypeIsSame &&
+            durationIsSame &&
+            locationIsSame &&
+            timezoneIsSame &&
+            attendeesWithinLimit &&
+            notUsingMeetingRooms &&
+            notUsingVirtualResources &&
+            verifyingPreviouslySuggestedDates
+        );
+    };
 
     window.submitClassification = function () {
-        askAvailabilitiesForm.sendForm();
+        if(window.featuresHelper.isFeatureActive('ai_dates_verification') && canVerifyWithAi() ) {
+            showAiThinkingLoader();
+
+            var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
+            var datesToVerify = _.map(classificationForm.getSuggestedDateTimes(), function(date) { return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss") });
+            var highlightedEmailNode = $('.email.highlighted');
+
+            if(datesToVerify.length > 0) {
+                var verifyParams = {
+                    account_email: window.threadAccount.email,
+                    thread_data: window.threadComputedData,
+                    dates_to_check: datesToVerify,
+                    server_message_id: highlightedEmailNode.attr('id'),
+                    today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss")
+                    //message_id: highlightedEmailNode.data('message-id'),
+                };
+
+                aiDatesVerificationManager.verifyDates(verifyParams).then(
+                    function(response) {
+                        //hideAiThinkingLoader();
+                        var verifiedDatesByAI = undefined;
+
+                        if(!response.error) {
+                            var verifiedDates = [];
+                            var now = moment();
+                            _.each(response.dates_validate, function (validated, date) {
+                                if (validated && moment(date).isAfter(now)) {
+                                    // Add Z at the end of the date string to specify momentJS it is an utc date
+                                    verifiedDates.push(date+'Z');
+                                }
+                            });
+
+                            if(verifiedDates.length > 0) {
+                                verifiedDates = _.sortBy(verifiedDates, function(date) {
+                                    return moment(date).valueOf();
+                                });
+
+                                verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                            }
+                        }
+                        askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
+                }, function(error) {
+                        askAvailabilitiesForm.sendForm();
+                    });
+            } else {
+                askAvailabilitiesForm.sendForm();
+            }
+        } else {
+            askAvailabilitiesForm.sendForm();
+        }
+
+        //askAvailabilitiesForm.sendForm();
     };
 
     $(function(e) {

@@ -100,7 +100,9 @@ class MessageClassification < ActiveRecord::Base
           using_restaurant_booking: last_classification_with_data.try(:using_restaurant_booking),
           restaurant_booking_details: last_classification_with_data.try(:restaurant_booking_details),
           location_changed: last_classification_with_data.try(:location_changed),
-          virtual_resource_used: last_classification_with_data.try(:virtual_resource_used)
+          virtual_resource_used: last_classification_with_data.try(:virtual_resource_used),
+          before_update_data: params[:before_update_data],
+          verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json
       )
     else
       attendees = []
@@ -115,6 +117,9 @@ class MessageClassification < ActiveRecord::Base
       end
 
       sanitized_timezone = params[:timezone].present? ? params[:timezone].strip : nil
+
+      puts 'HEREEEE *****************'
+      puts params.inspect
 
       result = self.new(
           locale: params[:locale],
@@ -149,7 +154,8 @@ class MessageClassification < ActiveRecord::Base
           restaurant_booking_details: (params[:restaurant_booking_details] || {}).to_json,
           location_changed: params[:location_changed],
           virtual_resource_used: params[:virtual_resource_used],
-          before_update_data: params[:before_update_data]
+          before_update_data: params[:before_update_data],
+          verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json
       )
     end
 

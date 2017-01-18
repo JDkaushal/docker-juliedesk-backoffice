@@ -172,6 +172,10 @@ Rails.application.routes.draw do
       post :send_learning_data
     end
 
+    namespace :dates_verification do
+      post :verify_dates
+    end
+
     namespace :events_metadata do
       post :fetch
     end

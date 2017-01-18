@@ -11,6 +11,8 @@ function EventTile($selector, params) {
     this.fromInvitation = params.eventFromInvitation == 'true';
     this.fromInvitationOrganizer = params.eventFromInvitationOrganizer;
 
+    this.createdFromAi = params.createdFromAI;
+
     this.event = params.event;
 
     this.selectEventCallback = params.selectEventCallback;
@@ -61,7 +63,13 @@ EventTile.prototype.render = function() {
             eventTile.$selector.find('.event-from-invitation-container').show();
             eventTile.$selector.find('.event-from-invitation-container .text').text(fromInvitationMessage);
         }
+    }
 
+    if(eventTile.createdFromAi) {
+      eventTile.$selector.find('.event-created-from-ai').show();
+      eventTile.$selector.find('.event-edit-buttons').hide();
+      eventTile.$selector.find('.event-tile-container').addClass('created-from-ai');
+      //eventTile.$selector.find('.event-from-invitation-container .text').text(fromInvitationMessage);
     }
 
     eventTile.initActions();

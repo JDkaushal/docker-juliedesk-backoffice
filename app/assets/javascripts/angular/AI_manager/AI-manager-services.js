@@ -45,6 +45,26 @@
         };
     }]);
 
+    app.service('aIDatesVerificationService', ['$http','$q', function($http, $q) {
+        // Mettre timeout sur call
+
+        this.verifyDates = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates',
+                method: "POST",
+                data: params,
+                timeout: 5000
+            }).then(
+                function(response) {
+                    console.log(response);
+                    return response.data;
+                }, function(httpError) {
+                    console.log(httpError);
+                    return {error: true, details: httpError};
+                });
+        };
+    }]);
+
     app.service('messageInterpretationsService', function(){
         this.getMainInterpretation = function(){
             var mainInterpretation = _.find(window.messageInterpretations, function(mI) {

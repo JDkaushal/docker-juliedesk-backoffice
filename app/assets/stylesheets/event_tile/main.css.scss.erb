@@ -31,6 +31,10 @@
     font-size: 14px;
     color: #666;
 
+    &.created-from-ai {
+      padding: 0;
+    }
+
     .event-tile-panel {
         width: 328px;
         height: auto;
@@ -401,6 +405,15 @@
         margin: 10px -50px;
         color: white;
         display: none;
+    }
+
+    .event-created-from-ai {
+      padding: 20px 20px;
+      background-color: $aiControlColor;
+      margin: 10px -50px 0px -50px;
+      color: white;
+      display: none;
+
     }
 
     &.editing {

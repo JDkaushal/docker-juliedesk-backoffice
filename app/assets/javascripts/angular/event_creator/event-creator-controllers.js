@@ -9,13 +9,14 @@
         $scope.datesManager = undefined;
         $scope.selectedDate = undefined;
 
-        $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
+        $scope.verifiedDatesByAi = angular.copy(window.verifiedDatesByAi);
+        $scope.aiDatesVerificationIsActive = window.featuresHelper.isFeatureActive('ai_dates_verification');
 
+        $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
             if(newVal != oldVal) {
                 // We will listen to this event in the meeting rooms manager to check for the rooms disponibilities
                 $scope.$emit('datesVerifNewSelectedDate', newVal);
             }
-
         });
 
         $scope.init = function() {
@@ -25,9 +26,37 @@
                 $scope.selectedDateRaw = $scope.datesToCheck[0].date;
             }
 
+            if($scope.aiDatesVerificationIsActive && $scope.aiShouldCreateEvent()) {
+                $scope.createEventIfNecessary();
+            }
+
             $scope.attachEventsToDom();
         };
 
+        $scope.hideAiNoDatesValidated = function() {
+          return !$scope.aiDatesVerificationIsActive || $scope.verifiedDatesByAi;
+        };
+
+        $scope.aiShouldCreateEvent = function() {
+            return (!window.currentEventTile &&
+                $scope.verifiedDatesByAi &&
+                $scope.verifiedDatesByAi.verified_dates &&
+                $scope.verifiedDatesByAi.verified_dates.length > 0);
+        };
+
+        $scope.createEventIfNecessary = function() {
+            var now = moment();
+            var filteredDates = _.filter(window.verifiedDatesByAi.verified_dates, function(date) {
+               return moment(date).isAfter(now);
+            });
+
+            if(filteredDates.length > 0) {
+                $scope.selectedDateRaw = filteredDates[0];
+                window.createEventButtonClickHandler({forceTimezone: window.verifiedDatesByAi.timezone, createdFromAI: true});
+            }
+
+        };
+        
         $scope.setRawDatesFromData = function() {
             var data = $('.suggested-date-times').data('date-times');
 

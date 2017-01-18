@@ -415,10 +415,14 @@
       return window.allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
+    window.getAppointment = function(appointmentNature) {
+      return $.grep(window.threadAccount.appointments,function(v) {
+        return v.label == appointmentNature;
+      })[0];
+    };
+
     window.getCurrentAppointment = function() {
-        return $.grep(window.threadAccount.appointments,function(v) {
-            return v.label == $("select#appointment_nature").val();
-        })[0];
+      return window.getAppointment($("select#appointment_nature").val());
     };
     window.getCurrentAddress = function() {
         var currentAppointment = window.getCurrentAppointment();
@@ -1477,6 +1481,10 @@
         <br>
         <br>
         <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
+        <div class="ai-thinking-loader">
+          <span><%= image_tag 'ai_processing_loader.gif', {class: 'ai-thinking-gif'} %></span>
+          <span class="ai-thinking-text">Jul.IA réfléchie</span>
+        </div>
       </div>
 
     </div>

@@ -561,6 +561,8 @@ Calendar.prototype.fullCalendarInit = function() {
             columnWidthInt = parseInt(columnWidth);
             offsetRowInt = parseInt($('.fc-agenda-axis').css('width'));
             calendar.fullCalendarViewRender(view, element);
+
+            console.log('dispStart', calendar.dispStart);
         },
         eventClick: function(event, jsEvent, view) {
             calendar.fullCalendarEventClick(event, jsEvent, view);

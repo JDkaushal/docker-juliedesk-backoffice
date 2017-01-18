@@ -530,7 +530,7 @@
         $scope.fetchMetadata = function(params) {
             return eventsMetadataService.fetch(params).then(function(response) {
                 return JSON.parse(response.data.calendar);
-            })
+            });
         };
         
         $scope.fetchSchedulingEventMetadata = function() {
@@ -546,6 +546,18 @@
             );
         };
 
+
+        $scope.init();
+    }]);
+    
+    app.controller('datesVerificationManager', ['$scope', 'aIDatesVerificationService', function($scope, aIDatesVerificationService) {
+
+        $scope.init = function() {
+        };
+
+        $scope.verifyDates = function(params) {
+            return aIDatesVerificationService.verifyDates(params);
+        };
 
         $scope.init();
     }]);

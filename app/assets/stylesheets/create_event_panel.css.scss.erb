@@ -6,6 +6,26 @@
 
   .suggested-date-times {
 
+    .ai-no-dates-validated {
+      color: $aiControlColor;
+
+      .sprite {
+        background-image: url(<%= asset_path 'warning2x.png' %>);
+        background-repeat: no-repeat;
+        background-size: 20px 20px;
+        width: 20px;
+        height: 20px;
+        position: relative;
+        display: inline-block;
+        margin-top: 5px;
+      }
+
+      .text {
+        margin-left: 10px;
+        vertical-align: super;
+      }
+    }
+
     .timezone-selection-area {
       margin-bottom: 5px;
 

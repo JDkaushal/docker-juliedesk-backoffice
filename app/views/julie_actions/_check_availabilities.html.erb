@@ -5,6 +5,10 @@
     window.leftColumnMessage = "Create event";
     window.suggestedDates = <%== @messages_thread.suggested_date_times.map{|d| d['date']}.to_json %>;
 
+    <% if @message_classification.verified_dates_by_ai.present? %>
+      window.verifiedDatesByAi = <%== @message_classification.verified_dates_by_ai.to_json %>;
+    <% end %>
+
     var noDateFitsType = "<%=
         date_times_to_check = JSON.parse(@julie_action.message_classification.date_times)
         suggested_date_times = @messages_thread.suggested_date_times
@@ -210,142 +214,151 @@
             };
         };
 
+        window.createEventButtonClickHandler = function(params) {
+          params = params || {};
+          var createdFromAI = params.createdFromAI || false;
+
+          var eventCreatorManager = $('#datesVerificationsManager').scope();
+
+          if(window.threadComputedData.client_agreement) {
+            var currentTimezone = params.forceTimezone || window.currentCalendar.getCalendarTimezone();
+            var meetingRoomManager = $('#meeting-rooms-manager').scope();
+            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+            trackActionV2('Click_on_create_event', {ux_element: 'standCE', meeting_room: meetingRoomManager.usingMeetingRoom, created_by_ai: createdFromAI});
+
+            window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
+
+            $("#create-event-button").attr('disabled', true);
+            $(".creating-event-message").html("Creating...");
+            var start = moment(eventCreatorManager.selectedDateRaw).tz(currentTimezone);
+            var end = start.clone();
+            end.add('m', <%= @messages_thread.computed_data[:duration] %>);
+
+            $(".calendar-container").addClass("minimized");
+
+            var location = [];
+
+            if(meetingRoomManager && meetingRoomManager.usingMeetingRoom && meetingRoomManager.selectedRoom && meetingRoomManager.selectedRoom.id != 'auto_room_selection') {
+              location.push(meetingRoomManager.selectedRoom.summary);
+            }
+
+            location.push(window.threadComputedData.location);
+
+            location = location.join(', ');
+
+            var emailInNotes = "";
+
+            // include_email_in_notes here
+
+            if(window.getCurrentAppointment().include_email_in_notes) {
+              <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
+              var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
+
+              emailInNotes = "\n\n" + textData.text;
+            }
+
+            var requestParams = {};
+
+            if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
+              requestParams['virtual_resource_id'] = vmHelper.selectedVirtualResource.id;
+              // Allows us to refresh the notes with the currently selected virtual resource instructions
+              forceUpdateNotesCallingInfos();
+            }
+
+            //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
+            // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
+            var description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
+
+            if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
+              if(window.threadComputedData.call_instructions.event_instructions)
+                location = window.threadComputedData.call_instructions.event_instructions;
+
+              if(window.currentEventTile) {
+                var currentEventNotesNode = $('.created-event-panel .notes');
+                var currentEventNotes = currentEventNotesNode.val();
+                var newEventDescription = '';
+                if(vmHelper && vmHelper.isVirtualAppointment()){
+                  var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+                  var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
+                  if(regExResult != null){
+                    newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
+                    description = newEventDescription;
+                  }
+                }
+              }
+            }
+
+            requestParams = $.extend(requestParams, {
+              action: "create_event",
+              email: "<%= @messages_thread.account_email %>",
+              summary: window.threadComputedData.summary,
+              description: description,
+              attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present?}.to_json %>,
+              location: location,
+              all_day: false,
+              private: window.threadComputedData.private,
+              start: start.format(),
+              end: end.format(),
+              start_timezone: currentTimezone,
+              end_timezone: currentTimezone,
+              calendar_login_username: window.threadComputedData.calendar_login_username,
+              meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
+            });
+
+            if(isPostpone && !window.currentEventFromInvitation) {
+              window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
+              window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
+              window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
+              // For backslahes to work in JS
+              window.currentCalendarLoginUsername = "<%= "#{@messages_thread.event_data[:calendar_login_username]}".gsub(/\\/, "\\\\\\\\") %>";
+              _.each({
+                action: "update_event",
+                event_id: window.currentEventId,
+                event_url: window.currentEventUrl,
+                calendar_id: window.currentCalendarId,
+                calendar_login_username: window.currentCalendarLoginUsername
+              }, function(v, k) {
+                requestParams[k] = v;
+              });
+            }
+
+            if(window.currentEventFromInvitation) {
+              window.currentEventTile.doneEditingCallback = function() {
+                window.actionDeletedEvent = true;
+                createOrUpdateEvent(start, requestParams);
+              };
+              window.currentEventTile.deleteEvent();
+            }else {
+              createOrUpdateEvent(start, requestParams, createdFromAI);
+            }
+          }
+          else {
+            var availableTimeSlots = [eventCreatorManager.selectedDateRaw];
+            var messageBuilder = $('#reply-area').scope();
+            $(".calendar-container").addClass("minimized");
+            window.setReplyMessage(messageBuilder.generateReply({
+              action: "client_agreement",
+              isPostpone: isPostpone,
+              dateTimesToCheck: availableTimeSlots,
+              isAvailable: true,
+              appointment: window.getCurrentAppointment(),
+              timezoneId: window.threadComputedData.timezone,
+              defaultTimezoneId: window.threadAccount.default_timezone_id,
+              locale: window.threadComputedData.locale
+            }), "only_client");
+          }
+          $('.email.extended').removeClass('extended');
+        };
+
         $("#create-event-button").click(function () {
-            var eventCreatorManager = $('#datesVerificationsManager').scope();
-
-            if(window.threadComputedData.client_agreement) {
-                var currentTimezone = window.currentCalendar.getCalendarTimezone();
-                var meetingRoomManager = $('#meeting-rooms-manager').scope();
-                var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
-
-                trackActionV2('Click_on_create_event', {ux_element: 'standCE', meeting_room: meetingRoomManager.usingMeetingRoom});
-
-                window.currentEventFromInvitation = "<%= @messages_thread.event_data[:event_from_invitation] %>" == "true";
-
-                $("#create-event-button").attr('disabled', true);
-                $(".creating-event-message").html("Creating...");
-                var start = moment(eventCreatorManager.selectedDateRaw).tz(currentTimezone);
-                var end = start.clone();
-                end.add('m', <%= @messages_thread.computed_data[:duration] %>);
-
-                $(".calendar-container").addClass("minimized");
-
-                var location = [];
-
-                if(meetingRoomManager && meetingRoomManager.usingMeetingRoom && meetingRoomManager.selectedRoom && meetingRoomManager.selectedRoom.id != 'auto_room_selection') {
-                    location.push(meetingRoomManager.selectedRoom.summary);
-                }
-
-                location.push(window.threadComputedData.location);
-
-                location = location.join(', ');
-
-                var emailInNotes = "";
-
-                // include_email_in_notes here
-
-                if(window.getCurrentAppointment().include_email_in_notes) {
-                    <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
-                    var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
-
-                    emailInNotes = "\n\n" + textData.text;
-                }
-
-                var requestParams = {};
-
-                if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
-                    requestParams['virtual_resource_id'] = vmHelper.selectedVirtualResource.id;
-                    // Allows us to refresh the notes with the currently selected virtual resource instructions
-                    forceUpdateNotesCallingInfos();
-                }
-
-                //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
-                // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
-                var description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
-
-                if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
-                    if(window.threadComputedData.call_instructions.event_instructions)
-                        location = window.threadComputedData.call_instructions.event_instructions;
-
-                    if(window.currentEventTile) {
-                        var currentEventNotesNode = $('.created-event-panel .notes');
-                        var currentEventNotes = currentEventNotesNode.val();
-                        var newEventDescription = '';
-                        if(vmHelper && vmHelper.isVirtualAppointment()){
-                            var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
-                            var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
-                            if(regExResult != null){
-                                newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
-                                description = newEventDescription;
-                            }
-                        }
-                    }
-                }
-
-                requestParams = $.extend(requestParams, {
-                    action: "create_event",
-                    email: "<%= @messages_thread.account_email %>",
-                    summary: window.threadComputedData.summary,
-                    description: description,
-                    attendees: <%== @messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true' && a['email'].present?}.to_json %>,
-                    location: location,
-                    all_day: false,
-                    private: window.threadComputedData.private,
-                    start: start.format(),
-                    end: end.format(),
-                    start_timezone: currentTimezone,
-                    end_timezone: currentTimezone,
-                    calendar_login_username: window.threadComputedData.calendar_login_username,
-                    meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
-                });
-
-                if(isPostpone && !window.currentEventFromInvitation) {
-                    window.currentEventId = "<%= @messages_thread.event_data[:event_id] %>";
-                    window.currentEventUrl = "<%= @messages_thread.event_data[:event_url] %>";
-                    window.currentCalendarId = "<%= @messages_thread.event_data[:calendar_id] %>";
-                    // For backslahes to work in JS
-                    window.currentCalendarLoginUsername = "<%= "#{@messages_thread.event_data[:calendar_login_username]}".gsub(/\\/, "\\\\\\\\") %>";
-                    _.each({
-                        action: "update_event",
-                        event_id: window.currentEventId,
-                        event_url: window.currentEventUrl,
-                        calendar_id: window.currentCalendarId,
-                        calendar_login_username: window.currentCalendarLoginUsername
-                    }, function(v, k) {
-                        requestParams[k] = v;
-                    });
-                }
-
-                if(window.currentEventFromInvitation) {
-                    window.currentEventTile.doneEditingCallback = function() {
-                        window.actionDeletedEvent = true;
-                        createOrUpdateEvent(start, requestParams);
-                    };
-                    window.currentEventTile.deleteEvent();
-                }else {
-                    createOrUpdateEvent(start, requestParams);
-                }
-            }
-            else {
-                var availableTimeSlots = [eventCreatorManager.selectedDateRaw];
-                var messageBuilder = $('#reply-area').scope();
-                $(".calendar-container").addClass("minimized");
-                window.setReplyMessage(messageBuilder.generateReply({
-                    action: "client_agreement",
-                    isPostpone: isPostpone,
-                    dateTimesToCheck: availableTimeSlots,
-                    isAvailable: true,
-                    appointment: window.getCurrentAppointment(),
-                    timezoneId: window.threadComputedData.timezone,
-                    defaultTimezoneId: window.threadAccount.default_timezone_id,
-                    locale: window.threadComputedData.locale
-                }), "only_client");
-            }
-            $('.email.extended').removeClass('extended');
+            createEventButtonClickHandler();
         });
+
+
     });
 
-    var createOrUpdateEvent = function(start, requestParams) {
+    var createOrUpdateEvent = function(start, requestParams, createdFromAI) {
         CommonHelpers.externalRequest(requestParams, function (e) {
             var currentAppointment = window.getCurrentAppointment();
             var eventCreatorManager = $('#datesVerificationsManager').scope();
@@ -354,7 +367,18 @@
 
             var virtualResourcesUsed = false;
 
+          var julieActionNode = $(".julie-action-title");
+          var julieActionTitleNode = $(".julie-action-title .title");
+
+          // We don't refresh the calendar when creating the event from the AI, so we can process the thread faster
+          if(createdFromAI) {
+            julieActionTitleNode.html("A faire : Rédiger l'email");
+            julieActionNode.addClass('event-created-by-ai');
+
+          } else {
             window.currentCalendar.refreshEvents();
+            julieActionTitleNode.html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
+          }
 
             if(!isPostpone || window.currentEventFromInvitation) {
                 window.currentEventId = e.data.event_id;
@@ -387,7 +411,6 @@
             };
 
             if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-
 
                 if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
                     messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
@@ -489,7 +512,6 @@
             $(".messages-thread-info-panel .create-event-panel").hide();
 
             $(".messages-thread-info-panel .message-container").hide();
-            $(".julie-action-title .title").html("<%= I18n.t("common.to_do") %> <%= I18n.t("actions.send_confirmation_email.todo")%>");
 
             window.currentEventTile = new EventTile($(".messages-thread-info-panel .created-event-panel"), {
                 timezoneId: window.threadComputedData.timezone,
@@ -501,7 +523,8 @@
                 calendarLoginUsername: window.currentCalendarLoginUsername,
                 accountEmail: window.threadAccount.email,
                 locale: window.threadComputedData.locale,
-                uxElement: 'form'
+                uxElement: 'form',
+                createdFromAI: createdFromAI
             });
 
             $(".messages-thread-info-panel .created-event-panel").show();

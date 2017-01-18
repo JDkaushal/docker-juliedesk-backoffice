@@ -671,7 +671,7 @@
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
                 $scope.exposeAttendeesToGlobalScope();
-                $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
+                //$rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
                 $(".attendee-timezone").timezonePicker();
                 $scope.displayExtendedInfos();
             }, function error(response){
