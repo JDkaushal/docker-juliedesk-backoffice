@@ -756,7 +756,7 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
     if(window.classification == 'update_event' && meetingRoomManager) {
       // In case we are using meeting rooms, we clean the current room
       var availableRoomsIds = _.map(meetingRoomManager.availableRooms, function(room) {return room.id});
-      attendees = _.reject(attendees, function(att) { return availableRoomsIds.indexOf(att) > -1 });
+      attendees = _.reject(attendees, function(att) { return availableRoomsIds.indexOf(att.email) > -1 });
     }
 
     var params = {
