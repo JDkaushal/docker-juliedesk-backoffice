@@ -751,6 +751,13 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
     var eventTile = this;
     var editedEvent = eventTile.getEditedEvent();
     var meetingRoomManager = $('#meeting-rooms-manager').scope();
+    var attendees = editedEvent.attendees;
+
+    if(window.classification == 'update_event' && meetingRoomManager) {
+      // In case we are using meeting rooms, we clean the current room
+      var availableRoomsIds = _.map(meetingRoomManager.availableRooms, function(room) {return room.id});
+      attendees = _.reject(attendees, function(att) { return availableRoomsIds.indexOf(att) > -1 });
+    }
 
     var params = {
         email: eventTile.accountEmail,
@@ -758,7 +765,7 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
 
         summary: editedEvent.title,
         description: editedEvent.description,
-        attendees: editedEvent.attendees,
+        attendees: attendees,
         location: editedEvent.location,
         all_day: editedEvent.all_day,
         private: editedEvent.private,
