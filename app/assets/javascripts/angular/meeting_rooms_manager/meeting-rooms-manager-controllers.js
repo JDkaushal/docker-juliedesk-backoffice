@@ -519,7 +519,7 @@
                                         // meeting room
                                         // As we don't want to display that the room is not available anymore on this period, we will ignore this particular period when checking for
                                         // the meeting room availability
-                                        if(updateEventClassification && window.threadComputedData.meeting_room_details.selected_meeting_room.id == meetingRoom.id) {
+                                        if(updateEventClassification && window.threadComputedData.meeting_room_details.selected_meeting_room && window.threadComputedData.meeting_room_details.selected_meeting_room.id == meetingRoom.id) {
                                             if(moment(currentEventStartTime).isSame(currentStartDate) && moment(currentEventEndTime).isSame(currentEndDate)) {
                                                 isOverlapping = false;
                                             } else {
