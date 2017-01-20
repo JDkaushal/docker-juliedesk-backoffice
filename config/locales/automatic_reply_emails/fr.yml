@@ -5,13 +5,13 @@ fr:
         with_julie_alias: |
           Bonjour,
 
-          Pour éviter toute confusion, pourriez-vous m’indiquer le nom, le prénom et l’adresse email de la personne avec laquelle vous souhaitez prendre rendez-vous ?
+          Pour éviter toute confusion, merci de mettre en copie la personne avec laquelle vous souhaitez prendre rendez-vous ou de m’indiquer son nom, son prénom et son adresse email.
         without_julie_alias: |
           Bonjour,
 
           Je ne parviens pas à trouver votre adresse email ni dans la liste des personnes avec lesquelles je travaille ni en tant que participant à un événement que j’organise.
 
-          Si vous souhaitez prendre rendez-vous avec l’une des personnes avec qui je travaille, merci de m’indiquer son nom, son prénom et son adresse email.
+          Si vous souhaitez prendre rendez-vous avec l’une des personnes avec qui je travaille, merci de la mettre en copie ou de m’indiquer son nom, son prénom et son adresse email.
     mailing_list:
       text: |
         Bonjour %{client_name},
