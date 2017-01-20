@@ -367,6 +367,21 @@ describe ThreadAccountAssociation::Manager do
           manager.compute_association
         end
 
+        context 'messages thread contains one splitted email' do
+          let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com', 'was_split' => true }}
+
+          it 'does not send a reply email to the sender' do
+            expect(manager).not_to receive(:send_account_request_email)
+            manager.compute_association
+          end
+
+          it 'does not archive message thread' do
+            expect_any_instance_of(MessagesThread).not_to receive(:archive)
+            manager.compute_association
+          end
+
+        end
+
       end
 
 

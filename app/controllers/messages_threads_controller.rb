@@ -79,12 +79,23 @@ class MessagesThreadsController < ApplicationController
     # TODO Find way to reduce this time (3secs to timeout)
     @messages_thread.re_import
 
-    @messages_thread.account
-
     @accounts_cache_light = Account.accounts_cache(mode: "light")
-
-    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
+    julie_aliases = JulieAlias.all
+    @julie_emails = julie_aliases.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+
+    # If the thread is not associated with a client, we will try to associate it
+    if @messages_thread.account_email.blank?
+      account_association_data_holder = ThreadAccountAssociation::DataHolder.new(@accounts_cache_light, julie_aliases, @julie_emails)
+
+      ThreadAccountAssociation::Manager.new(
+          data_holder: account_association_data_holder,
+          messages_thread: @messages_thread,
+          server_thread: @messages_thread.server_thread
+      ).compute_association
+    end
+
+    @messages_thread.account
 
     # TODO Don't forget to check if "account_email" is usable in calendar_login when calling computed_data method in place of "client_email"
     @messages_thread.create_event_title_review_if_needed

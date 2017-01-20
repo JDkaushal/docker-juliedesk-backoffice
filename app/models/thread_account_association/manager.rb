@@ -54,6 +54,10 @@ module ThreadAccountAssociation
     
     private
 
+    def has_one_splitted_message
+      get_server_messages.any?{|m| m['was_split']}
+    end
+
     def get_server_messages
       #@server_messages ||= @server_thread['messages'].reject{|m| m['from_me']}
       @server_messages ||= @server_thread['messages']
@@ -143,7 +147,7 @@ module ThreadAccountAssociation
         @logger.debug("-- will try to merge => #{try_to_merge} --")
         @logger.debug("-- automatic email already sent => #{@messages_thread.account_request_auto_email_sent} --")
 
-        if !try_to_merge && !@messages_thread.account_request_auto_email_sent
+        if !try_to_merge && !@messages_thread.account_request_auto_email_sent && !has_one_splitted_message
           @logger.debug("-- Sending automatic request account then archiving --")
           send_account_request_email
           @messages_thread.archive

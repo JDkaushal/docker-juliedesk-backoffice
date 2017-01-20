@@ -118,9 +118,6 @@ class MessageClassification < ActiveRecord::Base
 
       sanitized_timezone = params[:timezone].present? ? params[:timezone].strip : nil
 
-      puts 'HEREEEE *****************'
-      puts params.inspect
-
       result = self.new(
           locale: params[:locale],
           # Extra protection against trailing whitespace causing bugs with timezones
