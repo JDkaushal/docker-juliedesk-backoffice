@@ -384,7 +384,7 @@
 
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
-      var messageBodies = $.map($('#messages_container .email:not(".from-me") .body'), function(el, _) { return el.innerText }).join("\n");
+      var messageBodies = $.map($('#messages_container .email:not(".from-me") .body,.gmail_quote'), function(el, _) { return el.innerText }).join("\n");
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
           // The thread main account email
           .concat(window.threadAccount.email)
