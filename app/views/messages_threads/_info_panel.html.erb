@@ -407,7 +407,7 @@
 //        }
 //      }
 
-      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
+      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase().replace(/'/g, ""); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 
