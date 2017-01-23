@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170118131450) do
+ActiveRecord::Schema.define(version: 20170119212351) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -241,6 +241,7 @@ ActiveRecord::Schema.define(version: 20170118131450) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
+    t.text     "annotated_reply"
     t.json     "verified_dates_by_ai"
   end
 

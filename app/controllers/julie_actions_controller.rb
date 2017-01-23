@@ -145,6 +145,10 @@ class JulieActionsController < ApplicationController
       end
     end
 
+    if params[:annotated_reply].present?
+      message_classification_params_to_update[:annotated_reply] = params[:annotated_reply]
+    end
+
     if message_classification_params_to_update.present?
       julie_action.message_classification.update(message_classification_params_to_update)
     end

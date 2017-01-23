@@ -96,7 +96,9 @@
 
         var clientNames = [window.threadAccount.usage_name];
         _.each(otherClients(), function(attendee) {
-          var names = attendee.usageName.split(" ");
+          var names = [];
+          if(attendee.usageName)
+            names = attendee.usageName.split(" ");
           if(names.length > 0) {
             clientNames.push(window.helpers.capitalize(names[0]));
           }
@@ -105,7 +107,9 @@
         var attendeesForService = [];
         _.each(attendees(), function(attendee) {
           if (attendee.usageName) {
-            var names = attendee.usageName.split(" ");
+            var names = [];
+            if(attendee.usageName)
+              names = attendee.usageName.split(" ");
             if (names.length > 0 && !attendee.isAssistant) {
               var assistedByName = null;
               var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
@@ -120,7 +124,8 @@
               }
               attendeesForService.push({
                 name: window.helpers.capitalize(names[0]),
-                assisted_by_name: assistedByName
+                assisted_by_name: assistedByName,
+                email: attendee.email
               });
             }
           }
@@ -153,7 +158,14 @@
           should_ask_location: window.shouldAskLocation(),
           missing_contact_info: $('#attendeesCtrl').scope().missingContactInfo()
         }, function(generatedTemplate) {
-          window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+          if(typeof(generatedTemplate) == 'object') {
+            window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
+            window.annotatedReply = generatedTemplate["annotated_text"];
+          }
+          else {
+            window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+          }
+
         });
       }
       else {
@@ -173,7 +185,9 @@
           threadMainTimezone: threadComputedData.timezone,
           client: window.threadAccount.usage_name,
           other_clients: _.filter(_.map(otherClients(), function(attendee) {
-            var names = attendee.usageName.split(" ");
+            var names = [];
+            if(attendee.usageName)
+              names = attendee.usageName.split(" ");
             if(names.length > 0) {
               return window.helpers.capitalize(names[0]);
             }
@@ -243,7 +257,8 @@
                 done: true,
                 processed_in: Date.now() - window.startedAt,
                 messages_thread_id: "<%= @messages_thread.id %>",
-                client_settings: window.getClientSettings()
+                client_settings: window.getClientSettings(),
+                annotated_reply: window.annotatedReply
             }
         });
         window.sendReply();

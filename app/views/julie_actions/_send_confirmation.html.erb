@@ -124,7 +124,15 @@
         };
 
         new TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function(generatedTemplate) {
-          window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+          if(typeof(generatedTemplate) == "object") {
+            window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
+            window.annotatedReply = generatedTemplate["annotated_text"];
+          }
+          else {
+            window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+          }
+
+
         });
       } else {
 

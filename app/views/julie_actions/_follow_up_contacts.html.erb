@@ -38,7 +38,10 @@
             threadMainTimezone: threadComputedData.timezone,
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(otherClients(), function(attendee) {
-                var names = attendee.usageName.split(" ");
+                var names = [];
+                if(attendee.usageName)
+                  names = attendee.usageName.split(" ");
+
                 if(names.length > 0) {
                     return window.helpers.capitalize(names[0]);
                 }

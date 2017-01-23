@@ -194,7 +194,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "location_changed" => nil,
                                                               "virtual_resource_used" => nil,
                                                               "before_update_data"=>nil,
-                                                              "verified_dates_by_ai" => nil
+                                                              "verified_dates_by_ai" => nil,
+                                                              "annotated_reply"=>nil
                                                           }
                                                         }
                                                     }
