@@ -24,6 +24,7 @@ module ThreadAccountAssociation
     end
 
     def compute_association
+      clear_context
       compute_recipients_emails
       compute_accounts_candidates(@recipients_emails)
 
@@ -53,6 +54,12 @@ module ThreadAccountAssociation
     end
     
     private
+
+    def clear_context
+      # We clear the context,
+      # For example, reset the flag indicating that we could merge the thread, il will be set again if needed (if not, even when a potential account is found we would suggest the operator to merge the thread)
+      @messages_thread.update(account_association_merging_possible: false)
+    end
 
     def has_one_splitted_message
       get_server_messages.any?{|m| m['was_split']}
@@ -243,6 +250,7 @@ module ThreadAccountAssociation
 
       recipients_in_previous_threads = (@data_holder.get_last_3_weeks_threads_recipients(except) & @messages_thread.computed_recipients)
       to_merge = recipients_in_previous_threads.present?
+
       if to_merge
         @messages_thread.update(account_association_merging_possible: true, accounts_candidates: recipients_in_previous_threads)
       end
