@@ -26,6 +26,34 @@
           assisted_by_name: "Steve"
         }
       ],
+      linkedAttendees: [
+        {
+          usageName: "Pierre Linked"
+        },
+        {
+          usageName: "Jean Linked"
+        },
+        {
+          usageName: "Bea Linked"
+        },
+        {
+          usageName: "Dodu Linked"
+        }
+      ],
+      julieAliases: [
+        {
+          name: "Julie Alias 1"
+        },
+        {
+          name: "Julie Alias 2"
+        },
+        {
+          name: "Julie Alias 3"
+        },
+        {
+          name: "Julie Dodu"
+        }
+      ],
       dates: ["2016-01-01T12:00:00", "2016-01-01T02:00:00", "2016-01-03T02:00:00", "2016-01-04T23:00:00"],
       timezones: ["Europe/Paris", "America/Los_Angeles", "Asia/Kolkata", "Europe/London"]
     };
@@ -35,6 +63,8 @@
     $scope.meetingRoomName = "Malmo";
     $scope.clients = [];
     $scope.attendees = [];
+    $scope.linkedAttendees = [];
+    $scope.julieAliases = [];
     $scope.dates = [];
     $scope.isVirtual = true;
     $scope.defaultTimezone = $scope.examples.timezones[0];
@@ -45,6 +75,7 @@
     $scope.date = $scope.examples.dates[0];
     $scope.locationKind = "skype";
     $scope.restaurantBookingActivated = false;
+    $scope.haveEveryAttendeesAvailabilities = false;
     $scope.meetingRoomBooked = false;
 
     $scope.event = {
@@ -86,6 +117,26 @@
     };
     $scope.removeAttendee = function (index) {
       $scope.attendees.splice(index, 1);
+      $scope.refreshTemplates();
+    };
+
+    $scope.addLinkedAttendee = function () {
+      var linkedAttendee = $scope.examples.linkedAttendees[$scope.linkedAttendees.length % $scope.examples.linkedAttendees.length];
+      $scope.linkedAttendees.push(linkedAttendee);
+      $scope.refreshTemplates();
+    };
+    $scope.removeLinkedAttendee = function (index) {
+      $scope.linkedAttendees.splice(index, 1);
+      $scope.refreshTemplates();
+    };
+
+    $scope.addJulieAlias = function () {
+      var julieAlias = $scope.examples.julieAliases[$scope.julieAliases.length % $scope.examples.julieAliases.length];
+      $scope.julieAliases.push(julieAlias);
+      $scope.refreshTemplates();
+    };
+    $scope.removeJulieAlias = function (index) {
+      $scope.julieAliases.splice(index, 1);
       $scope.refreshTemplates();
     };
 
@@ -147,7 +198,10 @@
         restaurant_booking_activated: $scope.restaurantBookingActivated,
         main_client_company: $scope.mainClientCompany,
         meeting_room_booked: $scope.meetingRoomBooked,
-        meeting_room_name: $scope.meetingRoomName
+        meeting_room_name: $scope.meetingRoomName,
+        linked_attendees: $scope.linkedAttendees,
+        have_availabilities_of_everybody: $scope.haveEveryAttendeesAvailabilities,
+        julie_aliases: $scope.julieAliases
       };
     };
 
@@ -172,7 +226,10 @@
         restaurant_booking_activated: $scope.restaurantBookingActivated,
         main_client_company: $scope.mainClientCompany,
         meeting_room_booked: $scope.meetingRoomBooked,
-        meeting_room_name: $scope.meetingRoomName
+        meeting_room_name: $scope.meetingRoomName,
+        linked_attendees: $scope.linkedAttendees,
+        have_availabilities_of_everybody: $scope.haveEveryAttendeesAvailabilities,
+        julie_aliases: $scope.julieAliases
       };
     };
 
@@ -233,7 +290,7 @@
 
     // Watchers
 
-    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind", "restaurantBookingActivated", "meetingRoomBooked", "eventAddedAttendeesCount", "appointment_nature"];
+    var varsToWatch = ["template", "shouldAskLocation", "missingContactInfo", "isVirtual", "locale", "locationKind", "restaurantBookingActivated", "meetingRoomBooked", "eventAddedAttendeesCount", "appointment_nature", "haveEveryAttendeesAvailabilities"];
     _.each(varsToWatch, function(varToWatch) {
       $scope.$watch(varToWatch, function (oldValue, newValue) {
         $scope.refreshTemplates();
@@ -254,14 +311,12 @@
         TemplateServiceManager.getInstance().generateTemplate($scope.cleanContext(), 'all', window.otherEmails).then(function(generatedTemplate) {
           $template.find(".service-generated-template").html(generatedTemplate.text);
         });
-//        window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
-//          $template.find(".service-generated-template").html(serviceGeneratedTemplate);
-//        });
       }
     };
 
     $scope.addClient();
     $scope.addAttendee();
+    $scope.addJulieAlias();
     $scope.addDate();
     $scope.addTimezone();
     setTimeout(function() {
@@ -371,6 +426,40 @@
           </div>
           <br>
           <div class="btn btn-sm btn-primary" ng-click="addAttendee()">Add attendee</div>
+
+          <br>
+          <br>
+
+          <label>Linked Attendees</label>
+          <div ng-repeat="linkedAttendee in linkedAttendees track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Name</div>
+                <input ng-model="linkedAttendee.usageName" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeLinkedAttendee($index)"><span class="glyphicon glyphicon-remove"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="btn btn-sm btn-primary" ng-click="addLinkedAttendee()">Add linked attendee</div>
+
+          <br>
+          <br>
+
+          <label>Julie Aliases used in the thread</label>
+          <div ng-repeat="julieAlias in julieAliases track by $index">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Name</div>
+                <input ng-model="julieAlias.name" class="form-control" ng-change="refreshTemplates()">
+                <div class="input-group-addon btn" ng-click="removeJulieAlias($index)"><span class="glyphicon glyphicon-remove"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="btn btn-sm btn-primary" ng-click="addJulieAlias()">Add linked attendee</div>
         </form>
       </td>
 
@@ -512,6 +601,16 @@
             </label>
             <label class="btn btn-default" ng-class="missingContactInfo == null ? 'active btn-success' : ''">
               <input type="radio" ng-model="missingContactInfo" data-ng-value="null"> None
+            </label>
+          </div>
+        </div>
+
+        <br/>
+
+        <div class="form-group">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" ng-class="haveEveryAttendeesAvailabilities ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="haveEveryAttendeesAvailabilities"> Have every attendees availabilities
             </label>
           </div>
         </div>

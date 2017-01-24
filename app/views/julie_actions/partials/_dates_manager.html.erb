@@ -5,9 +5,13 @@
 
   <div id="dates-suggestion-manager" class="time-slots-to-suggest-list-container" ng-controller="datesSuggestionsManager as datesSuggestionsMng" ng-show="displayDatesSuggestionManager">
     <div class="time-slots-to-suggest-list">
-      <%= label_tag :dates_suggestion_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
-      <%= text_field_tag :dates_suggestion_timezone, @messages_thread.computed_data[:timezone] %>
-      <div class="time-slots-to-suggest-title">Dates proposées</div>
+      <div ng-hide="doNotAskSuggestionsMode">
+        <%= label_tag :dates_suggestion_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
+        <%= text_field_tag :dates_suggestion_timezone, @messages_thread.computed_data[:timezone] %>
+      </div>
+
+      <div ng-hide="doNotAskSuggestionsMode" class="time-slots-to-suggest-title">Dates proposées</div>
+      <div class="aiSuggestion" ng-show="doNotAskSuggestionsMode && timeSlotsSuggestedByAi.length > 0" class="time-slots-to-suggest-title">Suggestions de l'AI</div>
       <div class="ai-area">
         <span class="ai-loader-area" ng-show="showAiLoader">
           <span class="ai-loader"></span>
@@ -36,8 +40,12 @@
           </div>
         </div>
       </div>
-      <div class="dates-suggestions-from-ai-remaining-warning" ng-show="aiSuggestionsRemaining()">Validez ou invalidez les propositions de l’AI avant envoi</div>
-      <div class="btn btn-block btn-success suggest-dates-next-button" ng-disabled="nextBtnDisabled()">Next</div>
+
+
+      <div ng-hide="doNotAskSuggestionsMode">
+        <div class="dates-suggestions-from-ai-remaining-warning" ng-show="ModeaiSuggestionsRemaining()">Validez ou invalidez les propositions de l’AI avant envoi</div>
+        <div class="btn btn-block btn-success suggest-dates-next-button" ng-disabled="nextBtnDisabled()">Next</div>
+      </div>
     </div>
   </div>
 

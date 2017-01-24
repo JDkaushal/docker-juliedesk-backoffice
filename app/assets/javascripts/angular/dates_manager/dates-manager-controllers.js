@@ -20,6 +20,8 @@
 
         $scope.AIsuggestionsTrackingId = undefined;
 
+        $scope.doNotAskSuggestionsMode = false;
+
         var aiDatesSuggestionManager = $('#ai_dates_suggestions_manager');
 
         $scope.init = function() {

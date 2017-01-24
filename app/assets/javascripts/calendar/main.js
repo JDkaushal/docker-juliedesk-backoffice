@@ -714,7 +714,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         });
     }
 
-    CommonHelpers.externalRequest({
+    var params = {
         action: "events",
         email: accountPreferencesHash.email,
         calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
@@ -723,10 +723,15 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         start: start,
         end: end,
         trackingId: requestTrackingId
-    }, function (response) {
+    };
+
+    if(["ask_date_suggestions", "ask_availabilities"].indexOf(window.classification) > -1) {
+        params.linked_attendees = window.threadComputedData.linked_attendees
+    }
+
+    CommonHelpers.externalRequest(params, function (response) {
         if(!window.lastEventSync)
             window.lastEventSync = (new Date()).toISOString();
-
         var eventsCount = response.items.length;
 
         if(trackingOptions.trackNetworkResponse) {
@@ -1040,7 +1045,6 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     eventData = {
         id: ev.id,
         title: ev.summary,
-        aiMetadata: ev.ai_metadata,
         allDay: ev.all_day,
         aiMetadata: ev.ai_metadata || {},
         isSuggestionFromAi: ev.isSuggestionFromAi,
@@ -1048,6 +1052,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         isDefaultDelay: ev.isDefaultDelay,
         // Allow to know if the event is from a meeting room
         isMeetingRoom: ev.is_meeting_room,
+        isLinkedAttendeesBusy: ev.is_linked_attendees_busy,
         isVirtualResource: ev.is_virtual_resource,
         virtualResourceId: ev.virtual_resource_id,
         travelTime: ev.travelTime,

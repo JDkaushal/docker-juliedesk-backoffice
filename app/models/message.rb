@@ -542,7 +542,11 @@ class Message < ActiveRecord::Base
         end
 
         messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
-        messages_thread.update_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
+        messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
+
+        should_reprocess_linked_attendees = messages_thread.computed_recipients_changed?
+
+        messages_thread.save
 
         # Check if there are several julie aliases only if there was a new message
         if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
@@ -571,6 +575,10 @@ class Message < ActiveRecord::Base
               bo_thread_id: messages_thread.id,
               julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
           })
+        end
+
+        if should_reprocess_linked_attendees && messages_thread.account.linked_attendees_enabled
+          messages_thread.compute_linked_attendees(accounts_cache)
         end
       end
     end

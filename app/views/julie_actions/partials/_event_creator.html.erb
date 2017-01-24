@@ -1,17 +1,46 @@
 <%= javascript_include_tag 'angular_event_creator_app' %>
 
 <div class="create-event-panel" id="create-event-panel">
+
+      <div style="display: none" class="noSuggestionsNeeded">
+        <p class="note">L'ensemble des participants sont clients ou reliés aux client(s)</p>
+        <p>Il est recommandé de directement envoyer les invitations</p>
+      </div>
+
+      <script type="text/javascript">
+        if(window.julie_action_nature == "check_availabilities" && window.threadComputedData.do_not_ask_suggestions) {
+          var displayNoSuggestionInfoBox = function () {
+            $('.noSuggestionsNeeded').show();
+            $('.messages-thread-info-panel').prepend($('.noSuggestionsNeeded').remove());
+          };
+          var customizeAIArea = function () {
+              $('#dates-suggestion-manager').scope().doNotAskSuggestionsMode = true;
+          };
+
+          var customizeEventCreationArea = function() {
+            angular.element($('#datesVerificationsManager')).scope().doNotAskSuggestionsMode = true;
+          };
+
+          window.specialCallbacks = window.specialCallbacks.concat([
+              displayNoSuggestionInfoBox,
+              customizeAIArea,
+              customizeEventCreationArea
+          ]);
+        }
+      </script>
+
   <div class="suggested-date-times" id="datesVerificationsManager" data-date-times="<%= (local_assigns[:julie_action].message_classification.date_times || "[]")%>" ng-controller="datesVerificationManager as datesVerifMng">
     <div class="ai-no-dates-validated" ng-hide="hideAiNoDatesValidated()">
       <span class="sprite"></span><span class="text">Jul.IA n'a pas validé de date</span>
     </div>
 
-    <div class="timezone-selection-area">
+
+    <div ng-hide="doNotAskSuggestionsMode" class="timezone-selection-area" display="block">
       <%= label_tag :event_creation_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
       <%= text_field_tag :event_creation_timezone, @messages_thread.computed_data[:timezone] %>
     </div>
 
-    <div class="data-entry">
+    <div ng-show="!doNotAskSuggestionsMode" class="data-entry">
       <!--<div class="data-entry-name"><%= I18n.t("info_box.dates_to_check") %></div>-->
       <div class="data-entry-value">
         <div class="suggested-date-time-container" ng-repeat="dateToCheck in datesToCheck track by $index">
@@ -33,6 +62,38 @@
               </div>
             </div>
           </div>
+      </div>
+    </div>
+
+    <div ng-show="doNotAskSuggestionsMode" class="data-entry">
+      <!--<div class="data-entry-name"><%= I18n.t("info_box.dates_to_check") %></div>-->
+      <div class="data-entry-value">
+        <div ng-hide="aiDatesSuggestionsIsActive" class="suggested-date-time-container" ng-repeat="dateToCheck in datesToCheck track by $index">
+          <div class="suggested-date-time btn btn-sm btn-default btn-block" ng-class="{'btn-primary':dateToCheck.isHighlighted, 'is-outbound':dateToCheck.isOutBound}" data-date="{{dateToCheck.date}}">
+            <div class="timezone">{{dateToCheck.timezone}}</div>
+            <div class="text">{{dateToCheck.displayText}}</div>
+          </div>
+          <input type="checkbox" style="display: none;"/>
+        </div>
+
+        <div class="selected-date-details-area">
+          <div class="data-entry-name">Date sélectionnée</div>
+
+          <div class="content">
+            <div class="pleaseSelectDate" ng-show="(selectedDate.dateInOtherTimezones || []).length == 0">
+              Sélectionnez une date qui convient avant de créer l'évènement
+            </div>
+
+            <div class="selectedDateContainer" ng-repeat="dateToCheck in datesToCheck track by $index">
+              <div data-date="{{dateToCheck.date}}">
+                <div class="timezone">{{dateToCheck.timezone}}</div>
+                <br />
+                <div class="text">{{dateToCheck.displayText}}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
@@ -59,11 +120,11 @@
       <%= I18n.t("info_box.create_event") %>
     </button>
 
-    <button id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" ng-disabled="eventActionsDisabled()">
+    <button ng-hide="doNotAskSuggestionsMode" id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" ng-disabled="eventActionsDisabled()">
       <%= I18n.t("info_box.invitation_already_sent") %>
     </button>
 
-    <button id="no-date-fits" class="btn btn btn-default btn-block">
+    <button ng-hide="doNotAskSuggestionsMode" id="no-date-fits" class="btn btn btn-default btn-block">
       <%= I18n.t("info_box.no_date_fits", count: JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").length) %>
     </button>
     <div class="creating-event-message"></div>

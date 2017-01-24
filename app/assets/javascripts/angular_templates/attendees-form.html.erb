@@ -14,6 +14,9 @@
           <div class="attendee-form-picto col-xs-1 client-picto-contact" ng-show="attendeesFormCtrl.attendeeInForm.isClient">
             <%= image_tag 'client_picto.png', width: 30, height: 30 %>
           </div>
+          <div class="col-xs-1 client-picto-contact" ng-show="attendeesFormCtrl.attendeeInForm.displayAsLinkedAttendee()">
+            <%= image_tag 'linked_participant_form.png', width: 20, height: 20 %>
+          </div>
           <div class="attendee-details col-xs-11" ng-class="{'col-xs-11': !attendeesFormCtrl.attendeeInForm.isClient, 'col-xs-10 attendee-details-client': attendeesFormCtrl.attendeeInForm.isClient}">
             <div class="row ellipsable" style="margin-left: 0;">
               <span class="attendee-usage-name">{{attendeesFormCtrl.attendeeInForm.firstName}} {{attendeesFormCtrl.attendeeInForm.lastName}}</span> <span class="attendee-company">{{attendeesFormCtrl.attendeeInForm.company}}</span> <span class="attendee-no-company" ng-if="attendee.company==''">Entreprise non définie</span>

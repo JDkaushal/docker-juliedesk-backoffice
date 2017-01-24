@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170119212351) do
+ActiveRecord::Schema.define(version: 20170126101902) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -241,8 +241,8 @@ ActiveRecord::Schema.define(version: 20170119212351) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
-    t.text     "annotated_reply"
     t.json     "verified_dates_by_ai"
+    t.text     "annotated_reply"
   end
 
   add_index "message_classifications", ["message_id"], name: "index_message_classifications_on_message_id", using: :btree
@@ -307,6 +307,7 @@ ActiveRecord::Schema.define(version: 20170119212351) do
     t.string   "accounts_candidates",                  default: [],    array: true
     t.boolean  "account_request_auto_email_sent",      default: false
     t.boolean  "account_association_merging_possible", default: false
+    t.json     "linked_attendees",                     default: {}
   end
 
   create_table "operator_actions", force: true do |t|

@@ -129,7 +129,9 @@ describe MessagesThread, :type => :model do
                                                         :using_restaurant_booking=>nil,
                                                         :restaurant_booking_details=>nil,
                                                         :virtual_resource_used=>nil,
-                                                        :thread_recipients=>[]
+                                                        :thread_recipients=>[],
+                                                        :linked_attendees=>{},
+                                                        :do_not_ask_suggestions => false,
                                                     })
       end
     end
@@ -169,7 +171,9 @@ describe MessagesThread, :type => :model do
                                                         :using_restaurant_booking=>nil,
                                                         :restaurant_booking_details=>nil,
                                                         :virtual_resource_used=>nil,
-                                                        :thread_recipients=>[]
+                                                        :thread_recipients=>[],
+                                                        :linked_attendees=>{},
+                                                        :do_not_ask_suggestions => false,
                                                     })
       end
     end
@@ -212,7 +216,9 @@ describe MessagesThread, :type => :model do
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
                                                         :virtual_resource_used=>nil,
-                                                        :thread_recipients=>[]
+                                                        :thread_recipients=>[],
+                                                        :linked_attendees=>{},
+                                                        :do_not_ask_suggestions => false,
                                                     })
       end
     end
@@ -256,7 +262,9 @@ describe MessagesThread, :type => :model do
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
                                                         :virtual_resource_used=>nil,
-                                                        :thread_recipients=>[]
+                                                        :thread_recipients=>[],
+                                                        :linked_attendees=>{},
+                                                        :do_not_ask_suggestions => false,
                                                     })
       end
     end
@@ -301,7 +309,9 @@ describe MessagesThread, :type => :model do
                                                         :using_restaurant_booking=>false,
                                                         :restaurant_booking_details=>nil,
                                                         :virtual_resource_used=>nil,
-                                                        :thread_recipients=>[]
+                                                        :thread_recipients=>[],
+                                                        :linked_attendees=>{},
+                                                        :do_not_ask_suggestions => false,
                                                     })
       end
     end
@@ -538,5 +548,66 @@ describe MessagesThread, :type => :model do
         expect(@messages_thread.has_already_processed_action_once(MessageClassification::ASK_AVAILABILITIES)).to be(true)
       end
     end
+  end
+
+  describe '#compute_linked_attendees' do
+
+    # before(:example) do
+    #   allow(Account).to receive(:find_account_email).with('client1@email.com', {:accounts_cache=>{}}).and_return('client1@email.com')
+    #   allow(Account).to receive(:find_account_email).with('client2@email.com', {:accounts_cache=>{}}).and_return('client2@email.com')
+    #   allow(Account).to receive(:find_account_email).with('attendee1@email.com', {:accounts_cache=>{}}).and_return(nil)
+    #
+    #   http_response = double('http_response')
+    #   allow(http_response).to receive(:code).and_return(200)
+    #   allow(http_response).to receive(:parse).and_return({"frederic@juliedesk.com"=>[], "stagingjuliedesk@gmail.com"=>["nicolas@jdesk.onmicrosoft.com", "justine@jdesk.onmicrosoft.com"]})
+    #
+    #   allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com', 'client2@email.com'], attendees_emails: ['attendee1@email.com']}}).and_return(http_response)
+    #   @messages_thread.computed_recipients = ['client1@email.com', 'client2@email.com', 'attendee1@email.com']
+    #   @messages_thread.account_email = 'client1@email.com'
+    # end
+
+    before(:example) do
+      allow(Account).to receive(:find_account_email).with('client1@email.com', {:accounts_cache=>{}}).and_return('client1@email.com')
+      allow(Account).to receive(:find_account_email).with('client2@email.com', {:accounts_cache=>{}}).and_return('client2@email.com')
+      allow(Account).to receive(:find_account_email).with('attendee1@email.com', {:accounts_cache=>{}}).and_return(nil)
+
+      http_response = double('http_response')
+      allow(http_response).to receive(:code).and_return(200)
+      allow(http_response).to receive(:parse).and_return({"client1@email.com"=>["attendee1@email.com"]})
+
+      allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com'], attendees_emails: ['attendee1@email.com']}}).and_return(http_response)
+      @messages_thread.computed_recipients = ['client1@email.com', 'client2@email.com', 'attendee1@email.com']
+      @messages_thread.account_email = 'client1@email.com'
+    end
+
+    it 'should populate the linked attendees field correctly' do
+      pending 'When implementing multiple clients support (main + secondary)'
+      @messages_thread.compute_linked_attendees({})
+      expect(@messages_thread.linked_attendees).to eq({"frederic@juliedesk.com"=>[], "stagingjuliedesk@gmail.com"=>["nicolas@jdesk.onmicrosoft.com", "justine@jdesk.onmicrosoft.com"]})
+    end
+
+    it 'should populate the linked attendees field correctly' do
+      @messages_thread.compute_linked_attendees({})
+      expect(@messages_thread.linked_attendees).to eq({"client1@email.com"=>["attendee1@email.com"]})
+    end
+  end
+
+  describe '#ask_suggestions_needed?' do
+    context 'when all recipients are clients' do
+      it 'returns true' do
+      end
+    end
+
+    context 'when all attendees are linked attendees or client' do
+      it 'returns true' do
+      end
+    end
+
+    context 'when one of the attendee is not a linked attendee nor a client' do
+      it 'returns false' do
+
+      end
+    end
+
   end
 end

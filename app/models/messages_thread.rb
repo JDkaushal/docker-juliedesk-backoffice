@@ -145,6 +145,10 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def compute_linked_attendees(accounts_cache)
+    self.linked_attendees = LinkedAttendees::Manager.new(self, accounts_cache).fetch
+  end
+
   def account params={}
     if @account.present? || @account_fetched
       @account
@@ -428,7 +432,9 @@ class MessagesThread < ActiveRecord::Base
           using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
           restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
           virtual_resource_used: last_message_classification.try(:virtual_resource_used),
-          thread_recipients: self.computed_recipients
+          thread_recipients: self.computed_recipients,
+          linked_attendees: self.linked_attendees,
+          do_not_ask_suggestions: self.do_not_ask_suggestions?
       }
     end
 
@@ -955,31 +961,34 @@ class MessagesThread < ActiveRecord::Base
     self.computed_data([auto_message_classification])
   end
 
-  # def self.migrate_to_new_email_system threads_filename, messages_filename
-  #   threads = File.read(threads_filename).split("\n").map do |line|
-  #     d = line.split(":")
-  #     "('#{d.first}', #{d.last})"
-  #   end.join(", ")
-  #
-  #   ActiveRecord::Base.connection.execute("CREATE TABLE google_threads (google_thread_id varchar(255), messages_thread_id int)")
-  #   ActiveRecord::Base.connection.execute("INSERT INTO google_threads (google_thread_id, messages_thread_id) VALUES #{threads}")
-  #
-  #   ActiveRecord::Base.connection.execute("UPDATE messages_threads AS mt SET server_thread_id = gt.messages_thread_id FROM google_threads AS gt WHERE mt.google_thread_id = gt.google_thread_id")
-  #
-  #   ActiveRecord::Base.connection.execute("DROP TABLE google_threads")
-  #
-  #
-  #   messages = File.read(messages_filename).split("\n").map do |line|
-  #     d = line.split(":")
-  #     "('#{d.first}', #{d.last})"
-  #   end.join(", ")
-  #
-  #   ActiveRecord::Base.connection.execute("CREATE TABLE google_messages (google_message_id varchar(255), message_id int)")
-  #   ActiveRecord::Base.connection.execute("INSERT INTO google_messages (google_message_id, message_id) VALUES #{messages}")
-  #
-  #   ActiveRecord::Base.connection.execute("UPDATE messages AS m SET server_message_id = gm.message_id FROM google_messages AS gm WHERE m.google_message_id = gm.google_message_id")
-  #   ActiveRecord::Base.connection.execute("UPDATE julie_actions AS ja SET server_message_id = gm.message_id FROM google_messages AS gm WHERE ja.google_message_id = gm.google_message_id")
-  #
-  #   ActiveRecord::Base.connection.execute("DROP TABLE google_messages")
-  # end
+  def attendees
+    attendees_hash = self.computed_data_only_attendees
+    return nil unless attendees_hash.has_key?(:attendees)
+    attendees_hash[:attendees].select { |attendee| attendee["isPresent"] == "true" }
+  end
+
+  def attendees_emails
+    return nil if self.attendees.nil?
+    self.attendees.map { |attendee| attendee["email"] }.compact
+  end
+
+  def client_attendees_emails
+    return nil if self.attendees.nil?
+    self.attendees.select { |attendee| attendee["isClient"] == "true" }.map { |attendee| attendee["account_email"] }.compact
+  end
+
+  def linked_attendees_emails
+    linked_attendees.keys.compact
+  end
+
+  def do_not_ask_suggestions?
+    account_cache = REDIS_FOR_ACCOUNTS_CACHE.get(self.account_email)
+    return false if account_cache.nil?
+
+    account_cache_preferences = JSON.parse(account_cache)
+    return false if !account_cache_preferences["linked_attendees_feature"]
+    (self.linked_attendees_emails + self.client_attendees_emails - self.attendees_emails).empty?
+  end
+
+
 end

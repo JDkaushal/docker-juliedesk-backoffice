@@ -175,12 +175,13 @@ module ApplicationHelper
     "#{(hours > 0)?"#{hours}h ":nil}#{minutes}' #{(seconds < 10)?"0#{seconds}":seconds}''"
   end
 
-  def check_highlighting_in_recipients(string)
+  def process_recipients_html(string)
     sanitized_email = sanitize_email_address(string).downcase
+    qualifying_div_classes = []
 
     @computed_present_attendee_emails ||= @messages_thread.computed_data[:attendees].select{|att| att['isPresent'] == 'true'}.map{|att| att['email']}
 
-    if @client_emails.include?(sanitized_email)
+    result = if @client_emails.include?(sanitized_email)
       #we gsub the < for its html unicode equivalent to prevent it from beeing interpreted as a balise
       "<span class='highlighted'>#{CGI::escapeHTML(string)}</span>"
     elsif @computed_present_attendee_emails.include?(sanitized_email)
@@ -191,6 +192,16 @@ module ApplicationHelper
       CGI::escapeHTML(string)
     end
 
+    linked_attendees = (@messages_thread.computed_data[:linked_attendees] || {}).values.flatten
+
+    if linked_attendees.include?(sanitized_email)
+      qualifying_div_classes.push(:linked_attendee)
+      result += "<span class='linked-attendee-sprite' title='Récipiendaire lié'></span>"
+    end
+
+    global_classes = qualifying_div_classes.present? ? "class='#{qualifying_div_classes.join(' ')}'" : ''
+
+    "<span #{global_classes}>#{result}</span>"
   end
 
   def sanitize_email_address(string)

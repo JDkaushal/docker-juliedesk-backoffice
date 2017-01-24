@@ -176,6 +176,44 @@
               }
             }
 
+          &.linked-attendees-busy {
+            pointer-events: none;
+            z-index: 0 !important;
+            background-color: #E37F7F !important;
+
+            &:hover {
+              z-index: 999 !important;
+            }
+
+            .fc-event-inner {
+
+              &.juliedesk-located-event {
+                border: none !important;
+              }
+
+              .fc-event-title {
+
+                .sprite {
+                  background-image: url(<%= asset_path 'linked_participant_calendar_white.png' %>);
+                  background-size: 15px 14px;
+                  background-repeat: no-repeat;
+                  width: 15px;
+                  height: 14px;
+                  position: relative;
+                  left: -3px;
+                  top: 0;
+                  display: inline-block;
+                }
+
+                .text {
+                  margin-left: 5px;
+                  font-style:italic;
+                  font-weight: 400;
+                }
+              }
+            }
+          }
+
             &.meeting-room-unavailable {
                 pointer-events: none;
                 z-index: 0 !important;
@@ -212,8 +250,6 @@
                         }
                     }
                 }
-
-
             }
 
             .travel-time-wrapper {

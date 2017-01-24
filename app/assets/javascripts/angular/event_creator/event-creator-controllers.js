@@ -9,8 +9,11 @@
         $scope.datesManager = undefined;
         $scope.selectedDate = undefined;
 
+        $scope.doNotAskSuggestionsMode = false;
+
         $scope.verifiedDatesByAi = angular.copy(window.verifiedDatesByAi);
         $scope.aiDatesVerificationIsActive = window.featuresHelper.isFeatureActive('ai_dates_verification');
+        $scope.aiDatesSuggestionsIsActive = window.featuresHelper.isFeatureActive('ai_dates_suggestions');
 
         $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
             if(newVal != oldVal) {

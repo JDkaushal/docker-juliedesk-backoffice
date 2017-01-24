@@ -2,6 +2,9 @@
   <div class="col-xs-1 client-picto-contact" ng-show="attendee.isClient">
     <%= image_tag 'client_blue2x.png' %>
   </div>
+  <div class="col-xs-1 client-picto-contact" ng-show="attendee.displayAsLinkedAttendee()">
+    <%= image_tag 'linked_participant_form.png', width: 20, height: 20 %>
+  </div>
 
   <div class="col-xs-11">
 

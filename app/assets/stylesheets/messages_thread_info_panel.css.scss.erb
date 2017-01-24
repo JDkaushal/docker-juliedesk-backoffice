@@ -12,6 +12,28 @@
 
   z-index: 10;
 
+  .noSuggestionsNeeded {
+    padding: 5px 10px;
+    background-color: #D3F0DF;
+    margin-bottom: 25px;
+  }
+  .noSuggestionsNeeded > p.note {
+    color: #2EC094;
+    font-weight: bold;
+    padding-left: 30px;
+    position: relative;
+  }
+  .noSuggestionsNeeded > p.note:before {
+    content: '';
+    background: transparent url(<%= asset_path 'linked_participant_form_green.png' %>);
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    height: 25px;
+    width: 25px;
+  }
+
   &.scrollable {
     overflow: scroll;
   }
@@ -170,6 +192,11 @@
 
       .time-slots-to-suggest-list {
         padding: 10px 10px 30px 10px;
+
+        .aiSuggestion {
+          color: #9013fe;
+          font-weight: bold;
+        }
 
         .dates-suggestions-from-ai-remaining-warning {
           color: $aiControlColor;

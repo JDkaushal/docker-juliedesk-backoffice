@@ -91,7 +91,7 @@
 
         var googleMatrixDestinationLimitNumber = 25;
         var googleUsedTravelModeForMax = ['driving', 'transit'];
-        var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent'];
+        var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent', 'is_linked_attendees_busy'];
         // Allow us to prevent having to recalculate this fixed length every time
         var googleUsedTravelModeForMaxCount = googleUsedTravelModeForMax.length;
 

@@ -95,10 +95,10 @@
 
   <div class="email-container">
     <%
-        from_email = check_highlighting_in_recipients(email['from'].strip)
+        from_email = process_recipients_html(email['from'].strip)
 
-        to_emails = email['to'].split(',').map{|email| check_highlighting_in_recipients(email.strip)}.join(', ')
-        cc_emails = email['cc'].present? ? email['cc'].split(',').map{|email| check_highlighting_in_recipients(email.strip)}.join(', ') : ''
+        to_emails = email['to'].split(',').map{|email| process_recipients_html(email.strip)}.join(', ')
+        cc_emails = email['cc'].present? ? email['cc'].split(',').map{|email| process_recipients_html(email.strip)}.join(', ') : ''
     %>
 
         <div class="checkbox-container">

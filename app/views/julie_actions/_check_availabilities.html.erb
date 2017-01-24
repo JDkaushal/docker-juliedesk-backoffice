@@ -517,7 +517,233 @@
                 window.currentCalendarId = e.data.calendar_id;
                 window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
             }
-            generateReply();
+            //generateReply();
+
+
+            var message = '';
+            var callInstructionsMessage = '';
+
+            var messageBuilder = $('#reply-area').scope();
+            var attendeesMng = $('#attendeesCtrl').scope();
+
+            var attendeesWithMissingInfos = window.getPresentAttendeesWithMissingInfos();
+
+            var data = {
+                event_id: window.currentEventId,
+                event_url: window.currentEventUrl,
+                calendar_id: window.currentCalendarId,
+                calendar_login_username: window.currentCalendarLoginUsername,
+                done: true,
+                messages_thread_id: "<%= @messages_thread.id %>",
+                event_booked_date: start.format(),
+                client_settings: window.getClientSettings()
+            };
+
+            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+              data.using_meeting_room = true;
+              //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+              data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
+            }
+
+            data.virtual_resource_used = 'undefined';
+            if(vmHelper && vmHelper.isVirtualAppointment()) {
+                if(vmHelper.selectedVirtualResource !== undefined) {
+                  data.notes_updated = $('#notes').val();
+
+                  data.virtual_resource_used = vmHelper.selectedVirtualResource;
+                  virtualResourcesUsed = true;
+                }
+            }
+
+            if(window.threadComputedData.is_virtual_appointment){
+                var call_instructions = window.threadComputedData.call_instructions;
+
+                if(isPostpone){
+                    if($('#event_update_vm_ctrl').length > 0)
+                        call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
+                    else
+                        call_instructions = window.threadComputedData.call_instructions;
+
+                    data['call_instructions'] = call_instructions;
+
+                    angular.element($('#attendeesCtrl')).scope().confirmAIOnPresentAttendees();
+                    // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
+                    $.ajax({
+                        url: "/client_contacts/synchronize",
+                        type: "POST",
+                        data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
+                        success: function (e) {
+                            console.log('Contacts Synchronized');
+                        },
+                        error: function (e) {
+                            console.log("Error: ", e);
+                        }
+                    });
+                }
+            }
+
+          if(window.threadComputedData.do_not_ask_suggestions) {
+            var clientNames = [window.threadAccount.usage_name];
+            _.each(otherClients(), function(attendee) {
+              var names = [];
+              if(attendee.usageName)
+                names = attendee.usageName.split(" ");
+              if(names.length > 0) {
+                clientNames.push(window.helpers.capitalize(names[0]));
+              }
+            });
+
+            var attendeesForService = [];
+            _.each(attendees(), function(attendee) {
+              if (attendee.usageName) {
+                var names = [];
+                if(attendee.usageName)
+                  names = attendee.usageName.split(" ");
+                if (names.length > 0 && !attendee.isAssistant) {
+                  var assistedByName = null;
+                  var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
+                  if(isCurrentlyAssisted) {
+                    isCurrentlyAssisted = _.some(attendees(), function(attendeeObject) {
+                      return attendeeObject.guid == attendee.assistedBy.guid
+                    });
+                  }
+
+                  if(isCurrentlyAssisted) {
+                    assistedByName = attendee.assistedBy.displayName;
+                  }
+                  attendeesForService.push({
+                    name: window.helpers.capitalize(names[0]),
+                    assisted_by_name: assistedByName,
+                    email: attendee.email
+                  });
+                }
+              }
+            });
+
+            var linkedAttendeesForService = attendeesMng.getLinkedAttendees();
+
+            var locationInEmail = {};
+            if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
+              locationInEmail = {
+                en: window.getCurrentAddress().address_in_template.en,
+                fr: window.getCurrentAddress().address_in_template.fr
+              }
+            }
+
+            var currentAppointment = window.getCurrentAppointment();
+
+            var mainClientCompanyName = '';
+            var companyName = window.threadAccount.company_hash && window.threadAccount.company_hash.name
+            if(companyName) {
+              mainClientCompanyName = companyName;
+            }
+
+            var meetingRoomBooked = false;
+            var meetingRoomName = '';
+
+            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+              meetingRoomBooked = true;
+              meetingRoomName = meetingRoomsManager.selectedRoom.summary;
+            }
+
+            var serviceParams = {
+              template: 'send_invitations',
+              appointment_in_email: currentAppointment.title_in_email,
+              attendees: attendeesForService,
+              client_names: clientNames,
+              date: eventCreatorManager.selectedDateRaw,
+              default_timezone: window.threadAccount.default_timezone_id,
+              have_availabilities_of_everybody: true,
+              is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+              julie_aliases: window.julieAliases,
+              linked_attendees: linkedAttendeesForService,
+              locale: threadComputedData.locale,
+              location_in_email: locationInEmail,
+              location_kind: currentAppointment.kind,
+              main_client_company: mainClientCompanyName,
+              meeting_room_booked: meetingRoomBooked,
+              meeting_room_name: meetingRoomName,
+              missing_contact_info: attendeesMng.missingContactInfo(),
+              restaurant_booking_activated: window.threadComputedData.using_restaurant_booking,
+              should_ask_location: window.shouldAskLocation(),
+              timezones: eventCreatorManager.getUsedTimezones(),
+            };
+
+            TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function(generatedTemplate) {
+              if(typeof(generatedTemplate) == "object") {
+                window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
+                window.annotatedReply = generatedTemplate["annotated_text"];
+              }
+              else {
+                window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+              }
+            });
+          }
+          else {
+            var messageParams1 = {
+              action: "invites_sent",
+              isPostpone: isPostpone && !window.currentEventFromInvitation,
+              timeSlotToCreate: eventCreatorManager.selectedDateRaw,
+              usedTimezones: eventCreatorManager.getUsedTimezones(),
+              appointment: currentAppointment,
+              address: window.getCurrentAddress(),
+              timezoneId: window.threadComputedData.timezone,
+              defaultTimezoneId: window.threadAccount.default_timezone_id,
+              allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+              attendeesWithMissingInfos: attendeesWithMissingInfos,
+              locale: window.threadComputedData.locale,
+              usingRestaurantBooking: window.threadComputedData.using_restaurant_booking
+            };
+
+            if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+
+              if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+                messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
+                messageParams1.threadOwnerCompanyName = meetingRoomsManager.attendeesManagerCtrl.getThreadOwner().company;
+                messageParams1.selectedRoomName = meetingRoomsManager.selectedRoom.summary;
+              }
+            }
+
+            message += messageBuilder.generateReply(messageParams1);
+
+
+            if(window.threadComputedData.is_virtual_appointment){
+              var messageParams = {
+                action: 'send_call_instructions',
+                callInstructions: call_instructions,
+                locale: window.threadComputedData.locale,
+                virtualResourcesUsed: virtualResourcesUsed
+              };
+              var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
+
+              if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
+                messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
+              }
+
+              callInstructionsMessage = messageBuilder.generateReply(messageParams);
+
+              if(callInstructionsMessage != ''){
+                message += "\n\n";
+
+                message += callInstructionsMessage;
+              }
+            }
+
+            if(messageParams && messageParams['askCallInstructions'] && attendeesWithMissingInfos == 1) {
+              // We don't generate the "Xx, please also provide your hpone number, just in case!" when we are in a virtual appointment
+              // where we ask for the call instructions and there are only one attendee with missing infos
+              // It would create a duplicate question
+            } else {
+              var courtesyStringNeeded = !currentAppointment.appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+              var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
+              var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+              if(missingInfosMessage != ''){
+                message += missingInfosMessage;
+              }
+            }
+
+            window.setReplyMessage(message, 'all', window.otherEmails);
+          }
 
             $(".messages-thread-info-panel .create-event-panel").hide();
 
@@ -543,6 +769,10 @@
                 window.currentEventTile.displayCallingInfosForm();
                 window.currentEventData = data;
                 window.currentEventTile.redraw();
+                if(window.classification == 'ask_date_suggestions') {
+                  $('.noSuggestionsNeeded, #thread-header-other-entries-container').hide();
+                }
+
                 setTimeout(function () {
                     $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
                 }, 1000);
@@ -680,25 +910,18 @@
             });
             eventCreatorApp.$apply();
             window.timeSlotToCreate = event.data.eventStart;
-//            $(".suggested-date-times .suggested-date-time").removeClass("btn-primary");
-//            $(".suggested-date-times .suggested-date-time.other").remove();
-//            $(".suggested-date-times .suggested-date-time").each(function () {
-//                if (moment($(this).data("date")).isSame(moment(event.data.eventStart))) {
-//                    $(this).addClass("btn-primary");
-//                    window.timeSlotToCreateTimezone = $(this).data("timezone");
-//                }
-//            });
-//            if ($(".suggested-date-times .suggested-date-time.btn-primary").length == 0) {
-//                var dateString = moment(event.data.eventStart).tz(window.currentCalendar.getCalendarTimezone()).locale("<%= I18n.locale %>").format("dddd DD MMMM YYYY à HH:mm");
-//                window.timeSlotToCreateTimezone = window.currentCalendar.getCalendarTimezone();
-//                $(".suggested-date-times").append(
-//                        $("<div>")
-//                                .addClass("suggested-date-time other btn btn-sm btn-block btn-primary")
-//                                .html(dateString + "<br>" + window.currentCalendar.getCalendarTimezone())
-//                );
-//            }
-//            $("#create-event-button").removeAttr('disabled');
-//            $("#invitation-already-sent-button").removeAttr('disabled');
         }
     }, false);
+
+    var attendees = function(){
+      return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+        return attendee.isPresent && !attendee.isClient;
+      });
+    };
+
+    var otherClients = function(){
+      return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+        return attendee.isPresent && attendee.isClient && !attendee.isThreadOwner;
+      });
+    };
 </script>

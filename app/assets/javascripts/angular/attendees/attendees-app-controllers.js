@@ -521,11 +521,14 @@
             if(attendeesLength > 0 && informations.email) {
                 var alreadyPresent = window.currentToCC.indexOf(informations.email.toLowerCase()) > -1;
             }
+            var email = informations.email ? informations.email.toLowerCase() : undefined;
+
+            var linkedAttendees = _.flatten(Object.values(window.threadComputedData.linked_attendees || {}));
 
             var a = new Attendee({
                 accountEmail: attendee.account_email,
                 guid: informations.id || $scope.guid(),
-                email: informations.email ? informations.email.toLowerCase() : undefined,
+                email: email,
                 email_aliases: informations.email_aliases || [],
                 firstName: informations.firstName,
                 lastName: informations.lastName,
@@ -549,7 +552,8 @@
                 aIHasBeenConfirmed: aIHasBeenConfirmed,
                 isThreadOwner: false,
                 hasMissingInformations: false,
-                missingInformationsTemp: {}
+                missingInformationsTemp: {},
+                linkedAttendee: linkedAttendees.indexOf(email) > -1
             });
 
             if((a.firstName == '' || a.firstName == undefined) && (a.lastName == '' || a.lastName == undefined))
@@ -860,6 +864,12 @@
 
                 return timezone;
             })));
+        };
+
+        $scope.getLinkedAttendees = function() {
+          return _.filter($scope.attendees, function(a) {
+            return a.isPresent && !a.isClient && a.linkedAttendee;
+          });
         };
 
         $scope.getAttendeeByGuid = function(guid) {
@@ -1420,6 +1430,9 @@
         },
         has_skype: function(){
             return Boolean(this.skypeId);
+        },
+        displayAsLinkedAttendee: function() {
+            return this.linkedAttendee && !this.isClient;
         },
         computeContactNotes: function(locale){
             var notes = "";

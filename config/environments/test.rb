@@ -43,6 +43,8 @@ Rails.application.configure do
   ENV['CONSCIENCE_API_KEY'] = 'conscience_api_key'
   ENV['API_KEY'] = 'testpikeyferferfrefer'
 
+  ENV['JULIEDESK_APP_API_KEY'] = 'frfrfrf'
+
   ENV['JULIEDESK_APP_BASE_PATH'] = 'https://test-app.herokuapp.com'
   ENV['DOMAIN_NAME'] = 'test-backoffice.herokuapp.com'
 

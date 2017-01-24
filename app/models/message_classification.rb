@@ -190,7 +190,7 @@ class MessageClassification < ActiveRecord::Base
 
     case self.classification
       when MessageClassification::ASK_DATE_SUGGESTIONS
-        julie_action_nature = JulieAction::JD_ACTION_SUGGEST_DATES
+        julie_action_nature = self.message.messages_thread.do_not_ask_suggestions? ? JulieAction::JD_ACTION_CHECK_AVAILABILITIES : JulieAction::JD_ACTION_SUGGEST_DATES
       when MessageClassification::ASK_AVAILABILITIES
         julie_action_nature = JulieAction::JD_ACTION_CHECK_AVAILABILITIES
       when MessageClassification::ASK_INFO

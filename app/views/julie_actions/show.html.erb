@@ -1,3 +1,9 @@
+<script type="text/javascript">
+  window.specialCallbacks = [];
+  window.julie_action_nature = '<%= @julie_action.action_nature %>';
+  window.julie_action_id = '<%= @julie_action.id %>';
+</script>
+
 <% if @messages_thread.account %>
     <%= render partial: "messages_threads/info_panel", locals: {
                                                              messages_thread: @messages_thread,
@@ -25,8 +31,6 @@
     window.isResponseToClient = <%= @is_discussion_client_julie_only %>;
     window.startedAt = Date.now();
 
-    window.julie_action_nature = '<%= @julie_action.action_nature %>';
-    window.julie_action_id = '<%= @julie_action.id %>';
 
     window.classification = "<%= @message_classification.classification %>";
     window.locationHasBeenChanged = <%= @message_classification.location_changed || false %>;
@@ -269,11 +273,13 @@
         case 'ask_availabilities':
           //fall-through
         case 'ask_date_suggestions':
-          var datesSuggestionManager = $('#dates-suggestion-manager').scope();
+          if(window.julie_action_nature =! "check_availabilitiers") {
+            var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
-          disabled_by_ai = datesSuggestionManager.aiSuggestionsRemaining();
-          warningText = datesSuggestionManager.getTimeSlotsSuggestedByAi().length + ' proposition(s) reste(nt) à (in)valider avant envoie';
-          $('#reply-button-popover-warning-details').text(warningText);
+            disabled_by_ai = datesSuggestionManager.aiSuggestionsRemaining();
+            warningText = datesSuggestionManager.getTimeSlotsSuggestedByAi().length + ' proposition(s) reste(nt) à (in)valider avant envoie';
+            $('#reply-button-popover-warning-details').text(warningText);
+          }
           break;
       }
 
@@ -309,6 +315,10 @@
     };
 
     $(function () {
+        for(var i = 0; i < window.specialCallbacks.length; i++) {
+          window.specialCallbacks[i]();
+        }
+
         initTokenInputs();
         $("#show-calendar-button").click(function () {
             trackActionV2("Click_on_open_calendar", {

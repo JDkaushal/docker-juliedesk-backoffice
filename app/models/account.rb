@@ -38,6 +38,7 @@ class Account
                 :have_priority,
                 :auto_follow_up_enabled,
                 :restaurant_booking_enabled,
+                :linked_attendees_enabled,
                 :julie_aliases,
                 :using_calendar_server,
                 :main_address,
@@ -87,6 +88,7 @@ class Account
     account.have_priority = data['have_priority']
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
     account.restaurant_booking_enabled = data['restaurant_booking_enabled']
+    account.linked_attendees_enabled = data['linked_attendees_enabled']
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
 

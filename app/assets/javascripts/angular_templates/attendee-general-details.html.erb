@@ -7,6 +7,12 @@
 <div class="col-xs-1 client-picto-contact" ng-show="attendee.isClient">
   <%= image_tag 'client_picto.png', width: 20, height: 20 %>
 </div>
+<div class="col-xs-1 client-picto-contact" ng-show="attendee.displayAsLinkedAttendee()">
+  <%= image_tag 'linked_participant_form.png', width: 20, height: 20, 'ng-show' => 'attendee.isPresent', 'title' => 'Participant lié' %>
+  <%= image_tag 'linked_participant_form_grey.png', width: 20, height: 20, 'ng-hide' => 'attendee.isPresent', 'title' => 'Participant lié' %>
+</div>
+
+
 <div class="attendee-details" ng-class="{'col-xs-8': attendee.isClient, 'col-xs-9': !attendee.isClient}">
 
   <div ng-show="!attendees_manager.readOnly && attendee.showAIConfirmation()">
