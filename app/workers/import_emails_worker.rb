@@ -27,7 +27,9 @@ class ImportEmailsWorker
     print "Importing Emails\n"
     updated_messages_thread_ids = Message.import_emails
     if updated_messages_thread_ids.present? && updated_messages_thread_ids.size > 0
+      Rails.logger.info "triggering new-email message (socket)"
       WebSockets::Manager.trigger_new_email(updated_messages_thread_ids)
+      Rails.logger.info "new-email message triggered."
     end
   end
 end
