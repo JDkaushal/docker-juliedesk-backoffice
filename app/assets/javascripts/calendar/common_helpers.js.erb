@@ -566,7 +566,8 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
         // startDate et endDate are momentJs objects so we use the string used to
         mStartDate = moment(startDate._i).locale(locale);
         mEndDate = moment(endDate._i).locale(locale);
-        mEndDate.add('d', -1);
+        if(mEndDate > mStartDate)
+          mEndDate.add('d', -1);
 
         today = moment();
 
