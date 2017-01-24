@@ -27,8 +27,10 @@ module WebSockets
 
     def self.broadcast(type, params)
       if ENV['PUSHER_APP_ID']
+        Rails.logger.info "pusher broadcast : #{type}"
         Pusher.trigger('private-global-chat', type, params)
       elsif ENV['RED_SOCK_URL']
+        Rails.logger.info "redsock broadcast : #{type}"
         RedSock.trigger('private-global-chat', type, params)
       end
     end
