@@ -31,7 +31,8 @@ gem 'unicorn'
 gem 'uglifier', '>= 1.3.0'
 
 gem "pusher"
-gem "websocket-client-simple"
+#gem "websocket-client-simple"
+gem "faye"
 
 gem "mail", '2.6.3'
 
