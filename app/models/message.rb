@@ -88,7 +88,7 @@ class Message < ActiveRecord::Base
    current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
 
    julie_alias = current_messages_thread.julie_alias
-   using_julie_alias = true
+   using_julie_alias = julie_alias.email != 'julie@juliedesk.com'
 
    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
