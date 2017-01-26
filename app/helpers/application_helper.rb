@@ -238,4 +238,10 @@ module ApplicationHelper
 
     puts(JSON.pretty_generate(arg))
   end
+
+  def self.extract_domain(email)
+    if email.present? && email.include?('@')
+      email.split('@')[-1].split('.')[0]
+    end
+  end
 end

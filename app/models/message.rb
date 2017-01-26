@@ -2,6 +2,7 @@ class Message < ActiveRecord::Base
 
   include ActionView::Helpers::TextHelper
   include ERB::Util
+  include ApplicationHelper
 
   belongs_to :messages_thread
   has_many :message_classifications
@@ -86,13 +87,20 @@ class Message < ActiveRecord::Base
    locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
    current_messages_thread = self.messages_thread
    current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+   to = current_reply_all_recipients['from'].first['email']
 
    julie_alias = current_messages_thread.julie_alias
-   using_julie_alias = julie_alias.email != 'julie@juliedesk.com'
+   julie_alias_email = julie_alias.email
+
+   same_domain = ApplicationHelper.extract_domain(to) == ApplicationHelper.extract_domain(julie_alias.email)
+
+   using_julie_alias = julie_alias_email != 'julie@juliedesk.com'
 
    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
-   text = I18n.t("automatic_reply_emails.target_account_precisions.text.#{using_julie_alias ? 'with_julie_alias' : 'without_julie_alias'}", locale: locale_to_use)
+
+   using_julie_alias_template = using_julie_alias && !same_domain
+   text = I18n.t("automatic_reply_emails.target_account_precisions.text.#{using_julie_alias_template ? 'with_julie_alias' : 'without_julie_alias'}", locale: locale_to_use)
 
    if locale_to_use == "fr"
      html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
@@ -102,7 +110,7 @@ class Message < ActiveRecord::Base
     email_params = {
       subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
       from: julie_alias.generate_from,
-      to: [current_reply_all_recipients['from'].first['email']].join(','),
+      to: [to].join(','),
       cc: [].join(','),
       bcc: ["hello@juliedesk.com"].join(','),
       text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
