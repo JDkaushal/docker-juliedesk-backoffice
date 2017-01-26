@@ -248,7 +248,8 @@ class MessagesThreadsController < ApplicationController
     mc.julie_action.update_attributes({
                                           done: true,
                                           deleted_event: true,
-                                          processed_in: 0
+                                          processed_in: 0,
+                                          event_id: last_message_classification.try(:julie_action).try(:event_id)
                                       })
 
     redirect_to messages_thread

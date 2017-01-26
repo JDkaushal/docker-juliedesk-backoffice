@@ -594,7 +594,16 @@ EventTile.prototype.fetchEvent = function(callback) {
         }
     }, function(response) {
         eventTile.hideSpinner();
-        alert("Error fetching event");
+        if(response.responseJSON && response.responseJSON.error_code == "DELETED_EVENT") {
+          alert(response.responseJSON.message);
+          var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
+          $eventDoesNotExist.append($("<div>").html(localize('info_panel.event_does_not_exist_anymore')));
+          $eventDoesNotExist.append($("<a href='/messages_threads/"+ window.threadId +"/remove_event_link'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
+          eventTile.eventDoesNotExistSelector = $eventDoesNotExist;
+          eventTile.showEventDoesNotExist();
+        }
+        else
+          alert("Error fetching event");
         console.log(response);
     });
 };
