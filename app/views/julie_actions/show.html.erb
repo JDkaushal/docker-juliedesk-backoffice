@@ -68,6 +68,23 @@
         return result;
     };
 
+
+    window.initializeEmailLanguageSelector = function(callback){
+
+      var $languageSelector = $("<div>").addClass("language-selector-container");
+      $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
+      $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
+
+      $(".reply-box").append($languageSelector);
+
+      $(".language-selector-container .selector").click(function() {
+        window.threadComputedData.locale = $(this).data("value");
+        callback();
+      });
+
+      $('.email.extended').removeClass('extended');
+    };
+
     var datesSuggestionManager = $('#dates-suggestion-manager');
 
     /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT

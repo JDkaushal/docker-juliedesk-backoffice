@@ -28,31 +28,7 @@
             }
         });
 
-        initializeEmailLanguageSelector();
+      window.initializeEmailLanguageSelector(window.templateManager.refreshCurrentSelectedTemplate);
     });
-
-
-    function initializeEmailLanguageSelector(){
-
-        var $languageSelector = $("<div>").addClass("language-selector-container");
-        $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
-        $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
-
-        $(".reply-box").append($languageSelector);
-
-        $(".language-selector-container .selector").click(function() {
-            window.threadComputedData.locale = $(this).data("value");
-
-            window.templateManager.refreshCurrentSelectedTemplate();
-        });
-
-        $('.email.extended').removeClass('extended');
-    };
-
-    window.afterReplyBoxInitCallback = function(){
-        window.setReplyMessage("", "only_client");
-
-        window.templateManager.fetchTemplates();
-    };
 
 </script>

@@ -24,25 +24,8 @@
           }
       });
 
-      initializeEmailLanguageSelector();
+      initializeEmailLanguageSelector(window.templateManager.refreshCurrentSelectedTemplate);
   });
-
-    function initializeEmailLanguageSelector(){
-
-        var $languageSelector = $("<div>").addClass("language-selector-container");
-        $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
-        $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
-
-        $(".reply-box").append($languageSelector);
-
-        $(".language-selector-container .selector").click(function() {
-            window.threadComputedData.locale = $(this).data("value");
-
-            window.templateManager.refreshCurrentSelectedTemplate();
-        });
-
-        $('.email.extended').removeClass('extended');
-    };
 
 //    function clickOnTemplateItem($item) {
 //        var template = $item.data("template-en");

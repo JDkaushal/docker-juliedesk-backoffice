@@ -158,6 +158,7 @@
 
     window.afterReplyBoxInitCallback = function() {
       if(!useTemplateGenerationService) {
+        window.initializeEmailLanguageSelector(window.setReplyMessageActions);
         window.setReplyMessageActions();
       }
     };

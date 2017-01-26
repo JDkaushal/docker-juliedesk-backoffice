@@ -724,6 +724,9 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         end: end,
         trackingId: requestTrackingId
     }, function (response) {
+        if(!window.lastEventSync)
+            window.lastEventSync = (new Date()).toISOString();
+
         var eventsCount = response.items.length;
 
         if(trackingOptions.trackNetworkResponse) {

@@ -59,6 +59,7 @@
     };
 
     window.afterReplyBoxInitCallback = function() {
+        window.initializeEmailLanguageSelector(generateReply);
         window.setReplyMessage("");
     };
 
@@ -358,14 +359,144 @@
 
     });
 
+    var generateReply = function() {
+      var currentTimezone = window.currentCalendar.getCalendarTimezone();
+      var currentAppointment = window.getCurrentAppointment();
+      var eventCreatorManager = $('#datesVerificationsManager').scope();
+      var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+      var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+      var virtualResourcesUsed = false;
+
+      var message = '';
+      var callInstructionsMessage = '';
+
+      var messageBuilder = $('#reply-area').scope();
+      var attendeesMng = $('#attendeesCtrl').scope();
+
+      var attendeesWithMissingInfos = window.getPresentAttendeesWithMissingInfos();
+
+      var start = moment(eventCreatorManager.selectedDateRaw).tz(currentTimezone);
+
+      var messageParams1 = {
+        action: "invites_sent",
+        isPostpone: isPostpone && !window.currentEventFromInvitation,
+        timeSlotToCreate: eventCreatorManager.selectedDateRaw,
+        usedTimezones: eventCreatorManager.getUsedTimezones(),
+        appointment: currentAppointment,
+        address: window.getCurrentAddress(),
+        timezoneId: window.threadComputedData.timezone,
+        defaultTimezoneId: window.threadAccount.default_timezone_id,
+        allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
+        attendeesWithMissingInfos: attendeesWithMissingInfos,
+        locale: window.threadComputedData.locale,
+        usingRestaurantBooking: window.threadComputedData.using_restaurant_booking
+      };
+
+      if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+
+        if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+          messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
+          messageParams1.threadOwnerCompanyName = meetingRoomsManager.attendeesManagerCtrl.getThreadOwner().company;
+          messageParams1.selectedRoomName = meetingRoomsManager.selectedRoom.summary;
+        }
+      }
+
+      message += messageBuilder.generateReply(messageParams1);
+
+      var data = {
+        event_id: window.currentEventId,
+        event_url: window.currentEventUrl,
+        calendar_id: window.currentCalendarId,
+        calendar_login_username: window.currentCalendarLoginUsername,
+        done: true,
+        messages_thread_id: "<%= @messages_thread.id %>",
+        event_booked_date: start.format(),
+        client_settings: window.getClientSettings()
+      };
+
+      if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+        data.using_meeting_room = true;
+        //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+        data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
+      }
+
+      data.virtual_resource_used = 'undefined';
+      if(vmHelper && vmHelper.isVirtualAppointment()) {
+        if(vmHelper.selectedVirtualResource !== undefined) {
+          data.notes_updated = $('#notes').val();
+
+          data.virtual_resource_used = vmHelper.selectedVirtualResource;
+          virtualResourcesUsed = true;
+        }
+      }
+
+      if(window.threadComputedData.is_virtual_appointment){
+        var call_instructions = window.threadComputedData.call_instructions;
+
+        if(isPostpone){
+          if($('#event_update_vm_ctrl').length > 0)
+            call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
+          else
+            call_instructions = window.threadComputedData.call_instructions;
+
+          data['call_instructions'] = call_instructions;
+
+          angular.element($('#attendeesCtrl')).scope().confirmAIOnPresentAttendees();
+          // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
+          $.ajax({
+            url: "/client_contacts/synchronize",
+            type: "POST",
+            data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
+            success: function (e) {
+              console.log('Contacts Synchronized');
+            },
+            error: function (e) {
+              console.log("Error: ", e);
+            }
+          });
+        }
+        var messageParams = {
+          action: 'send_call_instructions',
+          callInstructions: call_instructions,
+          locale: window.threadComputedData.locale,
+          virtualResourcesUsed: virtualResourcesUsed
+        };
+        var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
+
+        if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
+          messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
+        }
+
+        callInstructionsMessage = messageBuilder.generateReply(messageParams);
+
+        if(callInstructionsMessage != ''){
+          message += "\n\n";
+
+          message += callInstructionsMessage;
+        }
+      }
+
+      if(messageParams && messageParams['askCallInstructions'] && attendeesWithMissingInfos == 1) {
+        // We don't generate the "Xx, please also provide your hpone number, just in case!" when we are in a virtual appointment
+        // where we ask for the call instructions and there are only one attendee with missing infos
+        // It would create a duplicate question
+      } else {
+        var courtesyStringNeeded = !currentAppointment.appointment_kind_hash.is_virtual && !window.getCurrentAddress();
+        var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
+        var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
+        if(missingInfosMessage != ''){
+          message += missingInfosMessage;
+        }
+      }
+
+      window.setReplyMessage(message, 'all', window.otherEmails);
+
+      // end generate
+    };
+
     var createOrUpdateEvent = function(start, requestParams, createdFromAI) {
         CommonHelpers.externalRequest(requestParams, function (e) {
-            var currentAppointment = window.getCurrentAppointment();
-            var eventCreatorManager = $('#datesVerificationsManager').scope();
-            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
-            var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
-
-            var virtualResourcesUsed = false;
 
           var julieActionNode = $(".julie-action-title");
           var julieActionTitleNode = $(".julie-action-title .title");
@@ -386,128 +517,7 @@
                 window.currentCalendarId = e.data.calendar_id;
                 window.currentCalendarLoginUsername = window.threadComputedData.calendar_login_username;
             }
-
-            var message = '';
-            var callInstructionsMessage = '';
-
-            var messageBuilder = $('#reply-area').scope();
-            var attendeesMng = $('#attendeesCtrl').scope();
-
-            var attendeesWithMissingInfos = window.getPresentAttendeesWithMissingInfos();
-
-            var messageParams1 = {
-                action: "invites_sent",
-                isPostpone: isPostpone && !window.currentEventFromInvitation,
-                timeSlotToCreate: eventCreatorManager.selectedDateRaw,
-                usedTimezones: eventCreatorManager.getUsedTimezones(),
-                appointment: currentAppointment,
-                address: window.getCurrentAddress(),
-                timezoneId: window.threadComputedData.timezone,
-                defaultTimezoneId: window.threadAccount.default_timezone_id,
-                allTimezoneIds: <%== @messages_thread.all_timezones.to_json %>,
-                attendeesWithMissingInfos: attendeesWithMissingInfos,
-                locale: window.threadComputedData.locale,
-                usingRestaurantBooking: window.threadComputedData.using_restaurant_booking
-            };
-
-            if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-
-                if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
-                    messageParams1.usingMeetingRoom = meetingRoomsManager.usingMeetingRoom;
-                    messageParams1.threadOwnerCompanyName = meetingRoomsManager.attendeesManagerCtrl.getThreadOwner().company;
-                    messageParams1.selectedRoomName = meetingRoomsManager.selectedRoom.summary;
-                }
-            }
-
-            message += messageBuilder.generateReply(messageParams1);
-
-            var data = {
-                event_id: window.currentEventId,
-                event_url: window.currentEventUrl,
-                calendar_id: window.currentCalendarId,
-                calendar_login_username: window.currentCalendarLoginUsername,
-                done: true,
-                messages_thread_id: "<%= @messages_thread.id %>",
-                event_booked_date: start.format(),
-                client_settings: window.getClientSettings()
-            };
-
-            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
-              data.using_meeting_room = true;
-              //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
-              data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
-            }
-
-            data.virtual_resource_used = 'undefined';
-            if(vmHelper && vmHelper.isVirtualAppointment()) {
-                if(vmHelper.selectedVirtualResource !== undefined) {
-                  data.notes_updated = $('#notes').val();
-
-                  data.virtual_resource_used = vmHelper.selectedVirtualResource;
-                  virtualResourcesUsed = true;
-                }
-            }
-
-            if(window.threadComputedData.is_virtual_appointment){
-                var call_instructions = window.threadComputedData.call_instructions;
-
-                if(isPostpone){
-                    if($('#event_update_vm_ctrl').length > 0)
-                        call_instructions = angular.element($('#event_update_vm_ctrl')).scope().currentConf;
-                    else
-                        call_instructions = window.threadComputedData.call_instructions;
-
-                    data['call_instructions'] = call_instructions;
-
-                    angular.element($('#attendeesCtrl')).scope().confirmAIOnPresentAttendees();
-                    // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
-                    $.ajax({
-                        url: "/client_contacts/synchronize",
-                        type: "POST",
-                        data: {client_email: window.threadAccount.email, contacts: JSON.stringify(window.getInfoPanelAttendees())},
-                        success: function (e) {
-                            console.log('Contacts Synchronized');
-                        },
-                        error: function (e) {
-                            console.log("Error: ", e);
-                        }
-                    });
-                }
-                var messageParams = {
-                    action: 'send_call_instructions',
-                    callInstructions: call_instructions,
-                    locale: window.threadComputedData.locale,
-                    virtualResourcesUsed: virtualResourcesUsed
-                };
-                var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
-
-                if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !call_instructions.details){
-                    messageParams['askCallInstructions'] = attendeesMng.mustAskCallInstructions(currentAppointmentKind);
-                }
-
-                callInstructionsMessage = messageBuilder.generateReply(messageParams);
-
-                if(callInstructionsMessage != ''){
-                    message += "\n\n";
-
-                    message += callInstructionsMessage;
-                }
-            }
-
-            if(messageParams && messageParams['askCallInstructions'] && attendeesWithMissingInfos == 1) {
-                // We don't generate the "Xx, please also provide your hpone number, just in case!" when we are in a virtual appointment
-                // where we ask for the call instructions and there are only one attendee with missing infos
-                // It would create a duplicate question
-            } else {
-                var courtesyStringNeeded = !currentAppointment.appointment_kind_hash.is_virtual && !window.getCurrentAddress();
-                var previousInformationGivenOrAsked = (callInstructionsMessage != '' || courtesyStringNeeded);
-                var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: previousInformationGivenOrAsked, sticky: previousInformationGivenOrAsked});
-                if(missingInfosMessage != ''){
-                    message += missingInfosMessage;
-                }
-            }
-
-            window.setReplyMessage(message, 'all', window.otherEmails);
+            generateReply();
 
             $(".messages-thread-info-panel .create-event-panel").hide();
 

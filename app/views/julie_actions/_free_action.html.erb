@@ -30,27 +30,13 @@
             }
         });
 
-        initializeEmailLanguageSelector();
+        var callback = function() {
+          window.templateManager.refreshCurrentSelectedTemplate(function() {
+            window.setReplyMessage("", "only_client");
+          });
+        };
+        initializeEmailLanguageSelector(callback);
     });
-
-    function initializeEmailLanguageSelector(){
-
-        var $languageSelector = $("<div>").addClass("language-selector-container");
-        $languageSelector.append($("<div>").addClass("selector").data("value", "en").html("EN"));
-        $languageSelector.append($("<div>").addClass("selector").data("value", "fr").html("FR"));
-
-        $(".reply-box").append($languageSelector);
-
-        $(".language-selector-container .selector").click(function() {
-            window.threadComputedData.locale = $(this).data("value");
-
-            window.templateManager.refreshCurrentSelectedTemplate(function() {
-                window.setReplyMessage("", "only_client");
-            });
-        });
-
-        $('.email.extended').removeClass('extended');
-    };
 
     window.afterReplyBoxInitCallback = function(){
         window.setReplyMessage("", "only_client");

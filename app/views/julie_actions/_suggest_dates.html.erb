@@ -23,6 +23,8 @@
 
     window.afterReplyBoxInitCallback = function() {
         window.setReplyMessage("");
+        window.initializeEmailLanguageSelector(suggestDatesSetReplyMessage);
+
         if(window.threadComputedData.client_agreement) {
             if(isPostpone) {
                 $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
