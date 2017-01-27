@@ -31,4 +31,8 @@
       window.initializeEmailLanguageSelector(window.templateManager.refreshCurrentSelectedTemplate);
     });
 
+    window.afterReplyBoxInitCallback = function(){
+      window.setReplyMessage("", "only_client");
+      window.templateManager.fetchTemplates();
+    };
 </script>
