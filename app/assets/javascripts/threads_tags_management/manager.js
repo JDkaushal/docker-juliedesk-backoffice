@@ -109,13 +109,13 @@ var TagsManager = (function() {
         function determineTags(messagesThread) {
             var tags = [];
 
-            if(messagesThread.account) {
-                _.each(THREAD_TAGS, function(tag) {
-                    if(messagesThread[tag]) {
-                        tags.push(new Tag({name: tag}));
-                    }
-                });
+            _.each(THREAD_TAGS, function(tag) {
+                if(messagesThread[tag]) {
+                    tags.push(new Tag({name: tag}));
+                }
+            });
 
+            if(messagesThread.account) {
                 _.each(ACCOUNT_TAGS, function(tag) {
                     if(messagesThread.account[tag]) {
                         tags.push(new Tag({name: tag}));
