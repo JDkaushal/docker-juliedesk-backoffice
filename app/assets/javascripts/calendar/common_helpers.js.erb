@@ -231,98 +231,101 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         });
     }
     else if(request.action == "create_event") {
-        var clientAttendees = window.currentAttendees
-            .filter(function(attendee) { return attendee["isClient"] == "true" && attendee["isPresent"] == "true" })
-            .map(function(attendee) { return attendee.account_email });
-
+      var createEvent = function() {
         $.ajax({
-          url: host + "/api/v1/calendar_proxy/last_change",
+          url: host + "/api/v1/calendar_proxy/event_create",
           type: "POST",
           contentType: "application/json",
           beforeSend: function(xhr){
             xhr.setRequestHeader("Authorization", access_key);
           },
-          data: JSON.stringify({client_emails: clientAttendees}),
+          data: JSON.stringify({
+            email: request.email,
+            calendar_login_username: request.calendar_login_username,
+            summary: request.summary,
+            description: request.description,
+            attendees: request.attendees,
+            all_day: request.all_day,
+            location: request.location,
+            private: request.private,
+            start: request.start,
+            end: request.end,
+            start_timezone: request.start_timezone,
+            end_timezone: request.end_timezone,
+            utc_offset: request.utc_offset,
+            recurrence: request.recurrence,
+            call_instructions: window.threadComputedData.call_instructions,
+            meeting_room: request.meeting_room,
+            virtual_resource_id: request.virtual_resource_id
+          }),
           success: function(e) {
-            var lastCalendarChanges = e.data ? moment(e.data) : null;
-            var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
-            if(lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
-              alert("L'événement n'a pas été créé car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
-            else
-              createEvent();
-          }
-        });
-
-        var createEvent = function() {
-          $.ajax({
-            url: host + "/api/v1/calendar_proxy/event_create",
-            type: "POST",
-            contentType: "application/json",
-            beforeSend: function(xhr){
-              xhr.setRequestHeader("Authorization", access_key);
-            },
-            data: JSON.stringify({
-              email: request.email,
-              calendar_login_username: request.calendar_login_username,
-              summary: request.summary,
-              description: request.description,
-              attendees: request.attendees,
-              all_day: request.all_day,
-              location: request.location,
-              private: request.private,
-              start: request.start,
-              end: request.end,
-              start_timezone: request.start_timezone,
-              end_timezone: request.end_timezone,
-              utc_offset: request.utc_offset,
-              recurrence: request.recurrence,
-              call_instructions: window.threadComputedData.call_instructions,
-              meeting_room: request.meeting_room,
-              virtual_resource_id: request.virtual_resource_id
-            }),
-            success: function(e) {
-              if(e.status == "success") {
-                if(staging_mode){
-                  saveAttendeesStaging(e.data.event_id, realAttendees);
-                  if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
-                    $('#restaurant-booking-manager').scope().sendAdminEmail({
-                      type: 'booking',
-                      user_email: window.threadAccount.email,
-                      booking_date: request.start,
-                      // the attendees count is set by the restaurant-booking-manager app
-                      location: request.location,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e));
-                  } else {
-                    callback(e);
-                  }
-                }else{
-                  // We send the restaurant booking email to the admins only when using the functionnality and
-                  // when a location is actually set
-                  if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
-                    $('#restaurant-booking-manager').scope().sendAdminEmail({
-                      type: 'booking',
-                      user_email: window.threadAccount.email,
-                      booking_date: request.start,
-                      // the attendees count is set by the restaurant-booking-manager app
-                      location: request.location,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e));
-                  } else {
-                    callback(e);
-                  }
+            if(e.status == "success") {
+              if(staging_mode){
+                saveAttendeesStaging(e.data.event_id, realAttendees);
+                if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
+                  $('#restaurant-booking-manager').scope().sendAdminEmail({
+                    type: 'booking',
+                    user_email: window.threadAccount.email,
+                    booking_date: request.start,
+                    // the attendees count is set by the restaurant-booking-manager app
+                    location: request.location,
+                    thread_id: window.processingMessageThreadId
+                  }, callback(e));
+                } else {
+                  callback(e);
+                }
+              }else{
+                // We send the restaurant booking email to the admins only when using the functionnality and
+                // when a location is actually set
+                if(window.threadComputedData.using_restaurant_booking && request.location && window.classification != 'unknown') {
+                  $('#restaurant-booking-manager').scope().sendAdminEmail({
+                    type: 'booking',
+                    user_email: window.threadAccount.email,
+                    booking_date: request.start,
+                    // the attendees count is set by the restaurant-booking-manager app
+                    location: request.location,
+                    thread_id: window.processingMessageThreadId
+                  }, callback(e));
+                } else {
+                  callback(e);
                 }
               }
-              else {
-                error_callback(e);
-              }
-            },
-            error: function(e) {
+            }
+            else {
               error_callback(e);
+            }
+          },
+          error: function(e) {
+            error_callback(e);
+          }
+        });
+      }
+
+        var clientAttendees = window.currentAttendees
+            .filter(function(attendee) { return attendee["isClient"] == "true" && attendee["isPresent"] == "true" })
+            .map(function(attendee) { return attendee.account_email });
+
+        if(clientAttendees.length > 0) {
+          $.ajax({
+            url: host + "/api/v1/calendar_proxy/last_change",
+            type: "POST",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("Authorization", access_key);
+            },
+            data: JSON.stringify({client_emails: clientAttendees}),
+            success: function (e) {
+              var lastCalendarChanges = e.data ? moment(e.data) : null;
+              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
+              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
+                alert("L'événement n'a pas été créé car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
+              else
+                createEvent();
             }
           });
         }
-
+        else
+          createEvent();
     }
     else if(request.action == "update_event") {
         if(staging_mode){
