@@ -251,7 +251,7 @@
         var $template = $(".template");
 
         TemplateServiceManager.getInstance().generateTemplate($scope.cleanContext(), 'all', window.otherEmails).then(function(generatedTemplate) {
-          $template.find(".service-generated-template").html(generatedTemplate);
+          $template.find(".service-generated-template").html(generatedTemplate.text);
         });
 //        window.generateEmailTemplateViaService($scope.cleanContext(), function (serviceGeneratedTemplate) {
 //          $template.find(".service-generated-template").html(serviceGeneratedTemplate);
