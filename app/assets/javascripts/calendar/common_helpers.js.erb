@@ -256,7 +256,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             recurrence: request.recurrence,
             call_instructions: window.threadComputedData.call_instructions,
             meeting_room: request.meeting_room,
-            virtual_resource_id: request.virtual_resource_id
+            virtual_resource_id: request.virtual_resource_id,
+            messages_thread_id: window.threadId
           }),
           success: function(e) {
             if(e.status == "success") {
