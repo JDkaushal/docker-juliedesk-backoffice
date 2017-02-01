@@ -581,8 +581,6 @@ class Message < ActiveRecord::Base
 
   def self.generate_reply_all_recipients(server_message, julie_aliases_emails = nil)
     julie_aliases = julie_aliases_emails || JulieAlias.all.map(&:email)
-
-
     from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses.select{|address| address.address && address.address.include?("@")}
     to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address && address.address.include?("@")}
 

@@ -26,7 +26,9 @@ module ApplicationHelper
     # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
     if str.present?
       # Remove '[' and ']'
-      str = str.gsub(/[\[|\]]/, '').split(',').reject{|s| !s.include?('@')}.join(',')
+      str.gsub!('"','')
+      str.gsub!(/[\[|\]]/, '')
+      str = str.split(',').reject{|s| !s.include?('@')}.join(',')
     end
 
     begin
