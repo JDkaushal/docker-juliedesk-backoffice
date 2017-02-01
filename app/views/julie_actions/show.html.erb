@@ -496,9 +496,14 @@
     });
 
     window.getRecipientsJulieAliases = function() {
-      return _.reject(window.julieAliases, function(jA) {
-        return jA.email == window.julieAlias.email;
-      })
+      var result = window.julieAliases;
+      if(window.julieAliases.length > 1) {
+        result = _.reject(window.julieAliases, function(jA) {
+          return jA.email == window.julieAlias.email;
+        })
+      }
+
+      return result;
     };
 
     window.setReplyRecipients = function(recipients, otherRecipients) {
