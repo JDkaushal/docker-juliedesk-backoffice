@@ -495,6 +495,12 @@
 
     });
 
+    window.getRecipientsJulieAliases = function() {
+      return _.reject(window.julieAliases, function(jA) {
+        return jA.email == window.julieAlias.email;
+      })
+    };
+
     window.setReplyRecipients = function(recipients, otherRecipients) {
         var replyBox = angular.element($('#recipients-manager')).scope();
         if(replyBox && replyBox.initiated)

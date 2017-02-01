@@ -159,7 +159,7 @@
           location_in_email: locationInEmail,
           should_ask_location: window.shouldAskLocation(),
           missing_contact_info: $('#attendeesCtrl').scope().missingContactInfo(),
-          julie_aliases: window.julieAliases
+          julie_aliases: window.getRecipientsJulieAliases()
         }, function(generatedTemplate) {
           if(typeof(generatedTemplate) == 'object') {
             window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
