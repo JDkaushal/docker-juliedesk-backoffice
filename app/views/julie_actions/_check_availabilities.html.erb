@@ -505,6 +505,8 @@
           var eventCreatorManager = $('#datesVerificationsManager').scope();
           var virtualResourcesUsed = false;
 
+          var currentAppointment = window.getCurrentAppointment();
+
           // We don't refresh the calendar when creating the event from the AI, so we can process the thread faster
           if(createdFromAI) {
             julieActionTitleNode.html("A faire : Rédiger l'email");
@@ -633,8 +635,6 @@
                 fr: window.getCurrentAddress().address_in_template.fr
               }
             }
-
-            var currentAppointment = window.getCurrentAppointment();
 
             var mainClientCompanyName = '';
             var companyName = window.threadAccount.company_hash && window.threadAccount.company_hash.name
