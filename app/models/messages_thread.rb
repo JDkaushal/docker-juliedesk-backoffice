@@ -984,7 +984,7 @@ class MessagesThread < ActiveRecord::Base
   def do_not_ask_suggestions?
     main_client_preferences = self.account
     return false if main_client_preferences.nil? || !main_client_preferences.linked_attendees_enabled
-    (self.linked_attendees_emails + self.client_attendees_emails - self.attendees_emails).empty?
+    (self.attendees_emails - (self.linked_attendees_emails + self.client_attendees_emails)).empty?
   end
 
 

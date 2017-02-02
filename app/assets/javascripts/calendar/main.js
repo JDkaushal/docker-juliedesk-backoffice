@@ -725,7 +725,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         trackingId: requestTrackingId
     };
 
-    if(["ask_date_suggestions", "ask_availabilities"].indexOf(window.classification) > -1) {
+    if(window.threadComputedData.linked_attendees) {
         params.linked_attendees = window.threadComputedData.linked_attendees
     }
 

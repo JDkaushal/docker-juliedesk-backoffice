@@ -1268,6 +1268,9 @@
                 that[key] = value;
             });
         },
+        usingPictogram: function() {
+          return this.isClient || this.linkedAttendee;
+        },
         dispatchUsageName: function() {
             if(this.usageNameManuallyModified) {
                 return;
