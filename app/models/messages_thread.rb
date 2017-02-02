@@ -969,7 +969,7 @@ class MessagesThread < ActiveRecord::Base
 
   def attendees_emails
     return nil if self.attendees.nil?
-    self.attendees.map { |attendee| attendee["email"] }.compact
+    self.attendees.map { |attendee| attendee["account_email"] || attendee["email"] }.compact
   end
 
   def client_attendees_emails
@@ -978,15 +978,12 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def linked_attendees_emails
-    linked_attendees.keys.compact
+    linked_attendees.values.flatten.compact
   end
 
   def do_not_ask_suggestions?
-    account_cache = REDIS_FOR_ACCOUNTS_CACHE.get(self.account_email)
-    return false if account_cache.nil?
-
-    account_cache_preferences = JSON.parse(account_cache)
-    return false if !account_cache_preferences["linked_attendees_feature"]
+    main_client_preferences = self.account
+    return false if main_client_preferences.nil? || !main_client_preferences.linked_attendees_enabled
     (self.linked_attendees_emails + self.client_attendees_emails - self.attendees_emails).empty?
   end
 
