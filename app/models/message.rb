@@ -589,8 +589,8 @@ class Message < ActiveRecord::Base
 
   def self.generate_reply_all_recipients(server_message, julie_aliases_emails = nil)
     julie_aliases = julie_aliases_emails || JulieAlias.all.map(&:email)
-    from_addresses = ApplicationHelper.find_addresses(server_message['from']).addresses.select{|address| address.address && address.address.include?("@")}
-    to_addresses = ApplicationHelper.find_addresses(server_message['to']).addresses.select{|address| address.address && address.address.include?("@")}
+    from_addresses = ApplicationHelper.find_addresses((server_message['from'] || '').downcase).addresses.select{|address| address.address && address.address.include?("@")}
+    to_addresses = ApplicationHelper.find_addresses((server_message['to'] || '').downcase).addresses.select{|address| address.address && address.address.include?("@")}
 
     {
         from: from_addresses.uniq.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
@@ -605,7 +605,7 @@ class Message < ActiveRecord::Base
               name: dest.name
           }
         },
-        cc: ApplicationHelper.find_addresses(server_message['cc']).addresses.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
+        cc: ApplicationHelper.find_addresses((server_message['cc'] || '').downcase).addresses.select{|dest| !julie_aliases.include?(dest.address.try(:downcase))}.map{|dest|
           {
               email: dest.address,
               name: dest.name
