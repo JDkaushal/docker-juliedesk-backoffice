@@ -34,7 +34,8 @@
         };
 
         $scope.hideAiNoDatesValidated = function() {
-          return !$scope.aiDatesVerificationIsActive || $scope.verifiedDatesByAi;
+            // It is undefined when no dates where submitted to the AI
+          return !$scope.aiDatesVerificationIsActive || $scope.verifiedDatesByAi === undefined  || $scope.verifiedDatesByAi;
         };
 
         $scope.aiShouldCreateEvent = function() {

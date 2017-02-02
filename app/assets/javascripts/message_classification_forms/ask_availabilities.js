@@ -48,8 +48,22 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         if(window.featuresHelper.isFeatureActive('ai_dates_verification') && canVerifyWithAi() ) {
             showAiThinkingLoader();
 
+            var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
+                return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+            });
             var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
-            var datesToVerify = _.map(classificationForm.getSuggestedDateTimes(), function(date) { return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss") });
+
+            var datesToVerify = _.compact(_.map(classificationForm.getSuggestedDateTimes(), function(date) {
+                var currentDate = moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+                var result = undefined;
+                
+                if(datesFromLastSuggestions.indexOf(currentDate) > -1) {
+                    result = currentDate;
+                }
+
+                return result
+            }));
+
             var highlightedEmailNode = $('.email.highlighted');
 
             if(datesToVerify.length > 0) {
@@ -208,18 +222,10 @@ window.classificationForms.askAvailabilitiesForm.prototype.submitSuggestedDates 
 
         askAvailabilitiesForm.addSuggestedDatesToHeader();
 
-        //datesManager.showDetectedDates();
-        //if(!datesManager.$$phase)
-        //    datesManager.$apply();
-
         askAvailabilitiesForm.clickBackButtonFunctions.push(function() {
-            console.log('here');
             $(".messages-thread-info-panel .dates-identification-panel").show();
             $(".messages-thread-info-panel .classic-info-panel").hide();
             askAvailabilitiesForm.removeSuggestedDatesToHeader();
-            //datesManager.showDetectedDates();
-            //if(!datesManager.$$phase)
-            //    datesManager.$apply();
         });
     }
     else {

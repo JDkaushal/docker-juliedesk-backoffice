@@ -1,5 +1,5 @@
 
-<div class="dates-identification-panel" ng-controller="datesIdentificationsManager as datesIdentificationsMng" id="dates-identifications-manager" data-dates-to-identify="<%= messages_thread.get_dates_to_verify.to_json %>">
+<div class="dates-identification-panel" ng-controller="datesIdentificationsManager as datesIdentificationsMng" id="dates-identifications-manager" data-dates-to-identify="<%= messages_thread.get_dates_to_verify[:every_propositions].to_json %>" data-last-dates-suggested="<%= messages_thread.get_dates_to_verify[:last_proposition].to_json %>">
   <div class="loader" ng-show="loading"></div>
 
   <div ng-hide="loading">

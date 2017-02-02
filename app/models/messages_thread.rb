@@ -73,9 +73,13 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def get_dates_to_verify
-    thread_locale = self.computed_data[:locale]
+    result = {}
+
+    every_propositions = get_all_suggested_date_times
+    result[:last_proposition] = every_propositions.last
+
     now = DateTime.now
-    self.suggested_date_times.uniq.map do |dt|
+    result[:every_propositions] = every_propositions.flatten.uniq.map do |dt|
       date = DateTime.parse(dt['date'])
       if date > now
         {'timezone' => dt['timezone'], 'date' => date, 'date_with_timezone' => date.in_time_zone(dt['timezone'])}
@@ -85,6 +89,8 @@ class MessagesThread < ActiveRecord::Base
     end.compact.sort_by do |dt|
       dt['date_with_timezone']
     end
+
+    result
   end
 
   def get_all_messages_recipients
@@ -457,6 +463,16 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def get_all_suggested_date_times
+    sorted_jas = get_julie_actions_with_dates_suggestions.sort_by(&:created_at)
+
+    if sorted_jas.present?
+      sorted_jas.map{|ja|JSON.parse(ja.date_times || '[]')}
+    else
+      []
+    end
+  end
+
   def suggested_date_times
     messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
@@ -470,15 +486,19 @@ class MessagesThread < ActiveRecord::Base
     }.flatten.uniq
   end
 
-  def last_suggested_date_times
-    sorted_jas = messages.map{ |m|
+  def get_julie_actions_with_dates_suggestions
+    messages.map{ |m|
       m.message_classifications.map(&:julie_action).compact.select{ |ja|
         (ja.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES ||
             ja.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT ||
             ja.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES ||
             ja.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CONTACTS) && ja.date_times.present? && ja.date_times != '[]'
       }
-    }.flatten.uniq.sort_by(&:created_at)
+    }.flatten.uniq
+  end
+
+  def last_suggested_date_times
+    sorted_jas = get_julie_actions_with_dates_suggestions.sort_by(&:created_at)
 
     if sorted_jas.present?
       JSON.parse(sorted_jas.last.date_times || '[]')
