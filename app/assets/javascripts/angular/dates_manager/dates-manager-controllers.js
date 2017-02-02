@@ -610,7 +610,7 @@
                     suggestions_status: suggestionsStatus,
                     id: $scope.AIsuggestionsTrackingId,
                     operator_id: $('body').data('operatorId'),
-                    classification: window.classification
+                    classification: window.classification,
                 };
 
                 aiDatesSuggestionManager.scope().sendLearningData(data);

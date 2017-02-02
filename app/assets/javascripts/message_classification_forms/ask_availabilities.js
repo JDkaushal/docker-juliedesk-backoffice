@@ -75,7 +75,8 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     thread_data: window.threadComputedData,
                     dates_to_check: datesToVerify,
                     server_message_id: highlightedEmailNode.attr('id'),
-                    today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss")
+                    today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
+                    attendees: $('#attendeesCtrl').scope().attendees,
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
