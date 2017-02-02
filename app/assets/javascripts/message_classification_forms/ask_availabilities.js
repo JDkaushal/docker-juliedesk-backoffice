@@ -18,15 +18,26 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         $('.ai-thinking-loader').hide();
     };
 
-    function getAppointmentType(appointment) {
+    function isVirtual(appointment) {
       return appointment.appointment_kind_hash.is_virtual;
     };
 
+    function locationIsSame(isVirtual) {
+        var isSame = true;
+        if(!isVirtual) {
+            isSame = window.threadComputedData.location == $("#location").val();
+        }
+
+        return isSame;
+    };
+
     function canVerifyWithAi() {
+        var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
+
         return (
-            getAppointmentType((window.getAppointment(window.threadComputedData.appointment_nature))) == getAppointmentType(window.getCurrentAppointment()) &&
+            isVirtual((window.getAppointment(window.threadComputedData.appointment_nature))) == currentAppointmentIsVirtual &&
             window.threadComputedData.duration == $("#duration").val() &&
-            window.threadComputedData.location == $("#location").val() &&
+            locationIsSame(currentAppointmentIsVirtual) &&
             window.threadComputedData.timezone == $("#timezone").val().trim() &&
             window.presentAttendees().length == 2 &&
             !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
