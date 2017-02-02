@@ -35,6 +35,10 @@
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+
+    window.threadComputedDataPresentAttendees = _.filter(window.threadComputedData.attendees, function(att) {
+      return att.isPresent == 'true';
+    });
     // If the appointment_nature is not set, it means it is the first time we are filling the form
     window.formFirstPass = !window.threadComputedData.appointment_nature;
 

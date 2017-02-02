@@ -23,24 +23,16 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
     };
 
     function canVerifyWithAi() {
-        var appointmentTypeIsSame =  getAppointmentType((window.getAppointment(window.threadComputedData.appointment_nature))) == getAppointmentType(window.getCurrentAppointment());
-        var durationIsSame = window.threadComputedData.duration == $("#duration").val();
-        var locationIsSame = window.threadComputedData.location == $("#location").val();
-        var timezoneIsSame = window.threadComputedData.timezone == $("#timezone").val().trim();
-        var attendeesWithinLimit = window.presentAttendees().length == 2;
-        var notUsingMeetingRooms = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
-        var notUsingVirtualResources = !$('#virtual-meetings-helper').scope().usingVirtualResources();
-        var verifyingPreviouslySuggestedDates = !$('#dates-identifications-manager').scope().showDetectedDatesArea;
-
         return (
-            appointmentTypeIsSame &&
-            durationIsSame &&
-            locationIsSame &&
-            timezoneIsSame &&
-            attendeesWithinLimit &&
-            notUsingMeetingRooms &&
-            notUsingVirtualResources &&
-            verifyingPreviouslySuggestedDates
+            getAppointmentType((window.getAppointment(window.threadComputedData.appointment_nature))) == getAppointmentType(window.getCurrentAppointment()) &&
+            window.threadComputedData.duration == $("#duration").val() &&
+            window.threadComputedData.location == $("#location").val() &&
+            window.threadComputedData.timezone == $("#timezone").val().trim() &&
+            window.presentAttendees().length == 2 &&
+            !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
+            !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
+            !$('#dates-identifications-manager').scope().showDetectedDatesArea &&
+            _.isEqual(_.map(window.threadComputedDataPresentAttendees, function(att) {return att.email}), _.map(window.presentAttendees(), function(att) {return att.email}))
         );
     };
 
