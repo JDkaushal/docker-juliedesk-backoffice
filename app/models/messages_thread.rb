@@ -146,7 +146,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def compute_linked_attendees(accounts_cache)
-    self.linked_attendees = LinkedAttendees::Manager.new(self, accounts_cache).fetch
+    self.update(linked_attendees: LinkedAttendees::Manager.new(self, accounts_cache).fetch)
   end
 
   def account params={}

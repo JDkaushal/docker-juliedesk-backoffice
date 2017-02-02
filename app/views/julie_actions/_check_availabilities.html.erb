@@ -500,6 +500,10 @@
 
           var julieActionNode = $(".julie-action-title");
           var julieActionTitleNode = $(".julie-action-title .title");
+          var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+          var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+          var eventCreatorManager = $('#datesVerificationsManager').scope();
+          var virtualResourcesUsed = false;
 
           // We don't refresh the calendar when creating the event from the AI, so we can process the thread faster
           if(createdFromAI) {
