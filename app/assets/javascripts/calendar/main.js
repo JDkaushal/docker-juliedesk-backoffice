@@ -725,8 +725,8 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         trackingId: requestTrackingId
     };
 
-    if(window.threadComputedData.linked_attendees) {
-        params.linked_attendees = window.threadComputedData.linked_attendees
+    if(window.threadComputedData.linked_attendees && window.threadComputedData.linked_attendees[accountPreferencesHash.email]) {
+        params.linked_attendees = window.threadComputedData.linked_attendees[accountPreferencesHash.email];
     }
 
     CommonHelpers.externalRequest(params, function (response) {
