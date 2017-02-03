@@ -91,7 +91,8 @@
 
         var googleMatrixDestinationLimitNumber = 25;
         var googleUsedTravelModeForMax = ['driving', 'transit'];
-        var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent', 'is_linked_attendees_busy'];
+        //var eventsToIgnore = ['is_meeting_room', 'is_virtual_resource', 'isNotAvailableEvent', 'is_linked_attendees_busy'];
+        var eventsToIgnore = ['is_virtual_resource', 'is_linked_attendees_busy'];
         // Allow us to prevent having to recalculate this fixed length every time
         var googleUsedTravelModeForMaxCount = googleUsedTravelModeForMax.length;
 
@@ -290,7 +291,7 @@
             // We don't take into account for travel time (and default time):
             //  - All day events
             $scope.events[email] = _.reject(events, function(e) {
-                return e.all_day || e.isNotAvailableEvent;
+                return e.all_day || e.isNotAvailableEvent || e.is_meeting_room;
             });
         };
 

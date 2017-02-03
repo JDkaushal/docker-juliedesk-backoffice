@@ -169,11 +169,13 @@
                             var currentCalendarId = containerNode.data('calendar-id');
                             var currentCalendarSummary = containerNode.data('calendar-summary');
                             var currentRoomCapacity = containerNode.data('room-capacity');
+                            var currentCanVisio = containerNode.data('room-can-visio');
+                            var currentCanConfcall = containerNode.data('room-can-confcall');
 
                             if(currentRoomCapacity)
                                 currentRoomCapacity = parseInt(currentRoomCapacity);
 
-                            $scope.availableRooms.push({calendar_login_username: containerNode.data('calendar-login-username'), id: currentCalendarId, summary: currentCalendarSummary, capacity: currentRoomCapacity});
+                            $scope.availableRooms.push({calendar_login_username: containerNode.data('calendar-login-username'), id: currentCalendarId, summary: currentCalendarSummary, capacity: currentRoomCapacity, can_visio: currentCanVisio, can_confcall: currentCanConfcall});
 
                             createEventRoomSelectionSelect.append('<option value="' + currentCalendarId + '">' + currentCalendarSummary + '</option>');
                         });
@@ -240,6 +242,8 @@
                     $scope.roomsList = [autoRoomMode];
 
                     _.each($scope.availableRooms, function(meetingRoom) {
+                        // Fix when some capacity are equal to '', should not happen anymore, was a bug from the admin panel on the user edit page where the capacity was set to null instead of undefined
+                        meetingRoom.capacity = meetingRoom.capacity || undefined;
                         $scope.roomsList.push({id: meetingRoom.id, summary: meetingRoom.summary, calendar_login_username: meetingRoom.calendar_login_username});
                     });
                 };

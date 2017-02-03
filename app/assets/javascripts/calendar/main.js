@@ -302,6 +302,8 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
 
                 // For meeting rooms
                 $div.data("room-capacity", calendarItem.capacity);
+                $div.data("room-can-visio", calendarItem.can_visio);
+                $div.data("room-can-confcall", calendarItem.can_confcall);
 
                 if(calendarItem.is_resource) {
                     $div.addClass('is-meeting-room');
