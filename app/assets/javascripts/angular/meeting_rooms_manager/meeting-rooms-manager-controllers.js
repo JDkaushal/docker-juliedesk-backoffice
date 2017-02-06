@@ -163,6 +163,7 @@
                 $scope.populateCreateEventRoomSelect = function() {
                     if(createEventMeetingRoomContainer.length > 0) {
                         createEventRoomSelectionSelect.html('');
+                        createEventRoomSelectionSelect.append('<option value="no_room_selected">No room selected</option>');
 
                         $scope.availableRooms = [];
 
@@ -355,6 +356,17 @@
                     }
                 };
 
+                $scope.getEventMeetingRoomDetails = function() {
+                    var result = {used: false};
+
+                    if(!$.isEmptyObject($scope.selectedRoom)) {
+                        result.used = true;
+                        result.selected = $scope.selectedRoom;
+                    }
+
+                    return result
+                };
+
                 $scope.getUsingMeetingRoom = function() {
                     return $scope.usingMeetingRoom;
                 };
@@ -468,7 +480,9 @@
                         return room.id == roomId;
                     });
 
-                    $scope.checkMeetingRoomAvailability(true);
+                    if(!$.isEmptyObject($scope.selectedRoom)) {
+                        $scope.checkMeetingRoomAvailability(true);
+                    }
                 };
 
                 $scope.checkIfDetectAvailabilities = function() {

@@ -549,9 +549,9 @@
                 if(currentDuration) {
                     currentDuration = Math.floor(currentDuration.value / 60);
 
-                    if(currentDuration > 180) {
-                        currentDuration = $scope.defaultCommutingTimeByClient[email];
-                    }
+                    // if(currentDuration > 180) {
+                    //     currentDuration = $scope.defaultCommutingTimeByClient[email];
+                    // }
 
                     // if(event.forceTravelTimeDurationValue) {
                     //     currentDuration = event.forceTravelTimeDurationValue;
@@ -576,9 +576,9 @@
                 if(currentDuration) {
                     currentDuration = Math.floor(currentDuration.value / 60);
 
-                    if(currentDuration > 180) {
-                        currentDuration = $scope.defaultCommutingTimeByClient[email];
-                    }
+                    // if(currentDuration > 180) {
+                    //     currentDuration = $scope.defaultCommutingTimeByClient[email];
+                    // }
                     
                     if(event.forceTravelTimeDurationValue) {
                         currentDuration = event.forceTravelTimeDurationValue;

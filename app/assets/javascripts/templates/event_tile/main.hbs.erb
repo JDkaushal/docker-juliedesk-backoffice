@@ -40,6 +40,8 @@
             <div id="event_tile_location_selector"></div>
             <input class="location" id="event_location"/>
 
+          <% if @julie_action.present? && @julie_action.action_nature == JulieAction::JD_ACTION_UPDATE_EVENT %>
+
             <div class="create-event-restaurant-booking-manager" style="display:none;">
                 <div class="create-event-restaurant-booking-manager-wrapper" style="display:none;">
                     <div class="checkbox-header">
@@ -71,6 +73,8 @@
                     <span class="sprite"></span><span class="virtual-resources-non-available-msg"></span>
                 </div>
             </div>
+
+          <% end %>
 
         </div>
 

@@ -43,6 +43,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
             !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
             !$('#dates-identifications-manager').scope().showDetectedDatesArea &&
+            $('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
             _.isEqual(_.map(window.threadComputedDataPresentAttendees, function(att) {return att.email}), _.map(window.presentAttendees(), function(att) {return att.email}))
         );
     };

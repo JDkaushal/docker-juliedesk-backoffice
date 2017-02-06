@@ -791,7 +791,7 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
         start_timezone: editedEvent.start_timezone,
         end_timezone: editedEvent.end_timezone,
         utc_offset: editedEvent.utc_offset,
-        meeting_room: {used: meetingRoomManager.usingMeetingRoom, selected: meetingRoomManager.selectedRoom}
+        meeting_room: meetingRoomManager.getEventMeetingRoomDetails()
     };
 
     if(!saving_recurring_occurrence) {
