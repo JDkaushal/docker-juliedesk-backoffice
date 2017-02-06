@@ -577,7 +577,7 @@ class Message < ActiveRecord::Base
           })
         end
 
-        if should_reprocess_linked_attendees && messages_thread.account.linked_attendees_enabled
+        if should_reprocess_linked_attendees && messages_thread.account.try(:linked_attendees_enabled)
           messages_thread.compute_linked_attendees(accounts_cache)
         end
       end
