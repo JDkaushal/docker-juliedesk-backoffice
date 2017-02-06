@@ -126,6 +126,7 @@
 
                 $('#location_nature, #location_nature_event').change(function(e) {
                     $scope.refreshRoomsList();
+                    $scope.determineFittingMeetingRooms();
                     $scope.$apply();
                 });
 
