@@ -131,6 +131,7 @@
 
                 $('#appointment_nature').change(function(e) {
                     $scope.setDefaultSelectedRoom();
+                    $scope.determineFittingMeetingRooms();
                     $scope.$apply();
                 });
 
