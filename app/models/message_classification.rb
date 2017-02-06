@@ -5,6 +5,8 @@ class MessageClassification < ActiveRecord::Base
 
   has_one :julie_action
 
+  attr_accessor :ignore_linked_attendees
+
   ASK_DATE_SUGGESTIONS     = "ask_date_suggestions"
   ASK_AVAILABILITIES       = "ask_availabilities"
   ASK_CANCEL_APPOINTMENT   = "ask_cancel_appointment"
@@ -152,7 +154,8 @@ class MessageClassification < ActiveRecord::Base
           location_changed: params[:location_changed],
           virtual_resource_used: params[:virtual_resource_used],
           before_update_data: params[:before_update_data],
-          verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json
+          verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
+          ignore_linked_attendees: params[:ignore_linked_attendees]
       )
     end
 
@@ -190,7 +193,7 @@ class MessageClassification < ActiveRecord::Base
 
     case self.classification
       when MessageClassification::ASK_DATE_SUGGESTIONS
-        julie_action_nature = self.message.messages_thread.do_not_ask_suggestions? ? JulieAction::JD_ACTION_CHECK_AVAILABILITIES : JulieAction::JD_ACTION_SUGGEST_DATES
+        julie_action_nature = self.message.messages_thread.do_not_ask_suggestions? && !self.ignore_linked_attendees ? JulieAction::JD_ACTION_CHECK_AVAILABILITIES : JulieAction::JD_ACTION_SUGGEST_DATES
       when MessageClassification::ASK_AVAILABILITIES
         julie_action_nature = JulieAction::JD_ACTION_CHECK_AVAILABILITIES
       when MessageClassification::ASK_INFO

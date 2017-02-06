@@ -36,6 +36,14 @@
             $scope.attachEventsToDom();
         };
 
+        $scope.reset = function() {
+            $scope.datesToCheck = [];
+            $scope.selectedDateRaw = undefined;
+            $scope.rawDatesToCheck = [];
+            $scope.selectedDate = undefined;
+        };
+
+
         $scope.hideAiNoDatesValidated = function() {
             // It is undefined when no dates where submitted to the AI
           return !$scope.aiDatesVerificationIsActive || $scope.verifiedDatesByAi === undefined  || $scope.verifiedDatesByAi;

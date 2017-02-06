@@ -1441,14 +1441,17 @@ Calendar.prototype.changeCalendarTimezone = function (conserveEvents) {
     }
 };
 
-Calendar.prototype.drawEventList = function () {
+Calendar.prototype.drawEventList = function (options) {
     var calendar = this;
-    calendar.drawExternalEventsList();
+    calendar.drawExternalEventsList(options);
 };
 
-Calendar.prototype.drawExternalEventsList = function () {
+Calendar.prototype.drawExternalEventsList = function (options) {
+    if(!options) options = {};
+    if(!options.alsoAllowOn) options.alsoAllowOn = [];
+
     var calendar = this;
-    if (calendar.getMode() != "suggest_dates") return;
+    if (calendar.getMode() != "suggest_dates" && options.alsoAllowOn.indexOf(calendar.getMode()) == -1) return;
 
     // We return only events added by clicking
     var dateTimes = calendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {

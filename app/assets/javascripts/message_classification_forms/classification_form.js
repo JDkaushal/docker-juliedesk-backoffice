@@ -181,6 +181,9 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         data.event_booked_date = window.currentEventTile.getEditedEvent().start.format();
     }
 
+    if(data.classification == 'ask_date_suggestions' && window.threadComputedData.do_not_ask_suggestions && window.location.hash == '#ignore_linked_attendees')
+        data.ignore_linked_attendees = true;
+
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
         type: "POST",

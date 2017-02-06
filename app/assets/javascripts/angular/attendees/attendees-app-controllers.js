@@ -950,6 +950,12 @@
             });
         };
 
+        $scope.getAttendeesOnlyPresentClients = function() {
+            return _.filter($scope.attendees, function(a) {
+                return a.isClient && a.isPresent;
+            });
+        };
+
         $scope.displayExtendedInfos = function(){
             var currentAppointment = window.getCurrentAppointment();
             if(currentAppointment && currentAppointment.appointment_kind_hash) {

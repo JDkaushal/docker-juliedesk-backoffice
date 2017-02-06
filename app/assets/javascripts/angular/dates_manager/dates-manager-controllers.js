@@ -196,6 +196,8 @@
                         var data = response.data;
 
                         data.suggested_dates = _.sortBy(data.suggested_dates);
+                        if($scope.doNotAskSuggestionsMode)
+                            data.suggested_dates = data.suggested_dates.slice(0, 1);
 
                         $scope.AIsuggestionsTrackingId = data.suggested_dates_id;
 
@@ -210,6 +212,15 @@
                             $scope.addSuggestedDatesByAiToCalendar();
                             $scope.setSuggestions();
                             window.currentCalendar.goToDateTime($scope.timeSlotsSuggestedByAi[0].value);
+
+                            if($scope.doNotAskSuggestionsMode) {
+                                var eventCreatorApp = $('#datesVerificationsManager').scope();
+                                eventCreatorApp.addNewDateToVerify({
+                                    date: moment($scope.timeSlotsSuggestedByAi[0].value).utc().format(),
+                                    timezone: window.currentCalendar.getCalendarTimezone()
+                                });
+                            }
+
                         } else {
                             $scope.showAiWarning = true;
                             $scope.$apply();
@@ -295,12 +306,17 @@
 
             calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
             calendar.addEvent(eventData);
-            calendar.drawEventList();
+
+            drawOptions = {};
+            if($scope.doNotAskSuggestionsMode)
+                drawOptions.alsoAllowOn = ["create_event"];
+            calendar.drawEventList(drawOptions);
 
             checkSendButtonAvailability();
         };
 
         $scope.rejectAiSuggestion = function(slot) {
+            var drawOptions = {};
             var slotToReject = _.find($scope.timeSlotsSuggestedByAi, function(currentSlot) {
                 return currentSlot.value.isSame(slot);
             });
@@ -308,7 +324,14 @@
             slotToReject.display = false;
             slotToReject.rejected = true;
             $scope.removeAiEventFromCalendar(slot);
-            window.currentCalendar.drawEventList();
+
+            if($scope.doNotAskSuggestionsMode) {
+                var eventCreatorApp = $('#datesVerificationsManager').scope();
+                eventCreatorApp.reset();
+                eventCreatorApp.$apply();
+                drawOptions.alsoAllowOn = ["create_event"];
+            }
+            window.currentCalendar.drawEventList(drawOptions);
 
             checkSendButtonAvailability();
         };

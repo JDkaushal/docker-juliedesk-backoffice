@@ -50,7 +50,27 @@
                         $scope.ccs.push({name: otherRecipient});
                     });
                 }
-            }else {
+            }
+            else if(window.threadComputedData && window.threadComputedData.do_not_ask_suggestions) {
+
+                if((window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") || window.julie_action_nature == 'cancel_event') {
+
+                    var mainClient = window.clientRecipient();
+                    var tos_attendees = $scope.attendeesApp.getAttendeesOnlyPresentClients().concat($scope.attendeesApp.getLinkedAttendees());
+                    if (mainClient && mainClient["name"]) {
+                        $scope.ccs.push(mainClient);
+                        tos_attendees = tos_attendees.filter(function (attendee) {
+                            return attendee["email"] != mainClient["name"]
+                        });
+                    }
+
+                    var tos = tos_attendees.map(function (attendee) {
+                        return {name: attendee["email"]};
+                    });
+                    $scope.tos = tos;
+                }
+            }
+            else {
                 var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
                 $scope.setDefaultRecipients(otherRecipients, presentAttendees);
             }

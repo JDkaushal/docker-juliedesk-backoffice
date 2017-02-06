@@ -31,7 +31,11 @@
         <div class="timezoned-suggestions-area" ng-repeat="(timezone, suggestions) in timeSlotsSuggestions">
           <div class="timezone-title">{{timezone}}</div>
 
-          <div class="btn btn-sm btn-block time-slot-to-suggest" data-date-time="{{suggestion.value.format()}}" ng-class="{'btn-danger':suggestion.isOutBound, 'btn-primary':!suggestion.isOutBound, 'from-ai':suggestion.fromAi && !suggestion.accepted, 'highlighted':suggestion.isHighlighted}" ng-repeat="suggestion in suggestions" ng-mouseenter="mouseEnterSuggestionNode(suggestion, $event)" ng-mouseleave="mouseLeaveSuggestionNode(suggestion, $event)">
+          <div class="btn btn-sm btn-block time-slot-to-suggest"
+               data-date-time="{{suggestion.value.format()}}"
+               ng-class="{'btn-danger':suggestion.isOutBound, 'btn-primary':!suggestion.isOutBound, 'from-ai':suggestion.fromAi && !suggestion.accepted, 'highlighted':suggestion.isHighlighted}"
+               ng-repeat="suggestion in suggestions" ng-mouseenter="mouseEnterSuggestionNode(suggestion, $event)"
+               ng-mouseleave="mouseLeaveSuggestionNode(suggestion, $event)">
             <div class="date-text">{{suggestion.displayText}}</div>
             <div class="ai-suggestion-action-wrapper" ng-show="suggestion.fromAi && !suggestion.accepted">
               <div class="ai-suggestion-action-item-container reject" ng-class="{'highlight':suggestion.highlightReject}" ng-mouseenter="mouseEnterSuggestionNode(suggestion, $event)" ng-mouseleave="mouseLeaveSuggestionNode(suggestion, $event)"><span class="ai-suggestion-action reject"></span></div>

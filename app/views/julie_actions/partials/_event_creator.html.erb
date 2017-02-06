@@ -8,7 +8,7 @@
       </div>
 
       <script type="text/javascript">
-        if(window.julie_action_nature == "check_availabilities" && window.threadComputedData.do_not_ask_suggestions) {
+        if(window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities" && window.threadComputedData.do_not_ask_suggestions) {
           var displayNoSuggestionInfoBox = function () {
             $('.noSuggestionsNeeded').show();
             $('.messages-thread-info-panel').prepend($('.noSuggestionsNeeded').remove());
@@ -119,6 +119,18 @@
     <button id="create-event-button" class="btn btn-success btn-block" ng-disabled="eventActionsDisabled()">
       <%= I18n.t("info_box.create_event") %>
     </button>
+
+    <div class="forceAskSuggestions" ng-show="doNotAskSuggestionsMode">
+      <%= link_to "Je souhaite proposer des horaires",
+                  {
+                      controller: :messages,
+                      action: :classifying,
+                      id: local_assigns[:julie_action].message_classification.message.id,
+                      classification: "ask_date_suggestions",
+                      anchor: "ignore_linked_attendees"
+                  }
+      %>
+    </div>
 
     <button ng-hide="doNotAskSuggestionsMode" id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" ng-disabled="eventActionsDisabled()">
       <%= I18n.t("info_box.invitation_already_sent") %>

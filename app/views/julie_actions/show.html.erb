@@ -2,6 +2,7 @@
   window.specialCallbacks = [];
   window.julie_action_nature = '<%= @julie_action.action_nature %>';
   window.julie_action_id = '<%= @julie_action.id %>';
+  window.classification = '<%= @message_classification.classification %>';
 </script>
 
 <% if @messages_thread.account %>
@@ -273,7 +274,7 @@
         case 'ask_availabilities':
           //fall-through
         case 'ask_date_suggestions':
-          if(window.julie_action_nature != "check_availabilitiers") {
+          if(window.julie_action_nature != "check_availabilities") {
             var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
             disabled_by_ai = datesSuggestionManager.aiSuggestionsRemaining();
