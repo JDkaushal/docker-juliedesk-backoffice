@@ -42,7 +42,8 @@ class Account
                 :julie_aliases,
                 :using_calendar_server,
                 :main_address,
-                :calendar_access_lost
+                :calendar_access_lost,
+                :ignore_non_all_day_free_events
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -91,6 +92,7 @@ class Account
     account.linked_attendees_enabled = data['linked_attendees_enabled']
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
+    account.ignore_non_all_day_free_events = data['ignore_non_all_day_free_events']
 
     account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
 
