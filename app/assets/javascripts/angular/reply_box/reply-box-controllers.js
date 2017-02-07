@@ -156,7 +156,7 @@
             var threadOwner = partitionnedAttendeesWithThreadOwner[0][0];
             var attendeesWithoutThreadOwner = partitionnedAttendeesWithThreadOwner[1];
             var partitionnedAttendees = _.partition(attendeesWithoutThreadOwner, function(a) {
-                if($scope.actionNature == 'ask_date_suggestions')
+                if(['ask_availabilities', 'ask_date_suggestions'].indexOf($scope.actionNature) != -1 )
                     return a.isClient || a.linkedAttendee;
                 else
                     return a.isClient;
