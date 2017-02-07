@@ -628,13 +628,13 @@
 
             var linkedAttendeesForService = attendeesMng.getLinkedAttendees();
 
-            var locationInEmail = {};
-            if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
-              locationInEmail = {
-                en: window.getCurrentAddress().address_in_template.en,
-                fr: window.getCurrentAddress().address_in_template.fr
-              }
-            }
+//            var locationInEmail = {};
+//            if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
+//              locationInEmail = {
+//                en: window.getCurrentAddress().address_in_template.en,
+//                fr: window.getCurrentAddress().address_in_template.fr
+//              }
+//            }
 
             var mainClientCompanyName = '';
             var companyName = window.threadAccount.company_hash && window.threadAccount.company_hash.name
@@ -662,7 +662,8 @@
               julie_aliases: window.getRecipientsJulieAliases(),
               linked_attendees: linkedAttendeesForService,
               locale: threadComputedData.locale,
-              location_in_email: locationInEmail,
+              location: requestParams.location,
+              //location_in_email: locationInEmail,
               location_kind: currentAppointment.kind,
               main_client_company: mainClientCompanyName,
               meeting_room_booked: meetingRoomBooked,
