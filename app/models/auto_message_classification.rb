@@ -1,6 +1,7 @@
 class AutoMessageClassification < MessageClassification
 
   include ApplicationHelper
+  extend ApplicationHelper
   extend TemplateGeneratorHelper
   has_many :auto_message_classification_reviews
 
@@ -126,6 +127,7 @@ class AutoMessageClassification < MessageClassification
                                     targetInfos: {}
                                 }.to_json
                             })
+
     end
 
     amc.julie_action = JulieAction.new({
@@ -217,11 +219,44 @@ class AutoMessageClassification < MessageClassification
 
 
     if params[:for_real]
+      amc.operator_id = Operator.find_by_email("julie@operator.juliedesk.com").try(:id)
       m.message_classifications << amc
-      #TODO: Send message
+      message_hash = AutoMessageClassification.build_message(amc)
+      EmailServer.deliver_message message_hash
     else
       m.auto_message_classification = amc
     end
+
+    amc
+  end
+
+  def self.build_message message_classification
+    julie_alias = message_classification.message.messages_thread.julie_alias
+    footer_and_signature = julie_alias.generate_footer_and_signature(message_classification.locale)
+
+    initial_recipients_only_reply_all = message_classification.message.initial_recipients only_reply_all: true
+    initial_recipients = message_classification.message.initial_recipients
+
+    should_quote = ((initial_recipients[:to] + initial_recipients[:cc]) - initial_recipients_only_reply_all[:to] - initial_recipients_only_reply_all[:cc]).length == 0
+    text_in_email = "#{message_classification.julie_action.text}#{footer_and_signature[:text_footer]}"
+
+    recipients_to = initial_recipients[:to]
+    recipients_cc = initial_recipients[:cc]
+    if message_classification.classification == AutoMessageClassification::WAIT_FOR_CONTACT
+      recipients_to = [initial_recipients[:client]]
+      recipients_cc = []
+    end
+
+    {
+        subject: message_classification.message.messages_thread.subject,
+        from: julie_alias.generate_from,
+        to: recipients_to.join(", "),
+        cc: recipients_cc.join(", "),
+        html: text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe,
+        quote_replied_message: should_quote,
+        quote_forward_message: false,
+        reply_to_message_id: message_classification.message.server_message_id
+    }
 
   end
 

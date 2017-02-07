@@ -87,6 +87,21 @@ class MessagesController < ApplicationController
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
   end
 
+
+  def let_ai_process
+    message = Message.find(params[:id])
+    AutoMessageClassification.build_from_conscience(message.id, {
+        for_real: true
+    })
+
+    render json: {
+        status: "success",
+        data: {
+
+        }
+    }
+  end
+
   def classify
     @message = Message.find(params[:id])
     params[:operator] = session[:user_username]

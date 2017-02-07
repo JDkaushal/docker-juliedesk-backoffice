@@ -56,6 +56,8 @@ Rails.application.routes.draw do
 
       post "classify", action: :classify, as: :classify
 
+      post "let_ai_process", action: :let_ai_process
+
       post "reply", action: :reply, as: :reply
       post "generate_threads", action: :generate_threads, as: :generate_threads
       post "generate_threads_for_follow_up", action: :generate_threads_for_follow_up, as: :generate_threads_for_follow_up
