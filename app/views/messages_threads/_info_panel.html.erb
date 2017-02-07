@@ -680,7 +680,7 @@
         }
     }
 
-    function newConstraintTile(data, expand) {
+    function newConstraintTile(data, expand, fromAI) {
         var possibleAttendees = window.presentAttendees();
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
@@ -690,6 +690,7 @@
             timezone: window.threadAccount.default_timezone_id,
             data: data,
             expand: expand,
+            fromAI: fromAI,
             cloneCallback: function(data) {
                 newConstraintTile(data, true);
             }

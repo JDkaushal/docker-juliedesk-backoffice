@@ -71,6 +71,11 @@ function ConstraintTile($selector, params) {
     if(params.timezone)  constraintTile.timezone = params.timezone;
     constraintTile.cloneCallback = null;
     if(params.cloneCallback) constraintTile.cloneCallback = params.cloneCallback;
+    if(params.fromAI) {
+        constraintTile.fromAI = params.fromAI;
+        constraintTile.fromAIText = params.data.text;
+    }
+
 
 
     var defaultData = {
@@ -120,6 +125,13 @@ ConstraintTile.prototype.render = function() {
 
 ConstraintTile.prototype.setInitialData = function(data) {
     var constraintTile = this;
+
+
+    // Set AI mode
+
+    constraintTile.setAIMode();
+
+
 
     // Set attendee email
     constraintTile.$selector.find(".constraint-attendee-email").val(data.attendee_email);
@@ -174,20 +186,27 @@ ConstraintTile.prototype.setInitialData = function(data) {
     constraintTile.redrawSentence();
 };
 
+ConstraintTile.prototype.setAIMode = function() {
+    var constraintTile = this;
+    constraintTile.$selector.find(".constraint-tile").removeClass("from-ai");
+    if(constraintTile.fromAI) {
+        constraintTile.$selector.find(".constraint-tile").addClass("from-ai");
+        constraintTile.$selector.find(".from-ai-text-text").html(constraintTile.fromAIText);
+    }
+};
+
 
 ConstraintTile.prototype.setConstraintWhenNature = function(value) {
     var constraintTile = this;
     constraintTile.$selector.find(".constraint-when-nature-selector .nature-option").removeClass("selected");
     constraintTile.$selector.find(".constraint-when-nature-selector .nature-option[data-value='" + value + "']").addClass("selected");
     constraintTile.whenNatureChanged();
-
 };
+
 ConstraintTile.prototype.getConstraintWhenNature = function() {
     var constraintTile = this;
     return constraintTile.$selector.find(".constraint-when-nature-selector .nature-option.selected").data("value");
 };
-
-
 
 ConstraintTile.prototype.redrawTimesContainer = function() {
     var constraintTile = this;
@@ -362,6 +381,15 @@ ConstraintTile.prototype.initActions = function() {
 
             constraintTile.redrawSentence();
         }
+    });
+
+    constraintTile.$selector.find(".from-ai-buttons .from-ai-button.reject").click(function() {
+        constraintTile.$selector.remove();
+    });
+
+    constraintTile.$selector.find(".from-ai-buttons .from-ai-button.accept").click(function() {
+        constraintTile.fromAI = false;
+        constraintTile.setAIMode();
     });
 
     constraintTile.$selector.find(".remove-constraint-button").click(function() {

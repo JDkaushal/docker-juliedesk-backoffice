@@ -40,7 +40,7 @@ module ThreadAccountAssociation
     end
 
     def get_julie_aliases_company_association_cache
-      @julie_aliases_company_association_cache ||= JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('julie_aliases_company_association') || '[]')
+      @julie_aliases_company_association_cache ||= JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('julie_aliases_company_association') || '{}')
     end
 
   end

@@ -62,6 +62,11 @@
                     $scope.checkLocaleConsistency($scope.currentLocale);
                 }
             }
+            if(featuresHelper.isFeatureActive("constraints_from_ai")) {
+                if (window.formFirstPass) {
+                    $scope.addAIConstraintTiles()
+                }
+            }
         };
 
         $scope.checkLocaleConsistency = function(locale, sameLocaleCallback) {
@@ -116,6 +121,22 @@
                 click_on_wrong_boolean: $scope.clickedOnWrong
             });
         };
+
+        $scope.addAIConstraintTiles = function() {
+            setTimeout(function() {
+                var mainInterpretation = messageInterpretationsService.getMainInterpretation();
+                if(mainInterpretation && mainInterpretation.constraints_data) {
+                    constraints_data = mainInterpretation.constraints_data;
+                    for(k in constraints_data) {
+                        newConstraintTile(constraints_data[k], false, true);
+                    }
+
+                }
+
+
+            }, 500);
+        };
+
 
         $scope.init();
 
