@@ -219,7 +219,7 @@ class AutoMessageClassification < MessageClassification
 
 
     if params[:for_real]
-      amc.operator_id = Operator.find_by_email("julie@operator.juliedesk.com").try(:id)
+      amc.operator = "julie@operator.juliedesk.com"
       m.message_classifications << amc
       message_hash = AutoMessageClassification.build_message(amc)
       EmailServer.deliver_message message_hash
