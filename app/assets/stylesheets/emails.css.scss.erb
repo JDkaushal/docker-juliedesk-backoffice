@@ -348,14 +348,27 @@
         font-weight: 600;
     }
 
-    .suggested-action-by-julie {
-        position: absolute;
-        top: 40px;
-        right: 70px;
+  .conscience-process {
+    position: absolute;
+    top: 30px;
+    right: 70px;
+    cursor: pointer;
 
-        &.enabled {
-            cursor: pointer;
-        }
+    .button {
+      border: 1px solid $aiControlHighlightedColor;
+      padding: 9px 15px;
+      height: 40px;
+      color: $aiControlHighlightedColor;
+
+      &:hover {
+        background: $aiControlColorBackground-5pct;
+      }
+    }
+
+      .loader {
+        display: none;
+        margin: 3px 30px 0 0;
+      }
     }
 
     .actions-menu-button {
@@ -430,6 +443,17 @@
                         background: #fff;
                         cursor: default;
                     }
+
+                  &.suggested {
+                    border-left: 5px solid $aiControlColor;
+                    background: $aiControlColorBackground-5pct;
+                    margin: 0 0 0 -1px;
+                    padding: 0 0 0 6px;
+
+                    &:hover {
+                      background: $aiControlColorBackground-10pct;
+                    }
+                  }
                 }
             }
 

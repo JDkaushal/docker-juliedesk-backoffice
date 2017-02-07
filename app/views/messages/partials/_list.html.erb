@@ -25,7 +25,7 @@
     else
       julie_message = @messages_thread.messages.find{|m| m.server_message_id == first_message.message_classifications.map(&:julie_action).select(&:done).first.server_message_id}
     end
-    items = [first_message, julie_message]
+    items = [first_message, julie_message].compact
   else
     items = (@messages_thread.messages + operator_actions_groups_without_emails).sort_by do |item|
         if item.class == Message
@@ -144,6 +144,10 @@
 
              if locals[:type] == :messages_threads_review
                fake_email_locals.merge!(reviewing_status: "review")
+             end
+
+             if locals[:type] == :messages_threads_turing
+               fake_email_locals.merge!(turing_mode: locals[:turing_mode])
              end
           %>
 

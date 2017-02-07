@@ -125,8 +125,13 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def admin_review_turing_index
+    @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil})
+    if params[:operator_id]
+      @auto_message_classification_reviews = @auto_message_classification_reviews.where(operator_id: params[:operator_id])
+    end
     @amc_count = AutoMessageClassification.where.not(message_id: nil).count
-    @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil}).includes(auto_message_classification: {message: :messages_thread}, operator: {}).sort_by(&:notation).reverse
+    @auto_message_classification_reviews = @auto_message_classification_reviews.includes(auto_message_classification: {message: :messages_thread, julie_action: []}, operator: {}).sort_by(&:notation).reverse
+    @operators = @auto_message_classification_reviews.map(&:operator).flatten.uniq
   end
 
   def review_turing_next

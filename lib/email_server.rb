@@ -190,11 +190,21 @@ module EmailServer
     # end
     http = HTTP.auth(ENV['EMAIL_SERVER_API_KEY'])
     url = "#{API_BASE_PATH}#{path}"
-    response = if method == :get
-      http.get(url)
-    elsif method == :post
-      http.post(url, body: post_params.to_param)
+
+    ssl_context = OpenSSL::SSL::SSLContext.new
+    if Rails.env == "development"
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
+
+
+
+    response = if method == :get
+      http.get(url, ssl_context: ssl_context)
+    elsif method == :post
+      http.post(url, body: post_params.to_param, ssl_context: ssl_context)
+    end
+
+    puts post_params, response
 
     response
   end

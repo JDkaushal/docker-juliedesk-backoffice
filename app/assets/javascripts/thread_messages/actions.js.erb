@@ -63,7 +63,12 @@ function flagMessage($element, $email) {
         }
     });
 }
-
+function letAIProcessClickHandler($element, $email) {
+  $email.find(".conscience-process .button").fadeOut("fast", function() {
+    $email.find(".conscience-process .loader").fadeIn("fast", function() {
+    });
+  });
+};
 function trackAction($element, $email) {
     var actionNature = $element.data('actionNature');
     var messageContainerNode = $('#messages_container');
@@ -103,14 +108,6 @@ function toggleEmailQuote($email) {
     }
     else {
         $quoteNodes.addClass("expanded");
-    }
-}
-
-function julieSuggestionClickHandler($element, $email) {
-    if($element.closest('.suggested-action-by-julie').hasClass("enabled")) {
-        $email.find(".suggested-action-by-julie .button").hide();
-        $email.find(".suggested-action-by-julie .result").show();
-        $element.removeClass("enabled");
     }
 }
 
@@ -238,8 +235,8 @@ $(function () {
         flagMessage($target, $email);
       } else if (ownClass($target, '.expand-quotes-button')) {
         toggleEmailQuote($email);
-      } else if ($target.parents('.suggested-action-by-julie').length > 0) {
-        julieSuggestionClickHandler($target, $email);
+      } else if ($target.parents('.conscience-process').length > 0) {
+        letAIProcessClickHandler($target, $email);
       } else if ($target.parents('.actions-menu').length > 0) {
         // We do nothing, so we don't trigger the default action (toggle the message)
       } else {

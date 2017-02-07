@@ -170,13 +170,9 @@
 
           <% if local_assigns[:actions_available] %>
               <% if session[:privilege] == Operator::PRIVILEGE_ADMIN && !message.from_me %>
-                  <div class="suggested-action-by-julie enabled">
-                    <div class="button">Give me your opinion, Julie.</div>
-                    <div class="result" style="display: none">
-                      Classif: <%= message.interpretations[:classification] %><br>
-                      Locale: <%= message.interpretations[:locale] %><br>
-                      Appointment: <%= message.interpretations[:appointment] %>
-                    </div>
+                  <div class="conscience-process">
+                    <%= image_tag "conscience.gif", class: "loader" %>
+                    <div class="button">Let A.I. process (<%= number_to_percentage(message.interpretations[:confidence] * 100, precision: 1) %>)</div>
                   </div>
               <% end %>
               <div class="actions-menu-button"></div>
@@ -186,7 +182,7 @@
                       <div class="classification-category">
                         <div class="classification-title"><%= I18n.t("classification_categories.#{category}.title") %></div>
                         <% classifications.each do |classification| %>
-                            <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action", data: {"action-nature" => classification} %>
+                            <%= link_to I18n.t("classification_categories.#{category}.classifications.#{classification}.action"), {controller: :messages, action: :classifying, id: message.id, classification: classification}, class: "action #{message.interpretations[:classification] == classification ? 'suggested' : ''}", data: {"action-nature" => classification} %>
                         <% end %>
                       </div>
                       <%= image_tag "ajax-loader.gif", class: "spinner" %>

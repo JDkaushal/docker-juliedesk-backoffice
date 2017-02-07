@@ -778,11 +778,18 @@ class Message < ActiveRecord::Base
       end
     end
 
+    confidence = begin
+      main_answer['request_confidence'] * main_answer['appointment_confidence']
+      rescue
+        0
+    end
+
     {
         classification: main_answer['request_classif'],
         appointment: main_answer['appointment_classif'],
         locale: main_answer['language_detected'],
-        entities: entities_found
+        entities: entities_found,
+        confidence: confidence
     }
   end
 

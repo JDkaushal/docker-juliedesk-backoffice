@@ -374,7 +374,6 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def computed_data message_classifications=nil
-
     if @computed_data.blank?
 
       unless message_classifications
