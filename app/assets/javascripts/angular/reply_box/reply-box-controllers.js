@@ -107,7 +107,7 @@
             console.log('action nature', $scope.actionNature);
 
             if($scope.specialActions.indexOf($scope.actionNature) > -1) {
-                setDefaultRecipientsAskOrVerifyAvailabilities(presentAttendees);
+                setDefaultRecipientsAskOrVerifyAvailabilities();
             }else {
                 setDefaultRecipientsOther();
             }
@@ -156,7 +156,10 @@
             var threadOwner = partitionnedAttendeesWithThreadOwner[0][0];
             var attendeesWithoutThreadOwner = partitionnedAttendeesWithThreadOwner[1];
             var partitionnedAttendees = _.partition(attendeesWithoutThreadOwner, function(a) {
-               return a.isClient;
+                if($scope.actionNature == 'ask_date_suggestions')
+                    return a.isClient || a.linkedAttendee;
+                else
+                    return a.isClient;
             });
 
             var clientsAttendees = partitionnedAttendees[0];
