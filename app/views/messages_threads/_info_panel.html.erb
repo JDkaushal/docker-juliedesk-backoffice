@@ -399,6 +399,7 @@
           //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
           // Extract emails from emails bodies
           .concat(extractEmails(messageBodies) || [])
+          .concat(extractEmails(window.threadComputedData.constraints) || [])
           // The attendees of the event if any
           //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
