@@ -22,20 +22,30 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
       return appointment.appointment_kind_hash.is_virtual;
     };
 
-    function locationIsSame(isVirtual) {
+    function locationIsSame(appointmentIsVirtual) {
         var isSame = true;
-        if(!isVirtual) {
+        if(!appointmentIsVirtual) {
             isSame = window.threadComputedData.location == $("#location").val();
         }
 
         return isSame;
     };
+    
+    function checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual) {
+        var result = currentAppointmentIsVirtual;
+
+        if(window.threadComputedData && window.threadComputedData.appointment_nature) {
+            result = isVirtual((window.getAppointment(window.threadComputedData.appointment_nature))) == currentAppointmentIsVirtual;
+        }
+
+       return result;
+    }
 
     function canVerifyWithAi() {
         var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
 
         return (
-            isVirtual((window.getAppointment(window.threadComputedData.appointment_nature))) == currentAppointmentIsVirtual &&
+            checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual) &&
             window.threadComputedData.duration == $("#duration").val() &&
             locationIsSame(currentAppointmentIsVirtual) &&
             window.threadComputedData.timezone == $("#timezone").val().trim() &&
