@@ -120,7 +120,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                         askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
                 }, function(error) {
                         askAvailabilitiesForm.sendForm();
-                    });
+                });
             } else {
                 askAvailabilitiesForm.sendForm();
             }

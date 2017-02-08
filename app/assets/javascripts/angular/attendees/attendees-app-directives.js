@@ -88,9 +88,9 @@
                         valid = window.isAuthorizedAttendee(modelValue);
                     }
 
-                    if(scope.attendeesFormCtrl.attendeeInForm.usageName && scope.attendeesFormCtrl.attendeeInForm.usageName.length > 0 && (!modelValue || modelValue.length == 0)) {
-                        valid = true
-                    }
+                    // if(scope.attendeesFormCtrl.attendeeInForm.usageName() && scope.attendeesFormCtrl.attendeeInForm.usageName().length > 0 && (!modelValue || modelValue.length == 0)) {
+                    //     valid = true
+                    // }
 
                     if(!valid) {
                         submitTooltip = "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts";
@@ -102,6 +102,4 @@
             }
         };
     });
-
-
 })();

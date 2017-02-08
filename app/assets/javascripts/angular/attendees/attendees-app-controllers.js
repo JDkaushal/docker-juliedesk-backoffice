@@ -31,7 +31,7 @@
                 $scope.$on('attendeeFormDisplayed', function(event, args){
                     attendeesFormCtrl.currentMode = args.action;
                     if(attendeesFormCtrl.currentMode == 'new')
-                        attendeesFormCtrl.attendeeInForm = {};
+                        attendeesFormCtrl.attendeeInForm = new Attendee({});
 
                     attendeesFormCtrl.setAttendeeInForm(args.attendee);
                     attendeesFormCtrl.checkIfTimezoneNeeded($('#appointment_nature').val());
@@ -60,8 +60,8 @@
                 };
 
                 this.addAttendee = function(){
-                    if(this.attendeeInForm.usageName == '' || this.attendeeInForm.usageName === undefined)
-                        this.attendeeInForm.usageName = this.attendeeInForm.firstName;
+                    // if(this.attendeeInForm.usageName == '' || this.attendeeInForm.usageName === undefined)
+                    //     this.attendeeInForm.usageName = this.attendeeInForm.firstName;
 
                     if(this.attendeeInForm.company === undefined)
                         this.attendeeInForm.company = '';
@@ -72,8 +72,8 @@
                     if(this.attendeeInForm.lastName)
                         this.sanitizeContent('lastName');
 
-                    if(this.attendeeInForm.usageName)
-                        this.sanitizeContent('usageName');
+                    // if(this.attendeeInForm.usageName)
+                    //     this.sanitizeContent('usageName');
 
                     if(this.attendeeInForm.timezone)
                         this.sanitizeContent('timezone');
@@ -89,7 +89,7 @@
 
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
-                        sharedProperties.notifyAttendeeAdded(new Attendee(this.attendeeInForm));
+                        sharedProperties.notifyAttendeeAdded(this.attendeeInForm);
                         // Sometime when a new attendee is added a display bug occure, hiding/showing the attendees seems to fix it
                         setTimeout(function(){
                             $('.contact').hide().show(0);
@@ -101,7 +101,7 @@
                             if(assisted)
                             {
                                 assisted.assistedBy.email = this.attendeeInForm.email;
-                                assisted.assistedBy.displayName = this.attendeeInForm.displayNormalizedName();
+                                assisted.assistedBy.displayName = this.attendeeInForm.computeUsageName();
                             }
                         }
                     }
@@ -203,7 +203,7 @@
                 };
 
                 this.setAttendeeInFormDetails = function(attendeeDetails){
-                    attendeesFormCtrl.attendeeInForm = {isPresent: true};
+                    //attendeesFormCtrl.attendeeInForm = {isPresent: true};
                     if(attendeeDetails.assistedBy)
                         attendeeDetails.assistedBy = JSON.parse(attendeeDetails.assistedBy);
                     Object.assign(attendeesFormCtrl.attendeeInForm, attendeeDetails);
@@ -246,6 +246,7 @@
         $scope.missingInformationLookedFor = '';
         $scope.displayAttendeesTimezone = false;
         this.readOnly = window.threadDataIsEditable == undefined;
+        this.usageNamev2Enabled = window.featuresHelper.isFeatureActive('usage_name_v2');
 
         //Watchers------------------------------------------------------------------------
         $scope.$watch('attendees', function (newVal, oldVal){
@@ -329,14 +330,14 @@
         };
 
         $scope.updateAttendeesUsageName = function() {
-            _.each($scope.attendees, function(attendee) {
-                $scope.formatUsageName(attendee);
-            });
+            // _.each($scope.attendees, function(attendee) {
+            //     $scope.formatUsageName(attendee);
+            // });
 
         };
 
         $scope.formatUsageName = function(attendee) {
-            attendee.dispatchUsageName();
+            //attendee.dispatchUsageName();
             // if(window.threadAccount.language_level == 'soutenu') {
             //     attendee.usageName = attendee.displayUsageNameSoutenu();
             // }
@@ -524,6 +525,7 @@
             var email = informations.email ? informations.email.toLowerCase() : undefined;
 
             var linkedAttendees = _.flatten(Object.values(window.threadComputedData.linked_attendees || {}));
+            var isClient = informations.isClient == "true";
 
             var a = new Attendee({
                 accountEmail: attendee.account_email,
@@ -533,6 +535,7 @@
                 firstName: informations.firstName,
                 lastName: informations.lastName,
                 name: (informations.firstName + ' ' + informations.lastName).trim(),
+                // Used for clients (is set in the admin panel)
                 usageName: informations.usageName || informations.name,
                 gender: informations.gender,
                 isAssistant: informations.isAssistant == "true",
@@ -547,7 +550,7 @@
                 confCallInstructions: informations.confCallInstructions,
                 isPresent: isPresent,
                 alreadySetPresent: isPresent || alreadyPresent,
-                isClient: informations.isClient == "true",
+                isClient: isClient,
                 needAIConfirmation: needAIConfirmation,
                 aIHasBeenConfirmed: aIHasBeenConfirmed,
                 isThreadOwner: false,
@@ -572,7 +575,7 @@
                     }).then(function success(response) {
                         if(response.data.status == "success") {
                             a.firstName = response.data.first_name;
-                            a.usageName = response.data.first_name;
+                            //a.usageName = response.data.first_name;
                             a.lastName = response.data.last_name;
 
                             a.needAIConfirmation = true;
@@ -647,12 +650,14 @@
                 }
             }
 
-            // We compute the usage name based on the client language level preference only in the first pass of the form filling
-            if(!window.threadComputedData.appointment_nature) {
-                a.dispatchUsageName();
-            } else {
-                if(!a.usageName) {
+            if(!window.featuresHelper.isFeatureActive('usage_name_v2')) {
+                //We compute the usage name based on the client language level preference only in the first pass of the form filling
+                if(!window.threadComputedData.appointment_nature) {
                     a.dispatchUsageName();
+                } else {
+                    if(!a.fullName()) {
+                        a.dispatchUsageName();
+                    }
                 }
             }
 
@@ -867,8 +872,14 @@
         };
 
         $scope.getLinkedAttendees = function() {
-          return _.filter($scope.attendees, function(a) {
-            return a.isPresent && !a.isClient && a.linkedAttendee;
+          return _.filter(angular.copy($scope.attendees), function(a) {
+              var isLinked = a.isPresent && !a.isClient && a.linkedAttendee;
+
+              if(isLinked) {
+                  a.usageName = a.computeUsageName();
+              }
+
+            return isLinked
           });
         };
 
@@ -1030,7 +1041,7 @@
                 return a.company != '' && a.guid != attendee.guid && a.company == attendee.company && !a.hasMissingInformations;
             });
 
-            return (attendee.usageName && attendee.usageName.length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
+            return (attendee.fullName() && attendee.fullName().length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
         };
 
         $scope.mustAskCallInstructions = function(type){
@@ -1128,7 +1139,7 @@
                         if(attendeesWithMissingInfos.length > 0){
                             _.each(attendeesWithMissingInfos, function(a){
                                 if($scope.missingInformationAttendeesFilter(a, attendeesWithMissingInfos)){
-                                    var names = a.usageName.split(" ");
+                                    var names = a.fullName().split(" ");
                                     if(names.length > 0) {
                                         result.attendeesNames.push(window.helpers.capitalize(names[0]));
                                     }
@@ -1278,14 +1289,14 @@
           return this.isClient || this.linkedAttendee;
         },
         dispatchUsageName: function() {
-            if(this.usageNameManuallyModified) {
-                return;
-            }
-            if(window.threadAccount.language_level == 'soutenu') {
-                this.usageName = this.displayUsageNameSoutenu();
-            } else {
-                this.setUsageName(this.firstName);
-            }
+            // if(this.usageNameManuallyModified) {
+            //     return;
+            // }
+            // if(window.threadAccount.language_level == 'soutenu') {
+            //     this.usageName = this.displayUsageNameSoutenu();
+            // } else {
+            //     this.setUsageName(this.firstName);
+            // }
         },
         usageNameKeyup: function() {
           this.usageNameManuallyModified = true;
@@ -1296,16 +1307,73 @@
             }
         },
         firstNameMirrored: function(){
-            return (this.usageName == '' || this.usageName == undefined);
+            return (this.fullName() == '' || this.fullName() == undefined);
+        },
+        computeUsageName: function() {
+            var that = this;
+            var computedUsageName = '';
+
+            if(window.featuresHelper.isFeatureActive('usage_name_v2')) {
+
+                if(that.isClient) {
+                    computedUsageName = that.usageName;
+                } else {
+                    var genderCode = that.gender == '?' ? '_' : that.gender;
+                    var translationKey = ["gender_reference", null, window.threadComputedData.language_level, genderCode];
+                    var nameKey = null;
+                    var computedName = null;
+                    var genderDenomination = null;
+
+                    var lastNamePresent = that.lastName && that.lastName.length > 0;
+                    var firstNamePresent = that.firstName && that.firstName.length > 0;
+
+                    if(window.threadComputedData.language_level == 'soutenu') {
+                        if(lastNamePresent) {
+                            if(that.gender == '?') {
+                                if(firstNamePresent) {
+                                    computedName = [that.firstName, that.lastName].join(' ');
+                                }
+                            } else {
+                                computedName = that.lastName;
+                                nameKey = 'with_name';
+                            }
+                        } else {
+                            nameKey = 'without_name';
+                        }
+                    } else {
+                        if(firstNamePresent) {
+                            computedName = that.firstName;
+                        } else if(lastNamePresent) {
+                            if(that.gender != '?') {
+                                computedName = that.lastName;
+                                nameKey = 'with_name';
+                            }
+                        } else {
+                            nameKey = 'without_name';
+                        }
+                    }
+
+                    if(nameKey) {
+                        translationKey[1] = nameKey;
+                        genderDenomination = localize(translationKey.join('.'), {locale: window.currentLocale});
+                    }
+
+                    computedUsageName = _.compact([genderDenomination, computedName]).join(' ') || null;
+                }
+            } else {
+                computedUsageName = that.usageName;
+            }
+
+            return computedUsageName;
         },
         setUsageName: function(value) {
-            if(this.firstNameMirrored){
-                this.usageName = value;
-                this.usageNameManuallyModified = false;
-            }
-            else {
-                this.usageNameManuallyModified = true;
-            }
+            // if(this.firstNameMirrored){
+            //     this.usageName = value;
+            //     this.usageNameManuallyModified = false;
+            // }
+            // else {
+            //     this.usageNameManuallyModified = true;
+            // }
         },
         confirmAI: function() {
             if(this.needAIConfirmation) {
@@ -1392,14 +1460,20 @@
         assistantDisplayText: function(){
             var name = '';
             if(this.assistedBy != undefined)
-                name = (this.assistedBy.usageName || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
+                name = (this.assistedBy.fullName() || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
             return name;
         },
+
+        fullName: function() {
+            return _.compact([this.firstName, this.lastName]).join(' ');
+        },
         displayNormalizedName: function(){
-            var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : this.lastName;
-            var _firstName = (this.firstName == undefined || this.firstName == null) ? '' : this.firstName;
-            var separator = (_firstName == '' || _lastName == '') ? '' : ' ';
-            var name = _firstName + separator + _lastName;
+            var that = this;
+            var name = that.fullName();
+            // var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : this.lastName;
+            // var _firstName = (this.firstName == undefined || this.firstName == null) ? '' : this.firstName;
+            // var separator = (_firstName == '' || _lastName == '') ? '' : ' ';
+            // var name = _firstName + separator + _lastName;
             return name || this.email;
         },
         hasPhoneInformations: function(){
@@ -1426,7 +1500,7 @@
             return _mobile + separator + _landline;
         },
         getName: function(){
-            return this.usageName || this.email;
+            return this.fullName() || this.email;
         },
         has_mobile_or_landline: function(){
             return this.has_mobile() || this.has_landline();

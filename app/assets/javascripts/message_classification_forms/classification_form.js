@@ -143,7 +143,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         notes: $("#notes").val(),
         other_notes: $("#other_notes").val(),
         private: $("#private:checked").length > 0,
-        attendees: window.getInfoPanelAttendees(),
+        attendees: window.getInfoPanelAttendeesForSendForm(),
         constraints: $("#constraints").val(),
         constraints_data: $(".constraint-tile-container").map(function () {
             return $(this).data("constraint")
@@ -164,7 +164,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
         location_changed: window.threadComputedData.location != $("#location").val(),
         before_update_data: params.before_update_data,
-        verified_dates_by_ai: params.verifiedDatesByAI
+        verified_dates_by_ai: params.verifiedDatesByAI,
+        language_level: $("input[name='language_level']:checked").val()
     };
 
     if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {

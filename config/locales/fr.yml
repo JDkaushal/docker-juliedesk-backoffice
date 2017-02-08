@@ -356,6 +356,10 @@ fr:
   info_box:
     no_account_found: "Compte non-identifié"
     locale: "Langue"
+    language_level:
+      title: "Niveau de langage"
+      normal: "Normal"
+      soutenu: "Soutenu"
     french: "Français"
     english: "Anglais"
     timezone: "Fuseau horaire"

@@ -549,47 +549,113 @@
     };
 
     window.computeSalutation = function() {
-      var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
-      var recipientsTos = $('#recipients-to-input').tokenInput('get');
+      if(window.featuresHelper.isFeatureActive('usage_name_v2')) {
+        var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
+        var recipientsTos = $('#recipients-to-input').tokenInput('get');
+        var salutationKeys = ['email_templates.salutations', window.threadComputedData.language_level, null];
 
+        var recipientsToName = null;
+        var attendeesApp = $('#attendeesCtrl').scope();
+        if(attendeesApp) {
+          if (recipientsTos.length == 1) {
+            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            if (attendee) {
+              var usageName = attendee.computeUsageName();
+              if(usageName) {
+                recipientsToName = usageName;
+              }
 
-      var recipientsToName = null;
-      var attendeesApp = $('#attendeesCtrl').scope();
-      if(attendeesApp) {
-        if (recipientsTos.length == 1) {
-          var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-          if (attendee && attendee.usageName) {
-            recipientsToName = attendee.usageName;
+            }
+          }
+          else if (recipientsTos.length == 2) {
+            var firstAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            var secondAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[1].name);
+            if (firstAttendee && secondAttendee) {
+              var firstAttUsageName = firstAttendee.computeUsageName();
+              var secondAttUsageName = secondAttendee.computeUsageName();
+
+              if(firstAttUsageName && secondAttUsageName && (firstAttUsageName != secondAttUsageName)) {
+                recipientsToName = localize("email_templates.common.names_list_and", {
+                  first_name: firstAttUsageName,
+                  last_name: secondAttUsageName
+                });
+              }
+            }
           }
         }
-        else if (recipientsTos.length == 2) {
-          var firstAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
-          var secondAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[1].name);
-          if (firstAttendee && firstAttendee.usageName && secondAttendee && secondAttendee.usageName) {
-            recipientsToName = localize("email_templates.common.names_list_and", {
-              first_name: firstAttendee.usageName,
-              last_name: secondAttendee.usageName
-            });
+        if(shouldSayHi) {
+          if(recipientsTos.length == 1) {
+            if(recipientsToName) {
+              salutationKeys[2] = 'one';
+            }
+          } else if(recipientsTos.length == 2) {
+            if(recipientsToName) {
+              salutationKeys[2] = 'two';
+            }
+          }
+
+          // Default we fallback to simple Hi/bonjour
+          if(salutationKeys[2] == null) {
+            salutationKeys[2] = 'many';
           }
         }
-      }
-      if(shouldSayHi) {
-        if(recipientsTos.length < 3) {
+
+        var salutationStr = '';
+
+        if(salutationKeys[2] == null) {
           if(recipientsToName) {
-            return localize("email_templates.common.hello_named", {name: recipientsToName});
-          } else {
-            return localize("email_templates.common.hello_only");
+            salutationStr = recipientsToName;
+          }
+        } else {
+          salutationStr = localize(salutationKeys.join('.'), {
+            names: recipientsToName
+          });
+        }
+
+        return salutationStr;
+      } else {
+
+        var shouldSayHi = !window.threadComputedData.last_message_sent_at || moment().diff(moment(window.threadComputedData.last_message_sent_at), 'hours') > 12;
+        var recipientsTos = $('#recipients-to-input').tokenInput('get');
+        var recipientsToName = null;
+        var attendeesApp = $('#attendeesCtrl').scope();
+        if(attendeesApp) {
+          if (recipientsTos.length == 1) {
+            var attendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            if (attendee && attendee.usageName) {
+              recipientsToName = attendee.usageName;
+            }
+          }
+          else if (recipientsTos.length == 2) {
+            var firstAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[0].name);
+            var secondAttendee = attendeesApp.getAttendeeByEmail(recipientsTos[1].name);
+            if (firstAttendee && firstAttendee.usageName && secondAttendee && secondAttendee.usageName) {
+              recipientsToName = localize("email_templates.common.names_list_and", {
+                first_name: firstAttendee.usageName,
+                last_name: secondAttendee.usageName
+              });
+            }
           }
         }
-        else {
-          return localize("email_templates.common.hello_all");
-        }
-      } else if(recipientsTos.length < 3) {
+        if(shouldSayHi) {
+          if(recipientsTos.length < 3) {
+            if(recipientsToName) {
+              return localize("email_templates.common.hello_named", {name: recipientsToName});
+            } else {
+              return localize("email_templates.common.hello_only");
+            }
+          }
+          else {
+            return localize("email_templates.common.hello_all");
+          }
+        } else if(recipientsTos.length < 3) {
           if(recipientsToName) {
             return localize("email_templates.common.interlocutor_name", {name: recipientsToName});
           }
+        }
+        return "";
       }
-      return "";
+
     };
 
     window.computeFooter = function() {

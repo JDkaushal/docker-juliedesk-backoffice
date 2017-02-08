@@ -99,38 +99,32 @@
 
         var clientNames = [window.threadAccount.usage_name];
         _.each(otherClients(), function(attendee) {
-          var names = [];
-          if(attendee.usageName)
-            names = attendee.usageName.split(" ");
-          if(names.length > 0) {
-            clientNames.push(window.helpers.capitalize(names[0]));
+          var usageName = attendee.computeUsageName();
+          if(usageName){
+            clientNames.push(window.helpers.capitalize(usageName));
           }
         });
 
         var attendeesForService = [];
         _.each(attendees(), function(attendee) {
-          if (attendee.usageName) {
-            var names = [];
-            if(attendee.usageName)
-              names = attendee.usageName.split(" ");
-            if (names.length > 0 && !attendee.isAssistant) {
-              var assistedByName = null;
-              var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
-              if(isCurrentlyAssisted) {
-                isCurrentlyAssisted = _.some(attendees(), function(attendeeObject) {
-                  return attendeeObject.guid == attendee.assistedBy.guid
-                });
-              }
-
-              if(isCurrentlyAssisted) {
-                assistedByName = attendee.assistedBy.displayName;
-              }
-              attendeesForService.push({
-                name: window.helpers.capitalize(names[0]),
-                assisted_by_name: assistedByName,
-                email: attendee.email
+          var usageName = attendee.computeUsageName();
+          if (usageName && !attendee.isAssistant) {
+            var assistedByName = null;
+            var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
+            if(isCurrentlyAssisted) {
+              isCurrentlyAssisted = _.some(attendees(), function(attendeeObject) {
+                return attendeeObject.guid == attendee.assistedBy.guid
               });
             }
+
+            if(isCurrentlyAssisted) {
+              assistedByName = attendee.assistedBy.displayName;
+            }
+            attendeesForService.push({
+              name: window.helpers.capitalize(usageName),
+              assisted_by_name: assistedByName,
+              email: attendee.email
+            });
           }
         });
 
@@ -201,28 +195,11 @@
           usedTimezones: datesSuggestionsManager.getUsedTimezones(),
           threadMainTimezone: threadComputedData.timezone,
           client: window.threadAccount.usage_name,
-          other_clients: _.filter(_.map(otherClients(), function(attendee) {
-            var names = [];
-            if(attendee.usageName)
-              names = attendee.usageName.split(" ");
-            if(names.length > 0) {
-              return window.helpers.capitalize(names[0]);
-            }
-            return null;
-          }), function(name) {
-            return name;
+          other_clients: _.map(otherClients(), function(attendee) {
+            return attendee.computeUsageName();
           }),
-          attendees: _.filter(_.map(attendees(), function(attendee) {
-            if(attendee.usageName)
-            {
-              var names = attendee.usageName.split(" ");
-              if(names.length > 0) {
-                return window.helpers.capitalize(names[0]);
-              }
-            }
-            return null;
-          }), function(name) {
-            return name;
+          attendees: _.map(attendees(), function(attendee) {
+            return attendee.computeUsageName();
           }),
           timezoneId: threadComputedData.timezone,
           defaultTimezoneId: window.threadAccount.default_timezone_id,
@@ -293,7 +270,6 @@
         datesSuggestionManager.trackSuggestedDates();
         suggestDateReplyFunction()
       }
-
     };
 
 </script>

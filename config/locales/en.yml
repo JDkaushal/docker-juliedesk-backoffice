@@ -188,6 +188,10 @@ en:
   info_box:
     no_account_found: "No account identified"
     locale: "Locale"
+    language_level:
+      title: "Language Level"
+      normal: "Normal"
+      soutenu: "Soutenu"
     french: "French"
     english: "English"
     timezone: "Timezone"

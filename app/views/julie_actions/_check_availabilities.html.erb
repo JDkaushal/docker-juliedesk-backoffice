@@ -591,21 +591,25 @@
           if(window.threadComputedData.do_not_ask_suggestions && window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") {
             var clientNames = [window.threadAccount.usage_name];
             _.each(otherClients(), function(attendee) {
-              var names = [];
-              if(attendee.usageName)
-                names = attendee.usageName.split(" ");
-              if(names.length > 0) {
-                clientNames.push(window.helpers.capitalize(names[0]));
+              var usageName = attendee.computeUsageName();
+//              var names = [];
+//              var fullName = attendee.fullName();
+//              if(fullName)
+//                names = fullName.split(" ");
+              if(usageName && usageName.length > 0) {
+                clientNames.push(window.helpers.capitalize(usageName));
               }
             });
 
             var attendeesForService = [];
             _.each(attendees(), function(attendee) {
-              if (attendee.usageName) {
-                var names = [];
-                if(attendee.usageName)
-                  names = attendee.usageName.split(" ");
-                if (names.length > 0 && !attendee.isAssistant) {
+              var usageName = attendee.computeUsageName();
+              //var fullName = attendee.fullName();
+              if (usageName && usageName.length > 0 && !attendee.isAssistant) {
+//                var names = [];
+//                if(fullName)
+//                  names = fullName.split(" ");
+                //if (names.length > 0 && !attendee.isAssistant) {
                   var assistedByName = null;
                   var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
                   if(isCurrentlyAssisted) {
@@ -618,11 +622,11 @@
                     assistedByName = attendee.assistedBy.displayName;
                   }
                   attendeesForService.push({
-                    name: window.helpers.capitalize(names[0]),
+                    name: window.helpers.capitalize(usageName),
                     assisted_by_name: assistedByName,
                     email: attendee.email
                   });
-                }
+                //}
               }
             });
 

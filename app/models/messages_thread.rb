@@ -436,7 +436,8 @@ class MessagesThread < ActiveRecord::Base
           virtual_resource_used: last_message_classification.try(:virtual_resource_used),
           thread_recipients: self.computed_recipients,
           linked_attendees: self.linked_attendees,
-          do_not_ask_suggestions: self.do_not_ask_suggestions?
+          do_not_ask_suggestions: self.do_not_ask_suggestions?,
+          language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal
       }
     end
 

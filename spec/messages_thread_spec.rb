@@ -132,6 +132,7 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
+                                                        :language_level => :normal
                                                     })
       end
     end
@@ -174,6 +175,7 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
+                                                        :language_level => :normal
                                                     })
       end
     end
@@ -219,6 +221,7 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
+                                                        :language_level => :normal
                                                     })
       end
     end
@@ -265,6 +268,7 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
+                                                        :language_level => :normal
                                                     })
       end
     end
@@ -312,6 +316,7 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
+                                                        :language_level => :normal
                                                     })
       end
     end

@@ -30,14 +30,14 @@
       <cite class="attendee-email">{{attendee.email}}</cite>
     </div>
 
-    <div class="row ellispable usage-name-input-container">
+    <div class="row ellispable usage-name-input-container" ng-if="!attendees_manager.usageNamev2Enabled">
       <%= label_tag :usage_name %>
       <%= text_field_tag :usage_name, "",{'ng-model' => 'attendee.usageName', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
     </div>
   </div>
 
   <div class="row ellipsable" ng-show="attendee.assisted">
-      <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par {{attendee.assistedBy.displayName || attendee.assistedBy.usageName}} ({{attendee.assistedBy.email}})</cite>
+      <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par {{attendee.assistedBy.displayName || attendee.assistedBy.usageName()}} ({{attendee.assistedBy.email}})</cite>
   </div>
 
   <div class="row ellipsable" ng-show="attendee.isAssistant">
@@ -61,7 +61,8 @@
       <%= label_tag :last_name, 'Nom' %>
       <%= text_field_tag :last_name, "",{'ng-model' => 'attendee.lastName', class: 'form-control' , 'ng-keyup' => 'attendee.firstLastNameKeyup()'} %>
     </div>
-    <div class="col-xs-12 usage-name-input-container">
+
+    <div class="col-xs-12 usage-name-input-container" ng-if="!attendees_manager.usageNamev2Enabled">
       <%= label_tag :usage_name %>
       <%= text_field_tag :usage_name, "",{'ng-model' => 'attendee.usageName', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true, 'ng-keyup' => 'attendee.usageNameKeyup()'} %>
     </div>

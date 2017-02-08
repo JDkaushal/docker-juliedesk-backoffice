@@ -39,8 +39,9 @@
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(otherClients(), function(attendee) {
                 var names = [];
-                if(attendee.usageName)
-                  names = attendee.usageName.split(" ");
+              var fullName = attendee.fullName();
+                if(fullName)
+                  names = fullName.split(" ");
 
                 if(names.length > 0) {
                     return window.helpers.capitalize(names[0]);

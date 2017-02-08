@@ -196,7 +196,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "virtual_resource_used" => nil,
                                                               "before_update_data"=>nil,
                                                               "verified_dates_by_ai" => nil,
-                                                              "annotated_reply"=>nil
+                                                              "annotated_reply"=>nil,
+                                                              "language_level"=>nil
                                                           }
                                                         }
                                                     }

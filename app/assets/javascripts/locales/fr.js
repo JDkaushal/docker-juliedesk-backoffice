@@ -195,6 +195,18 @@ window.wordings['fr'] = {
             postpone: "Je comprends que je dois attendre le retour de votre interlocuteur avant de reprogrammer.\nJ'annule %{appointment_nature} prévu %{date} en attendant.",
             no_postpone: "Je comprends que je dois attendre le retour de votre interlocuteur avant d'intervenir.\nJe reste à votre disposition si vous souhaitez que je propose des disponibilités en avance de phase."
         },
+        salutations: {
+            normal: {
+                one: "Bonjour %{names},\n\n",
+                two: "Bonjour %{names},\n\n",
+                many: "Bonjour,\n\n"
+            },
+            soutenu: {
+                one: "%{names},\n\n",
+                two: "%{names},\n\n",
+                many: "Bonjour,\n\n"
+            }
+        },
         common: {
             default_appointment_designation_in_email: "le rendez-vous",
             custom_address_at: "au %{location}",
@@ -304,6 +316,33 @@ window.wordings['fr'] = {
         to_hour: 'à',
         to_date: 'au',
         at: 'à'
+    },
+    gender_reference: {
+      with_name: {
+          normal: {
+              M: "M.",
+              F: "Mme",
+              _: ''
+          },
+
+          soutenu: {
+              M: "Monsieur",
+              F: "Madame",
+              _: ''
+          },
+      },
+        without_name: {
+            normal: {
+                M: "Monsieur",
+                F: "Madame",
+                _: ''
+            },
+            soutenu: {
+                M: "Monsieur",
+                F: "Madame",
+                _: ''
+            },
+        }
     },
     events: {
         new_event: "Nouvel évènement",

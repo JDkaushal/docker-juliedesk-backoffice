@@ -177,7 +177,7 @@
       <div class="thread-attendees">
         <span class="thread-attendees-icon"></span>
         <span class="thread-attendee" ng-repeat="attendee in messagesThread.computed_data.attendees | filter: {isPresent: true}">
-          <span class="thread-attendee-usage-name">{{ attendee.usageName }}</span><span class="thread-attendee-email">{{ attendee.email }}</span>
+          <span class="thread-attendee-usage-name">{{ [attendee.firstName,attendee.lastName].join(' ') }}</span><span class="thread-attendee-email">{{ attendee.email }}</span>
         </span>
       </div>
 

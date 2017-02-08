@@ -193,6 +193,19 @@ window.wordings['en'] = {
             postpone: "Pending your contact's response, before rescheduling I will cancel %{appointment_nature} scheduled %{date}.",
             no_postpone: "Pending your contact's response, let me know if you need me to suggest your availabilities beforehand."
         },
+        salutations: {
+            normal: {
+                one: "Hi %{names},\n\n",
+                two: "Hi %{names},\n\n",
+                many: "Hi,\n\n"
+            },
+            soutenu: {
+                one: "Dear %{names},\n\n",
+                two: "Dear %{names},\n\n",
+                many: "Hello,\n\n"
+            }
+        },
+
         common: {
             default_appointment_designation_in_email: "the meeting",
             custom_address_at: "at %{location}",
@@ -302,6 +315,32 @@ window.wordings['en'] = {
         to_hour: 'to',
         to_date: 'to',
         at: 'at'
+    },
+    gender_reference: {
+        with_name: {
+            normal: {
+                M: "Mr.",
+                F: "Mrs.",
+                _: ''
+            },
+            soutenu: {
+                M: "Mr.",
+                F: "Mrs.",
+                _: ''
+            },
+        },
+        without_name: {
+            normal: {
+                M: "Sir",
+                F: "Madam",
+                _: ''
+            },
+            soutenu: {
+                M: "Sir",
+                F: "Madam",
+                _: ''
+            },
+        }
     },
     events: {
         new_event: "New event",

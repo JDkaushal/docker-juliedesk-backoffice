@@ -43,6 +43,7 @@
     window.formFirstPass = !window.threadComputedData.appointment_nature;
 
     window.threadAccount = <%== @messages_thread.account.to_json %>;
+
     window.threadId = <%= @messages_thread.id %>;
 
     window.otherAttendeesWithoutAccount = _.filter(window.threadComputedData.attendees, function (attendee) {
@@ -162,7 +163,12 @@
         initAppointments();
 
         $(".validate-linear-form-entry-button").click(function() {
+          var that = $(this);
+          askNextLinearFormEntry();
+
+          if(that.hasClass('validate-locale') && window.threadAccount.language_level == 'soutenu') {
             askNextLinearFormEntry();
+          }
         });
 
         $(".client-current-time").html(moment.tz(window.threadAccount.default_timezone_id).format("DD/MM YYYY, HH:mm:ss"));
@@ -1250,37 +1256,46 @@
         return contacts.getAttendeesWithoutAssistant();
     };
 
+    // This is used because in sendForm method, Jquery will try to serialize the Attendee Class (including its methods) which will result in an exception being thrown because it will try to serialize the instantiate method without any params
+    window.getInfoPanelAttendeesForSendForm = function() {
+      return _.map(window.getInfoPanelAttendees(), function(attendee) {
+        return {
+          accountEmail: attendee.accountEmail,
+          guid: attendee.guid,
+          email: attendee.email,
+          firstName: attendee.firstName,
+          lastName: attendee.lastName,
+          name: attendee.name,
+          usageName: attendee.computeUsageName(),
+          gender: attendee.gender,
+          isAssistant: attendee.isAssistant,
+          assisted: attendee.assisted,
+          assistedBy: attendee.assistedBy,
+          company: attendee.company,
+          timezone: attendee.timezone,
+          landline: attendee.landline,
+          mobile: attendee.mobile,
+          skypeId: attendee.skypeId,
+          confCallInstructions: attendee.confCallInstructions,
+          isPresent: attendee.isPresent,
+          isClient: attendee.isClient,
+          isThreadOwner: attendee.isThreadOwner,
+          needAIConfirmation: attendee.needAIConfirmation,
+          aIHasBeenConfirmed: attendee.aIHasBeenConfirmed,
+          companyUpdated: attendee.companyUpdated
+        }
+      })
+    };
+
     window.getInfoPanelAttendees = function() {
         var contacts = angular.element($('#attendeesCtrl')).scope();
         var attendees = contacts.attendees.slice();
         // We save every contact on the thread even those who will not attend
-        return attendees.map(function(attendee) {
-            return{
-                accountEmail: attendee.accountEmail,
-                guid: attendee.guid,
-                email: attendee.email,
-                firstName: attendee.firstName,
-                lastName: attendee.lastName,
-                name: attendee.name,
-                usageName: attendee.usageName,
-                gender: attendee.gender,
-                isAssistant: attendee.isAssistant,
-                assisted: attendee.assisted,
-                assistedBy: attendee.assistedBy,
-                company: attendee.company,
-                timezone: attendee.timezone,
-                landline: attendee.landline,
-                mobile: attendee.mobile,
-                skypeId: attendee.skypeId,
-                confCallInstructions: attendee.confCallInstructions,
-                isPresent: attendee.isPresent,
-                isClient: attendee.isClient,
-                isThreadOwner: attendee.isThreadOwner,
-                needAIConfirmation: attendee.needAIConfirmation,
-                aIHasBeenConfirmed: attendee.aIHasBeenConfirmed,
-                companyUpdated: attendee.companyAI && attendee.companyAI != attendee.company
-            }
-        });
+      _.each(attendees, function(attendee) {
+        attendee.companyUpdated = attendee.companyAI && attendee.companyAI != attendee.company;
+      });
+
+      return attendees;
     };
 
     window.presentAttendees = function() {
@@ -1378,10 +1393,20 @@
           <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.english") %>
         </div>
         <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_language"><%= I18n.t("common.validate") %></div>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm validate-locale" data-tracking-event="Click_on_validate_language"><%= I18n.t("common.validate") %></div>
       </div>
 
+      <div class="data-entry linear-form-entry language-level-selection">
+        <div class="data-entry-name"><%= I18n.t("info_box.language_level.title") %></div>
+        <div class="semi-data-entry">
+          <%= radio_button_tag :language_level, "normal", (messages_thread.computed_data[:language_level] != 'soutenu'), {class: 'locale-radio', disabled: messages_thread.account.language_level == 'soutenu'} %> <%= I18n.t("info_box.language_level.normal") %>
+        </div>
+        <div class="semi-data-entry">
+          <%= radio_button_tag :language_level, "soutenu", (messages_thread.computed_data[:language_level] == 'soutenu'), {class: 'locale-radio', disabled: messages_thread.account.language_level == 'soutenu'} %> <%= I18n.t("info_box.language_level.soutenu") %>
+        </div>
 
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_select_language"><%= I18n.t("common.validate") %></div>
+      </div>
 
       <div class="data-entry linear-form-entry appointment-type-selects" data-entry-name="appointmentType">
         <% messages_thread_account_appointments = @messages_thread.account.appointments %>

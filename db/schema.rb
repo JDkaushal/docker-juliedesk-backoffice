@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170126101902) do
+ActiveRecord::Schema.define(version: 20170208152624) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -161,6 +161,13 @@ ActiveRecord::Schema.define(version: 20170126101902) do
     t.datetime "updated_at"
   end
 
+  create_table "global_settings", force: true do |t|
+    t.string   "name",       null: false
+    t.string   "value",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -236,6 +243,7 @@ ActiveRecord::Schema.define(version: 20170126101902) do
     t.json     "before_update_data"
     t.json     "verified_dates_by_ai"
     t.text     "annotated_reply"
+    t.string   "language_level"
   end
 
   add_index "message_classifications", ["message_id"], name: "index_message_classifications_on_message_id", using: :btree
@@ -377,5 +385,19 @@ ActiveRecord::Schema.define(version: 20170126101902) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

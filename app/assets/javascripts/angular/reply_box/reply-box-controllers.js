@@ -383,10 +383,10 @@
             });
 
             params['assistedAttendees'] = _.map(partitionnedAttendees[0], function(a) {
-                return a.usageName;
+                return a.computeUsageName();
             });
             params['unassistedAttendees'] = _.map(partitionnedAttendees[1], function(a) {
-                return a.usageName;
+                return a.computeUsageName();
             });
 
             $scope.replyMessage = window.generateEmailTemplate(params);

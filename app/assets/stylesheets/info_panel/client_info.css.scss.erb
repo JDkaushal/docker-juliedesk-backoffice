@@ -217,6 +217,43 @@
         background-color: #FB9053;
       }
 
+      &.language_level {
+        background-color: transparent;
+        border: solid 1px;
+
+        .language_level_sprite {
+          margin-right: 5px;
+        }
+
+        &.normal {
+          color: #787878;
+          border-color: #787878;
+
+          .language_level_sprite {
+            width: 14px;
+            height: 11px;
+            display: inline-block;
+            background-image: url(<%= asset_path 'langage_normal.png' %>);
+            background-size: 14px 11px;
+          }
+        }
+        &.soutenu {
+          color: #E14A11;
+          border-color: #E14A11;
+
+          .language_level_sprite {
+            width: 14px;
+            height: 11px;
+            display: inline-block;
+            background-image: url(<%= asset_path 'langage_soutenu.png' %>);
+            background-size: 14px 11px;
+          }
+        }
+
+
+
+      }
+
     }
 
   }

@@ -36,7 +36,7 @@
         <div class="row" style="margin-top: 0px;">
           <div class="col-xs-12">
             <%= label_tag :email %>
-            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', 'email-allowed' => true, class: 'form-control'} %>
+            <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'email-allowed' => true, class: 'form-control'} %>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
       </div>
       <div class="attendee-details" ng-class="{'col-xs-12': !attendeesFormCtrl.attendeeInForm.isClient, 'col-xs-10 new-attendee-details-client': attendeesFormCtrl.attendeeInForm.isClient}" style="padding-left: 15px;">
           <%= label_tag :email %>
-          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'ng-required' => '!attendeesFormCtrl.attendeeInForm.usageName.length > 0', 'email-allowed' => true, class: 'form-control'} %>
+          <%= email_field_tag :email, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.email', 'uib-typeahead' => "email for email in attendees_manager.getEmailsSuggestions($viewValue)", 'typeahead-on-select' => "attendeesFormCtrl.importContactInfos()", 'email-allowed' => true, class: 'form-control'} %>
           <%= image_tag 'tooltip.svg', {class: 'email-tooltip-img', title: "Veuillez entrer une adresse figurant dans l'un des emails du client ou de ses contacts", 'ng-show' => 'attendeesForm.email.$error.emailAllowed'} %>
 
           <div class="error-area-below-field" ng-messages="attendeesForm.email.$error" role="alert" ng-show="attendeesForm.email.$viewValue.length > 0">
@@ -70,12 +70,12 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-xs-12">
-        <%= label_tag :usage_name %>
-        <%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', 'ng-keyup' => 'attendee.usageNameKeyup()', class: 'form-control', capitalize:true} %>
-        </div>
-      </div>
+      <!--<div class="row">-->
+        <!--<div class="col-xs-12">-->
+        <!--<%= label_tag :usage_name %>-->
+        <!--<%= text_field_tag :usage_name, "",{'ng-model' => 'attendeesFormCtrl.attendeeInForm.usageName', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-required' => '!attendeesFormCtrl.attendeeInForm.email.length > 0', 'ng-keyup' => 'attendee.usageNameKeyup()', class: 'form-control', capitalize:true} %>-->
+        <!--</div>-->
+      <!--</div>-->
 
       <div class="row">
         <div class="col-xs-6" ng-class="{'need-ai-confirmation': attendeesFormCtrl.attendeeInForm.needAIConfirmation}">
