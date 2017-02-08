@@ -54,8 +54,6 @@
             else if(window.threadComputedData && window.threadComputedData.do_not_ask_suggestions) {
 
                 if((window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") || window.julie_action_nature == 'cancel_event') {
-                    console.log("ATT", $scope.attendeesApp.getAttendeesWithoutThreadOwner());
-
                     var mainClient = window.clientRecipient();
                     var tos_attendees = $scope.attendeesApp.getAttendeesOnlyPresentClients().concat($scope.attendeesApp.getLinkedAttendees());
                     if (mainClient && mainClient["name"]) {
@@ -77,6 +75,10 @@
                         return {name: attendee["email"]};
                     });
                     $scope.tos = tos;
+                }
+                else {
+                    var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
+                    $scope.setDefaultRecipients(otherRecipients, presentAttendees);
                 }
             }
             else {
