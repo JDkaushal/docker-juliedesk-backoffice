@@ -54,6 +54,7 @@
             else if(window.threadComputedData && window.threadComputedData.do_not_ask_suggestions) {
 
                 if((window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") || window.julie_action_nature == 'cancel_event') {
+                    console.log("ATT", $scope.attendeesApp.getAttendeesWithoutThreadOwner());
 
                     var mainClient = window.clientRecipient();
                     var tos_attendees = $scope.attendeesApp.getAttendeesOnlyPresentClients().concat($scope.attendeesApp.getLinkedAttendees());
@@ -64,10 +65,12 @@
                         });
 
                         // Include julie aliases (except the main one)
-                        //_.each(window.julie_alias_emails, function(julie_alias_email) {
-                        //    if(window.julieAlias && julie_alias_email != window.julieAlias.email)
-                        //        $scope.ccs.push({ name: julie_alias_email } );
-                        //});
+                        if(window.julieAliases) {
+                            _.each(window.julieAliases, function (julieAlias) {
+                                if (window.julieAlias && julieAlias.email != window.julieAlias.email)
+                                    $scope.ccs.push({name: julieAlias.email});
+                            });
+                        }
                     }
 
                     var tos = tos_attendees.map(function (attendee) {
