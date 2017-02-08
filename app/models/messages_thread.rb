@@ -1,5 +1,8 @@
 class MessagesThread < ActiveRecord::Base
 
+  class SplitError < Exception
+  end
+
   EVENT_SCHEDULED = "event_scheduled"
   SCHEDULING_EVENT = "scheduling_events"
   EVENTS_CREATED = "events_created"
@@ -538,7 +541,7 @@ class MessagesThread < ActiveRecord::Base
 
   def re_import
     existing_messages = []
-    all_messages = self.server_thread(force_refresh: true, show_split: true)['messages']
+    all_messages = self.server_thread(force_refresh: true, show_split: true).try(:[], 'messages') || []
     messages_thread_messages = self.messages
 
     all_messages.select do |server_message|
@@ -584,29 +587,11 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def split message_ids
+    raise SplitError.new("Cannot split thread without message id") if message_ids.blank?
 
     server_message_ids = self.messages.where(id: message_ids).map(&:server_message_id)
-    EmailServer.split_messages({
-        messages_thread_id: self.server_thread_id,
-        message_ids: server_message_ids
-                      })
-
+    EmailServer.split_messages({ messages_thread_id: self.server_thread_id, message_ids: server_message_ids })
     ImportEmailsWorker.enqueue
-    # updated_messages_thread_ids = Message.import_emails
-    # WebSockets::Manager.trigger_new_email(updated_messages_thread_ids)
-    # if ENV['PUSHER_APP_ID']
-    #   Pusher.trigger('private-global-chat', 'new-email', {
-    #       :message => 'new_email',
-    #       :messages_threads_count => MessagesThread.items_to_classify_count,
-    #       :updated_messages_thread_ids => updated_messages_thread_ids
-    #   })
-    # elsif ENV['RED_SOCK_URL']
-    #   RedSock.trigger 'private-global-chat', 'new-email', {
-    #                                            :message => 'new_email',
-    #                                            :messages_threads_count => MessagesThread.items_to_classify_count,
-    #                                            :updated_messages_thread_ids => updated_messages_thread_ids
-    #                                        }
-    # end
   end
 
   def has_already_processed_action_once(action_type)

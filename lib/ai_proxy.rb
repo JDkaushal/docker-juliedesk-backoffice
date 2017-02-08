@@ -44,7 +44,9 @@ class AiProxy
       url = set_url_params(url, data)
     end
 
-    dispatch_request(type, url, data)
+    Timeout::timeout(ENV['CONSCIENCE_API_TIMEOUT'].to_i || 20) do
+      dispatch_request(type, url, data)
+    end
   end
 
   def dispatch_request(type, url, data)

@@ -62,6 +62,12 @@
                         tos_attendees = tos_attendees.filter(function (attendee) {
                             return attendee["email"] != mainClient["name"]
                         });
+
+                        // Include julie aliases (except the main one)
+                        _.each(window.julie_alias_emails, function(julie_alias_email) {
+                            if(window.julieAlias && julie_alias_email != window.julieAlias.email)
+                                $scope.ccs.push({ name: julie_alias_email } );
+                        });
                     }
 
                     var tos = tos_attendees.map(function (attendee) {

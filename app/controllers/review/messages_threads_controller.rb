@@ -5,7 +5,13 @@ class Review::MessagesThreadsController < ReviewController
   before_filter :only_admin, only: [:admin_review_turing_index]
 
   def review
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
+    begin
+      @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render status: :not_found, text: "Sorry, this thread does not exist."
+      return
+    end
+
     @messages_thread.re_import
 
     @messages_thread.account

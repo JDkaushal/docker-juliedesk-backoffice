@@ -67,7 +67,12 @@ class MessagesThreadsController < ApplicationController
   end
 
   def show
-    @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
+    begin
+      @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      render status: :not_found, text: "Sorry, this thread does not exist."
+      return
+    end
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
@@ -196,15 +201,15 @@ class MessagesThreadsController < ApplicationController
   end
 
   def split
-    messages_thread = MessagesThread.find(params[:id])
-    messages_thread.split(params[:message_ids].map(&:to_i))
-    render json: {
-        status: "success",
-        message: "",
-        data: {
+      messages_thread = MessagesThread.find(params[:id])
+      messages_ids = (params[:message_ids] || []).map(&:to_i)
+      messages_thread.split(messages_ids)
+      render json: { status: "success", message: "", data: {} }
 
-        }
-    }
+    rescue ActiveRecord::RecordNotFound => e
+      render json: { error_code: 'MESSAGES_THREAD:NOT_FOUND', message: "Thread with id #{params[:id]} does not exist" }, status: :not_found
+    rescue MessagesThread::SplitError => e
+      render json: { error_code: 'MESSAGES_THREAD:SPLIT_ERROR', message: e.message }, status: :unprocessable_entity
   end
 
   def associate_to_account

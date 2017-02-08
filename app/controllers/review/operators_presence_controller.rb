@@ -82,8 +82,8 @@ class Review::OperatorsPresenceController < ReviewController
   end
 
   def remove
-    OperatorPresence.where(operator_id: params[:operator_id]).where(date: params[:presences].map{|p| DateTime.parse(p)}, is_review: params[:is_review].present?).delete_all
-
+    presences = (params[:presences] || []).map { |p| DateTime.parse(p) }
+    OperatorPresence.where(operator_id: params[:operator_id]).where(date: presences, is_review: params[:is_review].present?).delete_all
     render json: {}
   end
 
