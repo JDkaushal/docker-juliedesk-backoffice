@@ -134,6 +134,9 @@ function IcsManager() {
                 parsedIcs['receivedAt'] = receivedAt;
                 that.icsEntities.push(parsedIcs);
                 that.generatePreview($email, parsedIcs);
+
+                if(window.initAllowedAttendeesEmails)
+                  window.initAllowedAttendeesEmails();
             });
 
         });
