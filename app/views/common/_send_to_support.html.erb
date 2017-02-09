@@ -20,7 +20,7 @@
         });
     });
 </script>
-<% message_id = local_assigns[:messages_thread].messages.last.id %>
+<% message_id = local_assigns[:messages_thread].messages.last.try(:id) %>
 
 <% if messages_thread.sent_to_admin %>
     <%= button_to("Remove admin delegation", { controller: :messages, action: :classifying, id: message_id, classification: MessageClassification::CANCEL_TO_FOUNDERS }, class: "unsend-to-support-button btn btn-success btn-sm") %>

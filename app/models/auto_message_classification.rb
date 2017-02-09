@@ -288,8 +288,8 @@ class AutoMessageClassification < MessageClassification
       text_in_email = "#{self.julie_action.text}"
     end
 
-    recipients_to = initial_recipients[:to].join(", ")
-    recipients_cc = initial_recipients[:cc].join(", ")
+    recipients_to = initial_recipients[:to]
+    recipients_cc = initial_recipients[:cc]
     if self.classification == AutoMessageClassification::WAIT_FOR_CONTACT
       recipients_to = [initial_recipients[:client]]
       recipients_cc = []
