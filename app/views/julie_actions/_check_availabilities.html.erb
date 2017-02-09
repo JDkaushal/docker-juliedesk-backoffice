@@ -588,7 +588,7 @@
                 }
             }
 
-          if(window.threadComputedData.do_not_ask_suggestions) {
+          if(window.threadComputedData.do_not_ask_suggestions && window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") {
             var clientNames = [window.threadAccount.usage_name];
             _.each(otherClients(), function(attendee) {
               var names = [];
