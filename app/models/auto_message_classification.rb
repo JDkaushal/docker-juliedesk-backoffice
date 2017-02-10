@@ -138,17 +138,22 @@ class AutoMessageClassification < MessageClassification
 
 
     if amc.julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
-
-      # Handle calendar
-      date_suggestions_response = AiProxy.new.build_request(:fetch_dates_suggestions, {
+      fetch_date_suggestions_params = {
           account_email: account.email,
           thread_data: m.messages_thread.computed_data([amc]),
           raw_constraints: interpretation[:constraints_data],
           n_suggested_dates: 4,
           attendees: [],
-          message_id: m.id,
-          date: processing_date.strftime("%Y-%m-%d")
-      })
+          message_id: m.id
+      }
+      unless params[:for_real]
+        fetch_date_suggestions_params.merge!({
+                                                 date: processing_date.strftime("%Y-%m-%d")
+                                             })
+      end
+
+      # Handle calendar
+      date_suggestions_response = AiProxy.new.build_request(:fetch_dates_suggestions, fetch_date_suggestions_params)
       date_suggestions = date_suggestions_response["suggested_dates"]
       amc.date_times = (date_suggestions || []).to_json
 
