@@ -113,6 +113,8 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                 });
 
                                 verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                            } else {
+                                verifiedDatesByAI = {no_suitable_dates: true};
                             }
                         }
                         askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});

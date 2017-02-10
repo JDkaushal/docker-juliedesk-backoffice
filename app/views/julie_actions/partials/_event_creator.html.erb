@@ -30,7 +30,7 @@
       </script>
 
   <div class="suggested-date-times" id="datesVerificationsManager" data-date-times="<%= (local_assigns[:julie_action].message_classification.date_times || "[]")%>" ng-controller="datesVerificationManager as datesVerifMng">
-    <div class="ai-no-dates-validated" ng-hide="hideAiNoDatesValidated()">
+    <div class="ai-no-dates-validated" ng-show="showAiNoDatesValidated()">
       <span class="sprite"></span><span class="text">Jul.IA n'a pas validé de date</span>
     </div>
 
