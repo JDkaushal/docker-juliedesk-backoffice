@@ -172,8 +172,7 @@
                     // console.log("Locked Ok");
                 });
                 redsock.bindMessage('presence-thread-' + window.processingMessageThreadId, "subscription_failed", function(status) {
-                    $(".lock-container .unlock-btn").attr("href", "/messages_threads/" + window.processingMessageThreadId + "/unlock");
-                    $(".lock-container").fadeIn(200);
+                  $(".lock-container").fadeIn(200);
                 });
 
                 redsock.subscribeToChannel('presence-thread-' + window.processingMessageThreadId, {
@@ -181,9 +180,24 @@
                 });
 
                 var threadChannel = 'thread-' + window.processingMessageThreadId;
+
                 redsock.subscribeToChannel(threadChannel);
+
                 redsock.bindMessage(threadChannel, 'merged', function(message) {
                   alert("You are on a thread that has just been merged by " + message.sender +".\nPlease reload this page.");
+                });
+
+                redsock.bindMessage(threadChannel, 'unlock', function(data) {
+                  // member who unlocked the thread is not me
+                  if(data.member_id != redsock.member_id) {
+                    $('.lock-container .operator-name').text(data.name);
+                    $(".lock-container").fadeIn(200);
+                  }
+                });
+
+                $('.lock-container .unlock-btn').click(function() {
+                  redsock.unlockChannel(threadChannel);
+                  window.location.reload();
                 });
             }
 
@@ -338,7 +352,8 @@
   <a href="/">Back to home</a>
   <br>
   <br>
-  <%= link_to "", class:"unlock-btn btn btn-warning btn-lg" do %>
-      <span class="operator-name">I know This operator</span> is not present - Unlock
-  <% end %>
+
+  <a class="unlock-btn btn btn-warning btn-lg">
+    <span class="operator-name">I know This operator</span> is not present - Unlock
+  </a>
 </div>

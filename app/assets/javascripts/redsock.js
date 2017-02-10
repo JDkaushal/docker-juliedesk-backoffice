@@ -33,6 +33,14 @@ RedSock.prototype.unsubscribeFromChannel = function (channelName, data) {
     this.sendData(channelName, "unsubscribe", null, null)
 };
 
+RedSock.prototype.unlockChannel = function (channelName) {
+    this.sendData(channelName, "unlock", null, {
+        identifier: redsock.member_id,
+        name: redsock.member_name,
+        email: redsock.member_email
+    })
+};
+
 RedSock.prototype.sendData = function (channel, action, message, data) {
     var redsock = this;
     if(redsock.ws.readyState === 1) {
