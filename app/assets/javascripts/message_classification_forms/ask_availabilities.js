@@ -88,6 +88,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     server_message_id: highlightedEmailNode.attr('id'),
                     today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
                     attendees: $('#attendeesCtrl').scope().attendees,
+                    check_differences: true,
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
