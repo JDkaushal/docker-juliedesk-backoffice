@@ -186,7 +186,8 @@
                         time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
                         attendees: $('#attendeesCtrl').scope().attendees,
-                        message_id: $('.email.highlighted').data('message-id')
+                        message_id: $('.email.highlighted').data('message-id'),
+                        multi_clients: false
                     };
 
                     $scope.showAiLoader = true;
