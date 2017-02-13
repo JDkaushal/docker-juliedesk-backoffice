@@ -245,11 +245,18 @@ EventTile.prototype.getRruleIndex = function(recurrenceArray) {
 EventTile.prototype.redraw = function() {
     var eventTile = this;
 
-    console.log('redraw', eventTile.event);
+    // console.log('redraw', eventTile.event);
 
     eventTile.$selector.find("input.title").val(eventTile.event.title);
     eventTile.$selector.find(".date .date-text").html(CommonHelpers.formatDateTimeRange(eventTile.event.start, eventTile.event.end, eventTile.locale, eventTile.getTimezoneId(), eventTile.event.allDay));
     eventTile.$selector.find("input.location").val(eventTile.event.location);
+    if(window.featuresHelper.isFeatureActive("show_ai_event_interpretation") && eventTile.event.aiMetadata) {
+
+        eventTile.$selector.find("input.ai-sanitized-location").val(eventTile.event.aiMetadata.sanitized_location);
+        eventTile.$selector.find("input.ai-event-type").val(eventTile.event.aiMetadata.event_type);
+        eventTile.$selector.find(".ai-event-interpretation").show();
+    }
+
     eventTile.$selector.find("textarea.notes").val(eventTile.event.description);
 
     eventTile.$selector.find(".recurrence-container").hide();

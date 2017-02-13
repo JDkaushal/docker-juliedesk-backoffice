@@ -416,6 +416,25 @@
 
     }
 
+    .ai-event-interpretation-container {
+      position: relative;
+      color: $aiControlColor;
+
+      .ai-sanitized-location {
+        width: 100%;
+      }
+      .ai-indicator {
+        border-left: 6px solid $aiControlColor;
+        position: absolute;
+        top: -6px;
+        left: -45px;
+        bottom: -6px;
+      }
+    }
+    .ai-event-interpretation {
+      display: none;
+    }
+
     &.editing {
         .date-container {
             .date {
