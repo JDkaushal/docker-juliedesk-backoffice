@@ -1470,7 +1470,7 @@
         },
         displayNormalizedName: function(){
             var that = this;
-            var name = that.computeUsageName();
+            var name = that.fullName();
             // var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : this.lastName;
             // var _firstName = (this.firstName == undefined || this.firstName == null) ? '' : this.firstName;
             // var separator = (_firstName == '' || _lastName == '') ? '' : ' ';
