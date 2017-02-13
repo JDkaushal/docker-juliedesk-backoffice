@@ -30,6 +30,17 @@
       <cite class="attendee-email">{{attendee.email}}</cite>
     </div>
 
+    <div ng-if="attendees_manager.usageNamev2Enabled && !attendee.isClient" class="row ellipsable usage-name-input-container">
+      <div class="col-xs-6" style="padding-right: 6px; padding-left:0;">
+        <%= label_tag :first_name, 'Prénom' %>
+        <%= text_field_tag :first_name, "",{'ng-model' => 'attendee.firstName', class: 'form-control', 'ng-keyup' => 'attendee.firstLastNameKeyup()'} %>
+      </div>
+      <div class="col-xs-6" style="padding-left: 6px; padding-right:0;">
+        <%= label_tag :last_name, 'Nom' %>
+        <%= text_field_tag :last_name, "",{'ng-model' => 'attendee.lastName', class: 'form-control' , 'ng-keyup' => 'attendee.firstLastNameKeyup()'} %>
+      </div>
+    </div>
+
     <div class="row ellispable usage-name-input-container" ng-if="!attendees_manager.usageNamev2Enabled">
       <%= label_tag :usage_name %>
       <%= text_field_tag :usage_name, "",{'ng-model' => 'attendee.usageName', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control', capitalize:true} %>
