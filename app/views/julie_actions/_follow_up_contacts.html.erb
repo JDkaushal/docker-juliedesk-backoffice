@@ -39,7 +39,7 @@
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(otherClients(), function(attendee) {
                 var names = [];
-              var fullName = attendee.fullName();
+              var fullName = attendee.computeUsageName();
                 if(fullName)
                   names = fullName.split(" ");
 

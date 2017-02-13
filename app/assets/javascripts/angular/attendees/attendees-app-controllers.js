@@ -655,7 +655,7 @@
                 if(!window.threadComputedData.appointment_nature) {
                     a.dispatchUsageName();
                 } else {
-                    if(!a.fullName()) {
+                    if(!a.computeUsageName()) {
                         a.dispatchUsageName();
                     }
                 }
@@ -1041,7 +1041,7 @@
                 return a.company != '' && a.guid != attendee.guid && a.company == attendee.company && !a.hasMissingInformations;
             });
 
-            return (attendee.fullName() && attendee.fullName().length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
+            return (attendee.computeUsageName() && attendee.computeUsageName().length > 0 && !!(attendee.email || (!attendee.email && attendee.assistedBy && attendee.assistedBy.guid)) && !attendeeFromSameCompanyWithInfos);
         };
 
         $scope.mustAskCallInstructions = function(type){
@@ -1139,7 +1139,7 @@
                         if(attendeesWithMissingInfos.length > 0){
                             _.each(attendeesWithMissingInfos, function(a){
                                 if($scope.missingInformationAttendeesFilter(a, attendeesWithMissingInfos)){
-                                    var names = a.fullName().split(" ");
+                                    var names = a.computeUsageName().split(" ");
                                     if(names.length > 0) {
                                         result.attendeesNames.push(window.helpers.capitalize(names[0]));
                                     }
@@ -1307,7 +1307,7 @@
             }
         },
         firstNameMirrored: function(){
-            return (this.fullName() == '' || this.fullName() == undefined);
+            return (this.computeUsageName() == '' || this.computeUsageName() == undefined);
         },
         computeUsageName: function() {
             var that = this;
@@ -1460,7 +1460,7 @@
         assistantDisplayText: function(){
             var name = '';
             if(this.assistedBy != undefined)
-                name = (this.assistedBy.fullName() || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
+                name = (this.assistedBy.computeUsageName() || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
             return name;
         },
 
@@ -1469,7 +1469,7 @@
         },
         displayNormalizedName: function(){
             var that = this;
-            var name = that.fullName();
+            var name = that.computeUsageName();
             // var _lastName = (this.lastName == undefined || this.lastName == null) ? '' : this.lastName;
             // var _firstName = (this.firstName == undefined || this.firstName == null) ? '' : this.firstName;
             // var separator = (_firstName == '' || _lastName == '') ? '' : ' ';
@@ -1500,7 +1500,7 @@
             return _mobile + separator + _landline;
         },
         getName: function(){
-            return this.fullName() || this.email;
+            return this.computeUsageName() || this.email;
         },
         has_mobile_or_landline: function(){
             return this.has_mobile() || this.has_landline();
