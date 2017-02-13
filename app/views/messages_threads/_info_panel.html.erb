@@ -986,7 +986,12 @@
             $(".save-info-container").show();
         }
         else {
-            $(".linear-form-entry:hidden:not(.dont-show):eq(0)").show();
+            var currentHiddenDiv = $(".linear-form-entry:hidden:not(.dont-show):eq(0)").show();
+          // When ai has found an appointment type
+          if(currentHiddenDiv.hasClass('appointment-type-selects') && $('#appointment_family_nature').val()) {
+            askNextLinearFormEntry();
+          }
+
         }
         $(".messages-thread-info-panel").scrollTop($(".messages-thread-info-panel")[0].scrollHeight);
     }

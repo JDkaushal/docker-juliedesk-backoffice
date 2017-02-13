@@ -33,9 +33,9 @@
                             askNextLinearFormEntry();
                             $scope.localeValidated = true;
 
-                            if($('#appointment_family_nature').val()) {
-                                askNextLinearFormEntry();
-                            }
+                            // if($('#appointment_family_nature').val()) {
+                            //     askNextLinearFormEntry();
+                            // }
                         }
                     });
                 }
