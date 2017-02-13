@@ -106,7 +106,7 @@ class ClientContactsController < ApplicationController
                  firstName: fullname_splitted[0],
                  lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
                  usageName: cache['usage_name'],
-                 gender: "?",
+                 gender: "Unknown",
                  isAssistant: "false",
                  assisted: "false",
                  assistedBy: nil,

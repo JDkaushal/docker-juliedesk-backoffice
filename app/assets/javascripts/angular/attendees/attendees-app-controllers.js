@@ -474,7 +474,7 @@
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
                 name: window.threadAccount.full_name,
                 usageName: window.threadAccount.usage_name,
-                gender: '?',
+                gender: "Unknown",
                 isAssistant: false,
                 assisted: true,
                 assistedBy: {email: window.currentJulieAlias.email, displayName: window.currentJulieAlias.name},
@@ -537,7 +537,7 @@
                 name: (informations.firstName + ' ' + informations.lastName).trim(),
                 // Used for clients (is set in the admin panel)
                 usageName: informations.usageName || informations.name,
-                gender: informations.gender,
+                gender: informations.gender || "Unknown",
                 isAssistant: informations.isAssistant == "true",
                 assisted: informations.assisted == "true",
                 assistedBy: informations.assistedBy,
@@ -592,7 +592,7 @@
                                     a.gender = 'F';
                                     break;
                                 case 'unknown':
-                                    a.gender = '?';
+                                    a.gender = "Unknown";
                                     break;
                             }
                         }
@@ -1318,7 +1318,8 @@
                 if(that.isClient) {
                     computedUsageName = that.usageName;
                 } else {
-                    var genderCode = that.gender == '?' ? '_' : that.gender;
+                    var unknownGender = that.gender == "Unknown";
+                    var genderCode = unknownGender ? '_' : that.gender;
                     var translationKey = ["gender_reference", null, window.threadComputedData.language_level, genderCode];
                     var nameKey = null;
                     var computedName = null;
@@ -1329,7 +1330,7 @@
 
                     if(window.threadComputedData.language_level == 'soutenu') {
                         if(lastNamePresent) {
-                            if(that.gender == '?') {
+                            if(unknownGender) {
                                 if(firstNamePresent) {
                                     computedName = [that.firstName, that.lastName].join(' ');
                                 }
@@ -1344,7 +1345,7 @@
                         if(firstNamePresent) {
                             computedName = that.firstName;
                         } else if(lastNamePresent) {
-                            if(that.gender != '?') {
+                            if(that.gender != "Unknown") {
                                 computedName = that.lastName;
                                 nameKey = 'with_name';
                             }
