@@ -163,4 +163,11 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   def parse_ticket
     render json: AiProxy.new.build_request(:parse_sncf_ticket, { html_message: CGI.unescapeHTML(params[:html_message]) })
   end
+
+  # Expect an array of server_message_ids and return the missing ones from the Backoffice DB
+  # We cap at 10000 messages to prevent too big requests
+  def check_missing_messages
+    server_message_ids = params[:server_message_ids]
+    render json: server_message_ids - Message.where(server_message_id: params[:server_message_ids]).first(10000).map(&:server_message_id)
+  end
 end

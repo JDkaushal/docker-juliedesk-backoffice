@@ -165,6 +165,7 @@ Rails.application.routes.draw do
       post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
       post "/accounts/change_account_main_email", controller: :accounts, action: :change_account_main_email
       post "/messages_threads/parse_ticket", controller: :messages_threads, action: :parse_ticket
+      post "/messages_threads/check_missing_messages", controller: :messages_threads, action: :check_missing_messages
     end
   end
 
