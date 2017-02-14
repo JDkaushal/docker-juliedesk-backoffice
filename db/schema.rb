@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170208152624) do
+ActiveRecord::Schema.define(version: 20170214162303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -303,6 +303,7 @@ ActiveRecord::Schema.define(version: 20170208152624) do
     t.boolean  "account_request_auto_email_sent",      default: false
     t.boolean  "account_association_merging_possible", default: false
     t.json     "linked_attendees",                     default: {}
+    t.string   "clients_in_recipients",                default: [],    array: true
   end
 
   create_table "operator_actions", force: true do |t|

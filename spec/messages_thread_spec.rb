@@ -557,43 +557,66 @@ describe MessagesThread, :type => :model do
 
   describe '#compute_linked_attendees' do
 
-    # before(:example) do
-    #   allow(Account).to receive(:find_account_email).with('client1@email.com', {:accounts_cache=>{}}).and_return('client1@email.com')
-    #   allow(Account).to receive(:find_account_email).with('client2@email.com', {:accounts_cache=>{}}).and_return('client2@email.com')
-    #   allow(Account).to receive(:find_account_email).with('attendee1@email.com', {:accounts_cache=>{}}).and_return(nil)
-    #
-    #   http_response = double('http_response')
-    #   allow(http_response).to receive(:code).and_return(200)
-    #   allow(http_response).to receive(:parse).and_return({"frederic@juliedesk.com"=>[], "stagingjuliedesk@gmail.com"=>["nicolas@jdesk.onmicrosoft.com", "justine@jdesk.onmicrosoft.com"]})
-    #
-    #   allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com', 'client2@email.com'], attendees_emails: ['attendee1@email.com']}}).and_return(http_response)
-    #   @messages_thread.computed_recipients = ['client1@email.com', 'client2@email.com', 'attendee1@email.com']
-    #   @messages_thread.account_email = 'client1@email.com'
-    # end
+    let(:accounts_cache) {
+      {
+          'client1@email.com' => {
+              'email' => 'client1@email.com',
+              'email_aliases' => [],
+              'linked_attendees_enabled' => true
+          },
+          'client2@email.com' => {
+              'email' => 'client2@email.com',
+              'email_aliases' => [],
+              'linked_attendees_enabled' => true
+          }
+      }
+    }
 
     before(:example) do
-      allow(Account).to receive(:find_account_email).with('client1@email.com', {:accounts_cache=>{}}).and_return('client1@email.com')
-      allow(Account).to receive(:find_account_email).with('client2@email.com', {:accounts_cache=>{}}).and_return('client2@email.com')
-      allow(Account).to receive(:find_account_email).with('attendee1@email.com', {:accounts_cache=>{}}).and_return(nil)
-
-      http_response = double('http_response')
-      allow(http_response).to receive(:code).and_return(200)
-      allow(http_response).to receive(:parse).and_return({"client1@email.com"=>["attendee1@email.com"]})
-
-      allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com'], attendees_emails: ['attendee1@email.com']}}).and_return(http_response)
-      @messages_thread.computed_recipients = ['client1@email.com', 'client2@email.com', 'attendee1@email.com']
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({
+                                                                                                    'email' => 'client1@email.com',
+                                                                                                    'email_aliases' => [],
+                                                                                                    'linked_attendees_enabled' => true
+                                                                                                })
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({
+                                                                                                    'email' => 'client2@email.com',
+                                                                                                    'email_aliases' => [],
+                                                                                                    'linked_attendees_enabled' => true
+                                                                                                })
       @messages_thread.account_email = 'client1@email.com'
     end
 
-    it 'should populate the linked attendees field correctly' do
-      pending 'When implementing multiple clients support (main + secondary)'
-      @messages_thread.compute_linked_attendees({})
-      expect(@messages_thread.linked_attendees).to eq({"frederic@juliedesk.com"=>[], "stagingjuliedesk@gmail.com"=>["nicolas@jdesk.onmicrosoft.com", "justine@jdesk.onmicrosoft.com"]})
+    context 'multiple clients on the thread with linked attendees feature enabled' do
+      before(:example) do
+        @messages_thread.computed_recipients = ['client1@email.com', 'client2@email.com', 'attendee1@email.com', 'attendee2@email.com']
+        @messages_thread.clients_in_recipients = ['client1@email.com', 'client2@email.com']
+
+        http_response = double('http_response')
+        allow(http_response).to receive(:code).and_return(200)
+        allow(http_response).to receive(:parse).and_return({"client1@email.com"=>["attendee1@email.com"], "client2@email.com"=>["attendee2@email.com"]})
+        allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com', 'client2@email.com'], attendees_emails: ['attendee1@email.com', 'attendee2@email.com']}}).and_return(http_response)
+      end
+
+      it 'should populate the linked attendees field correctly' do
+        @messages_thread.compute_linked_attendees(accounts_cache)
+        expect(@messages_thread.linked_attendees).to eq({"client1@email.com"=>["attendee1@email.com"], "client2@email.com"=>["attendee2@email.com"]})
+      end
     end
 
-    it 'should populate the linked attendees field correctly' do
-      @messages_thread.compute_linked_attendees({})
-      expect(@messages_thread.linked_attendees).to eq({"client1@email.com"=>["attendee1@email.com"]})
+    context 'only the main client on the thread with linked attendees feature enabled' do
+      before(:example) do
+        @messages_thread.computed_recipients = ['client1@email.com', 'attendee1@email.com', 'attendee2@email.com']
+        @messages_thread.clients_in_recipients = ['client1@email.com']
+        http_response = double('http_response')
+        allow(http_response).to receive(:code).and_return(200)
+        allow(http_response).to receive(:parse).and_return({"client1@email.com"=>["attendee1@email.com"]})
+        allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com'], attendees_emails: ['attendee1@email.com', 'attendee2@email.com']}}).and_return(http_response)
+      end
+
+      it 'should populate the linked attendees field correctly' do
+        @messages_thread.compute_linked_attendees(accounts_cache)
+        expect(@messages_thread.linked_attendees).to eq({"client1@email.com"=>["attendee1@email.com"]})
+      end
     end
   end
 
@@ -613,6 +636,167 @@ describe MessagesThread, :type => :model do
 
       end
     end
-
   end
+
+  describe 'clients' do
+
+    before(:example) do
+      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false})
+
+      @messages_thread.clients_in_recipients = ['main_client@email.com', 'client1@email.com', 'client2@email.com']
+    end
+
+    it 'should return the correct clients accounts' do
+      accounts = @messages_thread.clients
+
+      expect(accounts.size).to eq(3)
+      expect(accounts[0].email).to eq('main_client@email.com')
+      expect(accounts[1].email).to eq('client1@email.com')
+      expect(accounts[2].email).to eq('client2@email.com')
+    end
+  end
+
+  describe 'clients_with_linked_attendees_enabled' do
+    let(:accounts_cache) { {'client1@email.com' => {'email' => 'client1@email.com', 'linked_attendees_enabled' => true}, 'client2@email.com' => {'email' => 'client2@email.com', 'linked_attendees_enabled' => false}, 'main_client@email.com' => {'email' => 'main_client@email.com', 'linked_attendees_enabled' => true}} }
+
+    before(:example) do
+      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false})
+
+      @messages_thread.clients_in_recipients = ['main_client@email.com', 'client1@email.com', 'client2@email.com']
+    end
+
+    it 'should return the correct clients accounts' do
+      accounts = @messages_thread.clients_with_linked_attendees_enabled
+
+      expect(accounts.size).to eq(2)
+      expect(accounts[0].email).to eq('main_client@email.com')
+      expect(accounts[1].email).to eq('client1@email.com')
+    end
+  end
+
+  describe 'should_reprocess_linked_attendees' do
+    let(:computed_recipients_changed) { false }
+    let(:accounts_cache) { {'client1@email.com' => {'linked_attendees_enabled' => false}, 'client2@email.com' => {'linked_attendees_enabled' => false}} }
+
+
+
+    subject(:should_reprocess_linked_attendees) { @messages_thread.should_reprocess_linked_attendees(computed_recipients_changed) }
+
+    context 'computed_recipients_changed' do
+      let(:computed_recipients_changed) { true }
+
+      context 'feature enabled' do
+        before(:example) do
+          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true})
+          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false})
+        end
+
+        let(:accounts_cache) { {'client1@email.com' => {'linked_attendees_enabled' => true}, 'client2@email.com' => {'linked_attendees_enabled' => false}} }
+
+        context 'single client' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com'])
+          end
+
+          it 'should return be true' do
+            expect(subject).to be(true)
+          end
+        end
+
+        context 'multiple clients' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com', 'client2@email.com'])
+          end
+
+          it 'should return be true' do
+            expect(subject).to be(true)
+          end
+        end
+      end
+
+      context 'feature disabled' do
+        before(:example) do
+          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => false})
+          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false})
+        end
+
+        context 'single client' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+
+        context 'multiple clients' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com', 'client2@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+      end
+
+    end
+
+    context 'computed_recipients_not_changed' do
+      let(:computed_recipients_changed) { false }
+
+      context 'feature enabled' do
+        let(:accounts_cache) { {'client1@email.com' => {'linked_attendees_enabled' => true}, 'client2@email.com' => {'linked_attendees_enabled' => false}} }
+
+        context 'single client' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+
+        context 'multiple clients' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com', 'client2@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+      end
+
+
+      context 'feature disabled' do
+        context 'single client' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+
+        context 'multiple clients' do
+          before(:example) do
+            @messages_thread.update(clients_in_recipients: ['client1@email.com', 'client2@email.com'])
+          end
+
+          it 'should return be false' do
+            expect(subject).to be(false)
+          end
+        end
+      end
+    end
+  end
+
 end

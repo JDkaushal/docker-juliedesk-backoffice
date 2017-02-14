@@ -26,7 +26,7 @@ module ThreadAccountAssociation
     def compute_association
       clear_context
       compute_recipients_emails
-      compute_accounts_candidates(@recipients_emails)
+      compute_accounts_candidates(@recipients_emails.try(:values).try(:flatten))
 
       process_association
     end
@@ -35,6 +35,14 @@ module ThreadAccountAssociation
       #compute_recipients_emails
 
       accounts_candidates_in_bodies = []
+
+      clients_in_recipients = get_accounts_emails(recipients)
+
+      # We always put the messages thread main account in first position
+      if clients_in_recipients.include?(@messages_thread.account_email)
+        clients_in_recipients.reject!{|email| email == @messages_thread.account_email}
+        clients_in_recipients.unshift(@messages_thread.account_email)
+      end
 
       if using_julie_alias
         @logger.debug("-- Entrering flow => using_julie_alias --")
@@ -47,9 +55,18 @@ module ThreadAccountAssociation
         accounts_candidates_in_bodies = find_clients_with_main_julie[:association_candidates]
       end
 
-      accounts_candidates = accounts_candidates_in_bodies += get_accounts_emails(recipients)
+      accounts_candidates = accounts_candidates_in_bodies += clients_in_recipients
+
       if accounts_candidates.present?
-        @messages_thread.update(accounts_candidates: accounts_candidates.to_a.uniq)
+        @messages_thread.accounts_candidates = accounts_candidates.to_a.uniq
+      end
+
+      if clients_in_recipients.present?
+        @messages_thread.clients_in_recipients = clients_in_recipients
+      end
+
+      if @messages_thread.changed?
+        @messages_thread.save
       end
     end
     

@@ -137,7 +137,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "accounts_candidates"=>[],
                                                       "account_request_auto_email_sent"=>false,
                                                       "account_association_merging_possible" => false,
-                                                      "linked_attendees"=>{}
+                                                      "linked_attendees"=>{},
+                                                      "clients_in_recipients"=>[]
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {

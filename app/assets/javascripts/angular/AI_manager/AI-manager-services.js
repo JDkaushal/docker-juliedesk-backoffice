@@ -46,8 +46,6 @@
     }]);
 
     app.service('aIDatesVerificationService', ['$http','$q', function($http, $q) {
-        // Mettre timeout sur call
-
         this.verifyDates = function(params) {
             return $http({
                 url: '/ai/dates_verification/verify_dates',

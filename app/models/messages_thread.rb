@@ -18,7 +18,7 @@ class MessagesThread < ActiveRecord::Base
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
 
   attr_writer :account
-  attr_accessor :thread_blocked
+  attr_accessor :thread_blocked, :clients_with_linked_attendees_enabled, :clients
 
   include ApplicationHelper
   include TemplateGeneratorHelper
@@ -452,23 +452,39 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).count
   end
 
-  def self.several_accounts_detected server_thread, params={}
-    contacts = self.contacts(server_messages_to_look: server_thread['messages'])
-    other_emails = contacts.map{|contact| contact[:email]}
-    account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+  def should_reprocess_linked_attendees(computed_recipients_changed)
+    computed_recipients_changed && clients_with_linked_attendees_enabled.size > 0
+  end
 
-    accounts = account_emails.map{|account_email|
-      Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
-    }
-    company_names = accounts.map{|account|
-      account.company_hash.try(:[], 'name')
-    }
-    if company_names.select{ |company_name|
-      company_name.nil?
-    }.length > 0
-      company_names.length > 1
+  def clients_with_linked_attendees_enabled
+    @clients_with_linked_attendees_enabled ||= clients.select{|c| c.linked_attendees_enabled}
+  end
+
+  def clients
+    @clients ||= self.clients_in_recipients.map{|client_email| Account.create_from_email(client_email)}
+  end
+
+  def self.several_accounts_detected server_thread, params={}
+    if self.clients_in_recipients.present?
+      self.clients_in_recipients.size > 1
     else
-      company_names.uniq.length > 1
+      contacts = self.contacts(server_messages_to_look: server_thread['messages'])
+      other_emails = contacts.map{|contact| contact[:email]}
+      account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+
+      accounts = account_emails.map{|account_email|
+        Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
+      }
+      company_names = accounts.map{|account|
+        account.company_hash.try(:[], 'name')
+      }
+      if company_names.select{ |company_name|
+        company_name.nil?
+      }.length > 0
+        company_names.length > 1
+      else
+        company_names.uniq.length > 1
+      end
     end
   end
 

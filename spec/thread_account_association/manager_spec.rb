@@ -379,9 +379,7 @@ describe ThreadAccountAssociation::Manager do
             expect_any_instance_of(MessagesThread).not_to receive(:archive)
             manager.compute_association
           end
-
         end
-
       end
 
 
@@ -389,7 +387,7 @@ describe ThreadAccountAssociation::Manager do
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com' }}
         let(:messages_thread_attributes) { { account_request_auto_email_sent: true } }
         let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [ups_julie.email]) }
-        after(:example) { manager.compute_association  }
+        after(:example) { manager.compute_association }
 
         it 'do not send reply email to the sender' do
           expect(manager).not_to receive(:send_account_request_email)
@@ -400,8 +398,19 @@ describe ThreadAccountAssociation::Manager do
         end
       end
 
+      context 'clients in recipients will be populated' do
+        let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [ups_julie.email]) }
+        let(:server_message_attributes) { { 'from' => 'bruce.lee@ups.com',  'to' => 'Billy <billy@ups.com>',  'cc' => 'Julie <julie@ups.com' } }
+        before(:example) do
+          allow_any_instance_of(MessagesThread).to receive(:archive)
+        end
+
+        subject! { manager.compute_association }
+
+        it 'add client as potential merging candidate' do
+          expect(messages_thread.clients_in_recipients).to eq(["bruce.lee@ups.com"])
+        end
+      end
     end
-
   end
-
 end

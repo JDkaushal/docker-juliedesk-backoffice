@@ -544,7 +544,7 @@ class Message < ActiveRecord::Base
         messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
         messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
-        should_reprocess_linked_attendees = messages_thread.computed_recipients_changed?
+        computed_recipients_changed = messages_thread.computed_recipients_changed?
 
         messages_thread.save
 
@@ -555,9 +555,9 @@ class Message < ActiveRecord::Base
 
         if messages_thread && !messages_thread.handled_by_automation
           thread_account_association_manager = ThreadAccountAssociation::Manager.new(
-              data_holder: account_association_data_holder,
-              messages_thread: messages_thread,
-              server_thread: server_thread
+            data_holder: account_association_data_holder,
+            messages_thread: messages_thread,
+            server_thread: server_thread
           )
           if messages_thread.account_email == nil
             thread_account_association_manager.compute_association
@@ -577,7 +577,7 @@ class Message < ActiveRecord::Base
           })
         end
 
-        if should_reprocess_linked_attendees && messages_thread.account.try(:linked_attendees_enabled)
+        if messages_thread.should_reprocess_linked_attendees(computed_recipients_changed)
           messages_thread.compute_linked_attendees(accounts_cache)
         end
       end
