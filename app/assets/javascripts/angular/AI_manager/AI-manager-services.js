@@ -54,14 +54,13 @@
                 method: "POST",
                 data: params,
                 timeout: 5000
-            }).then(
-                function(response) {
-                    console.log(response);
-                    return response.data;
-                }, function(httpError) {
-                    console.log(httpError);
-                    return {error: true, details: httpError};
-                });
+            }).then(function(response) {
+                console.log(response);
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
         };
     }]);
 

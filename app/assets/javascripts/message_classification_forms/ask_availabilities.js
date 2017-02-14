@@ -98,24 +98,30 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                         var verifiedDatesByAI = undefined;
 
                         if(!response.error) {
-                            var verifiedDates = [];
-                            var now = moment();
-                            _.each(response.dates_validate, function (validated, date) {
-                                if (validated && moment(date).isAfter(now)) {
-                                    // Add Z at the end of the date string to specify momentJS it is an utc date
-                                    verifiedDates.push(date+'Z');
-                                }
-                            });
-
-                            if(verifiedDates.length > 0) {
-                                verifiedDates = _.sortBy(verifiedDates, function(date) {
-                                    return moment(date).valueOf();
+                            if(response.status != 'fail') {
+                                var verifiedDates = [];
+                                var now = moment();
+                                _.each(response.dates_validate, function (validated, date) {
+                                    if (validated && moment(date).isAfter(now)) {
+                                        // Add Z at the end of the date string to specify momentJS it is an utc date
+                                        verifiedDates.push(date+'Z');
+                                    }
                                 });
 
-                                verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                                if(verifiedDates.length > 0) {
+                                    verifiedDates = _.sortBy(verifiedDates, function(date) {
+                                        return moment(date).valueOf();
+                                    });
+
+                                    verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                                } else {
+                                    verifiedDatesByAI = {no_suitable_dates: true};
+                                }
                             } else {
-                                verifiedDatesByAI = {no_suitable_dates: true};
+                                verifiedDatesByAI = {status: 'fail'};
                             }
+
+
                         }
                         askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
                 }, function(error) {
