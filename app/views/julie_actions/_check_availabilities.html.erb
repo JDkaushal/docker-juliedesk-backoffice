@@ -872,7 +872,12 @@
                 setInvitationConfirmedReplyText();
             }
         }else if (event.data.message == "drawExternalEventsList") {
-            window.timeSlotsToSuggest = event.data.date_times;
+
+            // Special flow (linked_attendees)
+            if(window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities")
+              window.timeSlotsToSuggest = null;
+            else
+              window.timeSlotsToSuggest = event.data.date_times;
 
             if(window.invitationAlreadySent){
                 window.redrawTimeSlotsToSuggestContainer();
