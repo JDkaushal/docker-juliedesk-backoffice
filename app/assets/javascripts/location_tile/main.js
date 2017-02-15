@@ -15,7 +15,7 @@ LocationTile.prototype.setLocationLabel = function() {
     locationTile.locationLabel = null;
     if(locationTile.locationNature) {
         var foundAddressHash =_.find(window.threadAccount.addresses, function(addressHash) {
-            return addressHash.type == locationTile.locationNature;
+            return addressHash.kind == locationTile.locationNature;
         }) ;
         if(foundAddressHash) {
             locationTile.locationLabel = foundAddressHash.label;
