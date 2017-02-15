@@ -43,7 +43,7 @@ class JulieActionsController < ApplicationController
     end
 
     date_times = []
-    if params[:date_times]
+    if params[:date_times] && params[:date_times].is_a?(Array)
       message_classification_timezone = julie_action.message_classification.timezone
 
       date_times = params[:date_times].map{|dt|
