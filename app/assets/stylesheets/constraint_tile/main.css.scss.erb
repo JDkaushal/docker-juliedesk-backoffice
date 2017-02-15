@@ -1,83 +1,115 @@
+.ai-suggestion-container {
+  padding: 10px;
+  margin: 10px 0;
+
+  .from-ai-interpreted-location-container {
+    position: relative;
+
+    .client-preference-icon {
+      position: absolute;
+      background: url("<%= asset_path("client-preferences-icon-16.png")%>");
+      top: 9px;
+      left: 9px;
+      width: 16px;
+      height: 16px;
+    }
+    input.from-ai-interpreted-location {
+      padding: 7px 7px 7px 35px;
+      background: #fafafa;
+      @include box-shadow(none);
+      border: 1px solid #ddd;
+      @include border-radius (6px);
+      width: 100%;
+    }
+  }
+}
+.ai-suggestion-container, .constraint-tile {
+  .from-ai-title {
+    display: none;
+    background: $aiControlColor;
+    color: white;
+    text-transform: uppercase;
+    margin: -10px -10px 0px -10px;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .from-ai-text {
+    display: none;
+    .from-ai-text-label {
+      font-size: 13px;
+      padding: 10px 0 0px 0;
+      font-weight: 600;
+
+    }
+    .from-ai-text-text {
+      display: inline-block;
+      background: #E4D9F9;
+      font-size: 15px;
+      padding: 1px 5px;
+    }
+  }
+
+  .from-ai-buttons {
+    display: none;
+    height: 40px;
+    margin: 10px -10px -10px -10px;
+
+    .from-ai-button {
+      float: left;
+      width: 50%;
+      text-align: center;
+      background-color: $aiControlColorBackground-70pct;
+      color: white;
+      height: 40px;
+      line-height: 40px;
+      cursor: pointer;
+      background-repeat: no-repeat;
+      background-position: center center;
+      //border-top: 1px solid $aiControlColor;
+
+      &:hover {
+        background-color: $aiControlColor;
+      }
+
+      &.accept {
+        background-image: url(<%= asset_path "validate_white_18.png" %>);
+      }
+
+      &.reject {
+        background-image: url(<%= asset_path "unvalidate_white_18.png" %>);
+        border-right: 1px solid #fff;
+      }
+    }
+  }
+
+  &.from-ai {
+    border: 1px solid $aiControlColor;
+
+    .from-ai-title {
+      display: block;
+    }
+    .from-ai-text {
+      display: block;
+    }
+    .from-ai-buttons {
+      display: block;
+    }
+    .constraint-buttons-container {
+      display: none;
+    }
+  }
+}
+
 .constraint-tile {
     border: 1px solid #ccc;
     padding: 10px;
     margin: 5px auto 10px auto;
     font-size: 12px;
 
-    .from-ai-title {
-      display: none;
-      background: $aiControlColor;
-      color: white;
-      text-transform: uppercase;
-      margin: -10px -10px 0px -10px;
-      padding: 10px;
-      font-size: 14px;
-    }
-    .from-ai-text {
-      display: none;
-      .from-ai-text-label {
-        font-size: 13px;
-        padding: 10px 0 0px 0;
-        font-weight: 600;
 
-      }
-      .from-ai-text-text {
-        display: inline-block;
-        background: #E4D9F9;
-        font-size: 15px;
-        padding: 1px 5px;
-      }
-    }
 
-    .from-ai-buttons {
-      display: none;
-      height: 40px;
-      margin: 10px -10px -10px -10px;
 
-      .from-ai-button {
-        float: left;
-        width: 50%;
-        text-align: center;
-        background-color: $aiControlColorBackground-70pct;
-        color: white;
-        height: 40px;
-        line-height: 40px;
-        cursor: pointer;
-        background-repeat: no-repeat;
-        background-position: center center;
-        //border-top: 1px solid $aiControlColor;
-
-        &:hover {
-          background-color: $aiControlColor;
-        }
-
-        &.accept {
-          background-image: url(<%= asset_path "validate_white_18.png" %>);
-        }
-
-        &.reject {
-          background-image: url(<%= asset_path "unvalidate_white_18.png" %>);
-          border-right: 1px solid #fff;
-        }
-      }
-    }
-
-    &.from-ai {
-      border-color: $aiControlColor;
-
-      .from-ai-title {
-        display: block;
-      }
-      .from-ai-text {
-        display: block;
-      }
-      .from-ai-buttons {
-        display: block;
-      }
-      .constraint-buttons-container {
-        display: none;
-      }
-    }
 
     .constraint-entry-container {
         padding: 2px 0;

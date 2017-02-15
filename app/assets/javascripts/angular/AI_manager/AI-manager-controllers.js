@@ -62,9 +62,16 @@
                     $scope.checkLocaleConsistency($scope.currentLocale);
                 }
             }
+
             if(featuresHelper.isFeatureActive("constraints_from_ai")) {
                 if (window.formFirstPass) {
                     $scope.addAIConstraintTiles()
+                }
+            }
+
+            if(featuresHelper.isFeatureActive("location_from_ai")) {
+                if (window.formFirstPass) {
+                    $scope.addAILocationTile()
                 }
             }
         };
@@ -120,6 +127,21 @@
                 first_path: window.formFirstPass,
                 click_on_wrong_boolean: $scope.clickedOnWrong
             });
+        };
+
+        $scope.addAILocationTile = function() {
+            setTimeout(function() {
+                var mainInterpretation = messageInterpretationsService.getMainInterpretation();
+                if(mainInterpretation && mainInterpretation.location_data && mainInterpretation.location_data.text) {
+                    location_data = mainInterpretation.location_data;
+
+                    new LocationTile($(".messages-thread-info-panel .ai-suggested-location-container"), {
+                        location_text: location_data.text,
+                        location_nature: location_data.location_nature
+                    });
+
+                }
+            }, 500);
         };
 
         $scope.addAIConstraintTiles = function() {

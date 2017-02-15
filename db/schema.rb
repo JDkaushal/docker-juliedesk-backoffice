@@ -161,13 +161,6 @@ ActiveRecord::Schema.define(version: 20170208152624) do
     t.datetime "updated_at"
   end
 
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -255,6 +248,7 @@ ActiveRecord::Schema.define(version: 20170208152624) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "error"
+    t.string   "classification"
   end
 
   add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree
