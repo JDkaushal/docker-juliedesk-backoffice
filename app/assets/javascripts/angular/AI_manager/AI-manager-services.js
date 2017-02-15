@@ -53,7 +53,7 @@
                 url: '/ai/dates_verification/verify_dates',
                 method: "POST",
                 data: params,
-                timeout: 5000
+                timeout: 10000
             }).then(function(response) {
                 console.log(response);
                 return response.data;
