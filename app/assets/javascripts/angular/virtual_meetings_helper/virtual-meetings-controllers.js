@@ -345,7 +345,11 @@
                             var selectedTargetInfos =  $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
                             var selectedSupport = $scope.determineDefaultSupport(findTargetAttendee($scope.currentConf.targetInfos));
 
-                            $scope.currentConf = Object.assign($scope.currentConf, {targetInfos: selectedTargetInfos, support: selectedSupport});
+                            var newData = {};
+                            if(selectedTargetInfos) newData.targetInfos = selectedTargetInfos;
+                            if(selectedSupport) newData.support = selectedSupport;
+
+                            $scope.currentConf = Object.assign($scope.currentConf, newData);
 
                             //$scope.computeCallDetails(true);
                             //Set the correct attendee in the targetInfos select if there is one
