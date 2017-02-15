@@ -215,8 +215,10 @@
                 }else {
                     $scope.ccs.push({name: a.email});
                 }
-
             });
+            var initialRecipients = window.initialToRecipients();
+            if(initialRecipients)
+                $scope.ccs = $scope.ccs.concat(initialRecipients);
         };
 
         function defaultRecipientsWhenNonClientAttendees(clientsAttendees, nonClientAttendees) {
