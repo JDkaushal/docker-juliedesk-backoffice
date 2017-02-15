@@ -12,7 +12,7 @@
 
       <div class="already-suggested-dates">
 
-        <div class="already-suggested-date" ng-class="{highlighted: date.selected}" data-date="{{date.date}}" data-timezone="{{date.timezone}}" ng-repeat="date in datesToIdentify track by $index">
+        <div class="already-suggested-date" ng-class="{highlighted: date.selected, selected_by_ai: date.selected_by_ai}" data-date="{{date.date}}" data-timezone="{{date.timezone}}" ng-repeat="date in datesToIdentify track by $index">
           <input id="already_suggested_date_{{$index}}" name="already_suggested_date_{{$index}}" ng-model="date.selected" type="checkbox" value="">
           <span class="date">{{date.displayText}}</span>
           <label for="already_suggested_date_{{$index}}"></label>

@@ -740,6 +740,7 @@
                     if(currentTimezonedDate.isSame(dateToCheck)) {
                         // We trigger the change event to undisable the "Oui" button in the suggestion date pannel
                         date['selected'] = true;
+                        date['selected_by_ai'] = true;
                         return false;
                     }
                     return true;
