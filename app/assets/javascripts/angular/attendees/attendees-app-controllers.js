@@ -526,6 +526,7 @@
 
             var linkedAttendees = _.flatten(Object.values(window.threadComputedData.linked_attendees || {}));
             var isClient = informations.isClient == "true";
+            var currentGender = ['M', 'F'].indexOf(informations.gender) == -1 ? "Unknown" : informations.gender;
 
             var a = new Attendee({
                 accountEmail: attendee.account_email,
@@ -537,7 +538,7 @@
                 name: (informations.firstName + ' ' + informations.lastName).trim(),
                 // Used for clients (is set in the admin panel)
                 usageName: informations.usageName || informations.name,
-                gender: informations.gender || "Unknown",
+                gender: currentGender,
                 isAssistant: informations.isAssistant == "true",
                 assisted: informations.assisted == "true",
                 assistedBy: informations.assistedBy,
