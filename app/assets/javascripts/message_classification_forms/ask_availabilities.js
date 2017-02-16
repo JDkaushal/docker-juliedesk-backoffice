@@ -122,13 +122,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                         }
                         askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
                 }, function(error) {
-                        askAvailabilitiesForm.sendForm();
+                        askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
                 });
             } else {
-                askAvailabilitiesForm.sendForm();
+                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
             }
         } else {
-            askAvailabilitiesForm.sendForm();
+            askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made'}});
         }
 
         //askAvailabilitiesForm.sendForm();
