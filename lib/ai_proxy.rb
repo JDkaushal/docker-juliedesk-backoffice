@@ -1,25 +1,25 @@
 class AiProxy
 
   AI_ENDPOINTS = {
-      parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V3'] + '/firstlastnames/' }.freeze,
-      initiate_planning:      { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/initiate/'}.freeze,
-      fetch_planning:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/get/'}.freeze,
-      fetch_forecast:         { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/planning/'}.freeze,
-      fetch_forecast_emails:  { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/forecastemails/'}.freeze,
-      ask_julia:              { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/julia/'}.freeze,
+      parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/firstlastnames/' }.freeze,
+      initiate_planning:      { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/initiate/'}.freeze,
+      fetch_planning:         { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/get/'}.freeze,
+      fetch_forecast:         { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/'}.freeze,
+      fetch_forecast_emails:  { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/forecastemails/'}.freeze,
+      ask_julia:              { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/julia/'}.freeze,
 
-      process_entity_main:    { type: :get, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/main/'}.freeze,
-      process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V2'] + '/entities/'}.freeze,
+      process_entity_main:    { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/main/'}.freeze,
+      process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v2/entities/'}.freeze,
 
-      get_company_name:       { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/companynames/' }.freeze,
-      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/parsersncf/'}.freeze,
+      get_company_name:       { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/companynames/' }.freeze,
+      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/parsersncf/'}.freeze,
 
-      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/suggest_dates/' }.freeze,
-      send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/validated_dates/' }.freeze,
+      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/V1/calendar/suggest_dates/' }.freeze,
+      send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
 
-      verify_dates: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/validate_dates/' }.freeze,
+      verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
 
-      calendar_classification: { type: :post, url: ENV['CONSCIENCE_API_BASE_PATH_V1'] + '/calendar/classification/' }.freeze,
+      calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,
   }.freeze
 
   def self.get_endpoint(key)
@@ -50,23 +50,8 @@ class AiProxy
   end
 
   def dispatch_request(type, url, data)
-
     client = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
-    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/planning/?date=#{date.strftime('%Y-%m-%d')}"
-    #
-    # response = http.get(url)
-
-    # client = HTTPClient.new(default_header: {
-    #                           "Authorization" => ENV['CONSCIENCE_API_KEY']
-    #                         })
-    #
-    # client.ssl_config.verify_mode = 0
-    #
-    # puts client.ssl_config.inspect
-
     result = self.send("execute_#{type}_request", client, {url: url, data: data})
-
-    #format_response(result.body)
     @format_response ? format_response(result) : result
   end
 

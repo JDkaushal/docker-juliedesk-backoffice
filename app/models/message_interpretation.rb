@@ -130,10 +130,6 @@ class MessageInterpretation < ActiveRecord::Base
 
 
   def process_main_entity
-    # http = HTTP.auth(ENV['CONSCIENCE_API_KEY'])
-    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
-    #
-    # response = http.get(url)
 
     response_body = AiProxy.new(format_response: false).build_request(:process_entity_main, {id: self.message.server_message_id}).body
 
@@ -149,12 +145,6 @@ class MessageInterpretation < ActiveRecord::Base
       end
     end
 
-    # client = HTTPClient.new(default_header: {
-    #                             "Authorization" => ENV['CONSCIENCE_API_KEY']
-    #                         })
-    # client.ssl_config.verify_mode = 0
-    # url = "#{ENV['CONSCIENCE_API_BASE_PATH_V1']}/main/?id=#{self.message.server_message_id}"
-    # response = client.get(url)
     self.raw_response = response_body_str
     begin
       JSON.parse(self.raw_response)
