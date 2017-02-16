@@ -14,7 +14,7 @@ class AiProxy
       get_company_name:       { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/companynames/' }.freeze,
       parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/parsersncf/'}.freeze,
 
-      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/V1/calendar/suggest_dates/' }.freeze,
+      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggest_dates/' }.freeze,
       send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
 
       verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
