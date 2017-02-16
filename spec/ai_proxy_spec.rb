@@ -6,13 +6,13 @@ describe AiProxy do
 
     describe 'parse_human_civilities' do
       it 'should return the correct values' do
-        expect(AiProxy.get_endpoint(:parse_human_civilities)).to eq( { type: :get, url: 'test_ai_conscience_path_v3/firstlastnames/' } )
+        expect(AiProxy.get_endpoint(:parse_human_civilities)).to eq( { type: :get, url: 'test_ai_conscience_path/api/v3/firstlastnames/' } )
       end
     end
 
     describe 'get_company_name' do
       it 'should return the correct values' do
-        expect(AiProxy.get_endpoint(:get_company_name)).to eq( { type: :post, url: 'test_ai_conscience_path_v1/companynames/' } )
+        expect(AiProxy.get_endpoint(:get_company_name)).to eq( { type: :post, url: 'test_ai_conscience_path/api/v1/companynames/' } )
       end
     end
 
