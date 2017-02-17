@@ -565,7 +565,7 @@ class Message < ActiveRecord::Base
             thread_account_association_manager.compute_accounts_candidates(messages_thread.computed_recipients)
           end
 
-          if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
+          if messages_thread.several_accounts_detected({accounts_cache: accounts_cache})
             messages_thread.tag_as_multi_clients
           end
         end

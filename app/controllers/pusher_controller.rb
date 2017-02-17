@@ -61,6 +61,7 @@ class PusherController < ApplicationController
       event = params[:events][0]
       regexp = Regexp.new "presence-thread-([0-9]*)"
       result = regexp.match(event[:channel])
+
       if result && result.length > 1
         operator_email = event[:user_id]
         operator = Operator.find_by_email operator_email
@@ -68,8 +69,10 @@ class PusherController < ApplicationController
         messages_thread = MessagesThread.find messages_thread_id
 
         if event[:name] == "member_removed"
+
           if messages_thread.locked_by_operator_id == operator.id &&
               (messages_thread.locked_at.nil? || Time.at(params[:time_ms]/1000).to_datetime > messages_thread.locked_at + 1.second)
+
             messages_thread.update_attribute :locked_by_operator_id, nil
 
             OperatorAction.create_and_verify({

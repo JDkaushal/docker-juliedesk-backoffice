@@ -464,11 +464,11 @@ class MessagesThread < ActiveRecord::Base
     @clients ||= self.clients_in_recipients.map{|client_email| Account.create_from_email(client_email)}
   end
 
-  def self.several_accounts_detected server_thread, params={}
+  def several_accounts_detected(params={})
     if self.clients_in_recipients.present?
       self.clients_in_recipients.size > 1
     else
-      contacts = self.contacts(server_messages_to_look: server_thread['messages'])
+      contacts = MessagesThread.contacts(server_messages_to_look: server_thread['messages'])
       other_emails = contacts.map{|contact| contact[:email]}
       account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
 
@@ -485,6 +485,26 @@ class MessagesThread < ActiveRecord::Base
       else
         company_names.uniq.length > 1
       end
+    end
+  end
+
+  def self.several_accounts_detected server_thread, params={}
+    contacts = self.contacts(server_messages_to_look: server_thread['messages'])
+    other_emails = contacts.map{|contact| contact[:email]}
+    account_emails = (other_emails.map{|co| Account.find_account_email(co, {accounts_cache: params[:accounts_cache]})}.uniq.compact.map(&:downcase) - JulieAlias.all.map(&:email))
+
+    accounts = account_emails.map{|account_email|
+      Account.create_from_email(account_email, {accounts_cache: params[:accounts_cache]})
+    }
+    company_names = accounts.map{|account|
+      account.company_hash.try(:[], 'name')
+    }
+    if company_names.select{ |company_name|
+      company_name.nil?
+    }.length > 0
+      company_names.length > 1
+    else
+      company_names.uniq.length > 1
     end
   end
 

@@ -3,9 +3,7 @@
     var newMessageInChat = false;
     var flashingTitle = false;
     var currentSender;
-
     var myName = "<%= session[:user_name] %>";
-
 
     <% if ENV['PUSHER_APP_ID'] %>
         var pusher = new Pusher('<%= Pusher.key %>');
