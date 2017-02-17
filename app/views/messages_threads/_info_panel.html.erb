@@ -1074,6 +1074,17 @@
         });
     }
 
+    function locationFieldIsSet() {
+      return ($('input#location').val()).trim().length > 0;
+    }
+
+    function locationIsSettled() {
+      if(isCurrentAppointmentVirtual())
+        return !!window.threadComputedData.call_instructions.details || ['skype', 'hangout'].indexOf(window.getCurrentAppointment().kind) >= 1;
+
+      return locationFieldIsSet();
+    }
+
     function locationIsDefined() {
       if(isCurrentAppointmentVirtual()) {
         var callInstructionsDetails = window.threadComputedData.call_instructions.details;
@@ -1081,16 +1092,7 @@
         return (callInstructionsDetails && callInstructionsDetails != "") || callInstructionsTarget == "later" || ['skype', 'hangout'].indexOf(window.getCurrentAppointment().kind) >= 1;
       }
       else {
-        return ($('input#location').val()).trim().length > 0;
-//        var currentAddressObject = window.getCurrentAddressObject();
-//        if(currentAddressObject) {
-//          var currentAddress = currentAddressObject.address;
-//          return (currentAddress && currentAddress != "") || currentAddressObject.kind == "client_will_define";
-//        }
-//        else {
-//          return false;
-//        }
-
+        return locationFieldIsSet();
       }
     }
 

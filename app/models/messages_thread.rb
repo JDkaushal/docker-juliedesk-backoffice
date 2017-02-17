@@ -886,7 +886,10 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def last_email_status(params = {})
-    if (params[:messages] || self.messages).sort_by(&:received_at).last.from_me
+    last_message = (params[:messages] || self.messages).sort_by(&:received_at).last
+    return nil if last_message.nil?
+
+    if last_message.from_me
       lmc = self.last_message_classification
       if lmc.nil?
         "not_from_me"

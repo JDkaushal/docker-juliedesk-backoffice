@@ -588,7 +588,8 @@
                 }
             }
 
-          if(window.threadComputedData.do_not_ask_suggestions && window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") {
+          //if(window.threadComputedData.do_not_ask_suggestions && window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities") {
+          if(true) {
             var clientNames = [window.threadAccount.usage_name];
             _.each(otherClients(), function(attendee) {
               var usageName = attendee.computeUsageName();
@@ -632,13 +633,13 @@
 
             var linkedAttendeesForService = attendeesMng.getLinkedAttendees();
 
-//            var locationInEmail = {};
-//            if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
-//              locationInEmail = {
-//                en: window.getCurrentAddress().address_in_template.en,
-//                fr: window.getCurrentAddress().address_in_template.fr
-//              }
-//            }
+            var locationInEmail = {};
+            if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
+              locationInEmail = {
+                en: window.getCurrentAddress().address_in_template.en,
+                fr: window.getCurrentAddress().address_in_template.fr
+              }
+            }
 
             var mainClientCompanyName = '';
             var companyName = window.threadAccount.company_hash && window.threadAccount.company_hash.name
@@ -654,6 +655,9 @@
               meetingRoomName = meetingRoomsManager.selectedRoom.summary;
             }
 
+            var haveAllAvailibilities = !!window.threadComputedData.do_not_ask_suggestions;
+            var linkedAttendeesActivated = window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities";
+
             var serviceParams = {
               template: 'send_invitations',
               appointment_in_email: currentAppointment.title_in_email,
@@ -661,14 +665,15 @@
               client_names: clientNames,
               date: eventCreatorManager.selectedDateRaw,
               default_timezone: window.threadAccount.default_timezone_id,
-              have_availabilities_of_everybody: true,
+              have_availabilities_of_everybody: haveAllAvailibilities && linkedAttendeesActivated,
               is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
               julie_aliases: window.getRecipientsJulieAliases(),
-              linked_attendees: linkedAttendeesForService,
+              linked_attendees: linkedAttendeesForService || [],
               locale: threadComputedData.locale,
               location: requestParams.location,
-              //location_in_email: locationInEmail,
+              location_in_email: locationInEmail,
               location_kind: currentAppointment.kind,
+              location_is_settled: window.locationIsSettled(),
               main_client_company: mainClientCompanyName,
               meeting_room_booked: meetingRoomBooked,
               meeting_room_name: meetingRoomName,
