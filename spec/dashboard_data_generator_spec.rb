@@ -152,11 +152,11 @@ describe DashboardDataGenerator do
       expect(DashboardDataGenerator.generate_operators_count_at_time_data).to eq({
                                                                                      :"operators_count" => 5,
                                                                                      :"operators" => [
-                                                                                         {:"name" => op1.name, :"email" => op1.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => 1},
-                                                                                         {:"name" => op2.name, :"email" => op2.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => 2},
-                                                                                         {:"name" => op3.name, :"email" => op3.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => 3},
-                                                                                         {:"name" => op4.name, :"email" => op4.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => 4},
-                                                                                         {:"name" => op5.name, :"email" => op5.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => 5}
+                                                                                         {:"name" => op1.name, :"email" => op1.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => op1.id},
+                                                                                         {:"name" => op2.name, :"email" => op2.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => op2.id},
+                                                                                         {:"name" => op3.name, :"email" => op3.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => op3.id},
+                                                                                         {:"name" => op4.name, :"email" => op4.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => op4.id},
+                                                                                         {:"name" => op5.name, :"email" => op5.email, :"present" => true, :"privilege" => nil, :"operator_of_the_month" => false, :"operator_id" => op5.id}
                                                                                      ]
                                                                                  })
     end
