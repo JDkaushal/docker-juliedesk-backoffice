@@ -155,9 +155,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get "operators_count_at_time", controller: :operators_presences, action: :operators_count_at_time
-      get "inbox_count", controller: :messages_threads, action: :inbox_count
-      get "sent_messages_stats", controller: :messages_threads, action: :sent_messages_stats
       get "weekly_recap_data", controller: :messages_threads, action: :weekly_recap_data
       get "messages_thread_context", controller: :messages_threads, action: :messages_thread_context
       get "emails_forecast", controller: :ai_forecast, action: :emails

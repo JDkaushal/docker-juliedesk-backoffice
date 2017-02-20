@@ -1,27 +1,5 @@
 class Api::V1::MessagesThreadsController < Api::ApiV1Controller
 
-  def inbox_count
-    inbox_count_data = DashboardDataGenerator.generate_inbox_count_data
-
-    render json: {
-        status: "success",
-        data: inbox_count_data
-    }
-  end
-
-  def sent_messages_stats
-    sent_messages_stats_data = DashboardDataGenerator.generate_sent_messages_stat_data({
-                                                                                           start_date: params[:start_date],
-                                                                                           end_date: params[:end_date],
-                                                                                           precision: params[:precision]
-                                                                                       })
-
-    render json: {
-               status: "success",
-               data: sent_messages_stats_data
-           }
-  end
-
   def weekly_recap_data
     [:email, :start_date].each do |required_param|
       unless params[required_param].present?

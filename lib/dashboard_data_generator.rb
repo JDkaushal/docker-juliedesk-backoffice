@@ -140,7 +140,7 @@ module DashboardDataGenerator
         count: inbox_messages_threads.length,
         admin_count: admin_messages_threads.length,
         global_productivity: operator_action_groups_count * 2,
-        individual_productivity: (operator_action_groups_count * 2.0 / operator_presences).round(1),
+        individual_productivity: operator_presences > 0 ? (operator_action_groups_count * 2.0 / operator_presences).round(1) : nil,
         current_delay: current_delay,
         priority_count: priority_messages_threads.length,
         follow_up_messages_threads_priority: follow_up_messages_threads_priority.length,
@@ -156,13 +156,7 @@ module DashboardDataGenerator
 
     operator_presences = OperatorPresence.where(date: date, is_review: false).includes(:operator)
 
-    connected_to_socket_user_emails = if ENV['PUSHER_APP_ID']
-                                        Pusher.get("/channels/presence-global/users")[:users].map{|u| u['id']}
-                                      elsif ENV['RED_SOCK_URL']
-                                        RedSock.get_channel_info("presence-global").map{|u| u['email']}
-                                      else
-                                        []
-                                      end
+    connected_to_socket_user_emails = self.get_connected_to_socket_user_emails
 
     {
         operators_count: operator_presences.count,
@@ -177,5 +171,15 @@ module DashboardDataGenerator
           }
         }
     }
+  end
+
+  def self.get_connected_to_socket_user_emails
+    if ENV['PUSHER_APP_ID']
+      Pusher.get("/channels/presence-global/users")[:users].map { |u| u['id'] }
+    elsif ENV['RED_SOCK_URL']
+      RedSock.get_channel_info("presence-global").map { |u| u['email'] }
+    else
+      []
+    end
   end
 end
