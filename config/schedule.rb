@@ -25,6 +25,10 @@ every 1.day, :at => '1am', :roles => [:tasker] do
   rake 'operator_stats:compute'
 end
 
+every 1.minute, :roles => [:tasker] do
+  rake 'dashboard_data:generate'
+end
+
 every 1.hour, :roles => [:tasker] do
   rake 'messages_threads:follow_up_check_routine'
 end

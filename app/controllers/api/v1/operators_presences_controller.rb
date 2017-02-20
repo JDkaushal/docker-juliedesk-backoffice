@@ -1,46 +1,11 @@
 class Api::V1::OperatorsPresencesController < Api::ApiV1Controller
 
   def operators_count_at_time
-    if params[:date]
-      date = DateTime.parse(params[:date])
-    else
-      date = DateTime.now
-    end
-
-    # Set to closest half-hour
-    date = date.change(min: (date.min / 30) * 30)
-
-    operator_presences = OperatorPresence.where(date: date, is_review: false).includes(:operator)
-
-    pusher_user_emails = get_currently_present_operators
+    operators_count_at_time_data = DashboardDataGenerator.generate_operators_count_at_time_data
 
     render json: {
         status: "success",
-        data: {
-            operators_count: operator_presences.count,
-            operators: operator_presences.map{|op|
-              {
-                  name: op.operator.name,
-                  email: op.operator.email,
-                  privilege: op.operator.privilege,
-                  operator_of_the_month: op.operator.operator_of_the_month,
-                  present: pusher_user_emails.include?(op.operator.email),
-                  operator_id: op.operator_id
-              }
-            }
-        }
+        data: operators_count_at_time_data
     }
-  end
-
-  private
-
-  def get_currently_present_operators
-    if ENV['PUSHER_APP_ID']
-      Pusher.get("/channels/presence-global/users")[:users].map{|u| u['id']}
-    elsif ENV['RED_SOCK_URL']
-      RedSock.get_channel_info("presence-global").map{|u| u['email']}
-    else
-      []
-    end
   end
 end
