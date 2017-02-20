@@ -92,12 +92,11 @@
               Sélectionnez une date qui convient avant de créer l'évènement
             </div>
 
-            <div class="selectedDateContainer" ng-repeat="dateToCheck in datesToCheck track by $index">
-              <div data-date="{{dateToCheck.date}}">
-                <div class="timezone">{{dateToCheck.timezone}}</div>
-                <br />
-                <div class="text">{{dateToCheck.displayText}}</div>
-              </div>
+            <div class="selected-date-time-other-timezone btn-block" ng-class="{'is-outbound':date.isOutBound}" ng-repeat="date in selectedDate.dateInOtherTimezones track by $index" ng-show="selectedDate.isHighlighted">
+              <span ng-class="{'out-of-bound-sprite':date.isOutBound}"></span>
+              <div class="timezone">{{date.timezone}}</div>
+              <br>
+              <div class="text">{{date.displayText}}</div>
             </div>
 
           </div>
