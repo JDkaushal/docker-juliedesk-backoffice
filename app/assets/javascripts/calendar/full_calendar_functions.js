@@ -49,7 +49,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
             realEnd.add(60, 'm');
         }
     }
-    
+
     var eventData = calendar.generateEventData({
         title: title,
         start: start,

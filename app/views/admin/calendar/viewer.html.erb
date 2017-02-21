@@ -1,0 +1,146 @@
+<script>
+    var getAsAtDate = function () {
+        if ($(".calendar-viewer-panel .buttons-inline .button.activated").data("val") == "as_at_date") {
+            return $("#calendar-viewer-datepicker").val() + "T" + $("#calendar-viewer-timepicker").val() + ":00+00:00";
+        }
+        else {
+            return null;
+        }
+    };
+
+    var redrawButtons = function () {
+        if (getAsAtDate()) {
+            $(".calendar-viewer-date-and-time-pickers").show();
+        }
+        else {
+            $(".calendar-viewer-date-and-time-pickers").hide();
+        }
+    };
+
+    var setupAccountAutocomplete = function ($element) {
+        var setValue = function (item, finalAction) {
+            $element.val(item.email);
+            if (finalAction) {
+                $element.trigger('change').blur();
+            }
+            return false;
+        };
+        var autoCompleteSource = function (request, callback) {
+            $.get("/accounts/autocomplete?request=" + request, function (data) {
+                callback(data.data);
+            });
+        };
+        $element.autocomplete({
+            source: function (request, callback) {
+                autoCompleteSource(request.term, function (data) {
+                    callback(data)
+                });
+            },
+            focus: function (event, ui) {
+                return setValue(ui.item);
+            },
+            select: function (event, ui) {
+                return setValue(ui.item, true);
+
+            }
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li>")
+                .addClass("contact-autocomplete-item")
+                .data("item.autocomplete", item)
+                .append($("<div>").addClass("contact-autocomplete-name").html(item.name))
+                .append($("<div>").addClass("contact-autocomplete-email").html(item.email))
+                .append($("<div>").addClass("contact-autocomplete-company").html(item.company))
+                .append($("<div>").addClass("contact-autocomplete-email-alias").html(item.email_alias))
+                .appendTo(ul);
+        };
+    };
+
+
+    var activateCalendarWithParams = function (calendarParams) {
+        var forcedInitialStartDate = moment();
+        if (window.currentCalendar) {
+            forcedInitialStartDate = window.currentCalendar.dispStart;
+            $("#calendar").fullCalendar('destroy');
+        }
+
+        calendarParams.height = $(".calendar-container").height();
+        calendarParams.default_calendar_login_username = calendarParams.email;
+        calendarParams.default_calendar_login_type = "google";
+        calendarParams.default_timezone_id = "Europe/Paris";
+        calendarParams.forcedInitialStartDate = forcedInitialStartDate;
+
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+        $(".calendar-container").addClass("visible");
+    };
+
+    window.getCurrentAddressObject = function () {
+        return null;
+    };
+    window.getCurrentAppointment = function () {
+        return null;
+    };
+
+    var reloadCalendar = function () {
+        activateCalendarWithParams({
+            email: $("#calendar-viewer-client-email").val(),
+            as_at_date: getAsAtDate()
+        });
+    };
+
+    $(function () {
+        $("#calendar-viewer-client-email").val("nicolas@wepopp.com");
+
+
+        $("#calendar-viewer-client-email, #calendar-viewer-datepicker, #calendar-viewer-timepicker").change(function () {
+            reloadCalendar();
+        });
+
+        setupAccountAutocomplete($("#calendar-viewer-client-email"));
+
+        $('#calendar-viewer-datepicker').datepicker({
+            dateFormat: "yy-mm-dd",
+            autoSize: true
+        });
+        $('#calendar-viewer-datepicker .ui-datepicker').css({
+            width: "310px"
+        });
+
+        $('#calendar-viewer-timepicker').timepicker({
+            timeFormat: "H:i"
+        });
+        $('#calendar-viewer-timepicker').val(moment().utc().format("HH:00"))
+
+        $(".calendar-viewer-panel .buttons-inline .button").click(function () {
+            $(".calendar-viewer-panel .buttons-inline .button").removeClass("activated");
+            $(this).addClass("activated");
+            redrawButtons();
+            reloadCalendar();
+        });
+        redrawButtons();
+
+        reloadCalendar();
+    })
+
+</script>
+
+<%= render template: "calendar/calendar" %>
+
+<div class="common-right-panel calendar-viewer-panel">
+  <h2>Calendar viewer</h2>
+  <label>Client email</label>
+  <input type="client-email" id="calendar-viewer-client-email">
+  <br>
+  <br>
+  <div class="buttons-inline">
+    <div class="button" data-val="as_at_date">As at date</div>
+    <div class="button activated" data-val="as_at_now">As at current time</div>
+  </div>
+
+  <div class="calendar-viewer-date-and-time-pickers">
+    <div id="calendar-viewer-datepicker"></div>
+    <br>
+    <input id="calendar-viewer-timepicker"/>
+  </div>
+
+
+</div>

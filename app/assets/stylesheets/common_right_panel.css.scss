@@ -1,0 +1,56 @@
+.common-right-panel {
+  position: fixed;
+  right: 0;
+  width: 350px;
+  padding: 20px;
+  background: #fafafa;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid #ccc;
+
+  h2 {
+    margin: 0 0 50px 0;
+    font-weight: 200;
+    font-size: 24px;
+  }
+
+  label {
+    font-weight: 200;
+    font-size: 14px;
+  }
+
+  input {
+    width: 100%;
+    padding: 4px 5px;
+    outline: none;
+  }
+
+  .ui-datepicker {
+    width: 100%;
+  }
+
+  .buttons-inline {
+    margin: 0 0 20px 0;
+    .button {
+      display: inline-block;
+      width: 150px;
+      background: #fff;
+      text-align: center;
+      padding: 4px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:nth-child(1) {
+        margin: 0 5px 0 0;
+      }
+
+      &.activated {
+        background: #0099CC;
+        color: white;
+        border-color: #0099CC;
+      }
+    }
+  }
+
+}

@@ -73,9 +73,11 @@ function Calendar($selector, params) {
     allEmailsForTracking.unshift(calendar.initialData.email);
 
     calendar.distinctIdForTracking = "" + Date.now() + "-" + allEmailsForTracking.join("|");
-    
+
+    calendar.$selector.find(".global-loading").show();
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
+
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
         var timeTravelManager = $('#travel_time_calculator').scope();
@@ -119,6 +121,10 @@ function Calendar($selector, params) {
 Calendar.prototype.determineCalendarInitialStartDate = function() {
     var calendar = this;
     var initialStartDate = moment();
+
+    if(calendar.initialData.forcedInitialStartDate) {
+        return calendar.initialData.forcedInitialStartDate;
+    }
 
     // When in an ask_availabilities flow, we will load the calendar from the currently selected date to verify
     if(window.currentEventTile) {
@@ -762,6 +768,9 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         end: end,
         trackingId: requestTrackingId
     };
+    if(calendar.initialData.as_at_date) {
+        params.as_at_date = calendar.initialData.as_at_date;
+    }
 
     // if(window.threadComputedData.linked_attendees && window.threadComputedData.linked_attendees[accountPreferencesHash.email]) {
     //     params.linked_attendees = window.threadComputedData.linked_attendees[accountPreferencesHash.email];

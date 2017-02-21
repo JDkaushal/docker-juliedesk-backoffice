@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
   resources :event_operator_interactions, only: [:create]
 
+
   resources :messages_threads, only: [:show, :index] do
     collection do
       get "index_with_import", action: :index_with_import, as: :index_with_import
@@ -46,6 +47,8 @@ Rails.application.routes.draw do
   end
 
   get "accounts", controller: :accounts, action: :show
+
+  get "accounts/autocomplete", controller: :accounts, action: :autocomplete
 
   resources :julie_aliases, only: [:index, :create, :edit, :new, :show, :update]
 
@@ -89,6 +92,8 @@ Rails.application.routes.draw do
     get "stats", controller: :stats, action: :main
 
     put "settings", controller: :my_settings, action: :update
+
+    get "calendar_viewer", controller: :calendar, action: :viewer
 
     root to: "operators#index"
   end
@@ -164,6 +169,7 @@ Rails.application.routes.draw do
       post "/accounts/change_account_main_email", controller: :accounts, action: :change_account_main_email
       post "/messages_threads/parse_ticket", controller: :messages_threads, action: :parse_ticket
       post "/messages_threads/check_missing_messages", controller: :messages_threads, action: :check_missing_messages
+
     end
   end
 

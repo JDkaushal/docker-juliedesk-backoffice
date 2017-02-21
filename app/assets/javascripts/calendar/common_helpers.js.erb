@@ -142,6 +142,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         host = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
     }
 
+
     var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
 
     //console.log("Receiving request: ", request);
@@ -192,6 +193,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
               end: request.end,
               email: request.email,
               calendar_ids: request.calendar_ids,
+              as_at_date: request.as_at_date,
               // This attribute allows us to complement the default calendars to show of a user with others calendars
               // (Used primarily with the meeting rooms)
               // As opposed to the calendar_ids attribute that will override them
