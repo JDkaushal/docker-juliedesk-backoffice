@@ -914,7 +914,7 @@
                             }
 
                             if(selectedDateStartTime)
-                                var selectedDateEndTime = selectedDateStartTime.clone().add('m', window.currentCalendar.getCurrentDuration());
+                                var selectedDateEndTime = selectedDateStartTime.clone().add(window.currentCalendar.getCurrentDuration(), 'm');
                         }
 
                         var virtualResourcesAvailable = $scope.getCurrentVAConfig().virtual_resources;

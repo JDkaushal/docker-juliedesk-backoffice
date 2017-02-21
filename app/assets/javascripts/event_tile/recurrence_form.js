@@ -13,7 +13,7 @@ function RecurrenceForm($selector, params) {
     recurrenceForm.$selector.find(".form-entry input[name='interval']").val(1);
     recurrenceForm.$selector.find(".form-entry input[name='count']").val(1);
     var mOneMonth = moment();
-    mOneMonth.add("month", 1);
+    mOneMonth.add(1, 'month');
     recurrenceForm.$selector.find(".form-entry input[name='until']").val(mOneMonth.format("YYYY-MM-DD"));
 
     if(params.rrule) {
@@ -194,7 +194,7 @@ RecurrenceForm.prototype.ruleChanged = function() {
         }
         else if(recurrenceEnd == "until") {
             var mUntil = moment(recurrenceForm.$selector.find("input[name='until']").val());
-            mUntil.add('d', 1);
+            mUntil.add(1, 'd');
             ruleOptions.until = mUntil.toDate();
         }
 

@@ -695,7 +695,7 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, 
 
         var realStartDate = start_date.clone();
         var realEndDate = end_date.clone();
-        realStartDate.add('d', -1);
+        realStartDate.add(-1, 'd');
 
         if(data.constraint_when_nature == ConstraintTile.WHEN_NATURE_ALWAYS) {
 
@@ -756,7 +756,7 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, 
                     constraint_nature: data.constraint_nature
                 });
             }
-            currentDate.add('d', 1);
+            currentDate.add(1, 'd');
         }
     });
 
@@ -768,9 +768,9 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, 
                 return data_entry.constraint_nature == constraintNature;
             }).length > 0) {
                 var fakeStartDate = start_date.clone();
-                fakeStartDate.add('d', -2);
+                fakeStartDate.add(-2, 'd');
                 var fakeEndDate = start_date.clone();
-                fakeEndDate.add('d', -1);
+                fakeEndDate.add(-1, 'd');
                 result.push({
                     start_date: fakeStartDate.format("YYYY-MM-DDTHH:mmZ"),
                     end_date: fakeEndDate.format("YYYY-MM-DDTHH:mmZ"),

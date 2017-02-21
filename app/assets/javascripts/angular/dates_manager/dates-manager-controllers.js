@@ -267,7 +267,7 @@
             window.currentCalendar.addCal(_.map(slotsToInsertInCalendar, function(date) {
                 var realStart = date.value.clone();
                 var realEnd = realStart.clone();
-                realEnd.add('m', calendarCurrentDuration);
+                realEnd.add(calendarCurrentDuration, 'm');
 
                 return{
                     summary: calendarDelayTitle,
@@ -303,7 +303,7 @@
             var realStart = slotToAccept.value.clone().tz(currentTimezone);
 
             var realEnd = realStart.clone();
-            realEnd.add('m', calendar.getCurrentDuration());
+            realEnd.add(calendar.getCurrentDuration(), 'm');
 
             var eventData = calendar.generateEventData({
                 title: calendar.generateDelayTitle(),

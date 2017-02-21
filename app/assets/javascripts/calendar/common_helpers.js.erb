@@ -144,7 +144,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
     var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
 
-    console.log("Receiving request: ", request);
+    //console.log("Receiving request: ", request);
     if(request.action == "getJulieDeskPreferences") {
         $.ajax({
             url: host + "/api/v1/accounts/show?email=" + request.email,
@@ -597,7 +597,7 @@ CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezon
         mStartDate = moment(startDate._i).locale(locale);
         mEndDate = moment(endDate._i).locale(locale);
         if(mEndDate > mStartDate)
-          mEndDate.add('d', -1);
+          mEndDate.add(-1, 'd');
 
         today = moment();
 
@@ -637,7 +637,7 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
     if(allDay) {
         mStartDate = moment(startDate).utc().locale(locale);
         mEndDate = moment(endDate).utc().locale(locale);
-        mEndDate.add('d', -1);
+        mEndDate.add(-1, 'd');
 
         formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
         formattedEndDate = mEndDate.format(localize("email_templates.common.simplified_date_format"));

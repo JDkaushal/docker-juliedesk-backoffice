@@ -37,7 +37,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
     }
 
     var realEnd = start.clone();
-    realEnd.add('m', calendar.getCurrentDuration());
+    realEnd.add(calendar.getCurrentDuration(), 'm');
 
     var title = calendar.generateDelayTitle();
 
@@ -46,7 +46,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
         realEnd = end;
         if((realEnd - start) / 1000 / 60 < 60) {
             realEnd = start.clone();
-            realEnd.add('m', 60);
+            realEnd.add(60, 'm');
         }
     }
     
@@ -575,7 +575,7 @@ Calendar.prototype.fullCalendarInit = function() {
             offsetRowInt = parseInt($('.fc-agenda-axis').css('width'));
             calendar.fullCalendarViewRender(view, element);
 
-            console.log('dispStart', calendar.dispStart);
+            //console.log('dispStart', calendar.dispStart);
         },
         eventClick: function(event, jsEvent, view) {
             calendar.fullCalendarEventClick(event, jsEvent, view);

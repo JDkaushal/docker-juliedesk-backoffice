@@ -84,7 +84,7 @@ function Calendar($selector, params) {
                 var dateObject = calendar.initialData.date_times[i];
                 var start = moment(dateObject.date).tz(calendar.getCalendarTimezone());
                 var end = start.clone();
-                end.add('m', calendar.getCurrentDuration());
+                end.add(calendar.getCurrentDuration(), 'm');
 
                 var title = "Suggested";
                 if(dateObject.mode == "to_check") {
@@ -179,7 +179,7 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
             var allEvents = [];
             _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
                 var mNow = moment();
-                var mOneYearFromNow = moment().add('y', 1);
+                var mOneYearFromNow = moment().add(1, 'y');
                 var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
                 _.each(events.cant, function (event) {
                     allEvents.push(event);
@@ -247,7 +247,13 @@ Calendar.prototype.getMode = function () {
     Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
         var calendar = this;
         var accountPreferences = calendar.accountPreferences[calendarItem.email];
-        var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+        if($('#meeting-rooms-manager').length > 0) {
+            var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+        }
+        else {
+            var meetingRoomsToDisplayIds = [];
+        }
+
 
         return (
             accountPreferences &&
@@ -354,7 +360,10 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         }
     }
 
-    meetingRoomsManager.populateCreateEventRoomSelect();
+    if(meetingRoomsManager) {
+        meetingRoomsManager.populateCreateEventRoomSelect();
+    }
+
 };
 
 Calendar.prototype.allEmails = function() {
@@ -667,7 +676,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
                     meetingRoomsManager.checkIfDetectAvailabilities();
                 }
 
-                if(virtualMeetingHelper.usingVirtualResources()) {
+                if(virtualMeetingHelper && virtualMeetingHelper.usingVirtualResources()) {
                     virtualMeetingHelper.determineFirstAvailableVirtualResource();
                 }
 
@@ -760,7 +769,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
     // We compute the linked attendees events only on the main account event list call (even if multi clients have linked attendees on the thread)
     // So we can merge the results easily
-    if(!$.isEmptyObject(window.threadComputedData.linked_attendees) && accountPreferencesHash.email ==  window.threadAccount.email) {
+    if(window.threadComputedData && !$.isEmptyObject(window.threadComputedData.linked_attendees) && accountPreferencesHash.email ==  window.threadAccount.email) {
         var presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
         params.linked_attendees = {};
 
@@ -923,7 +932,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
     var calendar = this;
     var result = [];
     var currentTimezone = calendar.getCalendarTimezone();
-    var usingAnotherTimeZone = window.threadAccount.default_timezone_id != currentTimezone;
+    var usingAnotherTimeZone = window.threadAccount && window.threadAccount.default_timezone_id != currentTimezone;
 
     var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual
 
@@ -1013,7 +1022,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
             var publicHoliday = accountPreferencesHash.public_holidays_dates[i];
             var mStartDate = moment(publicHoliday.date);
             var mEndDate = mStartDate.clone();
-            mEndDate.add("d", 1);
+            mEndDate.add(1, 'd');
 
             var event = {
                 summary: "FERIE : " + publicHoliday.name,

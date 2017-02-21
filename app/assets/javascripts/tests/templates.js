@@ -24,7 +24,7 @@ window.tests.templates = [
 ];
 
 var today = moment();
-var tomorrow = moment().add('d', 1);
+var tomorrow = moment().add(1, 'd');
 
 var suggestDatesDataSet1 = [
     {

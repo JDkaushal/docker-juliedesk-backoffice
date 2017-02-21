@@ -207,7 +207,7 @@ EventTile.prototype.getEventStartEnd = function() {
     if(allDay) {
         mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), "UTC");
         mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), "UTC");
-        mEnd.add("d", 1);
+        mEnd.add(1, 'd');
     }
     else {
         mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneId());
@@ -327,7 +327,7 @@ EventTile.prototype.redraw = function() {
     }
     else {
         mEndDate = mStartDate.clone();
-        mEndDate.add("h", 1);
+        mEndDate.add(1, 'h');
     }
     mStartDate = mStartDate.locale(eventTile.locale);
     mEndDate = mEndDate.locale(eventTile.locale);
@@ -348,7 +348,7 @@ EventTile.prototype.redraw = function() {
     }
 
     if(eventTile.event.allDay) {
-        mEndDate.add('d', -1);
+        mEndDate.add(-1, 'd');
     }
 
     eventTile.$selector.find(".start-date").val(mStartDate.format("YYYY-MM-DD"));
@@ -462,7 +462,7 @@ EventTile.prototype.getEditedEvent = function() {
     if(allDay) {
         mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), "UTC");
         mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), "UTC");
-        mEnd.add("d", 1);
+        mEnd.add(1, 'd');
     }
     else {
         mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneIdForStartDate());
@@ -711,12 +711,12 @@ EventTile.prototype.saveRecurringEvent = function() {
     else {
         var startDiff = editedEvent.start - moment(eventTile.event.start);
         recurringStartTime = moment(eventTile.recurringEvent.start);
-        recurringStartTime.add('s', startDiff / 1000);
+        recurringStartTime.add(startDiff / 1000, 's');
         recurringStartTime = recurringStartTime.format();
 
         var endDiff = editedEvent.end - moment(eventTile.event.end);
         recurringEndTime = moment(eventTile.recurringEvent.end);
-        recurringEndTime.add('s', endDiff / 1000);
+        recurringEndTime.add(endDiff / 1000, 's');
         recurringEndTime = recurringEndTime.format();
     }
 
@@ -1209,7 +1209,7 @@ EventTile.prototype.initActions = function() {
         var editedEvent = eventTile.getEditedEvent();
         if(editedEvent.end <= editedEvent.start) {
             var mEndDate = editedEvent.start.clone().tz(eventTile.getTimezoneIdForEndDate());
-            mEndDate.add("h", 1);
+            mEndDate.add(1, 'h');
 
 
             eventTile.$selector.find("input.end-date").val(mEndDate.format("YYYY-MM-DD"));
@@ -1417,7 +1417,7 @@ EventTile.prototype.getEventFormattedInfos = function() {
         }
 
         if(eventAllDay) {
-            timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end.add('d', -1), 'dddd Do MMMM');
+            timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end.add(-1, 'd'), 'dddd Do MMMM');
         } else {
           timeStr += ' ' + localize('common.to_date') + ' ' + eventTile.formatMoment(end, 'dddd Do MMMM');
           timeStr += ' ' + localize('common.at') + ' ' + eventTile.formatMoment(end, 'LT');
