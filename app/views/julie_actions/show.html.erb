@@ -489,7 +489,10 @@
                     cc: window.currentRecipients().cc,
                     quote_message: $("input#quote_message:checked").length > 0,
                     julie_action_id: "<%= @julie_action.id %>",
-                    forward: forward
+                    forward: forward,
+                    segment_params: {
+                      using_trust_circle_template: window.usingTrustCircleTemplate
+                    }
                 },
                 success: function (e) {
                     $(".reply-box #callback-message").html("<%= I18n.t("common.sent")%>");

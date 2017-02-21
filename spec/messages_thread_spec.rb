@@ -132,7 +132,8 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
-                                                        :language_level => :normal
+                                                        :language_level => :normal,
+                                                        :trusted_attendees=>{}
                                                     })
       end
     end
@@ -175,7 +176,8 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
-                                                        :language_level => :normal
+                                                        :language_level => :normal,
+                                                        :trusted_attendees=>{}
                                                     })
       end
     end
@@ -221,7 +223,8 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
-                                                        :language_level => :normal
+                                                        :language_level => :normal,
+                                                        :trusted_attendees=>{}
                                                     })
       end
     end
@@ -268,7 +271,8 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
-                                                        :language_level => :normal
+                                                        :language_level => :normal,
+                                                        :trusted_attendees=>{}
                                                     })
       end
     end
@@ -316,7 +320,8 @@ describe MessagesThread, :type => :model do
                                                         :thread_recipients=>[],
                                                         :linked_attendees=>{},
                                                         :do_not_ask_suggestions => false,
-                                                        :language_level => :normal
+                                                        :language_level => :normal,
+                                                        :trusted_attendees=>{}
                                                     })
       end
     end
@@ -899,4 +904,31 @@ describe MessagesThread, :type => :model do
     end
   end
 
+  describe 'trusted_attendees' do
+
+    before(:example) do
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({
+                                                                                                    'full_name' => 'Client 1 Name',
+                                                                                                    'circle_of_trust' => {
+                                                                                                        "trusting_everyone"=>false,
+                                                                                                        "trusted_domains"=>["domain1.com", "domain2.com"],
+                                                                                                        "trusted_emails"=>["email1@email.com", "email2@email.com"]
+                                                                                                    }
+                                                                                                })
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({
+                                                                                                    'full_name' => 'Client 2 Name',
+                                                                                                    'circle_of_trust' => {
+                                                                                                        "trusting_everyone"=>false,
+                                                                                                        "trusted_domains"=>["domain3.com", "domain4.com"],
+                                                                                                        "trusted_emails"=>["email3@email.com", "email4@email.com"]
+                                                                                                    }
+                                                                                                })
+    end
+
+    it 'should return the correct hash' do
+      @messages_thread.update(clients_in_recipients: ['client1@email.com', 'client2@email.com'])
+
+      expect(@messages_thread.trusted_attendees).to eq({"Client 1 Name"=>{"trusting_everyone"=>false, "trusted_domains"=>["domain1.com", "domain2.com"], "trusted_emails"=>["email1@email.com", "email2@email.com"]}, "Client 2 Name"=>{"trusting_everyone"=>false, "trusted_domains"=>["domain3.com", "domain4.com"], "trusted_emails"=>["email3@email.com", "email4@email.com"]}})
+    end
+  end
 end

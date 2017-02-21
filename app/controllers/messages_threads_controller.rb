@@ -89,6 +89,9 @@ class MessagesThreadsController < ApplicationController
     @julie_emails = julie_aliases.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
 
+    # Fresh Thread == Thread not yet classified
+    @fresh_thread = @messages_thread.computed_data[:appointment_nature].blank?
+
     # If the thread is not associated with a client, we will try to associate it
     if @messages_thread.account_email.blank?
       account_association_data_holder = ThreadAccountAssociation::DataHolder.new(@accounts_cache_light, julie_aliases, @julie_emails)

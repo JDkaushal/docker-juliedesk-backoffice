@@ -199,6 +199,12 @@ class MessagesController < ApplicationController
              }, status: 400 and return
     end
 
+    begin
+      handle_segment_params(params[:segment_params])
+    rescue => e
+      Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
+    end
+
     RequestAtWorker.enqueue @message.messages_thread.id
 
     # We set should follow up to false when we send the email
@@ -206,6 +212,7 @@ class MessagesController < ApplicationController
 
     @julie_action = JulieAction.find params[:julie_action_id]
     @julie_action.update_attribute :server_message_id, @new_server_message_id
+
 
     render json: {
         status: "success",
@@ -218,8 +225,22 @@ class MessagesController < ApplicationController
 
   private
 
-  def text_to_html text
-      text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
-  end
+    def text_to_html text
+        text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
+    end
+
+    def handle_segment_params(segment_params)
+      if segment_params.present?
+        account = @message.messages_thread.account
+
+        if segment_params[:using_trust_circle_template].presence == 'true'
+          ClientSuccessTrackingHelpers.async_track("Circle of trust", account.email, {
+              'Circle of trust' => !account.circle_of_trust['trusting_everyone'],
+              'Email list' => account.circle_of_trust['trusted_emails'].size > 0,
+              'Domain list' => account.circle_of_trust['trusted_domains'].size > 0
+          })
+        end
+      end
+    end
 
 end

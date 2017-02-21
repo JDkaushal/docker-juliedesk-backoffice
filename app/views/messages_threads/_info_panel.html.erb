@@ -368,15 +368,31 @@
             $(".messages-thread-info-panel .created-event-panel").addClass("several-events").show();
         <% end %>
 
+      $('.trusted-attendee-sprite').mouseenter(function(e) {
+        var that = $(this);
+        var trustedBy = that.data('in-circle-of');
+        _.each(trustedBy, function(clientNameParameterized) {
+          $('.trusted-attendee-sprite[' + clientNameParameterized + '="true"]').addClass('trusted-highlighted');
+        });
+      });
 
-        initGooglePlacesAutoCompleteOnLocationField();
-        initAllowedAttendeesEmails();
+      $('.trusted-attendee-sprite').mouseleave(function(e) {
+        var that = $(this);
+        var trustedBy = that.data('in-circle-of');
+        _.each(trustedBy, function(clientNameParameterized) {
+          $('.trusted-attendee-sprite[' + clientNameParameterized + '="true"]').removeClass('trusted-highlighted');
+        });
+      });
+
+
+      initGooglePlacesAutoCompleteOnLocationField();
+      initAllowedAttendeesEmails();
     });
 
     function extractEmails(text)
     {
       return text.match(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi);
-    };
+    }
 
     window.addAllowedAttendeesEmailsFromCurrentNotes = function(currentNotes) {
       var emails = extractEmails(currentNotes);
@@ -568,7 +584,6 @@
             )
         )
     );
-
 
     function refreshDisplayedAttendeesInfos() {
         var attendeesManager = angular.element($('#attendeesCtrl')).scope();
@@ -920,22 +935,9 @@
         var $selectNatureNode = $("select#appointment_nature");
         var $selectFamilyNatureNode = $("select#appointment_family_nature");
 
-//        $selectNatureNode.html("");
-//        _.each(window.threadAccount.appointments, function(appointment) {
-//            $selectNatureNode.append($("<option>").val(appointment.label).html(appointment.label));
-//        });
-
-//        _(_(_.map(window.threadAccount.appointments, function(appointment) {
-//            return appointment.appointment_kind_hash.family_kind;
-//        })).uniq()).each(function(familyKind) {
-//            $("select#appointment_family_nature").append($("<option>").val(familyKind).html(familyKind));
-//        });
-
         $selectFamilyNatureNode.change(function() {
             processAppointmentType();
-
             updateNotesCallingInfos();
-            //refreshVirtualAppointmentsHelper();
         });
 
         $selectNatureNode.val(window.threadComputedData.appointment_nature);
@@ -1358,7 +1360,6 @@
 
   <%= render partial: "messages_threads/waiting_for_others_panel", locals: {message: @message} %>
 
-  <%= render partial: "messages_threads/client_agreement_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
   <%= render partial: "messages_threads/attendees_are_noticed_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
@@ -1393,6 +1394,9 @@
         </div>
     <% end %>
 
+    <% if @fresh_thread %>
+        <%= render partial: "messages_threads/partials/client_agreement_level_tiles" %>
+    <% end %>
 
     <div class="data">
       <div class="data-entry linear-form-entry locale-selection">

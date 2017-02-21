@@ -47,7 +47,93 @@
   }
 
   .classic-info-panel {
+    $level_agreement_green: #748804;
+    $level_agreement_red: #CF3E3E;
 
+    $level_agreement_green_background: rgba(116,136,4,0.34);
+    $level_agreement_red_background: rgba(207,62,62,0.34);
+
+    .client-agreement-level-container {
+      .summary {
+        font-size: 12px;
+      }
+      .header {
+        font-size: 16px;
+      }
+      .content {
+        padding: 5px;
+      }
+
+      .authorized_request {
+        display: none;
+        .header {
+          color: $level_agreement_green;
+
+          .client-agreement-sprite {
+            background-image: url(<%= asset_path 'request_authorized.png' %>);
+            background-repeat: no-repeat;
+            background-size: 23px 23px;
+            width: 23px;
+            display: inline-block;
+            height: 23px;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+          }
+        }
+        .content {
+          background-color: $level_agreement_green_background;
+        }
+      }
+      .trusted_request {
+        display: none;
+        .header {
+          color: $level_agreement_green;
+
+          .client-agreement-sprite {
+            background-image: url(<%= asset_path 'trusted_request.png' %>);
+            background-repeat: no-repeat;
+            background-size: 23px 23px;
+            width: 23px;
+            display: inline-block;
+            height: 23px;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+          }
+        }
+        .content {
+           background-color: $level_agreement_green_background;
+        }
+      }
+      .unauthorized_request {
+        display: none;
+        .header {
+          color: $level_agreement_red;
+
+          .client-agreement-sprite {
+            background-image: url(<%= asset_path 'unauthorized_request.png' %>);
+            background-repeat: no-repeat;
+            background-size: 23px 23px;
+            width: 23px;
+            display: inline-block;
+            height: 23px;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+          }
+        }
+        .content {
+          background-color: $level_agreement_red_background;
+
+          .ask-client-agreement {
+            a {
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
   }
 
   .message-container {

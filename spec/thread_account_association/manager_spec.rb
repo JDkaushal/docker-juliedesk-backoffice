@@ -12,10 +12,10 @@ describe ThreadAccountAssociation::Manager do
 
     let(:accounts_cache) do
       {
-          'bruce.lee@ups.com' => { "email" => 'bruce.lee@ups.com', "usage_name" => 'M. Lee', "full_name" => 'Bruce Lee', "email_aliases" => ['bruce.lee@yopmail.com'] },
-          'john.wayne@ups.com' => {'email' => 'john.wayne@ups.com', 'usage_name' => 'John', 'Wayne' => 'John Wayne', 'email_aliases' => ['john.wayne@yopmail.com'] },
-          'steven.seagul@pepsi.com' => {'email' => 'steven.seagul@pepsi.com', 'usage_name' => 'Steven', 'full_name' => 'Seagul', 'email_aliases' => ['steven.seagul@pepsi.com'] },
-          'bud.spencer@pepsi.com' => {'email' => 'bud.spencer@pepsi.com', 'usage_name' => 'Bud', 'full_name' => 'Spencer', 'email_aliases' => ['bud.spencer@pepsi.com'] }
+          'bruce.lee@ups.com' => {'email' => 'bruce.lee@ups.com', 'first_name' => 'Bruce', 'last_name' => 'Lee', 'usage_name' => 'M. Lee', 'full_name' => 'Bruce Lee', 'email_aliases' => ['bruce.lee@yopmail.com'] },
+          'john.wayne@ups.com' => {'email' => 'john.wayne@ups.com', 'first_name' => 'John', 'last_name' => 'Wayne', 'usage_name' => 'John', 'Wayne' => 'John Wayne', 'email_aliases' => ['john.wayne@yopmail.com'] },
+          'steven.seagul@pepsi.com' => {'email' => 'steven.seagul@pepsi.com', 'first_name' => 'Steven', 'last_name' => 'Seagul', 'usage_name' => 'Steven', 'full_name' => 'Seagul', 'email_aliases' => ['steven.seagul@pepsi.com'] },
+          'bud.spencer@pepsi.com' => {'email' => 'bud.spencer@pepsi.com', 'first_name' => 'Bud', 'last_name' => 'Spencer', 'usage_name' => 'Bud', 'full_name' => 'Spencer', 'email_aliases' => ['bud.spencer@pepsi.com'] }
       }
     end
 
@@ -180,7 +180,6 @@ describe ThreadAccountAssociation::Manager do
       end
     end
 
-
     context 'when there are no clients in from, to or cc fields' do
       let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [ups_julie.email]) }
 
@@ -196,7 +195,6 @@ describe ThreadAccountAssociation::Manager do
         end
       end
 
-
       context 'and multiple clients are related to julie' do
         let(:server_message_attributes) { { 'cc' =>'Julie <julie@ups.com', 'text' => 'Julie, please organize an event with John Wayne : john.wayne@ups.com'} }
 
@@ -206,12 +204,41 @@ describe ThreadAccountAssociation::Manager do
         end
       end
 
-
       context 'and multiple clients related to julie and email is in message body' do
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com', 'text' => 'Julie, please organize an event with me and this guy : john.wayne@ups.com' } }
         subject! { manager.compute_association }
 
         it { expect(messages_thread.accounts_candidates).to eql(['john.wayne@ups.com']) }
+        it { expect(messages_thread.account_email).to be_nil}
+      end
+
+      context 'and multiple clients related to julie and emails is in message body and another client has first name in body and one of his trusted emails is in from' do
+        let(:server_message_attributes) { { 'from' => 'email1@email.com', 'cc' => 'Julie <julie@ups.com', 'text' => 'Julie, please organize an event with me and this guy : john.wayne@ups.com also steven my good buddy' } }
+
+        before(:example) do
+          allow(Account).to receive(:accounts_cache_for_email).with('steven.seagul@pepsi.com').and_return(
+            {
+              'email' => 'steven.seagul@pepsi.com',
+              'circle_of_trust' => {
+                'trusting_everyone' =>false,
+                'trusted_domains' =>
+                  [
+                    'domain1.com',
+                    'domain2.com'
+                  ],
+                'trusted_emails' =>
+                  [
+                    'email1@email.com',
+                    'email2@email.com'
+                  ]
+              }
+            }
+          )
+        end
+
+        subject! { manager.compute_association }
+
+        it { expect(messages_thread.accounts_candidates).to eql(['john.wayne@ups.com', 'steven.seagul@pepsi.com']) }
         it { expect(messages_thread.account_email).to be_nil}
       end
 
@@ -229,7 +256,6 @@ describe ThreadAccountAssociation::Manager do
 
         it { expect(messages_thread.account_email).to be_nil }
       end
-
 
       context 'and julie is julie@juliedesk.com and email is in message body' do
         let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [julie.email]) }
@@ -301,7 +327,6 @@ describe ThreadAccountAssociation::Manager do
         end
       end
 
-
       context 'and multiple clients related to custom julie and last name is in message body' do
         let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [ups_julie.email]) }
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com', 'text' => 'Julie, please organize an event with Mr Wayne' } }
@@ -324,8 +349,6 @@ describe ThreadAccountAssociation::Manager do
         it { expect(messages_thread.account_email).to be_nil }
       end
 
-
-
       context 'and multiple clients related to custom julie and first name is in message body' do
         let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [ups_julie.email]) }
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com', 'text' => 'Julie, please organize an event with John' } }
@@ -334,7 +357,6 @@ describe ThreadAccountAssociation::Manager do
         it { expect(messages_thread.accounts_candidates).to eql(['john.wayne@ups.com']) }
         it { expect(messages_thread.account_email).to be_nil }
       end
-
 
       context 'and multiple clients related to julie@juliedesk.com and first name is in message body' do
         let(:data_holder) { ThreadAccountAssociation::DataHolder.new(accounts_cache, julie_aliases, [julie.email]) }
@@ -349,7 +371,6 @@ describe ThreadAccountAssociation::Manager do
         it { expect(messages_thread.accounts_candidates).not_to include("john.wayne@ups.com") }
         it { expect(messages_thread.account_email).to be_nil }
       end
-
 
       context 'and multiple clients are related to Julie and account candidates are empty' do
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com' }}
@@ -381,7 +402,6 @@ describe ThreadAccountAssociation::Manager do
           end
         end
       end
-
 
       context 'multiple clients are related to Julie and account request email already send' do
         let(:server_message_attributes) { { 'cc' => 'Julie <julie@ups.com' }}

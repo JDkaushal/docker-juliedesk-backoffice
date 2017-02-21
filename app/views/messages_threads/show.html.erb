@@ -1,3 +1,5 @@
+<%= javascript_include_tag 'client_agreement_management/manager' %>
+
 <script>
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
@@ -147,6 +149,14 @@
         })
     };
 
+    function computeClientAgreementLevel() {
+      var agreementLevel = ClientAgreementLevelManager.getInstance().displayAgreementStatus();
+    }
+
+    function firstEmailSender() {
+      return <%== {name: @messages_thread.messages.sort_by(&:received_at).first.get_email_sender}.to_json %>;
+    }
+
     $(function () {
 
         trackActionV2("Thread_is_open", {
@@ -243,6 +253,11 @@
             $node.addClass('bordered');
           }
         });
+
+
+      if(window.formFirstPass) {
+        computeClientAgreementLevel();
+      }
     });
 //    $(window).unload(function() {
 //        console.log('Handler for .unload() called.');

@@ -437,11 +437,20 @@ class MessagesThread < ActiveRecord::Base
           thread_recipients: self.computed_recipients,
           linked_attendees: self.linked_attendees,
           do_not_ask_suggestions: self.do_not_ask_suggestions?,
-          language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal
+          language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal,
+          trusted_attendees: self.trusted_attendees
       }
     end
 
     @computed_data
+  end
+
+  def trusted_attendees
+    circle_of_trusts = self.clients.inject({}){|h, c|h[c.full_name]= c.circle_of_trust; h}
+    # {
+    #     emails: circle_of_trusts.map{|ct| ct['trusted_emails']}.flatten,
+    #     domains: circle_of_trusts.map{|ct| ct['trusted_domains']}.flatten
+    # }
   end
 
   def self.virtual_appointment_natures

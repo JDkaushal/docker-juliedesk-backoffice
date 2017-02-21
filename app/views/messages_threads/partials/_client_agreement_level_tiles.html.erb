@@ -1,0 +1,39 @@
+<div class="client-agreement-level-container">
+  <div class="authorized_request">
+    <h5>NOUVELLE DEMANDE ?</h5>
+    <div class="header"><span class="client-agreement-sprite"></span>Demande autorisée</div>
+    <i class="summary">La demande semble provenir du client ou d'une personne de confiance</i>
+    <div class="content">
+      <div class="sentence">
+        Vous pouvez organiser un rendez-vous à travers le flow adapté.
+      </div>
+    </div>
+  </div>
+
+  <div class="trusted_request">
+    <h5>NOUVELLE DEMANDE ?</h5>
+    <div class="header"><span class="client-agreement-sprite"></span>Demande autorisée</div>
+    <i class="summary">Le client fait confiance</i>
+    <div class="content">
+      <div class="sentence">
+        Vous pouvez organiser un rendez-vous à travers le flow adapté.
+      </div>
+    </div>
+  </div>
+
+  <div class="unauthorized_request">
+    <h5>NOUVELLE DEMANDE ?</h5>
+    <div class="header"><span class="client-agreement-sprite"></span>Demande non autorisée</div>
+    <i class="summary">Aucune personne de confiance de détectée</i>
+    <div class="content">
+      <div class="sentence">
+        Il est nécessaire de demander au client si oui ou non nous avons son autorisation pour organiser ce rendez-vous.
+      </div>
+      <div class="ask-client-agreement">
+        <a href="<%= classifying_message_path(@messages_thread.messages.first, classification: :unknown, started_at: Time.now.to_i * 1000, default_template: "Cercle de confiance - demande d'autorisation d'organisation") %>">
+          <div class=" btn btn-success btn-block">Demander l'autorisation au client</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

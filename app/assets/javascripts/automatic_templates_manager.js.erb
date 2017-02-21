@@ -47,7 +47,7 @@ var TemplateManager = function(params){
                 that.menuPanelNode.html("");
                 that.menuPanelWrapperNode.hide();
                 _(data).each(function (item) {
-                    var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr);
+                    var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('title', item.title);
                     that.templates.push($menuItem);
                     that.menuPanelNode.append($menuItem);
                 });
@@ -119,6 +119,8 @@ var TemplateManager = function(params){
 
     this.clickOnTemplateItem = function($item) {
         var template = '';
+
+      window.usingTrustCircleTemplate = $item.data('title') == "Cercle de confiance - demande d'autorisation d'organisation";
 
         if(window.threadComputedData.locale == 'fr') {
             template = $item.data("template-fr");

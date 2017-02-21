@@ -43,7 +43,8 @@ class Account
                 :using_calendar_server,
                 :main_address,
                 :calendar_access_lost,
-                :ignore_non_all_day_free_events
+                :ignore_non_all_day_free_events,
+                :circle_of_trust
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -93,6 +94,7 @@ class Account
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
     account.ignore_non_all_day_free_events = data['ignore_non_all_day_free_events']
+    account.circle_of_trust = data['circle_of_trust']
 
     account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
 
@@ -369,6 +371,10 @@ class Account
     scheduled_jas.each do |scheduled_ja|
       scheduled_ja.update_attribute :calendar_login_username, new_username
     end
+  end
+
+  def is_in_circle_of_trust?(email)
+    self.circle_of_trust.present? && ( self.circle_of_trust['trusted_emails'].include?(email) || ApplicationHelper.email_in_domain?(self.circle_of_trust['trusted_domains'], email) )
   end
 
   private

@@ -312,4 +312,48 @@ describe Account do
       end
     end
   end
+
+  describe 'is_in_circle_of_trust?' do
+    let(:accounts_cache) {
+      {
+        'client@email.com' => {
+          'circle_of_trust' => {
+            'trusting_everyone' => false,
+            'trusted_domains' =>
+              [
+                  'domain1.com',
+                  'domain2.com'
+              ],
+            'trusted_emails' =>
+              [
+                  'email1@email.com',
+                  'email2@email.com'
+              ]
+          }
+        }
+      }
+    }
+
+    let(:account) { Account.create_from_email('client@email.com') }
+
+    before(:example) do
+      allow(Account).to receive(:accounts_cache_for_email).and_return(accounts_cache['client@email.com'])
+    end
+
+    context 'from emails' do
+      it 'should return true' do
+        expect(account.is_in_circle_of_trust?('email1@email.com')).to be(true)
+      end
+    end
+
+    context 'from domains' do
+      it 'should return true' do
+        expect(account.is_in_circle_of_trust?('email3@domain1.com')).to be(true)
+      end
+    end
+
+    it 'should return false' do
+      expect(account.is_in_circle_of_trust?('email3@email.com')).to be(false)
+    end
+  end
 end

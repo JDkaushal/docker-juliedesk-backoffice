@@ -34,5 +34,7 @@ Rails.application.config.assets.precompile += [
     "angular_client_account_tile_app.js",
     "threads_tags_management/manager.js",
     "angular_no_account_tile_app.js",
-    "angular_date_suggestions_review_manager_app.js"
+    "angular_date_suggestions_review_manager_app.js",
+    "client_agreement_management/manager.js"
 ]
+
