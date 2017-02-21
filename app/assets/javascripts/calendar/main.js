@@ -149,6 +149,33 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
     if(calendar.getMode() == "suggest_dates") {
 
         if(calendar.initialData.constraintsData) {
+            // constraintNatures order is important
+            var constraintsStartDates = {}, constraintNatures = ["prefers"];
+            _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+                _.each(dataEntries, function (dataEntry){
+                    var constraintNature = dataEntry.constraint_nature;
+                    if(constraintNatures.indexOf(constraintNature) == -1) return;
+
+                    if(!constraintsStartDates[constraintNature]) constraintsStartDates[constraintNature] = [];
+
+                    if (data.start_time)
+                        constraintsStartDates[constraintNature].push(moment(startTime));
+                    if(dataEntry.dates) {
+                        _.each(dataEntry.dates, function(date) {
+                            constraintsStartDates[constraintNature].push(moment(date));
+                        });
+                    }
+                });
+            });
+
+            _.each(constraintNatures, function(nature) {
+                var minStartDate = null;
+                if(constraintsStartDates[nature]) {
+                    minStartDate = _.sortBy(constraintsStartDates[nature], function(d) { return d })[0];
+                    if(minStartDate && minStartDate > initialStartDate) initialStartDate = minStartDate;
+                }
+            });
+
             var allEvents = [];
             _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
                 var mNow = moment();
