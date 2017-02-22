@@ -96,4 +96,4 @@ fr:
       phone_number: "%{attendees_names}, merci de me faire parvenir le numéro sur lequel vous serez joignable."
 
     review:
-      form: "J’ai fait une erreur dans l'interprétation de votre message ? Vous pouvez me corriger <a href='https://ai.juliedesk.com/api/v1/review/form/?message_id=%{message_id}'>ici</a> afin de m’aider à m’améliorer !"
+      form: "" #"J’ai fait une erreur dans l'interprétation de votre message ? Vous pouvez me corriger <a href='https://ai.juliedesk.com/api/v1/review/form/?message_id=%{message_id}'>ici</a> afin de m’aider à m’améliorer !"
