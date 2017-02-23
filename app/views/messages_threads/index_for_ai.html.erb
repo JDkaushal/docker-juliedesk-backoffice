@@ -384,7 +384,7 @@
             $scope.$apply();
         };
 
-        window.redrawLocksStatuses = function(lockStatuses) {
+        /*window.redrawLocksStatuses = function(lockStatuses) {
             $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
                 messagesThread.locked_by_operator_id = null;
                 _.each(lockStatuses, function(lockStatus) {
@@ -396,7 +396,7 @@
             });
 
             $scope.$apply();
-        };
+        };*/
 
         window.archiveMessageThread = function(messageThreadId) {
             $scope.messagesThreads = _.filter($scope.messagesThreads, function(messagesThread) {

@@ -44,6 +44,7 @@
         $scope.toProcessLaterMessagesThreads = [];
 
         $scope.allMessagesThreads = [];
+        $scope.lockedThreadsData = [];
 
         $scope.refreshInbox = function(forceRefresh) {
             $scope.loading = true;
@@ -62,7 +63,8 @@
 
                         $scope.operatorsOnPlanning = e.operators_data;
                         $(".header .global-todo-count").html($scope.messagesThreads.length);
-                        //$scope.getTodayRequestsCountsForClients();
+                        $scope.updateLockStatuses();
+
                     })
                     .error(function(e) {
                         $scope.loading = false;
@@ -133,12 +135,6 @@
             return moment(date).locale("<%= I18n.locale %>").fromNow();
         };
 
-//        $scope.toProcessLaterMessagesThreads = function() {
-//            return _.filter($scope.messagesThreads, function(messagesThread) {
-//               return !$scope.shouldFollowUp(messagesThread) && $scope.shouldProcessLater(messagesThread);
-//            });
-//        };
-
         $scope.shouldFollowUp = function(messagesThread) {
             var isPriority = messagesThread.account && messagesThread.account.have_priority;
 
@@ -175,48 +171,6 @@
 
         $scope.labelInRow = function(messagesThread) {
           TagsManager.getInstance().handleThread(messagesThread);
-
-//          var infos = {cssClass: ''};
-//
-//           if(messagesThread.sent_to_admin) {
-//               infos.text = "Founders";
-//           }
-//           else {
-//               if(messagesThread.delegated_to_support) {
-//                   infos.text = "Support";
-//               }
-//               else {
-//                   if(messagesThread.account) {
-//                       if(messagesThread.account.office_365_refresh_token_expired) {
-//                           infos.text = "Tkn expird";
-//                       }
-//                       else {
-//                           if(messagesThread.account.only_admin_can_process) {
-//                               infos.text = "Admin only";
-//                           }
-//                           else {
-//                               if(messagesThread.account.only_support_can_process) {
-//                                   infos.text = "VIP";
-//                                   infos.cssClass = 'vip';
-//                               }
-//                               else {
-//                                   if(messagesThread.to_be_merged) {
-//                                       infos.text = 'To merge';
-//                                       infos.cssClass = 'to-be-merged';
-//                                   }else {
-//                                       infos.text = null;
-//                                   }
-//                               }
-//                           }
-//                       }
-//                   }
-//                   else {
-//                       infos.text = "Support";
-//                   }
-//               }
-//           }
-//
-//           return infos;
           return messagesThread.tags[0];
         };
 
@@ -381,7 +335,7 @@
             $scope.$apply();
         };
 
-        window.redrawLocksStatuses = function(lockStatuses) {
+        /*window.redrawLocksStatuses = function(lockStatuses) {
             $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
                 messagesThread.locked_by_operator_id = null;
                 _.each(lockStatuses, function(lockStatus) {
@@ -393,7 +347,7 @@
             });
 
             $scope.$apply();
-        };
+        };*/
 
         window.archiveMessageThread = function(messageThreadId) {
             $scope.messagesThreads = _.filter($scope.messagesThreads, function(messagesThread) {
@@ -403,6 +357,28 @@
         };
 
         $scope.refreshInbox(false);
+
+        $scope.updateLockStatuses = function() {
+          _.each($scope.messagesThreads, function(messageThread) {
+            var threadToLock = _.find($scope.lockedThreadsData, function(lockedThread) { return lockedThread.threadId == messageThread.id});
+              messageThread.locked_by_operator_id = threadToLock ? threadToLock.operatorIdentifier : null;
+              messageThread.locked_by_operator_name = threadToLock ? threadToLock.operatorName : null;
+          });
+
+          if(!$scope.$$phase)
+            $scope.$apply();
+        };
+
+
+        redsock.subscribeToChannel('lockedThreads');
+        redsock.bindMessage('lockedThreads', 'subscription_success', function(data) {
+          $scope.lockedThreadsData = data;
+        });
+
+        redsock.bindMessage('lockedThreads', 'update', function(data) {
+          $scope.lockedThreadsData = data;
+          $scope.updateLockStatuses();
+        });
     });
 
     trackActionV2('Home_is_open', {operator_id: window.currentOperatorId});

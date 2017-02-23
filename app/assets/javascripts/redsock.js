@@ -9,7 +9,6 @@ var RedSock = function (url, member_data) {
     var redsock = this;
     redsock.ws.onmessage = function (evt) {
         var json = JSON.parse(evt.data);
-        //console.log("New message", json);
         redsock.processBounds(json);
     };
 };
