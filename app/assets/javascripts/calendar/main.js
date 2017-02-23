@@ -761,7 +761,13 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     // We compute the linked attendees events only on the main account event list call (even if multi clients have linked attendees on the thread)
     // So we can merge the results easily
     if(!$.isEmptyObject(window.threadComputedData.linked_attendees) && accountPreferencesHash.email ==  window.threadAccount.email) {
-        params.linked_attendees = window.threadComputedData.linked_attendees;
+        var presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
+        params.linked_attendees = {};
+
+        _.each(window.threadComputedData.linked_attendees, function(attendees, mainAccount) {
+            params.linked_attendees[mainAccount] = _.intersection(presentAttendeesEmails, attendees);
+        });
+        //params.linked_attendees = window.threadComputedData.linked_attendees;
     }
 
     CommonHelpers.externalRequest(params, function (response) {
