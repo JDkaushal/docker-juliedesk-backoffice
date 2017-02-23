@@ -193,7 +193,7 @@
           </span>
 
           <span ng-if="!attendeesFormCtrl.attendeeInForm.needAIConfirmation">
-            <%= submit_tag 'Ok', {'title' => "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts", 'class' => 'attendees-form-submit-btn', 'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', 'ng-class' => "{'btn-success': attendeesFormCtrl.isFormValid(attendeesForm), 'form-submit-invalid': !attendeesFormCtrl.isFormValid(attendeesForm)}"} %>
+            <%= submit_tag 'Ok', {'title' => "Veuillez renseigner un Usage Name ou une adresse email présente dans l'un des emails du client ou de ses contacts", 'class' => 'attendees-form-submit-btn form-submit-invalid', 'ng-click' => 'attendeesFormCtrl.checkFormValidations(attendeesForm)', 'ng-class' => "{'btn-success': attendeesFormCtrl.isFormValid(attendeesForm), 'form-submit-invalid': !attendeesFormCtrl.isFormValid(attendeesForm)}"} %>
           </span>
         </div>
         <div ng-if="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">

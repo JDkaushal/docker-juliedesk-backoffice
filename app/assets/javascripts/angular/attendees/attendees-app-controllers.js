@@ -120,7 +120,11 @@
                 };
 
                 this.isFormValid = function(attendeesForm) {
-                   return jQuery.isEmptyObject(attendeesForm.email.$error);
+                    var noFormError = jQuery.isEmptyObject(attendeesForm.email.$error);
+                    var attendeeInForm = $scope.attendeesFormCtrl.attendeeInForm;
+                    var fullName = (!$.isEmptyObject(attendeeInForm) && attendeeInForm.fullName()) || '';
+
+                   return noFormError && fullName.length > 0;
                 };
 
                 this.checkAssistantConditions = function(attendeesForm){
@@ -1319,7 +1323,7 @@
                 if(that.isClient) {
                     computedUsageName = that.usageName;
                 } else {
-                    var unknownGender = that.gender == "Unknown";
+                    var unknownGender = that.gender == "Unknown" || !that.gender;
                     var genderCode = unknownGender ? '_' : that.gender;
                     var translationKey = ["gender_reference", null, window.threadComputedData.language_level, genderCode];
                     var nameKey = null;
@@ -1462,7 +1466,7 @@
         assistantDisplayText: function(){
             var name = '';
             if(this.assistedBy != undefined)
-                name = (this.assistedBy.computeUsageName() || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
+                name = ((this.assistedBy.computeUsageName && this.assistedBy.computeUsageName()) || this.assistedBy.displayName) + ' (' + this.assistedBy.email + ')';
             return name;
         },
 
