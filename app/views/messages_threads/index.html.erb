@@ -360,7 +360,7 @@
 
         $scope.updateLockStatuses = function() {
           _.each($scope.messagesThreads, function(messageThread) {
-            var threadToLock = _.find($scope.lockedThreadsData, function(lockedThread) { return lockedThread.threadId == messageThread.id});
+            var threadToLock = _.find($scope.allMessagesThreads, function(lockedThread) { return lockedThread.threadId == messageThread.id});
               messageThread.locked_by_operator_id = threadToLock ? threadToLock.operatorIdentifier : null;
               messageThread.locked_by_operator_name = threadToLock ? threadToLock.operatorName : null;
           });
