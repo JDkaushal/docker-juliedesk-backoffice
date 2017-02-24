@@ -5,7 +5,8 @@
     window.updatedEvents = [];
     window.deletedEvents = [];
 
-    window.currentHtmlMessage = '<%= @message.server_message['parsed_html'].gsub("\n", '').gsub("\r", '') %>';
+    // Deactivated because window.currentHtmlMessage has 'token unexpected error'
+    //window.currentHtmlMessage = '<%= @message.server_message['parsed_html'].gsub("\n", '').gsub("\r", '') %>';
     window.currentTicketInfos = {};
 
     var $container;
@@ -365,27 +366,27 @@
 
         $container = $("#thread-header-other-entries-container");
 
-
-        $.ajax({
-            url: "/api/v1/messages_threads/parse_ticket",
-            method: 'post',
-            data: {
-                html_message: window.currentHtmlMessage
-            },
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "<%= ENV['API_KEY'] %>");
-            },
-            success: function (response) {
-                if(response['Status'] == "Success") {
-                    $('#ticket_module').show();
-                    window.currentTicketInfos = response['Result'];
-                }
-                console.log(response);
-            },
-            error: function(response){
-                console.log(response);
-            }
-        })
+// Deactivated because window.currentHtmlMessage has 'token unexpected error'
+//        $.ajax({
+//            url: "/api/v1/messages_threads/parse_ticket",
+//            method: 'post',
+//            data: {
+//                html_message: window.currentHtmlMessage
+//            },
+//            beforeSend: function (xhr) {
+//                xhr.setRequestHeader("Authorization", "<%= ENV['API_KEY'] %>");
+//            },
+//            success: function (response) {
+//                if(response['Status'] == "Success") {
+//                    $('#ticket_module').show();
+//                    window.currentTicketInfos = response['Result'];
+//                }
+//                console.log(response);
+//            },
+//            error: function(response){
+//                console.log(response);
+//            }
+//        })
 
 
     });
