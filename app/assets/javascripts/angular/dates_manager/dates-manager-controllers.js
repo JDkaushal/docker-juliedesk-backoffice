@@ -180,6 +180,15 @@
                 }
 
                 if(fetch) {
+                    var meetingRoomsToShow = {};
+
+                    _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
+                        var calendarItemNode = $(c).closest('.calendar-item');
+
+                        meetingRoomsToShow[calendarItemNode.data('calendar-login-username')] = meetingRoomsToShow[calendarItemNode.data('calendar-login-username')] || [];
+                        meetingRoomsToShow[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
+                    });
+
                     var fetchParams = {
                         account_email: window.threadAccount.email,
                         thread_data: window.threadComputedData,
@@ -187,7 +196,8 @@
                         n_suggested_dates: suggestionsToGet,
                         attendees: $('#attendeesCtrl').scope().attendees,
                         message_id: $('.email.highlighted').data('message-id'),
-                        multi_clients: false
+                        multi_clients: false,
+                        meeting_rooms_to_show: meetingRoomsToShow
                     };
 
                     $scope.showAiLoader = true;
