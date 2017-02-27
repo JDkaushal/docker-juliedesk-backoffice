@@ -134,7 +134,7 @@
             var selectedDateMoment = moment($scope.selectedDateRaw);
 
             var currentDateUtc, currentDate, formattedDate, dateInOtherTimezones, timezones, data;
-            _.each($scope.rawDatesToCheck, function( datum) {
+            _.each($scope.rawDatesToCheck, function(datum) {
 
                 currentDateUtc = moment(datum.date);
                 currentDate = moment(datum.date).tz(window.threadComputedData.timezone);
@@ -148,7 +148,9 @@
                     timezone: window.threadComputedData.timezone,
                     displayText: currentDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")),
                     isHighlighted: currentDate.isSame(selectedDateMoment),
-                    isOutBound: $scope.datesManager.checkSuggestionTimeOutBound(currentDate)
+                    isOutBound: $scope.datesManager.checkSuggestionTimeOutBound(currentDate),
+                    // We may want to hide the date in the list because of reasons (i.e in the do_not_ask_suggestions_mode)
+                    hide: datum.hide
                 };
 
                 _.each(timezones, function(timezone) {

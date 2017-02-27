@@ -114,9 +114,23 @@ class MessagesController < ApplicationController
                                                                                                     awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
                                                                                                 })
     end
+
+    messages_thread = @message.messages_thread
+
     messages_thread_params = {last_operator_id: session[:operator_id]}
     messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
-    @message.messages_thread.update(messages_thread_params)
+    messages_thread.update(messages_thread_params)
+
+
+    messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
+
+    # if messages_thread.has_clients_with_linked_attendees_enabled && messages_thread.attendees_has_changed(params[:old_attendees], params[:attendees])
+    #   puts 'Computing linked attendees'
+    #   messages_thread.compute_linked_attendees(Account.accounts_cache(mode: "light"))
+    # end
+
+
+
     render json: {
         status: "success",
         message: "",

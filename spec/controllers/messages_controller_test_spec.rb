@@ -195,6 +195,40 @@ describe MessagesController, :type => :controller do
         m1.reload
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"redirect_url\":\"#{julie_action_path(m1.message_classifications.last.julie_action)}\",\"data\":{}}")
       end
+
+      it 'should recompute the linked_attendees' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        m1 = FactoryGirl.create(:message_complete)
+        message_classif = FactoryGirl.create(:message_classification_complete)
+
+        mt1.messages << m1
+
+        expect_any_instance_of(MessagesThread).to receive(:has_clients_with_linked_attendees_enabled).and_return(true)
+        expect_any_instance_of(MessagesThread).to receive(:compute_linked_attendees)
+
+        allow(MessageClassification).to receive(:create_from_params).and_return(message_classif)
+        allow(OperatorAction).to receive(:create_and_verify)
+        allow_any_instance_of(MessageClassification).to receive(:classification)
+
+        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}}, attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}, '2' => {'isPresent' => 'true', 'email' => 'email2@email.com'}}
+      end
+
+
+      it 'should not recompute the linked_attendees' do
+        mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+        m1 = FactoryGirl.create(:message_complete)
+        message_classif = FactoryGirl.create(:message_classification_complete)
+
+        mt1.messages << m1
+
+        expect_any_instance_of(MessagesThread).not_to receive(:compute_linked_attendees)
+
+        allow(MessageClassification).to receive(:create_from_params).and_return(message_classif)
+        allow(OperatorAction).to receive(:create_and_verify)
+        allow_any_instance_of(MessageClassification).to receive(:classification)
+
+        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: [], attendees: [{'isPresent' => true, 'email' => 'email@email.com'}]
+      end
     end
 
     describe "generate_threads" do

@@ -10,20 +10,22 @@ module LinkedAttendees
       @accounts_cache = accounts_cache
     end
 
-    def fetch
-      fetch_call
+    def fetch(forced_emails_to_check = nil)
+      fetch_call(forced_emails_to_check)
     end
 
     private
 
-    def fetch_call
+    def fetch_call(forced_emails_to_check)
       client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
 
+      attendees_to_check = forced_emails_to_check.present? ? forced_emails_to_check : @messages_thread.computed_recipients
+
       # Separate clients from non clients in a beautiful and magnificent way
-      recipients = @messages_thread.computed_recipients.partition {|r_email| Account.find_account_email(r_email, {accounts_cache: @accounts_cache}).present?}
+      recipients = attendees_to_check.partition {|r_email| Account.find_account_email(r_email, {accounts_cache: @accounts_cache}).present?}
       #clients_recipients = recipients[0].map{|client_recipient| Account.find_account_email(client_recipient, {accounts_cache: @accounts_cache})}
       #clients_recipients = [@messages_thread.account_email]
-      clients_recipients = @messages_thread.clients_with_linked_attendees_enabled.map(&:email)
+      clients_recipients = @messages_thread.get_clients_with_linked_attendees_enabled.map(&:email)
 
       result = {}
       if recipients[1].present? # Don't call if no other attendees than clients

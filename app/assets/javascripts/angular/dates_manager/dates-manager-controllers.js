@@ -228,7 +228,8 @@
                                 var eventCreatorApp = $('#datesVerificationsManager').scope();
                                 eventCreatorApp.addNewDateToVerify({
                                     date: moment($scope.timeSlotsSuggestedByAi[0].value).utc().format(),
-                                    timezone: window.currentCalendar.getCalendarTimezone()
+                                    timezone: window.currentCalendar.getCalendarTimezone(),
+                                    hide: true
                                 });
                             }
 

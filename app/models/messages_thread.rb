@@ -148,8 +148,8 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def compute_linked_attendees(accounts_cache)
-    self.update(linked_attendees: LinkedAttendees::Manager.new(self, accounts_cache).fetch)
+  def compute_linked_attendees(accounts_cache, forced_emails_to_check = nil)
+    self.update(linked_attendees: LinkedAttendees::Manager.new(self, accounts_cache).fetch(forced_emails_to_check))
   end
 
   def account params={}
@@ -453,11 +453,32 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def should_reprocess_linked_attendees(computed_recipients_changed)
-    computed_recipients_changed && clients_with_linked_attendees_enabled.size > 0
+    computed_recipients_changed && has_clients_with_linked_attendees_enabled
   end
 
-  def clients_with_linked_attendees_enabled
+  def has_clients_with_linked_attendees_enabled
+    get_clients_with_linked_attendees_enabled.size > 0
+  end
+
+  def get_clients_with_linked_attendees_enabled
     @clients_with_linked_attendees_enabled ||= clients.select{|c| c.linked_attendees_enabled}
+  end
+
+  def attendees_has_changed(old_attendees_emails, new_attendees_emails)
+    # old_emails is sent from frontend and is already constitued of only the present attendees
+    old_attendees_emails != new_attendees_emails
+  end
+
+  def check_recompute_linked_attendees(old_attendees, new_attendees)
+
+    if old_attendees.present? && new_attendees.present?
+      old_attendees_emails = old_attendees.values.map{|a| a['email']}.compact.sort
+      new_attendees_emails = new_attendees.values.map{|a| a['isPresent'] == 'true' ? a['email'] : nil}.compact.sort
+
+      if self.has_clients_with_linked_attendees_enabled && self.attendees_has_changed(old_attendees_emails, new_attendees_emails)
+        self.compute_linked_attendees(Account.accounts_cache(mode: "light"), new_attendees_emails)
+      end
+    end
   end
 
   def clients
@@ -1006,10 +1027,20 @@ class MessagesThread < ActiveRecord::Base
     linked_attendees.values.flatten.compact
   end
 
+  def do_not_ask_suggestions_emails_to_check
+    emails_to_check = self.client_attendees_emails
+    if self.account.linked_attendees_enabled
+      emails_to_check += self.linked_attendees_emails
+    end
+
+    emails_to_check
+  end
+
   def do_not_ask_suggestions?
     main_client_preferences = self.account
-    return false if main_client_preferences.nil? || !main_client_preferences.linked_attendees_enabled
-    (self.attendees_emails - (self.linked_attendees_emails + self.client_attendees_emails)).empty?
+    attendees_emails = self.attendees_emails
+    return false if main_client_preferences.nil? || attendees_emails.empty?
+    (self.attendees_emails - do_not_ask_suggestions_emails_to_check).empty?
   end
 
   # For dev purposes

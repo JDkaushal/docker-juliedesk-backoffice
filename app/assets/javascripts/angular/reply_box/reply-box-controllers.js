@@ -75,13 +75,11 @@
                         return {name: attendee["email"]};
                     });
                     $scope.tos = tos;
-                }
-                else {
+                } else {
                     var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
                     $scope.setDefaultRecipients(otherRecipients, presentAttendees);
                 }
-            }
-            else {
+            } else {
                 var presentAttendees = $scope.attendeesApp.getAttendeesWithoutThreadOwner();
                 $scope.setDefaultRecipients(otherRecipients, presentAttendees);
             }
@@ -121,6 +119,14 @@
                 setDefaultRecipientsAskOrVerifyAvailabilities();
             }else {
                 setDefaultRecipientsOther();
+            }
+
+            // Include julie aliases (except the main one)
+            if(window.julieAliases) {
+                _.each(window.julieAliases, function (julieAlias) {
+                    if (window.julieAlias && julieAlias.email != window.julieAlias.email)
+                        $scope.ccs.push({name: julieAlias.email});
+                });
             }
         };
 

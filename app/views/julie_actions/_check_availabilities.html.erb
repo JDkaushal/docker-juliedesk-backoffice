@@ -158,7 +158,7 @@
             });
 
             $("#thread-header-other-entries-container").on('click', '#invitation-sent-no-date-fits', function(e) {
-                window.timeSlotsToSuggest = null;
+                window.timeSlotsToSuggest = [];
                 window.pickingNewAvailabilities = true;
                 $(".messages-thread-info-panel .selected-events-list-container").hide();
                 window.currentCalendar.initialData.mode = "suggest_dates";
@@ -880,7 +880,7 @@
 
             // Special flow (linked_attendees)
             if(window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities")
-              window.timeSlotsToSuggest = null;
+              window.timeSlotsToSuggest = [];
             else
               window.timeSlotsToSuggest = event.data.date_times;
 

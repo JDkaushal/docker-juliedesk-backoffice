@@ -115,7 +115,6 @@ function Calendar($selector, params) {
             calendar.$selector.find(".global-loading").fadeOut();
         });
     });
-
 }
 
 Calendar.prototype.determineCalendarInitialStartDate = function() {

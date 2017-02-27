@@ -12,7 +12,7 @@
     });
 
     $("#thread-header-other-entries-container").on('click', '#invitation-sent-no-date-fits', function(e) {
-        window.timeSlotsToSuggest = null;
+        window.timeSlotsToSuggest = [];
         window.pickingNewAvailabilities = true;
         $(".messages-thread-info-panel .selected-events-list-container").hide();
         window.currentCalendar.initialData.mode = "suggest_dates";

@@ -143,6 +143,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         notes: $("#notes").val(),
         other_notes: $("#other_notes").val(),
         private: $("#private:checked").length > 0,
+        // We send the old_attendees for optimization purpose when looking if we need to recompute the linked attendees
+        old_attendees: _.filter(window.threadComputedData.attendees, function(att) { return att.isPresent == 'true' }),
         attendees: window.getInfoPanelAttendeesForSendForm(),
         constraints: $("#constraints").val(),
         constraints_data: $(".constraint-tile-container").map(function () {

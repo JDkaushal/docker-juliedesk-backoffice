@@ -69,11 +69,13 @@
       <!--<div class="data-entry-name"><%= I18n.t("info_box.dates_to_check") %></div>-->
       <div class="data-entry-value">
 
-        <div ng-show="aiDatesSuggestionsIsActive && datesManager.showAiError" class="suggested-date-time-container" ng-repeat="dateToCheck in datesToCheck track by $index">
-          <div class="suggested-date-time btn btn-sm btn-default btn-block" ng-class="{'btn-primary':dateToCheck.isHighlighted, 'is-outbound':dateToCheck.isOutBound}" data-date="{{dateToCheck.date}}">
-            <div class="text">{{dateToCheck.displayText}}</div>
+        <div ng-show="aiDatesSuggestionsIsActive" class="suggested-date-time-container" ng-repeat="dateToCheck in datesToCheck track by $index">
+          <div ng-hide="dateToCheck.hide">
+            <div class="suggested-date-time btn btn-sm btn-default btn-block" ng-class="{'btn-primary':dateToCheck.isHighlighted, 'is-outbound':dateToCheck.isOutBound}" data-date="{{dateToCheck.date}}">
+              <div class="text">{{dateToCheck.displayText}}</div>
+            </div>
+            <input type="checkbox" style="display: none;"/>
           </div>
-          <input type="checkbox" style="display: none;"/>
         </div>
 
         <div ng-hide="aiDatesSuggestionsIsActive" class="suggested-date-time-container" ng-repeat="dateToCheck in datesToCheck track by $index">

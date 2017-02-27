@@ -618,6 +618,24 @@ describe MessagesThread, :type => :model do
         expect(@messages_thread.linked_attendees).to eq({"client1@email.com"=>["attendee1@email.com"]})
       end
     end
+
+    context 'attendees emails to check are forced' do
+      let(:attendees_emails_to_check) { ['forced_attendees1@email.com', 'forced_attendees2@email.com'] }
+
+      before(:example) do
+        @messages_thread.computed_recipients = ['client1@email.com', 'attendee1@email.com', 'attendee2@email.com']
+        @messages_thread.clients_in_recipients = ['client1@email.com']
+        http_response = double('http_response')
+        allow(http_response).to receive(:code).and_return(200)
+        allow(http_response).to receive(:parse).and_return({'client1@email.com' =>['forced_attendees1@email.com', 'forced_attendees2@email.com']})
+        allow_any_instance_of(HTTP::Client).to receive(:post).with('https://test-app.herokuapp.com/api/v1/linked_attendees/extract', {json: {clients_emails: ['client1@email.com'], attendees_emails: ['forced_attendees1@email.com', 'forced_attendees2@email.com']}}).and_return(http_response)
+      end
+
+      it 'should populate the linked attendees field correctly' do
+        @messages_thread.compute_linked_attendees(accounts_cache, attendees_emails_to_check)
+        expect(@messages_thread.linked_attendees).to eq({'client1@email.com' =>['forced_attendees1@email.com', 'forced_attendees2@email.com']})
+      end
+    end
   end
 
   describe '#ask_suggestions_needed?' do
@@ -633,7 +651,6 @@ describe MessagesThread, :type => :model do
 
     context 'when one of the attendee is not a linked attendee nor a client' do
       it 'returns false' do
-
       end
     end
   end
@@ -658,7 +675,7 @@ describe MessagesThread, :type => :model do
     end
   end
 
-  describe 'clients_with_linked_attendees_enabled' do
+  describe 'get_clients_with_linked_attendees_enabled' do
     let(:accounts_cache) { {'client1@email.com' => {'email' => 'client1@email.com', 'linked_attendees_enabled' => true}, 'client2@email.com' => {'email' => 'client2@email.com', 'linked_attendees_enabled' => false}, 'main_client@email.com' => {'email' => 'main_client@email.com', 'linked_attendees_enabled' => true}} }
 
     before(:example) do
@@ -670,7 +687,7 @@ describe MessagesThread, :type => :model do
     end
 
     it 'should return the correct clients accounts' do
-      accounts = @messages_thread.clients_with_linked_attendees_enabled
+      accounts = @messages_thread.get_clients_with_linked_attendees_enabled
 
       expect(accounts.size).to eq(2)
       expect(accounts[0].email).to eq('main_client@email.com')
@@ -681,8 +698,6 @@ describe MessagesThread, :type => :model do
   describe 'should_reprocess_linked_attendees' do
     let(:computed_recipients_changed) { false }
     let(:accounts_cache) { {'client1@email.com' => {'linked_attendees_enabled' => false}, 'client2@email.com' => {'linked_attendees_enabled' => false}} }
-
-
 
     subject(:should_reprocess_linked_attendees) { @messages_thread.should_reprocess_linked_attendees(computed_recipients_changed) }
 
@@ -794,6 +809,91 @@ describe MessagesThread, :type => :model do
           it 'should return be false' do
             expect(subject).to be(false)
           end
+        end
+      end
+    end
+  end
+
+  describe 'attendees_has_changed' do
+    let(:messages_thread) { MessagesThread.new }
+    subject(:attendees_changed?) { messages_thread.attendees_has_changed(old_attendees, new_attendees) }
+
+    context 'attendees has not changed' do
+      let(:new_attendees) { ['email1@email.com', 'email2@email.com'] }
+      let(:old_attendees) { ['email1@email.com', 'email2@email.com'] }
+
+      it 'should return true' do
+        expect(attendees_changed?).to be(false)
+      end
+    end
+
+    context 'attendees has changed' do
+      let(:new_attendees) { ['email1@email.com', 'email2@email.com', 'email3@email.com'] }
+      let(:old_attendees) { ['email1@email.com', 'email2@email.com'] }
+
+      it 'should return false' do
+        expect(attendees_changed?).to be(true)
+      end
+    end
+  end
+
+  describe 'check_recompute_linked_attendees' do
+    before(:example) do
+      @messages_thread.update(clients_in_recipients: ['client1@email.com'])
+    end
+
+    #subject(:should_reprocess_linked_attendees) { @messages_thread.check_recompute_linked_attendees(old_attendees, new_attendees) }
+
+    context 'Client has the linked attendees feature active' do
+      before(:example) do
+        allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true})
+      end
+
+      context 'attendees  have changed' do
+        let(:old_attendees) { {'1' => {'email' => 'email1@email.com'}, '2' => {'email' => 'email2@email.com'}} }
+        let(:new_attendees) { {'1' => {'email' => 'email1@email.com', 'isPresent' => 'true'}, '2' => {'email' => 'email2@email.com', 'isPresent' => 'true'}, '3' => {'email' => 'email2@email.com', 'isPresent' => 'true'}} }
+
+        it 'should recompute the linked attendees' do
+          expect(@messages_thread).to receive(:compute_linked_attendees)
+          @messages_thread.check_recompute_linked_attendees(old_attendees, new_attendees)
+        end
+
+      end
+
+      context 'attendees have not changed' do
+        let(:old_attendees) { {'1' => {'email' => 'email1@email.com'}, '2' => {'email' => 'email2@email.com'}} }
+        let(:new_attendees) { {'1' => {'email' => 'email1@email.com', 'isPresent' => 'true'}, '2' => {'email' => 'email2@email.com', 'isPresent' => 'true'}} }
+
+        it 'should not recompute the linked attendees' do
+          expect(@messages_thread).not_to receive(:compute_linked_attendees)
+          @messages_thread.check_recompute_linked_attendees(old_attendees, new_attendees)
+        end
+      end
+    end
+
+    context 'Client has not the linked attendees feature active' do
+      before(:example) do
+        allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => false})
+      end
+
+      context 'attendees  have changed' do
+        let(:old_attendees) { {'1' => {'email' => 'email1@email.com'}, '2' => {'email' => 'email2@email.com'}} }
+        let(:new_attendees) { {'1' => {'email' => 'email1@email.com', 'isPresent' => 'true'}, '2' => {'email' => 'email2@email.com', 'isPresent' => 'true'}, '3' => {'email' => 'email2@email.com', 'isPresent' => 'true'}} }
+
+        it 'should not recompute the linked attendees' do
+          expect(@messages_thread).not_to receive(:compute_linked_attendees)
+          @messages_thread.check_recompute_linked_attendees(old_attendees, new_attendees)
+        end
+
+      end
+
+      context 'attendees have not changed' do
+        let(:old_attendees) { {'1' => {'email' => 'email1@email.com'}, '2' => {'email' => 'email2@email.com'}} }
+        let(:new_attendees) { {'1' => {'email' => 'email1@email.com', 'isPresent' => 'true'}, '2' => {'email' => 'email2@email.com', 'isPresent' => 'true'}} }
+
+        it 'should not recompute the linked attendees' do
+          expect(@messages_thread).not_to receive(:compute_linked_attendees)
+          @messages_thread.check_recompute_linked_attendees(old_attendees, new_attendees)
         end
       end
     end
