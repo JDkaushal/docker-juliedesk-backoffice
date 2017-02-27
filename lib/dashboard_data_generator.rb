@@ -1,7 +1,12 @@
 module DashboardDataGenerator
 
   def self.generate_data
-    madagascar_start_of_day = DateTime.now.in_time_zone("Indian/Antananarivo").change({hour: 6}).utc
+    if DateTime.now.in_time_zone("Indian/Antananarivo").hour < 6
+      madagascar_start_of_day = (DateTime.now.in_time_zone("Indian/Antananarivo") - 1.day).change({hour: 6}).utc
+    else
+      madagascar_start_of_day = DateTime.now.in_time_zone("Indian/Antananarivo").change({hour: 6}).utc
+    end
+
     madagascar_end_of_day = madagascar_start_of_day.clone + 1.day
     sent_messages_stat_data = self.generate_sent_messages_stat_data({
         start_date: madagascar_start_of_day.to_s,
