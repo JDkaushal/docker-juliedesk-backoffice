@@ -58,10 +58,6 @@
                     });
                 }
 
-                //$scope.$watch('selectedRoom', function(newVal, oldVal) {
-                //    $scope.displayAttendeesCountSelect = newVal && newVal.id == 'attendees_count';
-                //});
-
                 $scope.$watch('selectedRoom', function(newVal, oldVal) {
                     var currentAppointment = window.getCurrentAppointment();
                     if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
@@ -80,17 +76,6 @@
                         }
                     }
                 });
-
-                // $scope.$watch('selectedRoom', function(newVal, oldVal) {
-                //     if(newVal) {
-                //         $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
-                //
-                //         var currentAppointment = window.getCurrentAppointment();
-                //         if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
-                //             updateNotesCallingInfos();
-                //         }
-                //     }
-                // });
 
                 $scope.$watchGroup(['useAttendeesCountFilter', 'useCanConfCallFilter', 'useCanVisioFilter'], function(newValues, oldValues, scope) {
                     $scope.determineFittingMeetingRooms();
@@ -277,6 +262,8 @@
                                 });
                             }
                         }
+                    } else {
+                        $scope.usingMeetingRoom = false;
                     }
                 };
 

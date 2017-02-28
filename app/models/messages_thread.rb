@@ -1012,5 +1012,38 @@ class MessagesThread < ActiveRecord::Base
     (self.attendees_emails - (self.linked_attendees_emails + self.client_attendees_emails)).empty?
   end
 
+  # For dev purposes
+  def clear_thread
 
+    messages = self.messages
+    messages_classifications = messages.map(&:message_classifications).flatten
+    julie_actions = messages_classifications.map(&:julie_action).flatten
+
+    julie_actions.each(&:destroy)
+    messages_classifications.each(&:destroy)
+  end
+
+  # For dev purposes
+  def duplicate_thread
+    new_thread = self.dup
+    new_thread.save
+
+    self.messages.each do |message|
+     new_message = message.dup
+     new_message.messages_thread = new_thread
+     new_message.save
+
+      message.message_classifications.each do |mc|
+        new_mc = mc.dup
+        new_mc.message = new_message
+        new_mc.save
+
+        new_ja = mc.julie_action.dup
+        new_ja.message_classification = new_mc
+        new_ja.save
+      end
+    end
+
+    new_thread.id
+  end
 end
