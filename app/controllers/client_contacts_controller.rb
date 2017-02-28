@@ -285,7 +285,7 @@ class ClientContactsController < ApplicationController
       unless result[:error]
         # When the call fail, we store an empty string to avoid calling the API against on subsequent calls
         company_name = result['identification'] == 'fail' ? '' : result['company']
-        CompanyDomainAssociation.where(domain: domain, company_name: company_name).first_or_create
+        CompanyDomainAssociation.find_or_create_by(domain: domain, company_name: company_name)
       end
     end
 
