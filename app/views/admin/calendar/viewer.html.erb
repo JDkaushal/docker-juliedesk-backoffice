@@ -69,6 +69,7 @@
         calendarParams.default_timezone_id = "Europe/Paris";
         calendarParams.forcedInitialStartDate = forcedInitialStartDate;
         calendarParams.mode = "read_only";
+        calendarParams.dontTrackRequests = true;
 
         window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
         $(".calendar-container").addClass("visible");

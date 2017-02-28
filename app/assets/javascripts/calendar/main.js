@@ -735,7 +735,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
     var requestTrackingId = null;
     var requestTracked = null;
-    if (typeof RequestTracking === 'undefined' || RequestTracking == null) {
+    if (typeof RequestTracking === 'undefined' || RequestTracking == null || calendar.initialData.dontTrackRequests) {
 
     }
     else {
