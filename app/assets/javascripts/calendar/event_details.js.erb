@@ -30,10 +30,17 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
             });
         }
         else {
+            var right = 0;
+            if($(".fixed-columns").length > 0) {
+                right = $(".fixed-columns").width() - calendar.$currentEventTarget.offset().left + 10
+            }
+            else {
+                right = calendar.$selector.width() - calendar.$currentEventTarget.offset().left + 10
+            }
             $edc.find(".event-tile-container").css({
                 position: 'absolute',
                 top: (calendar.$selector.height() - $edc.find(".event-tile-container").outerHeight()) / 2,
-                right: $(".fixed-columns").width() - calendar.$currentEventTarget.offset().left + 10,
+                right: right,
                 left: "auto",
                 bottom: "auto"
             });
@@ -45,7 +52,12 @@ Calendar.prototype.showEventDetails = function(event, $currentTarget) {
 Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
     var calendar = this;
     var $container = calendar.$selector.find("#event-details-container");
-    console.log(event);
+    //console.log(event);
+    var locale = "en";
+    if(window.threadComputedData) {
+        locale = window.threadComputedData.locale;
+    }
+
     calendar.currentEvent = event;
     calendar.currentEventTile = new EventTile($container, {
         timezoneId: calendar.getCalendarTimezone(),
@@ -56,7 +68,7 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         calendarId: event.calId,
         accountEmail: calendar.findAccountEmailForEvent(event),
         uxElement: 'calendar',
-        locale: window.threadComputedData.locale,
+        locale: locale,
         selectEventCallback: function() {
             // - - - - - - - - - - - - - - - - - -
             // Fix for postponing events on calendars that load attendees on details
