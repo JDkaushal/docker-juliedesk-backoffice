@@ -423,7 +423,10 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
-      return window.allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
+      var allowedAttendeesEmails = window.allowedAttendeesEmails.map(function(email) {
+        return email.toLowerCase()
+      });
+      return allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
     window.getAppointment = function(appointmentNature) {
