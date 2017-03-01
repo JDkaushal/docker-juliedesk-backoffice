@@ -280,8 +280,10 @@
             }));
         };
 
-        $scope.removeAiEventFromCalendar = function(slot) {
-            window.currentCalendar.$selector.find("#calendar").fullCalendar("removeEvents", function (ev) {
+        $scope.removeAiEventFromCalendar = function(slot, applyImmediately) {
+            var method = applyImmediately ? "removeEvents" : "removeEventsFromCacheAndSources";
+
+            window.currentCalendar.$selector.find("#calendar").fullCalendar(method, function (ev) {
                 return ev.isSuggestionFromAi
                     && ev.start.isSame(slot);
             });
@@ -299,7 +301,7 @@
             // the operator selected it (which will be binded to the calendar)
             slotToAccept.display = false;
             slotToAccept.accepted = true;
-            $scope.removeAiEventFromCalendar(slot);
+            $scope.removeAiEventFromCalendar(slot, false);
 
             var realStart = slotToAccept.value.clone().tz(currentTimezone);
 
@@ -317,13 +319,13 @@
             });
 
             calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
-            calendar.addEvent(eventData);
-
-            drawOptions = {};
+            //calendar.addEvent(eventData);
+            //
+            var drawOptions = {};
             if($scope.doNotAskSuggestionsMode)
                 drawOptions.alsoAllowOn = ["create_event"];
             calendar.drawEventList(drawOptions);
-
+            //
             checkSendButtonAvailability();
         };
 
@@ -335,7 +337,7 @@
 
             slotToReject.display = false;
             slotToReject.rejected = true;
-            $scope.removeAiEventFromCalendar(slot);
+            $scope.removeAiEventFromCalendar(slot, true);
 
             if($scope.doNotAskSuggestionsMode) {
                 var eventCreatorApp = $('#datesVerificationsManager').scope();
@@ -664,7 +666,7 @@
                     operator_id: $('body').data('operatorId')
                 });
 
-                $scope.sendLearningData()
+                $scope.sendLearningData();
             }
             
         };

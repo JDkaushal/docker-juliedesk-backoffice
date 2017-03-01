@@ -1283,6 +1283,7 @@ function EventManager(options) { // assumed to be a calendar
 	t.updateEvent = updateEvent;
 	t.renderEvent = renderEvent;
 	t.removeEvents = removeEvents;
+    t.removeEventsFromCacheAndSources = removeEventsFromCacheAndSources;
 	t.clientEvents = clientEvents;
 	t.mutateEvent = mutateEvent;
 	
@@ -1622,6 +1623,23 @@ function EventManager(options) { // assumed to be a calendar
 			reportEvents(cache);
 		}
 	}
+
+	// Remove Events from cache does not actually rerender the calendar (usefull ofr optimisation purposes like deleting then adding other events
+	function removeEventsFromCacheAndSources(filter) {
+        // Purge event(s) from our local cache
+        var i;
+        
+        cache = $.grep(cache, filter, true); // inverse=true
+
+        // Remove events from array sources.
+        // This works because they have been converted to official Event Objects up front.
+        // (and as a result, event._id has been calculated).
+        for (i=0; i<sources.length; i++) {
+            if ($.isArray(sources[i].events)) {
+                sources[i].events = $.grep(sources[i].events, filter, true);
+            }
+        }
+    }
 	
 	
 	function removeEvents(filter) {
@@ -1638,18 +1656,20 @@ function EventManager(options) { // assumed to be a calendar
 			};
 		}
 
-		// Purge event(s) from our local cache
-		cache = $.grep(cache, filter, true); // inverse=true
+		// // Purge event(s) from our local cache
+		// cache = $.grep(cache, filter, true); // inverse=true
+        //
+		// // Remove events from array sources.
+		// // This works because they have been converted to official Event Objects up front.
+		// // (and as a result, event._id has been calculated).
+		// for (i=0; i<sources.length; i++) {
+		// 	if ($.isArray(sources[i].events)) {
+		// 		sources[i].events = $.grep(sources[i].events, filter, true);
+		// 	}
+		// }
 
-		// Remove events from array sources.
-		// This works because they have been converted to official Event Objects up front.
-		// (and as a result, event._id has been calculated).
-		for (i=0; i<sources.length; i++) {
-			if ($.isArray(sources[i].events)) {
-				sources[i].events = $.grep(sources[i].events, filter, true);
-			}
-		}
-
+        removeEventsFromCacheAndSources(filter);
+        
 		reportEvents(cache);
 	}
 	
