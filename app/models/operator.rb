@@ -30,7 +30,7 @@ class Operator < ActiveRecord::Base
 
     # Stock this in Redis for the day ?
     worked_hours = self.operator_presences.where('date >= ? AND date < ?', start_date, end_date).size / 2.0
-    requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('initiated_at >= ? AND initiated_at <= ?', start_date, end_date).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    requests_handled_for_the_day = self.operator_actions_groups.includes(:messages_thread).where('finished_at >= ? AND finished_at <= ?', start_date, end_date).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
     requests_handled_for_the_day_count = requests_handled_for_the_day.size
 
     uniq_clients = requests_handled_for_the_day.map do |r|
