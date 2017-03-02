@@ -1,7 +1,7 @@
 <div class="col-md-8 col-md-offset-2">
-  <h1>Turing review</h1>
+  <h1>Turing review </h1>
 
-  <h2>Set size: <%= @amc_count %></h2>
+  <h2><%= @batch_identifier %> (<%= @amc_count %>)</h2>
 
   <br>
 
@@ -59,10 +59,12 @@
                     5 => "success"
                 }[amc.notation] %>
                 <tr class="<%= klass %>">
+                  <td><%= amc.id %></td>
                   <td><%= amc.auto_message_classification.message.messages_thread.account_email %></td>
                   <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review_turing, id: amc.auto_message_classification.message.messages_thread.id, operator_id: amc.operator_id}, target: "_blank" %></td>
                   <td><%= amc.notation %>/5</td>
                   <td><%= amc.comments %></td>
+                  <td><%= amc.resolved ? "Solved" : "" %></td>
                   <td><%= amc.auto_message_classification.julie_action.done %></td>
                   <td><%= amc.operator.name %></td>
                 </tr>

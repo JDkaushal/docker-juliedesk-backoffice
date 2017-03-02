@@ -141,6 +141,7 @@ Rails.application.routes.draw do
 
         get "review_turing", action: :review_turing
         post "submit_turing_notation", action: :submit_turing_notation
+
       end
 
       collection do
@@ -152,6 +153,8 @@ Rails.application.routes.draw do
         get "review_turing", action: :review_turing_index
         get "admin_review_turing", action: :admin_review_turing_index
         get "review_turing_next", action: :review_turing_next
+
+        post "review_turing_mark_as_solved", action: :review_turing_mark_as_solved, as: :review_turing_mark_as_solved
       end
     end
 

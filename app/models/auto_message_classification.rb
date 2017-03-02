@@ -7,12 +7,20 @@ class AutoMessageClassification < MessageClassification
 
   self.table_name = "auto_message_classifications"
 
+  def auto_message_classification_review operator_id
+    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}" }
+  end
+
   def notation operator_id
-    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}" }.try(:notation)
+    auto_message_classification_review(operator_id).try(:notation)
+  end
+
+  def mark_as_solved? operator_id
+    auto_message_classification_review(operator_id).try(:resolved)
   end
 
   def notation_comments operator_id
-    auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}"}.try(:comments)
+    auto_message_classification_review(operator_id).try(:comments)
   end
 
   def self.build_from_operator message_id, params={}

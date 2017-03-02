@@ -131,13 +131,29 @@ class Review::MessagesThreadsController < ReviewController
   end
 
   def admin_review_turing_index
-    @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil})
-    if params[:operator_id]
-      @auto_message_classification_reviews = @auto_message_classification_reviews.where(operator_id: params[:operator_id])
+    if params[:batch_identifier]
+      @batch_identifier = params[:batch_identifier]
+      @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil}).where(auto_message_classifications: {batch_identifier: @batch_identifier})
+      if params[:operator_id]
+        @auto_message_classification_reviews = @auto_message_classification_reviews.where(operator_id: params[:operator_id])
+      end
+      @amc_count = AutoMessageClassification.where.not(message_id: nil).where(batch_identifier: @batch_identifier).count
+      @auto_message_classification_reviews = @auto_message_classification_reviews.includes(auto_message_classification: {message: :messages_thread, julie_action: []}, operator: {}).sort_by(&:notation).reverse
+      @operators = @auto_message_classification_reviews.map(&:operator).flatten.uniq
+
+    else
+      @batch_identifiers = AutoMessageClassification.select(:batch_identifier).distinct.map(&:batch_identifier)
+      render :admin_review_turing_index_choose_batch
     end
-    @amc_count = AutoMessageClassification.where.not(message_id: nil).count
-    @auto_message_classification_reviews = @auto_message_classification_reviews.includes(auto_message_classification: {message: :messages_thread, julie_action: []}, operator: {}).sort_by(&:notation).reverse
-    @operators = @auto_message_classification_reviews.map(&:operator).flatten.uniq
+
+  end
+
+  def review_turing_mark_as_solved
+    amcr = AutoMessageClassificationReview.find_by_id(params[:auto_message_classification_review_id])
+    if amcr
+      amcr.update(resolved: true)
+    end
+    redirect_to action: :admin_review_turing_index, batch_identifier: amcr.auto_message_classification.batch_identifier
   end
 
   def review_turing_next

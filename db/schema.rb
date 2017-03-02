@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170302131533) do
+ActiveRecord::Schema.define(version: 20170302162937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20170302131533) do
     t.text     "tags"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "resolved",                       default: false
   end
 
   create_table "auto_message_classifications", force: true do |t|
@@ -73,6 +74,7 @@ ActiveRecord::Schema.define(version: 20170302131533) do
     t.boolean  "from_ai",                    default: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "batch_identifier"
   end
 
   create_table "client_contacts", force: true do |t|
