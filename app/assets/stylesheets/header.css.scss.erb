@@ -311,6 +311,32 @@ $followUpHoverColor: #DF824C;
     }
   }
 
+  .review-element {
+    position: absolute;
+    right: 30px;
+    top: 5px;
+    height: 30px;
+    line-height: 30px;
+    width: 300px;
+    text-align: center;
+  }
+
+  .review-done-button {
+    font-weight: 400;
+    color: white;
+    @include border-radius(4px);
+    cursor: pointer;
+  }
+  .review-saving {
+    font-weight: 400;
+    color: #aaa;
+
+    img {
+      height: 20px;
+      margin: 6px 0;
+    }
+  }
+
   a, a:visited {
     color: #444;
     text-decoration: none!important;

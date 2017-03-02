@@ -155,6 +155,12 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :date_suggestions_reviews, only: [:show] do
+      member do
+        post "", action: :update
+      end
+    end
+
     root to: "operators#index"
   end
 

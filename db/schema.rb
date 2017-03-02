@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170214162303) do
+ActiveRecord::Schema.define(version: 20170302131533) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,21 @@ ActiveRecord::Schema.define(version: 20170214162303) do
   end
 
   add_index "company_domain_associations", ["company_name", "domain"], name: "index_company_domain_associations_on_company_name_and_domain", unique: true, using: :btree
+
+  create_table "date_suggestions_reviews", force: true do |t|
+    t.integer  "julie_action_id"
+    t.boolean  "generated_from_julie_action"
+    t.datetime "action_at"
+    t.json     "date_suggestions"
+    t.string   "review_set_status"
+    t.json     "review_set_errors"
+    t.integer  "review_items_incorrect_count"
+    t.json     "review_items_errors"
+    t.integer  "reviewed_by_operator_id"
+    t.string   "review_status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false

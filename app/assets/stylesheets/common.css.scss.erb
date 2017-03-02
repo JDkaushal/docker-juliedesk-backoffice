@@ -3,6 +3,14 @@
 $pink: #f4416d;
 $darkGrey: #494242;
 $borderGrey: #ccc;
+$warningOrange: #FB6F45;
+$labelBlue: #2D7992;
+
+$reviewCorrectLightGreen: #93D8C7;
+$reviewWarningLightPink: #FFB7B7;
+$reviewErrorLightRed: #F15B5B;
+
+$buttonGreen: #2EC094;
 
 $darkBlue: #0099CC;
 $lightBlue: #E7F2F5;
@@ -111,6 +119,13 @@ body {
   padding: 20px 0;
   width: 1100px;
   margin: 0 auto;
+}
+
+.notransition, .notransition * {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
 
 @mixin ai-date-suggestion-sprite-accept-circled() {

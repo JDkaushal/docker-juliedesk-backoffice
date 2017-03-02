@@ -30,6 +30,7 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
 
     if(calendar.getMode() == "select_events") return;
     if(calendar.getMode() == "read_only") return;
+    if(calendar.getMode() == "review") return;
 
     // Forbid suggestion or creation in the past
     if(moment.tz(start.format(), calendar.getCalendarTimezone()).isBefore(moment())) {
@@ -209,6 +210,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
         travelTimeTileCtrl.$apply();
     } else {
         if (event.beingAdded) {
+
             if(calendar.getMode() == "suggest_dates" && event.editable) {
 
                 // Not using calendar.events anymore
@@ -601,7 +603,7 @@ Calendar.prototype.fullCalendarInit = function() {
     $('#calendar_datepicker').datepicker({
         dateFormat: "dd-mm-yy",
         minDate: new Date,
-        onSelect: function(dateText, inst){
+        onSelect: function(dateText, inst) {
             var momentedDate = moment(dateText, 'DD-MM-YYYY');
             var selectedWeek = momentedDate.clone().startOf('isoWeek');
             var currentWeek = window.currentCalendar.$selector.find('#calendar').fullCalendar('getView').start;

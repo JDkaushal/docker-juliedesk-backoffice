@@ -204,7 +204,7 @@ module EmailServer
       http.post(url, body: post_params.to_param, ssl_context: ssl_context)
     end
 
-    puts post_params, response
+    #puts post_params, response
 
     response
   end

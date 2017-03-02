@@ -70,6 +70,7 @@
         calendarParams.forcedInitialStartDate = forcedInitialStartDate;
         calendarParams.mode = "read_only";
         calendarParams.dontTrackRequests = true;
+        calendarParams.dontShowMinimizeButton = true;
 
         window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
         $(".calendar-container").addClass("visible");

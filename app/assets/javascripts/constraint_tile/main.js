@@ -61,9 +61,21 @@ function ConstraintTile($selector, params) {
     var constraintTile = this;
 
     constraintTile.possibleAttendees = params.possible_attendees;
-    if(!constraintTile.possibleAttendees || constraintTile.possibleAttendees.length == 0) {
-        throw "possible_attendees param required to be a non-empty array";
+    if(!constraintTile.possibleAttendees) {
+        constraintTile.possibleAttendees = [];
     }
+    if(constraintTile.possibleAttendees.length == 0) {
+        if (params.readOnly) {
+            constraintTile.possibleAttendees.push({
+                    name: params.data.attendee_email,
+                    email: params.data.attendee_email
+                });
+        }
+        else {
+            throw "possible_attendees param required to be a non-empty array";
+        }
+    }
+
     constraintTile.$selector = $selector;
     constraintTile.locale = "en";
     if(params.locale)  constraintTile.locale = params.locale;
@@ -75,11 +87,17 @@ function ConstraintTile($selector, params) {
         constraintTile.fromAI = params.fromAI;
         constraintTile.fromAIText = params.data.text;
     }
+    if(params.readOnly) {
+        constraintTile.readOnly = true;
+    }
 
 
-
+    var defaultEmail = "";
+    if(constraintTile.possible_attendees && constraintTile.possible_attendees.length > 0) {
+        defaultEmail = constraintTile.possibleAttendees[0].email
+    }
     var defaultData = {
-        attendee_email: constraintTile.possibleAttendees[0].email,
+        attendee_email: defaultEmail,
         constraint_nature: ConstraintTile.NATURE_CAN,
         constraint_when_nature: ConstraintTile.WHEN_NATURE_FROM_DATE,
         dates: [moment().format("YYYY-MM-DD")],
@@ -91,8 +109,14 @@ function ConstraintTile($selector, params) {
     constraintTile.render();
 
     if(!params.expand) {
+        constraintTile.$selector.find(".constraint-tile").addClass("notransition");
         constraintTile.$selector.find(".constraint-tile").addClass("minimized");
+        setTimeout(function() {
+            constraintTile.$selector.find(".constraint-tile").removeClass("notransition");
+        }, 10);
     }
+
+
 
 
     var data = defaultData;
@@ -110,7 +134,7 @@ ConstraintTile.prototype.render = function() {
     constraintTile.$selector.html(HandlebarsTemplates['constraint_tile/main']());
 
     // Populate possible attendees select
-    _(this.possibleAttendees).each(function(attendee) {
+    _(constraintTile.possibleAttendees).each(function(attendee) {
         constraintTile.$selector.find(".constraint-attendee-email").append($("<option>").val(attendee.email).html(attendee.name + " (" + attendee.email + ")"));
     });
 
@@ -130,6 +154,10 @@ ConstraintTile.prototype.setInitialData = function(data) {
     // Set AI mode
 
     constraintTile.setAIMode();
+
+    if(constraintTile.readOnly) {
+        constraintTile.$selector.find(".constraint-tile").addClass("read-only");
+    }
 
 
 

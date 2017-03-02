@@ -4933,6 +4933,17 @@ function AgendaEventRenderer() {
 	
 	
 	function slotSegHtml(event, seg) {
+	    if(event.customHtml) {
+            var style = "position:absolute;" +
+                "top:" + seg.top + "px;" +
+                "left:" + seg.left + "px;";
+
+	        html = "<div style='" + style + "'>" + event.customHtml + "</div>";
+            html = html.replace(/\$COLOR\$/g, event.color);
+	        html = html.replace(/\$START\$/g, calendar.formatDate(event.start, opt('timeFormat')));
+            html = html.replace(/\$RAW_START\$/g, event.start.format());
+	        return html;
+        }
 		var html = "<";
 		var url = event.url;
 		var skinCss = getSkinCss(event, opt);

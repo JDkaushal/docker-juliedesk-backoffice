@@ -1,0 +1,127 @@
+
+<script>
+    window.dateSuggestionReviewId = <%= params[:id] %>;
+    window.getCurrentAddressObject = function () {
+        return null;
+    };
+    window.getCurrentAppointment = function () {
+        return null;
+    };
+</script>
+<%= javascript_include_tag 'angular_date_suggestions_review_manager_app' %>
+
+<style>
+  .calendar-container {
+    top: 40px;
+  }
+</style>
+
+
+<%= render template: "calendar/calendar" %>
+
+<div id="date-suggestions-review-manager"
+     ng-controller="date-suggestions-review-manager-controller"
+     ng-cloak>
+  <div class="header jd-global-header full">
+    Calendar review
+
+    <div class="review-element review-done-button btn-success" ng-click="validateReview()" ng-show="!saving && !loading && !error"">Next</div>
+    <div class="review-element review-saving" ng-show="saving"><%= image_tag "ajax-loader.gif" %></div>
+  </div>
+  <div class="common-right-panel with-header">
+
+
+    <div ng-show="loading">
+      <div class="loading">Loading...</div>
+    </div>
+    <div ng-show="error">
+      <div class="error">Impossible to load this review data.</div>
+    </div>
+    <div ng-show="!loading && !error">
+      <div class="warning-panel" ng-show="currentNotes">{{ currentNotes }}</div>
+
+      <div class="section">
+        <label>Scheduling</label>
+        <div class="information big">{{ duration }}min. {{ eventType | capitalize }}</div>
+      </div>
+
+      <div class="section">
+        <label>Location</label>
+        <div class="information">{{ location }}</div>
+      </div>
+
+      <div class="section">
+        <label>Constraints<span ng-show="constraints.length > 0"> ({{ constraints.length }})</span></label>
+        <div class="information empty" ng-show="constraints.length == 0">None</div>
+        <div class="constraint" ng-repeat="constraint in constraints" constraint-tile></div>
+      </div>
+
+
+      <div class="section">
+        <label>Suggested dates</label>
+        <div class="review-item"
+             ng-class="{correct: dateSuggestionsSetErrors.length == 0, warning: anyError(), incorrect: dateSuggestionsSetErrors.length > 0}"
+             dropdown
+             dropdown-data="{{ possibleDateSuggestionsSetErrors }}"
+             dropdown-select-item="addDateSuggestionsSetError(value)">
+          Date suggestions set
+          <div class="review-item-button dropdown-button"
+               tooltip="Signal an error"
+               tooltip-right
+               tooltip-delay>!
+          </div>
+        </div>
+        <div class="left-offset">
+          <div class="list-item red" ng-repeat="error in dateSuggestionsSetErrors track by $index">
+            <div class="list-item-remove-button" ng-click="removeDateSuggestionsSetErrors(error)">X</div>
+            {{ possibleDateSuggestionsSetErrors[error].label }}
+            <div class="free-text-container" ng-show="error == 'other'">
+              <input class="free-text" placeholder="Commentaire...">
+            </div>
+          </div>
+        </div>
+
+        <div class="line-break"></div>
+
+        <div class="section" ng-repeat="timezone in allTimezones track by $index">
+
+          <div class="suggested-date-timezone information">{{ timezone }}</div>
+          <div ng-repeat="dateSuggestion in suggestedDates" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+            <div class="suggested-date review-item correct"
+                 ng-class="{correct: dateSuggestion.errors.length == 0, incorrect: dateSuggestion.errors.length > 0}"
+
+                 dropdown
+                 dropdown-data="{{ possibleDateSuggestionErrors }}"
+                 dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+              {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+              <div class="review-item-button dropdown-button"
+                   tooltip="Signal an error"
+                   tooltip-right
+                   tooltip-delay>!
+              </div>
+            </div>
+
+            <div class="left-offset">
+              <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+                <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+                {{ possibleDateSuggestionErrors[error].label }}
+                <div class="free-text-container" ng-show="error == 'other'">
+                  <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-margin"></div>
+    </div>
+
+    <div id="event-to-check-for-calendar-html-in-review" style="display: none">
+      <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'>
+        <div style="position: absolute; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; font-weight: 600; text-transform: uppercase; padding: 0 0 0 10px;">$START$</div>
+        <div style=" position: absolute; top: 0px; right: 0px; width: 40px; height: 40px; background: white; color: black; font-weight: 600; font-size: 20px; text-align: center; cursor: pointer; border: 5px solid $COLOR$;" onclick="document.dispatchEvent(new CustomEvent('clickOnDateSuggestionAddErrorButtonInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">!</div>
+      </div>
+    </div>
+  </div>
+</div>

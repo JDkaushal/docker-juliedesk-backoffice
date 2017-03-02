@@ -64,10 +64,16 @@ function Calendar($selector, params) {
         calendar.changeShowCalendarCheckbox(e);
         calendar.refreshMeetingRoomSelectOptions();
     });
-    calendar.$selector.find("#minimize-button").click(function(e) {
-        trackActionV2('Click_on_close_calendar');
-        calendar.clickMinimizeButton(e);
-    });
+    if(calendar.initialData.dontShowMinimizeButton) {
+        calendar.$selector.find("#minimize-button").hide();
+    }
+    else {
+        calendar.$selector.find("#minimize-button").click(function(e) {
+            trackActionV2('Click_on_close_calendar');
+            calendar.clickMinimizeButton(e);
+        });
+    }
+
 
     var allEmailsForTracking = calendar.initialData.other_emails.slice();
     allEmailsForTracking.unshift(calendar.initialData.email);
@@ -81,28 +87,9 @@ function Calendar($selector, params) {
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
         var timeTravelManager = $('#travel_time_calculator').scope();
-        calendar.fetchCalendars(function () {
-            for(var i=0; i < calendar.initialData.date_times.length; i++) {
-                var dateObject = calendar.initialData.date_times[i];
-                var start = moment(dateObject.date).tz(calendar.getCalendarTimezone());
-                var end = start.clone();
-                end.add(calendar.getCurrentDuration(), 'm');
 
-                var title = "Suggested";
-                if(dateObject.mode == "to_check") {
-                    title = calendar.generateDelayTitle();
-                }else {
-                    calendar.suggestedEvents.push(dateObject);
-                }
-                var eventData = calendar.generateEventData({
-                    title: title,
-                    start: start,
-                    end: end
-                });
-                eventData.editable = false;
-                eventData.color = "#ccc";
-                calendar.eventsToCheck.push(eventData);
-            }
+        calendar.fetchCalendars(function () {
+            calendar.generateEventsToCheck(calendar.initialData.date_times);
 
             calendar.fullCalendarInit();
             if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
@@ -116,6 +103,44 @@ function Calendar($selector, params) {
         });
     });
 }
+
+Calendar.prototype.generateEventsToCheck = function() {
+    var calendar = this;
+    calendar.eventsToCheck = [];
+    for(var i=0; i < calendar.initialData.date_times.length; i++) {
+        var dateObject = calendar.initialData.date_times[i];
+        var start = moment(dateObject.date).tz(calendar.getCalendarTimezone());
+        var end = start.clone();
+        end.add(calendar.getCurrentDuration(), 'm');
+
+        var title = "Suggested";
+
+        if(dateObject.mode == "to_check") {
+            title = calendar.generateDelayTitle();
+        } else {
+            calendar.suggestedEvents.push(dateObject);
+        }
+        var eventData = calendar.generateEventData({
+            title: title,
+            start: start,
+            end: end
+        });
+        eventData.editable = false;
+        if(dateObject.color) {
+            eventData.color = dateObject.color;
+        }
+        else {
+            eventData.color = "#ccc";
+        }
+        if(dateObject.customHtml) {
+            eventData.customHtml = dateObject.customHtml;
+        }
+        //console.log(eventData);
+
+        window.lastEditedEventToCheck = eventData;
+        calendar.eventsToCheck.push(eventData);
+    }
+};
 
 Calendar.prototype.determineCalendarInitialStartDate = function() {
     var calendar = this;
@@ -529,6 +554,8 @@ Calendar.prototype.addForbiddenEvents = function(events) {
     calendar.$selector.find('#calendar').fullCalendar('addEventSource', result);
 };
 
+
+
 Calendar.prototype.getEventsToCheck = function() {
     var calendar = this;
     var result = [];
@@ -543,10 +570,14 @@ Calendar.prototype.getEventsToCheck = function() {
             color: event.color,
             durationEditable: event.durationEditable,
             editable: event.editable,
-            beingAdded: event.beingAdded
+            beingAdded: event.beingAdded,
+            customHtml: event.customHtml
         });
     });
-    return result;
+    return {
+        id: "events_to_check_source_id",
+        events: result
+    };
 
 };
 
@@ -564,8 +595,22 @@ Calendar.prototype.addEventsToCheckIfNeeded = function() {
         return ev.beingAdded
             && !ev.editable;
     }).length == 0) {
-        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.getEventsToCheck());
+        calendar.currentEventsToCheckSourceObject = calendar.getEventsToCheck();
+        calendar.$selector.find('#calendar').fullCalendar('addEventSource', calendar.currentEventsToCheckSourceObject);
     }
+};
+
+Calendar.prototype.reloadEventsToCheck = function() {
+    var calendar = this;
+    calendar.removeEventsToCheck();
+    calendar.generateEventsToCheck();
+    calendar.addEventsToCheckIfNeeded();
+};
+Calendar.prototype.removeEventsToCheck = function() {
+    var calendar = this;
+    calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(event) {
+        return event.source.id == "events_to_check_source_id";
+    });
 };
 
 Calendar.prototype.checkHideLoadingSpinner = function(start) {

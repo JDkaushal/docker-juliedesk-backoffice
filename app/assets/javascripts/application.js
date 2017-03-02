@@ -18,6 +18,9 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require angular
+//= require angular_common_directives
+
+
 
 //= require angular/merging_panel/ng-tags-input.min.js
 
@@ -40,6 +43,8 @@
 //= require rrule
 //= require nlp
 //= require ical
+
+//= require angular-moment.min
 
 //= require event_tile/main
 //= require event_tile/recurrence_form

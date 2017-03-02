@@ -1,0 +1,49 @@
+.custom-tooltip-container {
+  position: relative;
+  height: 0;
+
+  .custom-tooltip {
+    position: absolute;
+    background: $darkGrey;
+    white-space: pre;
+    top: 6px;
+    left: 0;
+    color: white;
+    font-size: 12px;
+    padding: 0 10px;
+    text-transform: none;
+    font-weight: 400;
+    z-index: 10;
+
+    .custom-tooltip-arrow {
+      position: absolute;
+      top: -12px;
+      left: 6px;
+      border: 6px solid transparent;
+      border-bottom: 6px solid $darkGrey;
+    }
+
+    &.right {
+      left: auto;
+      right: 0;
+
+      .custom-tooltip-arrow {
+        left: auto;
+        right: 6px;
+      }
+    }
+
+    &.top {
+      top: auto;
+      bottom: 6px;
+
+      .custom-tooltip-arrow {
+        top: auto;
+        bottom: -12px;
+        border-bottom: 6px solid transparent;
+        border-top: 6px solid $labelBlue;
+      }
+    }
+  }
+
+}
