@@ -45,7 +45,7 @@
             <% data_hash[:auto_message_classifications].each do |amc| %>
                 <tr>
                   <td><%= amc.message.messages_thread.account_email %></td>
-                  <td><%= link_to amc.message.messages_thread.subject, {action: :review_turing, id: amc.auto_message_classification.message.messages_thread.id}, target: "_blank" %></td>
+                  <td><%= link_to amc.message.messages_thread.subject, {action: :review_turing, id: amc.message.messages_thread.id}, target: "_blank" %></td>
                 </tr>
             <% end %>
           </table>
