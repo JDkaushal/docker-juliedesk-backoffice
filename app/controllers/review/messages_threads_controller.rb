@@ -141,6 +141,8 @@ class Review::MessagesThreadsController < ReviewController
       @auto_message_classification_reviews = @auto_message_classification_reviews.includes(auto_message_classification: {message: :messages_thread, julie_action: []}, operator: {}).sort_by(&:notation).reverse
       @operators = @auto_message_classification_reviews.map(&:operator).flatten.uniq
 
+      @unreviewed_message_classifications = AutoMessageClassification.where.not(message_id: nil).where(batch_identifier: @batch_identifier).where.not(id: @auto_message_classification_reviews.map(&:auto_message_classification_id))
+
     else
       @batch_identifiers = AutoMessageClassification.select(:batch_identifier).distinct.map(&:batch_identifier)
       render :admin_review_turing_index_choose_batch

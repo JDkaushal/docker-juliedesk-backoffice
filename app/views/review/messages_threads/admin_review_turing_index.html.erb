@@ -13,6 +13,17 @@
 
 
 
+  <% unreviewed_data_to_show = [
+      {
+          label: "Machine",
+          auto_message_classifications: @unreviewed_message_classifications.select { |amcr| amcr.from_ai}
+      },
+      {
+          label: "Human",
+          auto_message_classifications: @unreviewed_message_classifications.select { |amcr| !amcr.from_ai}
+      }
+  ] %>
+
 
 <% data_to_show = [
       {
@@ -23,14 +34,31 @@
           label: "Human",
           auto_message_classification_reviews: @auto_message_classification_reviews.select { |amcr| !amcr.auto_message_classification.from_ai}
       }
-  ] %>
+] %>
 
-  <h2>Reviewed:</h2>
+  <h2>Not reviewed: (<%= @unreviewed_message_classifications.length %>)</h2>
+  <div class="row">
+    <% unreviewed_data_to_show.each do |data_hash| %>
+        <div class="col">
+          <h4><%= data_hash[:label] %> (<%= data_hash[:auto_message_classifications].length %>)</h4>
+          <table class="table table-striped">
+            <% data_hash[:auto_message_classifications].each do |amc| %>
+                <tr>
+                  <td><%= amc.message.messages_thread.account_email %></td>
+                  <td><%= amc.message.messages_thread.subject %></td>
+                </tr>
+            <% end %>
+          </table>
+        </div>
+    <% end %>
+  </div>
+
+  <h2>Reviewed: (<%= @auto_message_classification_reviews.length %>)</h2>
 
   <div class="row">
     <% data_to_show.each do |data_hash| %>
         <div class="col">
-          <h4><%= data_hash[:label] %></h4>
+          <h4><%= data_hash[:label] %> (<%= data_hash[:auto_message_classification_reviews].length %>)</h4>
           <table class="table text-center">
             <tr>
               <td class="success col-md-3">
