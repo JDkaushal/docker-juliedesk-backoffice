@@ -48,12 +48,12 @@ angular.module('commonDirectives').directive('dropdown', function() {
             'selectItem': '&dropdownSelectItem'
         },
         template: function(element, attr) {
-            var htmlTemplate = `
-<div class="custom-dropdown-container" ng-show="isShown">
-<div class="custom-dropdown">
-<div class="custom-dropdown-option" ng-repeat="(data_id, data_item) in data_items" ng-click="hideDropdown(); selectItem({value: data_id})">{{ data_item.label }}</div>
-</div>
-</div>`;
+            var htmlTemplate =
+'<div class="custom-dropdown-container" ng-show="isShown">' +
+'<div class="custom-dropdown">' +
+'<div class="custom-dropdown-option" ng-repeat="(data_id, data_item) in data_items" ng-click="hideDropdown(); selectItem({value: data_id})">{{ data_item.label }}</div>' +
+'</div>' +
+'</div>';
 
             return "<div ng-transclude></div>" + htmlTemplate;
         }
