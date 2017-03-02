@@ -86,7 +86,7 @@
         <div class="notation-option" data-value="5"></div>
       </div>
       <% unless auto_message_classification.mark_as_solved?(params[:operator_id] || session[:operator_id]) %>
-        <%= button_to "Mark as solved", review_turing_mark_as_solved_review_messages_threads_path(auto_message_classification_review_id: auto_message_classification.auto_message_classification_review(params[:operator_id] || session[:operator_id]).id), class: "btn btn-success mark-as-solved-button" %>
+        <%= button_to "Mark as solved", review_turing_mark_as_solved_review_messages_threads_path(auto_message_classification_review_id: auto_message_classification.auto_message_classification_review(params[:operator_id] || session[:operator_id]).try(:id)), class: "btn btn-success mark-as-solved-button" %>
       <% end %>
       <textarea id="turing-notation-comments"><%= auto_message_classification.notation_comments(params[:operator_id] || session[:operator_id]) %></textarea>
     </div>
