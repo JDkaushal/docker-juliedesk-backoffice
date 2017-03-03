@@ -98,6 +98,15 @@ Rails.application.routes.draw do
     root to: "operators#index"
   end
 
+  namespace :turing_review do
+    get "", controller: :auto_message_classifications, action: :main
+    get ":batch_identifier/supervise", controller: :auto_message_classifications, action: :supervise
+    post ":batch_identifier/:auto_message_classification_review_id/mark_as_resolved", controller: :auto_message_classifications, action: :mark_as_resolved
+    get ":batch_identifier/:id", controller: :auto_message_classifications, action: :review
+    post ":batch_identifier/:id", controller: :auto_message_classifications, action: :reviewed
+
+  end
+
 
   namespace :review do
     resources :operators, only: [:show, :index] do
@@ -137,11 +146,6 @@ Rails.application.routes.draw do
         post "learnt", action: :learnt
 
         post "change_messages_thread_status", action: :change_messages_thread_status
-
-
-        get "review_turing", action: :review_turing
-        post "submit_turing_notation", action: :submit_turing_notation
-
       end
 
       collection do
@@ -149,12 +153,6 @@ Rails.application.routes.draw do
         get "review_next", action: :review_next
         get "learn_next", action: :learn_next
         get "group_review_next", action: :group_review_next
-
-        get "review_turing", action: :review_turing_index
-        get "admin_review_turing", action: :admin_review_turing_index
-        get "review_turing_next", action: :review_turing_next
-
-        post "review_turing_mark_as_solved", action: :review_turing_mark_as_solved, as: :review_turing_mark_as_solved
       end
     end
 

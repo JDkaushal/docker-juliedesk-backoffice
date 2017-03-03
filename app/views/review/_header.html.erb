@@ -1,6 +1,6 @@
 <div class="header jd-global-header review <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>">
-  <% if params[:action] == "review_turing" %>
-      <%= link_to action: :review_turing_index do %>
+  <% if params[:controller] == "turing_review/auto_message_classifications" %>
+      <%= link_to action: :main do %>
           Julie Desk Backoffice <span class="dot ai"></span> Turing Review
       <% end %>
   <% else %>
@@ -9,7 +9,7 @@
     <% end %>
   <% end %>
 
-  <% if params[:action] == "review" && !params[:no_next].present? %>
+  <% if params[:controller] != "turing_review/auto_message_classifications" && params[:action] == "review" && !params[:no_next].present? %>
       (<%= @to_review_count %>)
       <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :data %>
@@ -17,9 +17,10 @@
       <% end %>
   <% end %>
 
-  <% if params[:action] == "review_turing" %>
-      <%= form_tag({action: :submit_turing_notation}, method: "post", id: 'review-form') do |f| %>
+  <% if params[:controller] == "turing_review/auto_message_classifications" %>
+      <%= form_tag({action: :reviewed}, method: "post", id: 'review-form') do |f| %>
           <%= hidden_field_tag :id, params[:id] %>
+          <%= hidden_field_tag :batch_identifier, params[:batch_identifier] %>
           <%= hidden_field_tag :data %>
           <%= submit_tag "Next", class: "btn btn-success" %>
       <% end %>

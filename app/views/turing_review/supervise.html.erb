@@ -1,5 +1,7 @@
 <div class="col-md-8 col-md-offset-2">
-  <h1>Turing review </h1>
+  <h1><%= link_to "Turing review", {action: :main} %></h1>
+
+
 
   <h2><%= @batch_identifier %> (<%= @amc_count %>)</h2>
 
@@ -7,7 +9,7 @@
 
   <div>
     <% @operators.each do |operator| %>
-      <%= link_to operator.email, url_for({operator_id: operator.id}), class: "btn btn-primary" %>
+        <%= link_to operator.email, url_for({operator_id: operator.id}), class: "btn btn-primary" %>
     <% end %>
   </div>
 
@@ -25,7 +27,7 @@
   ] %>
 
 
-<% data_to_show = [
+  <% data_to_show = [
       {
           label: "Machine",
           auto_message_classification_reviews: @auto_message_classification_reviews.select { |amcr| amcr.auto_message_classification.from_ai}
@@ -34,7 +36,7 @@
           label: "Human",
           auto_message_classification_reviews: @auto_message_classification_reviews.select { |amcr| !amcr.auto_message_classification.from_ai}
       }
-] %>
+  ] %>
 
   <h2>Not reviewed: (<%= @unreviewed_message_classifications.length %>)</h2>
   <div class="row">
@@ -45,7 +47,7 @@
             <% data_hash[:auto_message_classifications].each do |amc| %>
                 <tr>
                   <td><%= amc.message.messages_thread.account_email %></td>
-                  <td><%= link_to amc.message.messages_thread.subject, {action: :review_turing, id: amc.message.messages_thread.id}, target: "_blank" %></td>
+                  <td><%= link_to amc.message.messages_thread.subject, {action: :review, id: amc.id}, target: "_blank" %></td>
                 </tr>
             <% end %>
           </table>
@@ -89,7 +91,7 @@
                 <tr class="<%= klass %>">
                   <td><%= amc.id %></td>
                   <td><%= amc.auto_message_classification.message.messages_thread.account_email %></td>
-                  <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review_turing, id: amc.auto_message_classification.message.messages_thread.id, operator_id: amc.operator_id}, target: "_blank" %></td>
+                  <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review, id: amc.auto_message_classification_id, operator_id: amc.operator_id}, target: "_blank" %></td>
                   <td><%= amc.notation %>/5</td>
                   <td><%= amc.comments %></td>
                   <td><%= amc.resolved ? "Solved" : "" %></td>

@@ -2,7 +2,6 @@ class Review::MessagesThreadsController < ReviewController
 
   skip_before_filter :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
   before_filter :only_mine, only: [:learn, :learnt, :learn_next]
-  before_filter :only_admin, only: [:admin_review_turing_index]
 
   def review
     begin
@@ -125,83 +124,8 @@ class Review::MessagesThreadsController < ReviewController
     redirect_to action: :review
   end
 
-  def review_turing_index
-    @reviewed_by_me_count = AutoMessageClassificationReview.where(operator_id: session[:operator_id]).count
-    @count_to_review = AutoMessageClassification.where.not(message_id: nil).count - @reviewed_by_me_count
-  end
-
-  def admin_review_turing_index
-    if params[:batch_identifier]
-      @batch_identifier = params[:batch_identifier]
-      @auto_message_classification_reviews = AutoMessageClassificationReview.joins(:auto_message_classification).where.not(auto_message_classifications: {message_id: nil}).where(auto_message_classifications: {batch_identifier: @batch_identifier})
-      if params[:operator_id]
-        @auto_message_classification_reviews = @auto_message_classification_reviews.where(operator_id: params[:operator_id])
-      end
-      @amc_count = AutoMessageClassification.where.not(message_id: nil).where(batch_identifier: @batch_identifier).count
-      @auto_message_classification_reviews = @auto_message_classification_reviews.includes(auto_message_classification: {message: :messages_thread, julie_action: []}, operator: {}).sort_by(&:notation).reverse
-      @operators = @auto_message_classification_reviews.map(&:operator).flatten.uniq
-
-      @unreviewed_message_classifications = AutoMessageClassification.where.not(message_id: nil).where(batch_identifier: @batch_identifier).where.not(id: @auto_message_classification_reviews.map(&:auto_message_classification_id))
-
-    else
-      @batch_identifiers = AutoMessageClassification.select(:batch_identifier).distinct.map(&:batch_identifier)
-      render :admin_review_turing_index_choose_batch
-    end
-
-  end
-
-  def review_turing_mark_as_solved
-    amcr = AutoMessageClassificationReview.find_by_id(params[:auto_message_classification_review_id])
-    if amcr
-      amcr.update(resolved: true)
-    end
-    redirect_to action: :admin_review_turing_index, batch_identifier: amcr.auto_message_classification.batch_identifier
-  end
-
-  def review_turing_next
-    redirect_to action: :review_turing, id: find_next_messages_thread_id_to_turing_review
-  end
-
-  def review_turing
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
-    @messages_thread.re_import
-    @messages_thread.mock_conscience_first_message
-
-
-    @messages_thread.account
-
-    @turing_mode = "machine"
-
-    @accounts_cache_light = Account.accounts_cache(mode: "light")
-    @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
-
-  end
-
-  def submit_turing_notation
-    @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
-    amc = @messages_thread.messages.sort_by(&:received_at).first.auto_message_classification
-    data = JSON.parse(params[:data]).with_indifferent_access
-    amc.auto_message_classification_reviews.where(operator_id: session[:operator_id]).destroy_all
-    amc.auto_message_classification_reviews << AutoMessageClassificationReview.new({
-                                                                                       notation: data[:notation],
-                                                                                       comments: data[:comments],
-                                                                                       operator_id: session[:operator_id]
-                                                                                   })
-    next_id = find_next_messages_thread_id_to_turing_review
-    if next_id
-      redirect_to action: :review_turing, id: next_id
-    else
-      redirect_to action: :review_turing_index
-    end
-  end
-
   private
 
-  def find_next_messages_thread_id_to_turing_review
-    reviewed_by_me_amc_ids = AutoMessageClassificationReview.where(operator_id: session[:operator_id]).map(&:auto_message_classification_id)
-    AutoMessageClassification.where.not(message_id: nil).where.not(id: reviewed_by_me_amc_ids).first.try(:message).try(:messages_thread_id)
-  end
 
   def group_review_next_messages_thread
     oag = OperatorActionsGroup.order("initiated_at ASC").find_by_group_review_status(OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)

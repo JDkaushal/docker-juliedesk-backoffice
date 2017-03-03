@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
 
   include FeatureHelper
 
+  helper_method :only_admin
+
   def change_sound
     session[:sound_is_activated] = false
     if params[:activated] == "true"

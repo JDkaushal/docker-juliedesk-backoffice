@@ -28,11 +28,15 @@ class AutoMessageClassification < MessageClassification
 
     mc = m.message_classifications.select{|mc| mc.julie_action.done}.first
     ja = mc.julie_action.dup
-    amc = AutoMessageClassification.new(mc.dup.attributes)
+    amc = AutoMessageClassification.new(mc.dup.attributes.reject{|k, v| ['verified_dates_by_ai', 'annotated_reply', 'language_level'].include? k})
     amc.julie_action = ja
     amc.from_ai = false
 
     m.auto_message_classification = amc
+  end
+
+  def self.get_all_batch_identifiers
+    self.select(:batch_identifier).distinct.map(&:batch_identifier).compact
   end
 
   def self.build_from_conscience message_id, params={}

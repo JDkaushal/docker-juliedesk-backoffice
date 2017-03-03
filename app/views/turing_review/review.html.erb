@@ -1,24 +1,24 @@
 <script>
-  $(function() {
-    $("#review-form").submit(function() {
-      var data = turingReviewData();
-      if(data.notation == "") {
-        return false;
-      }
-      else {
-        $("form#review-form input[name='data']").val(JSON.stringify(data));
-        return true;
-      }
+    $(function() {
+        $("#review-form").submit(function() {
+            var data = turingReviewData();
+            if(data.notation == "") {
+                return false;
+            }
+            else {
+                $("form#review-form input[name='data']").val(JSON.stringify(data));
+                return true;
+            }
+        });
     });
-  });
 
 
-  function turingReviewData() {
-      return {
-        notation: $(".notation-turing-container .notation-container").data('value'),
-        comments: $(".notation-turing-container textarea").val()
-      };
-  }
+    function turingReviewData() {
+        return {
+            notation: $(".notation-turing-container .notation-container").data('value'),
+            comments: $(".notation-turing-container textarea").val()
+        };
+    }
 </script>
 <%= render partial: "review/header" %>
 

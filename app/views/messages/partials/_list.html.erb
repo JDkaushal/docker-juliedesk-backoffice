@@ -18,7 +18,6 @@
       end
     end
   elsif locals[:type] == :messages_threads_turing
-
     first_message = @messages_thread.messages.sort_by(&:received_at).first
     if locals[:turing_mode] == "machine"
       julie_message = first_message.auto_message_classification.mock_julie_message (first_message.server_message)

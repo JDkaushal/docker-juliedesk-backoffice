@@ -1,9 +1,0 @@
-<div class="col-md-8 col-md-offset-2">
-  <h1>Turing review</h1>
-
-  <h3>Choose batch</h3>
-  <% @batch_identifiers.each do |batch_identifier| %>
-      <%= link_to("#{batch_identifier}", {batch_identifier: batch_identifier}) %>
-      <br>
-  <% end %>
-</div>
