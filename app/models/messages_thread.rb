@@ -845,7 +845,6 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_CREATE_EVENT
             ],
             other: [
-                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN,
                 MessageClassification::FORWARD_TO_SUPPORT
@@ -864,7 +863,6 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::INVITATION_ALREADY_SENT
             ],
             other: [
-                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN,
                 MessageClassification::FORWARD_TO_SUPPORT
@@ -884,7 +882,6 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::WAIT_FOR_CONTACT
             ],
             other: [
-                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::FORWARD_TO_CLIENT,
                 MessageClassification::UNKNOWN,
                 MessageClassification::FORWARD_TO_SUPPORT
@@ -900,7 +897,6 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::INVITATION_ALREADY_SENT
             ],
             other: [
-                MessageClassification::GIVE_PREFERENCE,
                 MessageClassification::ASK_CREATE_EVENT,
                 MessageClassification::ASK_CANCEL_EVENTS,
                 MessageClassification::ASK_POSTPONE_EVENTS,
