@@ -392,6 +392,13 @@
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 
+    window.refreshAllowedAttendeesEmails = function() {
+      window.initAllowedAttendeesEmails();
+      var recipientsManager = $('#recipients-manager').scope();
+      if(recipientsManager)
+        recipientsManager.initTokenInputs();
+    }
+
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
       var messageBodies = $.map($('#messages_container .email:not(".from-me") .body, .gmail_quote,blockquote, .email:not(".from-me") .ics-preview'), function(el, _) { return el.innerText }).join("\n");

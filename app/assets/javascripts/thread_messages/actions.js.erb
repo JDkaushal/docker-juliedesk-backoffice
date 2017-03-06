@@ -143,8 +143,8 @@ function IcsManager() {
                 that.icsEntities.push(parsedIcs);
                 that.generatePreview($email, parsedIcs);
 
-                if(window.initAllowedAttendeesEmails)
-                  window.initAllowedAttendeesEmails();
+                if(window.refreshAllowedAttendeesEmails)
+                  window.refreshAllowedAttendeesEmails();
             });
 
         });
