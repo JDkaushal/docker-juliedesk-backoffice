@@ -40,6 +40,8 @@ class AutoMessageClassification < MessageClassification
   end
 
   def self.build_from_conscience message_id, params={}
+    result = {}
+
     # Get objects
     m = Message.find(message_id)
     m.messages_thread.re_import
@@ -55,193 +57,201 @@ class AutoMessageClassification < MessageClassification
       main_message_interpretation.process
       entities_interpretation.process
     end
-    main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
-    # Get duration (should be done at conscience level in the future)
-    found_duration = nil
-    duration_entities = Nokogiri::HTML(JSON.parse(entities_interpretation.raw_response)['annotated']).css(".juliedesk-entity.duration")
-    if duration_entities.length == 1
-      duration_string = duration_entities.first.attr('value')
+    if main_message_interpretation.present?
+      main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
-      if (md = /.{2}(\d*)M/.match(duration_string))
-        found_duration = md[1].to_i
-      elsif (md = /.{2}(\d*)H/.match(duration_string))
-        found_duration = md[1].to_i * 60
-      end
-    end
+      # Get duration (should be done at conscience level in the future)
+      found_duration = nil
+      duration_entities = Nokogiri::HTML(JSON.parse(entities_interpretation.raw_response)['annotated']).css(".juliedesk-entity.duration")
+      if duration_entities.length == 1
+        duration_string = duration_entities.first.attr('value')
 
-
-    # Build interpretation hash in backoffice format
-    interpretation = {
-        :classification => main_interpretation["request_classif"] || main_interpretation["raw_request_classif"],
-        :appointment => main_interpretation['appointment_classif'] || main_interpretation['raw_appointment_classif'],
-        :locale => main_interpretation["language_detected"],
-        :entities => {},
-        attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
-          human_civilities_response = AiProxy.new.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
-          company_response = AiProxy.new.build_request(:get_company_name, { address: "severin.naudet@wework.com", message: "" })
-          {
-              'email' => att[:email],
-              'fullName' => att[:name],
-              'firstName' => human_civilities_response['first_name'],
-              'lastName' => human_civilities_response['last_name'],
-              'company' => company_response['company'],
-              'usageName' => human_civilities_response['first_name'],
-              'isPresent' => true
-          }
-        end,
-        constraints_data: main_interpretation['constraints_data']
-    }
-
-
-
-    klass = AutoMessageClassification
-    if params[:for_real]
-      klass = MessageClassification
-    end
-
-
-    # Build AutoMessageClassification
-    amc = klass.new({
-                                            classification: interpretation[:classification]
-                                        })
-
-    if amc.has_data?
-      unless account
-        raise "No account found for messages_thread ##{m.messages_thread_id} (account_email is #{m.messages_thread.account_email})"
+        if (md = /.{2}(\d*)M/.match(duration_string))
+          found_duration = md[1].to_i
+        elsif (md = /.{2}(\d*)H/.match(duration_string))
+          found_duration = md[1].to_i * 60
+        end
       end
 
-      # Build some other needed properties
-      client_preferences = {
-          timezone: account.default_timezone_id,
+
+      # Build interpretation hash in backoffice format
+      interpretation = {
+          :classification => main_interpretation["request_classif"] || main_interpretation["raw_request_classif"],
+          :appointment => main_interpretation['appointment_classif'] || main_interpretation['raw_appointment_classif'],
+          :locale => main_interpretation["language_detected"],
+          :entities => {},
+          attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
+            human_civilities_response = AiProxy.new.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
+            company_response = AiProxy.new.build_request(:get_company_name, { address: "severin.naudet@wework.com", message: "" })
+            {
+                'email' => att[:email],
+                'fullName' => att[:name],
+                'firstName' => human_civilities_response['first_name'],
+                'lastName' => human_civilities_response['last_name'],
+                'company' => company_response['company'],
+                'usageName' => human_civilities_response['first_name'],
+                'isPresent' => true
+            }
+          end,
+          constraints_data: main_interpretation['constraints_data']
       }
-      appointment = account.appointments.find{|appt| appt['label'] == interpretation[:appointment]}
-      target = {
-          "propose" => "client",
-          "ask_interlocutor" => "interlocutor",
-          "later" => "later"
-      }[appointment["behaviour"]] || "later"
-
-      amc.assign_attributes({
-                                appointment_nature: interpretation[:appointment],
-                                summary: nil,
-                                location:  appointment['default_address'].try(:[], 'address'),
-                                attendees: AutoMessageClassification.clean_and_categorize_clients(interpretation[:attendees]).to_json,
-                                notes: nil,
-                                date_times: "[]",
-                                locale: interpretation[:locale],
-                                timezone: client_preferences[:timezone],
-                                constraints_data: (interpretation[:constraints_data] || []).to_json,
-                                duration: found_duration || appointment['duration'],
-                                call_instructions: {
-                                    target: target,
-                                    support: "mobile",
-                                    targetInfos: {}
-                                }.to_json
-                            })
-
-    end
-
-    amc.julie_action = JulieAction.new({
-                                           action_nature: amc.computed_julie_action_nature,
-                                           done: true,
-                                           server_message_id: m.server_message_id,
-                                       })
 
 
-    if amc.julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
 
-      #puts "*" * 50
-      # Handle calendar
-      date_suggestions_response = AiProxy.new.build_request(:fetch_dates_suggestions, {
-          account_email: account.email,
-          thread_data: m.messages_thread.computed_data([amc]),
-          raw_constraints: interpretation[:constraints_data],
-          n_suggested_dates: 4,
-          attendees: [],
-          message_id: m.id,
-          date: processing_date.strftime("%Y-%m-%d")
-      })
-      #puts date_suggestions_response
-      date_suggestions = date_suggestions_response["suggested_dates"]
-      amc.date_times = (date_suggestions || []).to_json
-
-      # Handle template generation
-      client_names = interpretation[:attendees].select{|att| att['isPresent'] && att['account_email']}.map do |att|
-        att['usageName']
+      klass = AutoMessageClassification
+      if params[:for_real]
+        klass = MessageClassification
       end
 
-      attendees = interpretation[:attendees].select{|att| att['isPresent'] && !att['account_email']}.map do |att|
-        {
-            name: att['usageName']
+
+      # Build AutoMessageClassification
+      amc = klass.new({
+                          classification: interpretation[:classification]
+                      })
+
+      if amc.has_data?
+        unless account
+          raise "No account found for messages_thread ##{m.messages_thread_id} (account_email is #{m.messages_thread.account_email})"
+        end
+
+        # Build some other needed properties
+        client_preferences = {
+            timezone: account.default_timezone_id,
         }
+        appointment = account.appointments.find{|appt| appt['label'] == interpretation[:appointment]}
+        target = {
+            "propose" => "client",
+            "ask_interlocutor" => "interlocutor",
+            "later" => "later"
+        }[appointment["behaviour"]] || "later"
+
+        amc.assign_attributes({
+                                  appointment_nature: interpretation[:appointment],
+                                  summary: nil,
+                                  location:  appointment['default_address'].try(:[], 'address'),
+                                  attendees: AutoMessageClassification.clean_and_categorize_clients(interpretation[:attendees]).to_json,
+                                  notes: nil,
+                                  date_times: "[]",
+                                  locale: interpretation[:locale],
+                                  timezone: client_preferences[:timezone],
+                                  constraints_data: (interpretation[:constraints_data] || []).to_json,
+                                  duration: found_duration || appointment['duration'],
+                                  call_instructions: {
+                                      target: target,
+                                      support: "mobile",
+                                      targetInfos: {}
+                                  }.to_json
+                              })
+
       end
 
-      data_for_template = {
-          client_names: client_names,
-          timezones: [client_preferences[:timezone]],
-          default_timezone: client_preferences[:timezone],
-          locale: interpretation[:locale],
-          is_virtual: false,
-          attendees: attendees,
-          appointment_in_email: {
-              en: appointment['title_in_email']['en'],
-              fr: appointment['title_in_email']['fr']
-          },
-          location_in_email: {
-              en: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
-              fr: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
-          },
-          should_ask_location: false,
-          missing_contact_info: nil,
+      amc.julie_action = JulieAction.new({
+                                             action_nature: amc.computed_julie_action_nature,
+                                             done: true,
+                                             server_message_id: m.server_message_id,
+                                         })
 
-          dates: date_suggestions
-      }
 
-      text_template = get_suggest_dates_template data_for_template
+      if amc.julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
 
-      say_hi_text = get_say_hi_template({
-                                            recipient_names: attendees.map{|att| att[:assisted_by_name] || att[:name]},
-                                            should_say_hi: true,
-                                            locale: interpretation[:locale]
-                                        })
+        #puts "*" * 50
+        # Handle calendar
+        date_suggestions_response = AiProxy.new.build_request(:fetch_dates_suggestions, {
+            account_email: account.email,
+            thread_data: m.messages_thread.computed_data([amc]),
+            raw_constraints: interpretation[:constraints_data],
+            n_suggested_dates: 4,
+            attendees: [],
+            message_id: m.id,
+            date: processing_date.strftime("%Y-%m-%d")
+        })
+        #puts date_suggestions_response
+        date_suggestions = date_suggestions_response["suggested_dates"]
+        amc.date_times = (date_suggestions || []).to_json
 
-      if say_hi_text.present?
-        say_hi_text = "#{say_hi_text}\n\n"
-      end
+        # Handle template generation
+        client_names = interpretation[:attendees].select{|att| att['isPresent'] && att['account_email']}.map do |att|
+          att['usageName']
+        end
 
-      amc.julie_action.text = "#{say_hi_text}#{text_template}"
+        attendees = interpretation[:attendees].select{|att| att['isPresent'] && !att['account_email']}.map do |att|
+          {
+              name: att['usageName']
+          }
+        end
 
-    elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_WAIT_FOR_CONTACT
-      text_template = get_wait_for_contact_template({
-                                                        locale: interpretation[:locale]
-                                                    })
-      amc.julie_action.text = text_template
-    elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_NOTHING_TO_DO
-      # No text to write
-    elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
-      text_template = get_forward_to_support_template({
+        data_for_template = {
+            client_names: client_names,
+            timezones: [client_preferences[:timezone]],
+            default_timezone: client_preferences[:timezone],
+            locale: interpretation[:locale],
+            is_virtual: false,
+            attendees: attendees,
+            appointment_in_email: {
+                en: appointment['title_in_email']['en'],
+                fr: appointment['title_in_email']['fr']
+            },
+            location_in_email: {
+                en: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+                fr: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+            },
+            should_ask_location: false,
+            missing_contact_info: nil,
+
+            dates: date_suggestions
+        }
+
+        text_template = get_suggest_dates_template data_for_template
+
+        say_hi_text = get_say_hi_template({
+                                              recipient_names: attendees.map{|att| att[:assisted_by_name] || att[:name]},
+                                              should_say_hi: true,
+                                              locale: interpretation[:locale]
+                                          })
+
+        if say_hi_text.present?
+          say_hi_text = "#{say_hi_text}\n\n"
+        end
+
+        amc.julie_action.text = "#{say_hi_text}#{text_template}"
+
+      elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_WAIT_FOR_CONTACT
+        text_template = get_wait_for_contact_template({
                                                           locale: interpretation[:locale]
                                                       })
-      amc.julie_action.text = text_template
-    elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_CLIENT
-      text_template = get_forward_to_client_template({
-                                                         locale: interpretation[:locale]
-                                                     })
-      amc.julie_action.text = text_template
-    end
+        amc.julie_action.text = text_template
+      elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_NOTHING_TO_DO
+        # No text to write
+      elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
+        text_template = get_forward_to_support_template({
+                                                            locale: interpretation[:locale]
+                                                        })
+        amc.julie_action.text = text_template
+      elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_CLIENT
+        text_template = get_forward_to_client_template({
+                                                           locale: interpretation[:locale]
+                                                       })
+        amc.julie_action.text = text_template
+      end
 
 
-    if params[:for_real]
-      amc.operator = "julie@operator.juliedesk.com"
-      m.message_classifications << amc
-      message_hash = AutoMessageClassification.build_message(amc)
-      EmailServer.deliver_message message_hash
+      if params[:for_real]
+        amc.operator = "julie@operator.juliedesk.com"
+        m.message_classifications << amc
+        message_hash = AutoMessageClassification.build_message(amc)
+        EmailServer.deliver_message message_hash
+      else
+        m.auto_message_classification = amc
+      end
+
+      result[:auto_message_classification] = amc
+      result[:status] = 'success'
     else
-      m.auto_message_classification = amc
+      result[:status] = 'error'
     end
 
-    amc
+    result
   end
 
   def self.build_message message_classification

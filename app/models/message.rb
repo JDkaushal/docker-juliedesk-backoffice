@@ -458,6 +458,13 @@ class Message < ActiveRecord::Base
     updated_messages_thread_ids = []
 
     server_threads.each do |server_thread|
+      if server_thread['messages'].blank?
+        error_message = "No messsages for Messages Thread #{server_thread['id']} (email-server id)"
+        Rails.logger.error(error_message)
+        Airbrake.notify(Exceptions::MessagesThread::NoMessageError.new(error_message))
+        next
+      end
+
       should_update_thread = true
       new_thread = false
 

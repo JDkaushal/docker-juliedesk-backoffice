@@ -66,8 +66,16 @@ function flagMessage($element, $email) {
 function letAIProcessClickHandler($element, $email) {
   $email.find(".conscience-process .button").fadeOut("fast", function() {
     $email.find(".conscience-process .loader").fadeIn("fast", function() {
-        $.post("/messages/" + $email.data('message-id') + "/let_ai_process", function() {
+        $.post("/messages/" + $email.data('message-id') + "/let_ai_process", function(response) {
+          if(response.status == 'success') {
             window.location = window.location.href;
+          } else {
+            $email.find(".conscience-process .loader").fadeOut("fast", function() {
+              $email.find(".conscience-process .button").fadeIn("fast", function() {
+                alert('Error when letting AI processing the request');
+              });
+            });
+          }
         });
     });
   });
