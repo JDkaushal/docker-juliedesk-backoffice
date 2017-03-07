@@ -30,6 +30,10 @@ FactoryGirl.define do
       factory :messages_thread_for_inbox_count_sent_to_admin_in_inbox, traits: [:is_sent_to_admin, :in_in_inbox]
       factory :messages_thread_for_inbox_count_sent_to_admin_not_in_inbox, traits: [:is_sent_to_admin]
 
+      after(:create) do |messages_thread, evaluator|
+        create_list(:message_complete,  evaluator.messages_count, messages_thread: messages_thread)
+      end
+
     end
 
   end
