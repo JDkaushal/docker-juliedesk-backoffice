@@ -70,7 +70,12 @@ class MessagesThreadsController < ApplicationController
     begin
       @messages_thread = MessagesThread.includes(messages: {message_interpretations: {}, message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render status: :not_found, text: "Sorry, this thread does not exist."
+      render status: :not_found, text: 'Sorry, this thread does not exist.'
+      return
+    end
+
+    if @messages_thread.messages.size == 0
+      render status: :not_found, text: 'Sorry, this thread has no messages.'
       return
     end
 
@@ -284,6 +289,12 @@ class MessagesThreadsController < ApplicationController
 
   def preview
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator_actions: {}, operator: {}}).find(params[:id])
+
+    if @messages_thread.messages.size == 0
+      render status: :not_found, text: 'Sorry, this thread has no messages.'
+      return
+    end
+
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,
         target: @messages_thread,

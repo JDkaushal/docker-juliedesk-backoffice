@@ -11,6 +11,11 @@ class Review::MessagesThreadsController < ReviewController
       return
     end
 
+    if @messages_thread.messages.size == 0
+      render status: :not_found, text: 'Sorry, this thread has no messages.'
+      return
+    end
+
     @messages_thread.re_import
 
     @messages_thread.account
@@ -32,6 +37,11 @@ class Review::MessagesThreadsController < ReviewController
 
   def learn
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action}, operator_actions_groups: {operator: {}, target: {}}).find(params[:id])
+    if @messages_thread.messages.size == 0
+      render status: :not_found, text: 'Sorry, this thread has no messages.'
+      return
+    end
+
     @messages_thread.re_import
 
     @messages_thread.account
