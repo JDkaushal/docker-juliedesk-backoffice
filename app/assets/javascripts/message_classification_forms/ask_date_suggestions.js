@@ -18,7 +18,8 @@
 
         askDateSuggestionsForm.checkClientAgreement();
 
-        bypassClientAgreementIfPossible();
+        //bypassClientAgreementIfPossible();
+        window.acceptClientAgreement();
     });
 
     window.acceptClientAgreement = function() {

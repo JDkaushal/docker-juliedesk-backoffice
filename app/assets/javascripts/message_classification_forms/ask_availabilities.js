@@ -172,13 +172,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
         $(".classic-info-panel").hide();
         //$(".waiting-for-others-panel").show();
+        //window.acceptClientAgreement();
 
     });
 
     // When the dates identification manager has been loaded, we bypass when possible the client agreement validation
     window.datesIdentificationManageInitiatedCallback = function() {
-        if(bypassClientAgreementIfPossible)
-            bypassClientAgreementIfPossible();
+        window.acceptClientAgreement();
     };
 
     window.acceptClientAgreement = function() {

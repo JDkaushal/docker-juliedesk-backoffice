@@ -150,7 +150,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         constraints_data: $(".constraint-tile-container").map(function () {
             return $(this).data("constraint")
         }).get(),
-        client_agreement: $(".client-agreement-panel").data("client-agreement"),
+        client_agreement: true,
         attendees_are_noticed: $(".attendees-are-noticed-panel").data("attendees-are-noticed"),
         number_to_call: $("#number_to_call").val(),
         date_times: classificationForm.getSuggestedDateTimes(),
@@ -211,7 +211,6 @@ window.classificationForms.classificationForm.prototype.checkClientAgreement = f
     var classificationForm = this;
 
     var $infoPanelContainer = $(".messages-thread-info-panel");
-
 
     if(classificationForm.clientAgreement) {
         $infoPanelContainer.find(".client-agreement-panel").data("client-agreement", true);

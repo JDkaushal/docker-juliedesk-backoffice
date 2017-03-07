@@ -33,12 +33,12 @@ var ClientAgreementLevelManager = (function(params){
         }
 
         function computeAgreementLevel() {
-            var emailSender = firstEmailSender().name;
+            var emailSenders = allEmailsSenders();
             var clientCircleOfTrust = window.threadAccount.circle_of_trust;
             var clientEmails = _.uniq(window.threadAccount.email_aliases.concat(window.threadAccount.email));
             var agreementLevel = UNAUTHORIZED_REQUEST;
             
-            if(clientIsSender(clientEmails, emailSender) || emailInCircleOfTrust(clientCircleOfTrust, emailSender)) {
+            if(clientIsInSenders(clientEmails, emailSenders) || emailInCircleOfTrust(clientCircleOfTrust, emailSenders)) {
                 agreementLevel = AUTHORIZED_REQUEST;
             } else if(clientTrustingEveryone(clientCircleOfTrust)) {
                 agreementLevel = TRUSTED_REQUEST;
@@ -47,17 +47,25 @@ var ClientAgreementLevelManager = (function(params){
             return agreementLevel;
         }
 
-        function clientIsSender(clientEmails, emailSender) {
-            return clientEmails.indexOf(emailSender) > -1;
+        function arrayPartOfOtherArray(array1, array2) {
+            return _.intersection(array1, array2).length > 0;
         }
 
-        function emailInCircleOfTrust(circleOfTrust, email) {
+        function clientIsInSenders(clientEmails, emailSenders) {
+            return arrayPartOfOtherArray(clientEmails, emailSenders);
+        }
+
+        function emailInCircleOfTrust(circleOfTrust, emails) {
             var trustedEmails = circleOfTrust.trusted_emails;
             var trustedDomains = circleOfTrust.trusted_domains;
-            var emailDomainSplit = email.split('@');
-            var emailDomain = emailDomainSplit[emailDomainSplit.length - 1];
+            var emailDomains = [];
 
-            return (trustedEmails.indexOf(email) > -1) || (trustedDomains.indexOf(emailDomain) > -1)
+            _.each(emails, function(email) {
+                var emailDomainSplit = email.split('@');
+                emailDomains.push(emailDomainSplit[emailDomainSplit.length - 1]);
+            });
+
+            return arrayPartOfOtherArray(trustedEmails, emails) || arrayPartOfOtherArray(trustedDomains, emailDomains);
         }
 
         function clientTrustingEveryone(circleOfTrust) {

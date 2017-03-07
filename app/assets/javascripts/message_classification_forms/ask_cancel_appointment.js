@@ -14,7 +14,7 @@ window.classificationForms.askCancelAppointment = function (params) {
 
         askCancelAppointmentForm.checkClientAgreement();
 
-        bypassClientAgreementIfPossible();
+        window.acceptClientAgreement();
     });
 
     window.acceptClientAgreement = function() {

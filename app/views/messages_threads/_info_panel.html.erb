@@ -387,6 +387,7 @@
 
       initGooglePlacesAutoCompleteOnLocationField();
       initAllowedAttendeesEmails();
+
     });
 
     function extractEmails(text)
@@ -1360,6 +1361,8 @@
 
   <%= render partial: "messages_threads/waiting_for_others_panel", locals: {message: @message} %>
 
+  <!-- We don't ask for client agreement directly now, we use the circle of trust system -->
+  <%= render partial: "messages_threads/client_agreement_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
   <%= render partial: "messages_threads/attendees_are_noticed_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
