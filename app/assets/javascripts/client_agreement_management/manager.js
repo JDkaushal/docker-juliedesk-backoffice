@@ -13,7 +13,7 @@ var ClientAgreementLevelManager = (function(params){
         function displayAgreementStatus() {
             var agreementLevel = computeAgreementLevel();
             showCorrectAgreementLevelTile(agreementLevel);
-            postAgreementLevelComputingCallback(agreementLevel);
+            //postAgreementLevelComputingCallback(agreementLevel);
         }
 
         function postAgreementLevelComputingCallback(agreementLevel) {
