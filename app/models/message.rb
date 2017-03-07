@@ -47,6 +47,17 @@ class Message < ActiveRecord::Base
     end
   end
 
+  def get_email_from
+    parsed_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+    email_sender_email = nil
+
+    if parsed_reply_all_recipients['from'].present? && parsed_reply_all_recipients['from'].is_a?(Array)
+      email_sender_email = parsed_reply_all_recipients['from'][0]['email']
+    end
+
+    email_sender_email
+  end
+
 
   def async_auto_reply_mailing_list
     AutoReplyMailingListWorker.enqueue(self.id)

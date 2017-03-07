@@ -154,7 +154,7 @@
     }
 
     function allEmailsSenders() {
-      return <%== @messages_thread.messages.sort_by(&:received_at).map(&:get_email_sender).to_json %>;
+      return <%== @messages_thread.messages.sort_by(&:received_at).map(&:get_email_from).compact.to_json %>;
     }
 
     function firstEmailSender() {
