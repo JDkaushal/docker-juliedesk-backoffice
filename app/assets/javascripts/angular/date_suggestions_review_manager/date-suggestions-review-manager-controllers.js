@@ -46,12 +46,19 @@
 
 
                 $scope.accountEmail = data.account_email;
+                $scope.otherAccountEmails = data.other_account_emails;
                 $scope.currentNotes = data.other_notes;
                 $scope.duration = data.duration;
                 $scope.eventType = data.event_type;
                 $scope.location = data.location;
                 $scope.constraints = data.constraints_data;
                 $scope.date = data.date;
+
+
+                window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
+                    return attendee.isPresent && attendee.isClient && attendee.accountEmail && attendee.accountEmail != threadAccountEmail;
+                });
+
                 $scope.suggestedDates = _.map(data.date_suggestions, function(dateSuggestion) {
                     errors = [];
                     customError = "";
@@ -77,6 +84,7 @@
                 }));
 
 
+
                 $scope.activateCalendarWithParams({
                     email: $scope.accountEmail,
                     date_times: $scope.generateDateTimesForCalendar(),
@@ -85,7 +93,13 @@
                     default_timezone_id: $scope.mainTimezone,
                     additional_timezone_ids: $scope.allTimezones,
                     as_at_date: $scope.date,
-                    forcedInitialStartDate: firstDate
+                    forcedInitialStartDate: firstDate,
+                    now: $scope.date,
+                    constraintsData: _.groupBy($scope.constraints, function(constraint) {
+                        return constraint.attendee_email;
+                    }),
+                    computeConstraintsViaBackend: true,
+                    other_emails: $scope.otherAccountEmails
                 });
             }, function(response) {
                 if(response.status == 404) {
@@ -202,6 +216,21 @@
                 return dateSuggestion.date.format() == e.detail.start;
             });
             angular.element(document.getElementById("date-suggestion-" + selectedDateSuggestion.date.format())).scope().$broadcast("SHOW_DROPDOWN");
+
+        });
+        document.addEventListener("mouseEnterOnDateSuggestionInReviewMode", function (e) {
+            var selectedDateSuggestion = _.find($scope.suggestedDates, function (dateSuggestion) {
+                return dateSuggestion.date.format() == e.detail.start;
+            });
+            selectedDateSuggestion.highlighted = true;
+            $scope.$apply()
+        });
+        document.addEventListener("mouseLeaveOnDateSuggestionInReviewMode", function (e) {
+            var selectedDateSuggestion = _.find($scope.suggestedDates, function (dateSuggestion) {
+                return dateSuggestion.date.format() == e.detail.start;
+            });
+            selectedDateSuggestion.highlighted = false;
+            $scope.$apply()
         });
         $scope.saving = false;
         $scope.loading = true;

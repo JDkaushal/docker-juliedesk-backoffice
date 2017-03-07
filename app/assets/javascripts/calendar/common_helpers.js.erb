@@ -181,6 +181,26 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
+    else if(request.action == "deploy_constraints"){
+        $.ajax({
+            url: host + "/api/v1/calendar_proxy/deploy_constraints",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                constraints_data: request.constraints_data,
+                start: request.start,
+                end: request.end
+            }),
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
+            success: function(data) {
+                callback({
+                    data: data.data
+                });
+            }
+        });
+    }
     else if(request.action == "events") {
         $.ajax({
             url: host + "/api/v1/calendar_proxy/events_list",
@@ -590,7 +610,6 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
 
 
 CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone, allDay) {
-    console.log(startDate, endDate, allDay, timezone);
     if(!locale) locale = "en";
     var mStartDate, mEndDate, today;
     var formattedStartDate, formattedEndDate;

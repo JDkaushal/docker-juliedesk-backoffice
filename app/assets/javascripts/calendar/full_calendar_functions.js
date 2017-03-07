@@ -312,6 +312,8 @@ Calendar.prototype.fullCalendarInit = function() {
     var travelTimeOpacity = '0.80';
     var currentAllDayMasks = [];
 
+
+
     var columnWidth, columnWidthInt, offsetRowInt;
 
     var suggestionDatesManager = $('#dates-suggestion-manager').scope();
@@ -335,6 +337,7 @@ Calendar.prototype.fullCalendarInit = function() {
         selectHelper: true,
         defaultView:'agendaWeek',
         timeZone: "local",
+        now: calendar.now(),
         select: function(start, end, jsEvent, view) {
             calendar.fullCalendarSelect(start, end, jsEvent, view)
         },
