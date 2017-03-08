@@ -1019,9 +1019,12 @@ class MessagesThread < ActiveRecord::Base
     attendees_hash[:attendees].select { |attendee| attendee["isPresent"] == "true" }
   end
 
+  # Will return every email associated with the current present attendees
+  # So we take into account the fact that some attendees may not have any emails
+  # In order to do that we don't compact the resulting array
   def attendees_emails
     return nil if self.attendees.nil?
-    self.attendees.map { |attendee| attendee["account_email"] || attendee["email"] }.compact
+    self.attendees.map { |attendee| attendee["account_email"] || attendee["email"] }
   end
 
   def client_attendees_emails
