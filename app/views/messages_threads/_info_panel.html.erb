@@ -324,7 +324,7 @@
             window.currentEventData = data;
             window.currentEventTile.redraw();
             //_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()})
-            window.addAllowedAttendeesEmails(_.map(data.attendees, function(attendee) { return attendee.email;}));
+            window.addAllowedAttendeesEmails(_.map(data.attendees, function(attendee) { return attendee.email.toLowerCase();}));
             window.currentEventTile.initAttendeesAutomplete();
             if(recipientManager) {
               recipientManager.initTokenInputs();
@@ -414,7 +414,7 @@
       var recipientsManager = $('#recipients-manager').scope();
       if(recipientsManager)
         recipientsManager.initTokenInputs();
-    }
+    };
 
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
@@ -448,7 +448,7 @@
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
       var allowedAttendeesEmails = window.allowedAttendeesEmails.map(function(email) {
-        return email.toLowerCase()
+        return email.toLowerCase();
       });
       return allowedAttendeesEmails.concat(window.julie_alias_emails).indexOf(attendeeEmail.toLowerCase()) > -1;
     };
