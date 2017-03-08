@@ -1093,20 +1093,16 @@
 
     function locationIsSettled() {
       if(isCurrentAppointmentVirtual())
-        return !!window.threadComputedData.call_instructions.details || ['skype', 'hangout'].indexOf(window.getCurrentAppointment().kind) >= 1;
+        return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout';
 
       return locationFieldIsSet();
     }
 
     function locationIsDefined() {
-      if(isCurrentAppointmentVirtual()) {
-        var callInstructionsDetails = window.threadComputedData.call_instructions.details;
-        var callInstructionsTarget = window.threadComputedData.call_instructions.target;
-        return (callInstructionsDetails && callInstructionsDetails != "") || callInstructionsTarget == "later" || ['skype', 'hangout'].indexOf(window.getCurrentAppointment().kind) >= 1;
-      }
-      else {
-        return locationFieldIsSet();
-      }
+      if(isCurrentAppointmentVirtual() && window.threadComputedData.call_instructions.target == "later")
+        return true;
+
+      return locationIsSettled();
     }
 
     function shouldAskLocation() {
