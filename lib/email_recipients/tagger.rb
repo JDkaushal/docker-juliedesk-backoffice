@@ -74,8 +74,7 @@ module EmailRecipients
       end
 
       tmp.gsub!('>', '')
-
-      tmp
+      tmp.downcase
     end
 
     def email_in_domain?(domains)
