@@ -196,6 +196,7 @@
                         n_suggested_dates: suggestionsToGet,
                         attendees: $('#attendeesCtrl').scope().attendees,
                         message_id: $('.email.highlighted').data('message-id'),
+                        julie_action_id: window.julie_action_id,
                         multi_clients: false,
                         meeting_rooms_to_show: meetingRoomsToShow
                     };
