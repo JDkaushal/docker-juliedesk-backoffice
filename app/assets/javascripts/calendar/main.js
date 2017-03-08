@@ -104,6 +104,16 @@ function Calendar($selector, params) {
     });
 }
 
+Calendar.prototype.now = function() {
+    var calendar = this;
+    if(calendar.initialData.now) {
+        return calendar.initialData.now;
+    }
+    else {
+        return moment();
+    }
+};
+
 Calendar.prototype.generateEventsToCheck = function() {
     var calendar = this;
     calendar.eventsToCheck = [];
@@ -663,7 +673,13 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
     calendar.currentlyFetchingWeeks[formattedStart] = 0;
 
-    calendar.addCal(calendar.getConstraintsDataEvents(start, end));
+    if(calendar.initialData.computeConstraintsViaBackend) {
+        calendar.addConstraintsDataEventsViaBackend(start, end);
+    }
+    else {
+        calendar.addCal(calendar.getConstraintsDataEvents(start, end));
+    }
+
 
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
@@ -886,12 +902,73 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     });
 };
 
+Calendar.prototype.addConstraintsDataEventsViaBackend = function(startTime, endTime) {
+    var calendar = this;
+    console.log(startTime);
+    console.log(calendar.initialData.constraintsData);
+
+    CommonHelpers.externalRequest({
+            action: "deploy_constraints",
+            constraints_data: _.flatten(_.values(calendar.initialData.constraintsData)),
+            start: startTime,
+            end: endTime
+        },
+        function (response) {
+            result = [];
+            _.each(response.data, function(eventsHash, attendeeEmail) {
+
+                _.each(eventsHash.cant, function(ev) {
+
+                    var event = {
+                        summary: attendeeEmail + " not available",
+                        start: {
+                            dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
+                        },
+                        end: {
+                            dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
+                        },
+                        startEditable: false,
+                        durationEditable: false,
+                        calId: "juliedesk-strong-constraints",
+                        isNotAvailableEvent: true,
+                        constraintType: 'cant'
+                    };
+                    result.push(event);
+                });
+
+                _.each(eventsHash.dont_prefers, function(ev) {
+                    var event = {
+                        summary: attendeeEmail + " prefers not",
+                        start: {
+                            dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
+                        },
+                        end: {
+                            dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
+                        },
+                        startEditable: false,
+                        durationEditable: false,
+                        calId: "juliedesk-light-constraints",
+                        isNotAvailableEvent: true,
+                        constraintType: 'dontPrefer'
+                    };
+                    result.push(event);
+                });
+            });
+            calendar.addCal(result);
+        }
+    );
+
+};
+
+
 Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endTime) {
     var result = [];
     var calendar = this;
 
+
     _.each(data, function(dataEntries, attendeeEmail) {
         var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
+
         _.each(eventsFromData.cant, function(ev) {
 
             var event = {
@@ -930,11 +1007,15 @@ Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endT
         });
     });
 
+
     return result;
 };
 
+
+
 Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
     var calendar = this;
+
 
     return calendar.computeConstraintsDataEvents(calendar.initialData.constraintsData, startTime, endTime);
     // var result = [];

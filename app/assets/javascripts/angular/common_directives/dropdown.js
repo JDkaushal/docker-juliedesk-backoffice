@@ -27,7 +27,6 @@ angular.module('commonDirectives').directive('dropdown', function () {
             $scope.isShown = false;
 
             $scope.$on('SHOW_DROPDOWN', function (event, data) {
-                console.log("okok");
                 $scope.$apply(function () {
                     $scope.isShown = true;
                 });

@@ -41,6 +41,12 @@
       <div class="warning-panel" ng-show="currentNotes">{{ currentNotes }}</div>
 
       <div class="section">
+        <label>Action date</label>
+        <div class="information">{{ date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
+        <div class="information small">{{ mainTimezone }}</div>
+      </div>
+
+      <div class="section">
         <label>Scheduling</label>
         <div class="information big">{{ duration }}min. {{ eventType | capitalize }}</div>
       </div>
@@ -88,7 +94,7 @@
           <div class="suggested-date-timezone information">{{ timezone }}</div>
           <div ng-repeat="dateSuggestion in suggestedDates" id="date-suggestion-{{ dateSuggestion.date.format() }}">
             <div class="suggested-date review-item correct"
-                 ng-class="{correct: dateSuggestion.errors.length == 0, incorrect: dateSuggestion.errors.length > 0}"
+                 ng-class="{correct: dateSuggestion.errors.length == 0, incorrect: dateSuggestion.errors.length > 0, highlighted: dateSuggestion.highlighted}"
 
                  dropdown
                  dropdown-data="{{ possibleDateSuggestionErrors }}"
@@ -118,9 +124,12 @@
     </div>
 
     <div id="event-to-check-for-calendar-html-in-review" style="display: none">
-      <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'>
+      <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'
+           onmouseenter="document.dispatchEvent(new CustomEvent('mouseEnterOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))"
+           onmouseleave="document.dispatchEvent(new CustomEvent('mouseLeaveOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">
         <div style="position: absolute; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; font-weight: 600; text-transform: uppercase; padding: 0 0 0 10px;">$START$</div>
-        <div style=" position: absolute; top: 0px; right: 0px; width: 40px; height: 40px; background: white; color: black; font-weight: 600; font-size: 20px; text-align: center; cursor: pointer; border: 5px solid $COLOR$;" onclick="document.dispatchEvent(new CustomEvent('clickOnDateSuggestionAddErrorButtonInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">!</div>
+        <div style="display: none; position: absolute; top: 0px; right: 0px; width: 40px; height: 40px; background: white; color: black; font-weight: 600; font-size: 20px; text-align: center; cursor: pointer; border: 5px solid $COLOR$;"
+             onclick="document.dispatchEvent(new CustomEvent('clickOnDateSuggestionAddErrorButtonInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">!</div>
       </div>
     </div>
   </div>

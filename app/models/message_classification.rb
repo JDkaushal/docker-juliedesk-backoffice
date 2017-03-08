@@ -186,6 +186,17 @@ class MessageClassification < ActiveRecord::Base
     end
   end
 
+  def other_account_emails
+    JSON.parse(self.attendees || "[]").select do |attendee|
+      attendee['isPresent'] == "true" &&
+          attendee['isClient'] == "true" &&
+          attendee['accountEmail'] &&
+          attendee['"isThreadOwner"'] != 'true'
+    end.map do |attendee|
+      attendee['accountEmail']
+    end
+  end
+
   def review_status_as_text
     review_status || "To review"
   end
