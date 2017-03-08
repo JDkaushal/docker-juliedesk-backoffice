@@ -491,7 +491,8 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def clients
-    @clients ||= self.clients_in_recipients.map{|client_email| Account.create_from_email(client_email)}
+    # We compact it because clients can become deactivated in the mean time, so they will not be in the cache anymore
+    @clients ||= self.clients_in_recipients.map{|client_email| Account.create_from_email(client_email)}.compact
   end
 
   def several_accounts_detected(params={})
