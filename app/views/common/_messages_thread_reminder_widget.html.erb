@@ -109,7 +109,7 @@
           $('.new-thread-status-select').change(function(e) {
               var currentSelection = $(this).val();
 
-              if(['other', 'does_not_concern_client', 'handled_in_other_threads', 'scheduling_aborted', 'handled_by_client'].indexOf(currentSelection) > -1) {
+              if(['other', 'does_not_concern_client', 'handled_in_other_threads', 'scheduling_aborted', 'handled_by_client', 'scheduled'].indexOf(currentSelection) > -1) {
                   calculateNewReminder('0');
                   $('.follow-up-reminder .value').text('none');
               } else if(['scheduling_waiting_for_client', 'scheduling_waiting_for_contact'].indexOf(currentSelection) > -1) {
