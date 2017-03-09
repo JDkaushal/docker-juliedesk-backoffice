@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   include FeatureHelper
 
-  helper_method :only_admin
+  helper_method :is_admin
 
   def change_sound
     session[:sound_is_activated] = false
@@ -75,6 +75,10 @@ class ApplicationController < ActionController::Base
 
       false
     end
+  end
+
+  def is_admin
+    session[:privilege] == Operator::PRIVILEGE_ADMIN
   end
 
   def only_admin

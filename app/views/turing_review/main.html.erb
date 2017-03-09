@@ -29,7 +29,7 @@
               <%= link_to "Start reviewing this batch", {action: :review, batch_identifier: batch_identifier, id: batch_data_hash[:next_auto_message_classification_id]}, class: "btn btn-success" %></td>
             <% end %>
           <td>
-            <% if only_admin %>
+            <% if is_admin %>
               <%= link_to "Supervise review on this batch", {action: :supervise, batch_identifier: batch_identifier}, class: "btn btn-warning" %>
             <% end %>
           </td>
