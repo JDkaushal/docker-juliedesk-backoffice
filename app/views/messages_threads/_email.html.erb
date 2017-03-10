@@ -87,6 +87,7 @@
       </div>
       <% amc_review_id = auto_message_classification.auto_message_classification_review(params[:operator_id] || session[:operator_id]).try(:id) %>
       <% if is_admin && !amc_review_id.nil? && !auto_message_classification.mark_as_solved?(params[:operator_id] || session[:operator_id]) %>
+          <div class="message-information">Message id: <%= auto_message_classification.message_id %></div>
         <%= button_to "Mark as solved", {action: :mark_as_resolved, auto_message_classification_review_id: amc_review_id, batch_identifier: params[:batch_identifier]}, class: "btn btn-success mark-as-solved-button" %>
       <% end %>
       <textarea id="turing-notation-comments"><%= auto_message_classification.notation_comments(params[:operator_id] || session[:operator_id]) %></textarea>
