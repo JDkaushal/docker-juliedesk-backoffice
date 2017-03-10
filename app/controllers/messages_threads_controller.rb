@@ -74,6 +74,7 @@ class MessagesThreadsController < ApplicationController
       return
     end
 
+    @messages_thread.re_import
     if @messages_thread.messages.size == 0
       render status: :not_found, text: 'Sorry, this thread has no messages.'
       return
@@ -86,8 +87,6 @@ class MessagesThreadsController < ApplicationController
                                          operator_id: session[:operator_id],
                                          messages_thread_id: @messages_thread.id
                                      })
-
-    @messages_thread.re_import
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     julie_aliases = JulieAlias.all
