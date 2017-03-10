@@ -104,7 +104,6 @@ Rails.application.routes.draw do
     post ":batch_identifier/:auto_message_classification_review_id/mark_as_resolved", controller: :auto_message_classifications, action: :mark_as_resolved
     get ":batch_identifier/:id", controller: :auto_message_classifications, action: :review
     post ":batch_identifier/:id", controller: :auto_message_classifications, action: :reviewed
-
   end
 
 
@@ -118,6 +117,17 @@ Rails.application.routes.draw do
 
       member do
         get :errors
+      end
+    end
+
+    resources :julie_actions, only: [] do
+      collection do
+        get "list_errors", action: :list_errors
+
+      end
+
+      member do
+        get "compare_date_suggestions", action: :compare_date_suggestions
       end
     end
 

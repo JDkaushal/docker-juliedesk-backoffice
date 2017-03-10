@@ -142,6 +142,12 @@ Calendar.prototype.generateEventsToCheck = function() {
         else {
             eventData.color = "#ccc";
         }
+        if(dateObject.textColor) {
+            eventData.textColor = dateObject.textColor;
+        }
+        else {
+            eventData.textColor = "#000";
+        }
         if(dateObject.customHtml) {
             eventData.customHtml = dateObject.customHtml;
         }
@@ -574,6 +580,7 @@ Calendar.prototype.getEventsToCheck = function() {
             start: start,
             end: end,
             color: event.color,
+            textColor: event.textColor,
             durationEditable: event.durationEditable,
             editable: event.editable,
             beingAdded: event.beingAdded,
@@ -900,8 +907,6 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
 Calendar.prototype.addConstraintsDataEventsViaBackend = function(startTime, endTime) {
     var calendar = this;
-    console.log(startTime);
-    console.log(calendar.initialData.constraintsData);
 
     CommonHelpers.externalRequest({
             action: "deploy_constraints",

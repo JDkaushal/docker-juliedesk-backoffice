@@ -9,6 +9,8 @@ $labelBlue: #2D7992;
 $reviewCorrectLightGreen: #93D8C7;
 $reviewWarningLightPink: #FFB7B7;
 $reviewErrorLightRed: #F15B5B;
+$reviewErrorOrange: #ED8D55;
+$reviewCorrectBlue: #98e7ff;
 
 $buttonGreen: #2EC094;
 
@@ -17,6 +19,8 @@ $lightBlue: #E7F2F5;
 $aiControlColor: #9013FE;
 $aiControlColorBackground-5pct: rgba(144, 19, 254, 0.05);
 $aiControlColorBackground-10pct: rgba(144, 19, 254, 0.1);
+$aiControlColorBackground-20pct: rgba(144, 19, 254, 0.2);
+$aiControlColorBackground-40pct: rgba(144, 19, 254, 0.4);
 $aiControlColorBackground-70pct: rgba(144, 19, 254, 0.7);
 $aiControlColorBackground-80pct: rgba(144, 19, 254, 0.8);
 $aiControlColorBackground-90pct: rgba(144, 19, 254, 0.9);
@@ -112,6 +116,23 @@ body {
     color: #666;
     font-size: 14px;
   }
+}
+
+.loading-box-on-top {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -100px;
+  width: 200px;
+  text-align: center;
+  line-height: 16px;
+  height: 16px;
+  background: $darkBlue;
+  padding: 5px 0;
+  box-sizing: content-box;
+  font-size: 12px;
+  border-radius: 0 0 6px 4px;
+  color: white;
 }
 
 .standard-panel {

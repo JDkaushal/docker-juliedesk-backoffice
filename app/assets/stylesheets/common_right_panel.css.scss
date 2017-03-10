@@ -96,6 +96,24 @@
       color: white;
     }
 
+    &.ai-full {
+      background: $aiControlColor;
+      color: white;
+    }
+
+    &.ai-40 {
+      background: $aiControlColorBackground-40pct;
+    }
+
+    &.ai-20 {
+      background: $aiControlColorBackground-20pct;
+    }
+
+    &.default {
+      background: $darkBlue;
+      color: white;
+    }
+
     &.highlighted {
       border-left: 5px solid rgba(0,0,0,0.4);
       padding-left: 5px;

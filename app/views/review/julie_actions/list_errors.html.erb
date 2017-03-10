@@ -1,0 +1,39 @@
+<%= javascript_include_tag 'angular_date_suggestions_comparison_manager_app' %>
+<div class="col-md-8 col-md-offset-2" ng-controller="date-suggestions-errors-list-controller" id="date-suggestions-comparison-manager" ng-cloak>
+  <h1>Date suggestions sets comparison</h1>
+
+
+  <h4 ng-show="eventType">Event type: {{ eventType }}</h4>
+
+  <div class="loading-box-on-top" ng-show="loading">Loading...</div>
+
+  <div class="btn-group" role="group" aria-label="...">
+    <div class="btn btn-default" ng-click="goToWeek(previousWeekStart())">Previous</div>
+    <div class="btn {{ end() == now ? 'btn-success' : 'btn-primary' }}">{{ start | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY" }} - {{ end() | amTimezone: 'Europe/Paris' | amDateFormat:'dddd D MMMM YYYY' }}</div>
+    <div class="btn btn-default" ng-click="goToWeek(nextWeekStart())" ng-show="shouldShowNextWeek()">Next</div>
+  </div>
+
+
+
+
+  <br/>
+  <h5 ng-show="!loading">{{ errorsCount }} errors on {{ totalCount }} sets ({{ (totalCount - errorsCount) * 100.0 / totalCount | number: 1 }}% performance)</h5>
+
+
+
+  <table class="table table-striped" ng-show="!loading">
+    <tr>
+      <th class="col-md-4">Date</th>
+      <th class="col-md-2">Operator id</th>
+      <th class="col-md-2">Correct suggestions</th>
+      <th class="col-md-2">Julie action id</th>
+    </tr>
+
+    <tr ng-repeat="error in errors | orderBy: 'date'">
+      <td>{{ error.date | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY - HH:mm" }}</td>
+      <td>{{ error.operator_id }}</td>
+      <td>{{ error.correct_suggestions_count }} / {{ error.suggestions_count }}</td>
+      <td><a href="/review/julie_actions/{{ error.julie_action_id }}/compare_date_suggestions">{{ error.julie_action_id }}</a></td>
+    </tr>
+  </table>
+</div>

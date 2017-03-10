@@ -1,0 +1,29 @@
+angular.module('commonServices').service('conscienceApi', ['$http', function ($http) {
+
+    var conscienceBasePath = "<%= ENV['CONSCIENCE_BASE_PATH'] %>";
+    var conscienceApiKey = "<%= ENV['CONSCIENCE_API_KEY'] %>";
+
+
+    this.suggestedDatesListErrorsRequest = function(params) {
+        return this.request("/suggested_dates/errors", params);
+    };
+    this.suggestedDatesDetailsRequest = function(params) {
+        return this.request("/suggested_dates/from_julie_action_id", params);
+    };
+    this.request = function(path, params) {
+        var paramsAsUrl = "";
+        if(params) {
+            paramsAsUrl = "?" + _.map(params, function(v, k) {
+                return k + "=" + v;
+            }).join("&");
+        }
+
+        return $http({
+            method: "GET",
+            url: conscienceBasePath + "/api/v1" + path + paramsAsUrl,
+            headers: {
+                "Authorization": conscienceApiKey
+            }
+        });
+    }
+}]);

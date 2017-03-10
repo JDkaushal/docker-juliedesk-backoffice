@@ -1,0 +1,93 @@
+<script>
+  window.getCurrentAddressObject = function () {
+    return null;
+  };
+  window.getCurrentAppointment = function () {
+    return null;
+  };
+</script>
+<%= javascript_include_tag 'angular_date_suggestions_comparison_manager_app' %>
+
+<div class="calendar-in-thread-details-container">
+  <%= render template: "calendar/calendar" %>
+</div>
+
+<div id="date-suggestions-comparison-manager"
+     ng-controller="date-suggestions-comparison-controller"
+     ng-init="init({julie_action_id: <%= params[:id] %>})"
+     ng-cloak>
+  <div class="header jd-global-header full">
+    <%= link_to "Calendar comparison", action: :list_errors %>
+
+    <!--<div class="review-element review-done-button btn-success" ng-click="validateReview()" ng-show="!saving && !loading && !error"">Next</div>-->
+    <!--<div class="review-element review-saving" ng-show="saving"><%= image_tag "ajax-loader.gif" %></div>-->
+  </div>
+  <div class="common-right-panel with-header">
+
+
+
+    <div ng-show="isLoading()">
+      <div class="loading">Loading...</div>
+    </div>
+    <div ng-show="error">
+      <div class="error">Impossible to load this review data.</div>
+    </div>
+    <div ng-hide="isLoading() || error">
+      <div class="warning-panel" ng-show="currentNotes">{{ currentNotes }}</div>
+
+
+      <div class="section">
+        <label>Action date</label>
+        <div class="information">{{ date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
+        <div class="information small">{{ mainTimezone }}</div>
+      </div>
+
+      <div class="section">
+        <label>Scheduling</label>
+        <div class="information big">{{ duration }}min. {{ eventType | capitalize }}</div>
+      </div>
+
+      <div class="section">
+        <label>Location</label>
+        <div class="information">{{ location }}</div>
+      </div>
+
+      <div class="section">
+        <label>Constraints<span ng-show="constraints.length > 0"> ({{ constraints.length }})</span></label>
+        <div class="information empty" ng-show="constraints.length == 0">None</div>
+        <div class="constraint" ng-repeat="constraint in constraints" constraint-tile></div>
+      </div>
+
+
+      <div class="section">
+        <div class="suggested-date-timezone information">{{ timezone }}</div>
+
+        <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+          <div class="suggested-date review-item" ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false}">
+            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+          </div>
+        </div>
+
+        <div ng-repeat="dateSuggestion in suggestedDatesOther()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+          <div class="suggested-date review-item default">
+            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+          </div>
+        </div>
+
+        <br>
+        <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+          <div class="suggested-date review-item" ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false}">
+            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="event-to-check-for-calendar-html-in-review" style="display: none">
+      <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'>
+        <div style="position: absolute; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; font-weight: 600; text-transform: uppercase; padding: 0 0 0 10px; color: $TEXT_COLOR$">$START$</div>
+      </div>
+    </div>
+  </div>
+</div>
