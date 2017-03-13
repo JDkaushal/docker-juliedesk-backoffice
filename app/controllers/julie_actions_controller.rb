@@ -5,7 +5,13 @@ class JulieActionsController < ApplicationController
   before_action :check_staging_mode
 
   def show
-    @julie_action = JulieAction.find params[:id]
+    begin
+      @julie_action = JulieAction.find params[:id]
+    rescue ActiveRecord::RecordNotFound
+      render status: :not_found, text: 'Sorry, this action does not exist.'
+      return
+    end
+
     @message_classification = @julie_action.message_classification
     @message = @message_classification.message
 

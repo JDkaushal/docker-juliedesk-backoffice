@@ -91,15 +91,20 @@ class Review::OperatorsPresenceController < ReviewController
     result = ''
 
     if params[:file].present?
-      filename = "planning_constraints_#{Time.now.strftime('%d-%m-%YT%H:%M:%S')}.csv"
+      begin
+        filename = "planning_constraints_#{Time.now.strftime('%d-%m-%YT%H:%M:%S')}.csv"
 
-      Uploaders::AmazonAws.store_file(filename, params[:file])
+        Uploaders::AmazonAws.store_file(filename, params[:file])
 
-      result = AiProxy.new.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
+        result = AiProxy.new.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
 
-      unless result[:error]
-        result.merge!('start_date' => params[:start_date])
-        handle_planning_ai_data(result)
+        unless result[:error]
+          result.merge!('start_date' => params[:start_date])
+          handle_planning_ai_data(result)
+        end
+
+      rescue AiProxy::TimeoutError
+        render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
       end
     end
 

@@ -257,7 +257,7 @@ class ClientContactsController < ApplicationController
   def ai_parse_contact_civilities
     render json: AiProxy.new.build_request(:parse_human_civilities, { fullname: params[:fullname], at: params[:email]})
 
-  rescue Timeout::Error
+  rescue AiProxy::TimeoutError
     render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
   end
 
@@ -280,7 +280,7 @@ class ClientContactsController < ApplicationController
 
         begin
           result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
-        rescue Timeout::Error
+        rescue AiProxy::TimeoutError
           render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
           return
         end

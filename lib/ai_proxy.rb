@@ -1,4 +1,5 @@
 class AiProxy
+  class TimeoutError < Exception ; end
 
   AI_ENDPOINTS = {
       parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/firstlastnames/' }.freeze,
@@ -47,6 +48,9 @@ class AiProxy
     Timeout::timeout(ENV['CONSCIENCE_API_TIMEOUT'].to_i || 20) do
       dispatch_request(type, url, data)
     end
+
+  rescue Timeout::Error => e
+    raise TimeoutError.new(e)
   end
 
   def dispatch_request(type, url, data)
