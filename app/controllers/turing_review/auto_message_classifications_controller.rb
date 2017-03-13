@@ -5,8 +5,10 @@ class TuringReview::AutoMessageClassificationsController < TuringReviewControlle
   def main
     @data = Hash[AutoMessageClassification.get_all_batch_identifiers.map do |batch_identifier|
       reviewed_by_me_auto_message_classification_ids = AutoMessageClassificationReview.joins(:auto_message_classification).where(auto_message_classifications: {batch_identifier: batch_identifier}, auto_message_classification_reviews: {operator_id: session[:operator_id]}).select(:auto_message_classification_id).map(&:auto_message_classification_id).uniq
+      all_reviews_count = AutoMessageClassificationReview.joins(:auto_message_classification).where(auto_message_classifications: {batch_identifier: batch_identifier}).select(:auto_message_classification_id).distinct.count
       [batch_identifier, {
           auto_message_classifications_count: AutoMessageClassification.where(batch_identifier: batch_identifier).count,
+          all_reviews_count: all_reviews_count,
           my_reviews_count: reviewed_by_me_auto_message_classification_ids.length,
           next_auto_message_classification_id: AutoMessageClassification.where(batch_identifier: batch_identifier).where.not(id: reviewed_by_me_auto_message_classification_ids).select(:id).map(&:id).sample
       }]

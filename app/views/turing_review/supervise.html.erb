@@ -1,20 +1,6 @@
 <div class="col-md-8 col-md-offset-2">
   <h1><%= link_to "Turing review", {action: :main} %></h1>
 
-
-
-  <h2><%= @batch_identifier %> (<%= @amc_count %>)</h2>
-
-  <br>
-
-  <div>
-    <% @operators.each do |operator| %>
-        <%= link_to operator.email, url_for({operator_id: operator.id}), class: "btn btn-primary" %>
-    <% end %>
-  </div>
-
-
-
   <% unreviewed_data_to_show = [
       {
           label: "Machine",
@@ -38,6 +24,113 @@
       }
   ] %>
 
+  <% split_views= {
+      "Correct": {
+          notations: [5],
+          class: "success"
+      },
+      "Not far": {
+          notations: [3, 4],
+          class: "warning"
+      },
+      "Completely wrong": {
+          notations: [0, 1, 2],
+          class: "danger"
+      }
+  }
+    %>
+
+  <h2><%= @batch_identifier %> (<%= @amc_count %>)</h2>
+
+  <br>
+
+  <% data_to_show.each do |data_hash| %>
+      <% unreviewed_data_hash = unreviewed_data_to_show.find{|d| d[:label] == data_hash[:label]} %>
+      <h4><%= data_hash[:label] %>: <%= data_hash[:auto_message_classification_reviews].length %> / <%= data_hash[:auto_message_classification_reviews].length + unreviewed_data_hash[:auto_message_classifications].length %></h4>
+
+      <table class="table text-center">
+        <tr>
+          <% split_views.each do |label, view_hash| %>
+              <td class="<%= view_hash[:class] %> col-md-3">
+                <% count = data_hash[:auto_message_classification_reviews].select { |amc| view_hash[:notations].include? amc.notation }.length %>
+                <h5><%= number_to_percentage(count * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %> (<%= count %>)
+                  <%= label %></h5>
+              </td>
+          <% end %>
+        </tr>
+      </table>
+
+  <% end %>
+  <br>
+
+  <div>
+    <% @operators.each do |operator| %>
+        <%= link_to operator.email, url_for({operator_id: operator.id}), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+
+
+
+
+
+  <h2>Reviewed: (<%= @auto_message_classification_reviews.length %>)</h2>
+
+  <div class="row">
+    <% data_to_show.each do |data_hash| %>
+        <div class="col">
+          <h4><%= data_hash[:label] %> (<%= data_hash[:auto_message_classification_reviews].length %>)</h4>
+          <table class="table text-center">
+            <tr>
+              <% split_views.each do |label, view_hash| %>
+                  <td class="<%= view_hash[:class] %> col-md-3">
+                    <% count = data_hash[:auto_message_classification_reviews].select { |amc| view_hash[:notations].include? amc.notation }.length %>
+                    <h3><%= number_to_percentage(count * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %> (<%= count %>)
+                      <%= label %></h3>
+                  </td>
+              <% end %>
+            </tr>
+          </table>
+
+
+          <table class="table table-striped">
+            <tr>
+              <th>AMC ID</th>
+              <th>AM ID</th>
+              <th>Account email</th>
+              <th>Subject</th>
+              <th>Notation</th>
+              <th>Comments</th>
+              <th>Resolved</th>
+              <th>Operator</th>
+            </tr>
+
+            <% data_hash[:auto_message_classification_reviews].each do |amc| %>
+                <% klass = {
+                    1 => "danger",
+                    2 => "danger",
+                    3 => "warning",
+                    4 => "warning",
+                    5 => "success"
+                }[amc.notation] %>
+                <tr class="<%= klass %>">
+                  <td><%= amc.id %></td>
+                  <td><%= amc.auto_message_classification_id %></td>
+                  <td><%= amc.auto_message_classification.message.messages_thread.account_email %></td>
+                  <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review, id: amc.auto_message_classification_id, operator_id: amc.operator_id}, target: "_blank" %></td>
+                  <td><%= amc.notation %>/5</td>
+                  <td><%= amc.comments %></td>
+                  <td><%= amc.resolved ? "Solved" : "" %></td>
+                  <td><%= amc.operator.name %></td>
+                </tr>
+
+            <% end %>
+          </table>
+        </div>
+    <% end %>
+  </div>
+
+
+
   <h2>Not reviewed: (<%= @unreviewed_message_classifications.length %>)</h2>
   <div class="row">
     <% unreviewed_data_to_show.each do |data_hash| %>
@@ -49,56 +142,6 @@
                   <td><%= amc.message.messages_thread.account_email %></td>
                   <td><%= link_to amc.message.messages_thread.subject, {action: :review, id: amc.id}, target: "_blank" %></td>
                 </tr>
-            <% end %>
-          </table>
-        </div>
-    <% end %>
-  </div>
-
-  <h2>Reviewed: (<%= @auto_message_classification_reviews.length %>)</h2>
-
-  <div class="row">
-    <% data_to_show.each do |data_hash| %>
-        <div class="col">
-          <h4><%= data_hash[:label] %> (<%= data_hash[:auto_message_classification_reviews].length %>)</h4>
-          <table class="table text-center">
-            <tr>
-              <td class="success col-md-3">
-                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation == 5 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
-                  Correct</h3>
-              </td>
-              <td class="warning col-md-3">
-                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation > 2 && amc.notation < 5 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
-                  Not far</h3>
-              </td>
-              <td class="danger col-md-3">
-                <h3><%= number_to_percentage(data_hash[:auto_message_classification_reviews].select { |amc| amc.notation <= 2 }.length * 100.0 / data_hash[:auto_message_classification_reviews].length, precision: 1) %>
-                  Completely wrong</h3>
-              </td>
-            </tr>
-          </table>
-
-
-          <table class="table table-striped">
-            <% data_hash[:auto_message_classification_reviews].each do |amc| %>
-                <% klass = {
-                    1 => "danger",
-                    2 => "danger",
-                    3 => "warning",
-                    4 => "warning",
-                    5 => "success"
-                }[amc.notation] %>
-                <tr class="<%= klass %>">
-                  <td><%= amc.id %></td>
-                  <td><%= amc.auto_message_classification.message.messages_thread.account_email %></td>
-                  <td><%= link_to amc.auto_message_classification.message.messages_thread.subject, {action: :review, id: amc.auto_message_classification_id, operator_id: amc.operator_id}, target: "_blank" %></td>
-                  <td><%= amc.notation %>/5</td>
-                  <td><%= amc.comments %></td>
-                  <td><%= amc.resolved ? "Solved" : "" %></td>
-                  <td><%= amc.auto_message_classification.julie_action.done %></td>
-                  <td><%= amc.operator.name %></td>
-                </tr>
-
             <% end %>
           </table>
         </div>
