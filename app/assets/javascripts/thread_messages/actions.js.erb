@@ -265,10 +265,10 @@ $(function () {
     e.stopPropagation();
   });
 
+  paintExpandQuoteButtons();
 });
 
 $(window).load(function() {
-    paintExpandQuoteButtons();
-    window.icsManager = new IcsManager();
-    window.icsManager.perform();
+  window.icsManager = new IcsManager();
+  window.icsManager.perform();
 });
