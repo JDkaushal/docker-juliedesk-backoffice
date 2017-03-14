@@ -204,7 +204,7 @@ function IcsManager() {
             attendees: _.map(event.attendees, function(attendee) {
                 return attendee.getFirstValue().toLowerCase().replace("mailto:", "");
             }),
-            organizer: event.organizer.toLowerCase().replace("mailto:", ""),
+            organizer: (event.organizer || 'Not Provided').toLowerCase().replace("mailto:", ""),
             raw: vevent
         };
     };
