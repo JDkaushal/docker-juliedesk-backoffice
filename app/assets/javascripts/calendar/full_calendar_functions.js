@@ -151,9 +151,16 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
             var start = batchStartDate.format() + "T00:00:00Z";
             var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
 
-            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates, batchTrackingId: currentBatchTrackingId});
+            if(!window.featuresHelper.isFeatureActive('list_events_v2'))
+                calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates, batchTrackingId: currentBatchTrackingId});
             calendar.addToFetchedWeek(batchStartDate);
-        })
+        });
+
+        if(window.featuresHelper.isFeatureActive('list_events_v2')) {
+            start = _.first(currentBatches).format() + "T00:00:00Z";
+            end = _.last(currentBatches).clone().add(1, 'w').format() + "T00:00:00Z";
+            calendar.fetchAllAccountsEvents(start, end);
+        }
     }
     else {
         //if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {

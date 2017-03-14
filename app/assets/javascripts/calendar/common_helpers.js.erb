@@ -202,12 +202,16 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         });
     }
     else if(request.action == "events") {
+        var listEventsUrl = host + "/api/v1/calendar_proxy/events_list";
+        if(window.featuresHelper.isFeatureActive("list_events_v2"))
+          listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
+
         $.ajax({
-            url: host + "/api/v1/calendar_proxy/events_list",
+            url: listEventsUrl,
             // We need to use a post request here because when there are many meeting rooms the request entity becomes too large
             type: "POST",
             tryCount : 0,
-            retryLimit : 5,
+            retryLimit : 1,
             data: {
               start: request.start,
               end: request.end,
@@ -242,14 +246,24 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 }
             },
             error: function(xhr, textStatus, errorThrown) {
-                console.log("Error");
                 this.tryCount++;
                 if (this.tryCount <= this.retryLimit) {
                     console.log("Retrying...");
-                    $.ajax(this);
+                    var ajaxRequest = this;
+                    setTimeout(function() {
+                      $.ajax(ajaxRequest);
+                    }, 3000);
                     return;
                 }
-                console.log("Retried too many times");
+                else {
+                  if(xhr.responseJSON.error_code) {
+                    var failedSyncStatuses = ['CALENDAR_SYNC_FAILED', 'CALENDAR_SYNC_TIMEOUT', 'CALENDAR_SYNC_LOCKED'];
+                    if(failedSyncStatuses.indexOf(xhr.responseJSON.error_code) > -1)
+                      alert("Error: Calendar synchronisation failed");
+                    else if(xhr.responseJSON.error_code == 'CALENDAR_NOT_FOUND')
+                      alert("Some calendars do not exist anymore.");
+                  }
+                }
             }
         });
     }
