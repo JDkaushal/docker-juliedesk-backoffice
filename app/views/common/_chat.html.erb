@@ -24,6 +24,9 @@
                 redrawConnectedMembers();
             });
             redsock.subscribeToChannel('presence-global');
+            redsock.bindMessage('presence-global', "subscription_success", function(_) {
+              $('.connected-members').addClass('connected');
+            });
 
             redsock.subscribeToChannel('private-global-chat');
             redsock.bindMessage('private-global-chat', 'client-chat-message', function (data) {
@@ -33,11 +36,7 @@
                     sender: data.sender
                 });
             });
-            /*redsock.bindMessage('private-global-chat', 'locks-changed', function (data) {
-                if(window.redrawLocksStatuses) {
-                    window.redrawLocksStatuses(data.locks_statuses);
-                }
-            });*/
+
             redsock.bindMessage('private-global-chat', 'archive', function(data) {
                 if(window.archiveMessageThread) {
                     window.archiveMessageThread(data.message_thread_id);
@@ -209,7 +208,7 @@
         for(var memberId in connectedMembers) {
             connectedMemberNames.push(connectedMembers[memberId].name);
         }
-        $connectedMembersDiv.html(connectedMemberNames.join(", "));
+        $connectedMembersDiv.html(window.myName + " (" + connectedMemberNames.length + ")");
     }
 
     function newMessage() {

@@ -13,13 +13,33 @@
   }
 
   .connected-members {
+    position: relative;
     height: 31px;
     background: #444;
     color: white;
     line-height: 30px;
-    padding: 0 5px;
+    padding: 0 5px 0 32px;
     margin: -1px -1px 0 -1px;
     cursor: pointer;
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      left: 5px;
+      top: 50%;
+      margin-top: -10px;
+      display: inline-block;
+      height: 20px;
+      width: 20px;
+      -webkit-border-radius: 20px;
+      -moz-border-radius: 20px;
+      border-radius: 20px;
+      background-color: red;
+      z-index: 25;
+    }
+    &.connected::before {
+      background-color: green ;
+    }
 
     &.new-message {
       background: $darkBlue;
