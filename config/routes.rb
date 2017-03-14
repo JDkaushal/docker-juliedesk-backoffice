@@ -95,6 +95,8 @@ Rails.application.routes.draw do
 
     get "calendar_viewer", controller: :calendar, action: :viewer
 
+    get "urls", controller: :main, action: :available_routes
+
     root to: "operators#index"
   end
 

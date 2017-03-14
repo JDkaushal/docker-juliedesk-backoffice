@@ -1,0 +1,26 @@
+<div class="col-md-8 col-md-offset-2">
+  <h1>Available routes</h1>
+
+  <table class="table table-striped">
+    <tr><th>Admin routes</th></tr>
+    <tr><td><%= link_to "Operators listing", {controller: "admin/operators", action: :index} %></td></tr>
+    <tr><td><%= link_to "Features listing", {controller: "admin/features", action: :index} %></td></tr>
+    <tr><td><%= link_to "Calendar viewer", {controller: "admin/calendar", action: :viewer} %></td></tr>
+    <tr><td><%= link_to "Stats viewer", {controller: "admin/stats", action: :main} %></td></tr>
+    <tr><td><%= link_to "Date suggestions comparison", {controller: "review/julie_actions", action: :list_errors} %></td></tr>
+  </table>
+
+  <br>
+  <table class="table table-striped">
+    <tr><th>Reviewer routes</th></tr>
+    <tr><td><%= link_to "Turing review", {controller: "turing_review/auto_message_classifications", action: :main} %></td></tr>
+    <tr><td><%= link_to "Planning", {controller: "review/operators_presence", action: :index} %></td></tr>
+  </table>
+
+  <br>
+
+  <table class="table table-striped">
+    <tr><th>Common routes</th></tr>
+    <tr><td><%= link_to "Index", "/" %></td></tr>
+  </table>
+</div>
