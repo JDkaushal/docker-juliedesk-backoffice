@@ -384,10 +384,8 @@
         });
       });
 
-
       initGooglePlacesAutoCompleteOnLocationField();
       initAllowedAttendeesEmails();
-
     });
 
     function extractEmails(text)
@@ -418,6 +416,11 @@
 
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
+      var extendedMessages = $('.email.extended');
+      var notFromMeMessages = $('.email:not(".from-me")');
+      // We extend every emails before computing the allowed attendees because el.innerText does not return the same formatting for the text in both cases
+      notFromMeMessages.addClass('extended');
+
       var messageBodies = $.map($('#messages_container .email:not(".from-me") .body, .gmail_quote,blockquote, .email:not(".from-me") .ics-preview'), function(el, _) { return el.innerText }).join("\n");
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
           // The thread main account email
@@ -441,6 +444,9 @@
 //          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
 //        }
 //      }
+
+      notFromMeMessages.removeClass('extended');
+      extendedMessages.addClass('extended');
 
       window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase().replace(/'/g, ""); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
