@@ -824,6 +824,13 @@ class MessagesThread < ActiveRecord::Base
     @event_data
   end
 
+  def created_events_julie_action
+    julie_action = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
+      ja.done &&
+          ja.action_nature == JulieAction::JD_ACTION_CREATE_EVENT
+    }.sort_by(&:updated_at).last
+  end
+
   def created_events_data
     julie_action = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select{|ja|
       ja.done &&

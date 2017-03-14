@@ -243,25 +243,38 @@ class MessagesThreadsController < ApplicationController
 
   def remove_event_link
     messages_thread = MessagesThread.find(params[:id])
-    message = messages_thread.messages.last
+    event_id = params[:event_id]
 
-    last_message_classification = messages_thread.messages.map{|m|
-      m.message_classifications
-    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact.last
+    current_scheduling_status = messages_thread.scheduling_status
 
-    message_classification_params = {}
-    if last_message_classification
-      message_classification_params = last_message_classification.attributes.symbolize_keys.select{|k, v| [:appointment_nature, :summary, :duration, :location, :attendees, :notes, :constraints, :date_times, :locale, :timezone, :location_nature, :private, :other_notes, :constraints_data, :number_to_call].include? k}
+    # WHen events has been created directly (not using an ask_availabilities flow) we need to remove them from the 'events' array of the julie action when we want to remove the link with the thread
+    if current_scheduling_status == MessagesThread::EVENTS_CREATED
+      created_events_julie_action = messages_thread.created_events_julie_action
+
+      if created_events_julie_action.present?
+        events = JSON.parse(created_events_julie_action.events)
+        events = events.reject!{|e| e['id'] == event_id}
+        created_events_julie_action.update(events: events.to_json)
+      end
+    else
+      message_classification_params = {}
+      if last_message_classification
+        message_classification_params = last_message_classification.attributes.symbolize_keys.select{|k, v| [:appointment_nature, :summary, :duration, :location, :attendees, :notes, :constraints, :date_times, :locale, :timezone, :location_nature, :private, :other_notes, :constraints_data, :number_to_call].include? k}
+      end
+      last_message_classification = messages_thread.messages.map{|m|
+        m.message_classifications
+      }.flatten.sort_by(&:updated_at).select(&:has_data?).compact.last
+      message = messages_thread.messages.last
+
+      mc = message.message_classifications.create message_classification_params.merge(classification: MessageClassification::ASK_CANCEL_APPOINTMENT, operator: session[:user_username], processed_in: 0)
+      mc.append_julie_action
+      mc.julie_action.update_attributes({
+                                            done: true,
+                                            deleted_event: true,
+                                            processed_in: 0,
+                                            event_id: last_message_classification.try(:julie_action).try(:event_id)
+                                        })
     end
-
-    mc = message.message_classifications.create message_classification_params.merge(classification: MessageClassification::ASK_CANCEL_APPOINTMENT, operator: session[:user_username], processed_in: 0)
-    mc.append_julie_action
-    mc.julie_action.update_attributes({
-                                          done: true,
-                                          deleted_event: true,
-                                          processed_in: 0,
-                                          event_id: last_message_classification.try(:julie_action).try(:event_id)
-                                      })
 
     redirect_to messages_thread
   end

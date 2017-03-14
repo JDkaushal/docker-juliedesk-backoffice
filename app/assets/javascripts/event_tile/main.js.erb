@@ -605,7 +605,8 @@ EventTile.prototype.fetchEvent = function(callback) {
           alert(response.responseJSON.message);
           var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
           $eventDoesNotExist.append($("<div>").html(localize('info_panel.event_does_not_exist_anymore')));
-          $eventDoesNotExist.append($("<a href='/messages_threads/"+ window.threadId +"/remove_event_link'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
+          console.log('eventTIle', eventTile);
+          $eventDoesNotExist.append($("<a href='/messages_threads/" + window.threadId + "/remove_event_link?event_id=" + eventTile.eventId + "'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
           eventTile.eventDoesNotExistSelector = $eventDoesNotExist;
           eventTile.showEventDoesNotExist();
         }
