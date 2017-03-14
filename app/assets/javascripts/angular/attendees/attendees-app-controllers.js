@@ -1361,7 +1361,7 @@
 
                     if(nameKey) {
                         translationKey[1] = nameKey;
-                        genderDenomination = localize(translationKey.join('.'), {locale: window.currentLocale});
+                        genderDenomination = localize(translationKey.join('.'), {locale: window.threadComputedData.locale});
                     }
 
                     computedUsageName = _.compact([genderDenomination, computedName]).join(' ') || null;

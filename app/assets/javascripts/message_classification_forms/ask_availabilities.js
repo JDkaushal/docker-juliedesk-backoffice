@@ -416,7 +416,8 @@ window.classificationForms.askAvailabilitiesForm.prototype.appendDetectedDateRow
         $input.datepicker({
             dateFormat: 'DD d MM yy',
             altField: $(this).siblings(".detected-date-real-date"),
-            altFormat : 'yy-mm-dd'
+            altFormat : 'yy-mm-dd',
+            minDate: new Date,
         });
     });
     $(".detected-dates .detected-date:last .detected-date-timezone").timezonePicker();

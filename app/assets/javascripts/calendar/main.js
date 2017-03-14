@@ -152,12 +152,60 @@ Calendar.prototype.generateEventsToCheck = function() {
     }
 };
 
+// Compute the date at which the calendar will open
 Calendar.prototype.determineCalendarInitialStartDate = function() {
     var calendar = this;
     var initialStartDate = moment();
 
     if(calendar.initialData.forcedInitialStartDate) {
         return calendar.initialData.forcedInitialStartDate;
+    }
+
+    if(calendar.initialData.constraintsData) {
+        // constraintNatures order is important
+        var constraintsStartDates = {}, constraintNatures = ["prefers"];
+        _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
+            _.each(dataEntries, function (dataEntry){
+                var constraintNature = dataEntry.constraint_nature;
+                if(constraintNatures.indexOf(constraintNature) == -1) return;
+
+                if(!constraintsStartDates[constraintNature]) constraintsStartDates[constraintNature] = [];
+
+                if (data.start_time)
+                    constraintsStartDates[constraintNature].push(moment(startTime));
+                if(dataEntry.dates) {
+                    _.each(dataEntry.dates, function(date) {
+                        constraintsStartDates[constraintNature].push(moment(date));
+                    });
+                }
+            });
+        });
+
+        _.each(constraintNatures, function(nature) {
+            var minStartDate = null;
+            if(constraintsStartDates[nature]) {
+                minStartDate = _.sortBy(constraintsStartDates[nature], function(d) { return d })[0];
+                if(minStartDate && minStartDate > initialStartDate) initialStartDate = minStartDate;
+            }
+        });
+
+        var allEvents = [];
+        _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
+            var mNow = moment();
+            var mOneYearFromNow = moment().add(1, 'y');
+            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
+            _.each(events.cant, function (event) {
+                allEvents.push(event);
+            });
+        });
+
+        var i = 0;
+        while (conflictingEvent = _.find(allEvents, function (event) {
+            return event.start <= initialStartDate && event.end > initialStartDate;
+        })) {
+            if((++i) >= 100) break;
+            initialStartDate = conflictingEvent.end;
+        }
     }
 
     // When in an ask_availabilities flow, we will load the calendar from the currently selected date to verify
@@ -187,56 +235,6 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
     }
 
     if(calendar.getMode() == "suggest_dates") {
-
-        if(calendar.initialData.constraintsData) {
-            // constraintNatures order is important
-            var constraintsStartDates = {}, constraintNatures = ["prefers"];
-            _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
-                _.each(dataEntries, function (dataEntry){
-                    var constraintNature = dataEntry.constraint_nature;
-                    if(constraintNatures.indexOf(constraintNature) == -1) return;
-
-                    if(!constraintsStartDates[constraintNature]) constraintsStartDates[constraintNature] = [];
-
-                    if (data.start_time)
-                        constraintsStartDates[constraintNature].push(moment(startTime));
-                    if(dataEntry.dates) {
-                        _.each(dataEntry.dates, function(date) {
-                            constraintsStartDates[constraintNature].push(moment(date));
-                        });
-                    }
-                });
-            });
-
-            _.each(constraintNatures, function(nature) {
-                var minStartDate = null;
-                if(constraintsStartDates[nature]) {
-                    minStartDate = _.sortBy(constraintsStartDates[nature], function(d) { return d })[0];
-                    if(minStartDate && minStartDate > initialStartDate) initialStartDate = minStartDate;
-                }
-            });
-
-            var allEvents = [];
-            _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
-                var mNow = moment();
-                var mOneYearFromNow = moment().add(1, 'y');
-                var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
-                _.each(events.cant, function (event) {
-                    allEvents.push(event);
-                });
-            });
-
-            var i = 0;
-            while (conflictingEvent = _.find(allEvents, function (event) {
-                    return event.start <= initialStartDate && event.end > initialStartDate;
-                })) {
-                if((++i) >= 100) break;
-                initialStartDate = conflictingEvent.end;
-            }
-        }
-
-
-
         if(calendar.initialData.suggestedDateTimes) {
             var found = false;
             _.each(calendar.initialData.suggestedDateTimes, function(suggestedDateTime) {
@@ -246,11 +244,9 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
                     initialStartDate = suggested;
                     found = true;
                 }
-
             });
         }
     }
-
 
     return initialStartDate;
 };

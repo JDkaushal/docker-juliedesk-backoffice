@@ -312,8 +312,6 @@ Calendar.prototype.fullCalendarInit = function() {
     var travelTimeOpacity = '0.80';
     var currentAllDayMasks = [];
 
-
-
     var columnWidth, columnWidthInt, offsetRowInt;
 
     var suggestionDatesManager = $('#dates-suggestion-manager').scope();

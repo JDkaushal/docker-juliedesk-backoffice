@@ -111,7 +111,8 @@
         $('#calendar-viewer-timepicker').timepicker({
             timeFormat: "H:i"
         });
-        $('#calendar-viewer-timepicker').val(moment().utc().format("HH:00"))
+
+        $('#calendar-viewer-timepicker').val(moment().utc().format("HH:00"));
 
         $(".calendar-viewer-panel .buttons-inline .button").click(function () {
             $(".calendar-viewer-panel .buttons-inline .button").removeClass("activated");
