@@ -150,7 +150,9 @@
                 if(mainInterpretation && mainInterpretation.constraints_data) {
                     constraints_data = mainInterpretation.constraints_data;
                     for(k in constraints_data) {
-                        newConstraintTile(constraints_data[k], false, true);
+                        if(constraints_data[k]) {
+                            newConstraintTile(constraints_data[k], false, true);
+                        }
                     }
 
                 }
