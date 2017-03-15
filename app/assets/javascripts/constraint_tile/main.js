@@ -65,7 +65,7 @@ function ConstraintTile($selector, params) {
         constraintTile.possibleAttendees = [];
     }
     if(constraintTile.possibleAttendees.length == 0) {
-        if (params.readOnly) {
+        if (params.data && params.data.attendee_email) {
             constraintTile.possibleAttendees.push({
                     name: params.data.attendee_email,
                     email: params.data.attendee_email
