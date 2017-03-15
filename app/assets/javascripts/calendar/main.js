@@ -1,4 +1,4 @@
-function Calendar($selector, params) {
+function Calendar($selector, params, synchronize) {
 
     // Set initial parameters
     this.$selector = $selector;
@@ -92,6 +92,9 @@ function Calendar($selector, params) {
             calendar.generateEventsToCheck(calendar.initialData.date_times);
 
             calendar.fullCalendarInit();
+            if(synchronize)
+                calendar.triggerCalendarsSync();
+
             if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
                 new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
             }

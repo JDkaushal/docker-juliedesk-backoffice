@@ -256,10 +256,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     return;
                 }
                 else {
-                  if(xhr.responseJSON.error_code) {
+                  if(xhr.responseJSON && xhr.responseJSON.error_code) {
                     var failedSyncStatuses = ['CALENDAR_SYNC_FAILED', 'CALENDAR_SYNC_TIMEOUT', 'CALENDAR_SYNC_LOCKED'];
                     if(failedSyncStatuses.indexOf(xhr.responseJSON.error_code) > -1)
-                      alert("Error: Calendar synchronisation failed");
+                      alert("Calendar synchronisation failed ("+ xhr.responseJSON.error_code +")");
                     else if(xhr.responseJSON.error_code == 'CALENDAR_NOT_FOUND')
                       alert("Some calendars do not exist anymore.");
                   }
