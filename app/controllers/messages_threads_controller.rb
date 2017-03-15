@@ -258,13 +258,15 @@ class MessagesThreadsController < ApplicationController
       end
     else
       message_classification_params = {}
-      if last_message_classification
-        message_classification_params = last_message_classification.attributes.symbolize_keys.select{|k, v| [:appointment_nature, :summary, :duration, :location, :attendees, :notes, :constraints, :date_times, :locale, :timezone, :location_nature, :private, :other_notes, :constraints_data, :number_to_call].include? k}
-      end
       last_message_classification = messages_thread.messages.map{|m|
         m.message_classifications
       }.flatten.sort_by(&:updated_at).select(&:has_data?).compact.last
       message = messages_thread.messages.last
+
+      if last_message_classification
+        message_classification_params = last_message_classification.attributes.symbolize_keys.select{|k, v| [:appointment_nature, :summary, :duration, :location, :attendees, :notes, :constraints, :date_times, :locale, :timezone, :location_nature, :private, :other_notes, :constraints_data, :number_to_call].include? k}
+      end
+
 
       mc = message.message_classifications.create message_classification_params.merge(classification: MessageClassification::ASK_CANCEL_APPOINTMENT, operator: session[:user_username], processed_in: 0)
       mc.append_julie_action
