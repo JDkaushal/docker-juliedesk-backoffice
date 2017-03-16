@@ -1,0 +1,21 @@
+angular.module('commonServices').service('backofficeApi', ['$http', function ($http) {
+
+
+    this.accountDetailsRequest = function(params) {
+        return this.request("/accounts", params);
+    };
+
+    this.request = function(path, params) {
+        var paramsAsUrl = "";
+        if(params) {
+            paramsAsUrl = "?" + _.map(params, function(v, k) {
+                    return k + "=" + v;
+                }).join("&");
+        }
+
+        return $http({
+            method: "GET",
+            url: path + paramsAsUrl
+        });
+    }
+}]);

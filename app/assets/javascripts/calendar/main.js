@@ -776,6 +776,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     var virtualResourcesToShow = [];
     var momentedStart = moment(start);
 
+    if(calendar.initialData.meeting_rooms_to_show) {
+        meeting_rooms_to_show = calendar.initialData.meeting_rooms_to_show;
+    }
+
     if (window.threadAccount) {
         if (accountPreferencesHash.email == window.threadAccount.email) {
             _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
@@ -837,6 +841,9 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     };
     if(calendar.initialData.as_at_date) {
         params.as_at_date = calendar.initialData.as_at_date;
+    }
+    if(calendar.initialData.compute_meeting_rooms_via_backend) {
+        params.compute_meeting_rooms_unavailabilities = true;
     }
 
     // if(window.threadComputedData.linked_attendees && window.threadComputedData.linked_attendees[accountPreferencesHash.email]) {
@@ -1339,7 +1346,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
         var eventData = calendar.eventDataFromEvent(calEvent);
 
         // We don't add the individual meeting rooms events to the displayed events on the calendar
-        if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
+        if(meetingRoomsIds.indexOf(eventData.calId) > -1 && !calendar.initialData.compute_meeting_rooms_via_backend) {
             localMeetingRoomsEvents[eventData.calId].push(eventData);
             calendar.meetingRoomsEvents[eventData.calId].push(eventData);
         } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId) > -1) {

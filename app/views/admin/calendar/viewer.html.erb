@@ -1,3 +1,5 @@
+<%= javascript_include_tag "angular_calendar_viewer.js" %>
+
 <script>
     var getAsAtDate = function () {
         if ($(".calendar-viewer-panel .buttons-inline .button.activated").data("val") == "as_at_date") {
@@ -72,6 +74,7 @@
         calendarParams.dontTrackRequests = true;
         calendarParams.dontShowMinimizeButton = true;
 
+
         window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
         $(".calendar-container").addClass("visible");
     };
@@ -86,6 +89,8 @@
     var reloadCalendar = function () {
         activateCalendarWithParams({
             email: $("#calendar-viewer-client-email").val(),
+            meeting_rooms_to_show: $("#calendar-viewer").scope().selectedMeetingRoomsByUsername(),
+            compute_meeting_rooms_via_backend: true,
             as_at_date: getAsAtDate()
         });
     };
@@ -94,7 +99,16 @@
         $("#calendar-viewer-client-email").val("nicolas@wepopp.com");
 
 
-        $("#calendar-viewer-client-email, #calendar-viewer-datepicker, #calendar-viewer-timepicker").change(function () {
+        $("#calendar-viewer-client-email").change(function () {
+            $("#calendar-viewer").scope().$broadcast("account_email_changed");
+            reloadCalendar();
+        });
+
+        $("#calendar-viewer-datepicker, #calendar-viewer-timepicker").change(function () {
+            reloadCalendar();
+        });
+
+        document.addEventListener("calendarSettingsChanged", function(e) {
             reloadCalendar();
         });
 
@@ -121,15 +135,18 @@
             reloadCalendar();
         });
         redrawButtons();
-
-        reloadCalendar();
+        $("#calendar-viewer").scope().$broadcast("account_email_changed");
+        //reloadCalendar();
     })
 
 </script>
 
+
+
 <%= render template: "calendar/calendar" %>
 
-<div class="common-right-panel calendar-viewer-panel">
+
+<div class="common-right-panel calendar-viewer-panel" id="calendar-viewer" ng-controller="calendar-viewer-controller" ng-cloak>
   <h2>Calendar viewer</h2>
   <label>Client email</label>
   <input type="client-email" id="calendar-viewer-client-email">
@@ -138,6 +155,11 @@
   <div class="buttons-inline">
     <div class="button" data-val="as_at_date">As at date</div>
     <div class="button activated" data-val="as_at_now">As at current time</div>
+  </div>
+
+  <div class="section" ng-repeat="address in account.addresses | filter: addressHasMeetingRooms">
+    <label>{{ address.label }}</label>
+    <label class="checkbox-label" ng-class="{selected: meeting_room.selected}" ng-repeat="meeting_room in address.available_meeting_rooms"><input type="checkbox" ng-model="meeting_room.selected">{{ meeting_room.summary }}</label>
   </div>
 
   <div class="calendar-viewer-date-and-time-pickers">

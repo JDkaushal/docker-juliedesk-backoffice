@@ -120,12 +120,10 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
-        console.log("CONSTRAINT TILE", $(this), $(this).data());
         errorInConstraintTiles = errorInConstraintTiles || ($(this).data("constraint") == null);
     });
     if(errorInConstraintTiles) {
-        alert("Please fix incorrect constraints. " + $(".constraint-tile-container").length + " constraints detected.");
-
+        alert("Please fix incorrect constraints.");
         $(".submit-classification").removeAttr('disabled');
         return;
     }

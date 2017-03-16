@@ -25,6 +25,27 @@
     text-transform: uppercase;
     color: $labelBlue;
     margin: 0;
+
+    &.checkbox-label {
+      color: #000;
+      text-transform: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      display: block;
+      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:hover {
+        background: #fafafa;
+      }
+
+      &.selected {
+        background: #eee;
+      }
+    }
+
   }
 
   .line-break {
@@ -184,6 +205,12 @@
     width: 100%;
     padding: 4px 5px;
     outline: none;
+
+    &[type=checkbox] {
+      display: inline;
+      width: auto;
+      margin: 0 10px 0 0;
+    }
   }
 
   .ui-datepicker {
