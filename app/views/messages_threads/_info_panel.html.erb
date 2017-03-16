@@ -36,6 +36,8 @@
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
 
+    window.unSentMessages = <%== @messages_thread.messages.map(&:server_message).any?{|s_m| !s_m['sent'];} %>
+
     window.threadComputedDataPresentAttendees = _.filter(window.threadComputedData.attendees, function(att) {
       return att.isPresent == 'true';
     });

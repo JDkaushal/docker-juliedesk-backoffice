@@ -293,20 +293,20 @@
                     $scope.computeDefaultCommutingTime(email);
                     $scope.addTravelTimeEventsToCalendar(email);
                     $scope.displayDefaultAppointmentDelay(email);
+                    $scope.setClientProcessed(email);
                     // $scope.computeDefaultAppointmentDelay(email);
                     // $scope.addDefaultDelayEventsToCalendar(email);
                     //$scope.addDefaultDelayEventsToCalendar(email);
                 }
-
-                $scope.currentlyProcessingClient[email] = false;
-
-                // Check if we have some pending calls to be made for the current client and execute the first one if yes
-                if($scope.processActionsforClient[email].length > 0) {
-                    var pendingCallParams = $scope.processActionsforClient[email].shift();
-                    $scope.processForClient(pendingCallParams[0], pendingCallParams[1]);
-                }
             } else {
                 $scope.processActionsforClient[email].push([clientPrefs, events])
+            }
+        };
+
+        $scope.checkNextProcessingForClient = function(email) {
+            if($scope.processActionsforClient[email].length > 0) {
+                var pendingCallParams = $scope.processActionsforClient[email].shift();
+                $scope.processForClient(pendingCallParams[0], pendingCallParams[1]);
             }
         };
 
@@ -528,6 +528,7 @@
                 $scope.computeDefaultCommutingTime(email);
                 $scope.addTravelTimeEventsToCalendar(email);
                 $scope.displayDefaultAppointmentDelay(email);
+                $scope.setClientProcessed(email);
                 //$scope.addDefaultDelayEventsToCalendar(email);
             }
         };
@@ -908,6 +909,11 @@
             if(window.currentCalendar) {
                 window.currentCalendar.addCal($scope.defaultDelayEvents[email]);
             }
+        };
+
+        $scope.setClientProcessed = function(email) {
+            $scope.currentlyProcessingClient[email] = false;
+            $scope.checkNextProcessingForClient(email);
         };
 
         $scope.init()
