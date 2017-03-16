@@ -104,8 +104,12 @@ class AutoMessageClassification < MessageClassification
             }
           end,
           constraints_data: main_interpretation['constraints_data'],
-          duration: main_interpretation['duration']
+          duration: main_interpretation['duration'],
+          location: main_interpretation['location_data'].try(:[], 'text'),
+          location_nature: main_interpretation['location_data'].try(:[], 'location_nature')
       }
+
+
 
 
 
@@ -136,10 +140,28 @@ class AutoMessageClassification < MessageClassification
             "later" => "later"
         }[appointment["behaviour"]] || "later"
 
+
+        # Compute location
+        location_nature = nil
+        # We have a location nature...
+        if interpretation[:location_nature]
+          address = account.addresses.select{|addr| addr['kind'] == interpretation[:location_nature]}.sort_by{|addr| addr['is_main_address'] ? 0 : 1}.first
+          # ...and a corresponding address
+          if address
+            location = address['address']
+            location_nature = interpretation[:location_nature]
+          end
+        end
+        # Otherwise, we fallback to detected location text or default address for appointment type
+        location ||= interpretation[:location]
+        location ||= appointment['default_address'].try(:[], 'address')
+
+
         amc.assign_attributes({
                                   appointment_nature: interpretation[:appointment],
                                   summary: nil,
-                                  location:  appointment['default_address'].try(:[], 'address'),
+                                  location:  location,
+                                  location_nature: location_nature,
                                   attendees: AutoMessageClassification.clean_and_categorize_clients(interpretation[:attendees]).to_json,
                                   notes: nil,
                                   date_times: "[]",
