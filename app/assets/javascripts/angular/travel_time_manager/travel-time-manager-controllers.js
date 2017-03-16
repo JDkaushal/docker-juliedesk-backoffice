@@ -128,6 +128,12 @@
         $scope.schedulingEventProperties = {};
         $scope.referenceLocation = {};
 
+        // We store for each clients the processing actions we need to perform on him,
+        // We need to process the different calls for a same client consecutively
+        // Allow to manage the processing via a queue, so the calls don't interrupt themselves
+        $scope.processActionsforClient = {};
+        $scope.currentlyProcessingClient = {};
+
         $scope.init = function() {
             if(window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) {
                 $scope.originCoordinates = window.threadComputedData.location_coordinates;
@@ -262,28 +268,45 @@
         $scope.processForClient = function(clientPrefs, events) {
             var email = clientPrefs.email;
 
-            $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments;
-            $scope.defaultCommutingTimeByClient[email] = clientPrefs.default_commuting_time;
+            $scope.processActionsforClient[email] = $scope.processActionsforClient[email] || [];
 
-            $scope.resetForClient(email);
-            $scope.setEvents(email, events);
-            $scope.computeReferenceLocationForClient(email);
+            if(!$scope.currentlyProcessingClient[email]) {
 
-            $scope.selectEventsToCompute(email);
+                $scope.currentlyProcessingClient[email] = true;
 
-            if( ( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0 ) {
-                $scope.calculate(email);
+                $scope.defaultDelayByClient[email] = clientPrefs.delay_between_appointments;
+                $scope.defaultCommutingTimeByClient[email] = clientPrefs.default_commuting_time;
+
+                $scope.resetForClient(email);
+                $scope.setEvents(email, events);
+                $scope.computeReferenceLocationForClient(email);
+
+                $scope.selectEventsToCompute(email);
+
+                if( ( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0 ) {
+                    $scope.calculate(email);
+                } else {
+                    // This method is called by subfunctions of 'calculate' at the end of the process to display default time
+                    // to events for which Google could not calculate a travel time
+
+                    // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
+                    $scope.computeDefaultCommutingTime(email);
+                    $scope.addTravelTimeEventsToCalendar(email);
+                    $scope.displayDefaultAppointmentDelay(email);
+                    // $scope.computeDefaultAppointmentDelay(email);
+                    // $scope.addDefaultDelayEventsToCalendar(email);
+                    //$scope.addDefaultDelayEventsToCalendar(email);
+                }
+
+                $scope.currentlyProcessingClient[email] = false;
+
+                // Check if we have some pending calls to be made for the current client and execute the first one if yes
+                if($scope.processActionsforClient[email].length > 0) {
+                    var pendingCallParams = $scope.processActionsforClient[email].shift();
+                    $scope.processForClient(pendingCallParams[0], pendingCallParams[1]);
+                }
             } else {
-                // This method is called by subfunctions of 'calculate' at the end of the process to display default time
-                // to events for which Google could not calculate a travel time
-
-                // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
-                $scope.computeDefaultCommutingTime(email);
-                $scope.addTravelTimeEventsToCalendar(email);
-                $scope.displayDefaultAppointmentDelay(email);
-                // $scope.computeDefaultAppointmentDelay(email);
-                // $scope.addDefaultDelayEventsToCalendar(email);
-                //$scope.addDefaultDelayEventsToCalendar(email);
+                $scope.processActionsforClient[email].push([clientPrefs, events])
             }
         };
 
