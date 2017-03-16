@@ -83,24 +83,11 @@ class AutoMessageClassification < MessageClassification
     if main_message_interpretation.present?
       main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
-      # Get duration (should be done at conscience level in the future)
-      found_duration = nil
-      duration_entities = Nokogiri::HTML(JSON.parse(entities_interpretation.raw_response)['annotated']).css(".juliedesk-entity.duration")
-      if duration_entities.length == 1
-        duration_string = duration_entities.first.attr('value')
-
-        if (md = /.{2}(\d*)M/.match(duration_string))
-          found_duration = md[1].to_i
-        elsif (md = /.{2}(\d*)H/.match(duration_string))
-          found_duration = md[1].to_i * 60
-        end
-      end
-
 
       # Build interpretation hash in backoffice format
       interpretation = {
-          :classification => main_interpretation["request_classif"] || main_interpretation["raw_request_classif"],
-          :appointment => main_interpretation['appointment_classif'] || main_interpretation['raw_appointment_classif'],
+          :classification => main_interpretation["request_classif"],
+          :appointment => main_interpretation['appointment_classif'],
           :locale => main_interpretation["language_detected"],
           :entities => {},
           attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
@@ -116,7 +103,8 @@ class AutoMessageClassification < MessageClassification
                 'isPresent' => true
             }
           end,
-          constraints_data: main_interpretation['constraints_data']
+          constraints_data: main_interpretation['constraints_data'],
+          duration: main_interpretation['duration']
       }
 
 
@@ -158,7 +146,7 @@ class AutoMessageClassification < MessageClassification
                                   locale: interpretation[:locale],
                                   timezone: client_preferences[:timezone],
                                   constraints_data: (interpretation[:constraints_data] || []).to_json,
-                                  duration: found_duration || appointment['duration'],
+                                  duration: interpretation[:duration] || appointment['duration'],
                                   call_instructions: {
                                       target: target,
                                       support: "mobile",
