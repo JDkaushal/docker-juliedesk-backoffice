@@ -104,7 +104,7 @@ module ApplicationHelper
       nil
     end
 
-    if false && res_custom && res_custom.addresses.length == res.addresses.length
+    if res_custom && res_custom.addresses.length == res.addresses.length
       res_custom
     else
       res
