@@ -83,7 +83,7 @@ class AutoMessageClassification < MessageClassification
           :entities => {},
           attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
             human_civilities_response = AiProxy.new.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
-            company_response = AiProxy.new.build_request(:get_company_name, { address: "severin.naudet@wework.com", message: "" })
+            company_response = AiProxy.new.build_request(:get_company_name, { address: att[:email], message: "" })
             {
                 'email' => att[:email],
                 'fullName' => att[:name],

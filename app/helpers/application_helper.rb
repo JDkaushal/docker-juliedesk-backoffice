@@ -20,6 +20,55 @@ module ApplicationHelper
     end
   end
 
+  # This is a custom method to parse attendees
+  # It allows to keep not-ascii characters like accents
+  # Performance: 19991/20000 (tested on mails in database vs the other method)
+  def self.parse_attendees_custom str
+    # Convert to string
+    str = "#{str}"
+
+    # Decode what's need to be decoded
+    str = str.gsub(/\=\?utf\-8\?B\?([^\?]*)\?\=/) do |d|
+      Base64.decode64(Regexp.last_match[1]).force_encoding('utf-8')
+    end
+
+    # Remove parenthesis
+    str = str.gsub(/\([^\)]*\)\ ?/, "")
+
+
+    letters = ((0x41..0x5a).to_a + (0x61..0x7a).to_a).map do |i|
+      i.chr(Encoding::UTF_8)
+    end
+    accented_characters = (0xc0..0xff).map do |i|
+      i.chr(Encoding::UTF_8)
+    end
+
+    letter_regexp = /(?:#{(letters + accented_characters).join("|")})/
+
+    inside_email_regexp = /(?:[a-zA-Z0-9]|\#)(?:[a-zA-Z0-9]|\.|\-|\+|\_)*@(?:[a-zA-Z0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
+    inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\ |\'|\+|\.|[0-9]|\&|\?|\/)*/
+    email_regexp = /(?<email>#{inside_email_regexp})/
+    name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
+
+    possible_formats = [
+        /#{name_regexp} <#{email_regexp}>/,
+        /(?<name>\'#{inside_name_regexp}\')(?:\ \(.*\))? +<#{email_regexp}>/,
+        /(?<name>#{inside_email_regexp}) +<#{email_regexp}>/,
+        /(?<name>\'#{inside_email_regexp}\') +<#{email_regexp}>/,
+        /#{name_regexp} <<#{email_regexp}>(?:[a-zA-Z]|\@)*>/,
+        /<#{email_regexp}>/,
+        /#{email_regexp}/
+    ]
+
+    re = /(?:\, ?|^)(?:#{possible_formats.join("|")})(?=>|$|\,)/
+
+
+    str.to_enum(:scan, re).map do
+      md = Regexp.last_match
+      {name: nil, email: nil}.merge Hash[md.names.map{|n| [n.to_sym, md[n]]}]
+    end
+  end
+
   def self.find_addresses str
     # Necessary because Mail::AddressList.new decompose "Simon, Matthieu <Matthieu.Simon@rolandberger.com>" into two mails "Simon" and "Matthieu <Matthieu.Simon@rolandberger.com>"
     # So we need to remove non email string from the fieald for example
@@ -31,7 +80,7 @@ module ApplicationHelper
       str = str.split(',').reject{|s| !s.include?('@')}.join(',')
     end
 
-    begin
+    res = begin
       Mail::AddressList.new("#{str}".to_ascii.gsub(/<(<(.)*@(.)*>)(.)*>/, '\1'))
     rescue
       begin
@@ -39,6 +88,26 @@ module ApplicationHelper
       rescue
         Mail::AddressList.new("")
       end
+    end
+
+    res_custom = begin
+      data_items = self.parse_attendees_custom(str)
+      al = OpenStruct.new({addresses: data_items.map do |data_item|
+        add = Mail::Address.new
+        add.address = data_item[:email]
+        add.display_name = data_item[:name] if data_item[:name]
+        add
+      end})
+      al
+    rescue Exception => e
+      p e
+      nil
+    end
+
+    if false && res_custom && res_custom.addresses.length == res.addresses.length
+      res_custom
+    else
+      res
     end
   end
 
