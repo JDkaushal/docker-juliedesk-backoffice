@@ -195,17 +195,32 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
             currentBatches.push(start);
             currentBatches.push(start.clone().add(direction * 1, 'w'));
             currentBatches.push(start.clone().add(direction * 2, 'w'));
+            var toFetch = [];
+
             _.each(currentBatches, function(batchStartDate) {
                 var start = batchStartDate.format() + "T00:00:00Z";
                 var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
 
                 if(!calendar.alreadyFetchedWeek(batchStartDate)) {
-                    calendar.fetchAllAccountsEvents(start, end, {batchTrackingId: currentBatchTrackingId});
+                    if(window.featuresHelper.isFeatureActive('list_events_v2'))
+                        toFetch.push(batchStartDate);
+                    else
+                        calendar.fetchAllAccountsEvents(start, end, {batchTrackingId: currentBatchTrackingId});
+
                     calendar.addToFetchedWeek(batchStartDate);
                 }
             });
-            //calendar.fetchAllAccountsEvents(start, end);
-        //}
+
+            if(window.featuresHelper.isFeatureActive('list_events_v2')) {
+                toFetch = _.sortBy(toFetch, function(batchStartDate) { return batchStartDate });
+                var batchStart = _.first(toFetch);
+                var batchEnd = _.last(toFetch);
+                if(batchStart && batchEnd) {
+                    start = batchStart.clone().add(0, 'w').format() + "T00:00:00Z";
+                    end = batchEnd.clone().add(1, 'w').format() + "T00:00:00Z";
+                    calendar.fetchAllAccountsEvents(start, end);
+                }
+            }
     }
 };
 Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {

@@ -110,6 +110,7 @@ window.CommonHelpers.replaceCurrentCalendarAccountStaging = function(){
 // ***************************************************************
 
 window.CommonHelpers.externalRequest = function (request, callback, error_callback) {
+    window.syncing = false;
     var host = '';
 
     var staging_mode = isStagingEnv();
@@ -211,7 +212,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             // We need to use a post request here because when there are many meeting rooms the request entity becomes too large
             type: "POST",
             tryCount : 0,
-            retryLimit : 1,
+            retryLimit : 2,
             data: {
               start: request.start,
               end: request.end,
@@ -252,7 +253,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     var ajaxRequest = this;
                     setTimeout(function() {
                       $.ajax(ajaxRequest);
-                    }, 3000);
+                    }, 5000);
                     return;
                 }
                 else {

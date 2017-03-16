@@ -70,31 +70,39 @@
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 
+    window.refreshAllowedAttendeesEmails = function() {
+      window.initAllowedAttendeesEmails();
+      var recipientsManager = $('#recipients-manager').scope();
+      if(recipientsManager)
+        recipientsManager.initTokenInputs();
+    };
+
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
+      var extendedMessages = $('.email.extended');
+      var notFromMeMessages = $('.email:not(".from-me")');
+      // We extend every emails before computing the allowed attendees because el.innerText does not return the same formatting for the text in both cases
+      notFromMeMessages.addClass('extended');
+
+      var messageBodies = $.map($('#messages_container .email:not(".from-me") .body, .gmail_quote,blockquote, .email:not(".from-me") .ics-preview'), function(el, _) { return el.innerText }).join("\n");
       window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
       // The thread main account email
-          //.concat(window.threadAccount.email)
-          // The thread main account aliases
-          //.concat(window.threadAccount.email_aliases)
+
           // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
           // So we can look for them with Jquery using the regex function '*=' on the href attribute value
           //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
           // Extract emails from emails bodies
-          .concat(extractEmails($('#messages_container .email:not(".from-me") .body').text()) || [])
+          .concat(extractEmails(messageBodies) || [])
+          .concat(extractEmails(window.threadComputedData.constraints || '') || [])
           // The attendees of the event if any
           //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
-//      var clientsAccountsCurrentNotesNodes = $('.account-current-notes-container');
-//      if(clientsAccountsCurrentNotesNodes.length > 0) {
-//        var emails = extractEmails(clientsAccountsCurrentNotesNodes.text());
-//        if(emails) {
-//          window.allowedAttendeesEmails = window.allowedAttendeesEmails.concat(emails);
-//        }
-//      }
 
-      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase(); });
+      notFromMeMessages.removeClass('extended');
+      extendedMessages.addClass('extended');
+
+      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase().replace(/'/g, ""); });
       window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
     };
 

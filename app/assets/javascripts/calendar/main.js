@@ -629,10 +629,10 @@ Calendar.prototype.removeEventsToCheck = function() {
     });
 };
 
-Calendar.prototype.checkHideLoadingSpinner = function(start) {
+Calendar.prototype.checkHideLoadingSpinner = function(start, end) {
     var calendar = this;
     var currentView = calendar.$selector.find('#calendar').fullCalendar('getView');
-    var onView = currentView.start.isSame(start, 'd');
+    var onView = currentView.start >= start && currentView.start <= end;
 
     if(onView) {
         calendar.hideLoadingSpinner();
@@ -656,6 +656,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     var calendar = this;
     var localWaitingAccounts = 0;
     var momentedStart = moment(start);
+    var momentedEnd = moment(end);
     var formattedStart = momentedStart.format();
 
     var travelTimeCalculator = $('#travel_time_calculator').scope();
@@ -668,7 +669,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     allEmailsForTracking.unshift(calendar.initialData.email);
 
     var currentView = calendar.$selector.find('#calendar').fullCalendar('getView');
-    var onView = currentView.start.isSame(momentedStart, 'd');
+    var onView = currentView.start >= momentedStart && currentView.start <= momentedEnd;
 
     var allClientsPreferencesHash = [];
 
@@ -701,7 +702,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
             // We hide the spinner if we are currently the week that has finished being loaded
             if(calendar.currentlyFetchingWeeks[formattedStart] == 0) {
                 delete calendar.currentlyFetchingWeeks[formattedStart];
-                calendar.checkHideLoadingSpinner(momentedStart);
+                calendar.checkHideLoadingSpinner(momentedStart, momentedEnd);
             }
 
             if(trackingOptions.trackNetworkResponse) {
