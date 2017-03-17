@@ -54,8 +54,10 @@
     </script>
 <% end %>
 
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %><%= !email['sent'] ? 'not-sent' : '' %>  " id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
-  <% unless email['sent'] %>
+<% email_not_sent = !email['sent'] && DateTime.parse(email['date']) + 2.minutes < DateTime.now  %>
+
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %><%= email_not_sent ? 'not-sent' : '' %>  " id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
+  <% if email_not_sent %>
     <span class="email-not-sent-sprite"></span>
   <% end %>
 
