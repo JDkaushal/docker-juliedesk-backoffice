@@ -15,7 +15,7 @@ set :scm, :git
 set :user, 'appuser'
 set :assets_roles, [:web, :app]
 
-set :linked_dirs, %w{log tmp/pids}
+set :linked_dirs, %w{log tmp/pids script}
 set :linked_files, %w{config/database.yml .env}
 set :rvm_ruby_version, '2.2.0'
 

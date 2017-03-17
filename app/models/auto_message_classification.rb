@@ -218,6 +218,9 @@ class AutoMessageClassification < MessageClassification
         })
         #puts date_suggestions_response
         date_suggestions = date_suggestions_response["suggested_dates"]
+        if date_suggestions.length < 2
+          raise "Less than two dates found for suggestions. Not able to continue."
+        end
         amc.date_times = (date_suggestions || []).to_json
 
         # Handle template generation
