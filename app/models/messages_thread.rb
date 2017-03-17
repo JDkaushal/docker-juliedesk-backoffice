@@ -1021,6 +1021,7 @@ class MessagesThread < ActiveRecord::Base
     self.computed_data([auto_message_classification])
 
     def self.contacts params = {}
+      first_message = self.messages.sort_by(&:received_at).first
       params[:server_messages_to_look] = server_thread['messages'].select{|sm| [first_message.server_message_id].include? sm['id']}
       params[:forbidden_emails] = []
       unless params[:with_client]
