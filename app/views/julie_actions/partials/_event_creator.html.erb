@@ -136,7 +136,9 @@
                       action: :classifying,
                       id: local_assigns[:julie_action].message_classification.message.id,
                       classification: "ask_date_suggestions",
-                      anchor: "ignore_linked_attendees"
+                      anchor: "ignore_linked_attendees",
+                      ignore_linked_attendees: true,
+                      started_at: Time.now.to_i * 1000
                   }
       %>
     </div>

@@ -1219,10 +1219,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         endTime = ev.end.date;
     }
 
-
     var sstartTime = moment(startTime).tz(calendar.getCalendarTimezone()).format();
     var sendTime = moment(endTime).tz(calendar.getCalendarTimezone()).format();
-
 
     // Dont zone non-booking hours and all day events
     if(ev.calendar_login_type != 'EwsLogin' && (calendar.isFakeCalendarId(ev.calId) || (ev.all_day))) {

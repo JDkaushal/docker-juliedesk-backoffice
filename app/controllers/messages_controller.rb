@@ -81,12 +81,22 @@ class MessagesController < ApplicationController
       return
     end
 
+    if params[:ignore_linked_attendees]
+      last_classif = @message.message_classifications.last
+      new_classif = last_classif.dup
+      new_classif.assign_attributes(classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i))
+      new_classif.ignore_linked_attendees = true
+      new_classif.save
+      new_classif.append_julie_action
+      redirect_to julie_action_path(new_classif.julie_action)
+      return
+    end
+
     @messages_thread = MessagesThread.includes(messages: {message_classifications: :julie_action, message_interpretations: {}}).find(@message.messages_thread_id)
     @messages_thread.re_import
 
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
   end
-
 
   def let_ai_process
     message = Message.find(params[:id])
