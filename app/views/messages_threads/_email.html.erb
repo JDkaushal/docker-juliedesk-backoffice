@@ -53,7 +53,12 @@
         };
     </script>
 <% end %>
-<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %>" id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
+
+<div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %><%= !email['sent'] ? 'not-sent' : '' %>  " id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
+  <% unless email['sent'] %>
+    <span class="email-not-sent-sprite"></span>
+  <% end %>
+
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>
       <% notation = operator_actions_group.review_notation || 5 %>
       <div class="full-review-container <%= (notation != 5)?"expanded":"" %> <%= (operator_actions_group.review_status && local_assigns[:reviewing_status] == "review")?"already-set":""%> <%= (local_assigns[:reviewing_status] == "review")?"enabled":"" %>">

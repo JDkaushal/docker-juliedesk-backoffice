@@ -36,7 +36,7 @@
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
 
-    window.unSentMessages = <%== @messages_thread.messages.map(&:server_message).any?{|s_m| !s_m['sent'];} %>
+    window.hasUnSentMessages = <%== @messages_thread.messages.map(&:server_message).any?{|s_m| !s_m['sent'];} %>
 
     window.threadComputedDataPresentAttendees = _.filter(window.threadComputedData.attendees, function(att) {
       return att.isPresent == 'true';
@@ -388,7 +388,21 @@
 
       initGooglePlacesAutoCompleteOnLocationField();
       initAllowedAttendeesEmails();
+
+      checkIfDisplayMessageNotSentLayer();
     });
+
+    function getCurrentOperatorPrivilegeLevel() {
+      return $('body').data('operatorPrivilege');
+    }
+
+    function checkIfDisplayMessageNotSentLayer() {
+      // check if the thread contains any unsent messages
+      // Do not display the layer screen to the admins
+      if(window.hasUnSentMessages && getCurrentOperatorPrivilegeLevel() != 'admin') {
+        $('#thread_contains_message_not_sent_layer').show();
+      }
+    }
 
     function extractEmails(text)
     {
