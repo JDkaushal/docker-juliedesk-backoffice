@@ -305,11 +305,24 @@ class AutoMessageClassification < MessageClassification
   end
 
   def self.build_message message_classification
-    julie_alias = message_classification.message.messages_thread.julie_alias
+    m = message_classification.message
+    m.messages_thread.re_import
+    m = m.messages_thread.messages.find{|me| me.id == m.id}
+
+    julie_alias = m.messages_thread.julie_alias
     footer_and_signature = julie_alias.generate_footer_and_signature(message_classification.locale)
 
-    initial_recipients_only_reply_all = message_classification.message.initial_recipients only_reply_all: true
-    initial_recipients = message_classification.message.initial_recipients
+    contact_emails = MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map { |c| c[:email].try(:downcase) }
+    present_attendees = JSON.parse(message_classification.attendees).select{|a| a['isPresent'] == 'true'}
+    initial_recipients_only_reply_all = m.initial_recipients({
+                                                                 only_reply_all: true,
+                                                                 contact_emails: contact_emails,
+                                                                 present_attendees: present_attendees
+                                                             })
+    initial_recipients = m.initial_recipients({
+                                                  contact_emails: contact_emails,
+                                                  present_attendees: present_attendees
+                                              })
 
     should_quote = ((initial_recipients[:to] + initial_recipients[:cc]) - initial_recipients_only_reply_all[:to] - initial_recipients_only_reply_all[:cc]).length == 0
     text_in_email = "#{message_classification.julie_action.text}#{footer_and_signature[:text_footer]}"
@@ -322,14 +335,14 @@ class AutoMessageClassification < MessageClassification
     end
 
     {
-        subject: message_classification.message.messages_thread.subject,
+        subject: m.messages_thread.subject,
         from: julie_alias.generate_from,
         to: recipients_to.join(", "),
         cc: recipients_cc.join(", "),
         html: text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe,
         quote_replied_message: should_quote,
         quote_forward_message: false,
-        reply_to_message_id: message_classification.message.server_message_id
+        reply_to_message_id: m.server_message_id
     }
 
   end
@@ -348,11 +361,24 @@ class AutoMessageClassification < MessageClassification
       return oag
     end
 
+    m = self.message
+    m.messages_thread.re_import
+    m = m.messages_thread.messages.find{|me| me.id == m.id}
+
     julie_alias = self.message.messages_thread.julie_alias
     footer_and_signature = julie_alias.generate_footer_and_signature(self.locale)
 
-    initial_recipients_only_reply_all = self.message.initial_recipients only_reply_all: true
-    initial_recipients = self.message.initial_recipients
+    contact_emails = MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map { |c| c[:email].try(:downcase) }
+    present_attendees = JSON.parse(self.attendees).select{|a| a['isPresent'] == 'true'}
+    initial_recipients_only_reply_all = m.initial_recipients({
+                                                                 only_reply_all: true,
+                                                                 contact_emails: contact_emails,
+                                                                 present_attendees: present_attendees
+                                                             })
+    initial_recipients = m.initial_recipients({
+                                                  contact_emails: contact_emails,
+                                                  present_attendees: present_attendees
+                                              })
 
     should_quote = ((initial_recipients[:to] + initial_recipients[:cc]) - initial_recipients_only_reply_all[:to] - initial_recipients_only_reply_all[:cc]).length == 0
 

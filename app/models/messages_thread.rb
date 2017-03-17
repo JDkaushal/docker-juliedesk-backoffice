@@ -1005,6 +1005,7 @@ class MessagesThread < ActiveRecord::Base
     self.computed_data(first_message.message_classifications.sort_by(&:updated_at).select(&:has_data?).compact.first(1))
   end
 
+
   def mock_conscience_first_message
     first_message = self.messages.sort_by(&:received_at).first
     auto_message_classification = first_message.auto_message_classification
@@ -1018,6 +1019,15 @@ class MessagesThread < ActiveRecord::Base
         event_from_invitation_organizer: nil
     })
     self.computed_data([auto_message_classification])
+
+    def self.contacts params = {}
+      params[:server_messages_to_look] = server_thread['messages'].select{|sm| sm.id.include? [first_message.message_id]}
+      params[:forbidden_emails] = []
+      unless params[:with_client]
+        params[:forbidden_emails] = account.try(:all_emails) || []
+      end
+      MessagesThread.contacts params
+    end
   end
 
   def attendees

@@ -143,10 +143,11 @@ class Message < ActiveRecord::Base
     initial_cc_emails = reply_all_recipients['cc'].map{|c| c['email'].try(:downcase)}
 
     # Get all emails present in an email of the thread
-    contact_emails = self.messages_thread.contacts(with_client: true).map { |c| c[:email].try(:downcase) }
+    contact_emails = params[:contact_emails] || self.messages_thread.contacts(with_client: true).map { |c| c[:email].try(:downcase) }
 
     # Get all present attendees emails
-    present_attendees = self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}
+    present_attendees = params[:present_attendees] || self.messages_thread.computed_data[:attendees].select{|a| a['isPresent'] == 'true'}
+
     attendee_emails = present_attendees.map{|a| a['email'].try(:downcase)}
 
     # Get main client email in this thread
