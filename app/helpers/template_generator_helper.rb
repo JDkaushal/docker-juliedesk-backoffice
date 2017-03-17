@@ -21,6 +21,10 @@ module TemplateGeneratorHelper
     request("/api/v1/templates/say_hi", template_data)
   end
 
+  def get_usage_name template_data
+    request("/api/v1/templates/usage_name", template_data)
+  end
+
   private
 
   def request path, body=nil

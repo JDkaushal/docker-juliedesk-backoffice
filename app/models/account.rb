@@ -50,6 +50,9 @@ class Account
   RULE_UNVALIDATED = "rule_unvalidated"
   RULE_DEFAULT = "rule_default"
 
+  LANGUAGE_LEVEL_NORMAL = "normal"
+  LANGUAGE_LEVEL_FORMAL = "soutenu"
+
   def self.create_from_email email, params={}
     cache = params[:accounts_cache]# || self.accounts_cache
     users_access_lost_cache = params[:users_access_lost_cache] || self.users_with_lost_access

@@ -93,20 +93,23 @@ class AutoMessageClassification < MessageClassification
           attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
             human_civilities_response = AiProxy.new.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
             company_response = AiProxy.new.build_request(:get_company_name, { address: att[:email], message: "" })
+
+
             {
                 'email' => att[:email],
                 'fullName' => att[:name],
                 'firstName' => human_civilities_response['first_name'],
                 'lastName' => human_civilities_response['last_name'],
+                'gender' => human_civilities_response['gender'],
                 'company' => company_response['company'],
-                'usageName' => human_civilities_response['first_name'],
                 'isPresent' => true
             }
           end,
           constraints_data: main_interpretation['constraints_data'],
           duration: main_interpretation['duration'],
           location: main_interpretation['location_data'].try(:[], 'text'),
-          location_nature: main_interpretation['location_data'].try(:[], 'location_nature')
+          location_nature: main_interpretation['location_data'].try(:[], 'location_nature'),
+          is_formal: main_interpretation['formal_language']
       }
 
 
@@ -157,12 +160,26 @@ class AutoMessageClassification < MessageClassification
         location ||= appointment['default_address'].try(:[], 'address')
 
 
+        is_formal = false
+        is_formal ||= account.language_level == Account::LANGUAGE_LEVEL_FORMAL
+        is_formal ||= interpretation[:is_formal]
+
+        attendees = AutoMessageClassification.clean_and_categorize_clients(interpretation[:attendees])
+        attendees.each do |attendee|
+          attendee['usageName'] = get_usage_name({
+                                                     locale: interpretation[:locale],
+                                                     first_name: attendee['firstName'],
+                                                     last_name: attendee['lastName'],
+                                                     gender: "#{attendee['gender']}".first,
+                                                     formal: is_formal
+                                                 })
+        end
         amc.assign_attributes({
                                   appointment_nature: interpretation[:appointment],
                                   summary: nil,
                                   location:  location,
                                   location_nature: location_nature,
-                                  attendees: AutoMessageClassification.clean_and_categorize_clients(interpretation[:attendees]).to_json,
+                                  attendees: attendees.to_json,
                                   notes: nil,
                                   date_times: "[]",
                                   locale: interpretation[:locale],
@@ -173,7 +190,8 @@ class AutoMessageClassification < MessageClassification
                                       target: target,
                                       support: "mobile",
                                       targetInfos: {}
-                                  }.to_json
+                                  }.to_json,
+                                  language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL
                               })
 
       end
