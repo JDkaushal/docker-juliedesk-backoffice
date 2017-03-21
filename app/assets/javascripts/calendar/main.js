@@ -1508,13 +1508,9 @@ Calendar.prototype.triggerCalendarsSync = function() {
         var preferenceHash = calendar.accountPreferences[email];
 
         CommonHelpers.externalRequest({
-            action: "events",
+            action: "synchronize",
             email: preferenceHash.email,
-            calendar_ids: preferenceHash.calendar_ids_to_show_override,
-            meeting_rooms_to_show: [],
-            virtual_resources_to_show: [],
-            start: moment().format() + "T00:00:00Z",
-            end: moment().add(1, 's').format() + "T00:00:00Z"
+            calendar_ids: preferenceHash.calendar_ids_to_show_override
         }, function() {});
     }
 };

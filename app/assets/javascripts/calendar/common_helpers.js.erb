@@ -202,6 +202,15 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
         });
     }
+    else if (request.action == "synchronize") {
+      var synchronizeUrl = host + "/api/v1/calendar_proxy/synchronize";
+      $.ajax({
+        url: synchronizeUrl,
+        type: "POST",
+        data: { email: request.email, calendar_ids: request.calendar_ids },
+        beforeSend: function(xhr){ xhr.setRequestHeader("Authorization", access_key); }
+      });
+    }
     else if(request.action == "events") {
         var listEventsUrl = host + "/api/v1/calendar_proxy/events_list";
         if(window.featuresHelper.isFeatureActive("list_events_v2"))
