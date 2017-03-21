@@ -7,6 +7,75 @@ class AutoMessageClassification < MessageClassification
 
   self.table_name = "auto_message_classifications"
 
+  def clean_delete
+    self.julie_action.delete
+    self.auto_message_classification_reviews.each do |amcr|
+      amcr.delete
+    end
+    self.delete
+  end
+
+  def self.generate_batch_identifier params={}
+    start_date = params[:start_date] || raise("Missing argument start_date")
+    end_date = params[:end_date] || raise("Missing argument end_date")
+    now = DateTime.now
+    batchs_count = AutoMessageClassification.select(:batch_identifier).uniq.count
+
+    "Batch ##{batchs_count +1} | #{start_date.strftime("%Y-%m-%d")} - #{end_date.strftime("%Y-%m-%d")} | compiled #{now.strftime("%B %Y")}"
+  end
+
+  def self.populate_turing params={}
+    # Get params
+    start_date = params[:start_date] || raise("Missing argument start_date")
+    end_date = params[:end_date] || raise("Missing argument end_date")
+    batch_identifier = params[:batch_identifier] || self.generate_batch_identifier(start_date: start_date, end_date: end_date)
+    target_count = params[:target_count] || 100
+    force_reinterpretation = params[:dont_force_reinterpretation].blank?
+
+
+    # Get messages_thread_ids with messages received during period
+    messages_thread_ids = Message.where(from_me: false).where("received_at >= ? AND received_at < ?", start_date, end_date).select(:messages_thread_id).distinct.map(&:messages_thread_id)
+
+    # Get messages_ids first-of-thread received during period
+    fot_message_ids = Message.where(messages_thread_id: messages_thread_ids).select(:received_at, :id, :messages_thread_id).group_by(&:messages_thread_id).map do |messages_thread_id, messages|
+      messages.sort_by(&:received_at).first
+    end.select do |message|
+      message.received_at >= start_date && message.received_at < end_date
+    end.map(&:id)
+
+    # Get those classified as ask_date_suggestion by AI
+    fot_message_ids_sd = MessageInterpretation.where(message_id: fot_message_ids, question: "main", error: false).select{|mi|
+      mi.json_response && mi.json_response["request_classif"] == "ask_date_suggestions"
+    }.map(&:message_id)
+
+    # Retrieve message_ids not already associated to an auto_message_classification, and sample them
+    used_message_ids = AutoMessageClassification.where(message_id: fot_message_ids_sd).map(&:message_id)
+    unused_message_ids = Message.where(id: fot_message_ids_sd).where.not(id: used_message_ids).select(:id).map(&:id)
+    unused_message_ids = unused_message_ids.sample(unused_message_ids.length)
+
+
+    unused_message_ids.each do |mid|
+      amcs_count = AutoMessageClassification.where(batch_identifier: batch_identifier, from_ai: true).count
+      print "\n#{amcs_count}/#{target_count}..."
+      if amcs_count < target_count
+        begin
+          amc = AutoMessageClassification.build_from_conscience(mid, force_reinterpretation: force_reinterpretation)[:auto_message_classification]
+          amc.batch_identifier = batch_identifier
+          amc.save
+        rescue Exception => e
+          print "\nImpossible to generate an auto_message_classification: #{e}"
+        end
+      else
+        print "\n#{batch_identifier} is now complete with #{amcs_count} auto_message_classifications"
+        return true
+      end
+    end
+
+    amcs_count = AutoMessageClassification.where(batch_identifier: batch_identifier, from_ai: true).count
+    print "Can't complete #{batch_identifier}. Only #{amcs_count} auto_messages_classifications generated"
+    return false
+  end
+
   def auto_message_classification_review operator_id
     auto_message_classification_reviews.find{|amcr| "#{amcr.operator_id}" == "#{operator_id}" }
   end
@@ -66,11 +135,29 @@ class AutoMessageClassification < MessageClassification
 
     # Get objects
     m = Message.find(message_id)
-    m.messages_thread.re_import
-    processing_date = m.received_at + 5.minutes
-    m = m.messages_thread.messages.find{|me| me.id == m.id}
     account = m.messages_thread.account
 
+    # Verify account exists
+    raise "No account associated" unless account
+    raise "Associated account #{account.email} has current notes" unless account.current_notes.blank?
+
+    # Import server messages and associate the first-of-thread message
+    m.messages_thread.re_import
+    m = m.messages_thread.messages.find{|me| me.id == m.id}
+
+    # Verify client sent the email
+    from_email = ApplicationHelper.strip_email(m.server_message['from'])
+    raise "Client is not the sender" unless account.all_emails.map(&:downcase).include? "#{from_email}".downcase
+
+
+    # Verify it's not multi-clients
+    to_emails = ApplicationHelper.find_addresses("#{m.server_message['to']}").addresses.map(&:address)
+    cc_emails = ApplicationHelper.find_addresses("#{m.server_message['cc']}").addresses.map(&:address)
+    all_emails = ([from_email] + to_emails + cc_emails).uniq
+    all_account_emails = all_emails.map{|email| Account.find_account_email(email, {})}.compact.uniq
+    raise "Multi-clients: #{all_account_emails.join(", ")}" unless all_account_emails.length == 1
+
+    processing_date = m.received_at + 5.minutes
 
     # Get interpretations
     main_message_interpretation = m.message_interpretations.find{|mi| mi.question == "main"}
