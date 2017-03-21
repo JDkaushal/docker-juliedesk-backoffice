@@ -130,6 +130,7 @@ Rails.application.routes.draw do
 
       member do
         get "compare_date_suggestions", action: :compare_date_suggestions
+        post "update_review_comment", action: :update_review_comment
       end
     end
 

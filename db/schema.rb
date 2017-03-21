@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170317051908) do
+ActiveRecord::Schema.define(version: 20170321134603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
@@ -111,6 +112,15 @@ ActiveRecord::Schema.define(version: 20170317051908) do
   end
 
   add_index "company_domain_associations", ["company_name", "domain"], name: "index_company_domain_associations_on_company_name_and_domain", unique: true, using: :btree
+
+  create_table "date_suggestions_comparison_reviews", force: true do |t|
+    t.integer  "julie_action_id"
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "date_suggestions_comparison_reviews", ["julie_action_id"], name: "index_date_suggestions_comparison_reviews_on_julie_action_id", using: :btree
 
   create_table "date_suggestions_reviews", force: true do |t|
     t.integer  "julie_action_id"
@@ -266,6 +276,7 @@ ActiveRecord::Schema.define(version: 20170317051908) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "error"
+    t.string   "classification"
   end
 
   add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree
@@ -397,5 +408,19 @@ ActiveRecord::Schema.define(version: 20170317051908) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

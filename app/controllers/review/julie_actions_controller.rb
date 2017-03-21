@@ -19,12 +19,21 @@ class Review::JulieActionsController < ReviewController
                 date_suggestions: JSON.parse(ja.date_times || "[]"),
                 account_email: ja.message_classification.message.messages_thread.account_email,
                 other_account_emails: ja.message_classification.other_account_emails,
-                date: ja.created_at
+                date: ja.created_at,
+                review_comment: ja.date_suggestions_comparison_review.try(:comment)
             }
         }
       end
-
-
     end
+  end
+
+  def update_review_comment
+    ja = JulieAction.find(params[:id])
+    ja.date_suggestions_comparison_review ||= ja.build_date_suggestions_comparison_review
+    ja.date_suggestions_comparison_review.update_attributes(comment: params[:review_comment])
+    render json: {
+        status: "success",
+        data: {}
+    }
   end
 end

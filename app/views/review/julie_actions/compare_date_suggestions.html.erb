@@ -82,6 +82,13 @@
         </div>
       </div>
 
+      <div class="section">
+        <label>Comment</label>
+        <textarea ng-model="review_comment"></textarea>
+
+        <div class="btn btn-success" ng-disabled="loadingUpdateComment" ng-click="updateComment()">Update comment</div>
+      </div>
+
     </div>
 
     <div id="event-to-check-for-calendar-html-in-review" style="display: none">

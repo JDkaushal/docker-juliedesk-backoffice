@@ -201,7 +201,7 @@
     }
   }
 
-  input {
+  input, textarea {
     width: 100%;
     padding: 4px 5px;
     outline: none;
@@ -212,6 +212,12 @@
       margin: 0 10px 0 0;
     }
   }
+  textarea {
+    resize: none;
+    border: 1px solid #bbb;
+    height: 80px;
+  }
+
 
   .ui-datepicker {
     width: 100%;

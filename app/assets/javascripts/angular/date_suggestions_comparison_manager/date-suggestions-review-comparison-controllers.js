@@ -151,6 +151,7 @@
                 $scope.location = data.location;
                 $scope.constraints = data.constraints_data;
                 $scope.date = data.date;
+                $scope.review_comment = data.review_comment;
 
 
                 window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
@@ -250,7 +251,6 @@
                 };
             });
             var datesFromOperator = _.map($scope.suggestedDatesOther(), function (dateSuggestion) {
-
                 return {
                     date: dateSuggestion.date.format(),
                     color: "#0099CC",
@@ -261,6 +261,15 @@
 
             return datesFromOperator.concat(datesFromConscience);
         };
+
+        $scope.updateComment = function() {
+            $scope.loadingUpdateComment = true;
+            $http.post("/review/julie_actions/" + $scope.julieActionId + "/update_review_comment", {
+                review_comment: $scope.review_comment
+            }).then(function (response) {
+                $scope.loadingUpdateComment = false;
+            });
+        }
     }]);
 
 

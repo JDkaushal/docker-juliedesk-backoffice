@@ -2,6 +2,7 @@ class JulieAction < ActiveRecord::Base
 
   belongs_to :message_classification
   has_many :operator_actions, as: :target
+  has_one :date_suggestions_comparison_review
 
   JD_ACTION_CREATE_EVENT             = "create_event"
   JD_ACTION_UPDATE_EVENT             = "update_event"
