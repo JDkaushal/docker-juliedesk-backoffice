@@ -58,13 +58,29 @@
                 end: $scope.end().format(),
                 event_type: $scope.eventType
             }).then(function(response) {
-                $scope.loading = false;
-                $scope.errors = response.data.data.suggested_dates;
-                $scope.totalCount = response.data.data.total_count;
-                $scope.errorsCount = response.data.data.errors_count;
-                _.each($scope.errors, function(error) {
-                   error.date = moment(error.date);
+
+                $http.post("/review/julie_actions/list_comments", {
+                    ids: _.map(response.data.data.suggested_dates, function(error) {
+                        return error.julie_action_id;
+                    })
+                }).then(function (backofficeResponse) {
+
+                    $scope.errors = response.data.data.suggested_dates;
+                    $scope.totalCount = response.data.data.total_count;
+                    $scope.errorsCount = response.data.data.errors_count;
+
+                    var julieActionReviews = backofficeResponse.data.data.julie_actions;
+                    _.each($scope.errors, function(error) {
+                        error.date = moment(error.date);
+                        error.comment = julieActionReviews[error.julie_action_id];
+                    });
+
+                    $scope.loading = false;
+
+
                 });
+
+
             });
         };
 

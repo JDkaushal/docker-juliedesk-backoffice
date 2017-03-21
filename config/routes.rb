@@ -125,7 +125,7 @@ Rails.application.routes.draw do
     resources :julie_actions, only: [] do
       collection do
         get "list_errors", action: :list_errors
-
+        post "list_comments", actions: :list_comments
       end
 
       member do

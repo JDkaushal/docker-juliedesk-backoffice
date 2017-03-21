@@ -1,5 +1,20 @@
 class Review::JulieActionsController < ReviewController
 
+  def list_comments
+
+    ids = params[:ids] || []
+    data = Hash[ids.map {|id| [id, nil]}].merge(Hash[JulieAction.where(id: ids).joins(:date_suggestions_comparison_review).select(:id, date_suggestions_comparison_review: :comment).map do |ja|
+      [ja.id, ja.date_suggestions_comparison_review.comment]
+    end])
+
+    render json: {
+        status: "success",
+        data: {
+            julie_actions: data
+        }
+    }
+  end
+
   def compare_date_suggestions
     respond_to do |format|
       format.html do
