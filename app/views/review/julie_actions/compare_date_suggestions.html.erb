@@ -60,24 +60,24 @@
 
 
       <div class="section">
-        <div class="suggested-date-timezone information">{{ timezone }}</div>
+        <div class="suggested-date-timezone information">{{ mainTimezone }}</div>
 
         <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
           <div class="suggested-date review-item" ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false}">
-            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
           </div>
         </div>
 
         <div ng-repeat="dateSuggestion in suggestedDatesOther()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
           <div class="suggested-date review-item default">
-            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
           </div>
         </div>
 
         <br>
         <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
           <div class="suggested-date review-item" ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false}">
-            {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
           </div>
         </div>
       </div>
