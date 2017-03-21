@@ -3,7 +3,7 @@ lock '3.6.0'
 
 set :application, 'juliedesk_backoffice'
 set :repo_url, "deployer@#{ENV['DEPLOY_SERVER_IP']}:apps/juliedesk-backoffice"
-set :branch, 'develop'
+set :branch, 'master'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
