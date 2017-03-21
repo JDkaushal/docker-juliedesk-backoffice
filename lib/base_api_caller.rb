@@ -12,7 +12,7 @@ class BaseApiCaller
     @ssl_context = ssl_context
   end
 
-  def build_request(key, data = nil)
+  def build_request(key, data = {})
     endpoint_infos = get_endpoint(key)
     type = endpoint_infos[:type]
     url = URI.parse(endpoint_infos[:url])

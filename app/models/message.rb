@@ -648,8 +648,34 @@ class Message < ActiveRecord::Base
 
     # Process each one of the messages we want to create
     julie_messages.each do |julie_message_hash|
+      event_id = julie_message_hash['event_id']
+      event_url = julie_message_hash['event_url']
+      calendar_id = julie_message_hash['calendar_id']
+      calendar_login_username = julie_message_hash['calendar_login_username']
+      attendees = julie_message_hash['attendees']
+      summary = julie_message_hash['summary']
+      location = julie_message_hash['location']
+      duration = julie_message_hash['duration']
+      notes = julie_message_hash['notes']
+
       # Try to find an existing thread which would have resulted in the given event
-      existing_message = JulieAction.where(event_id: julie_message_hash['event_id'], calendar_id: julie_message_hash['calendar_id']).first.try(:message_classification).try(:message)
+      existing_message = JulieAction.where(event_id: event_id, calendar_id: calendar_id).first.try(:message_classification).try(:message)
+
+      unless existing_message.present?
+        found_main_event = PostponeEvents::CalendarServerEventFinder.new(start_date: julie_message_hash['start_date'], summary: julie_message_hash['summary'], organizer_email: julie_message_hash['organizerEmail']).find
+        if found_main_event['success']
+          event_id = found_main_event['event_id']
+          event_url = nil
+          calendar_id = found_main_event['calendar_id']
+          calendar_login_username = found_main_event['calendar_login_username']
+          attendees = found_main_event['attendees']
+          summary = found_main_event['summary']
+          location = found_main_event['location']
+          duration = found_main_event['duration']
+          notes = found_main_event['notes']
+        end
+        existing_message = JulieAction.where(event_id: event_id.to_s, calendar_id: calendar_id.to_s).first.try(:message_classification).try(:message)
+      end
 
       if existing_message.try(:messages_thread)
         copy_response = EmailServer.copy_message_to_existing_thread server_message_id: self.server_message_id, server_thread_id: existing_message.messages_thread.server_thread_id
@@ -663,28 +689,37 @@ class Message < ActiveRecord::Base
                                         reply_to_message_id:  copy_response['id']
                                     })
       else
+
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
-        server_message = EmailServer.deliver_message({
-                                        subject: julie_message_hash['subject'],
-                                        from: julie_alias_from,
-                                        to: julie_alias_from,
-                                        text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
-                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
-                                        quote: false,
-                                        reply_to_message_id: copy_response['id']
-                                    })
+
+        email_params = {
+          subject: julie_message_hash['subject'],
+          from: julie_alias_from,
+          to: julie_alias_from,
+          text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
+          html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
+          quote: false,
+          reply_to_message_id: copy_response['id']
+        }
+
+        if ENV['STAGING_APP']
+          thread = MessagesThread.create(server_thread_id: copy_response['messages_thread_id'])
+          email_params.merge!(message_thread_id: thread.id, server_thread_id: thread.server_thread_id)
+        end
+
+        server_message = EmailServer.deliver_message(email_params)
 
         Message.associate_event_data server_message,
                                                 {
-                                                    'id' => julie_message_hash['event_id'],
-                                                    'calendar_id' => julie_message_hash['calendar_id'],
-                                                    'url' => julie_message_hash['event_url'],
-                                                    'calendar_login_username' => julie_message_hash['calendar_login_username'],
-                                                    'attendees' => julie_message_hash['attendees'],
-                                                    'summary' => julie_message_hash['summary'],
-                                                    'location' => julie_message_hash['location'],
-                                                    'duration' => julie_message_hash['duration'],
-                                                    'notes' => julie_message_hash['notes'],
+                                                    'id' => event_id,
+                                                    'calendar_id' => calendar_id,
+                                                    'url' => event_url,
+                                                    'calendar_login_username' => calendar_login_username,
+                                                    'attendees' => attendees,
+                                                    'summary' => summary,
+                                                    'location' => location,
+                                                    'duration' => duration,
+                                                    'notes' => notes,
                                                 },
                                                 message_thread
       end
@@ -708,13 +743,16 @@ class Message < ActiveRecord::Base
 
     original_thread_account_all_emails = original_messages_thread.account.all_emails
 
-    attendees = (event['attendees'] || {}).select{|k, attendee|
+    attendees = event['attendees'] || {}
+    attendees = attendees.is_a?(Hash) ? attendees.values : attendees
+
+    attendees = attendees.select{|attendee|
       !original_thread_account_all_emails.include? attendee['email']
-    }.map{|k, attendee|
+    }.map{|attendee|
       {
-        k => {
-            email: attendee['email'],
-            name: "#{attendee['displayName']}"
+        attendee: {
+          email: attendee['email'],
+          name: "#{attendee['displayName']}"
         }
       }
     }.reduce(:merge)

@@ -1401,7 +1401,8 @@ Calendar.prototype.drawExternalEventSelection = function () {
                location: event.location,
                notes: event.description,
                calendar_login_username: event.calendar_login_username,
-               url: event.url
+               url: event.url,
+               organizerEmail: event.organizerEmail
            }
         })
     }, "*");
