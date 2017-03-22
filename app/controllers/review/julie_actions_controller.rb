@@ -48,7 +48,8 @@ class Review::JulieActionsController < ReviewController
                 account_email: ja.message_classification.message.messages_thread.account_email,
                 other_account_emails: ja.message_classification.other_account_emails,
                 date: ja.created_at,
-                review_comment: ja.date_suggestions_comparison_review.try(:comment)
+                review_comment: ja.date_suggestions_comparison_review.try(:comment),
+                review_thread_link: url_for(controller: :messages_threads, action: :review, id: ja.message_classification.message.messages_thread_id)
             }
         }
       end

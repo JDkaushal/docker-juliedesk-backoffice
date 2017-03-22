@@ -164,6 +164,7 @@
                 $scope.constraints = data.constraints_data;
                 $scope.date = data.date;
                 $scope.review_comment = data.review_comment;
+                $scope.reviewThreadLink = data.review_thread_link;
 
 
                 window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
