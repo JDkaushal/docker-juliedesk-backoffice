@@ -59,13 +59,14 @@ ConstraintTile.WHEN_NATURE_ALWAYS       = "always";
 
 function ConstraintTile($selector, params) {
     var constraintTile = this;
+    console.log(params);
 
     constraintTile.possibleAttendees = params.possible_attendees;
     if(!constraintTile.possibleAttendees) {
         constraintTile.possibleAttendees = [];
     }
     if(constraintTile.possibleAttendees.length == 0) {
-        if (params.data && params.data.attendee_email) {
+        if (params.data && params.data.attendee_email != undefined) {
             constraintTile.possibleAttendees.push({
                     name: params.data.attendee_email,
                     email: params.data.attendee_email

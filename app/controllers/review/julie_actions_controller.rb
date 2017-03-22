@@ -36,20 +36,24 @@ class Review::JulieActionsController < ReviewController
 
       format.json do
         ja = JulieAction.find(params[:id])
+        mc = ja.message_classification
+        mt = mc.message.messages_thread
+        account = mt.account
         render json: {
             status: "success",
             data: {
-                event_type: ja.message_classification.appointment_nature,
-                duration: ja.message_classification.duration,
-                location: ja.message_classification.location,
-                other_notes: ja.message_classification.other_notes,
-                constraints_data: JSON.parse(ja.message_classification.constraints_data || "[]"),
+                event_type: mc.appointment_nature,
+                duration: mc.duration,
+                location: mc.location,
+                other_notes: mc.other_notes,
+                constraints_data: JSON.parse(mc.constraints_data || "[]"),
                 date_suggestions: JSON.parse(ja.date_times || "[]"),
-                account_email: ja.message_classification.message.messages_thread.account_email,
-                other_account_emails: ja.message_classification.other_account_emails,
+                account_email: mt.account_email,
+                other_account_emails: mc.other_account_emails,
                 date: ja.created_at,
                 review_comment: ja.date_suggestions_comparison_review.try(:comment),
-                review_thread_link: url_for(controller: :messages_threads, action: :review, id: ja.message_classification.message.messages_thread_id)
+                review_thread_link: url_for(controller: :messages_threads, action: :review, id: mt.id),
+                #main_address: account.try(:main_address)
             }
         }
       end

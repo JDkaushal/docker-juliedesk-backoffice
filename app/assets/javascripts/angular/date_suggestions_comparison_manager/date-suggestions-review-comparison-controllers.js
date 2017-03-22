@@ -165,6 +165,7 @@
                 $scope.date = data.date;
                 $scope.review_comment = data.review_comment;
                 $scope.reviewThreadLink = data.review_thread_link;
+                $scope.mainAddress = data.main_address;
 
 
                 window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
