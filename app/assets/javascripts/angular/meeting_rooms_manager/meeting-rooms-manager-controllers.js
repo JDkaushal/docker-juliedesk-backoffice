@@ -67,8 +67,10 @@
 
                 $scope.$watch('roomsSelectionMode', function(newVal, oldVal) {
                     $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
+                    newVal = newVal || {};
+                    oldVal = oldVal || {};
 
-                    if(newVal && !window.julie_action_nature) {
+                    if(newVal && newVal.id != oldVal.id  && !window.julie_action_nature) {
                         if(newVal.id == 'auto_room_selection') {
                             $scope.selectedRoom = undefined;
                         } else {
@@ -473,7 +475,11 @@
                 };
 
                 $scope.checkIfDetectAvailabilities = function() {
-                    $scope.checkMeetingRoomAvailability();
+                    if($scope.selectedRoom && $scope.selectedRoom.id) {
+                        $scope.checkMeetingRoomAvailability(true);
+                    } else {
+                        $scope.checkMeetingRoomAvailability();
+                    }
                 };
 
                 $scope.checkMeetingRoomAvailability = function(checkSelectedRoom, specifiedDate) {
