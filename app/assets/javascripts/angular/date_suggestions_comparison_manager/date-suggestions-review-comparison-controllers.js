@@ -76,11 +76,7 @@
                     });
 
                     $scope.loading = false;
-
-
                 });
-
-
             });
         };
 
@@ -89,6 +85,13 @@
 
     app.controller("date-suggestions-comparison-controller", ['$scope', 'moment', '$http', 'conscienceApi', function ($scope, moment, $http, conscienceApi) {
 
+        $scope.init = function(params) {
+            $scope.julieActionId = params.julie_action_id;
+            $scope.saving = false;
+            $scope.loading = {};
+            $scope.fetchData();
+            $scope.fetchFromConscience();
+        };
 
         $scope.fetchFromConscience = function() {
             $scope.loading['conscience'] = true;
@@ -127,14 +130,7 @@
             });
         };
 
-        $scope.init = function(params) {
-            $scope.julieActionId = params.julie_action_id;
-            $scope.saving = false;
-            $scope.loading = {};
-            $scope.fetchData();
-            $scope.fetchFromConscience();
 
-        };
         $scope.activateCalendarWithParams = function (calendarParams) {
             calendarParams.height = $(".calendar-container").height();
             calendarParams.default_calendar_login_username = calendarParams.email;
@@ -192,10 +188,6 @@
                     return dateSuggestion.timezone;
                 }));
                 $scope.mainTimezone = $scope.allTimezones[0];
-
-
-
-
 
                 $scope.activateCalendarIfReady();
             }, function(response) {

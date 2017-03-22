@@ -1,3 +1,12 @@
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!--   To remove when travel times will be computed in backend   -->
+<%= javascript_include_tag 'angular_dependencies' %>
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=#{ENV['GOOGLE_JS_API_KEY']}"%>
+<script>
+    window.threadComputedData = <%== @window_thread_computed_data.to_json %>;
+    window.threadAccount =<%== @window_thread_account.to_json %>;
+</script>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 <script>
   window.getCurrentAddressObject = function () {
     return null;

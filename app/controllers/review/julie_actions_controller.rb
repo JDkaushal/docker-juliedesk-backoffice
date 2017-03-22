@@ -19,6 +19,19 @@ class Review::JulieActionsController < ReviewController
     respond_to do |format|
       format.html do
 
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        #   To remove when travel times are computed in backend
+        ja = JulieAction.find(params[:id])
+        @window_thread_account = {
+            email: ja.message_classification.message.messages_thread.account_email,
+            travel_time_transport_mode: ja.message_classification.message.messages_thread.account.try(:travel_time_transport_mode) || "max"
+        }
+        @window_thread_computed_data = {
+            location: ja.message_classification.location,
+            appointment_nature: ja.message_classification.appointment_nature,
+            is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(ja.message_classification.appointment_nature)
+        }
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       end
 
       format.json do
