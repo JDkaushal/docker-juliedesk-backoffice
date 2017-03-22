@@ -53,7 +53,7 @@ class Review::JulieActionsController < ReviewController
                 date: ja.created_at,
                 review_comment: ja.date_suggestions_comparison_review.try(:comment),
                 review_thread_link: url_for(controller: :messages_threads, action: :review, id: mt.id),
-                #main_address: account.try(:main_address)
+                main_address: account.try(:main_address).try(:[], 'address')
             }
         }
       end
