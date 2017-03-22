@@ -1,0 +1,53 @@
+<%= javascript_include_tag "angular_calendar_viewer.js" %>
+
+
+
+<div class="col-md-8 col-md-offset-2" id="calendar-viewer" ng-controller="event-histories-viewer-controller" ng-cloak>
+  <div class="common-right-panel">
+    <h2>Event histories viewer</h2>
+    <div class="section">
+      <label>Event id</label>
+      <input ng-model="event_id"/>
+    </div>
+    <div class="section">
+      <div class="btn btn-success" ng-click="fetch()">Show history</div>
+    </div>
+  </div>
+
+
+  <div>
+    <h2>Historical changes</h2>
+    <br>
+    <br>
+    <div ng-hide="!!cleanedHistories.length">
+      No event found.
+    </div>
+    <div ng-repeat="history in cleanedHistories">
+      <h4>{{ history.validity_start | amTimezone: "UTC" | amDateFormat:'dddd D MMMM YYYY - HH:mm' }} (UTC)</h4>
+
+        <div ng-show="history.changes.summary">
+          <p class="text-muted">Summary:</p>
+          <p class="btn btn-danger btn" ng-show="history.changes.summary.old">{{ history.changes.summary.old }}</p>
+          <span class="text-muted">→</span>
+          <p class="btn btn-success btn">{{ history.changes.summary.new }}</p>
+        </div>
+
+        <div ng-show="history.changes.dates">
+          <p class="text-muted">Date:</p>
+          <p class="btn btn-danger btn-sm" ng-show="history.changes.dates.old">{{ formatRange(history.changes.dates.old) }}</p>
+          <span class="text-muted">→</span>
+          <p class="btn btn-success btn-sm">{{ formatRange(history.changes.dates.new) }}</p>
+        </div>
+      <br>
+      <br>
+      <br>
+    </div>
+
+    <div ng-show="deletedAt">
+      <h4>{{ deletedAt | amTimezone: "UTC" | amDateFormat:'dddd D MMMM YYYY - HH:mm' }} (UTC)</h4>
+      <p class="btn btn-danger btn-sm">Deleted</p>
+    </div>
+  </div>
+
+
+</div>

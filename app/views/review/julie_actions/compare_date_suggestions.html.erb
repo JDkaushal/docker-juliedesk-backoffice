@@ -49,6 +49,9 @@
         <label>Action date</label>
         <div class="information">{{ date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
         <div class="information small">{{ mainTimezone }}</div>
+        <br>
+        <div class="information">{{ date | amTimezone: "UTC" | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
+        <div class="information small">UTC</div>
       </div>
 
       <div class="section">

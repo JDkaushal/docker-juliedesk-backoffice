@@ -94,6 +94,7 @@ Rails.application.routes.draw do
     put "settings", controller: :my_settings, action: :update
 
     get "calendar_viewer", controller: :calendar, action: :viewer
+    get "event_histories_viewer", controller: :calendar, action: :event_histories_viewer
 
     get "urls", controller: :main, action: :available_routes
 

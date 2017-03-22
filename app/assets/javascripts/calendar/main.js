@@ -1279,7 +1279,8 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         busyLocked: ev.busyLocked,
         organizerEmail: ev.organizer && ev.organizer.email,
         alreadySuggested: ev.alreadySuggested,
-        trackingId: ev.trackingId
+        trackingId: ev.trackingId,
+        event_history_event_id: ev.is_historical_data ? ev.event_id : null
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
     return eventData;

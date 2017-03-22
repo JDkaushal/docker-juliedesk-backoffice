@@ -427,6 +427,21 @@ EventTile.prototype.redraw = function() {
     if(eventTile.getMode() == "read_only") {
 
     }
+    if(eventTile.getMode() == "review") {
+        if(window.featuresHelper.isFeatureActive("show_events_technical_info")) {
+            var technicalInfoHtml = "";
+            if(eventTile.event.event_history_event_id) {
+                technicalInfoHtml += "Event id: " + eventTile.event.event_history_event_id;
+                technicalInfoHtml += "<br/>EventHistory id: " + eventTile.event.id;
+            }
+            else {
+                technicalInfoHtml += "Event id: " + eventTile.event.id
+            }
+            eventTile.$selector.find(".technical-info").html(technicalInfoHtml);
+
+            eventTile.$selector.find(".technical-info").show();
+        }
+    }
     if(eventTile.getMode() == "edit_only") {
         //if(eventTile.event.owned) {
             eventTile.$selector.find("#event-edit-button").show();
