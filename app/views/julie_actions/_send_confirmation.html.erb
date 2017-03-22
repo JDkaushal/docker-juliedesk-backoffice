@@ -93,7 +93,9 @@
               eventAnnexeAttributesChanged.push(attr);
             }
           } else if(attr == 'call_instructions_details' && window.currentAppointmentIsVirtual) {
-            eventAnnexeAttributesChanged.push(attr);
+            if(window.currentAppointmentIsVirtual) {
+              eventAnnexeAttributesChanged.push(attr);
+            }
           } else {
             eventAnnexeAttributesChanged.push(attr);
           }
