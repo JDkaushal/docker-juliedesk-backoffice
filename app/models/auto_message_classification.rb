@@ -455,11 +455,11 @@ class AutoMessageClassification < MessageClassification
     m.messages_thread.re_import
     m = m.messages_thread.messages.find{|me| me.id == m.id}
 
-    julie_alias = self.message.messages_thread.julie_alias
+    julie_alias = m.messages_thread.julie_alias
     footer_and_signature = julie_alias.generate_footer_and_signature(self.locale)
 
     contact_emails = MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map { |c| c[:email].try(:downcase) }
-    present_attendees = JSON.parse(self.attendees).select{|a| a['isPresent'] == 'true'}
+    present_attendees = JSON.parse(self.attendees).select{|a| a['isPresent'] == true}
     initial_recipients_only_reply_all = m.initial_recipients({
                                                                  only_reply_all: true,
                                                                  contact_emails: contact_emails,
