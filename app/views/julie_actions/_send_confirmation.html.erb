@@ -89,11 +89,13 @@
         if(updatedEventData[attr] != beforeUpdateEvent[attr]) {
           // We update the description only when neither the attendees nor the call instructions where updated and when no organization infos have been updated
           if(attr == 'description') {
-            if(attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1 && !eventOrganizationUpdated) {
+            if (attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1 && !eventOrganizationUpdated) {
               eventAnnexeAttributesChanged.push(attr);
             }
+          } else if(attr == 'call_instructions_details' && window.currentAppointmentIsVirtual) {
+            eventAnnexeAttributesChanged.push(attr);
           } else {
-              eventAnnexeAttributesChanged.push(attr);
+            eventAnnexeAttributesChanged.push(attr);
           }
         }
       });
