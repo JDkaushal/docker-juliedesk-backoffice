@@ -21,7 +21,7 @@
 
         $scope.selectedMeetingRooms = function() {
             return _.filter(_.flatten(_.map($scope.account.addresses, function(address) { return address.available_meeting_rooms; } )), function(address) {
-                return address.selected;
+                return address && address.selected;
             });
         };
 

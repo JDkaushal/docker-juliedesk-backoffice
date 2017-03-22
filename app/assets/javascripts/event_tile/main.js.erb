@@ -264,9 +264,10 @@ EventTile.prototype.redraw = function() {
     var rrule = "";
     var rruleIndex = 0;
     var rstart = moment(eventTile.event.start);
-
+    var recurrencePresent = false;
     if(eventTile.recurringEvent) {
-        eventTile.$selector.find(".recurrence-link-container .recurrence-text").html("Part of a recurring event");
+        recurrencePresent = true;
+
         if(eventTile.recurringEvent.recurrence && $.isArray(eventTile.recurringEvent.recurrence)) {
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(eventTile.recurringEvent.recurrence.join("\n"));
             rruleIndex = eventTile.getRruleIndex(eventTile.recurringEvent.recurrence);
@@ -292,6 +293,7 @@ EventTile.prototype.redraw = function() {
         rrule: rrule,
         rstart: rstart,
         parentEventTile: eventTile,
+        recurrencePresent: recurrencePresent,
         ruleChangedCallback: function(recurrenceForm) {
             eventTile.$selector.find(".recurrence-container .recurrence-rule").val(recurrenceForm.rrule);
             eventTile.$selector.find(".recurrence-link-container .recurrence-text").html(recurrenceForm.getText());
@@ -526,47 +528,64 @@ EventTile.prototype.getEditedEvent = function() {
         utc_offset: mStart.zone() / 60.0
     }
 };
-EventTile.prototype.fetchRecurringEventIfNeeded = function(callback) {
+EventTile.prototype.fetchRecurringEventIfNeeded = function(params) {
     var eventTile = this;
+    var callback = params.callback;
+    var dontFetch = params.dont_fetch;
 
     if(eventTile.event && eventTile.event.recurringEventId) {
-        var params = {
-            action: "get_event",
-            email: eventTile.accountEmail,
-            event_id: eventTile.event.recurringEventId,
-            calendar_id: eventTile.calendarId,
-            calendar_login_username: eventTile.calendarLoginUsername,
-            fetching_recurring_master: true
-        };
-
-        if(eventTile.event.url) {
-            params['event_url'] = eventTile.event.url;
-        }
-
-        eventTile.showSpinner();
-        CommonHelpers.externalRequest(params, function(response) {
-            if(response.status == "error") {
-                if(response.code == "EventNotFound") {
-                    alert("Event not found: " + response.message)
-                }
-                else {
-                    alert("Unable to fetch event: " + response.message)
-                }
-            }
-            else {
-                eventTile.hideSpinner();
-                eventTile.recurringEvent = eventTile.eventDataFromEvent(response.data);
-                eventTile.redraw();
+        if(dontFetch) {
+            eventTile.recurringEvent = {empty: true};
+            eventTile.redraw();
+            if(callback) {
                 callback();
             }
-        }, function(response) {
-            eventTile.hideSpinner();
-            alert("Unable to fetch event: " + response.message)
-        });
+        }
+        else {
+            var params = {
+                action: "get_event",
+                email: eventTile.accountEmail,
+                event_id: eventTile.event.recurringEventId,
+                calendar_id: eventTile.calendarId,
+                calendar_login_username: eventTile.calendarLoginUsername,
+                fetching_recurring_master: true
+            };
+
+            if(eventTile.event.url) {
+                params['event_url'] = eventTile.event.url;
+            }
+
+            eventTile.showSpinner();
+            CommonHelpers.externalRequest(params, function(response) {
+                if(response.status == "error") {
+                    if(response.code == "EventNotFound") {
+                        alert("Event not found: " + response.message)
+                    }
+                    else {
+                        alert("Unable to fetch event: " + response.message)
+                    }
+                }
+                else {
+                    eventTile.hideSpinner();
+                    eventTile.recurringEvent = eventTile.eventDataFromEvent(response.data);
+                    eventTile.redraw();
+                    if(callback) {
+                        callback();
+                    }
+
+                }
+            }, function(response) {
+                eventTile.hideSpinner();
+                alert("Unable to fetch event: " + response.message)
+            });
+        }
+
     }
     else {
         eventTile.redraw();
-        callback();
+        if(callback) {
+            callback();
+        }
     }
 
 };

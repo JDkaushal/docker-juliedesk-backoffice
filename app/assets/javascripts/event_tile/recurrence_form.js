@@ -9,6 +9,7 @@ function RecurrenceForm($selector, params) {
     recurrenceForm.weekDays = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU];
 
     recurrenceForm.redraw();
+    recurrenceForm.recurrencePresent = params.recurrencePresent;
 
     recurrenceForm.$selector.find(".form-entry input[name='interval']").val(1);
     recurrenceForm.$selector.find(".form-entry input[name='count']").val(1);
@@ -219,6 +220,9 @@ RecurrenceForm.prototype.getText = function() {
     var recurrenceForm = this;
     if(recurrenceForm.rule) {
         return "Recurs " + recurrenceForm.rule.toText();
+    }
+    else if(recurrenceForm.recurrencePresent) {
+        return "Part of a recurring event ";
     }
     else {
         return "Don't recur ";

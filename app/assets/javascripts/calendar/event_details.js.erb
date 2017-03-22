@@ -96,10 +96,13 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         });
     }
 
-    calendar.currentEventTile.fetchRecurringEventIfNeeded(function() {
 
+    calendar.currentEventTile.fetchRecurringEventIfNeeded({
+        dont_fetch: calendar.initialData.as_at_date != undefined,
+        callback: function() {
+
+        }
     });
-
 };
 
 Calendar.prototype.clickEventDetailsContainer = function(e) {
