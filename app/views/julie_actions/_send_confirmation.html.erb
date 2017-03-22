@@ -92,7 +92,7 @@
             if (attendeesUntouched && eventAnnexeAttributesChanged.indexOf('call_instructions_details') == -1 && !eventOrganizationUpdated) {
               eventAnnexeAttributesChanged.push(attr);
             }
-          } else if(attr == 'call_instructions_details' && window.currentAppointmentIsVirtual) {
+          } else if(attr == 'call_instructions_details') {
             if(window.currentAppointmentIsVirtual) {
               eventAnnexeAttributesChanged.push(attr);
             }
