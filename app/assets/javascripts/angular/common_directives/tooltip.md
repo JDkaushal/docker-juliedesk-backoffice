@@ -21,6 +21,9 @@ Then in your view use it as `tooltip` directive:
 * `tooltip-top`: Define the directive to make tooltip appear on top of the element
 * `tooltip-delay`: Define the directive to make tooltip appear after the delay (ms)
 
+### Nested directives
+* `tooltip-html`: Define hmtl message displayed in the tooltip
+
 ### Examples
 ```html
 <div class="my-cool-button"
@@ -34,4 +37,9 @@ Then in your view use it as `tooltip` directive:
      tooltip="I appear on top-right of the element"
      tooltip-right
      tooltip-top>Click me!</div>
+     
+<div class="my-cool-button"
+     tooltip>
+     <tooltip-html><p>This is my HTML message</p></tooltip-html>
+     Click me!</div>
 ```

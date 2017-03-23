@@ -1,80 +1,11 @@
 (function () {
-    var app = angular.module('calendar-viewer-controllers', ['angularMoment', 'commonServices']);
+    var app = angular.module('calendar-viewer-controllers', ['angularMoment', 'commonServices', 'commonDirectives']);
 
 
-    app.controller("event-histories-viewer-controller", ['$scope', 'moment', 'calendarServerApi', function ($scope, moment, calendarServerApi) {
-
-      $scope.event_id = 6716180;
-
-      $scope.fetch = function() {
-          calendarServerApi.eventHistoriesListRequest({event_id: $scope.event_id}).then(function(response) {
-
-              var histories = response.data.data.event_histories;
-              window.histories = histories;
-
-              $scope.cleanHistories(histories);
-
-          });
-      };
-
-      $scope.cleanHistories = function(histories) {
-          $scope.deletedAt = null;
-          $scope.cleanedHistories = [];
-
-          var result =_.sortBy(histories, function(history) {
-              return history.validity_start;
-          });
-
-
-          var currentAttributes = {};
-          var globalChanges = [];
-          _.each(result, function(history) {
-              var cleanHistory = {
-                  dates: {
-                      start: moment(history.start.date),
-                      end: moment(history.end.date)
-                  },
-                  summary: history.summary
-              };
-
-              var changedAttributeKeys = _.filter(_.keys(cleanHistory), function(k) {
-                  return JSON.stringify(currentAttributes[k]) != JSON.stringify(cleanHistory[k]);
-              });
-              var changes = {};
-              _.each(changedAttributeKeys, function(attributeKey) {
-                  changes[attributeKey] = {
-                      old: currentAttributes[attributeKey],
-                      new: cleanHistory[attributeKey]
-                  }
-              });
-
-              if(changedAttributeKeys.length > 0) {
-                  globalChanges.push({
-                      validity_start: moment(history.validity_start),
-                      changes: changes
-                  });
-                  currentAttributes = cleanHistory;
-              }
-          });
-
-          if(result.length > 0 && result[result.length - 1].validity_end) {
-              $scope.deletedAt = moment(result[result.length - 1].validity_end);
-          }
-
-          //$scope.$watch("event_id", $scope.fetch);
-
-          $scope.cleanedHistories = globalChanges;
-      };
-
-      $scope.formatRange = function(datesRanges) {
-          if(datesRanges && datesRanges.start && datesRanges.end) {
-              return CommonHelpers.formatDateTimeRangeInText(datesRanges.start, datesRanges.end, "en", "UTC", false);
-          }
-          return "";
-
-      };
-      $scope.fetch();
+    app.controller("event-histories-viewer-controller", ['$scope', function ($scope) {
+      $scope.event_id = 6320618;
     }]);
+
     app.controller("calendar-viewer-controller", ['$scope', 'backofficeApi', function ($scope, backofficeApi) {
 
 

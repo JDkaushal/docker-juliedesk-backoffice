@@ -11,6 +11,7 @@ var app = angular.module('my-controller', [..., 'commonDirectives']);
 ## Available directives
 * [Tooltip](tooltip.md)
 * [Dropdown](dropdown.md)
+* [EventTimeLine](event_time_line.md)
 
 ## Development
 

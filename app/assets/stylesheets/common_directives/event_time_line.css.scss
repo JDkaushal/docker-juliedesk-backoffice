@@ -1,0 +1,107 @@
+.event-time-line-container {
+
+  display: block;
+  text-align: center;
+
+  .no-event {
+    font-style: italic;
+    color: #aaa;
+  }
+  .event-time-line {
+    display: inline-block;
+    padding: 0 0 15px 0;
+
+    .history-change {
+      display: inline-block;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
+      width: 200px;
+      position: relative;
+      font-size: 12px;
+      height: 30px;
+
+      .history-change-date {
+        padding: 0 0 10px 0;
+        color: #777;
+      }
+
+      .history-change-dot {
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        z-index: 2;
+        cursor: pointer;
+        color: transparent;
+      }
+
+
+
+      .history-change-tooltip {
+        background: #444;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        padding: 10px;
+      }
+
+      .change-old {
+        color: #999;
+        text-decoration: line-through;
+      }
+      .change-arrow {
+        color: #aaa;
+        padding: 0 5px;
+      }
+      .change-new {
+        font-weight: 600;
+        color: #2EC094;
+      }
+      .change-deleted {
+        font-weight: 600;
+        color: #d9534f;
+      }
+
+      &.creation {
+        .history-change-dot {
+          border-color: #2EC094;
+        }
+
+        .change-arrow {
+          display: none;
+        }
+
+        &:after {
+          content: "";
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          width: 50%;
+          height: 1px;
+          background: white;
+          z-index: 1;
+        }
+
+      }
+      &.deletion {
+        .history-change-dot {
+          border-color: #d9534f;
+        }
+        &:after {
+          content: "";
+          position: absolute;
+          bottom: -1px;
+          left: 50%;
+          width: 50%;
+          height: 1px;
+          background: white;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}

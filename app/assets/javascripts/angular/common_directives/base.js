@@ -1,1 +1,1 @@
-angular.module('commonDirectives', []);
+angular.module('commonDirectives', ['commonServices']);

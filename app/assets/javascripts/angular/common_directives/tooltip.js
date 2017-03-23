@@ -46,17 +46,17 @@ angular.module('commonDirectives').directive('tooltip', function () {
                     $scope.shouldShow = false;
                     $scope.isShown = false;
                 }
-
-
             }
 
         }],
-        transclude: true,
+        transclude: {
+            'tooltipHtml': '?tooltipHtml'
+        },
         replace: false,
         template: function (element, attr) {
             var htmlTemplate =
                 '<div class="custom-tooltip-container" ng-show="isShown">' +
-                '<div class="custom-tooltip" ng-class="displayClasses">{{ message }}<div class="custom-tooltip-arrow"></div></div>' +
+                '<div class="custom-tooltip" ng-class="displayClasses"><div ng-transclude="tooltipHtml"></div>{{ message }}<div class="custom-tooltip-arrow"></div></div>' +
                 '</div>';
             if (attr['tooltipTop'] != null) {
                 return htmlTemplate + "<div ng-transclude></div>";
