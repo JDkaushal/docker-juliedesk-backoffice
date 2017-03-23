@@ -59,4 +59,9 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     server_message_ids = params[:server_message_ids]
     render json: server_message_ids - Message.where(server_message_id: params[:server_message_ids]).first(10000).map(&:server_message_id)
   end
+
+  def inbox_client_emails
+    render json: { data: MessagesThread.client_emails_from_inbox }
+  end
+
 end

@@ -339,22 +339,7 @@ class MessagesThreadsController < ApplicationController
     )
 
     WebSockets::Manager.trigger_archive(messages_thread.id)
-    # if ENV['PUSHER_APP_ID']
-    #   Pusher.trigger('private-global-chat', 'archive', {
-    #                                           :message => 'archive',
-    #                                           :message_thread_id => messages_thread.id
-    #                                       })
-    # elsif ENV['RED_SOCK_URL']
-    #   RedSock.trigger 'private-global-chat', 'archive', {
-    #                                            :message => 'archive',
-    #                                            :message_thread_id => messages_thread.id
-    #                                        }
-    # end
-
-    render json: {
-               status: "success",
-               data: {}
-           }
+    render json: { status: "success", data: {} }
   end
 
   private

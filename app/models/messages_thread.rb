@@ -20,6 +20,8 @@ class MessagesThread < ActiveRecord::Base
   attr_writer :account
   attr_accessor :thread_blocked, :clients_with_linked_attendees_enabled, :clients
 
+  scope :in_inbox, -> {  where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, true, false, false, false) }
+
   include ApplicationHelper
   include TemplateGeneratorHelper
 
@@ -1104,4 +1106,17 @@ class MessagesThread < ActiveRecord::Base
 
     new_thread.id
   end
+
+  def client_emails
+    emails = []
+    emails += self.clients_in_recipients unless self.clients_in_recipients.nil?
+    emails += self.client_attendees_emails unless self.client_attendees_emails.nil?
+    emails.compact.uniq
+  end
+
+  def self.client_emails_from_inbox
+    MessagesThread.in_inbox.map(&:client_emails).flatten.uniq
+  end
+
+
 end
