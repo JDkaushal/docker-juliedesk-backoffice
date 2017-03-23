@@ -8,7 +8,6 @@
 
     app.controller("calendar-viewer-controller", ['$scope', 'backofficeApi', function ($scope, backofficeApi) {
 
-
         $scope.account_email = function() {
             return $("#calendar-viewer-client-email").val();
         };
@@ -30,7 +29,7 @@
         };
 
         $scope.selectedMeetingRoomsByUsername = function() {
-            result = {}
+            result = {};
             _.each($("#calendar-viewer").scope().selectedMeetingRooms(), function(meeting_room) {
                 if(!(meeting_room.calendar_login_username in result)) {
                     result[meeting_room.calendar_login_username] = [];

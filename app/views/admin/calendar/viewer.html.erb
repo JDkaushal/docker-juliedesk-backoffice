@@ -73,6 +73,23 @@
         calendarParams.mode = "read_only";
         calendarParams.dontTrackRequests = true;
         calendarParams.dontShowMinimizeButton = true;
+        calendarParams.selectEventInCalendarCallback = function(event) {
+            var scope = $("#calendar-viewer").scope();
+            scope.$apply(function () {
+                if(event) {
+                    if(event.event_history_event_id) {
+                        scope.event_id = event.event_history_event_id;
+                    }
+                    else {
+                        scope.event_id = event.id;
+                    }
+                }
+                else {
+                    scope.event_id = null;
+                }
+
+            });
+        };
 
 
         window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
@@ -108,7 +125,7 @@
             reloadCalendar();
         });
 
-        document.addEventListener("calendarSettingsChanged", function(e) {
+        document.addEventListener("calendarSettingsChanged", function (e) {
             reloadCalendar();
         });
 
@@ -141,32 +158,59 @@
 
 </script>
 
+<style>
+  .event-time-line-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    z-index: 10;
+    background: white;
+    border-top: 1px solid #ccc;
+    padding: 5px 0 0 0;
+  }
+
+  .calendar-in-calendar-viewer-container .calendar-container {
+    bottom: 100px;
+  }
+</style>
+
+<div class="calendar-in-calendar-viewer-container">
+  <%= render template: "calendar/calendar" %>
+</div>
 
 
-<%= render template: "calendar/calendar" %>
+<div id="calendar-viewer" ng-controller="calendar-viewer-controller" ng-cloak>
 
 
-<div class="common-right-panel calendar-viewer-panel" id="calendar-viewer" ng-controller="calendar-viewer-controller" ng-cloak>
-  <h2>Calendar viewer</h2>
-  <label>Client email</label>
-  <input type="client-email" id="calendar-viewer-client-email">
-  <br>
-  <br>
-  <div class="buttons-inline">
-    <div class="button" data-val="as_at_date">As at date</div>
-    <div class="button activated" data-val="as_at_now">As at current time</div>
-  </div>
-
-  <div class="section" ng-repeat="address in account.addresses | filter: addressHasMeetingRooms">
-    <label>{{ address.label }}</label>
-    <label class="checkbox-label" ng-class="{selected: meeting_room.selected}" ng-repeat="meeting_room in address.available_meeting_rooms"><input type="checkbox" ng-model="meeting_room.selected">{{ meeting_room.summary }}</label>
-  </div>
-
-  <div class="calendar-viewer-date-and-time-pickers">
-    <div id="calendar-viewer-datepicker"></div>
+  <div class="common-right-panel calendar-viewer-panel">
+    <h2>Calendar viewer</h2>
+    <label>Client email</label>
+    <input type="client-email" id="calendar-viewer-client-email">
     <br>
-    <input id="calendar-viewer-timepicker"/>
+    <br>
+    <div class="buttons-inline">
+      <div class="button" data-val="as_at_date">As at date</div>
+      <div class="button activated" data-val="as_at_now">As at current time</div>
+    </div>
+
+    <div class="section" ng-repeat="address in account.addresses | filter: addressHasMeetingRooms">
+      <label>{{ address.label }}</label>
+      <label class="checkbox-label" ng-class="{selected: meeting_room.selected}" ng-repeat="meeting_room in address.available_meeting_rooms"><input type="checkbox" ng-model="meeting_room.selected">{{
+        meeting_room.summary }}</label>
+    </div>
+
+    <div class="calendar-viewer-date-and-time-pickers">
+      <div id="calendar-viewer-datepicker"></div>
+      <br>
+      <input id="calendar-viewer-timepicker"/>
+    </div>
+
+
   </div>
 
-
+  <div class="event-time-line-footer">
+    <event-time-line event-id="{{ event_id }}"></event-time-line>
+  </div>
 </div>

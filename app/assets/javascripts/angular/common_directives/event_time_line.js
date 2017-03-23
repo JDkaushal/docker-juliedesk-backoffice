@@ -12,13 +12,23 @@ angular.module('commonDirectives').directive('eventTimeLine', ['moment', 'calend
 
         },
         controller: ['$scope', function ($scope) {
+            $scope.loading = false;
+
             $scope.fetch = function() {
+                if(!$scope.eventId) {
+                    window.histories = [];
+                    $scope.cleanHistories(histories);
+                    $scope.loading = false;
+                    return;
+                }
+                $scope.loading = true;
                 calendarServerApi.eventHistoriesListRequest({event_id: $scope.eventId}).then(function(response) {
 
                     var histories = response.data.data.event_histories;
                     window.histories = histories;
 
                     $scope.cleanHistories(histories);
+                    $scope.loading = false;
 
                 });
             };
@@ -84,8 +94,9 @@ angular.module('commonDirectives').directive('eventTimeLine', ['moment', 'calend
         template: function (element, attr) {
             var htmlTemplate =
                 '<div class="event-time-line-container">' +
-                '<div class="no-event" ng-show="history_changes.length == 0">No event</div>' +
-                '<div class="event-time-line" ng-show="history_changes.length > 0">' +
+                '<div class="no-event" ng-show="history_changes.length == 0 && !loading">No event</div>' +
+                '<div class="no-event" ng-show="loading">Loading..</div>' +
+                '<div class="event-time-line" ng-show="history_changes.length > 0 && !loading">' +
                 '<div class="history-change" ng-class="{creation: history_change.is_creation}" ng-repeat="history_change in history_changes">' +
                 '<div class="history-change-date">{{ history_change.date | amTimezone: "UTC" | amDateFormat: "YYYY-MM-DD HH:mm" }}</div>' +
                 '<div class="history-change-dot" tooltip>' +

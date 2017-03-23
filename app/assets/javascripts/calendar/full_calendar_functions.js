@@ -227,6 +227,9 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     var calendar = this;
     var travelTimeTileCtrl = $('travel-time-tile').scope();
 
+    if(calendar.initialData.selectEventInCalendarCallback) {
+        calendar.initialData.selectEventInCalendarCallback(event);
+    }
     if(event.isTravelTime) {
         travelTimeTileCtrl.display(event, $(jsEvent.currentTarget));
         travelTimeTileCtrl.$apply();

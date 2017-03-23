@@ -110,6 +110,10 @@ Calendar.prototype.clickEventDetailsContainer = function(e) {
     var $container = calendar.$selector.find("#event-details-container");
     var $target = $(e.target);
 
+    if(calendar.initialData.selectEventInCalendarCallback) {
+        calendar.initialData.selectEventInCalendarCallback(null);
+    }
+
     if($target.closest(".event-tile-container").length == 0) {
         $container.fadeOut(200);
         if(calendar.getMode() == "free_calendar" || calendar.getMode() == "create_events") {
