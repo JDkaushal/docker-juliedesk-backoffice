@@ -7,9 +7,7 @@ var ClientAgreementLevelManager = (function(params){
         const UNAUTHORIZED_REQUEST = 'unauthorized_request';
 
         const DISPLAY_NODES_CLASSES = [AUTHORIZED_REQUEST, TRUSTED_REQUEST, UNAUTHORIZED_REQUEST];
-
-        var $nodesStatus = $('.client-agreement-level-container ' + _.map(DISPLAY_NODES_CLASSES, function(nodeClass){return '.' + nodeClass}).join(','));
-
+        
         function displayAgreementStatus() {
             var agreementLevel = computeAgreementLevel();
             showCorrectAgreementLevelTile(agreementLevel);
