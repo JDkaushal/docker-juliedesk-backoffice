@@ -1,7 +1,7 @@
 angular.module('commonServices').service('calendarServerApi', ['$http', function ($http) {
 
     var calendarServerBasePath = "<%= ENV['CALENDAR_SERVER_BASE_PATH'] %>";
-    var calendarServerApiKey = "<%= ENV['CALENDAR_SERVER_API_KEY'] %>";
+    var calendarServerApiKey = "<%= ENV['CALENDAR_SERVER_AUTHORIZATION'] %>";
 
 
     this.eventHistoriesListRequest = function(params) {
@@ -17,7 +17,7 @@ angular.module('commonServices').service('calendarServerApi', ['$http', function
 
         return $http({
             method: "GET",
-            url: calendarServerBasePath + path + paramsAsUrl,
+            url: calendarServerBasePath + "/api/v1" + path + paramsAsUrl,
             headers: {
                 "Authorization": calendarServerApiKey
             }
