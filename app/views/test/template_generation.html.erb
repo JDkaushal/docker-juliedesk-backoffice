@@ -86,7 +86,8 @@
     };
     $scope.appointment_nature = 'appointment';
     $scope.eventModifications = {
-      event_organization_updated: true
+      event_organization_updated: true,
+      restaurant_booking_changed: false
     };
     $scope.eventAddedAttendeesCount = 0;
     $scope.eventAnnexeModifications = {
@@ -749,6 +750,14 @@
           <div class="button-group" data-toggle="buttons">
             <label class="button-group-addon btn btn-default" ng-class="eventModifications.event_organization_updated ? 'active btn-success': ''">
               <input type="checkbox" ng-model="eventModifications.event_organization_updated"> Event organization updated
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="button-group" data-toggle="buttons">
+            <label class="button-group-addon btn btn-default" ng-class="eventModifications.restaurant_booking_changed ? 'active btn-success': ''">
+              <input type="checkbox" ng-model="eventModifications.restaurant_booking_changed"> Restaurant booking changed
             </label>
           </div>
         </div>

@@ -3,8 +3,6 @@
 <!-- For google Places and google Matrix Distance used to compute the travel time -->
 <%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=#{@messages_thread.computed_data[:locale]}&key=#{ENV['GOOGLE_JS_API_KEY']}"%>
 <script>
-    setCurrentLocale("<%= I18n.locale %>");
-
     <% @currentAttendees = [] %>
     <% attendees = messages_thread.computed_data[:attendees] || [] %>
     // Put the messages_thread contacts at the end of the array, so if we already saved it (i.e. the form for the contact has been filled) it will take precedence over the former when applying the select.first instruction
@@ -35,6 +33,8 @@
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+
+    setCurrentLocale(getDefaultLocale());
 
     <% now = DateTime.now %>
     window.hasUnSentMessages = <%== @messages_thread.messages.map(&:server_message).any?{|s_m| !s_m['sent'] && DateTime.parse(s_m['date']) + 2.minutes < now;} %>

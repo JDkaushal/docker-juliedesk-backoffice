@@ -5,6 +5,9 @@ function getCurrentLocale() {
     if(!window.currentLocale) window.currentLocale = 'en';
     return window.currentLocale;
 }
+function getDefaultLocale() {
+ return (window.threadComputedData && window.threadComputedData.locale) || (window.threadAccount && window.threadAccount.locale) || 'en';
+}
 function localize(key, params) {
     if(!params) params = {};
     var keys = key.split(".");

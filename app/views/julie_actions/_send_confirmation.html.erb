@@ -23,6 +23,12 @@
         $(".calendar-container").addClass("minimized");
     };
 
+    function getRestaurantBookingUpdateStatus(eventOrganizationUpdated, attendeesChanged) {
+      var usingRestaurantBooking = window.threadComputedData.using_restaurant_booking;
+
+      return usingRestaurantBooking && (eventOrganizationUpdated || attendeesChanged);
+    };
+
     window.getEventModifications = function() {
       // When the event has not been updated (no click on the 'edit' button in the event tile, then the beforeUpdateData will be null
       // We can skip this part as we know that no changes have been made
@@ -106,11 +112,14 @@
         eventAnnexeAttributesChanged.push('attendees');
       }
 
+      var attendeesChanged = addedAttendees.length > 0 || removedAttendees.length > 0;
+
       return {
         event_organization_updated: eventOrganizationUpdated,
         removed_attendees: removedAttendees,
         added_attendees: addedAttendees,
-        event_annexe_attributes_changed: eventAnnexeAttributesChanged
+        event_annexe_attributes_changed: eventAnnexeAttributesChanged,
+        restaurant_booking_changed: getRestaurantBookingUpdateStatus(eventOrganizationUpdated, attendeesChanged)
       };
     };
 
