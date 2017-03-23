@@ -427,7 +427,7 @@ EventTile.prototype.redraw = function() {
     if(eventTile.getMode() == "read_only") {
 
     }
-    if(eventTile.getMode() == "review") {
+    if(eventTile.getMode() == "review" || eventTile.getMode() == "read_only") {
         if(window.featuresHelper.isFeatureActive("show_events_technical_info")) {
             var technicalInfoHtml = "";
             if(eventTile.event.event_history_event_id) {

@@ -258,6 +258,12 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             error: function(xhr, textStatus, errorThrown) {
                 this.tryCount++;
+                if(xhr.responseJSON && xhr.responseJSON.error_code) {
+                    if(xhr.responseJSON.error_code == "NO_CALENDAR_SERVER_ACCOUNT") {
+                        alert("No calendar server account for account");
+                        return;
+                    }
+                }
                 if (this.tryCount <= this.retryLimit) {
                     console.log("Retrying...");
                     var ajaxRequest = this;
