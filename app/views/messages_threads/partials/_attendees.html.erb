@@ -1,7 +1,7 @@
 <%= javascript_include_tag 'angular_attendees_app' %>
 <script>window.currentToCC = <%== @messages_thread.present? ? @messages_thread.get_all_messages_recipients.map{|email| email.downcase}.to_json : [].to_json %>;</script>
 
-<div class="data-entry linear-form-entry attendees-manager" ng-app="attendees-manager">
+<div id="attendees_manager_app" class="data-entry linear-form-entry attendees-manager">
   <div class="data-entry-name header"><%= I18n.t("info_box.attendees") %></div>
   <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
     <label><%=I18n.t("common.add_registered_attendee")%></label>
