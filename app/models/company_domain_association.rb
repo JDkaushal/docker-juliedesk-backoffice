@@ -21,8 +21,5 @@ class CompanyDomainAssociation < ActiveRecord::Base
       end
 
     end
-
-    puts CompanyDomainAssociation.count
-
   end
 end

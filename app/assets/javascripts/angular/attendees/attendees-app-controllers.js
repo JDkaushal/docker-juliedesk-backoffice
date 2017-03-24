@@ -448,13 +448,29 @@
                 }
             });
 
+            // We store here the domain extracted from the attendees that have no company set
+            // This will allow us to query the backend only one if there are multiple attendees with the same domain
+            var attendeesDomainsWithoutCompany = new Set;
             angular.forEach($scope.attendees, function(a){
                 var assisted = undefined;
                 if(assisted = $scope.getAssistedByEmail(a)){
                     // We do that to actualize if necessary the temporary guid with the one returned by the database
                     assisted.assistedBy.guid = a.guid;
                 }
+
+                if(!a.company) {
+                    var attendeeDomain = a.email.substring(a.email.lastIndexOf("@") + 1);
+                    attendeesDomainsWithoutCompany.add(attendeeDomain);
+                }
             });
+
+            if(attendeesDomainsWithoutCompany.size > 0) {
+                var messageText = decodeURIComponent(window.messageText);
+
+                attendeesDomainsWithoutCompany.forEach(function(domain) {
+                    $scope.fetchCompanyByDomain(messageText, domain);
+                });
+            }
 
             var threadAccountFullName = window.threadAccount.full_name.split(' ');
             var companyName = '';
@@ -621,38 +637,38 @@
                 }
 
                 // If we have no company for this contact, we will ask the AI to find it if possible
-                if(!a.company) {
-                    var messageText = decodeURIComponent(window.messageText);
-
-                    $http({
-                        url: '/client_contacts/ai_get_company_name',
-                        method: "POST",
-                        data: { contact_address: a.email, message_text: messageText }
-                    }).then(function success(response) {
-                        if(response.data.identification != "fail" && !response.data.error) {
-                            a.company = response.data.company;
-                            a.needAIConfirmation = true;
-                            a.validatedCompany = '';
-
-                            a.companyAI = response.data.company;
-                        }
-
-                        $scope.trackGetCompanyNameEvent({
-                            identification: response.data.identification,
-                            is_error: response.data.status == 'error' || response.data.status == 'invalid' || response.data.error || false,
-                            error_message: response.data.message,
-                            contact_email_address: a.email,
-                            message_text: messageText,
-                            company_name_found: response.data.company,
-                            extra_checks: {database_id: response.data.database_id, database_domain: response.data.database_domain, security_check_is_empty: response.data.security_check_is_empty}
-                        });
-                    }, function error(response) {
-                        console.log(response);
-                        $scope.trackGetCompanyNameEvent({
-                            is_error: true
-                        });
-                    })
-                }
+                // if(!a.company) {
+                //     var messageText = decodeURIComponent(window.messageText);
+                //
+                //     $http({
+                //         url: '/client_contacts/ai_get_company_name',
+                //         method: "POST",
+                //         data: { contact_address: a.email, message_text: messageText }
+                //     }).then(function success(response) {
+                //         if(response.data.identification != "fail" && !response.data.error) {
+                //             a.company = response.data.company;
+                //             a.needAIConfirmation = true;
+                //             a.validatedCompany = '';
+                //
+                //             a.companyAI = response.data.company;
+                //         }
+                //
+                //         $scope.trackGetCompanyNameEvent({
+                //             identification: response.data.identification,
+                //             is_error: response.data.status == 'error' || response.data.status == 'invalid' || response.data.error || false,
+                //             error_message: response.data.message,
+                //             contact_email_address: a.email,
+                //             message_text: messageText,
+                //             company_name_found: response.data.company,
+                //             extra_checks: {database_id: response.data.database_id, database_domain: response.data.database_domain, security_check_is_empty: response.data.security_check_is_empty}
+                //         });
+                //     }, function error(response) {
+                //         console.log(response);
+                //         $scope.trackGetCompanyNameEvent({
+                //             is_error: true
+                //         });
+                //     })
+                // }
             }
 
             if(!window.featuresHelper.isFeatureActive('usage_name_v2')) {
@@ -667,6 +683,69 @@
             }
 
             $scope.attendees.push(a);
+        };
+
+        $scope.fetchCompanyByDomain = function(messageText, searchedDomain) {
+            // We fake an email with the specified domain to get retrocompatibility (we used to pass directly the attendee email)
+            var fakeEmail = 'email@' + searchedDomain;
+
+            $http({
+                url: '/client_contacts/ai_get_company_name',
+                method: "POST",
+                data: { contact_address: fakeEmail, message_text: messageText }
+            }).then(function success(response) {
+                $scope.setCompanyOnUsersFromDomain(response.data, searchedDomain, messageText);
+                // if(response.data.identification != "fail" && !response.data.error) {
+                //     a.company = response.data.company;
+                //     a.needAIConfirmation = true;
+                //     a.validatedCompany = '';
+                //
+                //     a.companyAI = response.data.company;
+                // }
+                //
+                // $scope.trackGetCompanyNameEvent({
+                //     identification: response.data.identification,
+                //     is_error: response.data.status == 'error' || response.data.status == 'invalid' || response.data.error || false,
+                //     error_message: response.data.message,
+                //     contact_email_address: a.email,
+                //     message_text: messageText,
+                //     company_name_found: response.data.company,
+                //     extra_checks: {database_id: response.data.database_id, database_domain: response.data.database_domain, security_check_is_empty: response.data.security_check_is_empty}
+                // });
+            }, function error(response) {
+                console.log(response);
+                $scope.trackGetCompanyNameEvent({
+                    is_error: true
+                });
+            })
+        };
+
+        $scope.setCompanyOnUsersFromDomain = function(responseData, searchedDomain, messageText) {
+            var setCompany = responseData.identification != "fail" && !responseData.error;
+            var responseIsError = responseData.status == 'error' || responseData.status == 'invalid' || responseData.error || false;
+
+            _.each($scope.attendees, function(attendee) {
+                if(attendee.email.indexOf(searchedDomain) > -1 && !attendee.company) {
+
+                    if(setCompany) {
+                        attendee.company = responseData.company;
+                        attendee.needAIConfirmation = true;
+                        attendee.validatedCompany = '';
+
+                        attendee.companyAI = responseData.company;
+                    }
+
+                    $scope.trackGetCompanyNameEvent({
+                        identification: responseData.identification,
+                        is_error: responseIsError,
+                        error_message: responseData.message,
+                        contact_email_address: attendee.email,
+                        message_text: messageText,
+                        company_name_found: responseData.company,
+                        extra_checks: {database_id: responseData.database_id, database_domain: responseData.database_domain, security_check_is_empty: responseData.security_check_is_empty}
+                    });
+                }
+            });
         };
 
         this.fetchAttendeeFromClientContactNetwork = function(){
