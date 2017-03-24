@@ -81,7 +81,6 @@
 
             var upperLimit = (maximumConstraintDate || moment()).clone().add(1, 'month');
 
-            //return timeConstraints.concat($('#appointment_times_constraints_helper').scope().getTimesConstraintsEventsForCurrentAppointment(moment(), moment().add('w', 3)));
             return window.currentCalendar.getConstraintsDataEvents(today, upperLimit);
         };
 
@@ -96,12 +95,6 @@
                 } else if(node.hasClass('accept')) {
                     $nodeInCalendar.find('.call-to-action.accept').addClass('highlighted');
                 }
-                //$('#' + suggestion.trackingId).addClass('highlighted');
-                // var eventInCalendar = $scope.findAiEventInCalendar(suggestion);
-                // eventInCalendar.isHighlighted = true;
-                // console.log('here');
-                // window.currentCalendar.reRenderEvents();
-                // console.log('rerender');
             }
         };
 

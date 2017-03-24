@@ -196,7 +196,9 @@
 
                 if(mainInterpretation && mainInterpretation.appointment_classif && mainInterpretation.appointment_proba >= 0.50) {
                     $scope.currentAppointmentType = mainInterpretation.appointment_classif;
-                    $scope.setAppointmentType();
+                    setTimeout(function() {
+                        $scope.setAppointmentType();
+                    }, 500);
                     //$scope.tagInputToVerify();
                 }
             }
