@@ -725,7 +725,7 @@
             var responseIsError = responseData.status == 'error' || responseData.status == 'invalid' || responseData.error || false;
 
             _.each($scope.attendees, function(attendee) {
-                if(attendee.email.indexOf(searchedDomain) > -1 && !attendee.company) {
+                if(!!attendee.email && attendee.email.indexOf(searchedDomain) > -1 && !attendee.company) {
 
                     if(setCompany) {
                         attendee.company = responseData.company;
