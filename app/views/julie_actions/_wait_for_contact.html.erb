@@ -31,9 +31,13 @@
         }
 
         if(isPostpone) {
+          if(window.currentEventData) {
+            setWaitingForContactReplyMesssage();
+          } else {
             window.afterEventFetched = function() {
-                setWaitingForContactReplyMesssage();
+              setWaitingForContactReplyMesssage();
             }
+          }
         }
         else {
             setWaitingForContactReplyMesssage();
@@ -70,6 +74,5 @@
         }
 
     };
-
 
 </script>
