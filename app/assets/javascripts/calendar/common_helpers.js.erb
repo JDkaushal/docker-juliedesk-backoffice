@@ -375,11 +375,13 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization", access_key);
             },
-            data: JSON.stringify({client_emails: clientAttendees}),
+            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start}),
             success: function (e) {
-              var lastCalendarChanges = e.data ? moment(e.data) : null;
-              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
-              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
+              var modificationsHappened = e.data;
+//              var lastCalendarChanges = e.data ? moment(e.data) : null;
+//              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
+//              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
+              if(modificationsHappened)
                 alert("L'événement n'a pas été créé car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
               else
                 createEvent();
@@ -402,124 +404,153 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
           var oldEvent = window.currentEventTile.event;
         }
 
-        $.ajax({
-          url: host + "/api/v1/calendar_proxy/event_update",
-          type: "POST",
-          contentType: "application/json",
-          beforeSend: function(xhr){
-            xhr.setRequestHeader("Authorization", access_key);
-          },
-          data: JSON.stringify({
-            email: request.email,
-            calendar_login_username: request.calendar_login_username,
-            event_id: request.event_id,
-            event_url: request.event_url,
-            calendar_id: request.calendar_id,
-            summary: request.summary,
-            description: request.description,
-            attendees: request.attendees,
-            all_day: request.all_day,
-            location: request.location,
-            private: request.private,
-            busy: request.busy,
-            start: request.start,
-            end: request.end,
-            start_timezone: request.start_timezone,
-            end_timezone: request.end_timezone,
-            utc_offset: request.utc_offset,
-            recurrence: request.recurrence,
-            // We use occurrences with IcloudLogin when updating the recurring event so we don't loose the exceptions if any
-            occurrences: request.occurrences,
-            saving_occurrence: request.saving_occurrence,
-            original_start: request.original_start,
-            original_end: request.original_end,
-            original_summary: request.original_summary,
-            original_location: request.original_location,
-            recurring_event: request.recurringEvent,
-            deleting_occurrence: request.deletingOccurrence,
-            call_instructions: window.threadComputedData.call_instructions,
-            meeting_room: request.meeting_room,
-            virtual_resource_id: request.virtual_resource_id
-          }),
-          success: function(e) {
-            var restaurantBookingManager = $('#restaurant-booking-manager').scope();
+        var updateEvent = function() {
+          $.ajax({
+            url: host + "/api/v1/calendar_proxy/event_update",
+            type: "POST",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("Authorization", access_key);
+            },
+            data: JSON.stringify({
+              email: request.email,
+              calendar_login_username: request.calendar_login_username,
+              event_id: request.event_id,
+              event_url: request.event_url,
+              calendar_id: request.calendar_id,
+              summary: request.summary,
+              description: request.description,
+              attendees: request.attendees,
+              all_day: request.all_day,
+              location: request.location,
+              private: request.private,
+              busy: request.busy,
+              start: request.start,
+              end: request.end,
+              start_timezone: request.start_timezone,
+              end_timezone: request.end_timezone,
+              utc_offset: request.utc_offset,
+              recurrence: request.recurrence,
+              // We use occurrences with IcloudLogin when updating the recurring event so we don't loose the exceptions if any
+              occurrences: request.occurrences,
+              saving_occurrence: request.saving_occurrence,
+              original_start: request.original_start,
+              original_end: request.original_end,
+              original_summary: request.original_summary,
+              original_location: request.original_location,
+              recurring_event: request.recurringEvent,
+              deleting_occurrence: request.deletingOccurrence,
+              call_instructions: window.threadComputedData.call_instructions,
+              meeting_room: request.meeting_room,
+              virtual_resource_id: request.virtual_resource_id
+            }),
+            success: function (e) {
+              var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
-            // We check if we are editing the correct event (not updating a busy/free event)
-            if(restaurantBookingManager.getUsingRestaurantBooking()) {
-              if(oldEvent.id == request.event_id) {
-                if(request.location) {
-                  if(window.threadComputedData.restaurant_booking_details.restaurant == '') {
-                    restaurantBookingManager.sendAdminEmail({
-                      type: 'booking',
-                      user_email: window.threadAccount.email,
-                      booking_date: request.start,
-                      // the attendees count is set by the restaurant-booking-manager app
-                      location: request.location,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e));
-                  } else if(window.threadComputedData.restaurant_booking_details.restaurant != request.location) {
-                    restaurantBookingManager.sendAdminEmail({
-                      type: 'cancellation',
-                      user_email: window.threadAccount.email,
-                      booking_date: oldEvent.start.format(),
-                      location: window.threadComputedData.restaurant_booking_details.restaurant,
-                      thread_id: window.processingMessageThreadId
-                    }, restaurantBookingManager.sendAdminEmail({
-                      type: 'booking',
-                      user_email: window.threadAccount.email,
-                      booking_date: request.start,
-                      // the attendees count is set by the restaurant-booking-manager app
-                      location: request.location,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e)));
-                  } else if(oldEvent.start.format() != request.start) {
-                    restaurantBookingManager.sendAdminEmail({
-                      type: 'postpone',
-                      user_email: window.threadAccount.email,
-                      old_booking_date: oldEvent.start.format(),
-                      booking_date: request.start,
-                      // the attendees count is set by the restaurant-booking-manager app
-                      location: request.location,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e));
+              // We check if we are editing the correct event (not updating a busy/free event)
+              if (restaurantBookingManager.getUsingRestaurantBooking()) {
+                if (oldEvent.id == request.event_id) {
+                  if (request.location) {
+                    if (window.threadComputedData.restaurant_booking_details.restaurant == '') {
+                      restaurantBookingManager.sendAdminEmail({
+                        type: 'booking',
+                        user_email: window.threadAccount.email,
+                        booking_date: request.start,
+                        // the attendees count is set by the restaurant-booking-manager app
+                        location: request.location,
+                        thread_id: window.processingMessageThreadId
+                      }, callback(e));
+                    } else if (window.threadComputedData.restaurant_booking_details.restaurant != request.location) {
+                      restaurantBookingManager.sendAdminEmail({
+                        type: 'cancellation',
+                        user_email: window.threadAccount.email,
+                        booking_date: oldEvent.start.format(),
+                        location: window.threadComputedData.restaurant_booking_details.restaurant,
+                        thread_id: window.processingMessageThreadId
+                      }, restaurantBookingManager.sendAdminEmail({
+                        type: 'booking',
+                        user_email: window.threadAccount.email,
+                        booking_date: request.start,
+                        // the attendees count is set by the restaurant-booking-manager app
+                        location: request.location,
+                        thread_id: window.processingMessageThreadId
+                      }, callback(e)));
+                    } else if (oldEvent.start.format() != request.start) {
+                      restaurantBookingManager.sendAdminEmail({
+                        type: 'postpone',
+                        user_email: window.threadAccount.email,
+                        old_booking_date: oldEvent.start.format(),
+                        booking_date: request.start,
+                        // the attendees count is set by the restaurant-booking-manager app
+                        location: request.location,
+                        thread_id: window.processingMessageThreadId
+                      }, callback(e));
+                    } else {
+                      callback(e);
+                    }
                   } else {
-                    callback(e);
+                    if (window.threadComputedData.restaurant_booking_details.restaurant) {
+                      restaurantBookingManager.sendAdminEmail({
+                        type: 'cancellation',
+                        user_email: window.threadAccount.email,
+                        booking_date: request.start,
+                        location: window.threadComputedData.restaurant_booking_details.restaurant,
+                        thread_id: window.processingMessageThreadId
+                      }, callback(e));
+                    } else {
+                      callback(e);
+                    }
                   }
                 } else {
-                  if(window.threadComputedData.restaurant_booking_details.restaurant) {
-                    restaurantBookingManager.sendAdminEmail({
-                      type: 'cancellation',
-                      user_email: window.threadAccount.email,
-                      booking_date: request.start,
-                      location: window.threadComputedData.restaurant_booking_details.restaurant,
-                      thread_id: window.processingMessageThreadId
-                    }, callback(e));
-                  } else {
-                    callback(e);
-                  }
+                  callback(e);
                 }
               } else {
-                callback(e);
+                // When uncheking the restaurant booking functionnality after having booked a restaurant
+                if (window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
+                  restaurantBookingManager.sendAdminEmail({
+                    type: 'cancellation',
+                    user_email: window.threadAccount.email,
+                    booking_date: request.start,
+                    location: window.threadComputedData.restaurant_booking_details.restaurant,
+                    thread_id: window.processingMessageThreadId
+                  }, callback(e));
+                } else {
+                  callback(e);
+                }
               }
-            } else {
-              // When uncheking the restaurant booking functionnality after having booked a restaurant
-              if(window.threadComputedData.using_restaurant_booking && window.threadComputedData.restaurant_booking_details.restaurant) {
-                restaurantBookingManager.sendAdminEmail({
-                  type: 'cancellation',
-                  user_email: window.threadAccount.email,
-                  booking_date: request.start,
-                  location: window.threadComputedData.restaurant_booking_details.restaurant,
-                  thread_id: window.processingMessageThreadId
-                }, callback(e));
-              } else {
-                callback(e);
-              }
+            },
+            error: function (e) {
+              error_callback(e);
             }
-          },
-          error: function(e) {
-            error_callback(e);
-          }
-        });
+          });
+        };
+
+        var clientAttendees = window.currentAttendees
+            .filter(function(attendee) { return attendee["isClient"] == "true" && attendee["isPresent"] == "true" })
+            .map(function(attendee) { return attendee.account_email });
+
+        if(clientAttendees.length > 0) {
+          $.ajax({
+            url: host + "/api/v1/calendar_proxy/last_change",
+            type: "POST",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("Authorization", access_key);
+            },
+            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start}),
+            success: function (e) {
+              var modificationsHappened = e.data;
+//              var lastCalendarChanges = e.data ? moment(e.data) : null;
+//              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
+//              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
+              if(modificationsHappened)
+                alert("L'événement n'a pas été mis à jour car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
+              else
+                updateEvent();
+            }
+          });
+        } else
+          updateEvent();
       }
     }
     else if(request.action == "delete_event") {
