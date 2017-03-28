@@ -23,8 +23,6 @@ class ImportEmailsWorker
   end
 
   def self.perform
-    Rails.logger.info 'Importing Emails'
-    print "Importing Emails\n"
     updated_messages_thread_ids = Message.import_emails
     if updated_messages_thread_ids.present? && updated_messages_thread_ids.size > 0
       WebSockets::Manager.trigger_new_email(updated_messages_thread_ids)
