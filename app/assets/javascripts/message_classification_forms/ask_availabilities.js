@@ -35,10 +35,21 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         var result = currentAppointmentIsVirtual;
 
         if(window.threadComputedData && window.threadComputedData.appointment_nature) {
-            result = isVirtual((window.getAppointment(window.threadComputedData.appointment_nature))) == currentAppointmentIsVirtual;
+            result = isVirtual(window.getAppointment(window.threadComputedData.appointment_nature)) == currentAppointmentIsVirtual;
         }
 
        return result;
+    }
+
+    function checkAppointmentDuration() {
+        return $("#duration").val() <= window.threadComputedData.duration;
+    }
+
+    function checkAttendeesWhereInPreviousForm() {
+        var currentlyPresentAttendeesEmails = _.map(window.presentAttendees(), function(att) {return att.email});
+        var lastFormAttendeesEmails = _.map(window.threadComputedData.attendees, function(att) {return att.email});
+
+        return _.difference(currentlyPresentAttendeesEmails, lastFormAttendeesEmails).length == 0;
     }
 
     function canVerifyWithAi() {
@@ -46,7 +57,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
         return (
             checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual) &&
-            window.threadComputedData.duration == $("#duration").val() &&
+            checkAppointmentDuration() &&
             locationIsSame(currentAppointmentIsVirtual) &&
             window.threadComputedData.timezone == $("#timezone").val().trim() &&
             window.presentAttendees().length == 2 &&
@@ -54,7 +65,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
             !$('#dates-identifications-manager').scope().showDetectedDatesArea &&
             $('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
-            _.isEqual(_.map(window.threadComputedDataPresentAttendees, function(att) {return att.email}), _.map(window.presentAttendees(), function(att) {return att.email}))
+            checkAttendeesWhereInPreviousForm()
         );
     };
 
