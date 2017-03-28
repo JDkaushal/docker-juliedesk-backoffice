@@ -47,7 +47,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     function checkAttendeesWhereInPreviousForm() {
         var currentlyPresentAttendeesEmails = _.map(window.presentAttendees(), function(att) {return att.email});
-        var lastFormAttendeesEmails = _.map(window.threadComputedData.attendees, function(att) {return att.email});
+        var lastFormAttendeesEmails = _.map(window.threadComputedDataPresentAttendees, function(att) {return att.email});
 
         return _.difference(currentlyPresentAttendeesEmails, lastFormAttendeesEmails).length == 0;
     }
