@@ -496,7 +496,7 @@ class Message < ActiveRecord::Base
         thread_recipients = Set.new
 
         unless messages_thread
-          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true
+          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, server_version: server_thread['version']
           new_thread = true
         end
 
