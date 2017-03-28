@@ -144,7 +144,7 @@ class MessagesThread < ActiveRecord::Base
     # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
     if recipients_with_lost_access.size > 0
       client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
-      body = {blocking_users_emails: recipients_with_lost_access}
+      body = {blocking_users_emails: recipients_with_lost_access, originated_from_thread_id: self.id}
       client.post(BLOCKED_THREAD_NOTIFY_URL, json: body)
       Rails.logger.info "Sent Blocked users for thread #{self.id}"
     end
