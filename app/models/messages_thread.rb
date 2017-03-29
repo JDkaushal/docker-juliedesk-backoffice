@@ -494,7 +494,14 @@ class MessagesThread < ActiveRecord::Base
 
   def clients
     # We compact it because clients can become deactivated in the mean time, so they will not be in the cache anymore
-    @clients ||= self.clients_in_recipients.map{|client_email| Account.create_from_email(client_email)}.compact
+    unless @clients
+      recipients_clients = Set.new(self.clients_in_recipients)
+      # In case accounts has been associated later to other client, so he is not in recipients
+      recipients_clients.add(self.account_email)
+      @clients = recipients_clients.to_a.map{|client_email| Account.create_from_email(client_email)}.compact
+    end
+
+    @clients
   end
 
   def several_accounts_detected(params={})
