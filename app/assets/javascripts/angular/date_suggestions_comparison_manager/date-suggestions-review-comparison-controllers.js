@@ -186,9 +186,7 @@
                   }
                 });
 
-                $scope.allTimezones = _.uniq(_.map(data.date_suggestions, function(dateSuggestion) {
-                    return dateSuggestion.timezone;
-                }));
+                $scope.allTimezones = data.used_timezones;
                 $scope.mainTimezone = $scope.allTimezones[0];
 
                 $scope.activateCalendarIfReady();
