@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170321134603) do
+ActiveRecord::Schema.define(version: 20170330115033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 20170321134603) do
     t.string   "batch_identifier"
     t.text     "annotated_reply"
     t.string   "language_level"
+    t.boolean  "asap_constraint",            default: false
   end
 
   create_table "client_contacts", force: true do |t|
@@ -189,13 +190,6 @@ ActiveRecord::Schema.define(version: 20170321134603) do
     t.datetime "updated_at"
   end
 
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -272,6 +266,7 @@ ActiveRecord::Schema.define(version: 20170321134603) do
     t.json     "verified_dates_by_ai"
     t.text     "annotated_reply"
     t.string   "language_level"
+    t.boolean  "asap_constraint",            default: false
   end
 
   add_index "message_classifications", ["message_id"], name: "index_message_classifications_on_message_id", using: :btree
@@ -283,6 +278,7 @@ ActiveRecord::Schema.define(version: 20170321134603) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "error"
+    t.string   "classification"
   end
 
   add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree

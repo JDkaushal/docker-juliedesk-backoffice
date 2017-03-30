@@ -369,16 +369,17 @@
             $scope.$apply();
         };
 
+        if(typeof redsock !== 'undefined') {
+            redsock.subscribeToChannel('lockedThreads');
+            redsock.bindMessage('lockedThreads', 'subscription_success', function(data) {
+                $scope.lockedThreadsData = data;
+            });
 
-        redsock.subscribeToChannel('lockedThreads');
-        redsock.bindMessage('lockedThreads', 'subscription_success', function(data) {
-          $scope.lockedThreadsData = data;
-        });
-
-        redsock.bindMessage('lockedThreads', 'update', function(data) {
-          $scope.lockedThreadsData = data;
-          $scope.updateLockStatuses();
-        });
+            redsock.bindMessage('lockedThreads', 'update', function(data) {
+                $scope.lockedThreadsData = data;
+                $scope.updateLockStatuses();
+            });
+        }
     });
 
     trackActionV2('Home_is_open', {operator_id: window.currentOperatorId});

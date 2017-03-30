@@ -440,7 +440,8 @@ class MessagesThread < ActiveRecord::Base
           linked_attendees: self.linked_attendees,
           do_not_ask_suggestions: self.do_not_ask_suggestions?,
           language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal,
-          trusted_attendees: self.trusted_attendees
+          trusted_attendees: self.trusted_attendees,
+          asap_constraint: last_message_classification.try(:asap_constraint).present?
       }
     end
 

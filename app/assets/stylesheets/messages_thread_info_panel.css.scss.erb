@@ -46,6 +46,25 @@
     display: none;
   }
 
+  label.asap-checkbox-container {
+    border: 1px solid #ccc;
+    display: block;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    font-weight: 400;
+
+    input {
+      cursor: inherit;
+      outline: none;
+    }
+
+    &.disabled {
+      cursor: not-allowed;
+      background: #f0f0f0;
+    }
+  }
+
   .classic-info-panel {
     $level_agreement_green: #748804;
     $level_agreement_red: #CF3E3E;

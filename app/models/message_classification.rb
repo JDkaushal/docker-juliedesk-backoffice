@@ -106,6 +106,7 @@ class MessageClassification < ActiveRecord::Base
           before_update_data: params[:before_update_data],
           verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
           language_level: last_classification_with_data.try(:language_level),
+          asap_constraint: params[:asap_constraint]
       )
     else
       attendees = []
@@ -158,6 +159,7 @@ class MessageClassification < ActiveRecord::Base
           verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
           ignore_linked_attendees: params[:ignore_linked_attendees],
           language_level: params[:language_level],
+          asap_constraint: params[:asap_constraint]
       )
     end
 

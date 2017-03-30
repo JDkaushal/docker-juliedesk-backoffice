@@ -43,7 +43,7 @@ module EmailRecipients
         in_circle_of_trust_of = []
 
         trusted_attendees.each do |full_name, circle_of_trust|
-          if circle_of_trust['trusted_emails'].include?(@sanitized_email) || email_in_domain?(circle_of_trust['trusted_domains'])
+          if circle_of_trust && (circle_of_trust['trusted_emails'].include?(@sanitized_email) || email_in_domain?(circle_of_trust['trusted_domains']))
             in_circle_of_trust_of.push(full_name)
           end
         end
