@@ -115,7 +115,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "before_update_data"=>nil,
                                                               "verified_dates_by_ai" => nil,
                                                               "annotated_reply"=>nil,
-                                                              "language_level"=>nil
+                                                              "language_level"=>nil,
+                                                              "asap_constraint"=>false
                                                           }
                                                         }
                                                     }
