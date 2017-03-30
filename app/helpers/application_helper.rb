@@ -46,7 +46,7 @@ module ApplicationHelper
     letter_regexp = /(?:#{(letters + accented_characters).join("|")})/
 
     inside_email_regexp = /(?:[a-zA-Z0-9]|\#)(?:[a-zA-Z0-9]|\.|\-|\+|\_)*@(?:[a-zA-Z0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
-    inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\ |\'|\+|\.|[0-9]|\&|\?|\/)*/
+    inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\ |\'|\>|\+|\.|[0-9]|\&|\?|\/)*/
     email_regexp = /(?<email>#{inside_email_regexp})/
     name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
 
@@ -105,7 +105,7 @@ module ApplicationHelper
       nil
     end
 
-    if res_custom && res_custom.addresses.length == res.addresses.length
+    if res_custom.present?
       res_custom
     else
       res
