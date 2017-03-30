@@ -626,8 +626,8 @@ ConstraintTile.getEventsFromDataFromDeployedConstraints = function (data_entries
             return data.constraint_nature == ConstraintTile.NATURE_CAN;
         }), function(data) {
             return {
-                start: moment(data.start_date),
-                end: moment(data.end_date)
+                start: moment(data.start_date || data.dates[0]),
+                end: moment(data.end_date || data.dates[1])
             };
         });
         canTimeWindows = _.sortBy(canTimeWindows, function(timeWindow) {
