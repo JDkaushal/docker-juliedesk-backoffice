@@ -209,7 +209,6 @@
         };
 
         function defaultRecipientsWhenOnlyClientAttendees(clientAttendees) {
-            var sender;
             var senderEmail = window.emailSender();
 
             // We iterate over each attendee, if he is the original email sender we set him in TO, if not we set him in CCs
@@ -222,7 +221,7 @@
                     $scope.ccs.push({name: a.email});
                 }
             });
-            var initialRecipients = window.initialToRecipients();
+            var initialRecipients = window.initialToRecipients().concat(window.initialCcRecipients());
             if(initialRecipients)
                 $scope.ccs = $scope.ccs.concat(initialRecipients);
         };
