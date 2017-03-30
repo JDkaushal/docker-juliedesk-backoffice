@@ -39,6 +39,7 @@ class Review::JulieActionsController < ReviewController
         mc = ja.message_classification
         mt = mc.message.messages_thread
         account = mt.account
+
         render json: {
             status: "success",
             data: {
@@ -51,6 +52,7 @@ class Review::JulieActionsController < ReviewController
                 account_email: mt.account_email,
                 other_account_emails: mc.other_account_emails,
                 date: ja.created_at,
+                used_timezones: mc.used_timezones,
                 review_comment: ja.date_suggestions_comparison_review.try(:comment),
                 review_thread_link: url_for(controller: :messages_threads, action: :review, id: mt.id),
                 main_address: account.try(:main_address).try(:[], 'address')

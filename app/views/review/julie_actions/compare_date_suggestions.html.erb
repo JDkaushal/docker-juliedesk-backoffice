@@ -75,8 +75,14 @@
         <div class="constraint" ng-repeat="constraint in constraints" constraint-tile></div>
       </div>
 
+      <div class="section" ng-show="allTimezones.length > 1">
+        <label>Timezones</label>
+        <div class="information" ng-repeat="timezone in allTimezones">{{ timezone }}: UTC{{ date | amTimezone: timezone | amDateFormat: "Z"  }}</div>
+      </div>
+
 
       <div class="section">
+        <label>Dates</label>
         <div class="suggested-date-timezone information">{{ mainTimezone }}</div>
 
         <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">

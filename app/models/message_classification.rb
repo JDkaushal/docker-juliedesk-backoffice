@@ -168,6 +168,26 @@ class MessageClassification < ActiveRecord::Base
     result
   end
 
+  def parsed_attendees
+    JSON.parse(self.attendees || "[]")
+  end
+
+  def present_attendees
+    parsed_attendees.select{|att| att['isPresent'] == "true"}
+  end
+
+  def used_timezones
+    if is_virtual_appointment?
+      ([self.timezone] + self.present_attendees.map{|att| att['timezone']}).compact.uniq
+    else
+      [self.timezone]
+    end
+  end
+
+  def is_virtual_appointment?
+    ['call', 'confcall', 'skype', 'hangout', 'webex'].include? self.appointment_nature
+  end
+
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
     attendees.map do |attendee|
