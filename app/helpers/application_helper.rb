@@ -71,7 +71,7 @@ module ApplicationHelper
 
   def self.find_addresses str
     # Necessary because Mail::AddressList.new decompose "Simon, Matthieu <Matthieu.Simon@rolandberger.com>" into two mails "Simon" and "Matthieu <Matthieu.Simon@rolandberger.com>"
-    # So we need to remove non email string from the fieald for example
+    # So we need to remove non email string from the field for example
     # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
     if str.present?
       # Remove '[' and ']'
@@ -79,6 +79,7 @@ module ApplicationHelper
       str.gsub!(/[\[|\]]/, '')
       str.gsub!(/\\/, '')
       str = str.split(',').reject{|s| !s.include?('@')}.join(',')
+      str.strip!
     end
 
     res = begin
