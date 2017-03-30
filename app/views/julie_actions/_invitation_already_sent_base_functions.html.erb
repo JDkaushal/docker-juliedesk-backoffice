@@ -14,6 +14,7 @@
         if(suppress_event)
             data['deleted_event'] = true;
 
+        var selectedEvent = window.selectedEvents[0];
         if(window.selectedEvents.length > 0) {
             data['event_id'] = window.selectedEvents[0].id;
             data['event_url'] = window.selectedEvents[0].url;
@@ -28,7 +29,19 @@
             url: "/julie_actions/<%= @julie_action.id %>/update",
             method: "post",
             data: data
+        }).done(function(_) {
+          var restaurantBookingManager = $('#restaurant-booking-manager').scope();
+          if(restaurantBookingManager.getUsingRestaurantBooking() && selectedEvent.location) {
+            restaurantBookingManager.sendAdminEmail({
+              type: 'booking',
+              user_email: window.threadAccount.email,
+              booking_date: selectedEvent.start,
+              location: selectedEvent.location,
+              thread_id: window.processingMessageThreadId
+            });
+          }
         });
+
         window.sendReply();
     }
 

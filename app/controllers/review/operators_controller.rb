@@ -41,28 +41,35 @@ class Review::OperatorsController < ReviewController
 
   def index
     reference_date_month = DateTime.now - 30.days
-
-    operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
-    reviewed_count_month = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).count
-    total_count_month = operator_actions.count
-
-    operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
-    reviewed_count_week = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).count
-    total_count_week = operator_actions_week.count
-
-    result = EmailServer.search_messages({
-                                    after: (reference_date_month).to_s,
-                                    labels: "flag",
-                                    limit: 1000
-                                })
-
+    result = EmailServer.search_messages({ after: (reference_date_month).to_s, labels: "flag", limit: 1000 })
     flag_server_message_ids = result['messages']['ids']
     flag_messages_thread_ids = Message.where(server_message_id: flag_server_message_ids).order(:created_at).select(:messages_thread_id).map(&:messages_thread_id).uniq
+
+    # last 30 days
+    operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    random_actions_last_30_days_count = operator_actions.where.not(messages_thread_id: flag_messages_thread_ids).count
+    random_review_last_30_days_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
+    flagged_review_last_30_days_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+    total_count_month = operator_actions.count
+
+
+    # last 7 days
+    operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    random_actions_last_7_days_count = operator_actions_week.where.not(messages_thread_id: flag_messages_thread_ids).count
+    random_review_last_7_days_count = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
+    flagged_review_last_7_days_count = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+
+
+    # current month
+    operator_actions_current_month = OperatorActionsGroup.where("initiated_at > ?", DateTime.now.beginning_of_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    random_actions_current_month_count = operator_actions_current_month.where.not(messages_thread_id: flag_messages_thread_ids).count
+    random_review_current_month_count = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
+    flagged_review_current_month_count = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+
     flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count
 
     counts_by_operator = operator_actions.group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_flagged = operator_actions.where(messages_thread_id: flag_messages_thread_ids).group(:operator_id).select("COUNT(*), operator_id")
-    #total_duration_by_operator = operator_actions.group(:operator_id).select("SUM(duration), operator_id")
     counts_by_operator_reviewed = operator_actions.where(review_notation: [0, 1, 2, 3, 4, 5]).group(:operator_id).select("COUNT(*), operator_id")
     counts_by_operator_errors = operator_actions.where(review_notation: [0, 1, 2, 3]).group(:operator_id).select("COUNT(*), operator_id")
 
@@ -124,10 +131,20 @@ class Review::OperatorsController < ReviewController
     end
 
     @data = {
-        main_coverage: reviewed_count_month * 1.0 / total_count_month,
-        review_count: reviewed_count_month,
-        main_coverage_week: reviewed_count_week * 1.0 / total_count_week,
-        review_count_week: reviewed_count_week,
+        random_review_current_month_count: random_review_current_month_count,
+        random_review_current_month_percent: random_actions_current_month_count == 0 ? nil : random_review_current_month_count*100.0/random_actions_current_month_count,
+
+        random_review_last_30_days_count: random_review_last_30_days_count,
+        random_review_last_30_days_percent: random_actions_last_30_days_count == 0 ? nil : random_review_last_30_days_count*100.0/random_actions_last_30_days_count,
+
+        random_review_last_7_days_count: random_review_last_7_days_count,
+        random_review_last_7_days_percent: random_actions_last_7_days_count == 0 ? nil : random_review_last_7_days_count*100.0/random_actions_last_7_days_count,
+
+        flagged_review_current_month_count: flagged_review_current_month_count,
+        flagged_review_last_30_days_count: flagged_review_last_30_days_count,
+        flagged_review_last_7_days_count: flagged_review_last_7_days_count,
+
+
         flag_to_review_count: flag_count,
         to_group_review_count: OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count,
         total_count: total_count_month,

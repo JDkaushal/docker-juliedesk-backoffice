@@ -173,10 +173,13 @@ class MessagesThread < ActiveRecord::Base
 
 
   def send_to_admin params={}
-    self.update_attributes({
-                               sent_to_admin: true,
-                               to_admin_message: "#{params[:message]}\n\n#{params[:operator]}"
-                           })
+    attrs_to_update = {
+        sent_to_admin: true,
+        to_admin_message: "#{params[:message]}\n\n#{params[:operator]}"
+    }
+    attrs_to_update.merge!(has_been_sent_to_admin: true) if has_been_sent_to_admin == false
+    self.update_attributes(attrs_to_update)
+
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
                                             messages_thread_ids: [self.server_thread_id],

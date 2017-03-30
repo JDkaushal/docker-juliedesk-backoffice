@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170330115033) do
+ActiveRecord::Schema.define(version: 20170330131232) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -263,8 +263,8 @@ ActiveRecord::Schema.define(version: 20170330115033) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
-    t.json     "verified_dates_by_ai"
     t.text     "annotated_reply"
+    t.json     "verified_dates_by_ai"
     t.string   "language_level"
     t.boolean  "asap_constraint",            default: false
   end
@@ -334,6 +334,7 @@ ActiveRecord::Schema.define(version: 20170330115033) do
     t.boolean  "account_association_merging_possible", default: false
     t.json     "linked_attendees",                     default: {}
     t.string   "clients_in_recipients",                default: [],    array: true
+    t.boolean  "has_been_sent_to_admin",               default: false
   end
 
   create_table "operator_actions", force: true do |t|

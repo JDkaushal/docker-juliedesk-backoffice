@@ -936,4 +936,24 @@ describe MessagesThread, :type => :model do
       expect(@messages_thread.trusted_attendees).to eq({"Client 1 Name"=>{"trusting_everyone"=>false, "trusted_domains"=>["domain1.com", "domain2.com"], "trusted_emails"=>["email1@email.com", "email2@email.com"]}, "Client 2 Name"=>{"trusting_everyone"=>false, "trusted_domains"=>["domain3.com", "domain4.com"], "trusted_emails"=>["email3@email.com", "email4@email.com"]}})
     end
   end
+
+  describe '#send_to_admin' do
+    let(:messages_thread_params) { {} }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread, messages_thread_params) }
+    before(:each) {
+      allow(EmailServer).to receive(:add_and_remove_labels)
+      messages_thread.send_to_admin(message: 'some bug occured', operator: "Bob")
+    }
+    subject { messages_thread.reload.has_been_sent_to_admin }
+
+    context 'when thread has never been sent to admin' do
+      let(:messages_thread_params) { { has_been_sent_to_admin: false } }
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when thread has already been sent to admin' do
+      let(:messages_thread_params) { { has_been_sent_to_admin: true } }
+      it { is_expected.to eq(true) }
+    end
+  end
 end

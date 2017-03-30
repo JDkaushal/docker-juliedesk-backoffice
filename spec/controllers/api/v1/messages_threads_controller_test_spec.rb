@@ -30,6 +30,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "snippet" => @mt1.snippet,
                                                       "account_name" => @mt1.account_name,
                                                       "sent_to_admin" => @mt1.sent_to_admin,
+                                                      "has_been_sent_to_admin" => @mt1.has_been_sent_to_admin,
                                                       "to_admin_message" => @mt1.to_admin_message,
                                                       "locked_by_operator_id" => @mt1.locked_by_operator_id,
                                                       "locked_at" => @mt1.locked_at,

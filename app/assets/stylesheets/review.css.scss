@@ -130,6 +130,15 @@
     font-size: 30px !important;
     text-decoration: none !important;
   }
+
+  #reviewGlobalStats  th {
+    font-weight: 400;
+    color: #428bca;
+  }
+  #reviewGlobalStats tbody td:first-child {
+    font-weight: 400;
+  }
+
   .main-coverage {
     font-size: 30px;
     font-weight: 100;

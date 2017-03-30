@@ -52,8 +52,50 @@
 
 <div class="review-dashboard col-md-8 col-md-offset-2">
   <h1 class="title">Review</h1>
-  <div class="main-coverage"><%= number_to_percentage @data[:main_coverage] * 100, precision: 0 %> (<%= @data[:review_count] %>) actions reviewed in the last 30 days</div>
-  <div class="main-reviews-count"><%= number_to_percentage @data[:main_coverage_week] * 100, precision: 0 %> (<%= @data[:review_count_week] %>) actions reviewed in the last 7 days</div>
+  <table id="reviewGlobalStats" class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Random Review</th>
+        <th>Flagged Review</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>Last 7 days</td>
+        <td>
+          <%= @data[:random_review_last_7_days_count] %>
+          <% unless @data[:random_review_last_7_days_percent].nil? %>
+              (<%= number_to_percentage(@data[:random_review_last_7_days_percent], precision: 2) %>)
+          <% end %>
+        </td>
+        <td><%= @data[:flagged_review_last_7_days_count] %></td>
+      </tr>
+
+      <tr>
+        <td>Current month</td>
+        <td>
+          <%= @data[:random_review_current_month_count] %>
+          <% unless @data[:random_review_current_month_percent].nil? %>
+              (<%= number_to_percentage(@data[:random_review_current_month_percent], precision: 2) %>)
+          <% end %>
+        </td>
+        <td><%= @data[:flagged_review_current_month_count] %></td>
+      </tr>
+
+      <tr>
+        <td>Last 30 days</td>
+        <td>
+          <%= @data[:random_review_last_30_days_count] %>
+          <% unless @data[:random_review_last_30_days_percent].nil? %>
+            (<%= number_to_percentage(@data[:random_review_last_30_days_percent], precision: 2) %>)
+          <% end %>
+        </td>
+        <td><%= @data[:flagged_review_last_30_days_count] %></td>
+      </tr>
+    </tbody>
+  </table>
 
   <div class="main-actions">
     <div class="flag-actions">
