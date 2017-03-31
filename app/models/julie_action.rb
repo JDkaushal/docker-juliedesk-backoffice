@@ -120,9 +120,9 @@ class JulieAction < ActiveRecord::Base
           end
         end
       else
-        puts "Processing for single event"
         # Event created from an ask availabilities flow, stored in the 'event_id' and 'calendar_id' attributes of the Julie Action under the form event_id: "fiejrfoierjforeijfoerij/freferf==" and calendar_id: "test@gmail.com"
         event_id = ja.event_id
+        puts "Processing for single event: #{event_id}"
         unless event_id.is_number?
           puts "Will process"
           response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: [event_id]})
