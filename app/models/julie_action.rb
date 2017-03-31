@@ -103,14 +103,25 @@ class JulieAction < ActiveRecord::Base
 
         if events_ids.any?{|e_id| !e_id.is_number?}
           puts "Will process"
-          response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: events_ids})
-          if response['events_data'].present? && response['events_data'].size == current_ja_events.size
-            fetched_events = response['events_data']
-            current_ja_events.each do |ev|
-              fetched_event = fetched_events.find{|f_e| f_e['provider_id'] == ev['id']}
-              ev['id'] = fetched_event['id']
-              ev['calendar_id'] = fetched_event['calendar_id']
+          success = true
+          events_ids.each_slice(3) do |events|
+            # We don't check next events if previous ones where not found, as it will anyway overall fail
+            if success
+              response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: events})
+              if response['events_data'].present? && response['events_data'].size == events.size
+                fetched_events = response['events_data']
+                current_ja_events.each do |ev|
+                  fetched_event = fetched_events.find{|f_e| f_e['provider_id'] == ev['id']}
+                  ev['id'] = fetched_event['id']
+                  ev['calendar_id'] = fetched_event['calendar_id']
+                end
+              else
+                success = false
+              end
             end
+          end
+
+          if success
             puts "Events updated: #{current_ja_events.inspect}"
             JulieAction.update(ja.id, events: current_ja_events)
             successfully_updated_julie_actions.push(ja.id)
@@ -118,6 +129,21 @@ class JulieAction < ActiveRecord::Base
             puts "Events not found"
             ja_with_events_not_found.push(ja.id)
           end
+          # response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: events_ids})
+          # if response['events_data'].present? && response['events_data'].size == current_ja_events.size
+          #   fetched_events = response['events_data']
+          #   current_ja_events.each do |ev|
+          #     fetched_event = fetched_events.find{|f_e| f_e['provider_id'] == ev['id']}
+          #     ev['id'] = fetched_event['id']
+          #     ev['calendar_id'] = fetched_event['calendar_id']
+          #   end
+          #   puts "Events updated: #{current_ja_events.inspect}"
+          #   JulieAction.update(ja.id, events: current_ja_events)
+          #   successfully_updated_julie_actions.push(ja.id)
+          # else
+          #   puts "Events not found"
+          #   ja_with_events_not_found.push(ja.id)
+          # end
         end
       else
         # Event created from an ask availabilities flow, stored in the 'event_id' and 'calendar_id' attributes of the Julie Action under the form event_id: "fiejrfoierjforeijfoerij/freferf==" and calendar_id: "test@gmail.com"
