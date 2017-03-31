@@ -81,7 +81,7 @@ class JulieAction < ActiveRecord::Base
     if specific_ids.present?
       julie_actions_with_events = JulieAction.select(:id, :event_id, :events, :calendar_id).find(specific_ids)
     else
-      julie_actions_with_events = JulieAction.select(:id, :event_id, :events, :calendar_id).where("event_id IS NOT NULL OR (events::text <> '[]'::text AND events IS NOT NULL) AND created_at >= ?", date)
+      julie_actions_with_events = JulieAction.select(:id, :event_id, :events, :calendar_id).where("event_id IS NOT NULL OR (events::text <> '[]'::text AND events IS NOT NULL)").where("created_at >= ?", date)
     end
 
     julie_actions_with_events_count = julie_actions_with_events.size
