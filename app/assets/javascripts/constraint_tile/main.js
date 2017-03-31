@@ -117,9 +117,6 @@ function ConstraintTile($selector, params) {
         }, 10);
     }
 
-
-
-
     var data = defaultData;
     if(params.data) data = params.data;
     constraintTile.setInitialData(data);
@@ -189,7 +186,9 @@ ConstraintTile.prototype.setInitialData = function(data) {
     constraintTile.startTimeEndTimeChanged();
 
     // Set timezone
-    constraintTile.$selector.find(".timezone").val(data.timezone);
+    if(data.timezone) {
+        constraintTile.$selector.find(".timezone").val(data.timezone);
+    }
 
     // Redraw dates container (calendar picker or days of week picker)
     constraintTile.redrawDatesContainer();
