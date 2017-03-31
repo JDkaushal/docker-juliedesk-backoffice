@@ -75,6 +75,80 @@ class JulieAction < ActiveRecord::Base
     end
   end
 
+  def self.reassociate_events_to_calendar_server_if_possible(date, specific_ids = [])
+    puts "Reassociating Julie Actions from #{date} | With specific ids: #{specific_ids}"
+
+    if specific_ids.present?
+      julie_actions_with_events = JulieAction.select(:id, :event_id, :events, :calendar_id).find(specific_ids)
+    else
+      julie_actions_with_events = JulieAction.select(:id, :event_id, :events, :calendar_id).where("event_id IS NOT NULL OR (events::text <> '[]'::text AND events IS NOT NULL) AND created_at >= ?", date)
+    end
+
+    julie_actions_with_events_count = julie_actions_with_events.size
+
+    puts "Found #{julie_actions_with_events_count} Julie Actions to process"
+
+    ja_with_events_not_found = []
+    successfully_updated_julie_actions = []
+
+    iteration = 0
+    julie_actions_with_events.each do |ja|
+      puts "Processing #{iteration += 1}/#{julie_actions_with_events_count} Julie Action (id: #{ja.id})"
+      current_ja_events = JSON.parse(ja.events)
+
+      if current_ja_events.present?
+        puts "Processing for multiple events"
+        # Manually created events stored in the 'events' attribute of the Julie Action under the form [{"id"=>"fiejrfoierjforeijfoerij/freferf==", "event_url"=>"", "calendar_id"=>"test@gmail.com", "calendar_login_username"=>"julie.gates@croscon.com", "timezone_id"=>"America/New_York"}]
+        events_ids = current_ja_events.map{|e| e['id']}
+
+        if events_ids.any?{|e_id| !e_id.is_number?}
+          puts "Will process"
+          response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: events_ids})
+          if response['events_data'].present? && response['events_data'].size == current_ja_events.size
+            fetched_events = response['events_data']
+            current_ja_events.each do |ev|
+              fetched_event = fetched_events.find{|f_e| f_e['provider_id'] == ev['id']}
+              ev['id'] = fetched_event['id']
+              ev['calendar_id'] = fetched_event['calendar_id']
+            end
+            puts "Events updated: #{current_ja_events.inspect}"
+            JulieAction.update(ja.id, events: current_ja_events)
+            successfully_updated_julie_actions.push(ja.id)
+          else
+            puts "Events not found"
+            ja_with_events_not_found.push(ja.id)
+          end
+        end
+      else
+        puts "Processing for single event"
+        # Event created from an ask availabilities flow, stored in the 'event_id' and 'calendar_id' attributes of the Julie Action under the form event_id: "fiejrfoierjforeijfoerij/freferf==" and calendar_id: "test@gmail.com"
+        event_id = ja.event_id
+        unless event_id.is_number?
+          puts "Will process"
+          response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: [event_id]})
+
+          if response['events_data'].present?
+            fetched_event = response['events_data'].first
+            # Cannot update a record when it was retrieved with a select it seems
+            puts "Event found: #{fetched_event.inspect}"
+            JulieAction.update(ja.id, event_id: fetched_event['id'], calendar_id: fetched_event['calendar_id'])
+            successfully_updated_julie_actions.push(ja.id)
+          else
+            puts "Event not found"
+            ja_with_events_not_found.push(ja.id)
+          end
+        end
+      end
+    end
+
+
+    {
+        ja_with_events_not_found: ja_with_events_not_found,
+        successfully_updated_julie_actions: successfully_updated_julie_actions
+
+    }
+  end
+
   def event_data
     message.messages_thread.event_data
   end

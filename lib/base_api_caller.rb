@@ -46,8 +46,15 @@ class BaseApiCaller
 
   def set_url_params(url, params)
     params.each do |k, v|
-      new_query_ar = URI.decode_www_form(url.query || '') << [k, v]
-      url.query = URI.encode_www_form(new_query_ar)
+      if v.is_a?(Array)
+        v.each do |value|
+          new_query_ar = URI.decode_www_form(url.query || '') << ["#{k}[]", v]
+          url.query = URI.encode_www_form(new_query_ar)
+        end
+      else
+        new_query_ar = URI.decode_www_form(url.query || '') << [k, v]
+        url.query = URI.encode_www_form(new_query_ar)
+      end
     end
     url
   end

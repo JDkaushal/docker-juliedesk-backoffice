@@ -578,8 +578,6 @@ ConstraintTile.prototype.getData = function() {
     }
     var timezone = constraintTile.$selector.find(".timezone").val();
 
-
-
     return {
         attendee_email: constraintTile.$selector.find(".constraint-attendee-email").val(),
         constraint_nature: constraintTile.getConstraintNature(),

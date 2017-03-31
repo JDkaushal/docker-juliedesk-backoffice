@@ -977,7 +977,6 @@ Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endT
     var result = [];
     var calendar = this;
 
-
     _.each(data, function(dataEntries, attendeeEmail) {
         var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
 

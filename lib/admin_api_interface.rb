@@ -1,12 +1,11 @@
-class CalendarServerInterface < BaseApiCaller
+class AdminApiInterface < BaseApiCaller
 
   ENDPOINTS = {
-      get_owner_event: {type: :get, url: '/api/v1/events/get_owner_event'}.freeze,
-      get_event: {type: :get, url: '/api/v1/events/get_event'}.freeze
+      get_owner_event: {type: :get, url: '/api/v1/calendar_proxy/event_get'}.freeze
   }.freeze
 
   def initialize
-    super(HTTP.auth(ENV['CALENDAR_SERVER_AUTHORIZATION']))
+    super(HTTP.auth(ENV['JULIEDESK_APP_API_KEY']))
   end
 
   def build_request(key, data = {})
@@ -16,7 +15,7 @@ class CalendarServerInterface < BaseApiCaller
   private
 
   def get_host_endpoint
-    ENV['CALENDAR_SERVER_BASE_PATH']
+    ENV['JULIEDESK_APP_BASE_PATH']
   end
 
   def compute_endpoint(key)

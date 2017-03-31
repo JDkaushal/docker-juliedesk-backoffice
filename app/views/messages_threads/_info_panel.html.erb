@@ -59,6 +59,7 @@
     window.lastAppointmentType = '';
 
     window.allowedAttendeesEmails = [];
+    window.contraintsTiles = [];
 
     var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
 
@@ -741,7 +742,7 @@
         var possibleAttendees = window.presentAttendees();
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
-        new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
+        var newConstraint = new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
             possible_attendees: possibleAttendees,
             locale: "<%= I18n.locale %>",
             timezone: window.threadAccount.default_timezone_id,
@@ -752,6 +753,10 @@
                 newConstraintTile(data, true);
             }
         });
+
+      window.contraintsTiles.push(newConstraint);
+
+      return newConstraint;
     }
 
     function redrawDifferentTimezoneWarner() {
