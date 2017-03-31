@@ -1126,7 +1126,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.client_emails_from_inbox
-    MessagesThread.in_inbox.map(&:client_emails).flatten.uniq
+    MessagesThread.includes(messages: :message_classifications).in_inbox.map(&:client_emails).flatten.uniq
   end
 
 
