@@ -110,7 +110,7 @@ class JulieAction < ActiveRecord::Base
               response = CalendarServerInterface.new.build_request(:get_event, {provider_ids: events})
               if response['events_data'].present? && response['events_data'].size == events.size
                 fetched_events = response['events_data']
-                current_ja_events.each do |ev|
+                current_ja_events.select{|eve| events.include?(eve['id'])}.each do |ev|
                   fetched_event = fetched_events.find{|f_e| f_e['provider_id'] == ev['id']}
                   ev['id'] = fetched_event['id']
                   ev['calendar_id'] = fetched_event['calendar_id']
@@ -123,7 +123,7 @@ class JulieAction < ActiveRecord::Base
 
           if success
             puts "Events updated: #{current_ja_events.inspect}"
-            JulieAction.update(ja.id, events: current_ja_events)
+            JulieAction.update(ja.id, events: current_ja_events.to_json)
             successfully_updated_julie_actions.push(ja.id)
           else
             puts "Events not found"
