@@ -1128,7 +1128,11 @@
     }
 
     function locationIsDefined() {
-      if(isCurrentAppointmentVirtual() && window.threadComputedData.call_instructions.target == "later")
+      if(isCurrentAppointmentVirtual()) {
+        if(window.threadComputedData.call_instructions.target == "later")
+          return true;
+      }
+      else if(window.threadComputedData.location_nature == 'Le client choisira plus tard')
         return true;
 
       return locationIsSettled();
