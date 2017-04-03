@@ -28,7 +28,10 @@
 
                 $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
                     // We only update the attendees count accordindly of adding or deleting them when we havent saved the count yet
-                    $scope.updateAttendeesCountSelect(args.attendees.slice());
+                    // Done so it does not override what we set earlier
+                    if($.isEmptyObject(window.threadComputedData.restaurant_booking_details)) {
+                      $scope.updateAttendeesCountSelect(args.attendees.slice());
+                    }
                 });
 
                 $scope.$watch('usingRestaurantBooking', function(newVal, oldVal) {
