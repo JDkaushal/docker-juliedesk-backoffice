@@ -43,7 +43,8 @@ module ApplicationHelper
       i.chr(Encoding::UTF_8)
     end
 
-    letter_regexp = /(?:#{(letters + accented_characters).join("|")})/
+    #letter_regexp = /(?:#{(letters + accented_characters).join("|")})/
+    letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
 
     inside_email_regexp = /(?:[a-zA-Z0-9]|\#)(?:[a-zA-Z0-9]|\.|\-|\+|\_)*@(?:[a-zA-Z0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
     inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\ |\'|\’|\>|\+|\.|[0-9]|\&|\@|\?|\/)*/
