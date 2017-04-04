@@ -47,7 +47,7 @@ module ApplicationHelper
     letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
 
     inside_email_regexp = /(?:[a-zA-Z0-9]|\#)(?:[a-zA-Z0-9]|\.|\-|\+|\_)*@(?:[a-zA-Z0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
-    inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\ |\'|\’|\>|\+|\.|[0-9]|\&|\@|\?|\/)*/
+    inside_name_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\-|\s|\u00A0|\'|\’|\>|\+|\.|[0-9]|\&|\@|\?|\/)*/
     email_regexp = /(?<email>#{inside_email_regexp})/
     name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
 
