@@ -143,7 +143,7 @@
       %>
     </div>
 
-    <button ng-hide="doNotAskSuggestionsMode" id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block" ng-disabled="eventActionsDisabled()">
+    <button ng-hide="doNotAskSuggestionsMode" id="invitation-already-sent-button" class="btn btn-success btn-brown btn-block">
       <%= I18n.t("info_box.invitation_already_sent") %>
     </button>
 
@@ -151,9 +151,5 @@
       <%= I18n.t("info_box.no_date_fits", count: JSON.parse(local_assigns[:julie_action].message_classification.date_times || "[]").length) %>
     </button>
     <div class="creating-event-message"></div>
-
-
   </div>
-
-
 </div>
