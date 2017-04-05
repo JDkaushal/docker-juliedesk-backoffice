@@ -190,6 +190,13 @@ ActiveRecord::Schema.define(version: 20170330131232) do
     t.datetime "updated_at"
   end
 
+  create_table "global_settings", force: true do |t|
+    t.string   "name",       null: false
+    t.string   "value",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -263,8 +270,8 @@ ActiveRecord::Schema.define(version: 20170330131232) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
-    t.text     "annotated_reply"
     t.json     "verified_dates_by_ai"
+    t.text     "annotated_reply"
     t.string   "language_level"
     t.boolean  "asap_constraint",            default: false
   end
@@ -278,7 +285,6 @@ ActiveRecord::Schema.define(version: 20170330131232) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "error"
-    t.string   "classification"
   end
 
   add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree
