@@ -159,7 +159,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
         if(window.featuresHelper.isFeatureActive('list_events_v2')) {
             start = _.first(currentBatches).format() + "T00:00:00Z";
             end = _.last(currentBatches).clone().add(1, 'w').format() + "T00:00:00Z";
-            calendar.fetchAllAccountsEvents(start, end);
+            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
         }
     }
     else {
@@ -218,7 +218,7 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
                 if(batchStart && batchEnd) {
                     start = batchStart.clone().add(0, 'w').format() + "T00:00:00Z";
                     end = batchEnd.clone().add(1, 'w').format() + "T00:00:00Z";
-                    calendar.fetchAllAccountsEvents(start, end);
+                    calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
                 }
             }
     }
