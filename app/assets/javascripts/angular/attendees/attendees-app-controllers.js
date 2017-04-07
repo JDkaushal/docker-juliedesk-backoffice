@@ -847,7 +847,8 @@
             window.otherAccountEmails = _.map(window.otherAttendeesWithAccount, function (attendee) {
                 return attendee.accountEmail;
             });
-            
+
+            window.addAllowedAttendeesEmails(window.otherAccountEmails);
             window.clientAccountTilesScope.fetchOtherAccounts();
 
             if(window.drawCalendarCallback)
