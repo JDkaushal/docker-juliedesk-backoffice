@@ -841,6 +841,8 @@
 
         $scope.exposeAttendeesToGlobalScope = function() {
             var threadAccountEmail = window.threadAccount.email;
+            var recipientsManager = $('#recipients-manager').scope();
+
             window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
                 return attendee.isPresent && attendee.isClient && attendee.accountEmail && attendee.accountEmail != threadAccountEmail;
             });
@@ -849,6 +851,10 @@
             });
 
             window.addAllowedAttendeesEmails(window.otherAccountEmails);
+
+            if(recipientsManager)
+                recipientsManager.initTokenInputs();
+
             window.clientAccountTilesScope.fetchOtherAccounts();
 
             if(window.drawCalendarCallback)
