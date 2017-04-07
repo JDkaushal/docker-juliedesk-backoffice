@@ -460,7 +460,8 @@ EventTile.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
     var eventTile = this;
 
     var $attendee = $(HandlebarsTemplates['event_tile/attendee'](attendee));
-    if(attendee.organizer)  $attendee.addClass("organizer");
+
+    if(attendee.is_organizer)  $attendee.addClass("organizer");
     eventTile.$selector.find(".attendees .attendees-list").append($attendee);
 
     eventTile.redrawAttendeesCountBadge();
