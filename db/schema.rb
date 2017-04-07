@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170330131232) do
+ActiveRecord::Schema.define(version: 20170407163501) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -166,7 +166,7 @@ ActiveRecord::Schema.define(version: 20170330131232) do
   create_table "event_title_reviews", force: true do |t|
     t.integer  "messages_thread_id"
     t.string   "status"
-    t.string   "title"
+    t.text     "title"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
