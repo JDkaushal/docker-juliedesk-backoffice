@@ -446,6 +446,7 @@
           .concat(window.threadAccount.email)
           // The thread main account aliases
           .concat(window.threadAccount.email_aliases)
+          .concat(window.otherAccountEmails)
           // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
           // So we can look for them with Jquery using the regex function '*=' on the href attribute value
           //.concat(_.map($( "a[href*='@']" ), function(node){ return $(node).text()}))
