@@ -134,7 +134,8 @@ describe MessagesThread, :type => :model do
                                                         :do_not_ask_suggestions => false,
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
-                                                        :asap_constraint => false
+                                                        :asap_constraint => false,
+                                                        :auto_follow_up_enabled=>false
                                                     })
       end
     end
@@ -179,7 +180,8 @@ describe MessagesThread, :type => :model do
                                                         :do_not_ask_suggestions => false,
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
-                                                        :asap_constraint => false
+                                                        :asap_constraint => false,
+                                                        :auto_follow_up_enabled=>false
                                                     })
       end
     end
@@ -227,7 +229,8 @@ describe MessagesThread, :type => :model do
                                                         :do_not_ask_suggestions => false,
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
-                                                        :asap_constraint => false
+                                                        :asap_constraint => false,
+                                                        :auto_follow_up_enabled=>false
                                                     })
       end
     end
@@ -276,7 +279,8 @@ describe MessagesThread, :type => :model do
                                                         :do_not_ask_suggestions => false,
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
-                                                        :asap_constraint => false
+                                                        :asap_constraint => false,
+                                                        :auto_follow_up_enabled=>false
                                                     })
       end
     end
@@ -326,7 +330,8 @@ describe MessagesThread, :type => :model do
                                                         :do_not_ask_suggestions => false,
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
-                                                        :asap_constraint => false
+                                                        :asap_constraint => false,
+                                                        :auto_follow_up_enabled=>false
                                                     })
       end
     end

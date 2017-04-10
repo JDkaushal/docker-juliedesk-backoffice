@@ -444,11 +444,17 @@ class MessagesThread < ActiveRecord::Base
           do_not_ask_suggestions: self.do_not_ask_suggestions?,
           language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal,
           trusted_attendees: self.trusted_attendees,
-          asap_constraint: last_message_classification.try(:asap_constraint).present?
+          asap_constraint: last_message_classification.try(:asap_constraint).present?,
+          auto_follow_up_enabled: self.auto_follow_up_enabled?
       }
     end
 
     @computed_data
+  end
+
+  # Auto follow up is enabled if at least one client on the thread has it enabled or if a previous follow up reminder date was set
+  def auto_follow_up_enabled?
+    self.clients.any?(&:auto_follow_up_enabled) || self.follow_up_reminder_date.present?
   end
 
   def trusted_attendees
