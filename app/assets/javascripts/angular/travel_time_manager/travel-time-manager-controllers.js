@@ -243,6 +243,13 @@
         $scope.fetchSchedulingEventMetadata = function() {
             var aiEventsMetadataManager = $('#ai_events_metadata_manager').scope();
 
+            // - - - - - - - DIRTY FIX DUE TO CHROME VERSION 57 BUG - - - - - //
+            // - TO REMOVE WHEN CHROM V.58 IS PUBLIC  - - - - - - - - - - - - //
+            if(!aiEventsMetadataManager.fetchSchedulingEventMetadata) {
+                console.log("Scope error due to Chrome v57.");
+                aiEventsMetadataManager = aiEventsMetadataManager.$$childTail;
+            }
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -//
             if(aiEventsMetadataManager) {
                 aiEventsMetadataManager.fetchSchedulingEventMetadata().then(function(response) {
                     $scope.schedulingEventProperties.aiMetadata = response.scheduling_event;

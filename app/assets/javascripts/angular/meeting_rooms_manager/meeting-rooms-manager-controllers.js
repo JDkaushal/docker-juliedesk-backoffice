@@ -712,7 +712,17 @@
                 };
 
                 $scope.getOverlappingEvents = function(eventsByMeetingRooms) {
-                    return $('#events_availabilities_methods').scope().getOverlappingEvents(eventsByMeetingRooms, {isMeetingRoom: true});
+                    var scop = $('#events_availabilities_methods').scope();
+
+                    // - - - - - - - DIRTY FIX DUE TO CHROME VERSION 57 BUG - - - - - //
+                    // - TO REMOVE WHEN CHROM V.58 IS PUBLIC  - - - - - - - - - - - - //
+                    if(!scop.getOverlappingEvents) {
+                        console.log("Scope error due to Chrome v57.");
+                        scop = scop.$$childHead;
+                    }
+                    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -//
+
+                    return scop.getOverlappingEvents(eventsByMeetingRooms, {isMeetingRoom: true});
                 };
 
                 $scope.getOverlappingEventsOld = function(eventsByMeetingRooms) {
