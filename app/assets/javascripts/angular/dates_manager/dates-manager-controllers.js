@@ -22,7 +22,15 @@
 
         $scope.doNotAskSuggestionsMode = false;
 
-        var aiDatesSuggestionManager = $('#ai_dates_suggestions_manager');
+        var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
+
+        // - - - - - - - DIRTY FIX DUE TO CHROME VERSION 57 BUG - - - - - //
+        // - TO REMOVE WHEN CHROM V.58 IS PUBLIC  - - - - - - - - - - - - //
+        if(!aiDatesSuggestionManagerScope.fetchSuggestedDatesByAi) {
+            console.log("Scope error due to Chrome v57.");
+            aiDatesSuggestionManagerScope = aiDatesSuggestionManagerScope.$$childHead;
+        }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -//
 
         $scope.init = function() {
             $scope.attachEventsToDom();
@@ -198,7 +206,7 @@
                     $scope.showAiLoader = true;
                     $scope.displayDatesSuggestionManager = true;
                     $scope.$apply();
-                    aiDatesSuggestionManager.scope().fetchSuggestedDatesByAi(fetchParams).then(function(response) {
+                    aiDatesSuggestionManagerScope.fetchSuggestedDatesByAi(fetchParams).then(function(response) {
                         var data = response.data;
 
                         data.suggested_dates = _.sortBy(data.suggested_dates);
@@ -645,7 +653,7 @@
                     classification: window.classification,
                 };
 
-                aiDatesSuggestionManager.scope().sendLearningData(data);
+                aiDatesSuggestionManagerScope.sendLearningData(data);
             }
             
         };
