@@ -730,8 +730,8 @@ CommonHelpers.formatDateTimeRangeInText = function(startDate, endDate, locale, t
 
     var formattedStartDate, formattedEndDate;
     if(allDay) {
-        mStartDate = moment(startDate).utc().locale(locale);
-        mEndDate = moment(endDate).utc().locale(locale);
+        mStartDate = moment(startDate).locale(locale);
+        mEndDate = moment(endDate).locale(locale);
         mEndDate.add(-1, 'd');
 
         formattedStartDate = mStartDate.format(localize("email_templates.common.simplified_date_format"));
