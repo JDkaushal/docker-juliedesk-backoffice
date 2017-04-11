@@ -13,7 +13,7 @@ set :deploy_to, '/home/appuser/apps/juliedesk_backoffice'
 
 set :scm, :git
 set :user, 'appuser'
-set :assets_roles, [:web, :app]
+set :assets_roles, [:web, :app, :test]
 
 set :linked_dirs, %w{log tmp/pids script}
 set :linked_files, %w{config/database.yml .env}
@@ -42,7 +42,9 @@ set :rvm_ruby_version, '2.2.0'
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for keep_releases is 5
-# set :keep_releases, 5
+# set :keep_releases, 2
+
+set :keep_assets, 1
 
 after :deploy, :restart_server
 after :deploy, :update_crontab
