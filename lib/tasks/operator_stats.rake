@@ -29,7 +29,7 @@ namespace :operator_stats do
     end
 
     puts "Processing team stats..."
-    DATA_CACHE_REDIS["operator_stats_team"] = Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).map(&:id), flagged_messages_thread_ids).to_json
+    DATA_CACHE_REDIS["operator_stats_team"] = Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).map(&:id), flagged_messages_thread_ids).to_json
     puts "Processed in #{Time.now - current_time}."
     current_time = Time.now
 

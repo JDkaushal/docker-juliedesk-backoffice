@@ -93,7 +93,7 @@ class Review::OperatorsController < ReviewController
         )
     ) / counts_by_operator.map{|c| c['count']}.inject(0) { |k, v| k + v }
 
-    operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).sort_by(&:level).map { |operator|
+    operators_data = Operator.where(enabled: true).where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).sort_by(&:level).map { |operator|
       actions_count = counts_by_operator.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
       errors_count = counts_by_operator_errors.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')
       reviewed_count = counts_by_operator_reviewed.find{|c| c['operator_id'] == operator.id}.try(:[], 'count')

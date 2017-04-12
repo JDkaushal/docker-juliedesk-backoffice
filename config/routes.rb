@@ -190,6 +190,7 @@ Rails.application.routes.draw do
       post "/accounts/change_account_main_email", controller: :accounts, action: :change_account_main_email
       post "/messages_threads/parse_ticket", controller: :messages_threads, action: :parse_ticket
       post "/messages_threads/check_missing_messages", controller: :messages_threads, action: :check_missing_messages
+      post "/client_contacts/ai_get_company_name", controller: :client_contacts, action: :ai_get_company_name
       get "/messages_threads/inbox_client_emails", controller: :messages_threads, action: :inbox_client_emails
 
     end

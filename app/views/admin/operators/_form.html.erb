@@ -26,6 +26,7 @@
       <%= f.select(:privilege, [
                                      ["Operator level 1", Operator::PRIVILEGE_OPERATOR],
                                      ["Operator level 2", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1],
+                                     ["Operator level 3", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3],
                                      ["Operator support", Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2],
                                      ["Admin", Operator::PRIVILEGE_ADMIN]
                              ], {}, class: "form-control") %>

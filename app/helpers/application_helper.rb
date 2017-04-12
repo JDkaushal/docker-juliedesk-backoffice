@@ -164,7 +164,7 @@ module ApplicationHelper
     incoming_messages_count = incoming_messages.select(:server_message_id).distinct.count
     real_threads_count = messages.select(:messages_thread_id).distinct.count
 
-    team_operator_ids = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).select(:id).map(&:id)
+    team_operator_ids = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).select(:id).map(&:id)
 
 
     flagged_server_messages_ids = EmailServer.search_messages({
@@ -221,7 +221,7 @@ module ApplicationHelper
             "Error rate": "#{(errors_rate * 100.0).round(2)}%"
         },
         "Other": {
-          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
+          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
           "Missing request_at count": all_messages.count - messages.count,
         }
     }

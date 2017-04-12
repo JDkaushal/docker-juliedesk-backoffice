@@ -46,6 +46,13 @@ function flagMessage($element, $email) {
         data['labels_to_remove'] = [];
     }
 
+    var currentOperatorPrivilege = window.getCurrentOperatorPrivilegeLevel();
+
+    if(!toFlag && ['admin', 'super_operator_level_2'].indexOf(currentOperatorPrivilege) == -1) {
+      alert('Action interdite');
+      return;
+    }
+
     $.ajax({
         type: "POST",
         url: url,

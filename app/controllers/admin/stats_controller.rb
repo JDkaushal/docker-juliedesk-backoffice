@@ -31,7 +31,7 @@ class Admin::StatsController < AdminController
                                                                   limit: 1000
                                                               })['messages']['ids']
 
-    team_operator_ids = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2]).select(:id).map(&:id)
+    team_operator_ids = Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2,Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).select(:id).map(&:id)
 
     flagged_messages_thread_ids = Message.where(server_message_id: flagged_server_messages_ids).select(:messages_thread_id).distinct.map(&:messages_thread_id)
 

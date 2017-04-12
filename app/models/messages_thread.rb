@@ -66,11 +66,15 @@ class MessagesThread < ActiveRecord::Base
       messages_threads.reject!{ |mt|
         self.basic_operator_check_thread_to_reject(mt)
       }
-    elsif privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
+    elsif privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2 || privilege == Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3
       messages_threads.reject!{ |mt|
         self.super_operator_level_1_check_thread_to_reject(mt)
       }
     end
+  end
+
+  def get_secondary_clients_emails
+    self.clients_in_recipients - [self.account_email]
   end
 
   def deassociate_event

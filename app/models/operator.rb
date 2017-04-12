@@ -8,8 +8,8 @@ class Operator < ActiveRecord::Base
   PRIVILEGE_OPERATOR = nil
   PRIVILEGE_ADMIN = "admin"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_1 = "super_operator_level_1"
+  PRIVILEGE_SUPER_OPERATOR_LEVEL_3 = "super_operator_level_3"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
-
 
   def compute_daily_stats(ref_date = Time.now)
     now = ref_date.in_time_zone("Indian/Antananarivo")
@@ -64,13 +64,14 @@ class Operator < ActiveRecord::Base
     {
         PRIVILEGE_OPERATOR => "Operator level 1",
         PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => "Operator level 2",
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_3 => "Operator level 3",
         PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => "Operator level support",
         PRIVILEGE_ADMIN => "Admin"
     }
   end
 
   def stars
-    if privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_1
+    if privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_1 || privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_3
       "*"
     elsif privilege == PRIVILEGE_SUPER_OPERATOR_LEVEL_2
       "**"
@@ -80,8 +81,9 @@ class Operator < ActiveRecord::Base
   def level
     {
       PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => 10,
-      PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 100,
-      PRIVILEGE_ADMIN => 1000
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_3 => 100,
+      PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 1000,
+      PRIVILEGE_ADMIN => 10000
     }[privilege] || 0
   end
 
@@ -90,6 +92,7 @@ class Operator < ActiveRecord::Base
         PRIVILEGE_OPERATOR => 1,
         PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => 2,
         PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => 3,
+        PRIVILEGE_SUPER_OPERATOR_LEVEL_3 => 4,
         PRIVILEGE_ADMIN => "Admin"
     }[privilege]
   end
