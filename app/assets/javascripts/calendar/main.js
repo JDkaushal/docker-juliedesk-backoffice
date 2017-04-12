@@ -180,12 +180,12 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
 
                 if(!constraintsStartDates[constraintNature]) constraintsStartDates[constraintNature] = [];
 
-                if (data.start_time)
-                    constraintsStartDates[constraintNature].push(moment(startTime));
                 if(dataEntry.dates) {
                     _.each(dataEntry.dates, function(date) {
                         constraintsStartDates[constraintNature].push(moment(date));
                     });
+                } else if(data.start_time) {
+                    constraintsStartDates[constraintNature].push(moment(startTime));
                 }
             });
         });
@@ -193,7 +193,7 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
         _.each(constraintNatures, function(nature) {
             var minStartDate = null;
             if(constraintsStartDates[nature]) {
-                minStartDate = _.sortBy(constraintsStartDates[nature], function(d) { return d })[0];
+                minStartDate = _.sortBy(constraintsStartDates[nature], function(d) { return d.valueOf(); })[0];
                 if(minStartDate && minStartDate > initialStartDate) initialStartDate = minStartDate;
             }
         });
