@@ -172,7 +172,7 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
 
     if(calendar.initialData.constraintsData) {
         // constraintNatures order is important
-        var constraintsStartDates = {}, constraintNatures = ["prefers"];
+        var constraintsStartDates = {}, constraintNatures = ["prefers", "can"];
         _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
             _.each(dataEntries, function (dataEntry){
                 var constraintNature = dataEntry.constraint_nature;
@@ -198,23 +198,26 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
             }
         });
 
-        var allEvents = [];
-        _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
-            var mNow = moment();
-            var mOneYearFromNow = moment().add(1, 'y');
-            var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
-            _.each(events.cant, function (event) {
-                allEvents.push(event);
-            });
-        });
+        // We process the 'can' constraints on the same way than the 'prefers' one
+        // Because it created problems with the generated "can't" events
 
-        var i = 0;
-        while (conflictingEvent = _.find(allEvents, function (event) {
-            return event.start <= initialStartDate && event.end > initialStartDate;
-        })) {
-            if((++i) >= 100) break;
-            initialStartDate = conflictingEvent.end;
-        }
+        // var allEvents = [];
+        // _.each(calendar.initialData.constraintsData, function (dataEntries, attendeeEmail) {
+        //     var mNow = moment();
+        //     var mOneYearFromNow = moment().add(1, 'y');
+        //     var events = ConstraintTile.getEventsFromData(dataEntries, mNow, mOneYearFromNow);
+        //     _.each(events.cant, function (event) {
+        //         allEvents.push(event);
+        //     });
+        // });
+        //
+        // var i = 0;
+        // while (conflictingEvent = _.find(allEvents, function (event) {
+        //     return event.start <= initialStartDate && event.end > initialStartDate;
+        // })) {
+        //     if((++i) >= 100) break;
+        //     initialStartDate = conflictingEvent.end;
+        // }
     }
 
     // When in an ask_availabilities flow, we will load the calendar from the currently selected date to verify
