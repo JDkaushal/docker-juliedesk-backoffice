@@ -392,7 +392,7 @@ class MessagesThreadsController < ApplicationController
         users_access_lost_cache = Account.users_with_lost_access
 
         @messages_thread.each do |mt|
-          mt.check_if_blocked(users_access_lost_cache)
+          mt.check_if_blocked(users_access_lost_cache, accounts_cache)
           mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
         end
 
