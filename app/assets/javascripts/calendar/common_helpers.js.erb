@@ -401,8 +401,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             saveAttendeesStaging(request.event_id, realAttendees);
         }
 
-      if(moment(request.start).isBefore(moment())) {
-        alert('You cannot create an event that start before the present Date');
+      if(moment(request.end).isBefore(moment())) {
+        alert('You cannot edit an event that end before the present Date');
       } else {
         if(window.currentEventTile) {
           var oldEvent = window.currentEventTile.event;
