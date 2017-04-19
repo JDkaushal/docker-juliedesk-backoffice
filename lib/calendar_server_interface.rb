@@ -19,7 +19,7 @@ class CalendarServerInterface < BaseApiCaller
     ENV['CALENDAR_SERVER_BASE_PATH']
   end
 
-  def compute_endpoint(key)
+  def compute_endpoint(key, data)
     endpoint_infos = ENDPOINTS[key]
     raise AIEndPointUnknown if endpoint_infos.blank?
 

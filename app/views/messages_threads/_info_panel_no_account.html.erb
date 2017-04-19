@@ -48,13 +48,17 @@
     $( document ).tooltip();
 
     initAllowedAttendeesEmails();
-  })
+  });
 
 
     function extractEmails(text)
     {
       return text.match(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi);
     };
+
+    function allowedAttendeesAreComputed() {
+      return window.threadComputedData.allowed_attendees && window.threadComputedData.allowed_attendees.length > 0;
+    }
 
     window.addAllowedAttendeesEmailsFromCurrentNotes = function(currentNotes) {
       var emails = extractEmails(currentNotes);
@@ -79,14 +83,18 @@
 
     // Compute the list of allowed attendees from their emails
     window.initAllowedAttendeesEmails = function() {
-      var extendedMessages = $('.email.extended');
-      var notFromMeMessages = $('.email:not(".from-me")');
-      // We extend every emails before computing the allowed attendees because el.innerText does not return the same formatting for the text in both cases
-      notFromMeMessages.addClass('extended');
 
-      var messageBodies = $.map($('#messages_container .email:not(".from-me") .body, .gmail_quote,blockquote, .email:not(".from-me") .ics-preview'), function(el, _) { return el.innerText }).join("\n");
-      window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
-      // The thread main account email
+      if(allowedAttendeesAreComputed()) {
+        window.allowedAttendeesEmails = window.threadComputedData.allowed_attendees;
+      } else {
+        var extendedMessages = $('.email.extended');
+        var notFromMeMessages = $('.email:not(".from-me")');
+        // We extend every emails before computing the allowed attendees because el.innerText does not return the same formatting for the text in both cases
+        notFromMeMessages.addClass('extended');
+
+        var messageBodies = $.map($('#messages_container .email:not(".from-me") .body, .gmail_quote,blockquote, .email:not(".from-me") .ics-preview'), function(el, _) { return el.innerText }).join("\n");
+        window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
+          // The thread main account email
 
           // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
           // So we can look for them with Jquery using the regex function '*=' on the href attribute value
@@ -98,12 +106,12 @@
           //.concat(_.map($('.attendees-container .attendees .attendee-email'), function(attendee) { return $(attendee).text().trim()}))
           .concat(['hello@juliedesk.com']);
 
+        notFromMeMessages.removeClass('extended');
+        extendedMessages.addClass('extended');
 
-      notFromMeMessages.removeClass('extended');
-      extendedMessages.addClass('extended');
-
-      window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase().replace(/'/g, ""); });
-      window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+        window.allowedAttendeesEmails = _.map(window.allowedAttendeesEmails, function(email) { return email.toLowerCase().replace(/'/g, ""); });
+        window.allowedAttendeesEmails = _.uniq(window.allowedAttendeesEmails);
+      }
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {

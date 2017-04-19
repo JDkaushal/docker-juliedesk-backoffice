@@ -148,6 +148,7 @@ GEM
     http_parser.rb (0.6.0)
     httpclient (2.8.0)
     i18n (0.7.0)
+    icalendar (2.4.1)
     jasmine (2.4.0)
       jasmine-core (~> 2.4)
       phantomjs
@@ -342,6 +343,7 @@ DEPENDENCIES
   flamegraph
   handlebars_assets
   http
+  icalendar
   jasmine
   jquery-minicolors-rails
   jquery-rails

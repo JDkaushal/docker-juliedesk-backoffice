@@ -11,6 +11,10 @@ class Message < ActiveRecord::Base
   
   attr_accessor :server_message
 
+  def compute_allowed_attendees(julie_alias_emails)
+    self.allowed_attendees = AllowedAttendees::MessageManager.new(self, self.server_message, julie_alias_emails).extract_allowed_attendees
+  end
+
   def self.delegate_to_julia(message, julie_aliases_cache)
     Ai::EmailProcessing::Processor.new(message.id, nil).delay.process
   end
@@ -505,6 +509,7 @@ class Message < ActiveRecord::Base
 
         server_thread['messages'].each do |server_message|
           message = Message.find_by_server_message_id server_message['id']
+
           message_recipients = Message.generate_reply_all_recipients(server_message, julie_aliases_emails)
 
           thread_recipients.merge((message_recipients[:from] + message_recipients[:to] + message_recipients[:cc]).map{|recipient| recipient[:email]})
@@ -515,10 +520,9 @@ class Message < ActiveRecord::Base
                                                 reply_all_recipients: message_recipients.to_json,
                                                 from_me: server_message['from_me']
 
+            m.server_message = server_message
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
-
-
             should_call_conscience = false
 
             unless m.from_me
@@ -559,11 +563,23 @@ class Message < ActiveRecord::Base
               ConscienceWorker.enqueue m.id
             end
 
+            m.compute_allowed_attendees(julie_aliases_emails)
+            m.save
+          else
+            # We already have the message in DB, we will make sure that we computed the allowed attendees for it (for retro compatibility purposes)
+            if message.allowed_attendees.blank?
+              # For compute_allowed_attendees
+              message.server_message = server_message
+
+              message.compute_allowed_attendees(julie_aliases_emails)
+              message.save
+            end
           end
         end
 
         messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
         messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
+        messages_thread.compute_allowed_attendees
 
         computed_recipients_changed = messages_thread.computed_recipients_changed?
 
@@ -618,6 +634,10 @@ class Message < ActiveRecord::Base
         if messages_thread.should_reprocess_linked_attendees(computed_recipients_changed)
           messages_thread.compute_linked_attendees(accounts_cache)
         end
+
+        # Need the accounts candidates to have been computed before doing it
+        messages_thread.compute_allowed_attendees
+        messages_thread.save
       end
     end
 

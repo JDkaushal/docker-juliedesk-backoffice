@@ -13,7 +13,7 @@ class BaseApiCaller
   end
 
   def build_request(key, data = {})
-    endpoint_infos = get_endpoint(key)
+    endpoint_infos = get_endpoint(key, data)
     type = endpoint_infos[:type]
     url = URI.parse(endpoint_infos[:url])
 
@@ -33,14 +33,14 @@ class BaseApiCaller
 
   private
 
-  def get_endpoint(key)
-    endpoint_infos = compute_endpoint(key)
+  def get_endpoint(key, data)
+    endpoint_infos = compute_endpoint(key, data)
     raise EndPointUnknown if endpoint_infos.blank?
 
     endpoint_infos
   end
 
-  def compute_endpoint(key)
+  def compute_endpoint(key, data)
     raise 'Not implemented on the parent class'
   end
 

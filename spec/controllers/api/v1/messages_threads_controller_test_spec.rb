@@ -56,7 +56,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "account_request_auto_email_sent"=>false,
                                                       "account_association_merging_possible" => false,
                                                       "linked_attendees"=>{},
-                                                      "clients_in_recipients"=>[]
+                                                      "clients_in_recipients"=>[],
+                                                      "allowed_attendees"=>[]
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
@@ -69,7 +70,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                         "reply_all_recipients" => m.reply_all_recipients,
                                                         "from_me" => m.from_me,
                                                         "server_message_id" => m.server_message_id,
-                                                        "request_at" => nil
+                                                        "request_at" => nil,
+                                                        "allowed_attendees"=>[]
                                                     }
                                                   },
                                                   "messages_classifications" => @mt1.messages.map { |m|

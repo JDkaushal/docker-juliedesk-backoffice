@@ -135,7 +135,8 @@ describe MessagesThread, :type => :model do
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
-                                                        :auto_follow_up_enabled=>false
+                                                        :auto_follow_up_enabled=>false,
+                                                        :allowed_attendees=>[]
                                                     })
       end
     end
@@ -181,7 +182,8 @@ describe MessagesThread, :type => :model do
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
-                                                        :auto_follow_up_enabled=>false
+                                                        :auto_follow_up_enabled=>false,
+                                                        :allowed_attendees=>[]
                                                     })
       end
     end
@@ -230,7 +232,8 @@ describe MessagesThread, :type => :model do
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
-                                                        :auto_follow_up_enabled=>false
+                                                        :auto_follow_up_enabled=>false,
+                                                        :allowed_attendees=>[]
                                                     })
       end
     end
@@ -280,7 +283,8 @@ describe MessagesThread, :type => :model do
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
-                                                        :auto_follow_up_enabled=>false
+                                                        :auto_follow_up_enabled=>false,
+                                                        :allowed_attendees=>[]
                                                     })
       end
     end
@@ -331,7 +335,8 @@ describe MessagesThread, :type => :model do
                                                         :language_level => :normal,
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
-                                                        :auto_follow_up_enabled=>false
+                                                        :auto_follow_up_enabled=>false,
+                                                        :allowed_attendees=>[]
                                                     })
       end
     end

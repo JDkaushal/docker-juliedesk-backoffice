@@ -48,4 +48,6 @@ Rails.application.configure do
 
   ENV['STAGING_APP'] = nil
   ENV['REDIS_URL_FOR_ACCOUNTS_CACHE'] = 'redis://127.0.0.1/0'
+
+  ENV['EMAIL_SERVER_BASE_PATH'] = 'http://test.com'
 end

@@ -850,7 +850,9 @@
                 return attendee.accountEmail;
             });
 
-            window.addAllowedAttendeesEmails(window.otherAccountEmails);
+            if(allowedAttendeesAreComputed && !allowedAttendeesAreComputed()) {
+                window.addAllowedAttendeesEmails(window.otherAccountEmails);
+            }
 
             if(recipientsManager)
                 recipientsManager.initTokenInputs();

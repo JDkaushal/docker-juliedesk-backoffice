@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170407163501) do
+ActiveRecord::Schema.define(version: 20170419150939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(version: 20170407163501) do
     t.boolean  "from_me",              default: false
     t.integer  "server_message_id"
     t.datetime "request_at"
+    t.string   "allowed_attendees",    default: [],    array: true
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
@@ -341,6 +342,7 @@ ActiveRecord::Schema.define(version: 20170407163501) do
     t.json     "linked_attendees",                     default: {}
     t.string   "clients_in_recipients",                default: [],    array: true
     t.boolean  "has_been_sent_to_admin",               default: false
+    t.string   "allowed_attendees",                    default: [],    array: true
   end
 
   create_table "operator_actions", force: true do |t|

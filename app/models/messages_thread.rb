@@ -451,11 +451,17 @@ class MessagesThread < ActiveRecord::Base
           language_level: last_message_classification.try(:language_level) || self.account.try(:language_level) || :normal,
           trusted_attendees: self.trusted_attendees,
           asap_constraint: last_message_classification.try(:asap_constraint).present?,
-          auto_follow_up_enabled: self.auto_follow_up_enabled?
+          auto_follow_up_enabled: self.auto_follow_up_enabled?,
+          # We add in front the julie aliases emails and the services emails (hello@juliedesk.com)
+          allowed_attendees: self.allowed_attendees
       }
     end
 
     @computed_data
+  end
+
+  def compute_allowed_attendees
+    self.allowed_attendees = AllowedAttendees::ThreadManager.new(self).compute_allowed_attendees
   end
 
   # Auto follow up is enabled if at least one client on the thread has it enabled or if a previous follow up reminder date was set

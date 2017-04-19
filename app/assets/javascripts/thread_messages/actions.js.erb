@@ -150,7 +150,7 @@ function IcsManager() {
                 that.icsEntities.push(parsedIcs);
                 that.generatePreview($email, parsedIcs);
 
-                if(window.refreshAllowedAttendeesEmails)
+                if(window.refreshAllowedAttendeesEmails && allowedAttendeesAreComputed && !allowedAttendeesAreComputed())
                   window.refreshAllowedAttendeesEmails();
             });
 
