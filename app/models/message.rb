@@ -599,9 +599,16 @@ class Message < ActiveRecord::Base
           secondary_clients = messages_thread.secondary_clients
           if secondary_clients.present?
             secondary_clients.each do |secondary_client|
+              secondary_client_company = secondary_client.company
+
+              if secondary_client_company.present?
+                # Need to normalize the company names for data aggregation in customer IO and mixpanel
+                secondary_client_company = I18n.transliterate(secondary_client_company).upcase
+              end
+
               ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client.email, {
                   bo_thread_id: messages_thread.id,
-                  'Company Name' => secondary_client.company
+                  'Company Name' => secondary_client_company
               })
             end
           end
