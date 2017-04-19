@@ -596,11 +596,12 @@ class Message < ActiveRecord::Base
               julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
           })
 
-          secondary_clients_emails = messages_thread.get_secondary_clients_emails
-          if secondary_clients_emails.present?
-            secondary_clients_emails.each do |secondary_client_email|
-              ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client_email, {
-                  bo_thread_id: messages_thread.id
+          secondary_clients = messages_thread.secondary_clients
+          if secondary_clients.present?
+            secondary_clients.each do |secondary_client|
+              ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client.email, {
+                  bo_thread_id: messages_thread.id,
+                  'Company Name' => secondary_client.company
               })
             end
           end

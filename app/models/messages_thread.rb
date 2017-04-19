@@ -506,6 +506,14 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def secondary_clients
+    unless @secondary_clients
+      @secondary_clients = self.get_secondary_clients_emails.map{|client_email| Account.create_from_email(client_email)}.compact
+    end
+
+    @secondary_clients
+  end
+
   def clients
     # We compact it because clients can become deactivated in the mean time, so they will not be in the cache anymore
     unless @clients
