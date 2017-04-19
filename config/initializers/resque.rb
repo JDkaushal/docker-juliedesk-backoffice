@@ -65,7 +65,8 @@ module Resque
             sleep interval
           end
 
-        rescue Redis::CannotConnectError => e
+
+        rescue Redis::CannotConnectError, Redis::TimeoutError => e
           reconnect_extended if will_fork?
           if job.present?
             perform(job, &block)
