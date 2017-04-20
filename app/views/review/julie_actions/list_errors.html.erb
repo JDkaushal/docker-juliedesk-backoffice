@@ -5,6 +5,16 @@
 
   <h4 ng-show="eventType">Event type: {{ eventType }}</h4>
 
+  <h4>All-day events restrictions
+    <select ng-model="all_day_mode">
+      <option value="no_all_day_event_on_range">No all-day events on total horizon</option>
+      <option value="no_all_day_event_on_horizon">No all-day events on suggestions horizon</option>
+      <option value="no_free_all_day_event_on_range">No free all-day events on suggestions horizon</option>
+      <option value="no_all_day_event_on_suggestions">No free all-day events on suggestions days</option>
+      <option value="">No restriction</option>
+    </select>
+  </h4>
+
   <div class="loading-box-on-top" ng-show="loading">Loading...</div>
 
   <div class="btn-group" role="group" aria-label="...">

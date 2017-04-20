@@ -24,6 +24,7 @@
         $scope.now = moment();
         $scope.start = $scope.now.clone().startOf('isoWeek');
         $scope.eventType = "call";
+        $scope.all_day_mode = "no_all_day_event_on_range";
 
 
         $scope.previousWeekStart = function() {
@@ -50,13 +51,20 @@
             return end > $scope.now ? $scope.now : end;
         };
 
+        $scope.$watch('all_day_mode', function(previousValue, newValue) {
+            if(newValue != previousValue) {
+                $scope.fetch();
+            }
+        });
+
 
         $scope.fetch = function() {
             $scope.loading = true;
             conscienceApi.suggestedDatesListErrorsRequest({
                 start: $scope.start.format(),
                 end: $scope.end().format(),
-                event_type: $scope.eventType
+                event_type: $scope.eventType,
+                all_day_mode: $scope.all_day_mode
             }).then(function(response) {
 
                 $http.post("/review/julie_actions/list_comments", {
