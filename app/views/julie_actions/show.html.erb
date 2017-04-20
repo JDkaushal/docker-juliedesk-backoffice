@@ -92,33 +92,6 @@
 
     var datesSuggestionManager = $('#dates-suggestion-manager');
 
-    /*elsif @julie_action.action_nature == JulieAction::JD_ACTION_POSTPONE_EVENT
-    window.afterEventFetched = function () {
-        // Add attendees as recipients if not present already
-        var toRecipients = _.map($("#recipients-to-input").tokenInput("get"), function (elt) {
-            return elt.name;
-        });
-        var ccRecipients = _.map($("#recipients-cc-input").tokenInput("get"), function (elt) {
-            return elt.name;
-        });
-
-        _.each(window.currentEventData.attendees, function (attendee) {
-            if (toRecipients.indexOf(attendee.email) == -1 && ccRecipients.indexOf(attendee.email) == -1) {
-                $("#recipients-to-input").tokenInput("add", {name: attendee.email});
-            }
-        });
-
-        $("input#quote_message").removeAttr("checked");
-        window.currentCalendar.addForbiddenEvents([
-            {
-                title: "TO POSTPONE",
-                start: window.currentEventData.start.dateTime,
-                end: window.currentEventData.end.dateTime
-            }
-        ]);
-        redrawReplyText();
-    };
-*/
 
     <% initial_recipients = @message.initial_recipients(only_reply_all: @julie_action.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS) %>
 

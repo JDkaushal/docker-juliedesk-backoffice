@@ -216,6 +216,17 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         if(window.featuresHelper.isFeatureActive("list_events_v2"))
           listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
 
+        var timeTravelManager = $('#travel_time_calculator').scope();
+        var appointment = null;
+        var calculateTravelTime = !!(window.featuresHelper.isFeatureActive("travel_time_v2") && timeTravelManager && window.getCurrentAppointment());
+
+        if(calculateTravelTime) {
+          appointment = {
+            kind: window.getCurrentAppointment().kind,
+            location: window.getCurrentAddress()
+          };
+        }
+
         $.ajax({
             url: listEventsUrl,
             // We need to use a post request here because when there are many meeting rooms the request entity becomes too large
@@ -237,7 +248,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 // and display the duration that are busy on every single one
                 virtual_resources_to_show: request.virtual_resources_to_show,
                 parallelize: true,
-                linked_attendees: request.linked_attendees
+                linked_attendees: request.linked_attendees,
+                calculate_travel_time: calculateTravelTime,
+                appointment: appointment
             },
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);

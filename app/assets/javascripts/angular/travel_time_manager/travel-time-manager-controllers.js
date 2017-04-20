@@ -296,24 +296,39 @@
 
                 $scope.resetForClient(email);
                 $scope.setEvents(email, events);
-                $scope.computeReferenceLocationForClient(email);
 
-                $scope.selectEventsToCompute(email);
-
-                if( ( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0 ) {
-                    $scope.calculate(email);
-                } else {
-                    // This method is called by subfunctions of 'calculate' at the end of the process to display default time
-                    // to events for which Google could not calculate a travel time
-
-                    // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
-                    $scope.computeDefaultCommutingTime(email);
+                if(!window.featuresHelper.isFeatureActive("travel_time_v2")) {
+                    $scope.computeReferenceLocationForClient(email);
+                    $scope.selectEventsToCompute(email);
+                }
+                else {
+                    _.each($scope.events[email], function(event) {
+                        $scope.buildInfoEvent(email, 'travelTime', event, 0, event.computed_location);
+                    });
                     $scope.addTravelTimeEventsToCalendar(email);
-                    $scope.displayDefaultAppointmentDelay(email);
+                    $scope.addDefaultDelayEventsToCalendar(email);
+
+                    $scope.currentlyProcessingClient[email] = false;
                     $scope.setClientProcessed(email);
-                    // $scope.computeDefaultAppointmentDelay(email);
-                    // $scope.addDefaultDelayEventsToCalendar(email);
-                    //$scope.addDefaultDelayEventsToCalendar(email);
+                }
+
+
+                if(!window.featuresHelper.isFeatureActive("travel_time_v2")) {
+                    if (( (window.threadComputedData.location_coordinates && window.threadComputedData.location_coordinates.length > 0) || ($scope.referenceLocation[email]) ) && $scope.eventsToCompute[email].length > 0) {
+                        $scope.calculate(email);
+                    } else {
+                        // This method is called by subfunctions of 'calculate' at the end of the process to display default time
+                        // to events for which Google could not calculate a travel time
+
+                        // We call it here when we don't calculate travel time (because no location has been set in the thread form or it is invalid)
+                        $scope.computeDefaultCommutingTime(email);
+                        $scope.addTravelTimeEventsToCalendar(email);
+                        $scope.displayDefaultAppointmentDelay(email);
+                        $scope.setClientProcessed(email);
+                        // $scope.computeDefaultAppointmentDelay(email);
+                        // $scope.addDefaultDelayEventsToCalendar(email);
+                        //$scope.addDefaultDelayEventsToCalendar(email);
+                    }
                 }
             } else {
                 $scope.processActionsforClient[email].push([clientPrefs, events])
@@ -438,7 +453,6 @@
             $scope.pendingGoogleMatrixCall[email] = 0;
             $scope.destinationsResults[email] = {};
 
-            //var groupedEvents = $scope.decomposeEventsIntoFittingGroups(events);
             var allDestinations = $scope.getAllDestinations(events);
 
             _.each(allDestinations, function(destination) {
@@ -781,8 +795,16 @@
             return currentStartDate.isBetween(eventStartDate, eventEndDate, 'minute', '(]');
         };
 
-        // Modified it beyond initial expectations, should probably refactor it by splitting logic into separate functions for each event types (travelTime and defaultDelay)
         $scope.buildInfoEvent = function(email, eventType, event, timeDuration, destination) {
+            if(window.featuresHelper.isFeatureActive("travel_time_v2")){
+                $scope.buildInfoEventV2(email, eventType, event, timeDuration, destination);
+            }
+            else {
+                $scope.buildInfoEventV1(email, eventType, event, timeDuration, destination);
+            }
+        }
+
+        $scope.buildInfoEventV1 = function(email, eventType, event, timeDuration, destination) {
             var referenceDate, travelTimeBefore, travelTimeAfter, remainingTime, newRefDate, displayedTime;
 
             var usedEventType = eventType;
@@ -830,6 +852,85 @@
 
                 $scope.createInfoEvent(email, usedEventType, 'after', referenceDate, timeDuration, travelTimeAfter, destination);
             }
+        };
+
+        // Modified it beyond initial expectations, should probably refactor it by splitting logic into separate functions for each event types (travelTime and defaultDelay)
+        $scope.buildInfoEventV2 = function(email, eventType, event, timeDuration, destination) {
+            var defaultDelayTime = $scope.defaultDelayByClient[email];
+
+            if(eventType == 'travelTime') {
+                if(event.travel_time_before) {
+                    var realTravelTimeBefore = Math.round(event.travel_time_before.duration/60);
+
+                    // Default Values
+                    var travelReferenceDate = (event.start.dateTime || event.start.date);
+                    var displayedTravelTimeBefore = realTravelTimeBefore;
+                    var delayRefDate = moment(travelReferenceDate).clone().add(-realTravelTimeBefore, 'm');
+                    var displayedDelayTimeBefore = defaultDelayTime;
+
+                    if(event.max_duration_before) {
+                        var maxDurationBefore = Math.round(event.max_duration_before/60);
+                        var remainingTime = maxDurationBefore;
+
+                        delayRefDate = (event.start.dateTime || event.start.date);
+                        travelReferenceDate = null;
+
+                        if(remainingTime <= defaultDelayTime) {
+                            displayedDelayTimeBefore = remainingTime;
+                        }
+                        else {
+                            remainingTime -= defaultDelayTime;
+                            travelReferenceDate = moment(delayRefDate).clone();
+                            if(remainingTime < realTravelTimeBefore) {
+                                displayedTravelTimeBefore = remainingTime;
+                                delayRefDate = moment(delayRefDate).clone().add(-remainingTime, 'm');
+                            }
+                            else {
+                                displayedTravelTimeBefore = realTravelTimeBefore;
+                                delayRefDate = moment(delayRefDate).clone().add(-realTravelTimeBefore, 'm');
+                            }
+                        }
+                    }
+
+                    if(delayRefDate)
+                        $scope.createInfoEvent(email, 'defaultDelay', 'before', delayRefDate, $scope.defaultDelayByClient[email], displayedDelayTimeBefore, destination);
+                    if(travelReferenceDate)
+                        $scope.createInfoEvent(email, eventType, 'before', travelReferenceDate, realTravelTimeBefore, displayedTravelTimeBefore , destination);
+
+                }
+
+
+                if(event.travel_time_after) {
+                    var realTravelTimeAfter = Math.round(event.travel_time_after.duration/60);
+
+                    // Default Values
+                    var delayRefDate = (event.end.dateTime || event.end.date);
+                    var displayedDelayTimeAfter = defaultDelayTime;
+                    var travelReferenceDate = moment(delayRefDate).clone().add(defaultDelayTime, 'm');
+                    var displayedTravelTimeAfter = realTravelTimeAfter;
+
+
+                    if(event.max_duration_after) {
+                        var maxDurationAfter = Math.round(event.max_duration_after/60);
+                        var remainingTime = maxDurationAfter;
+
+                        if(remainingTime <= defaultDelayTime) {
+                            travelReferenceDate = null;
+                            displayedDelayTimeAfter = remainingTime;
+                        }
+                        else {
+                            remainingTime -= defaultDelayTime;
+                            displayedTravelTimeAfter = remainingTime < realTravelTimeAfter ? remainingTime : realTravelTimeAfter;
+                        }
+                    }
+
+                    if(delayRefDate)
+                        $scope.createInfoEvent(email, 'defaultDelay', 'after', delayRefDate, $scope.defaultDelayByClient[email], displayedDelayTimeAfter, destination);
+                    if(travelReferenceDate)
+                        $scope.createInfoEvent(email, eventType, 'after', travelReferenceDate, realTravelTimeAfter, displayedTravelTimeAfter , destination);
+                }
+            }
+
         };
 
         $scope.createInfoEvent = function(email, eventType, type, referenceDate, realTravelTime, displayedTravelTime, destination) {
