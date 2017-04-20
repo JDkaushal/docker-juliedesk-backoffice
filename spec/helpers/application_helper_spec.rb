@@ -15,5 +15,15 @@ describe ApplicationHelper do
 
   end
 
+  describe '.find_addresses' do
+    let(:content) { "" }
+    subject { ApplicationHelper.find_addresses(content).addresses.first.try(:address) }
+
+    context "when name contains special char ':'" do
+      let(:content) { 'Bob Doe : Bob Doe <bob.doe@yopmail.com>' }
+      it { is_expected.to eq('bob.doe@yopmail.com') }
+    end
+  end
+
 
 end
