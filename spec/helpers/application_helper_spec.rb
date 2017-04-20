@@ -17,11 +17,16 @@ describe ApplicationHelper do
 
   describe '.find_addresses' do
     let(:content) { "" }
-    subject { ApplicationHelper.find_addresses(content).addresses.first.try(:address) }
+    subject { ApplicationHelper.find_addresses(content).addresses.map(&:address) }
 
     context "when name contains special char ':'" do
       let(:content) { 'Bob Doe : Bob Doe <bob.doe@yopmail.com>' }
-      it { is_expected.to eq('bob.doe@yopmail.com') }
+      it { is_expected.to eq(['bob.doe@yopmail.com']) }
+    end
+
+    context "white space before name" do
+      let(:content) { 'Bob Doe <bob.doe@yopmail.com>,  Johnny Doe <johnny.doe@yopmail.com>' }
+      it { is_expected.to match_array(['bob.doe@yopmail.com', 'johnny.doe@yopmail.com']) }
     end
   end
 
