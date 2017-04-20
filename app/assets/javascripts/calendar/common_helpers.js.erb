@@ -250,6 +250,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                     alert("Office 365 access expired for account: " + request.email);
                 }
                 else {
+                  if(!window.lastCalendarCheck)
+                    window.lastCalendarCheck = (new Date()).toISOString();
                     callback({
                         items: CommonHelpers.filterEvents(data.items),
                         key: request.key
@@ -379,12 +381,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization", access_key);
             },
-            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start}),
+            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start, last_calendar_check: window.lastCalendarCheck}),
             success: function (e) {
               var modificationsHappened = e.data;
-//              var lastCalendarChanges = e.data ? moment(e.data) : null;
-//              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
-//              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
               if(modificationsHappened)
                 alert("L'événement n'a pas été créé car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
               else
@@ -541,12 +540,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization", access_key);
             },
-            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start}),
+            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start, last_calendar_check: window.lastCalendarCheck}),
             success: function (e) {
               var modificationsHappened = e.data;
-//              var lastCalendarChanges = e.data ? moment(e.data) : null;
-//              var lastOperatorSync = window.lastEventSync ? moment(window.lastEventSync) : null;
-//              if (lastCalendarChanges && lastOperatorSync && lastCalendarChanges > lastOperatorSync)
               if(modificationsHappened)
                 alert("L'événement n'a pas été mis à jour car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
               else
