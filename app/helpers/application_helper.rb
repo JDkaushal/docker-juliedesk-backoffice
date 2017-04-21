@@ -23,44 +23,45 @@ module ApplicationHelper
   # This is a custom method to parse attendees
   # It allows to keep not-ascii characters like accents
   # Performance: 19991/20000 (tested on mails in database vs the other method)
-  def self.parse_attendees_custom str
-    # Convert to string
-    str = "#{str}"
 
-    # Decode what's need to be decoded
-    str = str.gsub(/\=\?utf\-8\?B\?([^\?]*)\?\=/) do |d|
-      Base64.decode64(Regexp.last_match[1]).force_encoding('utf-8')
+    def self.parse_attendees_custom str
+      # Convert to string
+      str = "#{str}"
+
+      # Decode what's need to be decoded
+      str = str.gsub(/\=\?utf\-8\?B\?([^\?]*)\?\=/) do |d|
+        Base64.decode64(Regexp.last_match[1]).force_encoding('utf-8')
+      end
+
+      # Remove parenthesis
+      str = str.gsub(/\([^\)]*\)/, "")
+      str.gsub!('"', '')
+
+      letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
+
+      inside_email_regexp = /(?:#{letter_regexp}|[0-9]|\#)(?:#{letter_regexp}|[0-9]|\.|\-|\+|\_)*@(?:#{letter_regexp}|[0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
+      inside_name_regexp = /(?:#{letter_regexp}|\#|\s)(?:#{letter_regexp}|\-|\s|\u00A0|\\|"|\'|\’|\_|\>|\+|\.|:|[0-9]|\&|\@|\?|\/)*/
+      email_regexp = /(?<email>#{inside_email_regexp})/
+      name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
+
+      possible_formats = [
+          /#{name_regexp} <#{email_regexp}>/,
+          /(?<name>\'#{inside_name_regexp}\')(?:\ \(.*\))? +<#{email_regexp}>/,
+          /(?<name>#{inside_email_regexp}) +<#{email_regexp}>/,
+          /(?<name>\'#{inside_email_regexp}\') +<#{email_regexp}>/,
+          /#{name_regexp} <<#{email_regexp}>(?:[a-zA-Z]|\@)*>/,
+          /<#{email_regexp}>/,
+          /#{email_regexp}/
+      ]
+
+      re = /(?:\, ?|^)(?:#{possible_formats.join("|")})(?=>|$|\,)/
+
+
+      str.to_enum(:scan, re).map do
+        md = Regexp.last_match
+        {name: nil, email: nil}.merge Hash[md.names.map{|n| [n.to_sym, md[n]]}]
+      end
     end
-
-    # Remove parenthesis
-    str = str.gsub(/\([^\)]*\)/, "")
-    str.gsub!('"', '')
-
-    letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
-
-    inside_email_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\.|\-|\+|\_)*@(?:#{letter_regexp}|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
-    inside_name_regexp = /(?:#{letter_regexp}|\#|\s)(?:#{letter_regexp}|\-|\s|\u00A0|\\|"|\'|\’|\_|\>|\+|\.|:|[0-9]|\&|\@|\?|\/)*/
-    email_regexp = /(?<email>#{inside_email_regexp})/
-    name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
-
-    possible_formats = [
-        /#{name_regexp} <#{email_regexp}>/,
-        /(?<name>\'#{inside_name_regexp}\')(?:\ \(.*\))? +<#{email_regexp}>/,
-        /(?<name>#{inside_email_regexp}) +<#{email_regexp}>/,
-        /(?<name>\'#{inside_email_regexp}\') +<#{email_regexp}>/,
-        /#{name_regexp} <<#{email_regexp}>(?:[a-zA-Z]|\@)*>/,
-        /<#{email_regexp}>/,
-        /#{email_regexp}/
-    ]
-
-    re = /(?:\, ?|^)(?:#{possible_formats.join("|")})(?=>|$|\,)/
-
-
-    str.to_enum(:scan, re).map do
-      md = Regexp.last_match
-      {name: nil, email: nil}.merge Hash[md.names.map{|n| [n.to_sym, md[n]]}]
-    end
-  end
 
 
   def self.find_addresses str

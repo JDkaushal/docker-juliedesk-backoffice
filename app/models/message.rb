@@ -273,6 +273,7 @@ class Message < ActiveRecord::Base
 
   def is_discussion_client_julie_only
     result = false
+
     if destined_to_julie?
       # If the message is destined to Julie only
       message_tos = server_message['to'].split(',')
