@@ -223,7 +223,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         if(calculateTravelTime) {
           appointment = {
             kind: window.getCurrentAppointment().kind,
-            location: window.getCurrentAddress()
+            location: $("#location").val()
           };
         }
 
