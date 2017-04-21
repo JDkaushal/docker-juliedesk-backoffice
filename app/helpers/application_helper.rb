@@ -34,11 +34,12 @@ module ApplicationHelper
 
     # Remove parenthesis
     str = str.gsub(/\([^\)]*\)/, "")
+    str.gsub!('"', '')
 
     letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
 
-    inside_email_regexp = /(?:[a-zA-Z0-9]|\#)(?:[a-zA-Z0-9]|\.|\-|\+|\_)*@(?:[a-zA-Z0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
-    inside_name_regexp = /(?:#{letter_regexp}|\#|\s)(?:#{letter_regexp}|\-|\s|\u00A0|\'|\’|\_|\>|\+|\.|:|[0-9]|\&|\@|\?|\/)*/
+    inside_email_regexp = /(?:#{letter_regexp}|\#)(?:#{letter_regexp}|\.|\-|\+|\_)*@(?:#{letter_regexp}|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
+    inside_name_regexp = /(?:#{letter_regexp}|\#|\s)(?:#{letter_regexp}|\-|\s|\u00A0|\\|"|\'|\’|\_|\>|\+|\.|:|[0-9]|\&|\@|\?|\/)*/
     email_regexp = /(?<email>#{inside_email_regexp})/
     name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
 
@@ -60,6 +61,7 @@ module ApplicationHelper
       {name: nil, email: nil}.merge Hash[md.names.map{|n| [n.to_sym, md[n]]}]
     end
   end
+
 
   def self.find_addresses str
     # Necessary because Mail::AddressList.new decompose "Simon, Matthieu <Matthieu.Simon@rolandberger.com>" into two mails "Simon" and "Matthieu <Matthieu.Simon@rolandberger.com>"
