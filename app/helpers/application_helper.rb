@@ -74,7 +74,7 @@ module ApplicationHelper
       str.gsub!('"','')
       str.gsub!(/[\[|\]]/, '')
       str.gsub!(/\\/, '')
-      str = str.split(',').reject{|s| !s.include?('@')}.join(',')
+      #str = str.split(',').reject{|s| !s.include?('@')}.join(',')
       str.strip!
     end
 

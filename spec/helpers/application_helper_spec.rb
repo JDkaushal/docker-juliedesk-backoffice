@@ -24,10 +24,16 @@ describe ApplicationHelper do
       it { is_expected.to eq(['bob.doe@yopmail.com']) }
     end
 
-    context "white space before name" do
+    context "when white space is present before name" do
       let(:content) { 'Bob Doe <bob.doe@yopmail.com>,  Johnny Doe <johnny.doe@yopmail.com>' }
       it { is_expected.to match_array(['bob.doe@yopmail.com', 'johnny.doe@yopmail.com']) }
     end
+
+    context "when the name contain a comma" do
+      let(:content) { '"Doe, Bob (Bob Commpany, Bob Group)" <bob.doe@yopmail.com>, Johnny <johnny.doe@yopmail.com>' }
+      it { is_expected.to match_array(['bob.doe@yopmail.com', 'johnny.doe@yopmail.com']) }
+    end
+
   end
 
 
