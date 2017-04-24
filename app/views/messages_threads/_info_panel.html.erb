@@ -114,11 +114,21 @@
             updateNotesCallingInfos();
 
             if(currentAppointment) {
-                if(currentAppointment.appointment_kind_hash.is_virtual) {
-                    $('#location_instructions_tracking_btn').attr('data-tracking-event', 'Click_on_validate_instruction');
-                } else {
-                    $('#location_instructions_tracking_btn').attr('data-tracking-event', 'Click_on_validate_location');
-                }
+              if(currentAppointment.appointment_kind_hash.is_virtual) {
+                  $('#location_instructions_tracking_btn').attr('data-tracking-event', 'Click_on_validate_instruction');
+              } else {
+                  $('#location_instructions_tracking_btn').attr('data-tracking-event', 'Click_on_validate_location');
+              }
+
+              if(currentAppointment.kind == 'lunch' && window.threadAccount) {
+                var splittedLunchTimePreference = String(window.threadAccount.lunch_time_preference).split('');
+                splittedLunchTimePreference.splice(-2, 0, 'h');
+                $('#lunch_time_preference_value').html(splittedLunchTimePreference.join(''));
+                $('.lunch-time-preference').show();
+              } else {
+                $('.lunch-time-preference').hide();
+                $('#lunch_time_preference_value').html('');
+              }
             }
 
             if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
@@ -1470,6 +1480,15 @@
         <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
         <div class="data-entry-name"><%= I18n.t("info_box.computed_appointment_type") %></div>
         <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control" %>
+
+        <div class="lunch-time-preference">
+          <div class="lunch-time-wrapper">
+            <div class="lunch-time-text">
+              Client preferred lunch time
+              <div id="lunch_time_preference_value"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="data-entry linear-form-entry" data-entry-name="timezone">
