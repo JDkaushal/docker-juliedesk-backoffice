@@ -48,9 +48,19 @@
               var mStartDate = data.start.clone();
               var mEndDate = mStartDate.clone();
               mEndDate.add(duration, "ms");
-              window.currentEventTile.event.start = mStartDate;
-              window.currentEventTile.event.end = mEndDate;
-              window.currentEventTile.redraw();
+
+              // DOn't update the currentEventTile.event, it should represent the original event not yet modified
+              // To access the modified event, we need to read the values from the current event tile fields, by calling the currentEventTile.getEditedEvent() method
+//              window.currentEventTile.event.start = mStartDate;
+//              window.currentEventTile.event.end = mEndDate;
+//              window.currentEventTile.redraw();
+
+              window.currentEventTile.$selector.find(".start-date").val(mStartDate.format("YYYY-MM-DD"));
+              window.currentEventTile.$selector.find(".start-hours").val(mStartDate.format("HH"));
+              window.currentEventTile.$selector.find(".start-minutes").val(mStartDate.format("mm"));
+              window.currentEventTile.$selector.find(".end-date").val(mEndDate.format("YYYY-MM-DD"));
+              window.currentEventTile.$selector.find(".end-hours").val(mEndDate.format("HH"));
+              window.currentEventTile.$selector.find(".end-minutes").val(mEndDate.format("mm"));
 
               window.currentEventTile.enterEditMode();
             };

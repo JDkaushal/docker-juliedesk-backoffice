@@ -360,10 +360,6 @@ EventTile.prototype.redraw = function() {
     eventTile.$selector.find(".end-hours").val(mEndDate.format("HH"));
     eventTile.$selector.find(".end-minutes").val(mEndDate.format("mm"));
 
-
-
-
-
     if(eventTile.event.allDay) {
         eventTile.$selector.find(".event-date-all-day").prop("checked", true);
     }
