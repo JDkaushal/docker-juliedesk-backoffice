@@ -1455,6 +1455,7 @@ Calendar.prototype.getCheckedMainAccountCalendarIds = function(e) {
 
 Calendar.prototype.changeWeekendsCheckbox = function () {
     var calendar = this;
+    var calendarNode = $('#calendar');
 
     var currentDate = calendar.$selector.find('#calendar').fullCalendar('getDate');
     var currentEvents = calendar.$selector.find('#calendar').fullCalendar('clientEvents');
@@ -1464,8 +1465,9 @@ Calendar.prototype.changeWeekendsCheckbox = function () {
 
     calendar.fullCalendarInit();
 
-    $('#calendar').fullCalendar('gotoDate', currentDate);
-    $('#calendar').fullCalendar('addEventSource', currentEvents);
+    //calendarNode.fullCalendar('removeEvents');
+    calendarNode.fullCalendar('gotoDate', currentDate);
+    //calendarNode.fullCalendar('addEventSource', currentEvents);
 };
 
 Calendar.prototype.goToDateTime = function(dateTime) {
