@@ -8,14 +8,17 @@
             return true;
         });
 
+        window.activateCalendarWithParams({
+          mode: "free_calendar",
+          date_times: [],
+          email: "<%= @messages_thread.account_email %>",
+          duration: <%= @messages_thread.computed_data[:duration] || 60 %>
+        });
+        $(".calendar-container").addClass("visible minimized");
+
         $("#show-calendar-button").click(function () {
-            window.activateCalendarWithParams({
-                mode: "free_calendar",
-                date_times: [],
-                email: "<%= @messages_thread.account_email %>",
-                duration: <%= @messages_thread.computed_data[:duration] || 60 %>
-            });
             $(".calendar-container").removeClass("minimized");
+            window.currentCalendar.redrawFullCalendar();
         });
     });
 
@@ -32,7 +35,7 @@
 
     window.activateCalendarWithParams = function (calendarParams) {
         calendarParams.height = $(".calendar-container").height();
-        calendarParams.other_emails = window.otherAccountEmails;
+        calendarParams.other_emails = window.otherAccountEmails || [];
         if(window.threadAccount) {
             calendarParams.default_timezone_id = window.threadAccount.default_timezone_id;
         }
@@ -45,7 +48,7 @@
         calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
         calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, true);
         $(".calendar-container").addClass("visible");
     };
 </script>
