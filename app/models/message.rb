@@ -8,7 +8,7 @@ class Message < ActiveRecord::Base
   has_many :message_classifications
   has_one :auto_message_classification
   has_many :message_interpretations
-
+  
   attr_accessor :server_message
 
   def self.delegate_to_julia(message, julie_aliases_cache)

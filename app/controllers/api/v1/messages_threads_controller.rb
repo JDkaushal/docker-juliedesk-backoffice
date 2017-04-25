@@ -64,4 +64,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     render json: { data: MessagesThread.client_emails_from_inbox }
   end
 
+  def only_inbox_messages_server_ids
+    render json: { data: MessagesThread.only_in_inbox_messages_server_ids }
+  end
+
 end

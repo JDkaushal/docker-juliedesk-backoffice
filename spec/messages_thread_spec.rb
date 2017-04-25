@@ -961,4 +961,27 @@ describe MessagesThread, :type => :model do
       it { is_expected.to eq(true) }
     end
   end
+
+  describe 'only_in_inbox' do
+    let(:messages_thread1) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: true, messages_count: 3) }
+    let(:messages_thread2) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: true, messages_count: 5) }
+    let(:messages_thread3) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: false, should_follow_up: true) }
+
+    before(:example) do
+      i = 0
+      messages_thread1.messages.each do |m|
+        m.update(server_message_id: i)
+        i += 1
+      end
+
+      messages_thread2.messages.each do |m|
+        m.update(server_message_id: i)
+        i +=1
+      end
+    end
+
+    it 'should return the messages server_message_id of the threads that are present in the inbox' do
+      expect(MessagesThread.only_in_inbox_messages_server_ids).to eq([0, 1, 2, 3, 4, 5, 6, 7])
+    end
+  end
 end

@@ -20,7 +20,9 @@ class MessagesThread < ActiveRecord::Base
   attr_writer :account
   attr_accessor :thread_blocked, :clients_with_linked_attendees_enabled, :clients
 
-  scope :in_inbox, -> {  where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, true, false, false, false) }
+  scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, true, false, false, false) }
+
+  scope :in_inbox_only, -> { where("in_inbox = ? AND should_follow_up = ? AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, false, false, false, false) }
 
   include ApplicationHelper
   include TemplateGeneratorHelper
@@ -1147,5 +1149,7 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.includes(messages: :message_classifications).in_inbox.map(&:client_emails).flatten.uniq
   end
 
-
+  def self.only_in_inbox_messages_server_ids
+    MessagesThread.includes(:messages).in_inbox_only.map{|mt| mt.messages.map(&:server_message_id)}.flatten
+  end
 end

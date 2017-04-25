@@ -192,9 +192,8 @@ Rails.application.routes.draw do
       post "/messages_threads/check_missing_messages", controller: :messages_threads, action: :check_missing_messages
       post "/client_contacts/ai_get_company_name", controller: :client_contacts, action: :ai_get_company_name
       get "/messages_threads/inbox_client_emails", controller: :messages_threads, action: :inbox_client_emails
-      
       get "check", controller: :healthcheck, action: :check
-
+      get "/messages_threads/only_inbox_messages_server_ids", controller: :messages_threads, action: :only_inbox_messages_server_ids
     end
   end
 
