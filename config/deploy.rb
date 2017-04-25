@@ -46,6 +46,10 @@ set :rvm_ruby_version, '2.2.0'
 
 set :keep_assets, 1
 
-after :deploy, :restart_server
-after :deploy, :update_crontab
-after :deploy, :run_resque
+# Classic deploy. These tasks are overidden in case of deploy_sequence task so they are deactivated
+# if we are in the deploy_sequence case
+if (defined?(ENV['deploy_sequence'])).nil?
+  after :deploy, :restart_server
+  after :deploy, :update_crontab
+  after :deploy, :run_resque
+end

@@ -1,0 +1,49 @@
+How to launch the project using Docker
+--------------------------------------
+
+Compile Docker Container
+---
+cd <juliedesk-backoffice-directory>
+docker build -t passenger-backoffice .
+
+Launch a Postgres Container
+---
+# Create a directory to host postgres persistent data (choose where to put it)
+mkdir -p ~/Development/Data/postgres
+cd <directory-where-postgres-data-is-located>
+docker run -p 5432:5432 -d -v $PWD:/var/lib/postgresql/data -e POSTGRES_PASSWORD=<password> -e POSTGRES_USER=<username> --name postgres postgres:9.5-alpine
+
+Run Analytics Container
+---
+cd <juliedesk-backoffice-directory>
+docker run -p 80:80 -d --link postgres:postgres -v $PWD:/home/app/juliedesk-backoffice --name passenger-backoffice -t passenger-backoffice 
+
+Locally, change Database.yml in config :
+---
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  host: postgres
+  username: <username>
+  password: <password>
+  database: juliedesk_backoffice_dev
+
+-----
+Create DB (first time) :
+-----
+
+Connect to local postgres and create DB :
+---
+docker -it passenger-backoffice bash
+$ cd /home/app/juliedesk-backoffice
+$ bin/rake db:create RAILS_ENV=development
+$ bin/rake db:migrate RAILS_ENV=development
+
+
+Code updates automatically EXCEPT for configuration (env, database.yml...)
+One must restart the passenger container to take it into account :
+docker stop passenger-backoffice; docker start passenger-backoffice
