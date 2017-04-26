@@ -8,6 +8,10 @@
 
 desc "Task that perform sequential deployment"
 task :deploy_sequence do
+  
+  # Compile assets locally and upload to servers
+  invoke 'deploy:assets:local_precompile'
+  
   roles(:web).each do |server|
     puts server.hostname
 
@@ -17,8 +21,9 @@ task :deploy_sequence do
     sh "bundle exec cap --hosts=#{server.hostname} production deploy_with_signal deploy_sequence=true"
 
   end
+  
   # Deploy other servers "normally"
-  sh "bundle exec cap --roles=worker,tasker production deploy"
+  sh "bundle exec cap --roles=worker,tasker production deploy deploy_sequence=true"
 end
 
 
@@ -47,7 +52,3 @@ end
 
 before :deploy_sequence, 'lock:check'
 after :deploy_sequence, 'lock:release'
-
-after :deploy_sequence, :restart_server
-after :deploy_sequence, :update_crontab
-after :deploy_sequence, :run_resque
