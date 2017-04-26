@@ -579,7 +579,6 @@ class Message < ActiveRecord::Base
 
         messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access)
         messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
-        messages_thread.compute_allowed_attendees
 
         computed_recipients_changed = messages_thread.computed_recipients_changed?
 

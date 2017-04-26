@@ -49,7 +49,14 @@ module AllowedAttendees
     end
 
     def extract_from_clients_current_notes
-      current_notes_aggregated = @messages_thread.clients.map{|c| c.current_notes}.join(' ')
+      clients_current_notes = @messages_thread.clients.map{|c| c.current_notes}
+
+      current_notes_aggregated = if clients_current_notes.present?
+        clients_current_notes.join(' ')
+      else
+        ''
+      end
+
       current_notes_aggregated.scan(emails_regexp)
     end
   end
