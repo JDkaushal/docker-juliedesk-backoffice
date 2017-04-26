@@ -1156,6 +1156,9 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def self.only_in_inbox_messages_server_ids
-    MessagesThread.includes(:messages).in_inbox_only.map{|mt| mt.messages.map(&:server_message_id)}.flatten
+    # We do that in two queries to be able to use 'select' on the threads messages to avoid filling up the RAM for nothing
+    # Using 'select' with an 'includes' is reported to have inconsistent behaviour
+    mt_ids_in_inbox = MessagesThread.select(:id).in_inbox_only
+    Message.select(:server_message_id).where(messages_thread_id: mt_ids_in_inbox).map(&:server_message_id)
   end
 end
