@@ -76,7 +76,12 @@ module AllowedAttendees
       # end
 
       #ics_data
+      begin
       EmailServerInterface.new.build_request(:fetch_ics, {message_id: @server_message['id'], attachment_id: @server_message['attachments_data'][0]['attachment_id']})['data']
+      rescue => e
+        Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
+      end
+
     end
   end
 end
