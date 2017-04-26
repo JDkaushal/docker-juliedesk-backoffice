@@ -150,17 +150,12 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
         _.each(currentBatches, function(batchStartDate) {
             var start = batchStartDate.format() + "T00:00:00Z";
             var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
-
-            if(!window.featuresHelper.isFeatureActive('list_events_v2'))
-                calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true, formattedBatchesDates: formattedBatchesDates, batchTrackingId: currentBatchTrackingId});
             calendar.addToFetchedWeek(batchStartDate);
         });
 
-        if(window.featuresHelper.isFeatureActive('list_events_v2')) {
-            start = _.first(currentBatches).format() + "T00:00:00Z";
-            end = _.last(currentBatches).clone().add(1, 'w').format() + "T00:00:00Z";
-            calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
-        }
+        start = _.first(currentBatches).format() + "T00:00:00Z";
+        end = _.last(currentBatches).clone().add(1, 'w').format() + "T00:00:00Z";
+        calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
     }
     else {
         //if(view.start.isBefore(calendar.dispStart) || view.end.isAfter(calendar.dispEnd)) {
@@ -202,24 +197,18 @@ Calendar.prototype.fullCalendarViewRender = function(view, element) {
                 var end = batchStartDate.clone().add(1, 'w').format() + "T00:00:00Z";
 
                 if(!calendar.alreadyFetchedWeek(batchStartDate)) {
-                    if(window.featuresHelper.isFeatureActive('list_events_v2'))
-                        toFetch.push(batchStartDate);
-                    else
-                        calendar.fetchAllAccountsEvents(start, end, {batchTrackingId: currentBatchTrackingId});
-
+                    toFetch.push(batchStartDate);
                     calendar.addToFetchedWeek(batchStartDate);
                 }
             });
 
-            if(window.featuresHelper.isFeatureActive('list_events_v2')) {
-                toFetch = _.sortBy(toFetch, function(batchStartDate) { return batchStartDate });
-                var batchStart = _.first(toFetch);
-                var batchEnd = _.last(toFetch);
-                if(batchStart && batchEnd) {
-                    start = batchStart.clone().add(0, 'w').format() + "T00:00:00Z";
-                    end = batchEnd.clone().add(1, 'w').format() + "T00:00:00Z";
-                    calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
-                }
+            toFetch = _.sortBy(toFetch, function(batchStartDate) { return batchStartDate });
+            var batchStart = _.first(toFetch);
+            var batchEnd = _.last(toFetch);
+            if(batchStart && batchEnd) {
+                start = batchStart.clone().add(0, 'w').format() + "T00:00:00Z";
+                end = batchEnd.clone().add(1, 'w').format() + "T00:00:00Z";
+                calendar.fetchAllAccountsEvents(start, end, {trackNetworkResponse: true});
             }
     }
 };
@@ -237,18 +226,6 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
         if (event.beingAdded) {
 
             if(calendar.getMode() == "suggest_dates" && event.editable) {
-
-                // Not using calendar.events anymore
-                // for(var k=0; k<calendar.events.length; k++){
-                //     if(calendar.events[k].start.isSame(event.start)){
-                //         calendar.events.splice(k, 1);
-                //     }
-                // }
-                // calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
-                //     return toremove.start.isSame(event.start)
-                //         && toremove.beingAdded;
-                // });
-
                 calendar.$selector.find('#calendar').fullCalendar('removeEvents', function(toremove){
                     return toremove.beingAdded && toremove._id == event._id;
                 });

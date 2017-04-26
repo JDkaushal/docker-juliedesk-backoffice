@@ -11,7 +11,7 @@ module AllowedAttendees
     end
 
     def extract_allowed_attendees
-      Set.new(extract_from_aggregated_texts + extract_from_recipients + extract_from_ics_if_any).to_a
+      Set.new(extract_from_aggregated_texts + extract_from_recipients + extract_from_ics_if_any).to_a.compact
     end
 
     private

@@ -8,7 +8,7 @@ module AllowedAttendees
     end
 
     def compute_allowed_attendees
-      Set.new(extract_from_thread_owner + extract_from_clients_current_notes + extract_from_accounts_candidates + extract_from_messages + extract_from_current_attendees).to_a
+      Set.new(extract_from_thread_owner + extract_from_clients_current_notes + extract_from_accounts_candidates + extract_from_messages + extract_from_current_attendees).to_a.compact
     end
 
     private

@@ -212,9 +212,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
       });
     }
     else if(request.action == "events") {
-        var listEventsUrl = host + "/api/v1/calendar_proxy/events_list";
-        if(window.featuresHelper.isFeatureActive("list_events_v2"))
-          listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
+        var listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
 
         var timeTravelManager = $('#travel_time_calculator').scope();
         var appointment = null;
