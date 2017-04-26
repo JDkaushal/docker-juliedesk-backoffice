@@ -2,6 +2,7 @@ module AllowedAttendees
 
   class MessageManager
     attr_reader :message, :server_message, :julie_aliases_emails
+    FETCHED_ATTACHMENT_TYPES = ["application/ics", "text/calendar"]
 
     def initialize(message, server_message, julie_aliases_emails)
       @message = message
@@ -50,12 +51,16 @@ module AllowedAttendees
 
       if @server_message['attachments_data'].present?
 
-        ics_data = fetch_ics
+        attachment_data_type = @server_message['attachments_data'][0]['type']
 
-        if ics_data.present?
-          parsed_ics_data = Icalendar::Calendar.parse(ics_data)
-          if parsed_ics_data.present?
-            attendees_emails = parsed_ics_data.first.events.first.attendee.map(&:to)
+        if FETCHED_ATTACHMENT_TYPES.include?(attachment_data_type)
+          ics_data = fetch_ics
+
+          if ics_data.present?
+            parsed_ics_data = Icalendar::Calendar.parse(ics_data)
+            if parsed_ics_data.present?
+              attendees_emails = parsed_ics_data.first.events.first.attendee.map(&:to)
+            end
           end
         end
       end
@@ -77,7 +82,7 @@ module AllowedAttendees
 
       #ics_data
       begin
-      EmailServerInterface.new.build_request(:fetch_ics, {message_id: @server_message['id'], attachment_id: @server_message['attachments_data'][0]['attachment_id']})['data']
+        EmailServerInterface.new.build_request(:fetch_ics, {message_id: @server_message['id'], attachment_id: @server_message['attachments_data'][0]['attachment_id']})['data']
       rescue => e
         Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
       end
