@@ -85,7 +85,7 @@
     window.initAllowedAttendeesEmails = function() {
 
       if(allowedAttendeesAreComputed()) {
-        window.allowedAttendeesEmails = window.threadComputedData.allowed_attendees;
+        window.allowedAttendeesEmails = window.threadComputedData.allowed_attendees.concat(['hello@juliedesk.com']);
       } else {
         var extendedMessages = $('.email.extended');
         var notFromMeMessages = $('.email:not(".from-me")');
