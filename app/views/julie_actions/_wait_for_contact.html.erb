@@ -9,7 +9,8 @@
             mode: "select_events",
             date_times: [],
             email: window.threadAccount.email,
-            duration: window.threadComputedData.duration
+            duration: window.threadComputedData.duration,
+            compute_meeting_rooms_via_backend: true
         });
         // We don't want to directly show the calendar when forwarding to a client
         $(".calendar-container").addClass("minimized");

@@ -9,15 +9,15 @@
 
     window.drawCalendarCallback = function(){
         window.activateCalendarWithParams({
-            mode: "suggest_dates",
-            date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
-            {
-                mode: "already_suggested",
-                date: date
-            }
-        }.to_json %>,
-            email: window.threadAccount.email,
-            duration: window.threadComputedData.duration
+          mode: "suggest_dates",
+          date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+          {
+              mode: "already_suggested",
+              date: date
+          }}.to_json %>,
+          compute_meeting_rooms_via_backend: true,
+          email: window.threadAccount.email,
+          duration: window.threadComputedData.duration
         });
     };
 

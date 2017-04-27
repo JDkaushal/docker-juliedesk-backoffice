@@ -12,7 +12,8 @@
           mode: "free_calendar",
           date_times: [],
           email: "<%= @messages_thread.account_email %>",
-          duration: <%= @messages_thread.computed_data[:duration] || 60 %>
+          duration: <%= @messages_thread.computed_data[:duration] || 60 %>,
+          compute_meeting_rooms_via_backend: true
         });
         $(".calendar-container").addClass("visible minimized");
 

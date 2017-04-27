@@ -44,6 +44,7 @@
               }
             }).uniq{|date_object| date_object[:date]}.to_json %>,
             email: window.threadAccount.email,
+            compute_meeting_rooms_via_backend: true,
             duration: window.threadComputedData.duration,
             calendarandEventsLoadedFirstTimeCallback: function() {
                 if($(".suggested-date-time").length > 0) {

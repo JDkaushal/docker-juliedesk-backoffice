@@ -1352,7 +1352,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
         var eventData = calendar.eventDataFromEvent(calEvent);
 
         // We don't add the individual meeting rooms events to the displayed events on the calendar
-        if(meetingRoomsIds.indexOf(eventData.calId) > -1 && !calendar.initialData.compute_meeting_rooms_via_backend) {
+        if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
             localMeetingRoomsEvents[eventData.calId].push(eventData);
             calendar.meetingRoomsEvents[eventData.calId].push(eventData);
         } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId) > -1) {
@@ -1363,9 +1363,9 @@ Calendar.prototype.addAllCals = function (calEvents) {
         }
     });
 
-    if(meetingRoomsManager) {
-        calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(localMeetingRoomsEvents));
-    }
+    // if(meetingRoomsManager) {
+    //     calendar.eventDataX = calendar.eventDataX.concat(meetingRoomsManager.getOverlappingEvents(localMeetingRoomsEvents));
+    // }
 
     if(virtualMeetingHelper && virtualMeetingHelper.isCurrentAppointmentVirtual()) {
         calendar.eventDataX = calendar.eventDataX.concat(virtualMeetingHelper.getOverlappingVirtualResourcesEvents(localVirtualResourcesEvents));
