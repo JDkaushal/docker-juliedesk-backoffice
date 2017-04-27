@@ -652,7 +652,7 @@ class MessagesThread < ActiveRecord::Base
     messages_thread_messages = self.messages
 
     all_messages.select do |server_message|
-      server_message['messages_thread_id'] == self.server_thread_id
+      server_message['messages_thread_id'] == self.server_thread_id && !server_message['duplicate']
     end.each do |server_message|
       server_message['from'].try(:gsub!, '?', '')
       server_message['cc'].try(:gsub!, '?', '')
