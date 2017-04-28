@@ -34,6 +34,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(['bob.doe@yopmail.com', 'johnny.doe@yopmail.com']) }
     end
 
+    context "when one of the recipient has no name (only email)" do
+      let(:content) { 'bob.doe@yopmail.com, Johnny <johnny.doe@yopmail.com>' }
+      it { is_expected.to match_array(['bob.doe@yopmail.com', 'johnny.doe@yopmail.com']) }
+    end
+
     context "when name and email contain an apostrophe" do
       let(:content) { "\"d'Argentre,Alexis\" <Alexis.d'Argentre@gartner.com>" }
       it { is_expected.to match_array(["Alexis.d'Argentre@gartner.com"]) }
