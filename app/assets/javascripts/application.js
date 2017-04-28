@@ -87,4 +87,4 @@
 
 //= require clipboard.min
 //= require error_manager
-//= require error_manager_init.js.erb
+//= require error_manager_init
