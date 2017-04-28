@@ -149,11 +149,11 @@ class MessagesThreadsController < ApplicationController
 
     # Voir pertinence à ce moment, on le fait sur l'index déjà normalement
 
-    refreshed_messages = messages_thread.server_thread(force_refresh: true)['messages']
+    refreshed_messages = messages_thread.server_thread(force_refresh: true)['messages'].select { |m| !m['duplicate'] }
 
     if params[:current_messages_ids].present?
       current_messages_ids = params[:current_messages_ids].split(',')
-      refreshed_messages_ids = refreshed_messages.map{|m| m['id'].to_s && !m['duplicate']}
+      refreshed_messages_ids = refreshed_messages.map{|m| m['id'].to_s }
 
       missing_messages_ids = refreshed_messages_ids - current_messages_ids
     end
