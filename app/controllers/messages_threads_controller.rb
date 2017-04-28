@@ -153,7 +153,7 @@ class MessagesThreadsController < ApplicationController
 
     if params[:current_messages_ids].present?
       current_messages_ids = params[:current_messages_ids].split(',')
-      refreshed_messages_ids = refreshed_messages.map{|m| m['id'].to_s}
+      refreshed_messages_ids = refreshed_messages.map{|m| m['id'].to_s && !m['duplicate']}
 
       missing_messages_ids = refreshed_messages_ids - current_messages_ids
     end
