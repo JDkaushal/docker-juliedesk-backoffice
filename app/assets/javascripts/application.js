@@ -86,3 +86,5 @@
 //= require smart_listing
 
 //= require clipboard.min
+//= require error_manager
+//= require error_manager_init.js.erb

@@ -1,0 +1,2 @@
+var errorManager = new ErrorManager('<%= ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>' + '/api/v1/errors', { auth: '<%= ENV['JD_BACKOFFICE_API_KEY'] %>'});
+errorManager.init();
