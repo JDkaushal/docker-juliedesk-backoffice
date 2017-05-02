@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20170419150939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
@@ -186,13 +185,6 @@ ActiveRecord::Schema.define(version: 20170419150939) do
     t.text     "description"
     t.string   "active_mode", default: "none"
     t.text     "active_data"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -419,19 +411,5 @@ ActiveRecord::Schema.define(version: 20170419150939) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
 end

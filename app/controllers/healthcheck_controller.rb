@@ -1,4 +1,4 @@
-class Api::V1::HealthcheckController < Api::ApiV1Controller
+class HealthcheckController < ApiController
   def check
     
     # If no signalisation file is present, answer with a HTTP 200

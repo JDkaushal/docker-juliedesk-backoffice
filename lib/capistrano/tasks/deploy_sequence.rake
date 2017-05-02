@@ -24,6 +24,9 @@ task :deploy_sequence do
   
   # Deploy other servers "normally"
   sh "bundle exec cap --roles=worker,tasker production deploy deploy_sequence=true"
+  
+  # Cleanup old assets
+  invoke 'deploy:assets:local_cleanup_assets'
 end
 
 
