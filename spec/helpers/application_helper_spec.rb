@@ -49,6 +49,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(["8765ttg@gmail.com", "julie.bourbon@hildebrandt-law.com"]) }
     end
 
+    context "when name contains ⎪" do
+      let(:content) { "Nicolas JOB ⎪Carbookr <nicolas@carbookr.com>, Julie de Bourbon <julie.bourbon@hildebrandt-law.com>" }
+      it { is_expected.to match_array(["julie.bourbon@hildebrandt-law.com", "nicolas@carbookr.com"]) }
+    end
+
   end
 
 

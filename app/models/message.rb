@@ -727,7 +727,6 @@ class Message < ActiveRecord::Base
                                         reply_to_message_id:  copy_response['id']
                                     })
       else
-
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
 
         email_params = {
