@@ -299,8 +299,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
     else if(request.action == "create_event") {
 
-      if(moment(request.start).isBefore(moment())) {
-        alert('You cannot create an event that start before the present Date');
+      if(moment(request.end).isBefore(moment())) {
+        alert('You cannot create an event that end before the present Date');
         $("#create-event-button").attr('disabled', false);
         $(".creating-event-message").html("");
       } else {
