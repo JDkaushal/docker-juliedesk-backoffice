@@ -29,6 +29,19 @@ class MessagesThread < ActiveRecord::Base
 
   BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
 
+  def recompute_allowed_attendees_full
+    messages = self.re_import
+    julie_aliases_emails = JulieAlias.all.map(&:email)
+
+    messages.each do|message|
+      message.compute_allowed_attendees(julie_aliases_emails)
+      message.save
+    end
+
+    self.compute_allowed_attendees
+    self.save
+  end
+
   def archive
     EmailServer.archive_thread(messages_thread_id: self.server_thread_id)
     self.update({
