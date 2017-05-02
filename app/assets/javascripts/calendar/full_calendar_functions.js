@@ -88,8 +88,13 @@ Calendar.prototype.fullCalendarSelect = function(start, end, jsEvent, view) {
 
 Calendar.prototype.fullCalendarEventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
     var calendar = this;
-    calendar.addEvent(event);
-    calendar.drawEventList();
+
+    if(window.classification == "update_event" && window.setUpdatedEventDates) {
+        window.setUpdatedEventDates(event);
+    } else {
+        calendar.addEvent(event);
+        calendar.drawEventList();
+    }
 };
 Calendar.prototype.fullCalendarEventDragStart = function(event, jsEvent, ui, view) {
     var calendar = this;
