@@ -54,6 +54,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(["julie.bourbon@hildebrandt-law.com", "nicolas@carbookr.com"]) }
     end
 
+    context "when name contains °" do
+      let(:content) { "BobCorp 360° <bob@bobcorp360.com>" }
+      it { is_expected.to match_array(["bob@bobcorp360.com"]) }
+    end
+
   end
 
 
