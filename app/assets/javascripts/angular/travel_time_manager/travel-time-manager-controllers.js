@@ -490,7 +490,9 @@
 
         $scope.performGoogleRequests = function(email, groupedEvents, travelMode) {
             var currentDestinations = [];
-            var origin = $scope.originCoordinates;
+            //var origin = $scope.originCoordinates;
+            //if($scope.originCoordinates.length == 0)
+            origin = $scope.referenceLocation[email];
 
             if($scope.originCoordinates.length == 0)
                 origin = $scope.referenceLocation[email];
