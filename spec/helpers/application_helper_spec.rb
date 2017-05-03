@@ -59,6 +59,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(["bob@bobcorp360.com"]) }
     end
 
+    context 'when name start with -' do
+      let(:content) { "- bob <bob.artisans@wanadoo.fr>" }
+      it { is_expected.to match_array(["bob.artisans@wanadoo.fr"]) }
+    end
+
   end
 
 
