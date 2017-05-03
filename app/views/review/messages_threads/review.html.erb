@@ -8,13 +8,6 @@
             return true;
         });
 
-        window.activateCalendarWithParams({
-          mode: "free_calendar",
-          date_times: [],
-          email: "<%= @messages_thread.account_email %>",
-          duration: <%= @messages_thread.computed_data[:duration] || 60 %>,
-          compute_meeting_rooms_via_backend: true
-        });
         $(".calendar-container").addClass("visible minimized");
 
         $("#show-calendar-button").click(function () {
@@ -22,6 +15,16 @@
             window.currentCalendar.redrawFullCalendar();
         });
     });
+
+    window.drawCalendarCallback = function(){
+      window.activateCalendarWithParams({
+        mode: "free_calendar",
+        date_times: [],
+        email: "<%= @messages_thread.account_email %>",
+        duration: <%= @messages_thread.computed_data[:duration] || 60 %>,
+        compute_meeting_rooms_via_backend: true
+      });
+    };
 
     function reviewData() {
         return $(".full-review-container:not(.already-set) .notation-container").map(function() {
