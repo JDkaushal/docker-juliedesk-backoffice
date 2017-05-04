@@ -683,12 +683,14 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
     calendar.currentlyFetchingWeeks[formattedStart] = 0;
 
-    if(calendar.initialData.computeConstraintsViaBackend) {
-        calendar.addConstraintsDataEventsViaBackend(start, end);
-    }
-    else {
-        calendar.addCal(calendar.getConstraintsDataEvents(start, end));
-    }
+    // Constraints now computed in backend
+
+    // if(calendar.initialData.computeConstraintsViaBackend) {
+    //     calendar.addConstraintsDataEventsViaBackend(start, end);
+    // }
+    // else {
+    //     calendar.addCal(calendar.getConstraintsDataEvents(start, end));
+    // }
 
 
     for(var email in calendar.accountPreferences) {
@@ -848,6 +850,9 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     if(calendar.initialData.compute_meeting_rooms_via_backend) {
         params.compute_meeting_rooms_unavailabilities = true;
     }
+    if(calendar.initialData.constraintsData) {
+        params.constraints_data = _.flatten(_.values(currentCalendar.initialData.constraintsData));
+    }
 
     // if(window.threadComputedData.linked_attendees && window.threadComputedData.linked_attendees[accountPreferencesHash.email]) {
     //     params.linked_attendees = window.threadComputedData.linked_attendees[accountPreferencesHash.email];
@@ -900,6 +905,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
 
         calendar.addAllCals(response.items);
 
+        if(response.constraints_events) {
+            calendar.addCal(calendar.handleConstraintsFromBackend(response.constraints_events));
+        }
+
         if(travelTimeCalculator) {
             // Allow us to detect easily if the events are following or followed by unavailable events
             calendar.calendarAllEvents[accountPreferencesHash.email].push(response.items);
@@ -929,52 +938,57 @@ Calendar.prototype.addConstraintsDataEventsViaBackend = function(startTime, endT
             end: endTime
         },
         function (response) {
-            result = [];
-            _.each(response.data, function(eventsHash, attendeeEmail) {
-
-                _.each(eventsHash.cant, function(ev) {
-
-                    var event = {
-                        summary: attendeeEmail + " not available",
-                        start: {
-                            dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
-                        },
-                        end: {
-                            dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
-                        },
-                        startEditable: false,
-                        durationEditable: false,
-                        calId: "juliedesk-strong-constraints",
-                        isNotAvailableEvent: true,
-                        constraintType: 'cant'
-                    };
-                    result.push(event);
-                });
-
-                _.each(eventsHash.dont_prefers, function(ev) {
-                    var event = {
-                        summary: attendeeEmail + " prefers not",
-                        start: {
-                            dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
-                        },
-                        end: {
-                            dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
-                        },
-                        startEditable: false,
-                        durationEditable: false,
-                        calId: "juliedesk-light-constraints",
-                        isNotAvailableEvent: true,
-                        constraintType: 'dontPrefer'
-                    };
-                    result.push(event);
-                });
-            });
-            calendar.addCal(result);
+            calendar.addCal(calendar.handleConstraintsFromBackend(response.data));
         }
     );
-
 };
 
+Calendar.prototype.handleConstraintsFromBackend = function(data) {
+    var result = [];
+    var calendar = this;
+
+    _.each(data, function(eventsHash, attendeeEmail) {
+
+        _.each(eventsHash.cant, function(ev) {
+
+            var event = {
+                summary: attendeeEmail + " not available",
+                start: {
+                    dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
+                },
+                end: {
+                    dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
+                },
+                startEditable: false,
+                durationEditable: false,
+                calId: "juliedesk-strong-constraints",
+                isNotAvailableEvent: true,
+                constraintType: 'cant'
+            };
+            result.push(event);
+        });
+
+        _.each(eventsHash.dont_prefers, function(ev) {
+            var event = {
+                summary: attendeeEmail + " prefers not",
+                start: {
+                    dateTime: moment(ev.start).tz(calendar.getCalendarTimezone()).format()
+                },
+                end: {
+                    dateTime: moment(ev.end).tz(calendar.getCalendarTimezone()).format()
+                },
+                startEditable: false,
+                durationEditable: false,
+                calId: "juliedesk-light-constraints",
+                isNotAvailableEvent: true,
+                constraintType: 'dontPrefer'
+            };
+            result.push(event);
+        });
+    });
+
+    return result;
+};
 
 Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endTime) {
     var result = [];

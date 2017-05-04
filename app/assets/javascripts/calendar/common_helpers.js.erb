@@ -225,31 +225,38 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
           };
         }
 
+        var data = {
+          start: request.start,
+          end: request.end,
+          email: request.email,
+          calendar_ids: request.calendar_ids,
+          as_at_date: request.as_at_date,
+          compute_meeting_rooms_unavailabilities: request.compute_meeting_rooms_unavailabilities,
+          // This attribute allows us to complement the default calendars to show of a user with others calendars
+          // (Used primarily with the meeting rooms)
+          // As opposed to the calendar_ids attribute that will override them
+          meeting_rooms_to_show: request.meeting_rooms_to_show,
+          // Virtual resources bound to a User via its company, we fetch the events on the associated calendars and return them so we can compute them
+          // and display the duration that are busy on every single one
+          virtual_resources_to_show: request.virtual_resources_to_show,
+          parallelize: true,
+          linked_attendees: request.linked_attendees,
+          calculate_travel_time: calculateTravelTime,
+          appointment: appointment,
+          constraints_data: request.constraints_data
+        };
+
+//        if(currentCalendar && currentCalendar.initialData.constraintsData) {
+//          data.constraints_data = _.flatten(_.values(currentCalendar.initialData.constraintsData));
+//        }
+
         $.ajax({
             url: listEventsUrl,
             // We need to use a post request here because when there are many meeting rooms the request entity becomes too large
             type: "POST",
             tryCount : 0,
             retryLimit : 2,
-            data: {
-                start: request.start,
-                end: request.end,
-                email: request.email,
-                calendar_ids: request.calendar_ids,
-                as_at_date: request.as_at_date,
-                compute_meeting_rooms_unavailabilities: request.compute_meeting_rooms_unavailabilities,
-                // This attribute allows us to complement the default calendars to show of a user with others calendars
-                // (Used primarily with the meeting rooms)
-                // As opposed to the calendar_ids attribute that will override them
-                meeting_rooms_to_show: request.meeting_rooms_to_show,
-                // Virtual resources bound to a User via its company, we fetch the events on the associated calendars and return them so we can compute them
-                // and display the duration that are busy on every single one
-                virtual_resources_to_show: request.virtual_resources_to_show,
-                parallelize: true,
-                linked_attendees: request.linked_attendees,
-                calculate_travel_time: calculateTravelTime,
-                appointment: appointment
-            },
+            data: data,
             beforeSend: function(xhr){
                 xhr.setRequestHeader("Authorization", access_key);
                 if(request.trackingId) {
@@ -264,8 +271,9 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                   if(!window.lastCalendarCheck)
                     window.lastCalendarCheck = (new Date()).toISOString();
                     callback({
-                        items: CommonHelpers.filterEvents(data.items),
-                        key: request.key
+                      items: CommonHelpers.filterEvents(data.items),
+                      constraints_events: data.constraints_events,
+                      key: request.key
                     });
                 }
             },

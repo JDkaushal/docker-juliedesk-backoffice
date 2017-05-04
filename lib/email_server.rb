@@ -74,7 +74,7 @@ module EmailServer
     }
 
     if ENV['STAGING_APP']
-      params[:message][:reply_to_message_id] = ''
+      #params[:message][:reply_to_message_id] = ''
       params[:message][:cc] = ''
       params[:message][:to] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
       params[:message][:subject] = 'Staging: ' + opts[:subject]
