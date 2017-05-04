@@ -8,9 +8,11 @@ window.trackEvent = function(event, params, callback) {
             beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
             dataType: 'json',
             success: function(responseData, textStatus, jqXHR) {
+              if(callback)
                 callback();
             },
             error: function (responseData, textStatus, errorThrown) {
+              if(callback)
                 callback();
             }
         });

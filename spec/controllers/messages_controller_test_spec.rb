@@ -227,7 +227,7 @@ describe MessagesController, :type => :controller do
         allow(OperatorAction).to receive(:create_and_verify)
         allow_any_instance_of(MessageClassification).to receive(:classification)
 
-        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: [], attendees: [{'isPresent' => true, 'email' => 'email@email.com'}]
+        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {}, attendees: {'0' => {'isPresent' => true, 'email' => 'email@email.com'}}
       end
     end
 

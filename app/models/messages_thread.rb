@@ -518,8 +518,8 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def check_recompute_linked_attendees(old_attendees, new_attendees)
-
-    if old_attendees.present? && new_attendees.present?
+    old_attendees ||= {}
+    if new_attendees.present?
       old_attendees_emails = old_attendees.values.map{|a| a['email']}.compact.sort
       new_attendees_emails = new_attendees.values.map{|a| a['isPresent'] == 'true' ? a['email'] : nil}.compact.sort
 
