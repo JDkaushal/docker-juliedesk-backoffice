@@ -64,6 +64,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(["bob.artisans@wanadoo.fr"]) }
     end
 
+    context 'name contain =UTF-8' do
+      let(:content) { "=UTF-8BRMOpc2lyw6kgQ291bGliYWx5= <bob@gmail.com>" }
+      it { is_expected.to match_array(["bob@gmail.com"]) }
+    end
+
   end
 
 

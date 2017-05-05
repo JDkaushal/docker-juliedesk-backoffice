@@ -36,7 +36,7 @@ module ApplicationHelper
       # Remove parenthesis
       str = str.gsub(/\([^\)]*\)/, "")
       str.gsub!('"', '')
-      str.gsub!('=UTF-8Q', '')
+      str.gsub!('=UTF-8', '')
 
       letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
 
