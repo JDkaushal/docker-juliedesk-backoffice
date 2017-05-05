@@ -20,52 +20,34 @@ module ApplicationHelper
     end
   end
 
-  # This is a custom method to parse attendees
-  # It allows to keep not-ascii characters like accents
-  # Performance: 19991/20000 (tested on mails in database vs the other method)
+  def self.find_addresses str
+    result = []
+    email_regex = /(?:[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i
+    clean_name_regex = /<|>|"|,|(\(.*\))/
 
-    def self.parse_attendees_custom str
-      # Convert to string
-      str = "#{str}"
+    str = str.blank? ? "" : str
+    email_addresses = str.scan(email_regex)
+    temp_str = str
+    email_addresses.each do |email_address|
+      next if result.find { |entry| entry[:email].try(:downcase) == email_address.try(:downcase) }
+      before_email, after_email = temp_str.split(email_address, 2)
+      before_email.gsub!(clean_name_regex, '')
+      before_email.strip!
 
-      # Decode what's need to be decoded
-      str = str.gsub(/\=\?utf\-8\?B\?([^\?]*)\?\=/) do |d|
-        Base64.decode64(Regexp.last_match[1]).force_encoding('utf-8')
-      end
-
-      # Remove parenthesis
-      str = str.gsub(/\([^\)]*\)/, "")
-      str.gsub!('"', '')
-      str.gsub!('=UTF-8', '')
-
-      letter_regexp = /(?:(\p{L}))/ # international letters (includes chines, cyrillic,...)
-
-      inside_email_regexp = /(?:#{letter_regexp}|[0-9]|\#)(?:#{letter_regexp}|[0-9]|\'|\.|\-|\+|\_)*@(?:#{letter_regexp}|[0-9]|\-|\.)*(?:\.[a-zA-Z]*){1,2}/
-      inside_name_regexp = /(?:#{letter_regexp}|\#|\s|[0-9]|\⎪|-)(?:#{letter_regexp}|[0-9]|\⎪|\-|\s|\u00A0|\\|\*|"|\'|°|\’|=|\_|\>|\+|\.|:|[0-9]|\&|\@|\?|\/)*/
-      email_regexp = /(?<email>#{inside_email_regexp})/
-      name_regexp = /(?<name>#{inside_name_regexp})(?:\ \(.*\))?/
-
-      possible_formats = [
-          /#{name_regexp} <#{email_regexp}>/,
-          /(?<name>\'#{inside_name_regexp}\')(?:\ \(.*\))? +<#{email_regexp}>/,
-          /(?<name>#{inside_email_regexp}) +<#{email_regexp}>/,
-          /(?<name>\'#{inside_email_regexp}\') +<#{email_regexp}>/,
-          /#{name_regexp} <<#{email_regexp}>(?:[a-zA-Z]|\@)*>/,
-          /<#{email_regexp}>/,
-          /#{email_regexp}/
-      ]
-
-      re = /(?:\, ?|^)(?:#{possible_formats.join("|")})(?=>|$|\,)/
-
-
-      str.to_enum(:scan, re).map do
-        md = Regexp.last_match
-        {name: nil, email: nil}.merge Hash[md.names.map{|n| [n.to_sym, md[n]]}]
-      end
+      result << { email: email_address.downcase, name: before_email }
+      temp_str = after_email
     end
 
+    OpenStruct.new({addresses: result.map { |data_item|
+      add = Mail::Address.new
+      add.address = data_item[:email]
+      add.display_name = data_item[:name] if data_item[:name]
+      add
+    }})
+  end
 
-  def self.find_addresses str
+
+  def self.original_find_addresses str
     # Necessary because Mail::AddressList.new decompose "Simon, Matthieu <Matthieu.Simon@rolandberger.com>" into two mails "Simon" and "Matthieu <Matthieu.Simon@rolandberger.com>"
     # So we need to remove non email string from the field for example
     # "Josephine, Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>" becomes "Vincent <Vincent.Josephine@rolandberger.com>, julie_desk <julie.desk@rolandberger.com>"
@@ -74,7 +56,7 @@ module ApplicationHelper
       str.gsub!('"','')
       str.gsub!(/[\[|\]]/, '')
       str.gsub!(/\\/, '')
-      #str = str.split(',').reject{|s| !s.include?('@')}.join(',')
+      str = str.split(',').reject{|s| !s.include?('@')}.join(',')
       str.strip!
     end
 
@@ -88,25 +70,7 @@ module ApplicationHelper
       end
     end
 
-    res_custom = begin
-      data_items = self.parse_attendees_custom(str)
-      al = OpenStruct.new({addresses: data_items.map do |data_item|
-        add = Mail::Address.new
-        add.address = data_item[:email]
-        add.display_name = data_item[:name] if data_item[:name]
-        add
-      end})
-      al
-    rescue Exception => e
-      p e
-      nil
-    end
-
-    if res_custom.present?
-      res_custom
-    else
-      res
-    end
+    res
   end
 
   def self.strip_contact_name contact

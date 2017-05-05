@@ -316,12 +316,10 @@ module ThreadAccountAssociation
     end
 
     def extract_recipients_emails(recipients)
-      addresses = ApplicationHelper.parse_attendees_custom(recipients.join(','))
-
-      addresses.group_by{ |contact|
-        contact[:email]
-      }.map{ |_, contacts|
-        contacts.max{|contact| "#{contact[:name]}".length}[:email]
+      recipients_str = recipients.join(',')
+      addresses = ApplicationHelper.find_addresses(recipients_str).addresses
+      addresses.group_by { |contact| contact.address }.map{ |_, contacts|
+        contacts.max{|contact| "#{contact.name}".length}.try(:address)
       }
     end
 

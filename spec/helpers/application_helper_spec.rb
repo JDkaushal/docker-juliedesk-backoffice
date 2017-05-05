@@ -19,6 +19,21 @@ describe ApplicationHelper do
     let(:content) { "" }
     subject { ApplicationHelper.find_addresses(content).addresses.map(&:address) }
 
+    context "when string contain only email" do
+      let(:content) { 'bob.doe@yopmail.com' }
+      it { is_expected.to eq(['bob.doe@yopmail.com']) }
+    end
+
+    context "when string contain email and name" do
+      let(:content) { 'Bob <bob.doe@yopmail.com>' }
+      it { is_expected.to eq(['bob.doe@yopmail.com']) }
+    end
+
+    context "when string contain multiple email and name" do
+      let(:content) { 'John <john@yopmail.com>, Bob <bob.doe@yopmail.com>' }
+      it { is_expected.to eq(['john@yopmail.com', 'bob.doe@yopmail.com']) }
+    end
+
     context "when name contains special char ':'" do
       let(:content) { 'Bob Doe : Bob Doe <bob.doe@yopmail.com>' }
       it { is_expected.to eq(['bob.doe@yopmail.com']) }
@@ -41,7 +56,7 @@ describe ApplicationHelper do
 
     context "when name and email contain an apostrophe" do
       let(:content) { "\"d'Argentre,Alexis\" <Alexis.d'Argentre@gartner.com>" }
-      it { is_expected.to match_array(["Alexis.d'Argentre@gartner.com"]) }
+      it { is_expected.to match_array(["alexis.d'argentre@gartner.com"]) }
     end
 
     context "when name contains numbers" do
