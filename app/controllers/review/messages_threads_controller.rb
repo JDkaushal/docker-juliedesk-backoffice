@@ -19,8 +19,9 @@ class Review::MessagesThreadsController < ReviewController
     @messages_thread.re_import
 
     @messages_thread.account
-    operator_ids = Operator.where("email <> 'guillaume@juliedesk.com'").map(&:id)
-    @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, operator_id: operator_ids).map(&:messages_thread_id).uniq.length
+
+    guillaume_operator_id = Operator.find_by_email('guillaume@juliedesk.com').id
+    @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).where.not(operator_id: guillaume_operator_id).select(:messages_thread_id).distinct.count
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
