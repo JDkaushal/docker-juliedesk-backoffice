@@ -47,24 +47,61 @@ class Review::OperatorsController < ReviewController
 
     # last 30 days
     operator_actions = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    operator_actions_count = operator_actions.count
+
     random_actions_last_30_days_count = operator_actions.where.not(messages_thread_id: flag_messages_thread_ids).count
-    random_review_last_30_days_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
-    flagged_review_last_30_days_count = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+
+    random_reviews_last_30_days = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids)
+    random_review_last_30_days_count = random_reviews_last_30_days.count
+    random_error_last_30_days_count = random_reviews_last_30_days.where(review_notation: [0, 1, 2, 3]).count
+
+    flagged_reviews_last_30_days = operator_actions.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids)
+    flagged_review_last_30_days_count = flagged_reviews_last_30_days.count
+    flagged_error_last_30_days_count = flagged_reviews_last_30_days.where(review_notation: [0, 1, 2, 3]).count
+
+    random_actions_last_30_days_percent = operator_actions_count == 0 ? nil : random_actions_last_30_days_count*1.0/operator_actions_count
+    flagged_actions_last_30_days_percent = operator_actions_count == 0 ? nil : (operator_actions_count - random_actions_last_30_days_count)*1.0/operator_actions_count
+
     total_count_month = operator_actions.count
 
 
     # last 7 days
     operator_actions_week = OperatorActionsGroup.where("initiated_at > ?", DateTime.now - 7.days).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    operator_actions_week_count = operator_actions_week.count
+
     random_actions_last_7_days_count = operator_actions_week.where.not(messages_thread_id: flag_messages_thread_ids).count
-    random_review_last_7_days_count = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
-    flagged_review_last_7_days_count = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+
+    random_reviews_last_7_days = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids)
+    random_review_last_7_days_count = random_reviews_last_7_days.count
+    random_error_last_7_days_count = random_reviews_last_7_days.where(review_notation: [0, 1, 2, 3]).count
+
+    flagged_reviews_last_7_days = operator_actions_week.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids)
+    flagged_review_last_7_days_count = flagged_reviews_last_7_days.count
+    flagged_error_last_7_days_count = flagged_reviews_last_7_days.where(review_notation: [0, 1, 2, 3]).count
+
+    random_actions_last_7_days_percent = operator_actions_week_count == 0 ? nil : random_actions_last_7_days_count*1.0/operator_actions_week_count
+    flagged_actions_last_7_days_percent = operator_actions_week_count == 0 ? nil : (operator_actions_week_count - random_actions_last_7_days_count)*1.0/operator_actions_week_count
 
 
     # current month
     operator_actions_current_month = OperatorActionsGroup.where("initiated_at > ?", DateTime.now.beginning_of_month).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE)
+    operator_actions_current_month_count = operator_actions_current_month.count
+
     random_actions_current_month_count = operator_actions_current_month.where.not(messages_thread_id: flag_messages_thread_ids).count
-    random_review_current_month_count = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids).count
-    flagged_review_current_month_count = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids).count
+
+    random_reviews_current_month = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"]).where.not(messages_thread_id: flag_messages_thread_ids)
+    random_review_current_month_count = random_reviews_current_month.count
+    random_error_current_month_count = random_reviews_current_month.where(review_notation: [0, 1, 2, 3]).count
+
+
+    flagged_reviews_current_month = operator_actions_current_month.where(review_status: ["reviewed", "learnt", "to_learn"], messages_thread_id: flag_messages_thread_ids)
+    flagged_review_current_month_count = flagged_reviews_current_month.count
+    flagged_error_current_month_count = flagged_reviews_current_month.where(review_notation: [0, 1, 2, 3]).count
+
+    random_actions_current_month_percent = operator_actions_current_month_count == 0 ? nil : random_actions_current_month_count*1.0/operator_actions_current_month_count
+    flagged_actions_current_month_percent = operator_actions_current_month_count == 0 ? nil : (operator_actions_current_month_count - random_actions_current_month_count)*1.0/operator_actions_current_month_count
+
+
 
     flag_count = OperatorActionsGroup.where("initiated_at > ?", reference_date_month).where("initiated_at < ?", DateTime.now - 1.days).where(review_status: nil, messages_thread_id: flag_messages_thread_ids).where.not(label: OperatorActionsGroup::LABEL_ARCHIVE).count
 
@@ -154,6 +191,18 @@ class Review::OperatorsController < ReviewController
         total_errors_percentage_for_all_operators: errors_percentage_global,
         operators: operators_data
     }
+
+    if random_actions_last_7_days_percent && random_review_last_7_days_count > 0 && flagged_actions_last_7_days_percent && flagged_review_last_7_days_count > 0
+      @data[:last_7_days_error_percent] = (random_error_last_7_days_count*1.0 / random_review_last_7_days_count)*random_actions_last_7_days_percent + (flagged_error_last_7_days_count*1.0 / flagged_review_last_7_days_count)*flagged_actions_last_7_days_percent
+    end
+
+    if random_actions_last_30_days_percent && random_review_last_30_days_count > 0 && flagged_actions_last_30_days_percent && flagged_review_last_30_days_count > 0
+      @data[:last_30_days_error_percent] = (random_error_last_30_days_count*1.0 / random_review_last_30_days_count)*random_actions_last_30_days_percent + (flagged_error_last_30_days_count*1.0 / flagged_review_last_30_days_count)*flagged_actions_last_30_days_percent
+    end
+
+    if random_actions_current_month_percent && random_review_current_month_count > 0 && flagged_actions_current_month_percent && flagged_review_current_month_count > 0
+      @data[:current_month_error_percent] = (random_error_current_month_count*1.0 / random_review_current_month_count)*random_actions_current_month_percent + (flagged_error_current_month_count*1.0 / flagged_review_current_month_count)*flagged_actions_current_month_percent
+    end
   end
 
   def messages_thread_ids_to_review

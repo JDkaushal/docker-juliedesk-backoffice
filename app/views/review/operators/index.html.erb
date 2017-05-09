@@ -58,6 +58,7 @@
         <th></th>
         <th>Random Review</th>
         <th>Flagged Review</th>
+        <th>Error %</th>
       </tr>
     </thead>
 
@@ -71,6 +72,11 @@
           <% end %>
         </td>
         <td><%= @data[:flagged_review_last_7_days_count] %></td>
+        <td>
+          <% unless @data[:last_7_days_error_percent].nil? %>
+              (<%= number_to_percentage(@data[:last_7_days_error_percent], precision: 2) %>)
+          <% end %>
+        </td>
       </tr>
 
       <tr>
@@ -82,6 +88,11 @@
           <% end %>
         </td>
         <td><%= @data[:flagged_review_current_month_count] %></td>
+        <td>
+          <% unless @data[:current_month_error_percent].nil? %>
+              (<%= number_to_percentage(@data[:current_month_error_percent], precision: 2) %>)
+          <% end %>
+        </td>
       </tr>
 
       <tr>
@@ -93,6 +104,11 @@
           <% end %>
         </td>
         <td><%= @data[:flagged_review_last_30_days_count] %></td>
+        <td>
+          <% unless @data[:last_30_days_error_percent].nil? %>
+              (<%= number_to_percentage(@data[:last_30_days_error_percent], precision: 2) %>)
+          <% end %>
+        </td>
       </tr>
     </tbody>
   </table>
