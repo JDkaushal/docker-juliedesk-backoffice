@@ -307,7 +307,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
     else if(request.action == "create_event") {
 
-      if(moment(request.end).isBefore(moment())) {
+      if(moment(request.end).isBefore(moment()) && (!request.recurrence || request.recurrence.length == 0)) {
         alert('You cannot create an event that end before the present Date');
         $("#create-event-button").attr('disabled', false);
         $(".creating-event-message").html("");
@@ -419,7 +419,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             saveAttendeesStaging(request.event_id, realAttendees);
         }
 
-      if(moment(request.end).isBefore(moment())) {
+        // We allow to update an event in the past if is a recurring one
+      if(moment(request.end).isBefore(moment()) && (!request.recurrence || request.recurrence.length == 0)) {
         alert('You cannot edit an event that end before the present Date');
       } else {
         if(window.currentEventTile) {

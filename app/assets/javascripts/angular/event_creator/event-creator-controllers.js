@@ -66,7 +66,6 @@
                 $scope.selectedDateRaw = filteredDates[0];
                 window.createEventButtonClickHandler({forceTimezone: window.verifiedDatesByAi.timezone, createdFromAI: true});
             }
-
         };
         
         $scope.setRawDatesFromData = function() {
