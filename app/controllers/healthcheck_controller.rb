@@ -1,4 +1,6 @@
 class HealthcheckController < ApiController
+  skip_before_filter :authenticate
+  
   def check
     
     # If no signalisation file is present, answer with a HTTP 200
