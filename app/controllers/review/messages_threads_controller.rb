@@ -47,7 +47,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @messages_thread.account
 
-    @to_learn_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, operator_id: params[:operator_id]).map(&:messages_thread_id).uniq.length
+    @to_learn_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, operator_id: params[:operator_id]).select(:messages_thread_id).distinct.count
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
@@ -60,7 +60,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @messages_thread.account
 
-    @to_group_review_count = OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).map(&:messages_thread_id).uniq.length
+    @to_group_review_count = OperatorActionsGroup.where(group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN).select(:messages_thread_id).distinct.count
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
