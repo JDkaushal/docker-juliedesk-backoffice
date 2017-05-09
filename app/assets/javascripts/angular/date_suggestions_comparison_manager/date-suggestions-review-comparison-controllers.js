@@ -24,7 +24,9 @@
         $scope.now = moment();
         $scope.start = $scope.now.clone().startOf('isoWeek');
         $scope.eventType = "call";
-        $scope.all_day_mode = "no_all_day_event_on_range";
+        $scope.all_day_mode = "no_all_day_event_on_suggestions";
+
+        $scope.eventTypeOptions = ["coffee", "meeting", "lunch", "hangout", "appointment", "call", "work_session", "dinner", "skype", "visio", "breakfast", "confcall", "drink", "webex"] ;
 
 
         $scope.previousWeekStart = function() {
@@ -52,6 +54,12 @@
         };
 
         $scope.$watch('all_day_mode', function(previousValue, newValue) {
+            if(newValue != previousValue) {
+                $scope.fetch();
+            }
+        });
+
+        $scope.$watch('eventType', function(previousValue, newValue) {
             if(newValue != previousValue) {
                 $scope.fetch();
             }
