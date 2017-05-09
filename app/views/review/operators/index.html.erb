@@ -74,7 +74,7 @@
         <td><%= @data[:flagged_review_last_7_days_count] %></td>
         <td>
           <% unless @data[:last_7_days_error_percent].nil? %>
-              (<%= number_to_percentage(@data[:last_7_days_error_percent], precision: 2) %>)
+              (<%= number_to_percentage(@data[:last_7_days_error_percent]*100, precision: 2) %>)
           <% end %>
         </td>
       </tr>
@@ -100,7 +100,7 @@
         <td>
           <%= @data[:random_review_last_30_days_count] %>
           <% unless @data[:random_review_last_30_days_percent].nil? %>
-            (<%= number_to_percentage(@data[:random_review_last_30_days_percent]*100, precision: 2) %>)
+            (<%= number_to_percentage(@data[:random_review_last_30_days_percent], precision: 2) %>)
           <% end %>
         </td>
         <td><%= @data[:flagged_review_last_30_days_count] %></td>
