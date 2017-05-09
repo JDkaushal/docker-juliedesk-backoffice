@@ -798,15 +798,6 @@
         };
 
         $scope.buildInfoEvent = function(email, eventType, event, timeDuration, destination) {
-            if(window.featuresHelper.isFeatureActive("travel_time_v2")){
-                $scope.buildInfoEventV2(email, eventType, event, timeDuration, destination);
-            }
-            else {
-                $scope.buildInfoEventV1(email, eventType, event, timeDuration, destination);
-            }
-        }
-
-        $scope.buildInfoEventV1 = function(email, eventType, event, timeDuration, destination) {
             var referenceDate, travelTimeBefore, travelTimeAfter, remainingTime, newRefDate, displayedTime;
 
             var usedEventType = eventType;
@@ -857,83 +848,6 @@
         };
 
         // Modified it beyond initial expectations, should probably refactor it by splitting logic into separate functions for each event types (travelTime and defaultDelay)
-        $scope.buildInfoEventV2 = function(email, eventType, event, timeDuration, destination) {
-            var defaultDelayTime = $scope.defaultDelayByClient[email];
-
-            if(eventType == 'travelTime') {
-                if(event.travel_time_before) {
-                    var realTravelTimeBefore = Math.round(event.travel_time_before.duration/60);
-
-                    // Default Values
-                    var travelReferenceDate = (event.start.dateTime || event.start.date);
-                    var displayedTravelTimeBefore = realTravelTimeBefore;
-                    var delayRefDate = moment(travelReferenceDate).clone().add(-realTravelTimeBefore, 'm');
-                    var displayedDelayTimeBefore = defaultDelayTime;
-
-                    if(event.max_duration_before) {
-                        var maxDurationBefore = Math.round(event.max_duration_before/60);
-                        var remainingTime = maxDurationBefore;
-
-                        delayRefDate = (event.start.dateTime || event.start.date);
-                        travelReferenceDate = null;
-
-                        if(remainingTime <= defaultDelayTime) {
-                            displayedDelayTimeBefore = remainingTime;
-                        }
-                        else {
-                            remainingTime -= defaultDelayTime;
-                            travelReferenceDate = moment(delayRefDate).clone();
-                            if(remainingTime < realTravelTimeBefore) {
-                                displayedTravelTimeBefore = remainingTime;
-                                delayRefDate = moment(delayRefDate).clone().add(-remainingTime, 'm');
-                            }
-                            else {
-                                displayedTravelTimeBefore = realTravelTimeBefore;
-                                delayRefDate = moment(delayRefDate).clone().add(-realTravelTimeBefore, 'm');
-                            }
-                        }
-                    }
-
-                    if(delayRefDate)
-                        $scope.createInfoEvent(email, 'defaultDelay', 'before', delayRefDate, $scope.defaultDelayByClient[email], displayedDelayTimeBefore, destination);
-                    if(travelReferenceDate)
-                        $scope.createInfoEvent(email, eventType, 'before', travelReferenceDate, realTravelTimeBefore, displayedTravelTimeBefore , destination);
-
-                }
-
-
-                if(event.travel_time_after) {
-                    var realTravelTimeAfter = Math.round(event.travel_time_after.duration/60);
-
-                    // Default Values
-                    var delayRefDate = (event.end.dateTime || event.end.date);
-                    var displayedDelayTimeAfter = defaultDelayTime;
-                    var travelReferenceDate = moment(delayRefDate).clone().add(defaultDelayTime, 'm');
-                    var displayedTravelTimeAfter = realTravelTimeAfter;
-
-
-                    if(event.max_duration_after) {
-                        var maxDurationAfter = Math.round(event.max_duration_after/60);
-                        var remainingTime = maxDurationAfter;
-
-                        if(remainingTime <= defaultDelayTime) {
-                            travelReferenceDate = null;
-                            displayedDelayTimeAfter = remainingTime;
-                        }
-                        else {
-                            remainingTime -= defaultDelayTime;
-                            displayedTravelTimeAfter = remainingTime < realTravelTimeAfter ? remainingTime : realTravelTimeAfter;
-                        }
-                    }
-
-                    if(delayRefDate)
-                        $scope.createInfoEvent(email, 'defaultDelay', 'after', delayRefDate, $scope.defaultDelayByClient[email], displayedDelayTimeAfter, destination);
-                    if(travelReferenceDate)
-                        $scope.createInfoEvent(email, eventType, 'after', travelReferenceDate, realTravelTimeAfter, displayedTravelTimeAfter , destination);
-                }
-            }
-
-        };
 
         $scope.createInfoEvent = function(email, eventType, type, referenceDate, realTravelTime, displayedTravelTime, destination) {
             var infoEvent = {travelTime: realTravelTime};

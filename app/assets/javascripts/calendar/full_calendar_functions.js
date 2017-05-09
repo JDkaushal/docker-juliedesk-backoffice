@@ -227,7 +227,7 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
     if(event.isTravelTime) {
         travelTimeTileCtrl.display(event, $(jsEvent.currentTarget));
         travelTimeTileCtrl.$apply();
-    } else {
+    } else if(!event.isDefaultDelay){
         if (event.beingAdded) {
 
             if(calendar.getMode() == "suggest_dates" && event.editable) {

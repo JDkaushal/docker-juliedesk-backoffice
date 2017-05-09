@@ -213,15 +213,14 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
     else if(request.action == "events") {
         var listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
-
         var timeTravelManager = $('#travel_time_calculator').scope();
         var appointment = null;
-        var calculateTravelTime = !!(window.featuresHelper.isFeatureActive("travel_time_v2") && timeTravelManager && window.getCurrentAppointment());
+        var calculateTravelTime = !!(window.featuresHelper.isFeatureActive("travel_time_v2") && timeTravelManager);
 
         if(calculateTravelTime) {
           appointment = {
-            kind: window.getCurrentAppointment().kind,
-            location: $("#location").val()
+            kind: window.threadComputedData.appointment_nature,
+            location: window.threadComputedData.location
           };
         }
 
@@ -242,6 +241,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
           parallelize: true,
           linked_attendees: request.linked_attendees,
           calculate_travel_time: calculateTravelTime,
+          build_travel_events: calculateTravelTime,
           appointment: appointment,
           constraints_data: request.constraints_data
         };

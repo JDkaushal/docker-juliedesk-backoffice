@@ -662,7 +662,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     var momentedEnd = moment(end);
     var formattedStart = momentedStart.format();
 
-    var travelTimeCalculator = $('#travel_time_calculator').scope();
+    var travelTimeCalculator = window.featuresHelper.isFeatureActive('travel_time_v2') ? null : $('#travel_time_calculator').scope();
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
     var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
 
@@ -1279,6 +1279,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         computed_location: ev.computed_location,
         travel_time_before: ev.travel_time_before,
         travel_time_after: ev.travel_time_after,
+        position: ev.position,
         max_duration_before: ev.max_duration_before,
         max_duration_before: ev.max_duration_before,
         description: ev.description,
@@ -1304,6 +1305,46 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         event_history_event_id: ev.is_historical_data ? ev.event_id : null
     };
     eventData.isLocated = calendar.computeIsLocated(eventData);
+
+    if(ev.is_travel_time)
+        Object.assign(eventData, calendar.computeTravelTimeData(ev));
+    if(ev.is_travel_delay)
+        Object.assign(eventData, calendar.computeDefaultDelayData(ev));
+
+    return eventData;
+};
+
+
+
+Calendar.prototype.computeDefaultDelayData = function(ev) {
+    var eventData = {};
+    eventData.isDefaultDelay = true;
+    eventData.travelTimeOriginalStartTime = moment(ev.original_start);
+    eventData.travelTimeOriginalEndTime = moment(ev.original_end);
+    eventData.eventInfoType = ev.position;
+    eventData.location = ev.computed_location;
+    eventData.travelTime = Math.round(ev.duration/60);
+    eventData.isWarning = ev.truncated;
+    eventData.location = ev.location;
+    eventData.travelTimeType = 'defaultDelay';
+    return eventData;
+};
+
+Calendar.prototype.computeTravelTimeData = function(ev) {
+    var eventData = {};
+    eventData.isTravelTime = true;
+    eventData.travelTimeOriginalStartTime = moment(ev.original_start);
+    eventData.travelTimeOriginalEndTime = moment(ev.original_end);
+    eventData.eventInfoType = ev.position;
+    eventData.location = ev.computed_location;
+    eventData.travelTime = Math.round(ev.duration/60);
+    eventData.isWarning = ev.truncated;
+    eventData.location = ev.location;
+    eventData.location = ev.position == 'before' ? ev.to_location : ev.from_location;
+    eventData.travelTimeType = 'travelTime';
+    if(ev.from_location && ev.to_location)
+        eventData.travelTimeGoogleDestinationUrl = 'https://www.google.com/maps/dir/' + encodeURIComponent(ev.from_location)  + '/' + encodeURIComponent(ev.to_location);
+
     return eventData;
 };
 
