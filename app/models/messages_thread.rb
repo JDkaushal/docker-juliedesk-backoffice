@@ -162,7 +162,7 @@ class MessagesThread < ActiveRecord::Base
     # Les éléments en commun sont les récipiendaires qui sont clients chez nous et dont on a perdu les accès à l'un de leurs calendriers
     recipients_clients = recipients.select{|recipient_email| accounts_cache[recipient_email].present?}
 
-    recipients_with_lost_access = blocking_users(recipients_clients, users_with_lost_access)
+    recipients_with_lost_access = blocking_users(Set.new(recipients_clients), users_with_lost_access)
 
     # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
     if recipients_with_lost_access.size > 0
