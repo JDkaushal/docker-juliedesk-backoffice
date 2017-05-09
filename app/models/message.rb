@@ -695,6 +695,7 @@ class Message < ActiveRecord::Base
       location = julie_message_hash['location']
       duration = julie_message_hash['duration']
       notes = julie_message_hash['notes']
+      selectingOccurrence = julie_message_hash['selectingOccurrence']
 
       # Try to find an existing thread which would have resulted in the given event
       existing_message = JulieAction.where(event_id: event_id, calendar_id: calendar_id).first.try(:message_classification).try(:message)
@@ -727,6 +728,16 @@ class Message < ActiveRecord::Base
                                         reply_to_message_id:  copy_response['id']
                                     })
       else
+
+        # When selecting an occurrence to postpone and we have not already it in DB (it will have a '__' in its id)
+        # We will add the occurrence to the calendar server, so we can interact with it independently of the master recurring event
+        if selectingOccurrence && event_id.include?('__')
+          created_occurrence_in_db = PostponeEvents::OccurrenceCreator.new(julie_message_hash).create
+
+          if created_occurrence_in_db.present? && created_occurrence_in_db['event_id'].present?
+            event_id = created_occurrence_in_db['event_id']
+          end
+        end
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
 
         email_params = {

@@ -45,7 +45,8 @@ class Account
                 :calendar_access_lost,
                 :ignore_non_all_day_free_events,
                 :circle_of_trust,
-                :lunch_time_preference
+                :lunch_time_preference,
+                :gender
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -100,6 +101,7 @@ class Account
     account.ignore_non_all_day_free_events = data['ignore_non_all_day_free_events']
     account.circle_of_trust = data['circle_of_trust']
     account.lunch_time_preference = data['lunch_time_preference']
+    account.gender = data['gender']
 
     account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
 

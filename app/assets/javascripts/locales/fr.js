@@ -318,6 +318,10 @@ window.wordings['fr'] = {
         at: 'à'
     },
     gender_reference: {
+        account_tile: {
+            M: 'M.',
+            F: 'Mme.'
+        },
       with_name: {
           normal: {
               M: "M.",
@@ -349,6 +353,7 @@ window.wordings['fr'] = {
         recurring_event: {
             this_event_is_part_of_recurring: "Cet évènement fait partie d'un évènement récurrent.",
             what_to_update: "Quelles occurrences voulez-vous mettre à jour ?",
+            what_to_select: "Quelles occurrences voulez-vous sélectionner?",
             what_to_delete: "Quelles occurrences voulez-vous supprimer ?",
             this_occurrence: "Cette occurrence",
             all_occurrences: "Toutes les occurrences"

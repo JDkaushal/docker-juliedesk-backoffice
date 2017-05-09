@@ -58,7 +58,11 @@
 
 <div class="email <%= (local_assigns[:highlight]) ? "highlighted" : "" %> <%= (local_assigns[:highlight] || !email['read'] || local_assigns[:last])? "extended" : "" %> email-<%= message.server_message_id %> <%= (message.from_me?) ? "from-me" : "" %> <%= message_not_read ? 'not-read' : '' %><%= email_not_sent ? 'not-sent' : '' %>  " id="<%= message.server_message_id %>" data-received-at="<%=email['date']%>" data-message-id="<%= message.id %>" <%=local_assigns[:expend] ? 'expanded' : '' %>>
   <% if email_not_sent %>
-    <span class="email-not-sent-sprite"></span>
+      <div class="email-not-sent-wrapper">
+        <span class="email-not-sent-sprite"></span>
+        <br/>
+        <span class="email-not-sent-message">Unsent email</span>
+      </div>
   <% end %>
 
   <% if (local_assigns[:reviewing_status] == "review" || local_assigns[:reviewing_status] == "learn") && operator_actions_group %>

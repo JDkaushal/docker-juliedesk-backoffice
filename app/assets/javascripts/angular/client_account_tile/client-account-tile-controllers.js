@@ -122,6 +122,20 @@
                 });
             });
         };
+
+        $scope.computeAccountGender = function(account) {
+            var result = '';
+
+            if(account.gender) {
+                result = localize("gender_reference.account_tile." + account.gender);
+            }
+
+            return result;
+        };
+
+        $scope.computeAccountDisplayName = function(account) {
+            return [$scope.computeAccountGender(account), account.full_name].join(' ');
+        };
     }]);
 
     $(function () {

@@ -69,12 +69,13 @@ Calendar.prototype.redrawEventDetailsFromEvent = function(event) {
         accountEmail: calendar.findAccountEmailForEvent(event),
         uxElement: 'calendar',
         locale: locale,
-        selectEventCallback: function() {
+        selectEventCallback: function(selectingOccurrence) {
+          selectingOccurrence = selectingOccurrence || false;
             // - - - - - - - - - - - - - - - - - -
             // Fix for postponing events on calendars that load attendees on details
             calendar.currentEvent.attendees = calendar.currentEventTile.event.attendees;
             // - - - - - - - - - - - - - - - - - -
-            calendar.selectEvent(calendar.currentEvent);
+            calendar.selectEvent(calendar.currentEvent, selectingOccurrence);
             $container.fadeOut(200);
             //calendar.showEventDetails(calendar.currentEvent);
         },

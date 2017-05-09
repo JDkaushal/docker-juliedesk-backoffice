@@ -122,15 +122,7 @@
                   $('#location_instructions_tracking_btn').attr('data-tracking-event', 'Click_on_validate_location');
               }
 
-              if(currentAppointment.kind == 'lunch' && window.threadAccount) {
-                var splittedLunchTimePreference = String(window.threadAccount.lunch_time_preference).split('');
-                splittedLunchTimePreference.splice(-2, 0, 'h');
-                $('#lunch_time_preference_value').html(splittedLunchTimePreference.join(''));
-                $('.lunch-time-preference').show();
-              } else {
-                $('.lunch-time-preference').hide();
-                $('#lunch_time_preference_value').html('');
-              }
+              displayLunchTimePreferences(currentAppointment);
             }
 
             if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
@@ -410,8 +402,25 @@
       initGooglePlacesAutoCompleteOnLocationField();
       initAllowedAttendeesEmails();
 
-      checkIfDisplayMessageNotSentLayer();
+      var currentAppointment = window.getCurrentAppointment();
+
+      if(currentAppointment) {
+        displayLunchTimePreferences(currentAppointment);
+      }
+      //checkIfDisplayMessageNotSentLayer();
     });
+
+    function displayLunchTimePreferences(currentAppointment) {
+      if(currentAppointment.kind == 'lunch' && window.threadAccount) {
+        var splittedLunchTimePreference = String(window.threadAccount.lunch_time_preference).split('');
+        splittedLunchTimePreference.splice(-2, 0, 'h');
+        $('#lunch_time_preference_value').html(splittedLunchTimePreference.join(''));
+        $('.lunch-time-preference').show();
+      } else {
+        $('.lunch-time-preference').hide();
+        $('#lunch_time_preference_value').html('');
+      }
+    }
 
     function getCurrentOperatorPrivilegeLevel() {
       return $('body').data('operatorPrivilege');

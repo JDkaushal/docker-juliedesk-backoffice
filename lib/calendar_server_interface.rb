@@ -2,7 +2,8 @@ class CalendarServerInterface < BaseApiCaller
 
   ENDPOINTS = {
       get_owner_event: {type: :get, url: '/api/v1/events/get_owner_event'}.freeze,
-      get_event: {type: :get, url: '/api/v1/events/get_event'}.freeze
+      get_event: {type: :get, url: '/api/v1/events/get_event'}.freeze,
+      create_occurrence: {type: :post, url: '/api/v1/events/create_occurrence'}.freeze
   }.freeze
 
   def initialize

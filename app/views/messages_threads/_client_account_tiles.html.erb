@@ -26,7 +26,7 @@
     <div class="account-status" ng-hide="account.isMain">Autre client participant</div>
     <div class="account-inside-separator"></div>
     <div class="account-name-container">
-      <span class="account-name">{{ account.full_name }}</span>
+      <span class="account-name">{{ computeAccountDisplayName(account) }}</span>
       <span class="change-account-link" ng-click="initiateChangeAccount()" ng-show="account.isMain">edit</span>
     </div>
     <div class="account-current-time-container">

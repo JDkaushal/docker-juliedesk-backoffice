@@ -267,14 +267,16 @@ Calendar.prototype.refreshMeetingRoomSelectOptions = function() {
     $('#meeting-rooms-manager').scope().populateCreateEventRoomSelect();
 };
 
-Calendar.prototype.selectEvent = function (event) {
+Calendar.prototype.selectEvent = function (event, selectingOccurrence) {
     var calendar = this;
     if(event.isSelected) {
         event.isSelected = false;
+        event.selectingOccurrence = selectingOccurrence;
         calendar.selectedEvents.splice(calendar.selectedEvents.indexOf(event), 1)
     }
     else {
         event.isSelected = true;
+        event.selectingOccurrence = selectingOccurrence;
         calendar.selectedEvents.push(event);
     }
 
@@ -1465,7 +1467,8 @@ Calendar.prototype.drawExternalEventSelection = function () {
                notes: event.description,
                calendar_login_username: event.calendar_login_username,
                url: event.url,
-               organizerEmail: event.organizerEmail
+               organizerEmail: event.organizerEmail,
+               selectingOccurrence: event.selectingOccurrence
            }
         })
     }, "*");

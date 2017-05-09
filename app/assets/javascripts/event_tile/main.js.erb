@@ -920,6 +920,39 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
         });
     }
 };
+
+// Used to differentiate occurrence from main event when selecting a recurring event to report
+EventTile.prototype.confirmRecurringEventSelect = function(params) {
+
+  var eventTile = this;
+  eventTile.$selector.find(".recurrence-confirm-container").html(HandlebarsTemplates['event_tile/recurrence_confirm_popup']()).fadeIn(200);
+
+  // Wordings
+  eventTile.$selector.find(".recurrence-confirm-container .message .message-situation").html(localize("events.recurring_event.this_event_is_part_of_recurring"));
+  eventTile.$selector.find(".recurrence-confirm-container .message .message-question").html(localize("events.recurring_event.what_to_select"));
+
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-all-occurrences-button").html(localize("events.recurring_event.all_occurrences"));
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-this-occurrence-button").html(localize("events.recurring_event.this_occurrence"));
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-cancel-button").html(localize("common.cancel"));
+
+
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-cancel-button").click(function() {
+    eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+  });
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-all-occurrences-button").click(function() {
+    eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+    if(params.allOccurrencesCallback) {
+      params.allOccurrencesCallback();
+    }
+  });
+  eventTile.$selector.find(".recurrence-confirm-container .recurrence-confirm-this-occurrence-button").click(function() {
+    eventTile.$selector.find(".recurrence-confirm-container").fadeOut(200);
+    if(params.thisOccurrenceCallback) {
+      params.thisOccurrenceCallback();
+    }
+  });
+};
+
 EventTile.prototype.confirmRecurringEventUpdate = function(params) {
 
     var eventTile = this;
@@ -1208,7 +1241,21 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-select-button").click(function(e) {
+      if(eventTile.recurringEvent) {
+        eventTile.confirmRecurringEventSelect({
+          mode: "delete",
+          thisOccurrenceCallback: function() {
+            if(eventTile.selectEventCallback)  eventTile.selectEventCallback(true);
+          },
+          allOccurrencesCallback: function() {
+            if(eventTile.selectEventCallback)  eventTile.selectEventCallback();
+          }
+        });
+
+
+      } else {
         if(eventTile.selectEventCallback)  eventTile.selectEventCallback();
+      }
     });
 
     eventTile.$selector.find(".add-attendee-button").click(function(e) {
