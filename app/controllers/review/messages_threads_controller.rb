@@ -20,7 +20,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @messages_thread.account
 
-    guillaume_operator_id = Operator.find_by_email('guillaume@juliedesk.com').id
+    guillaume_operator_id = Operator.find_by_email('guillaume@juliedesk.com').try(:id)
     @to_review_count = OperatorActionsGroup.where(review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW).where.not(operator_id: guillaume_operator_id).select(:messages_thread_id).distinct.count
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
