@@ -30,12 +30,19 @@
                     $scope.currentStartDate = travelTimeEvent.travelTimeOriginalStartTime.locale('fr');
                     $scope.currentEndDate = travelTimeEvent.travelTimeOriginalEndTime.locale('fr');
 
-                    if(travelTimeEvent.eventInfoType == 'before') {
-                        $scope.currentOrigin = window.threadComputedData.location;
-                        $scope.currentDestination = travelTimeEvent.location || 'Non défini';
-                    } else {
-                        $scope.currentOrigin = travelTimeEvent.location || 'Non défini';
-                        $scope.currentDestination = window.threadComputedData.location;
+
+                    if('from_location' in travelTimeEvent && 'to_location' in travelTimeEvent) {
+                        $scope.currentOrigin = travelTimeEvent.from_location || 'Non défini';
+                        $scope.currentDestination = travelTimeEvent.to_location || 'Non défini';
+                    }
+                    else {
+                        if(travelTimeEvent.eventInfoType == 'before') {
+                            $scope.currentOrigin = window.threadComputedData.location;
+                            $scope.currentDestination = travelTimeEvent.location || 'Non défini';
+                        } else {
+                            $scope.currentOrigin = travelTimeEvent.location || 'Non défini';
+                            $scope.currentDestination = window.threadComputedData.location;
+                        }
                     }
 
                     $scope.currentTravelTime = travelTimeEvent.formattedTravelTime;

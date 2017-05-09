@@ -1336,10 +1336,10 @@ Calendar.prototype.computeTravelTimeData = function(ev) {
     eventData.travelTimeOriginalStartTime = moment(ev.original_start);
     eventData.travelTimeOriginalEndTime = moment(ev.original_end);
     eventData.eventInfoType = ev.position;
-    eventData.location = ev.computed_location;
     eventData.travelTime = Math.round(ev.duration/60);
     eventData.isWarning = ev.truncated;
-    eventData.location = ev.location;
+    eventData.from_location = ev.from_location;
+    eventData.to_location = ev.to_location;
     eventData.location = ev.position == 'before' ? ev.to_location : ev.from_location;
     eventData.travelTimeType = 'travelTime';
     if(ev.from_location && ev.to_location)
