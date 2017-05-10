@@ -12,5 +12,4 @@ class Ai::DatesSuggestionsController < ApplicationController
   rescue AiProxy::TimeoutError
       render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
   end
-
 end

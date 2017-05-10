@@ -1,5 +1,10 @@
 module EmailServer
 
+  class MessageDeliveryError < StandardError; end
+  class CopyToExistingThreadError < StandardError; end
+  class CopyToNewThreadError < StandardError; end
+  class CalendarServerNotResponding < StandardError; end
+
   #API_BASE_PATH = "https://jd-email-server-staging.herokuapp.com/api/v1"
   SERVER_PATH = "#{ENV['EMAIL_SERVER_BASE_PATH']}"
   API_BASE_PATH = "#{ENV['EMAIL_SERVER_BASE_PATH']}/api/v1"
@@ -86,10 +91,10 @@ module EmailServer
       if response.status == 200
         res = JSON.parse(response.body)['data']
       else
-        raise "Can't deliver message: #{JSON.parse(response.body)['message']}"
+        raise MessageDeliveryError.new("Can't deliver message: #{JSON.parse(response.body)['message']}")
       end
     else
-      raise "Can't deliver message: EmailServer error"
+      raise MessageDeliveryError.new("Can't deliver message: EmailServer error")
     end
 
 
@@ -111,7 +116,7 @@ module EmailServer
   end
 
   def self.copy_message_to_new_thread opts={}
-    raise "No message id given" unless opts[:server_message_id]
+    raise CopyToNewThreadError.new("No message id given") unless opts[:server_message_id]
     copy_options = {}
     if opts[:force_subject]
       copy_options[:force_subject] = opts[:force_subject]
@@ -124,8 +129,8 @@ module EmailServer
   end
 
   def self.copy_message_to_existing_thread opts={}
-    raise "No message id given" unless opts[:server_message_id]
-    raise "No thread id given" unless opts[:server_thread_id]
+    raise CopyToExistingThreadError.new("No message id given") unless opts[:server_message_id]
+    raise CopyToExistingThreadError.new("No thread id given") unless opts[:server_thread_id]
 
 
     res = self.make_request :post,
@@ -169,7 +174,6 @@ module EmailServer
     response = self.make_request_raw method, path, post_params
 
     if response
-      #JSON.parse(response.body)['data']
       response.parse['data']
     else
       nil
@@ -177,17 +181,6 @@ module EmailServer
   end
 
   def self.make_request_raw method, path, post_params={}
-    # client = HTTPClient.new(default_header: {
-    #                             "Authorization" => ENV['EMAIL_SERVER_API_KEY']
-    #                         })
-    #
-    #
-    # url = "#{API_BASE_PATH}#{path}"
-    # response = if method == :get
-    #   client.get(url)
-    # elsif method == :post
-    #   client.post(url, post_params.to_param)
-    # end
     http = HTTP.auth(ENV['EMAIL_SERVER_API_KEY'])
     url = "#{API_BASE_PATH}#{path}"
 
@@ -196,15 +189,15 @@ module EmailServer
       ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
 
-
-
-    response = if method == :get
-      http.get(url, ssl_context: ssl_context)
-    elsif method == :post
-      http.post(url, body: post_params.to_param, ssl_context: ssl_context)
+    begin
+      response = if method == :get
+                  http.get(url, ssl_context: ssl_context)
+                 elsif method == :post
+                  http.post(url, body: post_params.to_param, ssl_context: ssl_context)
+                 end
+    rescue HTTP::ConnectionError => e
+      raise CalendarServerNotResponding.new(e.message)
     end
-
-    #puts post_params, response
 
     response
   end
