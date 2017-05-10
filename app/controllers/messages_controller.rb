@@ -108,6 +108,13 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     params[:operator] = session[:user_username]
 
+    messages_thread = @message.messages_thread
+
+    messages_thread_params = {last_operator_id: session[:operator_id]}
+    messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
+    messages_thread.update(messages_thread_params)
+    messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
+
     @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
@@ -125,21 +132,10 @@ class MessagesController < ApplicationController
                                                                                                 })
     end
 
-    messages_thread = @message.messages_thread
-
-    messages_thread_params = {last_operator_id: session[:operator_id]}
-    messages_thread_params.merge!(event_booked_date: params[:event_booked_date]) if params[:event_booked_date].present?
-    messages_thread.update(messages_thread_params)
-
-
-    messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
-
     # if messages_thread.has_clients_with_linked_attendees_enabled && messages_thread.attendees_has_changed(params[:old_attendees], params[:attendees])
     #   puts 'Computing linked attendees'
     #   messages_thread.compute_linked_attendees(Account.accounts_cache(mode: "light"))
     # end
-
-
 
     render json: {
         status: "success",
