@@ -104,6 +104,7 @@
     };
 
     var reloadCalendar = function () {
+        $(".calendar-container *").unbind();
         activateCalendarWithParams({
             email: $("#calendar-viewer-client-email").val(),
             meeting_rooms_to_show: $("#calendar-viewer").scope().selectedMeetingRoomsByUsername(),
@@ -118,7 +119,7 @@
 
         $("#calendar-viewer-client-email").change(function () {
             $("#calendar-viewer").scope().$broadcast("account_email_changed");
-            reloadCalendar();
+            //reloadCalendar();
         });
 
         $("#calendar-viewer-datepicker, #calendar-viewer-timepicker").change(function () {
