@@ -930,20 +930,20 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     });
 };
 
-Calendar.prototype.addConstraintsDataEventsViaBackend = function(startTime, endTime) {
-    var calendar = this;
-
-    CommonHelpers.externalRequest({
-            action: "deploy_constraints",
-            constraints_data: _.flatten(_.values(calendar.initialData.constraintsData)),
-            start: startTime,
-            end: endTime
-        },
-        function (response) {
-            calendar.addCal(calendar.handleConstraintsFromBackend(response.data));
-        }
-    );
-};
+// Calendar.prototype.addConstraintsDataEventsViaBackend = function(startTime, endTime) {
+//     var calendar = this;
+//
+//     CommonHelpers.externalRequest({
+//             action: "deploy_constraints",
+//             constraints_data: _.flatten(_.values(calendar.initialData.constraintsData)),
+//             start: startTime,
+//             end: endTime
+//         },
+//         function (response) {
+//             calendar.addCal(calendar.handleConstraintsFromBackend(response.data));
+//         }
+//     );
+// };
 
 Calendar.prototype.handleConstraintsFromBackend = function(data) {
     var result = [];
@@ -1098,7 +1098,7 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
     var currentTimezone = calendar.getCalendarTimezone();
     var usingAnotherTimeZone = window.threadAccount && window.threadAccount.default_timezone_id != currentTimezone;
 
-    var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual
+    var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual;
 
     for (var day in accountPreferencesHash.unbooking_hours) {
         var slots = accountPreferencesHash.unbooking_hours[day];
