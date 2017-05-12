@@ -339,7 +339,11 @@
             // We may have to improve this in the future, to fetch the event data in backend and pass it to the front directly but in case of a timeout,
             // that would mean that we introduce a delay before displaying the thread
 
-            window.addAllowedAttendeesEmails(_.map(data.attendees, function(attendee) { return attendee.email.toLowerCase();}));
+            window.addAllowedAttendeesEmails(_.map(data.attendees, function(attendee) {
+              if(attendee.email)
+                return attendee.email.toLowerCase();
+              return "";
+            }));
             window.currentEventTile.initAttendeesAutomplete();
             if(recipientManager) {
               recipientManager.initTokenInputs();
