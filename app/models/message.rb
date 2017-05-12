@@ -731,7 +731,7 @@ class Message < ActiveRecord::Base
 
         # When selecting an occurrence to postpone and we have not already it in DB (it will have a '__' in its id)
         # We will add the occurrence to the calendar server, so we can interact with it independently of the master recurring event
-        if selectingOccurrence && event_id.include?('__')
+        if selectingOccurrence && event_id.to_s.include?('__')
           created_occurrence_in_db = PostponeEvents::OccurrenceCreator.new(julie_message_hash).create
 
           if created_occurrence_in_db.present? && created_occurrence_in_db['event_id'].present?
