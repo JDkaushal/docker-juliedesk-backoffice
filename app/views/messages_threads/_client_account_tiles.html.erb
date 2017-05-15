@@ -29,89 +29,100 @@
       <span class="account-name">{{ computeAccountDisplayName(account) }}</span>
       <span class="change-account-link" ng-click="initiateChangeAccount()" ng-show="account.isMain">edit</span>
     </div>
-    <div class="account-current-time-container">
-      <span class="account-current-time-label">Current time:</span>
-      <span class="account-current-time">{{ account.currentTime}}</span>
-    </div>
-    <div class="account-warnings-container" ng-show="account.calendar_access_lost">
-      <span class="account-warning calendar-access-lost" ng-show="account.calendar_access_lost"><span class="icon"></span><span class="text">Access to calendar lost</span></span>
+
+    <div ng-show="!account.displayDetails" class="account-problems">
+      <span class="account-problem-warning-sprite"></span>
+      <span ng-show="!account.configured">Activation Needed</span>
+      <span ng-show="!account.subscribed">NO LONGER CLIENT</span>
     </div>
 
-    <div class="account-activated-features-container">
-      <span class="account-feature activated-since" ng-show="account.creation_distance_days < 31">{{ account.creation_distance_days }} jours</span>
-      <span class="account-feature language_level" ng-class="{'normal': account.language_level == 'normal', 'soutenu': account.language_level == 'soutenu'}"><span class="language_level_sprite"></span>langage {{account.language_level}}</span>
-      <br>
-      <span class="account-feature follow-up {{ account.auto_follow_up_enabled ? 'activated' : '' }}"><span class="icon"></span>Auto follow-up</span>
-      <span class="account-feature restaurant-booking {{ account.restaurant_booking_enabled ? 'activated' : '' }}"><span class="icon"></span>Restaurant booking</span>
-      <span class="account-feature meeting-room {{ account.has_meeting_rooms ? 'activated' : '' }}"><span class="icon"></span>Meeting Room</span>
-    </div>
-
-    <div class="account-client-info-container" ng-class="account.infoExtended ? 'extended' : ''">
-      <div class="account-client-info-header" ng-click="account.infoExtended = !account.infoExtended">
-        <div class="extended-arrow"></div>
-        Client infos
+    <div ng-show="account.displayDetails">
+      <div class="account-current-time-container">
+        <span class="account-current-time-label">Current time:</span>
+        <span class="account-current-time">{{ account.currentTime}}</span>
       </div>
-      <div class="account-client-info-details-container">
-        <div class="client-info-container">
-          <div class="client-info-title">In-between meeting delays</div>
-          <div class="client-info-details">{{ account.delay_between_appointments }} min</div>
-        </div>
+      <div class="account-warnings-container" ng-show="account.calendar_access_lost">
+        <span class="account-warning calendar-access-lost" ng-show="account.calendar_access_lost"><span class="icon"></span><span class="text">Access to calendar lost</span></span>
+      </div>
 
-        <div class="client-info-container">
-          <div class="client-info-title">Default travel time</div>
-          <div class="client-info-details">{{ account.default_commuting_time || 0 }} min</div>
-        </div>
+      <div class="account-activated-features-container">
+        <span class="account-feature activated-since" ng-show="account.creation_distance_days < 31">{{ account.creation_distance_days }} jours</span>
+        <span class="account-feature language_level" ng-class="{'normal': account.language_level == 'normal', 'soutenu': account.language_level == 'soutenu'}"><span class="language_level_sprite"></span>langage {{account.language_level}}</span>
+        <br>
+        <span class="account-feature follow-up {{ account.auto_follow_up_enabled ? 'activated' : '' }}"><span class="icon"></span>Auto follow-up</span>
+        <span class="account-feature restaurant-booking {{ account.restaurant_booking_enabled ? 'activated' : '' }}"><span class="icon"></span>Restaurant booking</span>
+        <span class="account-feature meeting-room {{ account.has_meeting_rooms ? 'activated' : '' }}"><span class="icon"></span>Meeting Room</span>
+      </div>
 
-        <div class="client-info-container" ng-show="account.means_of_transport">
-          <div class="client-info-title">Means of transport</div>
-          <div class="client-info-details">{{ account.means_of_transport }}</div>
+      <div class="account-client-info-container" ng-class="account.infoExtended ? 'extended' : ''">
+        <div class="account-client-info-header" ng-click="account.infoExtended = !account.infoExtended">
+          <div class="extended-arrow"></div>
+          Client infos
         </div>
+        <div class="account-client-info-details-container">
+          <div class="client-info-container">
+            <div class="client-info-title">In-between meeting delays</div>
+            <div class="client-info-details">{{ account.delay_between_appointments }} min</div>
+          </div>
 
-        <div class="client-info-container">
-          <div class="client-info-title">Contact info</div>
-          <div class="client-info-details">
-            <div class="client-info-contact-info-container">
-              <div class="client-info-contact-info-label" ng-show="account.email">Email</div>
-              <div class="client-info-contact-info-value">{{ account.email }}</div>
-            </div>
-            <div class="client-info-contact-info-container" ng-show="account.mobile_number">
-              <div class="client-info-contact-info-label">Mob.</div>
-              <div class="client-info-contact-info-value">{{ account.mobile_number }}</div>
-            </div>
-            <div class="client-info-contact-info-container" ng-show="account.landline_number">
-              <div class="client-info-contact-info-label">Land.</div>
-              <div class="client-info-contact-info-value">{{ account.landline_number }}</div>
-            </div>
-            <div class="client-info-contact-info-container" ng-show="account.skype">
-              <div class="client-info-contact-info-label">Skype</div>
-              <div class="client-info-contact-info-value">{{ account.skype }}</div>
-            </div>
-            <div class="client-info-contact-info-container" ng-show="account.confcall_instructions">
-              <div class="client-info-contact-info-label">Confcall</div>
-              <div class="client-info-contact-info-value pre">{{ account.confcall_instructions }}</div>
+          <div class="client-info-container">
+            <div class="client-info-title">Default travel time</div>
+            <div class="client-info-details">{{ account.default_commuting_time || 0 }} min</div>
+          </div>
+
+          <div class="client-info-container" ng-show="account.means_of_transport">
+            <div class="client-info-title">Means of transport</div>
+            <div class="client-info-details">{{ account.means_of_transport }}</div>
+          </div>
+
+          <div class="client-info-container">
+            <div class="client-info-title">Contact info</div>
+            <div class="client-info-details">
+              <div class="client-info-contact-info-container">
+                <div class="client-info-contact-info-label" ng-show="account.email">Email</div>
+                <div class="client-info-contact-info-value">{{ account.email }}</div>
+              </div>
+              <div class="client-info-contact-info-container" ng-show="account.mobile_number">
+                <div class="client-info-contact-info-label">Mob.</div>
+                <div class="client-info-contact-info-value">{{ account.mobile_number }}</div>
+              </div>
+              <div class="client-info-contact-info-container" ng-show="account.landline_number">
+                <div class="client-info-contact-info-label">Land.</div>
+                <div class="client-info-contact-info-value">{{ account.landline_number }}</div>
+              </div>
+              <div class="client-info-contact-info-container" ng-show="account.skype">
+                <div class="client-info-contact-info-label">Skype</div>
+                <div class="client-info-contact-info-value">{{ account.skype }}</div>
+              </div>
+              <div class="client-info-contact-info-container" ng-show="account.confcall_instructions">
+                <div class="client-info-contact-info-label">Confcall</div>
+                <div class="client-info-contact-info-value pre">{{ account.confcall_instructions }}</div>
+              </div>
             </div>
             <div class="client-info-contact-info-container" ng-show="account.video_conference_instructions">
               <div class="client-info-contact-info-label">Video conference</div>
               <div class="client-info-contact-info-value pre">{{ account.video_conference_instructions }}</div>
             </div>
           </div>
-        </div>
 
-        <div class="client-info-container">
-          <div class="client-info-title">Company</div>
-          <div class="client-info-details">{{ account.company_hash.name }}</div>
-        </div>
+          <div class="client-info-container">
+            <div class="client-info-title">Company</div>
+            <div class="client-info-details">{{ account.company_hash.name }}</div>
+          </div>
 
-        <div class="client-info-container">
-          <div class="client-info-title">Office</div>
-          <div class="client-info-details" ng-repeat = "address in account.addresses | filter: {is_main_address: true}" ><span class="address-name">{{ address.label }}</span> <span class="main-address-tag">#MAIN</span><br>{{ address.address }}<br>{{ address.address_complement }}</div>
-          <div class="client-info-details" ng-repeat = "address in account.addresses | filter: {kind: 'office', is_main_address: false}" >{{ address.label }}<br>{{ address.address }}<br>{{ address.address_complement }}</div>
-        </div>
+          <div class="client-info-container">
+            <div class="client-info-title">Office</div>
+            <div class="client-info-details" ng-repeat = "address in account.addresses | filter: {is_main_address: true}" ><span class="address-name">{{ address.label }}</span> <span class="main-address-tag">#MAIN</span><br>{{ address.address }}<br>{{ address.address_complement }}</div>
+            <div class="client-info-details" ng-repeat = "address in account.addresses | filter: {kind: 'office', is_main_address: false}" >{{ address.label }}<br>{{ address.address }}<br>{{ address.address_complement }}</div>
+          </div>
 
+        </div>
+      </div>
+
+      <div class="account-current-notes-container" ng-show="account.current_notes">
+        <span ng-show="account.awaiting_current_notes">{{ account.awaiting_current_notes }}</span>
+        {{ account.current_notes }}
       </div>
     </div>
-
-    <div class="account-current-notes-container" ng-show="account.current_notes"><span ng-show="account.awaiting_current_notes">{{ account.awaiting_current_notes }}
-      </span>{{ account.current_notes }}</div>
   </div>
 </div>

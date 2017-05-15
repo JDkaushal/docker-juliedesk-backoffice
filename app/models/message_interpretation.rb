@@ -131,7 +131,7 @@ class MessageInterpretation < ActiveRecord::Base
 
   def process_main_entity
 
-    response_body = AiProxy.new(format_response: false).build_request(:process_entity_main, {id: self.message.server_message_id}).body
+    response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_main, {id: self.message.server_message_id}).body
 
     response_body_str = ''
 
@@ -176,7 +176,7 @@ class MessageInterpretation < ActiveRecord::Base
           'messages_count' => messages.size
       }
 
-      response_body = AiProxy.new(format_response: false).build_request(:process_entity_entities, body).body
+      response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_entities, body).body
 
       response_body_str = ''
 

@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170606112143) do
+ActiveRecord::Schema.define(version: 20170609123753) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
@@ -267,8 +266,8 @@ ActiveRecord::Schema.define(version: 20170606112143) do
     t.boolean  "location_changed"
     t.json     "virtual_resource_used"
     t.json     "before_update_data"
-    t.json     "verified_dates_by_ai"
     t.text     "annotated_reply"
+    t.json     "verified_dates_by_ai"
     t.string   "language_level"
     t.boolean  "asap_constraint",            default: false
   end
@@ -340,6 +339,9 @@ ActiveRecord::Schema.define(version: 20170606112143) do
     t.string   "clients_in_recipients",                default: [],    array: true
     t.boolean  "has_been_sent_to_admin",               default: false
     t.string   "allowed_attendees",                    default: [],    array: true
+    t.string   "accounts_candidates_primary_list",     default: [],    array: true
+    t.string   "accounts_candidates_secondary_list",   default: [],    array: true
+    t.string   "merging_account_candidates",           default: [],    array: true
   end
 
   create_table "operator_actions", force: true do |t|

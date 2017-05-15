@@ -89,3 +89,4 @@
 //= require clipboard.min
 //= require error_manager
 //= require error_manager_init
+//= require faker

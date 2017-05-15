@@ -9,7 +9,39 @@ class Message < ActiveRecord::Base
   has_one :auto_message_classification
   has_many :message_interpretations
   
-  attr_accessor :server_message
+  attr_accessor :server_message, :ics_attendees
+  FETCHED_ATTACHMENT_TYPES = ["application/ics", "text/calendar"]
+
+  # Fetch attendees from ics attached to the message if any, we memoize the result in an instance variable
+  def get_ics_attendees_if_any
+    @ics_attendees ||= []
+
+     if self.server_message.present? && self.server_message['attachments_data'].present? && @ics_attendees.blank?
+
+      attachment_data_type = self.server_message['attachments_data'][0]['type']
+
+      if FETCHED_ATTACHMENT_TYPES.include?(attachment_data_type)
+        ics_data = fetch_ics
+        if ics_data.present?
+          parsed_ics_data = Icalendar::Calendar.parse(ics_data)
+          if parsed_ics_data.present?
+            # .reject{|a| a == nil} because compact does not work, it is not really a nil that is returned when the .attendee method, it is an instance of Icalendar::Values::CalAddress evaluating to nil so compact does not work on it
+            @ics_attendees = parsed_ics_data.first.events.first.attendee.reject{|a| a == nil}.map(&:to)
+          end
+        end
+      end
+    end
+
+    @ics_attendees
+  end
+
+  def fetch_ics
+    begin
+      EmailServerInterface.new.build_request(:fetch_ics, {message_id: self.server_message['id'], attachment_id: self.server_message['attachments_data'][0]['attachment_id']})['data']
+    rescue => e
+      Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
+    end
+  end
 
   def compute_allowed_attendees(julie_alias_emails)
     self.allowed_attendees = AllowedAttendees::MessageManager.new(self, self.server_message, julie_alias_emails).extract_allowed_attendees
@@ -101,8 +133,45 @@ class Message < ActiveRecord::Base
     EmailServer.deliver_message(email_params)['id']
   end
 
+  def send_account_configuration_pending_email
+    self.interprete unless Rails.env.development?
+
+    locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
+    current_messages_thread = self.messages_thread
+    current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+    to = current_reply_all_recipients['from'].first['email']
+
+    julie_alias = current_messages_thread.julie_alias
+
+    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
+    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+
+    text = I18n.t("automatic_reply_emails.configuration_pending", locale: locale_to_use, client_name: self.messages_thread.account.usage_name)
+
+    if locale_to_use == "fr"
+      html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
+      text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
+    end
+
+    email_params = {
+      subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
+      from: julie_alias.generate_from,
+      to: [to].join(','),
+      cc: [].join(','),
+      bcc: ["hello@juliedesk.com"].join(','),
+      text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
+      html: "#{text_to_html("#{text}#{text_signature}")}#{html_signature}",
+      quote_replied_message: true,
+      reply_to_message_id:  self.server_message_id
+    }
+
+    current_messages_thread.update(account_request_auto_email_sent: true)
+
+    EmailServer.deliver_message(email_params)['id']
+  end
+
   def auto_reply_target_account_precisions_email
-   self.interprete
+   self.interprete unless Rails.env.development?
 
    locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
    current_messages_thread = self.messages_thread
@@ -142,6 +211,52 @@ class Message < ActiveRecord::Base
    current_messages_thread.update(account_request_auto_email_sent: true)
 
    EmailServer.deliver_message(email_params)['id']
+  end
+
+  # Should refactor it to a more generic automatics emails send function
+  # email_type params should be :specific_email or anything else
+  def send_account_notice_email(email_type, email_to_send_to = nil)
+    self.interprete if Rails.env.production?
+
+    locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
+    current_messages_thread = self.messages_thread
+
+    to = if email_type == 'account_deactivated.client'
+      email_to_send_to
+     elsif email_type == 'account_gone_unsubscribe.client'
+      email_to_send_to
+    else
+      current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+      current_reply_all_recipients['from'].first['email']
+    end
+
+    julie_alias = current_messages_thread.julie_alias
+
+    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
+    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+
+    text = I18n.t("automatic_reply_emails.#{email_type}", locale: locale_to_use, client_name: self.messages_thread.account.usage_name)
+
+    if locale_to_use == "fr"
+      html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
+      text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
+    end
+
+    email_params = {
+      subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
+      from: julie_alias.generate_from,
+      to: [to].join(','),
+      cc: [].join(','),
+      bcc: ["hello@juliedesk.com"].join(','),
+      text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
+      html: "#{text_to_html("#{text}#{text_signature}")}#{html_signature}",
+      quote_replied_message: true,
+      reply_to_message_id:  self.server_message_id
+    }
+
+    current_messages_thread.update(account_request_auto_email_sent: true)
+
+    EmailServer.deliver_message(email_params)['id']
   end
 
   def initial_recipients params={}
@@ -488,6 +603,19 @@ class Message < ActiveRecord::Base
         Rails.logger.error(error_message)
         Airbrake.notify(Exceptions::MessagesThread::NoMessageError.new(server_thread['id']))
         next
+      else
+        # When in staging env, we will check wether a thread is archived by queying the staging table responsible for holding this data
+        # because we will not actually archive it on the email server, which is used in production
+        if ENV['STAGING_APP']
+          if server_thread['messages'].any?{|m| !m['read']}
+            StagingHelpers::MessagesThreadsHelper.unarchive_thread(server_thread['id'])
+          end
+
+          is_archived = StagingHelpers::MessagesThreadsHelper.is_thread_archived?(server_thread['id'])
+          if is_archived
+            next
+          end
+        end
       end
 
       should_update_thread = true
@@ -516,7 +644,9 @@ class Message < ActiveRecord::Base
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
 
         server_thread['messages'].each do |server_message|
-          message = Message.find_by_server_message_id server_message['id']
+          # Allow to store memoized data on messages that will be accessible later from messages_thread.messages (like fetched ics data)
+          current_messages = messages_thread.messages
+          message = current_messages.find{|m| m.server_message_id == server_message['id']}
 
           message_recipients = Message.generate_reply_all_recipients(server_message, julie_aliases_emails)
 
@@ -604,9 +734,14 @@ class Message < ActiveRecord::Base
             server_thread: server_thread
           )
           if messages_thread.account_email == nil
-            thread_account_association_manager.compute_association
+            thread_account_association_manager.compute_association_v2
           else
-            thread_account_association_manager.compute_accounts_candidates(messages_thread.computed_recipients)
+            if messages_thread.check_if_owner_inactive
+              thread_account_association_manager.compute_association_v2
+            else
+              thread_account_association_manager.compute_accounts_candidates_v2(messages_thread.computed_recipients)
+            end
+
           end
 
           if messages_thread.several_accounts_detected({accounts_cache: accounts_cache})

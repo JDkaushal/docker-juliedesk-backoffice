@@ -3,7 +3,7 @@ require "rails_helper"
 describe AllowedAttendees::ThreadManager do
 
   describe 'compute_allowed_attendees' do
-    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, messages_count: 3, clients_in_recipients: ['client1@email.com', 'client2@email.com', 'client3@email.com'], accounts_candidates: ['accountCandidate1@mail.com', 'accountCandidate2@mail.com'], account_email: 'client1@email.com') }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, messages_count: 3, clients_in_recipients: ['client1@email.com', 'client2@email.com', 'client3@email.com'], accounts_candidates_primary_list: ['accountCandidate1@mail.com'], accounts_candidates_secondary_list: ['accountCandidate2@mail.com'], accounts_candidates: ['accountCandidate1@mail.com', 'accountCandidate2@mail.com'], account_email: 'client1@email.com') }
 
     before(:example) do
       messages_thread.messages[0].update(allowed_attendees: ['message1AllowedAttendee1@mail.com', 'message1AllowedAttendee2@mail.com'])
@@ -36,10 +36,6 @@ describe AllowedAttendees::ThreadManager do
                                                                "client1@email.com",
                                                                "alias1@email.com",
                                                                "alias2@email.com",
-                                                               "currentNotes1Client2@email.com",
-                                                               "currentNotes2Client2@email.com",
-                                                               "currentNotes1Client3@email.com",
-                                                               "currentNotes2Client3@email.com",
                                                                "accountCandidate1@mail.com",
                                                                "accountCandidate2@mail.com",
                                                                "message1AllowedAttendee1@mail.com",

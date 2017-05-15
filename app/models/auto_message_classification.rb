@@ -178,8 +178,8 @@ class AutoMessageClassification < MessageClassification
           :locale => main_interpretation["language_detected"],
           :entities => {},
           attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
-            human_civilities_response = AiProxy.new.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
-            company_response = AiProxy.new.build_request(:get_company_name, { address: att[:email], message: "" })
+            human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
+            company_response = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: att[:email], message: "" })
 
 
             {
@@ -294,7 +294,7 @@ class AutoMessageClassification < MessageClassification
 
         #puts "*" * 50
         # Handle calendar
-        date_suggestions_response = AiProxy.new.build_request(:fetch_dates_suggestions, {
+        date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
             account_email: account.email,
             thread_data: m.messages_thread.computed_data([amc]),
             raw_constraints: interpretation[:constraints_data],

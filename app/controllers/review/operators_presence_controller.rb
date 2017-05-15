@@ -39,7 +39,7 @@ class Review::OperatorsPresenceController < ReviewController
 
     date = DateTime.parse params[:start]
 
-    json_response = AiProxy.new.build_request(:fetch_forecast, { date: date.strftime('%Y-%m-%d')})['planning']
+    json_response = AI_PROXY_INTERFACE.build_request(:fetch_forecast, { date: date.strftime('%Y-%m-%d')})['planning']
 
     unless json_response[:error]
       @operators = json_response.map do |name, data|
@@ -96,7 +96,7 @@ class Review::OperatorsPresenceController < ReviewController
 
         Uploaders::AmazonAws.store_file(filename, params[:file])
 
-        result = AiProxy.new.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
+        result = AI_PROXY_INTERFACE.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
 
         unless result[:error]
           result.merge!('start_date' => params[:start_date])
@@ -113,7 +113,7 @@ class Review::OperatorsPresenceController < ReviewController
 
   def get_planning_from_ai
 
-    result = AiProxy.new.build_request(:fetch_planning, { date: params[:start_date], filename: params[:filename], productivity: params[:productivity] })
+    result = AI_PROXY_INTERFACE.build_request(:fetch_planning, { date: params[:start_date], filename: params[:filename], productivity: params[:productivity] })
 
     unless result[:error]
       result.merge!('start_date' => params[:start_date])

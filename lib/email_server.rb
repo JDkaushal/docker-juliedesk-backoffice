@@ -11,6 +11,10 @@ module EmailServer
 
   #API_BASE_PATH = "http://localhost:3000/api/v1"
 
+  def self.fetch_messages_thread params
+    EmailServerInterface.new.build_request(:fetch_messages_threads, params)
+  end
+
   def self.list_messages_threads opts={}
     url_params = {
         filter: opts[:filter],
@@ -32,6 +36,11 @@ module EmailServer
     if opts[:show_split].present?
       url += "&show_split=true"
     end
+
+    if ENV['STAGING_APP']
+      url += "&not_read=true"
+    end
+
     result = self.make_request :get, url
 
     if ENV['STAGING_APP']
@@ -53,6 +62,8 @@ module EmailServer
   end
 
   def self.add_and_remove_labels opts={}
+    return if ENV['STAGING_APP']
+
     self.make_request :post,
                       "/messages_threads/update_labels",
                       {
@@ -82,6 +93,7 @@ module EmailServer
       #params[:message][:reply_to_message_id] = ''
       params[:message][:cc] = ''
       params[:message][:to] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
+      params[:message][:bcc] = ''
       params[:message][:subject] = 'Staging: ' + (opts[:subject] || '')
     end
 
@@ -109,7 +121,13 @@ module EmailServer
       cloned_message['cc'] = opts[:cc]
       cloned_message['messages_thread_id'] = opts[:server_thread_id]
 
-      StagingHelpers::MessagesThreadsHelper.save_message_server(opts[:message_thread_id], cloned_message)
+      messages_thread_id = nil
+      message = Message.find_by_server_message_id(opts[:reply_to_message_id])
+      if message.present?
+        messages_thread_id = message.messages_thread_id
+      end
+
+      StagingHelpers::MessagesThreadsHelper.save_message_server(messages_thread_id, cloned_message)
     end
 
     message
@@ -117,6 +135,8 @@ module EmailServer
 
   def self.copy_message_to_new_thread opts={}
     raise CopyToNewThreadError.new("No message id given") unless opts[:server_message_id]
+    return if ENV['STAGING_APP']
+
     copy_options = {}
     if opts[:force_subject]
       copy_options[:force_subject] = opts[:force_subject]
@@ -132,6 +152,7 @@ module EmailServer
     raise CopyToExistingThreadError.new("No message id given") unless opts[:server_message_id]
     raise CopyToExistingThreadError.new("No thread id given") unless opts[:server_thread_id]
 
+    return if ENV['STAGING_APP']
 
     res = self.make_request :post,
                             "/messages/#{opts[:server_message_id]}/copy_to_existing_thread",
@@ -142,14 +163,28 @@ module EmailServer
   end
 
   def self.archive_thread opts={}
-    self.add_and_remove_labels({
-      messages_thread_ids: [opts[:messages_thread_id]],
-      labels_to_add: [],
-      labels_to_remove: ["INBOX"]
-    })
+    if ENV['STAGING_APP']
+      StagingHelpers::MessagesThreadsHelper.archive_thread(opts[:messages_thread_id])
+    else
+      self.add_and_remove_labels({
+                                   messages_thread_ids: [opts[:messages_thread_id]],
+                                   labels_to_add: [],
+                                   labels_to_remove: ["INBOX"]
+                                 })
+    end
   end
 
   def self.unarchive_thread opts={}
+    if ENV['STAGING_APP']
+      StagingHelpers::MessagesThreadsHelper.unarchive_thread(opts[:messages_thread_id])
+    else
+      self.add_and_remove_labels({
+                                     messages_thread_ids: [opts[:messages_thread_id]],
+                                     labels_to_add: [],
+                                     labels_to_remove: ["INBOX"]
+                                 })
+    end
+
     self.add_and_remove_labels({
                                    messages_thread_ids: [opts[:messages_thread_id]],
                                    labels_to_add: ["INBOX"],
@@ -158,6 +193,8 @@ module EmailServer
   end
 
   def self.split_messages opts={}
+    return if ENV['STAGING_APP']
+
     self.make_request :post,
                       "/messages_threads/#{opts[:messages_thread_id]}/split",
                       {

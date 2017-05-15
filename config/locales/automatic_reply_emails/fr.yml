@@ -1,5 +1,35 @@
 fr:
   automatic_reply_emails:
+    account_gone_unsubscribe:
+      client: |
+        Bonjour %{client_name},
+
+        Votre licence Julie Desk venant d’expirer, je suis au regret de ne plus pouvoir vous porter assistance concernant cette demande en cours.
+        Je vous laisse en reprendre la main si besoin est.
+
+        Au plaisir de renouer notre collaboration dans le futur ;)
+        Pour de plus amples informations, merci de contacter hello@juliedesk.com.
+    account_deactivated:
+      client: |
+        Bonjour %{client_name},
+
+        Votre licence Julie Desk n’est malheureusement plus active.
+        Navrée de ne pouvoir vous apporter assistance.
+
+        Pour de plus amples informations, merci de contacter hello@juliedesk.com.
+      interlocutor: |
+        Bonjour,
+
+        J’aimerais beaucoup aider mais je ne travaille plus avec %{client_name}.
+        Navrée de ne pouvoir vous apporter assistance.
+    configuration_pending: |
+      Bonjour %{client_name},
+
+      Très heureuse de vous lire.
+      Votre compte n'a pas encore été activé.
+      Je traiterais cette demande dès qu’il sera configuré.
+
+      J'ai également hâte de commencer notre collaboration.
     target_account_precisions:
       text:
         with_julie_alias: |

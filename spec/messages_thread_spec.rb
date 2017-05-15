@@ -587,12 +587,14 @@ describe MessagesThread, :type => :model do
           'client1@email.com' => {
               'email' => 'client1@email.com',
               'email_aliases' => [],
-              'linked_attendees_enabled' => true
+              'linked_attendees_enabled' => true,
+              'subscribed' => true
           },
           'client2@email.com' => {
               'email' => 'client2@email.com',
               'email_aliases' => [],
-              'linked_attendees_enabled' => true
+              'linked_attendees_enabled' => true,
+              'subscribed' => true
           }
       }
     }
@@ -601,12 +603,14 @@ describe MessagesThread, :type => :model do
       allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({
                                                                                                     'email' => 'client1@email.com',
                                                                                                     'email_aliases' => [],
-                                                                                                    'linked_attendees_enabled' => true
+                                                                                                    'linked_attendees_enabled' => true,
+                                                                                                    'subscribed' => true
                                                                                                 })
       allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({
                                                                                                     'email' => 'client2@email.com',
                                                                                                     'email_aliases' => [],
-                                                                                                    'linked_attendees_enabled' => true
+                                                                                                    'linked_attendees_enabled' => true,
+                                                                                                    'subscribed' => true
                                                                                                 })
       @messages_thread.account_email = 'client1@email.com'
     end
@@ -683,9 +687,9 @@ describe MessagesThread, :type => :model do
   describe 'clients' do
 
     before(:example) do
-      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true})
-      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true})
-      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false})
+      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true, 'subscribed' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true, 'subscribed' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false, 'subscribed' => true})
 
       @messages_thread.clients_in_recipients = ['main_client@email.com', 'client1@email.com', 'client2@email.com']
     end
@@ -704,9 +708,9 @@ describe MessagesThread, :type => :model do
     let(:accounts_cache) { {'client1@email.com' => {'email' => 'client1@email.com', 'linked_attendees_enabled' => true}, 'client2@email.com' => {'email' => 'client2@email.com', 'linked_attendees_enabled' => false}, 'main_client@email.com' => {'email' => 'main_client@email.com', 'linked_attendees_enabled' => true}} }
 
     before(:example) do
-      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true})
-      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true})
-      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false})
+      allow(Account).to receive(:accounts_cache_for_email).with('main_client@email.com').and_return({'email' => 'main_client@email.com', 'linked_attendees_enabled' => true, 'subscribed' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'email' => 'client1@email.com', 'linked_attendees_enabled' => true, 'subscribed' => true})
+      allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'email' => 'client2@email.com', 'linked_attendees_enabled' => false, 'subscribed' => true})
 
       @messages_thread.clients_in_recipients = ['main_client@email.com', 'client1@email.com', 'client2@email.com']
     end
@@ -731,8 +735,8 @@ describe MessagesThread, :type => :model do
 
       context 'feature enabled' do
         before(:example) do
-          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true})
-          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false})
+          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true, 'subscribed' => true})
+          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false, 'subscribed' => true})
         end
 
         let(:accounts_cache) { {'client1@email.com' => {'linked_attendees_enabled' => true}, 'client2@email.com' => {'linked_attendees_enabled' => false}} }
@@ -760,8 +764,8 @@ describe MessagesThread, :type => :model do
 
       context 'feature disabled' do
         before(:example) do
-          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => false})
-          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false})
+          allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => false, 'subscribed' => true})
+          allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({'linked_attendees_enabled' => false, 'subscribed' => true})
         end
 
         context 'single client' do
@@ -871,7 +875,7 @@ describe MessagesThread, :type => :model do
 
     context 'Client has the linked attendees feature active' do
       before(:example) do
-        allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true})
+        allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({'linked_attendees_enabled' => true, 'subscribed' => true})
       end
 
       context 'attendees  have changed' do
@@ -929,6 +933,7 @@ describe MessagesThread, :type => :model do
     before(:example) do
       allow(Account).to receive(:accounts_cache_for_email).with('client1@email.com').and_return({
                                                                                                     'full_name' => 'Client 1 Name',
+                                                                                                    'subscribed' => true,
                                                                                                     'circle_of_trust' => {
                                                                                                         "trusting_everyone"=>false,
                                                                                                         "trusted_domains"=>["domain1.com", "domain2.com"],
@@ -937,6 +942,7 @@ describe MessagesThread, :type => :model do
                                                                                                 })
       allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({
                                                                                                     'full_name' => 'Client 2 Name',
+                                                                                                    'subscribed' => true,
                                                                                                     'circle_of_trust' => {
                                                                                                         "trusting_everyone"=>false,
                                                                                                         "trusted_domains"=>["domain3.com", "domain4.com"],

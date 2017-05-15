@@ -1,7 +1,7 @@
 class Ai::DatesVerificationController < ApplicationController
 
   def verify_dates
-    render json: AiProxy.new.build_request(:verify_dates, params)
+    render json: AI_PROXY_INTERFACE.build_request(:verify_dates, params)
     rescue AiProxy::TimeoutError
       render json: { error_code: "AI_TIMEOUT", message: "Timeout error" }, status: :request_timeout
   end

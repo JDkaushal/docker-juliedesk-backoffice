@@ -21,7 +21,7 @@ module Ai
 
       def process
         begin
-          julia_response = AiProxy.new.build_request(:ask_julia, {id: @server_message_id})
+          julia_response = AI_PROXY_INTERFACE.build_request(:ask_julia, {id: @server_message_id})
 
           if julia_response[:error]
             # Raise error so we go execute the catch code

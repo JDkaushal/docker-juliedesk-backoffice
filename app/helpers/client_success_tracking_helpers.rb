@@ -6,7 +6,7 @@ class ClientSuccessTrackingHelpers
   end
 
   def self.track event_name, account_email, properties
-    analytics = SimpleSegment::Client.new({write_key: ENV['SEGMENT_WRITE_KEY']})
+    analytics = SEGMENT_CLIENT
     account_id = Account.accounts_cache(mode: 'light').find{|email, infos| email.downcase == "#{account_email}".downcase}.try('[]', 1).try('[]', 'id')
 
     if account_id

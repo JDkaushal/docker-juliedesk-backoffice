@@ -48,7 +48,11 @@ class Account
                 :circle_of_trust,
                 :lunch_time_preference,
                 :gender,
-                :auto_date_suggestions
+                :auto_date_suggestions,
+                :configured,
+                :subscribed,
+                :configuration_needed
+
 
   RULE_VALIDATED = "rule_validated"
   RULE_UNVALIDATED = "rule_unvalidated"
@@ -65,8 +69,8 @@ class Account
     return nil unless data.present?
     account = self.new
     account.email = data['email']
-    account.appointments = data['appointments']
-    account.addresses = data['addresses']
+    account.appointments = data['appointments'] || []
+    account.addresses = data['addresses'] || []
     account.virtual_appointments_support_config = data['virtual_appointments_support_config']
     account.virtual_appointments_company_support_config = data['virtual_appointments_company_support_config']
     account.usage_name = data['usage_name']
@@ -106,6 +110,11 @@ class Account
     account.lunch_time_preference = data['lunch_time_preference']
     account.gender = data['gender']
     account.auto_date_suggestions = data['auto_date_suggestions']
+
+    account.configured = data['configured']
+    account.subscribed = data['subscribed']
+
+    account.configuration_needed = !account.configured
 
     account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
 

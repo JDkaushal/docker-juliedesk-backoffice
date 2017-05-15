@@ -175,10 +175,16 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect(MessageClassification).to receive(:create_from_params).and_call_original
-        expect_any_instance_of(HTTP::Client).to receive(:post).with("https://test-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes", json: {
-                                                                                                                                                        email: mt1.account_email,
-                                                                                                                                                        awaiting_current_notes: "Awaiting Current notes (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{mt1.id}/review)"
-                                                                                                                                                    })
+
+        expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:set_awaiting_current_notes, {
+          email: mt1.account_email,
+          awaiting_current_notes: "Awaiting Current notes (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{mt1.id}/review)"
+        })
+
+        # expect_any_instance_of(HTTP::Client).to receive(:post).with(URI.parse("https://test-app.herokuapp.com/api/v1/accounts/set_awaiting_current_notes"), json: {
+        #                                                                                                                                                 email: mt1.account_email,
+        #                                                                                                                                                 awaiting_current_notes: "Awaiting Current notes (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{mt1.id}/review)"
+        #                                                                                                                                             }, :ssl_context=>nil)
         # 300 000 ms == 5min
         post :classify, id: m1.id, classification: MessageClassification::GIVE_PREFERENCE, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes'
       end

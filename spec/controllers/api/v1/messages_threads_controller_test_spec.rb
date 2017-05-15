@@ -58,7 +58,10 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "account_association_merging_possible" => false,
                                                       "linked_attendees"=>{},
                                                       "clients_in_recipients"=>[],
-                                                      "allowed_attendees"=>[]
+                                                      "allowed_attendees"=>[],
+                                                      "accounts_candidates_primary_list"=>[],
+                                                      "accounts_candidates_secondary_list"=>[],
+                                                      "merging_account_candidates"=>[]
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {

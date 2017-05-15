@@ -64,12 +64,15 @@ gem 'simple_segment'
 
 #gem "http", path: "../http"
 
-group :production, :production_ey do
+group :production, :production_ey, :release do
   gem 'lograge', '0.4.1'
 end
 
-group :development do
+group :development, :release do
   gem 'better_errors'
+end
+
+group :development do
   gem 'binding_of_caller'
   gem 'railroady'
   gem 'capistrano', '3.6.0'

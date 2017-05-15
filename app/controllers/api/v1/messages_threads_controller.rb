@@ -50,7 +50,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def parse_ticket
-    render json: AiProxy.new.build_request(:parse_sncf_ticket, { html_message: CGI.unescapeHTML(params[:html_message]) })
+    render json: AI_PROXY_INTERFACE.build_request(:parse_sncf_ticket, { html_message: CGI.unescapeHTML(params[:html_message]) })
   end
 
   # Expect an array of server_message_ids and return the missing ones from the Backoffice DB
@@ -68,4 +68,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     render json: { data: MessagesThread.only_in_inbox_messages_server_ids }
   end
 
+  def fetch_messages_threads
+    render json: EmailServer.fetch_messages_thread(params)
+  end
 end

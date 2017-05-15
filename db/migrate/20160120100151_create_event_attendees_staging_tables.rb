@@ -1,4 +1,5 @@
 class CreateEventAttendeesStagingTables < ActiveRecord::Migration
+
   def change
     if ENV['STAGING_APP']
       create_table :staging_event_attendees do |t|

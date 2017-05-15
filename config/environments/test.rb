@@ -53,4 +53,5 @@ Rails.application.configure do
 
   ENV['DEFAULT_JULIE_ALIAS_EMAIL'] = 'julie@juliedesk.com'
   ENV['COMMON_JULIE_ALIAS_EMAIL'] = 'julie@juliedesk.com'
+  ENV['SEGMENT_WRITE_KEY'] = '123'
 end

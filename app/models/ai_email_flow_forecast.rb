@@ -64,7 +64,7 @@ class AiEmailFlowForecast < ActiveRecord::Base
 
   def self.make_call(date, duration)
 
-    json_response = AiProxy.new.build_request(:fetch_forecast_emails, { date: date.strftime('%Y-%m-%d'), duration: duration})
+    json_response = AI_PROXY_INTERFACE.build_request(:fetch_forecast_emails, { date: date.strftime('%Y-%m-%d'), duration: duration})
     if json_response[:error]
       json_response
     else

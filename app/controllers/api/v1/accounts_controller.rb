@@ -8,4 +8,9 @@ class Api::V1::AccountsController < Api::ApiV1Controller
              success: AccountEmailMigrationWorker.enqueue(params[:old_email], params[:new_email])
            }
   end
+
+  def account_gone_unsubscribed
+    AccountFlows::ClientUnsubscribed.new(params[:account_email]).trigger
+    render json: { status: "success" }
+  end
 end

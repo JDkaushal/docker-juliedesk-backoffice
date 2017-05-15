@@ -29,7 +29,8 @@ describe ClientContactsController, :type => :controller do
       cc1 = FactoryGirl.create(:client_contact)
       cc2 = FactoryGirl.create(:client_contact)
 
-      allow(ClientContact).to receive(:fetch_redis).with(cc1.email).and_return({'email_aliases' => ['alias1@alias.com', 'alias2@alias.com'], 'full_name' => 'f n', 'company_hash' => {'name' => 'company 1'}})
+
+      allow(ClientContact).to receive(:fetch_redis).with(cc1.email).and_return({'email_aliases' => ['alias1@alias.com', 'alias2@alias.com'], 'full_name' => 'f n', 'configured' => true, 'subscribed' => true, 'company_hash' => {'name' => 'company 1'}})
       allow(ClientContact).to receive(:fetch_redis).with(cc2.email).and_return(nil)
 
       allow(ClientContact).to receive(:fetch_companies_julie_alias).and_return({
@@ -58,6 +59,8 @@ describe ClientContactsController, :type => :controller do
                                                 :mobile=>nil,
                                                 :skypeId=>nil,
                                                 :confCallInstructions=>nil,
+                                                :subscribed=>"true",
+                                                :configured=>"true",
                                                 :isClient=>"true",
                                                 :needAIConfirmation=>false,
                                                 :aIHasBeenConfirmed=>false
@@ -205,7 +208,7 @@ describe ClientContactsController, :type => :controller do
     it 'should return the correct infos about a requested contact when it is in its contacts network and is a client (main email used)' do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
 
-      allow(Account).to receive(:accounts_cache).and_return({'test@test.com' => [present: true]})
+      allow(Account).to receive(:accounts_cache).and_return({'test@test.com' => {'present' => true, 'configured' => true, 'subscribed' => true}})
 
       cc1 = ClientContact.create({
                                      client_email: 'client@mail.com',
@@ -234,7 +237,7 @@ describe ClientContactsController, :type => :controller do
     it 'should return the correct infos about a requested contact when it is in its contacts network and is a client (alias email used)' do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
 
-      allow(Account).to receive(:accounts_cache).and_return({'testalias@test.com' => {"email_aliases" => ['test@test.com']}})
+      allow(Account).to receive(:accounts_cache).and_return({'testalias@test.com' => {"email_aliases" => ['test@test.com'], 'configured' => true, 'subscribed' => true}})
 
       cc1 = ClientContact.create({
                                      client_email: 'client@mail.com',

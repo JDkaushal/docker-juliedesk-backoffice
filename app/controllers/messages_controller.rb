@@ -127,12 +127,18 @@ class MessagesController < ApplicationController
                                          messages_thread_id: @message.messages_thread_id
                                      })
     if @message_classification.classification == MessageClassification::GIVE_PREFERENCE
-      http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
 
-      http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
-                                                                                                    email: @message.messages_thread.account_email,
-                                                                                                    awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
-                                                                                                })
+      ADMIN_API_INTERFACE.build_request(:set_awaiting_current_notes, {
+          email: @message.messages_thread.account_email,
+          awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
+      })
+
+      # http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
+      #
+      # http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
+      #                                                                                               email: @message.messages_thread.account_email,
+      #                                                                                               awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
+      #                                                                                           })
     end
 
     # if messages_thread.has_clients_with_linked_attendees_enabled && messages_thread.attendees_has_changed(params[:old_attendees], params[:attendees])

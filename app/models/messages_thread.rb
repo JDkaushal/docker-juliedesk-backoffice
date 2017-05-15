@@ -13,12 +13,17 @@ class MessagesThread < ActiveRecord::Base
   has_many :mt_operator_actions, class_name: "OperatorAction", foreign_key: "messages_thread_id"
   has_many :event_title_reviews
 
+  after_update :owner_changed?
+
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
 
   attr_writer :account
-  attr_accessor :thread_blocked, :clients_with_linked_attendees_enabled, :clients
+  attr_accessor :thread_blocked,
+                :clients_with_linked_attendees_enabled,
+                :clients,
+                :has_inactive_owner
 
   scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ? AND sent_to_admin = ?", true, true, false, false, false, false) }
 
@@ -33,6 +38,21 @@ class MessagesThread < ActiveRecord::Base
     JuliedeskTrackerInterface.new.build_request(:track, {name: :thread_appeared_in_inbox, date:  Time.now.to_s, properties: {messages_thread_id: self.id}, distinct_id: "thread_#{self.id}_in_inbox"})
   end
 
+  def get_last_message
+    messages.sort_by{|m| m.received_at}.last
+  end
+
+  def send_account_gone_unsubscribe_email
+    last_message = get_last_message
+    all_recipients = messages.map{|m| JSON.parse(m.reply_all_recipients).values}.flatten.map{|h| h['email']}.uniq
+    client_all_emails = self.account.all_emails
+
+    found_client_aliases = all_recipients & client_all_emails
+
+    AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_gone_unsubscribe.client', found_client_aliases.first)
+    #last_message.send_account_notice_email('account_gone_unsubscribe.client', found_client_aliases.first)
+  end
+
   def recompute_allowed_attendees_full
     messages = self.re_import
     julie_aliases_emails = JulieAlias.all.map(&:email)
@@ -44,6 +64,10 @@ class MessagesThread < ActiveRecord::Base
 
     self.compute_allowed_attendees
     self.save
+  end
+
+  def enqueue_account_not_configured_yet_automatic_email(message_id)
+    AutoReplyAccountConfigurationPendingWorker.enqueue(message_id)
   end
 
   def archive
@@ -72,12 +96,13 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.delegated_to_support ||
         messages_thread.account.only_admin_can_process ||
         messages_thread.account.only_support_can_process ||
-        messages_thread.to_be_merged || messages_thread.thread_blocked
+        messages_thread.to_be_merged || messages_thread.thread_blocked ||
+        messages_thread.has_inactive_owner
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
     messages_thread.sent_to_admin ||
-        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked
+        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked || messages_thread.has_inactive_owner
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
@@ -170,9 +195,10 @@ class MessagesThread < ActiveRecord::Base
 
     # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
     if recipients_with_lost_access.size > 0
-      client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
-      body = {blocking_users_emails: recipients_with_lost_access, originated_from_thread_id: self.id}
-      client.post(BLOCKED_THREAD_NOTIFY_URL, json: body)
+      # client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
+      # body = {blocking_users_emails: recipients_with_lost_access, originated_from_thread_id: self.id}
+      # client.post(BLOCKED_THREAD_NOTIFY_URL, json: body)
+      ADMIN_API_INTERFACE.build_request(:notify_blocked_threads, body)
       Rails.logger.info "Sent Blocked users for thread #{self.id}"
     end
   end
@@ -190,14 +216,17 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def check_if_owner_inactive
+    @has_inactive_owner ||= !self.account.subscribed
+  end
+
   def async_archive
     ArchiveMessagesThreadWorker.enqueue(self.id)
   end
 
-  def archive
-    EmailServer.archive_thread(messages_thread_id: self.server_thread_id)
+  def composed_accounts_candidates
+    self.accounts_candidates_primary_list + self.accounts_candidates_secondary_list
   end
-
 
   def send_to_admin params={}
     attrs_to_update = {
@@ -550,7 +579,13 @@ class MessagesThread < ActiveRecord::Base
       recipients_clients = Set.new(self.clients_in_recipients)
       # In case accounts has been associated later to other client, so he is not in recipients
       recipients_clients.add(self.account_email)
-      @clients = recipients_clients.to_a.map{|client_email| Account.create_from_email(client_email)}.compact
+      @clients = recipients_clients.to_a.map do |client_email|
+        account = Account.create_from_email(client_email)
+        if account && account.subscribed
+          account
+        end
+
+      end.compact
     end
 
     @clients
@@ -1182,5 +1217,17 @@ class MessagesThread < ActiveRecord::Base
     # Using 'select' with an 'includes' is reported to have inconsistent behaviour
     mt_ids_in_inbox = MessagesThread.select(:id).in_inbox_only
     Message.select(:server_message_id).where(messages_thread_id: mt_ids_in_inbox).map(&:server_message_id)
+  end
+
+  def reset_auto_follow_up
+    self.update(follow_up_reminder_date: nil)
+  end
+
+  private
+
+  def owner_changed?
+    if self.account_email_changed?
+      @account_fetched = false
+    end
   end
 end

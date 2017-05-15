@@ -104,7 +104,7 @@ class MessagesThreadsController < ApplicationController
           data_holder: account_association_data_holder,
           messages_thread: @messages_thread,
           server_thread: @messages_thread.server_thread
-      ).compute_association
+      ).compute_association_v2
     end
 
     @messages_thread.account
@@ -397,6 +397,9 @@ class MessagesThreadsController < ApplicationController
         @messages_thread.each do |mt|
           mt.check_if_blocked(users_access_lost_cache, all_clients_emails)
           mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
+          if mt.account.present?
+            mt.check_if_owner_inactive
+          end
         end
 
         MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)

@@ -1,5 +1,35 @@
 en:
   automatic_reply_emails:
+    account_gone_unsubscribe:
+      client: |
+        Hi %{client_name},
+
+        As your Julie Desk licence just expired, I’m sorry to inform you I cannot be of further assistance on this ongoing request.
+        I let you take it from here if needed.
+
+        Hoping we will cross paths again in the future ;)
+        For more informations, please contact hello@juliedesk.com.
+    account_deactivated:
+      client: |
+        Hi %{client_name},
+
+        Unfortunately your Julie Desk licence is no longer active.
+        Sorry I cannot be of further assistance.
+
+        For more informations, please contact hello@juliedesk.com.
+      interlocutor: |
+        Hello there,
+
+        I would be pleased to help but I'm not working with %{client_name} anymore.
+        Sorry I cannot be of further assistance.
+    configuration_pending: |
+      Hi %{client_name},
+
+      Happy to receive your message.
+      Your account has not yet been activated.
+      Once it is configured, I will handle this request.
+
+      I also look forward to our collaboration.
     target_account_precisions:
       text:
         with_julie_alias: |

@@ -2,8 +2,9 @@ class AdminApiInterface < BaseApiCaller
 
   ENDPOINTS = {
       get_owner_event: {type: :get, url: '/api/v1/calendar_proxy/event_get'}.freeze,
-      constraints_conflict: {type: :post, url: '/api/v1/calendar_proxy/constraints_conflict'}
-
+      constraints_conflict: {type: :post, url: '/api/v1/calendar_proxy/constraints_conflict'}.freeze,
+      set_awaiting_current_notes: {type: :post, url: '/api/v1/accounts/set_awaiting_current_notes'}.freeze,
+      notify_blocked_threads: {type: :post, url: '/api/v1/calendar_access_lost/notify_email_blocked'}.freeze
   }.freeze
 
   def initialize

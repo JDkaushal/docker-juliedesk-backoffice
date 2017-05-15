@@ -1,7 +1,8 @@
 class EmailServerInterface < BaseApiCaller
 
   ENDPOINTS = {
-      fetch_ics: {type: :get, url: '/messages/get_attachment'}.freeze
+    fetch_ics:              {type: :get, url: '/messages/get_attachment'}.freeze,
+    fetch_messages_threads: {type: :get, url: '/messages_threads'}.freeze
   }.freeze
 
   def initialize

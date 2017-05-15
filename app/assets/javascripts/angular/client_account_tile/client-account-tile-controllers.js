@@ -31,6 +31,8 @@
             account.has_meeting_rooms = account.hasMeetingRooms();
             account.isMain = window.threadAccount.email == account.email;
 
+            account.displayDetails = account.configured && account.subscribed;
+
             if(account.isMain) {
                 $scope.julieCanWorkNow = $scope.canJulieWorkNowForAccount(account);
             }

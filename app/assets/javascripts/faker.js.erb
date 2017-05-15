@@ -1,0 +1,32 @@
+<% if ENV['MOCK_APIS'].present? %>
+  //Mock ajax function
+  $.originalAjax = $.ajax;
+  var JULIEDESK_APP_BASE_PATH = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
+  var EMAIL_SERVER_BASE_PATH = "<%= ENV['EMAIL_SERVER_BASE_PATH'] %>";
+  var CALENDAR_SERVER_BASE_PATH = "<%= ENV['CALENDAR_SERVER_BASE_PATH'] %>";
+
+  $.ajax = function (params) {
+      var startingWithOneOf = function(values) {
+          return new RegExp('^' + values.map(function(value) {
+              return '(' + value + ')';
+          }).join('|'));
+      }
+
+      var unauthorizedAPIs = [JULIEDESK_APP_BASE_PATH, EMAIL_SERVER_BASE_PATH, CALENDAR_SERVER_BASE_PATH];
+      console.log(unauthorizedAPIs);
+      var exceptions = [
+          JULIEDESK_APP_BASE_PATH + '/api/v1/accounts/show',
+          JULIEDESK_APP_BASE_PATH + '/api/v1/calendar_proxy/calendars_list',
+          JULIEDESK_APP_BASE_PATH + '/api/v1/calendar_proxy/event_get'
+      ];
+
+
+      if(params.url.match(startingWithOneOf(unauthorizedAPIs))) {
+          if(!params.url.match(startingWithOneOf(exceptions))) {
+              console.log("Faking call to " + params.url, params);
+              return;
+          }
+      }
+      return $.originalAjax(params);
+  };
+<% end %>

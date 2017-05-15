@@ -2,7 +2,6 @@ module AllowedAttendees
 
   class MessageManager
     attr_reader :message, :server_message, :julie_aliases_emails
-    FETCHED_ATTACHMENT_TYPES = ["application/ics", "text/calendar"]
 
     def initialize(message, server_message, julie_aliases_emails)
       @message = message
@@ -47,46 +46,7 @@ module AllowedAttendees
     end
 
     def extract_from_ics_if_any
-      attendees_emails = []
-
-      if @server_message['attachments_data'].present?
-
-        attachment_data_type = @server_message['attachments_data'][0]['type']
-
-        if FETCHED_ATTACHMENT_TYPES.include?(attachment_data_type)
-          ics_data = fetch_ics
-
-          if ics_data.present?
-            parsed_ics_data = Icalendar::Calendar.parse(ics_data)
-            if parsed_ics_data.present?
-              attendees_emails = parsed_ics_data.first.events.first.attendee.map(&:to)
-            end
-          end
-        end
-      end
-
-      attendees_emails
-    end
-
-    def fetch_ics
-      # ics_data = nil
-      #
-      # http = HTTP.auth(ENV['EMAIL_SERVER_API_KEY'])
-      # ssl_context = OpenSSL::SSL::SSLContext.new
-      #
-      # request = http.get("#{EmailServer::SERVER_PATH}/messages/#{@server_message['id']}/get_attachment?attachment_id=#{@server_message['attachments_data'][0]['attachment_id']}", ssl_context: ssl_context)
-      #
-      # if request.code == 200
-      #   ics_data = request.readpartial
-      # end
-
-      #ics_data
-      begin
-        EmailServerInterface.new.build_request(:fetch_ics, {message_id: @server_message['id'], attachment_id: @server_message['attachments_data'][0]['attachment_id']})['data']
-      rescue => e
-        Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
-      end
-
+      @message.get_ics_attendees_if_any
     end
   end
 end

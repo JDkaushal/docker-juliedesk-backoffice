@@ -36,8 +36,13 @@ class ClientContactsController < ApplicationController
           end
         end
 
-        if cache = ClientContact.fetch_redis(searched_email)
+        cache = ClientContact.fetch_redis(searched_email)
+
+        if cache && cache['configured'] && cache['subscribed']
+
           fullname_splitted = cache['full_name'].split(' ')
+
+          # We convert subscribed and configured boolean to their string counterpart for retro compatibility purposes
           account = {
               id: contact.id,
               client_email: contact.client_email,
@@ -56,7 +61,9 @@ class ClientContactsController < ApplicationController
               mobile: cache['mobile_number'],
               skypeId: cache['skype'],
               confCallInstructions: cache['confcall_instructions'],
-              isClient: "true",
+              subscribed: cache['subscribed'].to_s,
+              configured: cache['configured'].to_s,
+              isClient: 'true',
               needAIConfirmation: contact.need_ai_confirmation,
               aIHasBeenConfirmed: contact.ai_has_been_confirmed
           }
@@ -97,26 +104,31 @@ class ClientContactsController < ApplicationController
             end
           end
 
-          if cache = ClientContact.fetch_redis(searched_email)
+          cache = ClientContact.fetch_redis(searched_email)
+
+          if cache && cache['configured'] && cache['subscribed']
             fullname_splitted = cache['full_name'].split(' ')
+
             @contacts_infos.push({
-                 client_email: params['client_email'],
-                 email_aliases: cache['email_aliases'],
-                 email: contact_email,
-                 firstName: fullname_splitted[0],
-                 lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
-                 usageName: cache['usage_name'],
-                 gender: "Unknown",
-                 isAssistant: "false",
-                 assisted: "false",
-                 assistedBy: nil,
-                 company: cache['company_hash'] ? cache['company_hash']["name"] : '',
-                 timezone: cache['default_timezone_id'],
-                 landline: cache['landline_number'],
-                 mobile: cache['mobile_number'],
-                 skypeId: cache['skype'],
-                 confCallInstructions: cache['confcall_instructions'],
-                 isClient: "true"
+               client_email: params['client_email'],
+               email_aliases: cache['email_aliases'],
+               email: contact_email,
+               firstName: fullname_splitted[0],
+               lastName: (fullname_splitted.slice(1, fullname_splitted.size) || []).join(' '),
+               usageName: cache['usage_name'],
+               gender: "Unknown",
+               isAssistant: "false",
+               assisted: "false",
+               assistedBy: nil,
+               company: cache['company_hash'] ? cache['company_hash']["name"] : '',
+               timezone: cache['default_timezone_id'],
+               landline: cache['landline_number'],
+               mobile: cache['mobile_number'],
+               skypeId: cache['skype'],
+               confCallInstructions: cache['confcall_instructions'],
+               subscribed: cache['subscribed'].to_s,
+               configured: cache['configured'].to_s,
+               isClient: 'true'
              })
           end
         end
@@ -129,10 +141,10 @@ class ClientContactsController < ApplicationController
       @contacts_infos.each do |contact_infos|
         contact_infos_company = contact_infos[:company]
         if contact_infos_company.present? &&
-            contact_infos.is_a?(Hash) &&
-            contact_infos[:isClient] == 'true' &&
-            company_julie_alias.is_a?(Hash) &&
-            company_julie_alias_infos = company_julie_alias[contact_infos_company]
+          contact_infos.is_a?(Hash) &&
+          contact_infos[:isClient] == 'true' &&
+          company_julie_alias.is_a?(Hash) &&
+          company_julie_alias_infos = company_julie_alias[contact_infos_company]
 
           contact_infos[:assisted] = "true"
           contact_infos[:assistedBy] = company_julie_alias_infos
@@ -223,11 +235,11 @@ class ClientContactsController < ApplicationController
 
     is_client = false
 
-    if accounts_cache_light.find{|email, infos| email.downcase == params[:email].downcase}.try('[]', 1)
+    if accounts_cache_light.find{|email, infos| email.downcase == params[:email].downcase && infos['configured'] && infos['subscribed'] }.try('[]', 1)
       is_client = true
     else
       accounts_cache_light.each do |email, account|
-        if account["email_aliases"].include?(params[:email])
+        if account["email_aliases"].include?(params[:email]) && account['configured'] && account['subscribed']
           is_client = true
           break
         end
@@ -270,7 +282,7 @@ class ClientContactsController < ApplicationController
   end
 
   def ai_parse_contact_civilities
-    render json: AiProxy.new.build_request(:parse_human_civilities, { fullname: params[:fullname], at: params[:email]})
+    render json: AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: params[:fullname], at: params[:email]})
 
   rescue AiProxy::TimeoutError
     render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
@@ -294,7 +306,7 @@ class ClientContactsController < ApplicationController
       else
 
         begin
-          result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
+          result = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
         rescue AiProxy::TimeoutError
           render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
           return

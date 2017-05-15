@@ -36,7 +36,18 @@ module ThreadAccountAssociation
     end
 
     def get_clients_emails
-      @client_emails ||= @accounts_cache.inject([]){|emails, c| c=c[1]; current_emails = c["email_aliases"] << c["email"] ; emails += current_emails; }.map(&:downcase).reject{|e| e == ''}
+      @client_emails ||= @accounts_cache.inject([]) do |emails, c|
+        c=c[1]
+        if c['subscribed']
+          current_emails = c["email_aliases"] << c["email"]
+          emails += current_emails
+        end
+        emails
+      end.map(&:downcase).reject{|e| e == ''}
+    end
+
+    def get_clients_accounts(emails)
+      emails.map{|email| Account.create_from_email(email, {accounts_cache: @accounts_cache})}.compact
     end
 
     def get_julie_aliases_company_association_cache

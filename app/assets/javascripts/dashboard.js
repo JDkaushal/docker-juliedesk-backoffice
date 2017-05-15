@@ -25,3 +25,4 @@
 
 //= require tracking
 //= require features_helper
+//= require faker

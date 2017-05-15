@@ -2,6 +2,31 @@
 
     var app = angular.module('restaurant-booking-controllers', ['templates']);
 
+    app.config(['$httpProvider', function ($httpProvider) {
+
+        // We stop the http calls in staging ENV
+        if(isStagingEnv()) {
+            $httpProvider.interceptors.push(
+                function($q) {
+                    return {
+                        'request': function(config) {
+                            var canceler = $q.defer();
+                            config.timeout = canceler.promise;
+
+                            if (true) {
+
+                                // Cancelling request
+                                canceler.resolve();
+                            }
+
+                            return config;
+                        }
+                    }
+                }
+            )
+        }
+    }]);
+
     app.directive('restaurantBookingManager', function() {
         return {
             restrict: 'E',

@@ -28,6 +28,7 @@ class BaseApiCaller
   end
 
   def dispatch_request(type, url, data)
+    puts self.inspect
     result = self.send("execute_#{type}_request", @client, {url: url, data: data})
 
     #format_response(result.body)

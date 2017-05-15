@@ -19,7 +19,7 @@ class Api::V1::ClientContactsController < Api::ApiV1Controller
       else
 
         begin
-          result = AiProxy.new.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
+          result = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: params[:contact_address], message: params[:message_text] })
         rescue AiProxy::TimeoutError
           render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
           return

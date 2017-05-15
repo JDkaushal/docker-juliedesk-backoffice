@@ -609,7 +609,7 @@
     }
 
     window.accountsAutocompleteSource = <%==
-      @messages_thread.accounts_candidates.map{ |candidate_email| Account.create_for_autocomplete(candidate_email, {accounts_cache: local_assigns[:accounts_cache_light]})}.flatten.to_json
+      @messages_thread.composed_accounts_candidates.map{ |candidate_email| Account.create_for_autocomplete(candidate_email, {accounts_cache: local_assigns[:accounts_cache_light]})}.flatten.to_json
        # (local_assigns[:accounts_cache_light] || {}).map do |k, contact|
        #      [{
        #          email: contact['email'],
@@ -1089,7 +1089,7 @@
         });
         $("select#location_nature").append($("<option>").val("Custom").html("Custom"));
         $("select#location_nature").val("Custom");
-        if (appointment.default_address) {
+        if (appointment && appointment.default_address) {
             $("select#location_nature").val(appointment.default_address.label).trigger('change');
         }
     }
@@ -1124,7 +1124,7 @@
         $(".location-part-container").closest(".linear-form-entry").removeClass("dont-show");
 
         var appointment = getCurrentAppointment();
-        if(appointment.appointment_kind_hash.is_virtual) {
+        if(appointment && appointment.appointment_kind_hash.is_virtual) {
             if( showCallInstructionsFormFor.indexOf(appointment.kind) > -1 ) {
                 $(".number-to-call-part-container").show();
             }
@@ -1502,7 +1502,7 @@
       </div>
 
       <div class="data-entry linear-form-entry appointment-type-selects" data-entry-name="appointmentType">
-        <% messages_thread_account_appointments = @messages_thread.account.appointments %>
+        <% messages_thread_account_appointments = @messages_thread.account.try(:appointments) || [] %>
         <% selectOption = Struct.new(:id, :name)%>
         <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.group_by{|app| app['appointment_kind_hash']['family_kind']}.map{|family_kind, aks| selectOption.new(family_kind, aks.length > 1 ? family_kind : aks.first['designation']) }.sort_by{|option| option.name} %>
         <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['designation']) } %>
