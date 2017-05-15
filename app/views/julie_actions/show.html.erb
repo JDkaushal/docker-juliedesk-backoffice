@@ -484,7 +484,7 @@
 
     window.getRecipientsJulieAliases = function() {
       var result = window.julieAliases;
-      if(window.julieAliases.length > 1) {
+      if(window.julieAliases.length > 0) {
         result = _.reject(window.julieAliases, function(jA) {
           return jA.email == window.julieAlias.email;
         })
