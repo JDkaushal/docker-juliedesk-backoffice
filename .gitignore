@@ -10,8 +10,8 @@ config/database.yml
 dump.rdb
 test.sh
 coverage
-doc
 script/start_resque.sh
 script/stop_resque.sh
 /node_modules
 /nbproject
+doc/*.html

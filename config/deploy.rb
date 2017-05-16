@@ -52,8 +52,10 @@ if (ENV['deploy_sequence']).nil?
   after :deploy, :restart_server
   after :deploy, :update_crontab
   after :deploy, :run_resque
+  after :deploy, :deploy_doc
 end
 
 after :deploy_sequence, :restart_server
 after :deploy_sequence, :update_crontab
 after :deploy_sequence, :run_resque
+after :deploy_sequence, :deploy_doc
