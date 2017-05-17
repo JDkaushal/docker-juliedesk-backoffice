@@ -36,28 +36,6 @@ class JulieActionsController < ApplicationController
       @first_date_suggestion = !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
     end
 
-    flow_switches = {
-        almost_full_ai_suggestions: {
-            back_conditions: {
-                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
-                event_type: MessageClassification::VIRTUAL_EVENT_TYPES,
-                should_book_resource: false,
-                current_notes_present: false,
-                free_notes_present: false,
-                linked_attendees_present: false,
-                all_clients_on_calendar_server: true,
-            },
-            front_conditions: {
-                conscience_suggestions: {
-                    min_suggestions_count: 4,
-                    all_day_mode: :no_suggestion_on_all_day_event
-                }
-            }
-        }
-    }
-
-    @flow_switches = handle_flow_switches flow_switches
-
     @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
   end
 
@@ -187,39 +165,4 @@ class JulieActionsController < ApplicationController
         }
     }
   end
-
-  private
-
-  def handle_flow_switches(flow_switches)
-    flow_switches.select do |flow_identifier, flow_data|
-      !flow_data[:back_conditions].find{|condition_identifier, condition_value| !validate_flow_condition(condition_identifier, condition_value)}
-    end
-  end
-
-  def validate_flow_condition(condition_identifier, condition_value)
-    case condition_identifier
-      when :action_nature
-        validation_flow_condition_include_or_equals condition_value, @julie_action.action_nature
-      when :event_type
-        validation_flow_condition_include_or_equals condition_value, @julie_action.message_classification.appointment_nature
-      when :should_book_resource
-        validation_flow_condition_include_or_equals condition_value, @julie_action.should_book_resource
-      when :current_notes_present
-        #TODO: write
-      when :free_notes_present
-        validation_flow_condition_include_or_equals condition_value, @julie_action.free_notes_present
-      when :linked_attendees_present
-        validation_flow_condition_include_or_equals condition_value, @messages_thread.linked_attendees.present?
-      when :all_clients_on_calendar_server
-        all_account_emails = @julie_action.message_classification.other_account_emails + @messages_thread.account_email
-        all_account_emails.map{|email| Account}
-      else
-        raise "Unsupported flow condition: #{condition_identifier}"
-    end
-  end
-
-  def validation_flow_condition_include_or_equals(condition_value, value_to_check)
-    condition_value.is_a?(Array) ? condition_value.include?(value_to_check) : value_to_check == condition_value
-  end
-
 end
