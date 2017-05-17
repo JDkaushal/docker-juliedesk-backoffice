@@ -148,7 +148,7 @@ class MessagesThread < ActiveRecord::Base
 
     if thread_computed_data_attendees && thread_computed_data_attendees[:attendees].size > 0
       attendees = thread_computed_data_attendees[:attendees]
-      attendees_emails = attendees.select{|att| att['isClient'] == true_str && att['isPresent'] == true_str && accounts_cache[att['email']].present?}.map{|att| att['email']}
+      attendees_emails = attendees.select{|att| att['isClient'] == true_str && att['isPresent'] == true_str && accounts_cache[att['account_email']].present?}.map{|att| att['email']}
     else
       attendees_emails = attendees_emails.select{|att_email| accounts_cache[att_email].present?}
     end
