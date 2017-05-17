@@ -141,16 +141,16 @@ class MessagesThread < ActiveRecord::Base
     recipients & users_with_lost_access
   end
 
-  def check_if_blocked(users_with_lost_access, accounts_cache)
+  def check_if_blocked(users_with_lost_access, all_clients_emails)
     thread_computed_data_attendees = self.computed_data_only_attendees
     true_str = 'true'
     attendees_emails = self.computed_recipients
 
     if thread_computed_data_attendees && thread_computed_data_attendees[:attendees].size > 0
       attendees = thread_computed_data_attendees[:attendees]
-      attendees_emails = attendees.select{|att| att['isClient'] == true_str && att['isPresent'] == true_str && accounts_cache[att['account_email']].present?}.map{|att| att['email']}
+      attendees_emails = attendees.select{|att| att['isClient'] == true_str && att['isPresent'] == true_str && all_clients_emails.include?(att['account_email'])}.map{|att| att['email']}
     else
-      attendees_emails = attendees_emails.select{|att_email| accounts_cache[att_email].present?}
+      attendees_emails = attendees_emails.select{|att_email| all_clients_emails.include?(att_email)}
     end
 
     self.thread_blocked = blocking_users(Set.new(attendees_emails), users_with_lost_access).size > 0
