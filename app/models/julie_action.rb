@@ -199,6 +199,15 @@ class JulieAction < ActiveRecord::Base
 
   end
 
+  def initial_recipients
+    result = self.message_classification.message.initial_recipients(only_reply_all: self.message_classification.classification != MessageClassification::ASK_DATE_SUGGESTIONS)
+    if self.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT
+      result[:cc] << 'hello@juliedesk.com'
+    end
+
+    result
+  end
+
   private
 
   def get_suggested_dates_barycentre

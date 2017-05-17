@@ -54,6 +54,8 @@ class MessageClassification < ActiveRecord::Base
   THREAD_STATUS_EVENTS_CREATION                 = "events_creation"
   THREAD_STATUS_OTHER                           = "other"
 
+  VIRTUAL_EVENT_TYPES = ['call', 'confcall', 'skype', 'hangout', 'webex']
+
   def clean_delete
     if self.julie_action
       OperatorAction.delete_all(target_type: JulieAction.to_s, target_id: self.julie_action.id)
@@ -187,7 +189,7 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def is_virtual_appointment?
-    ['call', 'confcall', 'skype', 'hangout', 'webex'].include? self.appointment_nature
+    VIRTUAL_EVENT_TYPES.include? self.appointment_nature
   end
 
   def self.clean_and_categorize_clients attendees

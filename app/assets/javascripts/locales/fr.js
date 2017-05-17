@@ -315,7 +315,9 @@ window.wordings['fr'] = {
         from_date: 'du',
         to_hour: 'à',
         to_date: 'au',
-        at: 'à'
+        at: 'à',
+        sending: "Envoi en cours...",
+        sent: "Envoyé."
     },
     gender_reference: {
         account_tile: {
