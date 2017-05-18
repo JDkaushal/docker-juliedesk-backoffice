@@ -154,6 +154,10 @@ class Account
     nil
   end
 
+  def has_current_notes?
+    self.current_notes.present?
+  end
+
   def self.create_for_autocomplete(email, params)
     cache = params[:accounts_cache]
     found_accounts = []

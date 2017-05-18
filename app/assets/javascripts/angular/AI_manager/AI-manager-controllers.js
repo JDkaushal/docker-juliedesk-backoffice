@@ -553,16 +553,21 @@
 
     app.controller('datesSuggestionManager', ['$scope', 'aIDatesSuggestionService', function($scope, aIDatesSuggestionService) {
 
-        $scope.init = function() {
+        $scope.init = function () {
         };
 
-        $scope.fetchSuggestedDatesByAi = function(params) {
+        $scope.fetchSuggestedDatesByAi = function (params) {
             return aIDatesSuggestionService.fetch(params);
         };
 
-        $scope.sendLearningData = function(params) {
+        $scope.sendLearningData = function (params) {
             return aIDatesSuggestionService.sendLearningData(params);
         };
+
+        $scope.datesSuggestionsAutoProcessUpdate = function (params) {
+            return aIDatesSuggestionService.datesSuggestionsAutoProcessUpdate(params);
+        };
+
 
         $scope.init();
     }]);

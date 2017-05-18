@@ -208,6 +208,15 @@ class JulieAction < ActiveRecord::Base
     result
   end
 
+  def should_book_resource
+    self.message_classification.virtual_resource_used ||
+        self.message_classification.meeting_room_details.present?
+  end
+
+  def free_notes_present
+    self.message_classification.constraints.present?
+  end
+
   private
 
   def get_suggested_dates_barycentre

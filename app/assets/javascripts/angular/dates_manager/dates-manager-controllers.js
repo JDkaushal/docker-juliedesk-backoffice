@@ -1,6 +1,6 @@
 (function() {
 
-    var app = angular.module('dates-manager-controllers', []);
+    var app = angular.module('dates-manager-controllers', ['commonDirectives']);
 
     app.controller('datesSuggestionsManager', ['$scope', 'attendeesService', function($scope, attendeesService) {
         $scope.timeSlotsSuggestions = {};
@@ -21,6 +21,21 @@
         $scope.AIsuggestionsTrackingId = undefined;
 
         $scope.doNotAskSuggestionsMode = false;
+
+        $scope.possibleReasonsForOpeningCalendarWhenTrustingJulia = [
+            {
+                value: "constraints",
+                label: "Ne respectent pas les contraintes"
+            },
+            {
+                value: "working_hours",
+                label: "Semblent hors des horaires de travail"
+            },
+            {
+                value: "other",
+                label: "Autre"
+            }
+        ];
 
         var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
 
@@ -240,10 +255,28 @@
                             $scope.showAiWarning = true;
                             $scope.$apply();
                         }
+
+                        if(window.consienceSuggestionCallbacks) {
+                            _.each(window.consienceSuggestionCallbacks, function(consienceSuggestionCallback) {
+                                consienceSuggestionCallback({
+                                    suggestions: $scope.timeSlotsSuggestedByAi,
+                                    all_days_on_suggestions: data.all_days_on_suggestions
+                                });
+                            });
+                        }
+
                     }, function(error) {
                         //console.log('error', error);
                         $scope.showAiError = true;
                         $scope.$apply();
+
+                        if(window.consienceSuggestionCallbacks) {
+                            _.each(window.consienceSuggestionCallbacks, function(consienceSuggestionCallback) {
+                                consienceSuggestionCallback({
+                                    suggestions: []
+                                });
+                            });
+                        }
                     }).finally(function() {
                         $scope.showAiLoader = false;
                         $scope.$apply();
@@ -330,6 +363,69 @@
             calendar.drawEventList(drawOptions);
             //
             checkSendButtonAvailability();
+        };
+
+        $scope.acceptAllAiSuggestions = function() {
+            var calendar = window.currentCalendar;
+            var currentTimezone = calendar.getCalendarTimezone();
+            var eventsData = [];
+            _.each($scope.timeSlotsSuggestedByAi, function(slot) {
+                slot.display = false;
+                slot.accepted = true;
+
+                $scope.removeAiEventFromCalendar(slot.value, false);
+
+                var realStart = slot.value.clone().tz(currentTimezone);
+
+                var realEnd = realStart.clone();
+                realEnd.add(calendar.getCurrentDuration(), 'm');
+
+                var eventData = (calendar.generateEventData({
+                    title: calendar.generateDelayTitle(),
+                    start: realStart,
+                    end: realEnd,
+                    calendar_login_username: calendar.initialData.default_calendar_login_username,
+                    calendar_login_type: calendar.initialData.default_calendar_login_type,
+                    calendar_login_email: calendar.initialData.email,
+                    trackingId: slot.trackingId
+                }));
+
+                calendar.$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+            });
+
+
+
+            var drawOptions = {};
+            if($scope.doNotAskSuggestionsMode)
+                drawOptions.alsoAllowOn = ["create_event"];
+            calendar.drawEventList(drawOptions);
+            //
+            checkSendButtonAvailability();
+        };
+
+        $scope.trustAllAiSuggestions = function() {
+            $scope.acceptAllAiSuggestions();
+            $scope.nextButtonClickAction();
+            $("#show-calendar-button").hide();
+
+            $scope.sendDatesSuggestionsAutoProcessUpdate();
+
+            $scope.trustMode = "trusted";
+        };
+
+        $scope.sendDatesSuggestionsAutoProcessUpdate = function() {
+            aiDatesSuggestionManagerScope.datesSuggestionsAutoProcessUpdate({
+                id: $scope.AIsuggestionsTrackingId,
+                auto_process_passed_conditions: true,
+                auto_process_force_human_reason: $scope.reasonToOpenCalendarWhenTrustingJulia,
+                auto_process_force_human_reason_details: $scope.reasonDetailsToOpenCalendarWhenTrustingJulia
+            });
+        };
+
+        $scope.forceManualCheckWhenTrustingJulia = function() {
+            $("#show-calendar-button").show().click();
+            $scope.sendDatesSuggestionsAutoProcessUpdate();
+            $scope.trustMode = null;
         };
 
         $scope.rejectAiSuggestion = function(slot) {

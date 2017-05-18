@@ -35,6 +35,28 @@ class JulieActionsController < ApplicationController
     @is_first_date_suggestion = @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES &&
         !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
 
+    @flow_conditions = handle_flow_conditions({
+        trust_julia_suggestions: {
+            label: 'We can trust Jul.IA date suggestions',
+            back_conditions: {
+                feature_active: "trust_julia_suggestion",
+                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                event_type: MessageClassification::VIRTUAL_EVENT_TYPES,
+                should_book_resource: false,
+                current_notes_present: false,
+                free_notes_present: false,
+                linked_attendees_present: false,
+                all_clients_on_calendar_server: true,
+            },
+            front_conditions: {
+                conscience_suggestion: {
+                    count: 4,
+                    suggestion_on_all_day_event: false
+                }
+            },
+            flow_action: 'autoProcessDateSuggestions'
+        }
+    })
 
     @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
   end
@@ -164,5 +186,50 @@ class JulieActionsController < ApplicationController
 
         }
     }
+  end
+
+  private
+
+  def handle_flow_conditions(flow_conditions)
+    Rails.logger.debug('- ' * 50)
+    puts 'Handling flow conditions...'
+    flow_conditions.select do |flow_identifier, flow_data|
+      Rails.logger.debug("  Flow: #{flow_identifier}")
+      conditions_respect = flow_data[:back_conditions].map do |condition_identifier, condition_value|
+        result = validate_flow_condition(condition_identifier, condition_value)
+        Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
+        result
+      end
+      !conditions_respect.include?(false)
+    end
+  end
+
+  def validate_flow_condition(condition_identifier, condition_value)
+    case condition_identifier
+      when :feature_active
+        feature_active? condition_value, session[:operator_id], session[:privilege]
+      when :action_nature
+        validation_flow_condition_include_or_equals condition_value, @julie_action.action_nature
+      when :event_type
+        validation_flow_condition_include_or_equals condition_value, @julie_action.message_classification.appointment_nature
+      when :should_book_resource
+        validation_flow_condition_include_or_equals condition_value, @julie_action.should_book_resource
+      when :current_notes_present
+        all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
+        all_account_emails.map{|email| Account.create_from_email(email).has_current_notes?}.include?(true) == condition_value
+      when :free_notes_present
+        validation_flow_condition_include_or_equals condition_value, @julie_action.free_notes_present
+      when :linked_attendees_present
+        validation_flow_condition_include_or_equals condition_value, @messages_thread.linked_attendees.present?
+      when :all_clients_on_calendar_server
+        all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
+        !all_account_emails.map{|email| Account.create_from_email(email).using_calendar_server}.include?(false) == condition_value
+      else
+        raise "Unsupported flow condition: #{condition_identifier}"
+    end
+  end
+
+  def validation_flow_condition_include_or_equals(condition_value, value_to_check)
+    condition_value.is_a?(Array) ? condition_value.include?(value_to_check) : value_to_check == condition_value
   end
 end

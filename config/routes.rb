@@ -200,6 +200,7 @@ Rails.application.routes.draw do
     namespace :dates_suggestions do
       post :fetch
       post :send_learning_data
+      post :dates_suggestions_auto_process_update
     end
 
     namespace :dates_verification do

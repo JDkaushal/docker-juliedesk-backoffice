@@ -10,7 +10,6 @@
                 data: params
             }).then(
                 function(response) {
-                    console.log(response);
                     var result = {};
 
                     // In case of error, we reject the deferred object
@@ -27,6 +26,21 @@
                 });
         };
 
+        this.datesSuggestionsAutoProcessUpdate = function (params) {
+            return $http({
+                url: '/ai/dates_suggestions/dates_suggestions_auto_process_update',
+                method: "POST",
+                data: params
+            }).then(
+                function (response) {
+                    return {
+                        data: response.data
+                    };
+                }, function (httpError) {
+                    console.log(httpError);
+                });
+        };
+
         this.sendLearningData = function(params) {
             return $http({
                 url: '/ai/dates_suggestions/send_learning_data',
@@ -34,7 +48,6 @@
                 data: params
             }).then(
                 function(response) {
-                    console.log(response);
                     return {
                         data: response.data
                     };
@@ -53,7 +66,6 @@
                 data: params,
                 timeout: 10000
             }).then(function(response) {
-                console.log(response);
                 return response.data;
             }, function(httpError) {
                 console.log(httpError);

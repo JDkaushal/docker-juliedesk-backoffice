@@ -239,4 +239,10 @@ $(function () {
         window.setReplyRecipients("only_client");
         window.assignCurrentReplyMessage()
     });
+
+    window.flowConditionsHandler.processFlowConditions(window.flowConditions);
 });
+
+window.autoProcessDateSuggestions = function() {
+    getDatesSuggestionManager().trustAllAiSuggestions();
+};

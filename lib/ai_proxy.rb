@@ -17,6 +17,7 @@ class AiProxy
 
       fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggest_dates/' }.freeze,
       send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
+      dates_suggestions_auto_process_update: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggested_date_auto_process_update/' }.freeze,
 
       verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
 

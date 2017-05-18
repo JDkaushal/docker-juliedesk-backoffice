@@ -12,4 +12,10 @@ class Ai::DatesSuggestionsController < ApplicationController
   rescue AiProxy::TimeoutError
       render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
   end
+
+  def dates_suggestions_auto_process_update
+    render json: AiProxy.new.build_request(:dates_suggestions_auto_process_update, params)
+  rescue AiProxy::TimeoutError
+    render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
+  end
 end
