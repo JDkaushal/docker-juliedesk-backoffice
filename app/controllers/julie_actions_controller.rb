@@ -216,14 +216,14 @@ class JulieActionsController < ApplicationController
         validation_flow_condition_include_or_equals condition_value, @julie_action.should_book_resource
       when :current_notes_present
         all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
-        all_account_emails.map{|email| Account.create_from_email(email).has_current_notes?}.include?(true) == condition_value
+        all_account_emails.map{|email| Account.create_from_email(email).try(:has_current_notes?)}.include?(true) == condition_value
       when :free_notes_present
         validation_flow_condition_include_or_equals condition_value, @julie_action.free_notes_present
       when :linked_attendees_present
         validation_flow_condition_include_or_equals condition_value, @messages_thread.linked_attendees.present?
       when :all_clients_on_calendar_server
         all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
-        !all_account_emails.map{|email| Account.create_from_email(email).using_calendar_server}.include?(false) == condition_value
+        !all_account_emails.map{|email| Account.create_from_email(email).try(:using_calendar_server)}.include?(false) == condition_value
       else
         raise "Unsupported flow condition: #{condition_identifier}"
     end
