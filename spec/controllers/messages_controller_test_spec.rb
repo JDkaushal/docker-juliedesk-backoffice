@@ -342,7 +342,6 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect(EmailServer).to receive(:deliver_message).with({
-                                                                  subject: 'New Subject',
                                                                   from: "#{ja1.name} <#{ja1.email}>",
                                                                   to: "test@test.com",
                                                                   cc: "test2@test.com, test3@test.com, test4@test.com",
@@ -353,7 +352,7 @@ describe MessagesController, :type => :controller do
                                                                   reply_to_message_id: m1.server_message_id
                                                               }).and_return({'id' => 2})
 
-        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com'], subject: 'New Subject'
+        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com']
       end
 
       it 'should update the specified Julie Action with the new server message id' do
