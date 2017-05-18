@@ -90,7 +90,6 @@
       var message = '';
       var messageBuilder = $('#reply-area').scope();
       var threadComputedData = window.threadComputedData;
-      var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
       var attendeesMng = $('#attendeesCtrl').scope();
 
 
@@ -139,7 +138,7 @@
           template: "suggest_dates",
           client_names: clientNames,
           dates: window.timeSlotsToSuggest,
-          timezones: datesSuggestionsManager.getUsedTimezones(),
+          timezones: getDatesSuggestionManager().getUsedTimezones(),
           default_timezone: window.threadAccount.default_timezone_id,
           locale: threadComputedData.locale,
           is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
@@ -189,9 +188,9 @@
           locale: threadComputedData.locale,
           appointment: window.getCurrentAppointment(),
           address: window.getCurrentAddress(),
-          timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
+          timeSlotsToSuggest: getDatesSuggestionManager().getTimeSlotsSuggestionsForTemplate(),
           //timeSlotsToSuggest: window.timeSlotsToSuggest,
-          usedTimezones: datesSuggestionsManager.getUsedTimezones(),
+          usedTimezones: getDatesSuggestionManager().getUsedTimezones(),
           threadMainTimezone: threadComputedData.timezone,
           client: window.threadAccount.usage_name,
           other_clients: _.map(otherClients(), function(attendee) {
@@ -256,19 +255,17 @@
         window.sendReply();
     };
 
-    window.clickReplyButton = function() {
-      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
-
-      if(isPostpone) {
-          window.deleteEventBeforeReply(function() {
-            datesSuggestionManager.trackSuggestedDates();
-            suggestDateReplyFunction();
-          });
-      }
-      else {
-        datesSuggestionManager.trackSuggestedDates();
-        suggestDateReplyFunction()
-      }
+    window.clickReplyButton = function () {
+        if (isPostpone) {
+            window.deleteEventBeforeReply(function () {
+                getDatesSuggestionManager().trackSuggestedDates();
+                suggestDateReplyFunction();
+            });
+        }
+        else {
+            getDatesSuggestionManager().trackSuggestedDates();
+            suggestDateReplyFunction()
+        }
     };
 
 </script>

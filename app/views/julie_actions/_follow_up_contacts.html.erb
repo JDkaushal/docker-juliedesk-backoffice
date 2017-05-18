@@ -28,14 +28,13 @@
         var message = '';
         var messageBuilder = $('#reply-area').scope();
         var threadComputedData = window.threadComputedData;
-        var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
 
         message += messageBuilder.generateReply({
             action: "follow_up_contacts",
             locale: threadComputedData.locale,
             appointment: window.getCurrentAppointment(),
-            timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
-            usedTimezones: datesSuggestionsManager.getUsedTimezones(),
+            timeSlotsToSuggest: getDatesSuggestionManager().getTimeSlotsSuggestionsForTemplate(),
+            usedTimezones: getDatesSuggestionManager().getUsedTimezones(),
             threadMainTimezone: threadComputedData.timezone,
             client: window.threadAccount.usage_name,
             other_clients: _.filter(_.map(otherClients(), function(attendee) {
@@ -76,7 +75,6 @@
         var eventData, end;
         var currentEventDuration = currentCalendar.getCurrentDuration();
         var currentTimezone = currentCalendar.getCalendarTimezone();
-        var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
 //      if(window.featuresHelper.isFeatureActive('ai_dates_suggestions')) {
 //        currentCalendar.addCal(_.map(dates, function(date) {
@@ -85,7 +83,7 @@
 //          end = date.clone();
 //          end.add('m', currentEventDuration);
 //
-//          datesSuggestionManager.addTimeSlotSuggestedByAI({value: date, fromAi: true, display: true, alreadyInsertedInCalendar: true});
+//          getDatesSuggestionManager().addTimeSlotSuggestedByAI({value: date, fromAi: true, display: true, alreadyInsertedInCalendar: true});
 //
 //          return {
 //            summary: 'Already Suggested',
@@ -140,9 +138,8 @@
     };
 
     window.clickReplyButton = function() {
-      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
-      datesSuggestionManager.trackSuggestedDates();
-      contactsFollowUpReplyFunction();
+        getDatesSuggestionManager().trackSuggestedDates();
+        contactsFollowUpReplyFunction();
     };
 
 </script>

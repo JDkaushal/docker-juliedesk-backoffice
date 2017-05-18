@@ -99,10 +99,9 @@
 
         $("#no-date-fits").click(function () {      
             window.timeSlotToCreate = null;
-            var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
 
-            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
-              new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions(true);
+            if(getDatesSuggestionManager() && window.threadComputedData.client_agreement) {
+              new Feature('ai_dates_suggestions', getDatesSuggestionManager()).fetchAiDatesSuggestions(true);
             }
             $(".messages-thread-info-panel .create-event-panel").hide();
             clearDatesToCheck();
@@ -788,17 +787,16 @@
 
 
     window.clickReplyButton = function () {
-      var datesSuggestionManager = $('#dates-suggestion-manager').scope();
 
         if(isPostpone && window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
             window.deleteEventBeforeReply(function() {
-              datesSuggestionManager.trackSuggestedDates();
-              checkAvailabilitiesClassicReply();
+                getDatesSuggestionManager().trackSuggestedDates();
+                checkAvailabilitiesClassicReply();
             });
         }
         else {
           if(window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
-            datesSuggestionManager.trackSuggestedDates();
+              getDatesSuggestionManager().trackSuggestedDates();
           }
           checkAvailabilitiesClassicReply();
         }
@@ -844,7 +842,6 @@
                 })
             }else{
                 var messageBuilder = $('#reply-area').scope();
-                var datesSuggestionsManager = $('#dates-suggestion-manager').scope();
                 var threadComputedData = window.threadComputedData;
 
                 window.redrawTimeSlotsToSuggestContainer();
@@ -857,8 +854,8 @@
                     locale: threadComputedData.locale,
                     appointment: window.getCurrentAppointment(),
                     address: window.getCurrentAddress(),
-                    timeSlotsToSuggest: datesSuggestionsManager.getTimeSlotsSuggestionsForTemplate(),
-                    usedTimezones: datesSuggestionsManager.getUsedTimezones(),
+                    timeSlotsToSuggest: getDatesSuggestionManager().getTimeSlotsSuggestionsForTemplate(),
+                    usedTimezones: getDatesSuggestionManager().getUsedTimezones(),
                     threadMainTimezone: threadComputedData.timezone,
                     client: window.threadAccount.usage_name,
                     timezoneId: threadComputedData.timezone,
