@@ -32,9 +32,9 @@ class JulieActionsController < ApplicationController
 
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
 
-    if @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
-      @first_date_suggestion = !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
-    end
+    @is_first_date_suggestion = @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES &&
+        !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
+
 
     @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
   end

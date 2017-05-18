@@ -1,35 +1,38 @@
 <script>
     window.leftColumnMessage = "Suggest dates";
-    var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?'true':'false' %>;
+    window.isPostpone = <%= (messages_thread.event_data[:event_id].present?)?'true':'false' %>;
 
-    var previousAppointment = $.grep(window.threadAccount.appointments,function(v) {
-      return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
+    window.previousAppointment = $.grep(window.threadAccount.appointments, function (v) {
+        return v.label == "<%= @messages_thread.event_data[:appointment_nature] %>";
     })[0];
 
-    window.drawCalendarCallback = function(){
-        window.activateCalendarWithParams({
-          mode: "suggest_dates",
-          date_times: <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
+    window.alreadySuggestedDateTimes = <%== @messages_thread.suggested_date_times.select{|dt| dt['date']}.map{|dt| dt['date']}.map{|date|
           {
               mode: "already_suggested",
               date: date
-          }}.to_json %>,
-          compute_meeting_rooms_via_backend: true,
-          email: window.threadAccount.email,
-          duration: window.threadComputedData.duration
+          }}.to_json %>;
+
+    // This is when we are ready to do stuff (called from attendees-app-controller)
+    window.drawCalendarCallback = function () {
+        window.activateCalendarWithParams({
+            mode: "suggest_dates",
+            date_times: window.alreadySuggestedDateTimes,
+            compute_meeting_rooms_via_backend: true,
+            email: window.threadAccount.email,
+            duration: window.threadComputedData.duration
         });
     };
 
-    window.afterReplyBoxInitCallback = function() {
+    window.afterReplyBoxInitCallback = function () {
         window.setReplyMessage("");
         window.initializeEmailLanguageSelector(suggestDatesSetReplyMessage);
 
-        if(window.threadComputedData.client_agreement) {
-            if(isPostpone) {
+        if (window.threadComputedData.client_agreement) {
+            if (isPostpone) {
                 $(".julie-action-title .title").html(localize("actions.to_do.suggest_dates.postpone"));
-                window.afterEventFetched = function() {
+                window.afterEventFetched = function () {
                     window.otherEmails = [];
-                    if(!window.threadComputedData.attendees_are_noticed) {
+                    if (!window.threadComputedData.attendees_are_noticed) {
                         $("input#quote_message").removeAttr("checked");
                         $("input#include-email-in-notes").removeAttr("checked");
                     }
@@ -64,108 +67,108 @@
             // Dont generate template via Service for now here, as isPostpone is false
             window.setReplyMessage(
                 messageBuilder.generateReply({
-                  action: "suggest_dates",
-                  client_agreement: false,
-                  isPostpone: isPostpone,
-                  locale: window.threadComputedData.locale
+                    action: "suggest_dates",
+                    client_agreement: false,
+                    isPostpone: isPostpone,
+                    locale: window.threadComputedData.locale
                 }),
                 "only_client"
             );
         }
     };
 
-    var otherClients = function(){
-        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+    window.otherClients = function () {
+        return _.filter(window.getInfoPanelAttendees(), function (attendee) {
             return attendee.isPresent && attendee.isClient && !attendee.isThreadOwner;
         });
     };
 
-    var attendees = function(){
-        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+    window.attendees = function () {
+        return _.filter(window.getInfoPanelAttendees(), function (attendee) {
             return attendee.isPresent && !attendee.isClient;
         });
     };
 
-    var suggestDatesSetReplyMessage = function() {
-      var message = '';
-      var messageBuilder = $('#reply-area').scope();
-      var threadComputedData = window.threadComputedData;
-      var attendeesMng = $('#attendeesCtrl').scope();
+    window.suggestDatesSetReplyMessage = function () {
+        var message = '';
+        var messageBuilder = $('#reply-area').scope();
+        var threadComputedData = window.threadComputedData;
+        var attendeesMng = $('#attendeesCtrl').scope();
 
 
-      if(window.featuresHelper.isFeatureActive("template_generation_v2_for_suggest_dates") && !isPostpone) {
+        if (window.featuresHelper.isFeatureActive("template_generation_v2_for_suggest_dates") && !isPostpone) {
 
-        var clientNames = [window.threadAccount.usage_name];
-        _.each(otherClients(), function(attendee) {
-          var usageName = attendee.computeUsageName();
-          if(usageName){
-            clientNames.push(window.helpers.capitalize(usageName));
-          }
-        });
-
-        var attendeesForService = [];
-        _.each(attendees(), function(attendee) {
-          var usageName = attendee.computeUsageName();
-          if (usageName && !attendee.isAssistant) {
-            var assistedByName = null;
-            var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
-            if(isCurrentlyAssisted) {
-              isCurrentlyAssisted = _.some(attendees(), function(attendeeObject) {
-                return attendeeObject.guid == attendee.assistedBy.guid
-              });
-            }
-
-            if(isCurrentlyAssisted) {
-              assistedByName = attendee.assistedBy.displayName;
-            }
-            attendeesForService.push({
-              name: window.helpers.capitalize(usageName),
-              assisted_by_name: assistedByName,
-              email: attendee.email
+            var clientNames = [window.threadAccount.usage_name];
+            _.each(otherClients(), function (attendee) {
+                var usageName = attendee.computeUsageName();
+                if (usageName) {
+                    clientNames.push(window.helpers.capitalize(usageName));
+                }
             });
-          }
-        });
 
-        var locationInEmail = {};
-        if(window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
-          locationInEmail = {
-            en: window.getCurrentAddress().address_in_template.en,
-            fr: window.getCurrentAddress().address_in_template.fr
-          }
-        }
+            var attendeesForService = [];
+            _.each(attendees(), function (attendee) {
+                var usageName = attendee.computeUsageName();
+                if (usageName && !attendee.isAssistant) {
+                    var assistedByName = null;
+                    var isCurrentlyAssisted = attendee.assisted && attendee.assistedBy;
+                    if (isCurrentlyAssisted) {
+                        isCurrentlyAssisted = _.some(attendees(), function (attendeeObject) {
+                            return attendeeObject.guid == attendee.assistedBy.guid
+                        });
+                    }
 
-        var serviceParams = {
-          template: "suggest_dates",
-          client_names: clientNames,
-          dates: window.timeSlotsToSuggest,
-          timezones: getDatesSuggestionManager().getUsedTimezones(),
-          default_timezone: window.threadAccount.default_timezone_id,
-          locale: threadComputedData.locale,
-          is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
-          attendees: attendeesForService,
-          appointment_type: window.getCurrentAppointment().kind,
-          appointment_in_email: {
-            en: window.getCurrentAppointment().title_in_email.en,
-            fr: window.getCurrentAppointment().title_in_email.fr
-          },
-          designation_in_email: window.getCurrentAppointment().designation_in_email,
+                    if (isCurrentlyAssisted) {
+                        assistedByName = attendee.assistedBy.displayName;
+                    }
+                    attendeesForService.push({
+                        name: window.helpers.capitalize(usageName),
+                        assisted_by_name: assistedByName,
+                        email: attendee.email
+                    });
+                }
+            });
 
-          location_in_email: locationInEmail,
-          should_ask_location: window.shouldAskLocation(),
-          missing_contact_info: attendeesMng.missingContactInfo(),
-          linked_attendees: attendeesMng.getLinkedAttendees(),
-          julie_aliases: window.getRecipientsJulieAliases()
-        };
+            var locationInEmail = {};
+            if (window.getCurrentAddress() && window.getCurrentAddress().address_in_template) {
+                locationInEmail = {
+                    en: window.getCurrentAddress().address_in_template.en,
+                    fr: window.getCurrentAddress().address_in_template.fr
+                }
+            }
 
-        TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function(generatedTemplate) {
-          if(typeof(generatedTemplate) == "object") {
-            window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
-            window.annotatedReply = generatedTemplate["annotated_text"];
-          }
-          else {
-            window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
-          }
-        });
+            var serviceParams = {
+                template: "suggest_dates",
+                client_names: clientNames,
+                dates: window.timeSlotsToSuggest,
+                timezones: getDatesSuggestionManager().getUsedTimezones(),
+                default_timezone: window.threadAccount.default_timezone_id,
+                locale: threadComputedData.locale,
+                is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+                attendees: attendeesForService,
+                appointment_type: window.getCurrentAppointment().kind,
+                appointment_in_email: {
+                    en: window.getCurrentAppointment().title_in_email.en,
+                    fr: window.getCurrentAppointment().title_in_email.fr
+                },
+                designation_in_email: window.getCurrentAppointment().designation_in_email,
+
+                location_in_email: locationInEmail,
+                should_ask_location: window.shouldAskLocation(),
+                missing_contact_info: attendeesMng.missingContactInfo(),
+                linked_attendees: attendeesMng.getLinkedAttendees(),
+                julie_aliases: window.getRecipientsJulieAliases()
+            };
+
+            TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function (generatedTemplate) {
+                if (typeof(generatedTemplate) == "object") {
+                    window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
+                    window.annotatedReply = generatedTemplate["annotated_text"];
+                }
+                else {
+                    window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
+                }
+            });
 
 //        window.generateEmailTemplateViaService(, function(generatedTemplate) {
 //          if(typeof(generatedTemplate) == 'object') {
@@ -176,66 +179,72 @@
 //            window.setReplyMessage(generatedTemplate, "all", window.otherEmails);
 //          }
 //        });
-      }
-      else {
-        message += messageBuilder.generateReply({
-          action: "suggest_dates",
-          client_agreement: true,
-          isPostpone: isPostpone,
-          attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
-          previousAppointment: previousAppointment,
-          currentEventData: window.currentEventData,
-          locale: threadComputedData.locale,
-          appointment: window.getCurrentAppointment(),
-          address: window.getCurrentAddress(),
-          timeSlotsToSuggest: getDatesSuggestionManager().getTimeSlotsSuggestionsForTemplate(),
-          //timeSlotsToSuggest: window.timeSlotsToSuggest,
-          usedTimezones: getDatesSuggestionManager().getUsedTimezones(),
-          threadMainTimezone: threadComputedData.timezone,
-          client: window.threadAccount.usage_name,
-          other_clients: _.map(otherClients(), function(attendee) {
-            return attendee.computeUsageName();
-          }),
-          attendees: _.map(attendees(), function(attendee) {
-            return attendee.computeUsageName();
-          }),
-          timezoneId: threadComputedData.timezone,
-          defaultTimezoneId: window.threadAccount.default_timezone_id,
-          callInstructions: threadComputedData.call_instructions
-        });
-
-        var currentAppointment = window.getCurrentAppointment();
-        var firstDateSuggestion = <%= @first_date_suggestion %>;
-        var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
-
-        if(( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !threadComputedData.call_instructions.details){
-          var messageParams = {
-            action: 'send_call_instructions',
-            callInstructions: threadComputedData.call_instructions,
-            locale: threadComputedData.locale,
-            askCallInstructions: attendeesMng.mustAskCallInstructions(currentAppointmentKind),
-            askingEarly: true
-          };
-
-          if(messageParams.askCallInstructions) {
-            message += "\n";
-            message += messageBuilder.generateReply(messageParams);
-          }
         }
+        else {
+            message += messageBuilder.generateReply({
+                action: "suggest_dates",
+                client_agreement: true,
+                isPostpone: isPostpone,
+                attendeesAreNoticed: window.threadComputedData.attendees_are_noticed,
+                previousAppointment: previousAppointment,
+                currentEventData: window.currentEventData,
+                locale: threadComputedData.locale,
+                appointment: window.getCurrentAppointment(),
+                address: window.getCurrentAddress(),
+                timeSlotsToSuggest: getDatesSuggestionManager().getTimeSlotsSuggestionsForTemplate(),
+                //timeSlotsToSuggest: window.timeSlotsToSuggest,
+                usedTimezones: getDatesSuggestionManager().getUsedTimezones(),
+                threadMainTimezone: threadComputedData.timezone,
+                client: window.threadAccount.usage_name,
+                other_clients: _.map(otherClients(), function (attendee) {
+                    return attendee.computeUsageName();
+                }),
+                attendees: _.map(attendees(), function (attendee) {
+                    return attendee.computeUsageName();
+                }),
+                timezoneId: threadComputedData.timezone,
+                defaultTimezoneId: window.threadAccount.default_timezone_id,
+                callInstructions: threadComputedData.call_instructions
+            });
 
-        if(firstDateSuggestion && currentAppointment && (currentAppointmentKind == 'skype' || currentAppointmentKind == 'call')) {
-          var missingInfosMessage = attendeesMng.checkMissingInformations({redundantCourtesy: true, sticky: true, askingEarly: true, ask_early_skype: currentAppointment.kind == 'skype', ask_early_call: currentAppointment.appointment_kind_hash.family_kind == 'call'});
-          if(missingInfosMessage != ''){
-            message += missingInfosMessage;
-          }
+            var currentAppointment = window.getCurrentAppointment();
+            var firstDateSuggestion = window.isFirstDateSuggestion;
+            var currentAppointmentKind = currentAppointment.appointment_kind_hash.family_kind;
+
+            if (( currentAppointmentKind == 'call' || currentAppointmentKind == 'skype' ) && !threadComputedData.call_instructions.details) {
+                var messageParams = {
+                    action: 'send_call_instructions',
+                    callInstructions: threadComputedData.call_instructions,
+                    locale: threadComputedData.locale,
+                    askCallInstructions: attendeesMng.mustAskCallInstructions(currentAppointmentKind),
+                    askingEarly: true
+                };
+
+                if (messageParams.askCallInstructions) {
+                    message += "\n";
+                    message += messageBuilder.generateReply(messageParams);
+                }
+            }
+
+            if (firstDateSuggestion && currentAppointment && (currentAppointmentKind == 'skype' || currentAppointmentKind == 'call')) {
+                var missingInfosMessage = attendeesMng.checkMissingInformations({
+                    redundantCourtesy: true,
+                    sticky: true,
+                    askingEarly: true,
+                    ask_early_skype: currentAppointment.kind == 'skype',
+                    ask_early_call: currentAppointment.appointment_kind_hash.family_kind == 'call'
+                });
+                if (missingInfosMessage != '') {
+                    message += missingInfosMessage;
+                }
+            }
+            window.setReplyMessage(message, "all", window.otherEmails);
         }
-        window.setReplyMessage(message, "all", window.otherEmails);
-      }
     };
 
-    var suggestDateReplyFunction = function() {
+    window.suggestDateReplyFunction = function () {
         $.ajax({
-            url: "/julie_actions/<%= @julie_action.id %>/update",
+            url: "/julie_actions/" + window.julie_action_id + "/update",
             method: "post",
             data: {
                 text: $("textarea#reply-text").val(),
@@ -247,7 +256,7 @@
                 deleted_event: window.actionDeletedEvent,
                 done: true,
                 processed_in: Date.now() - window.startedAt,
-                messages_thread_id: "<%= @messages_thread.id %>",
+                messages_thread_id: window.processingMessageThreadId,
                 client_settings: window.getClientSettings(),
                 annotated_reply: window.annotatedReply
             }

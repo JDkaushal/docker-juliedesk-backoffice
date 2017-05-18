@@ -145,7 +145,7 @@ $(function () {
         window.currentCalendar.goToDateTime(dateTime);
 
         if (that.hasClass('from-ai')) {
-            $('#dates-suggestion-manager').scope().scrollToAiSuggestionInCalendar(dateTime);
+            getDatesSuggestionManager().scrollToAiSuggestionInCalendar(dateTime);
             // Get the scrollable div that contains all the events
 //            var calendarEventContainer = window.currentCalendar.$selector.find('.fc-agenda-divider').next();
 //            var currentPos = calendarEventContainer.scrollTop();
