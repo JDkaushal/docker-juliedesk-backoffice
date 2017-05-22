@@ -13,6 +13,7 @@ $reviewErrorOrange: #ED8D55;
 $reviewCorrectBlue: #98e7ff;
 
 $buttonGreen: #2EC094;
+$alertDanger: #FFD3D3;
 
 $darkBlue: #0099CC;
 $lightBlue: #E7F2F5;
@@ -48,6 +49,21 @@ body {
 .btn-brown, .btn-brown:hover {
     background-color: #BDA793 !important;
     border-color: #BDA793 !important;
+}
+
+.alert-custom {
+  color: black;
+  margin: 0 -10px;
+  padding: 10px;
+
+  &.alert-danger {
+    background: $alertDanger;
+  }
+}
+.btn {
+  &.btn-full {
+    width: 100%;
+  }
 }
 
 

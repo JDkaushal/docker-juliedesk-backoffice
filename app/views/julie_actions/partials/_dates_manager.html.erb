@@ -11,7 +11,10 @@
       </div>
 
       <div ng-hide="doNotAskSuggestionsMode || trustMode == 'trusted'" class="time-slots-to-suggest-title">Dates proposées</div>
-      <div ng-show="trustMode == 'trusted'" class="time-slots-to-suggest-title purple">Dates proposées par Jul.IA</div>
+      <div ng-show="trustMode == 'trusted'" class="time-slots-to-suggest-title purple">
+        <label class="julia-icon"></label>
+        Dates proposées par Jul.IA
+      </div>
       <div class="aiSuggestion" ng-show="doNotAskSuggestionsMode && timeSlotsSuggestedByAi.length > 0" class="time-slots-to-suggest-title">Suggestions de l'AI</div>
       <div class="ai-area">
         <span class="ai-loader-area" ng-show="showAiLoader">
@@ -46,8 +49,9 @@
         </div>
       </div>
 
-      <div ng-show="trustMode == 'trusted'" class="alert alert-danger">
+      <div ng-show="trustMode == 'trusted'" class="alert-custom alert-danger">
         <p>Je souhaite ouvrir le calendrier car ces dates:</p>
+        <br>
         <form>
           <div class="form-group">
             <select ng-model="reasonToOpenCalendarWhenTrustingJulia"
@@ -68,7 +72,7 @@
           </div>
 
           <div class="form-group">
-            <div class="btn btn-success nomargin"
+            <div class="btn btn-success btn-full nomargin"
                  ng-disabled="!reasonToOpenCalendarWhenTrustingJulia || (reasonToOpenCalendarWhenTrustingJulia == 'other' && !reasonDetailsToOpenCalendarWhenTrustingJulia)"
                  ng-click="forceManualCheckWhenTrustingJulia()"
             >Open calendar
