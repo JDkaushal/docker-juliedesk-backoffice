@@ -14,11 +14,28 @@ namespace :deploy do
     run_locally do
       with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
-        execute :rake, "'assets:clean[#{fetch(:keep_assets)}]'"
+        fetch(:infrastructures).each do |key,value|
+          # Cleanup
+          if File.directory? "./public/assets-#{value[:role]}"
+            execute :mv, "./public/assets-#{value[:role]} ./public/assets"
+            execute :rake, "'assets:clean[#{fetch(:keep_assets)}]'"
+            execute :mv, "./public/assets ./public/assets-#{value[:role]}"
+          end
 
-        roles(fetch(:assets_roles)).each do |server|
-          execute "rsync -av --delete ./public/assets/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+          roles(fetch(:assets_roles)).each do |server|
+            server.roles.each do |role|
+               # Support ROLE Env filtering
+               if (ENV['ROLES']).nil? || /#{role}/.match(ENV['ROLES'])
+
+                 if role == value[:role]
+                    execute "rsync -av --delete ./public/assets-#{value[:role]}/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+                 end
+               end
+            end
+          end
         end
+
+
      end
     end
   end
@@ -32,26 +49,39 @@ namespace :deploy do
 
   namespace :assets do
     desc 'Precompile assets locally and then rsync to remote servers'
-    
+
     # Local precompile tasks
     # Called directly in sequential mode
     task :local_precompile do
-      
+
       run_locally do
         with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
-          
-          execute :rake, "assets:precompile" 
-     
-          roles(fetch(:assets_roles)).each do |server|
-            execute "rsync -av ./public/assets/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+
+          fetch(:infrastructures).each do |key,value|
+            # Compilation
+            if File.directory? "./public/assets-#{value[:role]}"
+              execute :mv, "./public/assets-#{value[:role]} ./public/assets"
+            end
+            execute :rake, "assets:precompile ENV_FILE=#{value[:env]}"
+            execute :mv, "./public/assets ./public/assets-#{value[:role]}"
+
+            roles(fetch(:assets_roles)).each do |server|
+              server.roles.each do |role|
+                # Support ROLE Env filtering
+                if (ENV['ROLES']).nil? || /#{value[:role]}/.match(ENV['ROLES'])
+                  if role == value[:role]
+                    execute "rsync -av ./public/assets-#{value[:role]}/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+                  end
+                end
+              end
+            end
+
           end
-      
-          # Remove assets on deployer
-#          execute :rake, "assets:clobber"
+
         end
       end
     end
-    
+
     if (ENV['deploy_sequence']).nil?
       # Override Standard Deploy Case
       task :precompile do

@@ -1,9 +1,10 @@
 desc "Upload .env file."
  task :upload_env do
-   on roles(:jd) do
-     upload! StringIO.new(File.read(".env")), "#{shared_path}/.env"
+
+   fetch(:infrastructures).each do |key,value|
+     on roles(value[:role]) do
+       upload! StringIO.new(File.read("#{value[:env]}")), "#{shared_path}/.env"
+     end
    end
-   on roles(:ey) do
-     upload! StringIO.new(File.read("ey.env")), "#{shared_path}/.env"
-   end
+
  end
