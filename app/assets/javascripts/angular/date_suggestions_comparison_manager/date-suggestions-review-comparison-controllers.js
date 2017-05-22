@@ -135,17 +135,21 @@
         };
 
         $scope.correctConscienceDateSuggestions = function() {
-            return _.filter($scope.conscienceDateSuggestions, function(dateSuggestionHash) {
-               return dateSuggestionHash.status == true;
-            });
+            return $scope.correctOrIncorrectConscienceDateSuggestions(true);
         };
 
         $scope.notCorrectConscienceDateSuggestions = function() {
-            return _.filter($scope.conscienceDateSuggestions, function(dateSuggestionHash) {
-                return dateSuggestionHash.status != true;
-            });
+            return $scope.correctOrIncorrectConscienceDateSuggestions(false);
         };
 
+        $scope.correctOrIncorrectConscienceDateSuggestions = function(correctOrIncorrect) {
+            return _.filter($scope.conscienceDateSuggestions, function(dateSuggestionHash) {
+                var isCorrect = dateSuggestionHash.status == true || _.find($scope.suggestedDates, function(suggestionDate) {
+                        return dateSuggestionHash.date.format() == suggestionDate.date.format();
+                    }) != undefined;
+                return isCorrect == correctOrIncorrect;
+            });
+        };
 
         $scope.activateCalendarWithParams = function (calendarParams) {
             calendarParams.height = $(".calendar-container").height();
