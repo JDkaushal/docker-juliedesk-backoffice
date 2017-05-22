@@ -26,7 +26,6 @@
 
       return  allowedAttendees.indexOf(attendeeEmail.toLowerCase()) > -1;
     };
-
     window.accountsAutocompleteSource = <%==
       @messages_thread.accounts_candidates.map{ |candidate_email| Account.create_for_autocomplete(candidate_email, {accounts_cache: local_assigns[:accounts_cache_light]})}.flatten.to_json
     %>;
