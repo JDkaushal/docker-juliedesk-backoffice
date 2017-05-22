@@ -2,11 +2,11 @@ source 'https://rubygems.org'
 
 # Used to load .env file as environment variable when loading gemfile
 begin
-  File.read(".env").scan(/^([[A-Z0-9]|_]+)\=?(.*)?$/).each do |env_variable|
+  File.read(ENV['ENV_FILE'] || ".env").scan(/^([[A-Z0-9]|_]+)\=?(.*)?$/).each do |env_variable|
     ENV[env_variable[0]] = env_variable[1]
   end
 rescue Errno::ENOENT
-  
+
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
