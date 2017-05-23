@@ -47,6 +47,8 @@ class JulieActionsController < ApplicationController
                 free_notes_present: false,
                 linked_attendees_present: false,
                 all_clients_on_calendar_server: true,
+                main_client_auto_date_suggestions_on: true,
+                constraints_conflicts: false
             },
             front_conditions: {
                 conscience_suggestion: {
@@ -195,12 +197,12 @@ class JulieActionsController < ApplicationController
     puts 'Handling flow conditions...'
     flow_conditions.select do |flow_identifier, flow_data|
       Rails.logger.debug("  Flow: #{flow_identifier}")
-      conditions_respect = flow_data[:back_conditions].map do |condition_identifier, condition_value|
+      a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
-        result
+        result == false
       end
-      !conditions_respect.include?(false)
+      !a_condition_fails
     end
   end
 
@@ -224,6 +226,10 @@ class JulieActionsController < ApplicationController
       when :all_clients_on_calendar_server
         all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
         !all_account_emails.map{|email| Account.create_from_email(email).try(:using_calendar_server)}.include?(false) == condition_value
+      when :main_client_auto_date_suggestions_on
+        Account.create_from_email(@messages_thread.account_email).try(:auto_date_suggestions).present?
+      when :constraints_conflicts
+        AdminApiInterface.constraints_conflicts(JSON.parse(@julie_action.message_classification.constraints_data || "[]")) == condition_value
       else
         raise "Unsupported flow condition: #{condition_identifier}"
     end

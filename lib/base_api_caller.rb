@@ -6,6 +6,9 @@ class BaseApiCaller
     @client = client
 
     @ssl_context = nil
+    if Rails.env == 'development'
+      set_ssl_context get_untrusted_ssl_context
+    end
   end
 
   def set_ssl_context(ssl_context)
@@ -82,6 +85,13 @@ class BaseApiCaller
   def get_default_ssl_context
     ctx      = OpenSSL::SSL::SSLContext.new
     ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+    ctx
+  end
+
+  def get_untrusted_ssl_context
+    ctx      = OpenSSL::SSL::SSLContext.new
+    ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     ctx
   end
