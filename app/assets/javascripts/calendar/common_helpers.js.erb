@@ -703,15 +703,20 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
     }
 };
 
-
-CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone, allDay) {
+CommonHelpers.formatDateTimeRange = function(startDate, endDate, locale, timezone, allDay, eventCalendarType) {
     if(!locale) locale = "en";
     var mStartDate, mEndDate, today;
     var formattedStartDate, formattedEndDate;
     if(allDay) {
-        // startDate et endDate are momentJs objects so we use the string used to
-        mStartDate = moment(startDate._i).tz(timezone).locale(locale);
-        mEndDate = moment(endDate._i).tz(timezone).locale(locale);
+        // O365 do not return timezone infos for all day events
+        if(eventCalendarType && eventCalendarType == 'ExchangeLogin') {
+            mStartDate = moment(startDate._i).locale(locale);
+            mEndDate = moment(endDate._i).locale(locale);
+        } else {
+            mStartDate = moment(startDate._i).tz(timezone).locale(locale);
+            mEndDate = moment(endDate._i).tz(timezone).locale(locale);
+        }
+
         if(mEndDate > mStartDate)
           mEndDate.add(-1, 'd');
 
