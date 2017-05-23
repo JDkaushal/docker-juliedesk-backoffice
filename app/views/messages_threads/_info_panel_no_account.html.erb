@@ -22,6 +22,7 @@
           .concat(extractEmails($('#messages_container .email .body').text()) || [])
           .concat(window.threadComputedData.thread_recipients)
           .concat(['hello@juliedesk.com'])
+          .filter(function(email) { return email; })
           .map(function(email) { return email.toLowerCase() });
 
       return  allowedAttendees.indexOf(attendeeEmail.toLowerCase()) > -1;

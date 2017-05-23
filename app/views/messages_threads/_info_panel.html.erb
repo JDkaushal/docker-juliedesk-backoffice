@@ -504,9 +504,13 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
-      var allowedAttendeesEmails = window.allowedAttendeesEmails.map(function(email) {
-        return email.toLowerCase();
-      });
+      var allowedAttendeesEmails = window.allowedAttendeesEmails
+          .filter(function(email) {
+            return email;
+          })
+          .map(function(email) {
+            return email.toLowerCase();
+          });
       return allowedAttendeesEmails.indexOf(attendeeEmail.toLowerCase()) > -1;
     };
 
