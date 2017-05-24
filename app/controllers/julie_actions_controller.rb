@@ -115,6 +115,7 @@ class JulieActionsController < ApplicationController
         deleted_event: params[:deleted_event],
         event_from_invitation: params[:event_from_invitation],
         event_from_invitation_organizer: params[:event_from_invitation_organizer],
+        date_suggestions_full_ai: params[:date_suggestions_full_ai].present?
      })
 
     if params[:messages_thread_id].present?

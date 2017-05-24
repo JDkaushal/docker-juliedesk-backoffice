@@ -258,7 +258,8 @@
                 processed_in: Date.now() - window.startedAt,
                 messages_thread_id: window.processingMessageThreadId,
                 client_settings: window.getClientSettings(),
-                annotated_reply: window.annotatedReply
+                annotated_reply: window.annotatedReply,
+                date_suggestions_full_ai: getDatesSuggestionManager().dateSuggestionsFullAi == true
             }
         });
         window.sendReply();

@@ -415,6 +415,7 @@
             $scope.sendDatesSuggestionsAutoProcessUpdate();
 
             $scope.trustMode = "trusted";
+            $scope.dateSuggestionsFullAi = true;
         };
 
         $scope.sendDatesSuggestionsAutoProcessUpdate = function() {

@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170419150939) do
+ActiveRecord::Schema.define(version: 20170524114033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
@@ -190,13 +189,6 @@ ActiveRecord::Schema.define(version: 20170419150939) do
     t.datetime "updated_at"
   end
 
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -217,6 +209,7 @@ ActiveRecord::Schema.define(version: 20170419150939) do
     t.text     "generated_text"
     t.boolean  "event_from_invitation",           default: false
     t.string   "event_from_invitation_organizer"
+    t.boolean  "date_suggestions_full_ai",        default: false
   end
 
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
@@ -419,19 +412,5 @@ ActiveRecord::Schema.define(version: 20170419150939) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
 end
