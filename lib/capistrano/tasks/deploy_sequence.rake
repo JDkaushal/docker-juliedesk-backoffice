@@ -8,23 +8,23 @@
 
 desc "Task that perform sequential deployment"
 task :deploy_sequence do
-  
+
   # Compile assets locally and upload to servers
   invoke 'deploy:assets:local_precompile'
-  
+
   roles(:web).each do |server|
     puts server.hostname
 
     # Execute Deploy on each server one by one
     # Note that we pass an environment variable. If set, we will not launch restart tasks after the deploy task
     # but only after the deploy_sequence task
-    sh "bundle exec cap --hosts=#{server.hostname} production deploy_with_signal deploy_sequence=true"
+    sh "bundle exec cap --hosts=#{server.hostname} #{fetch(:rails_env)} deploy_with_signal deploy_sequence=true"
 
   end
-  
+
   # Deploy other servers "normally"
-  sh "bundle exec cap --roles=worker,tasker production deploy deploy_sequence=true"
-  
+  sh "bundle exec cap --roles=worker,tasker #{fetch(:rails_env)} deploy deploy_sequence=true"
+
   # Cleanup old assets
   invoke 'deploy:local_cleanup_assets'
 end

@@ -14,21 +14,18 @@ namespace :deploy do
     run_locally do
       with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
+        assets_directory = fetch(:assets_dir, "assets")
+
         fetch(:infrastructures).each do |key,value|
           # Cleanup
-          if File.directory? "./public/assets-#{value[:role]}"
-            execute :mv, "./public/assets-#{value[:role]} ./public/assets"
-            execute :rake, "'assets:clean[#{fetch(:keep_assets)}]'"
-            execute :mv, "./public/assets ./public/assets-#{value[:role]}"
-          end
+          execute :rake, "'assets:clean[#{fetch(:keep_assets)}]'"
 
           roles(fetch(:assets_roles)).each do |server|
             server.roles.each do |role|
                # Support ROLE Env filtering
                if (ENV['ROLES']).nil? || /#{role}/.match(ENV['ROLES'])
-
                  if role == value[:role]
-                    execute "rsync -av --delete ./public/assets-#{value[:role]}/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+                    execute "rsync -av --delete ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
                  end
                end
             end
@@ -57,20 +54,18 @@ namespace :deploy do
       run_locally do
         with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
+          assets_directory = fetch(:assets_dir, "assets")
+
           fetch(:infrastructures).each do |key,value|
             # Compilation
-            if File.directory? "./public/assets-#{value[:role]}"
-              execute :mv, "./public/assets-#{value[:role]} ./public/assets"
-            end
-            execute :rake, "assets:precompile ENV_FILE=#{value[:env]}"
-            execute :mv, "./public/assets ./public/assets-#{value[:role]}"
+            execute "RAILS_ENV=\"#{fetch(:rails_env)}\" ENV_FILE=\"#{value[:env]}\" rake assets:precompile"
 
             roles(fetch(:assets_roles)).each do |server|
               server.roles.each do |role|
                 # Support ROLE Env filtering
                 if (ENV['ROLES']).nil? || /#{value[:role]}/.match(ENV['ROLES'])
                   if role == value[:role]
-                    execute "rsync -av ./public/assets-#{value[:role]}/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
+                    execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
                   end
                 end
               end
@@ -80,6 +75,7 @@ namespace :deploy do
 
         end
       end
+
     end
 
     if (ENV['deploy_sequence']).nil?
