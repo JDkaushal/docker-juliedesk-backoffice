@@ -115,6 +115,7 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
+      if(!attendeeEmail) return false;
       return window.allowedAttendeesEmails
               .concat(window.julie_alias_emails)
               .filter(function(email) { return email; })
