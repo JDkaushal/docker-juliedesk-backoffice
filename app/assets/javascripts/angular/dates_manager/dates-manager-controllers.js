@@ -208,7 +208,7 @@
                     var fetchParams = {
                         account_email: window.threadAccount.email,
                         thread_data: window.threadComputedData,
-                        time_constraints: $scope.generateTimeConstraints(),
+                        //time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
                         attendees: $('#attendeesCtrl').scope().attendees,
                         message_id: $('.email.highlighted').data('message-id'),
@@ -217,6 +217,10 @@
                         meeting_rooms_to_show: meetingRoomsToShow,
                         asap: window.threadComputedData.asap_constraint
                     };
+
+                    if(window.currentCalendar.initialData.constraintsData) {
+                        fetchParams.time_constraints = _.flatten(_.values(currentCalendar.initialData.constraintsData));
+                    }
 
                     $scope.showAiLoader = true;
                     $scope.displayDatesSuggestionManager = true;
