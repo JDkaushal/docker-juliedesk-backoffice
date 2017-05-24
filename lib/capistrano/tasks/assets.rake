@@ -25,7 +25,7 @@ namespace :deploy do
                # Support ROLE Env filtering
                if (ENV['ROLES']).nil? || /#{role}/.match(ENV['ROLES'])
                  if role == value[:role]
-                    execute "rsync -av --delete ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    execute "rsync -av --delete ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
                  end
                end
             end
@@ -65,7 +65,7 @@ namespace :deploy do
                 # Support ROLE Env filtering
                 if (ENV['ROLES']).nil? || /#{value[:role]}/.match(ENV['ROLES'])
                   if role == value[:role]
-                    execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/assets/"
                   end
                 end
               end
