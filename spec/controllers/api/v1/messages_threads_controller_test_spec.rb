@@ -146,7 +146,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                             "calendar_login_username" => mc.julie_action.calendar_login_username,
                                                             "server_message_id" => mc.julie_action.server_message_id,
                                                             "event_from_invitation"=>false,
-                                                            "event_from_invitation_organizer"=>nil
+                                                            "event_from_invitation_organizer"=>nil,
+                                                            "date_suggestions_full_ai"=>false
                                                         }
                                                     }
                                                   }

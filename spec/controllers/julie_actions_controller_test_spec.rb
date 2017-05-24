@@ -137,7 +137,8 @@ describe JulieActionsController, :type => :controller do
             processed_in: "3",
             deleted_event: false,
             :event_from_invitation=>nil,
-            :event_from_invitation_organizer=>nil
+            :event_from_invitation_organizer=>nil,
+            :date_suggestions_full_ai=>false
         })
         put :update, id: ja1.id, text: 'New Text', generated_text: 'New Text generated', date_times: ["2015-11-27T15:00:01+01:00", "2015-11-28T16:00:01+01:00", "2015-11-29T15:20:01+01:00"], event_id: 2, event_url: 'test@url.com', calendar_id: 2, calendar_login_username: 'username', done: true, events: {1 => {name: 'event 1'}, 2 => {name: 'event 2'}}, processed_in: 3, deleted_event: false
       end
