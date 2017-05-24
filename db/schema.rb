@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170524114033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"

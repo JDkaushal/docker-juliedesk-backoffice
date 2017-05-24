@@ -136,7 +136,8 @@ describe MessagesThread, :type => :model do
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
-                                                        :allowed_attendees=>[]
+                                                        :allowed_attendees=>[],
+                                                        :date_suggestions_full_ai => false
                                                     })
       end
     end
@@ -183,7 +184,8 @@ describe MessagesThread, :type => :model do
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
-                                                        :allowed_attendees=>[]
+                                                        :allowed_attendees=>[],
+                                                        :date_suggestions_full_ai => false,
                                                     })
       end
     end
@@ -233,7 +235,8 @@ describe MessagesThread, :type => :model do
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
-                                                        :allowed_attendees=>[]
+                                                        :allowed_attendees=>[],
+                                                        :date_suggestions_full_ai => false,
                                                     })
       end
     end
@@ -284,7 +287,8 @@ describe MessagesThread, :type => :model do
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
-                                                        :allowed_attendees=>[]
+                                                        :allowed_attendees=>[],
+                                                        :date_suggestions_full_ai => false,
                                                     })
       end
     end
@@ -336,7 +340,8 @@ describe MessagesThread, :type => :model do
                                                         :trusted_attendees=>{},
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
-                                                        :allowed_attendees=>[]
+                                                        :allowed_attendees=>[],
+                                                        :date_suggestions_full_ai => false,
                                                     })
       end
     end

@@ -470,7 +470,8 @@ class MessagesThread < ActiveRecord::Base
           asap_constraint: last_message_classification.try(:asap_constraint).present?,
           auto_follow_up_enabled: self.auto_follow_up_enabled?,
           # We add in front the julie aliases emails and the services emails (hello@juliedesk.com)
-          allowed_attendees: self.allowed_attendees
+          allowed_attendees: self.allowed_attendees,
+          date_suggestions_full_ai: message_classifications.map(&:julie_action).compact.select(&:done).map(&:date_suggestions_full_ai).include?(true)
       }
     end
 

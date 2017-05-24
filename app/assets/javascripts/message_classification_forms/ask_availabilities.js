@@ -52,12 +52,17 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         return _.difference(currentlyPresentAttendeesEmails, lastFormAttendeesEmails).length == 0;
     }
 
+    function checkNoDatesSuggestionsFullAi() {
+        return window.threadComputedData.date_suggestions_full_ai == false;
+    }
+
     function canVerifyWithAi() {
         var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
 
         return (
             checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual) &&
             checkAppointmentDuration() &&
+            checkNoDatesSuggestionsFullAi() &&
             locationIsSame(currentAppointmentIsVirtual) &&
             window.threadComputedData.timezone == $("#timezone").val().trim() &&
             window.presentAttendees().length == 2 &&
