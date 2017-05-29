@@ -262,11 +262,12 @@
 
             var emailInNotes = "";
 
-            // include_email_in_notes here
-
-            if(window.getCurrentAppointment().include_email_in_notes) {
+            // We only include the email in notes if the current email is not a client only discussion with julie
+            if(window.getCurrentAppointment().include_email_in_notes && window.isResponseToClient) {
               <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
               var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
+
+
 
               emailInNotes = "\n\n" + textData.text;
             }

@@ -29,8 +29,12 @@ describe ClientContactsController, :type => :controller do
       cc1 = FactoryGirl.create(:client_contact)
       cc2 = FactoryGirl.create(:client_contact)
 
-      allow(ClientContact).to receive(:fetch_redis).with(cc1.email).and_return({'email_aliases' => ['alias1@alias.com', 'alias2@alias.com'], 'full_name' => 'f n'})
+      allow(ClientContact).to receive(:fetch_redis).with(cc1.email).and_return({'email_aliases' => ['alias1@alias.com', 'alias2@alias.com'], 'full_name' => 'f n', 'company_hash' => {'name' => 'company 1'}})
       allow(ClientContact).to receive(:fetch_redis).with(cc2.email).and_return(nil)
+
+      allow(ClientContact).to receive(:fetch_companies_julie_alias).and_return({
+                                                                                'company 1' => {email: 'julie@company1.com', displayName: 'Julie Company1'}
+                                                                              })
 
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user,@pw)
       get :fetch, client_email: 'client@test.com', contacts_emails: [cc1.email, cc2.email]
@@ -46,9 +50,9 @@ describe ClientContactsController, :type => :controller do
                                                 :usageName=>nil,
                                                 :gender=>nil,
                                                 :isAssistant=>"false",
-                                                :assisted=>"false",
-                                                :assistedBy=>nil,
-                                                :company=>"",
+                                                :assisted=>"true",
+                                                :assistedBy=>{:email=>"julie@company1.com", :displayName=>"Julie Company1"},
+                                                :company=>"company 1",
                                                 :timezone=>nil,
                                                 :landline=>nil,
                                                 :mobile=>nil,

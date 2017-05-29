@@ -124,6 +124,16 @@ class ClientContactsController < ApplicationController
     end
 
     if params['contacts_emails'].present?
+      company_julie_alias = ClientContact.fetch_companies_julie_alias
+
+      @contacts_infos.each do |contact_infos|
+        contact_infos_company = contact_infos[:company]
+        if contact_infos_company.present?
+          contact_infos[:assisted] = "true"
+          contact_infos[:assistedBy] = company_julie_alias[contact_infos_company]
+        end
+      end
+
       not_found_contacts_emails = params['contacts_emails'] - @contacts_infos.map{|c| c[:email]}
       not_found_contacts_emails.each do |contact_email|
         if(contact = ClientContact.where(email: contact_email).first)

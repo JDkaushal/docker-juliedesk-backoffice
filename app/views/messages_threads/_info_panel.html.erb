@@ -473,7 +473,7 @@
 
       // For retrocompatibility purposes
       if(allowedAttendeesAreComputed()) {
-        window.allowedAttendeesEmails = window.threadComputedData.allowed_attendees.concat(window.julie_alias_emails).concat(SERVICES_EMAILS);
+        window.allowedAttendeesEmails = window.threadComputedData.allowed_attendees.concat(SERVICES_EMAILS);
       } else {
         var extendedMessages = $('.email.extended');
         var notFromMeMessages = $('.email:not(".from-me")');
@@ -492,7 +492,7 @@
             // Extract emails from emails bodies
             .concat(extractEmails(messageBodies) || [])
             .concat(extractEmails(window.threadComputedData.constraints || '') || [])
-            .concat(window.julie_alias_emails)
+            //.concat(window.julie_alias_emails)
             .concat(SERVICES_EMAILS);
 
         notFromMeMessages.removeClass('extended');
@@ -504,7 +504,7 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
-      var allowedAttendeesEmails = window.allowedAttendeesEmails
+      var allowedAttendeesEmails = window.allowedAttendeesEmails.concat(window.julie_alias_emails)
           .filter(function(email) {
             return email;
           })

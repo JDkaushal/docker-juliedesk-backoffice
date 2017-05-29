@@ -2,6 +2,10 @@ class ClientContact < ActiveRecord::Base
 
   validates :client_email, presence: true
 
+  def self.fetch_companies_julie_alias
+    @companies_julie_aliases ||= JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('company_julie_alias_details') || '[]')
+  end
+
   def self.fetch_redis(email)
     result = REDIS_FOR_ACCOUNTS_CACHE.get(email)
 

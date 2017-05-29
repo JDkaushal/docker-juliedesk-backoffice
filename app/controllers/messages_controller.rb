@@ -75,7 +75,7 @@ class MessagesController < ApplicationController
       return
     end
 
-    if @classification == MessageClassification::FOLLOW_UP_CONTACTS || @classification == MessageClassification::FOLLOW_UP_CLIENT
+    if @classification == MessageClassification::FOLLOW_UP_CLIENT
       message_classification = @message.message_classifications.create_from_params classification: @classification, operator: session[:user_username], processed_in: (DateTime.now.to_i * 1000 - params[:started_at].to_i)
       redirect_to julie_action_path(message_classification.julie_action)
       return

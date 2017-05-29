@@ -33,7 +33,11 @@ window.classificationForms.createClassificationForm = function (params) {
     }
     else if (params.classification == "invitation_already_sent") {
         form = new window.classificationForms.invitationSentEvents(params);
-    } else {
+    }
+    else if(params.classification == "follow_up_contacts") {
+        form = new window.classificationForms.followUpContactsForm(params);
+    }
+    else {
         throw "No classification form defined for classification: '" + params.classification + "'";
     }
 
