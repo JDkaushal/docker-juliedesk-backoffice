@@ -7,4 +7,8 @@ desc "Upload .env file."
      end
    end
 
+   run_locally do
+      # Cleanup assets temp cache directory as .env file may have changed (assets may depend on .env)
+      execute :rm, "-rf tmp/cache/assets/#{fetch(:rails_env)}"
+   end
  end
