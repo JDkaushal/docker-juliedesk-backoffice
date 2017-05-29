@@ -19,12 +19,6 @@ set :linked_dirs, %w{log tmp/pids script}
 set :linked_files, %w{config/database.yml .env}
 set :rvm_ruby_version, '2.2.0'
 
-# Multi infrastructures config
-# ---
-# role : role concerned by the config
-# env : environment variable (deployer specific file in root directory)
-# db : database config (deployer specific in config directory)
-set :infrastructures, {1 => {:role => :jd, :env => ".env", :db => "database.yml"}, 2 => {:role => :ey, :env => "ey.env", :db => "database-ey.yml"}}
 
 # Default value for :scm is :git
 # set :scm, :git
