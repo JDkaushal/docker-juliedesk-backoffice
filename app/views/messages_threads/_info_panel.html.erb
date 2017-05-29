@@ -810,7 +810,7 @@
 
     function setTitleToThreadSubject() {
         // We are converting all html encoded characters back to their readable form + escaping any double quotes found in the title
-        var newTitle = "<%== CGI.unescapeHTML((@messages_thread.subject || '').gsub(/(re\s?:)|(fwd\s?:)|(fw\s?:)|(tr\s?:)/i, '').strip).gsub('"', "\\\"") %>";
+        var newTitle = "<%== CGI.unescapeHTML((@messages_thread.subject || '').gsub(/(re\s?:)|(fwd\s?:)|(fw\s?:)|(tr\s?:)|\\/i, '').strip).gsub('"', "\\\"") %>";
         $("input#summary").val(newTitle);
         if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only' && $('#event-cancel-button').css('display') == 'block')
             $('.event-tile-panel .title').val(newTitle);

@@ -190,6 +190,13 @@ ActiveRecord::Schema.define(version: 20170524114033) do
     t.datetime "updated_at"
   end
 
+  create_table "global_settings", force: true do |t|
+    t.string   "name",       null: false
+    t.string   "value",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -337,6 +344,9 @@ ActiveRecord::Schema.define(version: 20170524114033) do
     t.string   "clients_in_recipients",                default: [],    array: true
     t.boolean  "has_been_sent_to_admin",               default: false
     t.string   "allowed_attendees",                    default: [],    array: true
+    t.string   "accounts_candidates_primary_list",     default: [],    array: true
+    t.string   "accounts_candidates_secondary_list",   default: [],    array: true
+    t.string   "merging_account_candidates",           default: [],    array: true
   end
 
   create_table "operator_actions", force: true do |t|
@@ -413,5 +423,19 @@ ActiveRecord::Schema.define(version: 20170524114033) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
+
+  create_table "staging_event_attendees", force: true do |t|
+    t.string   "event_id"
+    t.text     "attendees"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "staging_server_messages", force: true do |t|
+    t.integer  "messages_thread_id"
+    t.text     "server_message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

@@ -82,7 +82,7 @@ module EmailServer
       #params[:message][:reply_to_message_id] = ''
       params[:message][:cc] = ''
       params[:message][:to] = ENV['STAGING_TARGET_EMAIL_ADDRESS']
-      params[:message][:subject] = 'Staging: ' + opts[:subject]
+      params[:message][:subject] = 'Staging: ' + (opts[:subject] || '')
     end
 
     response = self.make_request_raw :post, "/messages/send_message", params
