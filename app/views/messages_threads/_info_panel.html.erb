@@ -1158,7 +1158,7 @@
 
     function locationIsSettled() {
       if(isCurrentAppointmentVirtual())
-        return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout';
+        return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || window.getCurrentAppointment().kind == 'skype';
 
       return locationFieldIsSet();
     }
