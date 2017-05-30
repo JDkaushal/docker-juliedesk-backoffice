@@ -111,7 +111,7 @@
     window.lastEmailStatus = "<%= local_assigns[:messages_thread].last_email_status %>";
 
 </script>
-<div class="header jd-global-header full <%= ENV['EY_DISPLAY'] ? "ey-skin" : nil %>">
+<div class="header jd-global-header full <%= ENV['SPECIFIC_TENANT'] == "ey" ? "ey-skin" : nil %>">
 
   <%= link_to "JD", "/", class: "home-link" %>
 

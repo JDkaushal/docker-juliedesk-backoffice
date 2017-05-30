@@ -14,7 +14,15 @@ angular.module('commonServices').service('conscienceApi', ['$http', function ($h
         var paramsAsUrl = "";
         if(params) {
             paramsAsUrl = "?" + _.map(params, function(v, k) {
-                return k + "=" + v;
+                if(v instanceof Array) {
+                    return _.map(v, function(value) {
+                       return k + "[]=" + value;
+                    }).join("&");
+                }
+                else {
+                    return k + "=" + v;
+                }
+
             }).join("&");
         }
 

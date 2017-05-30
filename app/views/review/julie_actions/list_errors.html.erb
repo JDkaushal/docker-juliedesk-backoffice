@@ -2,11 +2,20 @@
 <div class="col-md-8 col-md-offset-2" ng-controller="date-suggestions-errors-list-controller" id="date-suggestions-comparison-manager" ng-cloak>
   <h1>Date suggestions sets comparison</h1>
 
+  <h4>Event types:
+    <table class="table">
+      <tr>
+        <td ng-repeat="(k, eventTypesFamilyOptions) in eventTypeOptions">
+          <span class="btn btn-default" ng-click="selectEventTypes(k)">Select all</span>
+          <div class="checkbox" ng-repeat="eventTypeOption in eventTypesFamilyOptions">
+            <label>
+              <input type="checkbox" ng-model="eventTypes[eventTypeOption]"> {{ eventTypeOption }}
+            </label>
+          </div>
+        </td>
+      </tr>
+    </table>
 
-  <h4 ng-show="eventType">Event type:
-    <select ng-model="eventType">
-      <option ng-repeat="eventTypeOption in eventTypeOptions">{{ eventTypeOption }}</option>
-    </select>
   </h4>
 
   <h4>All-day events restrictions

@@ -24,9 +24,13 @@
         $scope.now = moment();
         $scope.start = $scope.now.clone().startOf('isoWeek');
         $scope.eventType = "call";
+        $scope.eventTypes = {call: true};
         $scope.all_day_mode = "no_all_day_event_on_suggestions";
 
-        $scope.eventTypeOptions = ["coffee", "meeting", "lunch", "hangout", "appointment", "call", "work_session", "dinner", "skype", "visio", "breakfast", "confcall", "drink", "webex"] ;
+        $scope.eventTypeOptions = {
+            virtual: ["call", "skype", "visio", "confcall", "webex", "hangout"],
+            physical: ["appointment", "meeting", "lunch", "coffee", "work_session", "dinner", "breakfast", "drink"]
+        };
 
 
         $scope.previousWeekStart = function() {
@@ -65,13 +69,43 @@
             }
         });
 
+        $scope.$watch('eventTypes', function(previousValue, newValue) {
+            if(newValue != previousValue) {
+                $scope.fetch();
+            }
+        }, true);
+
+        $scope.selectedEventTypes = function() {
+            var result = [];
+            _.each($scope.eventTypes, function(selected, eventType) {
+                if(selected) {
+                    result.push(eventType);
+                }
+            });
+            return result;
+        };
+
+        $scope.selectEventTypes = function(family) {
+            $scope.eventTypes = {};
+            _.each($scope.eventTypeOptions[family], function(eventType) {
+                $scope.eventTypes[eventType] = true;
+            });
+
+        };
+
+        $scope.unselectEventTypes = function() {
+            $scope.eventTypes = {
+                call: true
+            };
+        };
+
 
         $scope.fetch = function() {
             $scope.loading = true;
             conscienceApi.suggestedDatesListErrorsRequest({
                 start: $scope.start.format(),
                 end: $scope.end().format(),
-                event_type: $scope.eventType,
+                event_types: $scope.selectedEventTypes(),
                 all_day_mode: $scope.all_day_mode
             }).then(function(response) {
 
