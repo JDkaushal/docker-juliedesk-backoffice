@@ -1,6 +1,6 @@
 .idea/
 tmp
-.env
+*.env
 log
 *.sqlite3
 public/assets
@@ -15,3 +15,7 @@ script/stop_resque.sh
 /node_modules
 /nbproject
 doc/*.html
+config/database-ey.yml
+config/database-jd.yml
+config/database-release.yml
+public/assets*
