@@ -1095,8 +1095,8 @@ Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
     var result = [];
-    var currentTimezone = calendar.getCalendarTimezone();
-    var usingAnotherTimeZone = window.threadAccount && window.threadAccount.default_timezone_id != currentTimezone;
+    var currentTimezone = window.threadComputedData.timezone;
+    //var usingAnotherTimeZone = window.threadAccount && window.threadAccount.default_timezone_id != currentTimezone;
 
     var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual;
 
@@ -1109,27 +1109,27 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
 
                 var currentDay = mCurrentTime.day();
                 $(slots).each(function (k, slot) {
-                    var eventStartTime = mCurrentTime.clone().tz(accountPreferencesHash.default_timezone_id);
+                    var eventStartTime = mCurrentTime.clone().tz(currentTimezone);
                     eventStartTime.day(currentDay);
                     eventStartTime.hours(slot[0] / 100);
                     eventStartTime.minutes(slot[0] % 100);
 
-                    var eventEndTime = mCurrentTime.clone().tz(accountPreferencesHash.default_timezone_id);
+                    var eventEndTime = mCurrentTime.clone().tz(currentTimezone);
                     eventEndTime.day(currentDay);
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
 
-                    if (virtualAppointment) {
-                        if(usingAnotherTimeZone) {
-                            eventStartTime.tz(currentTimezone);
-                            eventEndTime.tz(currentTimezone);
-                        }
-
-                        if(accountPreferencesHash.default_timezone_id != currentTimezone) {
-                            eventStartTime.tz(currentTimezone);
-                            eventEndTime.tz(currentTimezone);
-                        }
-                    }
+                    // if (virtualAppointment) {
+                    //     if(usingAnotherTimeZone) {
+                    //         eventStartTime.tz(currentTimezone);
+                    //         eventEndTime.tz(currentTimezone);
+                    //     }
+                    //
+                    //     if(accountPreferencesHash.default_timezone_id != currentTimezone) {
+                    //         eventStartTime.tz(currentTimezone);
+                    //         eventEndTime.tz(currentTimezone);
+                    //     }
+                    // }
                     
                     var event_title = "Not available";
 
