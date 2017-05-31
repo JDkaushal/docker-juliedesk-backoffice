@@ -128,7 +128,12 @@ class ClientContactsController < ApplicationController
 
       @contacts_infos.each do |contact_infos|
         contact_infos_company = contact_infos[:company]
-        if contact_infos_company.present? && contact_infos[:isClient] == 'true' && company_julie_alias_infos = company_julie_alias[contact_infos_company]
+        if contact_infos_company.present? &&
+            contact_infos.is_a?(Hash) &&
+            contact_infos[:isClient] == 'true' &&
+            company_julie_alias.is_a?(Hash) &&
+            company_julie_alias_infos = company_julie_alias[contact_infos_company]
+
           contact_infos[:assisted] = "true"
           contact_infos[:assistedBy] = company_julie_alias_infos
         end
