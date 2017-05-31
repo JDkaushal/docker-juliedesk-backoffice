@@ -13,7 +13,7 @@ module ProfilerHelper
   end
 
   def print_all_times
-    if Rails.env.production?
+    if !Rails.env.development?
       print({
                 route: "#{params[:controller]}##{params[:action]}",
                 times: @times

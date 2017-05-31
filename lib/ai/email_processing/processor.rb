@@ -69,7 +69,7 @@ module Ai
 
           send_response_email(email_text, julia_response['julie_alias'])
         rescue => e
-          if Rails.env.production?
+          if !Rails.env.development?
             send_response_email(error_response_template, JulieAlias.find_by(email: 'jul.ia@juliedesk.com'))
             send_error_email_to_ai_team
           else

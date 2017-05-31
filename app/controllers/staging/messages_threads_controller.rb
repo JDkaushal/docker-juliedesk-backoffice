@@ -87,7 +87,7 @@ if ENV['STAGING_APP']
 
         http = Net::HTTP.new(uri.host, uri.port)
 
-        if Rails.env.production?
+        if !Rails.env.development?
           http.use_ssl = true
         end
         new_request = Net::HTTP::Post.new(uri.path, {'Content-Type' =>'application/json'})
