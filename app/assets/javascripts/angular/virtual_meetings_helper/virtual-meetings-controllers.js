@@ -712,6 +712,11 @@
                     var message = '';
                     var content = '';
                     var eventInstructions = '';
+                    var usedLocale = window.threadComputedData.locale;
+
+                    if(window.formFirstPass) {
+                        usedLocale = $('.locale-radio:checked').val();
+                    }
 
                     if($scope.currentConf.details){
 
@@ -749,8 +754,10 @@
                                     details: $scope.currentConf.details
                                 });
 
+
+
                                 eventInstructions = localize("events.call_instructions.instructions_in_notes", {
-                                    locale: window.threadComputedData.locale
+                                    locale: usedLocale
                                 });
                             }
                         }
@@ -758,7 +765,7 @@
                         if($scope.selectedVirtualResource) {
                             content = localize("events.call_instructions.give_confcall", {
                                 target_name: $scope.currentConf.targetInfos.name,
-                                details: $scope.selectedVirtualResource['instructions_' + window.threadComputedData.locale]
+                                details: $scope.selectedVirtualResource['instructions_' + usedLocale]
                             });
 
                             //eventInstructions = localize("events.call_instructions.instructions_in_notes", {
