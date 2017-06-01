@@ -341,7 +341,8 @@ class MessageClassification < ActiveRecord::Base
       ASK_POSTPONE_EVENTS,
       WAIT_FOR_CONTACT,
       INVITATION_ALREADY_SENT,
-      UPDATE_EVENT
+      UPDATE_EVENT,
+      FOLLOW_UP_CONTACTS
     ].include? classification
   end
 
