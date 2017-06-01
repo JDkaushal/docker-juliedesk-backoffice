@@ -2,7 +2,7 @@ class Review::OperatorsPresenceController < ReviewController
 
   skip_before_filter :verify_authenticity_token
   skip_before_filter :only_super_operator_level_2_or_admin
-  before_filter :only_planning_access
+  before_filter :only_planning_access, :no_ey_env
 
   def index
 
@@ -202,5 +202,9 @@ class Review::OperatorsPresenceController < ReviewController
       redirect_to "/"
       false
     end
+  end
+
+  def no_ey_env
+    Rails.env != "production_ey"
   end
 end
