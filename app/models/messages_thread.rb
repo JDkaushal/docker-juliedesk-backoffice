@@ -272,7 +272,7 @@ class MessagesThread < ActiveRecord::Base
   def julie_alias(params={})
     real_julie_aliases = self.julie_aliases(params)
     if real_julie_aliases.empty?
-      JulieAlias.find_by_email("julie@juliedesk.com")
+      JulieAlias.find_by_email(ENV['DEFAULT_JULIE_ALIAS_EMAIL'])
     else
       selected_real_julie_alias = nil
 

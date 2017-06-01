@@ -27,3 +27,13 @@ fr:
         3. Si je dois bien ignorer cet email, merci de me supprimer de la mailing list associée pour ne plus recevoir ce message à l'avenir.
 
         Merci de votre compréhension,
+      text_specific_tenant: |
+        Bonjour %{client_name},
+
+        Je ne reconnais pas l'email avec lequel vous m'avez contacté, je ne pourrai donc malheureusement pas traiter cet email.
+
+        1. Si vous m'avez contacté en me mettant en copie cachée, merci de me mettre en copie non-cachée de l'email.
+
+        2. Si je dois bien ignorer cet email, merci de me supprimer de la mailing list associée pour ne plus recevoir ce message à l'avenir.
+
+        Merci de votre compréhension,

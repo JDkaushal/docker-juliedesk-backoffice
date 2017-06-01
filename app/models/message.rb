@@ -71,7 +71,12 @@ class Message < ActiveRecord::Base
     account = self.messages_thread.account
     I18n.locale = account.locale
 
-    text = I18n.t("automatic_reply_emails.mailing_list.text", client_name: account.usage_name)
+    if ENV['DEFAULT_JULIE_ALIAS_EMAIL'] != ENV['COMMON_JULIE_ALIAS_EMAIL']
+      text = I18n.t("automatic_reply_emails.mailing_list.text_specific_tenant", client_name: account.usage_name)
+    else
+      text = I18n.t("automatic_reply_emails.mailing_list.text", client_name: account.usage_name)
+    end
+
 
     julie_alias = JulieAlias.find_by_email(ENV['DEFAULT_JULIE_ALIAS_EMAIL'])
     html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
@@ -109,7 +114,7 @@ class Message < ActiveRecord::Base
 
    same_domain = ApplicationHelper.extract_domain(to) == ApplicationHelper.extract_domain(julie_alias.email)
 
-   using_julie_alias = julie_alias_email != 'julie@juliedesk.com'
+   using_julie_alias = julie_alias_email != ENV['COMMON_JULIE_ALIAS_EMAIL']
 
    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
@@ -372,7 +377,7 @@ class Message < ActiveRecord::Base
 
           ClientSuccessTrackingHelpers.async_track("New Request Sent", account_email, {
               bo_thread_id: messages_thread.id,
-              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL'])
           })
         end
 
@@ -609,7 +614,7 @@ class Message < ActiveRecord::Base
         if new_thread && messages_thread.account_email.present?
           ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
               bo_thread_id: messages_thread.id,
-              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? "julie@juliedesk.com")
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL'])
           })
 
           secondary_clients = messages_thread.secondary_clients
