@@ -170,7 +170,7 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-    @julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email("julie@juliedesk.com")
+    @julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email(ENV['DEFAULT_JULIE_ALIAS_EMAIL'])
 
     quote_replied_message = false
     quote_forward_message = false

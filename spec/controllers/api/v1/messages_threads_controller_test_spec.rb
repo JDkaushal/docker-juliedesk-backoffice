@@ -15,7 +15,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
       @mt1 = FactoryGirl.create(:messages_thread_with_messages, server_thread_id: 666)
     end
 
-    it 'should return the correct context for the messages_thread' do
+    xit 'should return the correct context for the messages_thread' do
       pending 'Waiting for reactivation'
       get :messages_thread_context, id: 666
 
