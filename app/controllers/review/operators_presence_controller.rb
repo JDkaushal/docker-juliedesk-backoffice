@@ -205,6 +205,12 @@ class Review::OperatorsPresenceController < ReviewController
   end
 
   def no_ey_env
-    Rails.env != "production_ey"
+    if Rails.env == "production_ey"
+      redirect_to "/"
+      false
+    else
+      true
+    end
+
   end
 end
