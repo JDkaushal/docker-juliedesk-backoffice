@@ -572,13 +572,13 @@ class Message < ActiveRecord::Base
             m.save
           else
             # We already have the message in DB, we will make sure that we computed the allowed attendees for it (for retro compatibility purposes)
-            if message.allowed_attendees.blank?
+            #if message.allowed_attendees.blank?
               # For compute_allowed_attendees
               message.server_message = server_message
 
               message.compute_allowed_attendees(julie_aliases_emails)
               message.save
-            end
+            #end
           end
         end
 
