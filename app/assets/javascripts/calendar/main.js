@@ -1100,6 +1100,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
 
     var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual;
 
+    var tz = (window.threadComputedData && window.threadComputedData.timezone) ? window.threadComputedData.timezone : currentTimezone;
+
     for (var day in accountPreferencesHash.unbooking_hours) {
         var slots = accountPreferencesHash.unbooking_hours[day];
         var mCurrentTime = moment(startTime);
@@ -1109,12 +1111,12 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
 
                 var currentDay = mCurrentTime.day();
                 $(slots).each(function (k, slot) {
-                    var eventStartTime = mCurrentTime.clone().tz(window.threadComputedData.timezone);
+                    var eventStartTime = mCurrentTime.clone().tz(tz);
                     eventStartTime.day(currentDay);
                     eventStartTime.hours(slot[0] / 100);
                     eventStartTime.minutes(slot[0] % 100);
 
-                    var eventEndTime = mCurrentTime.clone().tz(window.threadComputedData.timezone);
+                    var eventEndTime = mCurrentTime.clone().tz(tz);
                     eventEndTime.day(currentDay);
                     eventEndTime.hours(slot[1] / 100);
                     eventEndTime.minutes(slot[1] % 100);
