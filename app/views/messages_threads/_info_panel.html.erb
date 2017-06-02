@@ -402,8 +402,12 @@
           $('.trusted-attendee-sprite[' + clientNameParameterized + '="true"]').removeClass('trusted-highlighted');
         });
       });
+        try {
+            initGooglePlacesAutoCompleteOnLocationField();
+        } catch(err) {
+            console.log(err.message)
+        }
 
-      initGooglePlacesAutoCompleteOnLocationField();
       initAllowedAttendeesEmails();
 
       var currentAppointment = window.getCurrentAppointment();
