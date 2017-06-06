@@ -283,7 +283,7 @@ class Message < ActiveRecord::Base
   def is_discussion_client_julie_only
     result = false
 
-    if destined_to_julie?
+    #if destined_to_julie?
       # If the message is destined to Julie only
       message_tos = server_message['to'].split(',')
       client_aliases = [messages_thread.account_email]
@@ -296,7 +296,7 @@ class Message < ActiveRecord::Base
       from_address = ApplicationHelper.find_addresses(server_message['from']).addresses.first.address
 
       result = message_tos.size == 1 && (server_message['cc'].blank? ||  server_message['cc'].split(',').size == 0) && ( client_aliases.include?(from_address) || from_a_julie?(from_email: from_address) )
-    end
+    #end
     result
   end
 
