@@ -9,6 +9,8 @@
         $scope.datesManager = undefined;
         $scope.selectedDate = undefined;
 
+        $scope.hasDateOutOfBounds = false;
+
         $scope.doNotAskSuggestionsMode = false;
 
         $scope.verifiedDatesByAi = angular.copy(window.verifiedDatesByAi);
@@ -131,6 +133,7 @@
         $scope.addDatesToCheck = function() {
             $scope.datesToCheck = [];
             var selectedDateMoment = moment($scope.selectedDateRaw);
+            $scope.hasDateOutOfBounds = false;
 
             var currentDateUtc, currentDate, formattedDate, dateInOtherTimezones, timezones, data;
             _.each($scope.rawDatesToCheck, function(datum) {
@@ -141,13 +144,18 @@
                 dateInOtherTimezones = [];
 
                 timezones = $scope.getUsedTimezones();
+                var dateIsOutOfBounds = $scope.datesManager.checkSuggestionTimeOutBound(currentDate);
+
+                if(dateIsOutOfBounds) {
+                    $scope.hasDateOutOfBounds = true;
+                }
 
                 data = {
                     date: formattedDate,
                     timezone: window.threadComputedData.timezone,
                     displayText: currentDate.locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")),
                     isHighlighted: currentDate.isSame(selectedDateMoment),
-                    isOutBound: $scope.datesManager.checkSuggestionTimeOutBound(currentDate),
+                    isOutBound: dateIsOutOfBounds,
                     // We may want to hide the date in the list because of reasons (i.e in the do_not_ask_suggestions_mode)
                     hide: datum.hide
                 };

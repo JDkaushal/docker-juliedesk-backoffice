@@ -488,9 +488,9 @@
 
         window.allowedAttendeesEmails = (window.threadComputedData.thread_recipients || [])
             // The thread main account email
-            .concat(window.threadAccount.email)
+            //.concat(window.threadAccount.email)
             // The thread main account aliases
-            .concat(window.threadAccount.email_aliases)
+            //.concat(window.threadAccount.email_aliases)
             // The emails present un the messages (they are represented as <a href="fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a> or <a href="mailto:fdeschamps@chu-reims.fr">fdeschamps@chu-reims.fr</a>
             // So we can look for them with Jquery using the regex function '*=' on the href attribute value
             // Extract emails from emails bodies
@@ -508,7 +508,7 @@
     };
 
     window.isAuthorizedAttendee = function(attendeeEmail = '') {
-      var allowedAttendeesEmails = window.allowedAttendeesEmails.concat(window.julie_alias_emails)
+      var allowedAttendeesEmails = window.allowedAttendeesEmails.concat(window.julie_alias_emails).concat(window.threadAccount.email).concat(window.threadAccount.email_aliases)
           .filter(function(email) {
             return email;
           })

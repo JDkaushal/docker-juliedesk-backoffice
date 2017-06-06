@@ -34,7 +34,6 @@
       <span class="sprite"></span><span class="text">Jul.IA n'a pas validé de date</span>
     </div>
 
-
     <div ng-hide="doNotAskSuggestionsMode" class="timezone-selection-area" display="block">
       <%= label_tag :event_creation_timezone, @messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical"), {class: 'dates-suggestion-timezone-label'} %>
       <%= text_field_tag :event_creation_timezone, @messages_thread.computed_data[:timezone] %>
@@ -122,6 +121,12 @@
     <div class="virtual-resources-details-container" style="display: none;">
       <div class="warning-area">
         <span class="sprite"></span><span class="virtual-resources-non-available-msg"></span>
+      </div>
+    </div>
+
+    <div class="verification-out-of-bounds" ng-show="hasDateOutOfBounds">
+      <div id="verification_out_of_bounds_message">
+        L'horaire sélectionné semble sortir du raisonnable
       </div>
     </div>
 
