@@ -94,7 +94,7 @@ function ConstraintTile($selector, params) {
 
 
     var defaultEmail = "";
-    if(constraintTile.possible_attendees && constraintTile.possible_attendees.length > 0) {
+    if(constraintTile.possibleAttendees && constraintTile.possibleAttendees.length > 0) {
         defaultEmail = constraintTile.possibleAttendees[0].email
     }
     var defaultData = {
