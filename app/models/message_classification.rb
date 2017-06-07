@@ -216,9 +216,7 @@ class MessageClassification < ActiveRecord::Base
           attendee['isClient'] == "true" &&
           #attendee['accountEmail'] &&
           attendee['"isThreadOwner"'] != 'true'
-    end.map do |attendee|
-      attendee['accountEmail']
-    end
+    end.map { |attendee| attendee['accountEmail'] }.compact
   end
 
   def review_status_as_text
