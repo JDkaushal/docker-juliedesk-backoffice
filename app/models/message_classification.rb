@@ -214,9 +214,11 @@ class MessageClassification < ActiveRecord::Base
     JSON.parse(self.attendees || "[]").select do |attendee|
       attendee['isPresent'] == "true" &&
           attendee['isClient'] == "true" &&
-          attendee['accountEmail'] &&
-          attendee['"isThreadOwner"'] != 'true'
-    end.map { |attendee| attendee['accountEmail'] }.compact
+          (attendee['accountEmail'] || attendee['account_email']) &&
+          attendee['isThreadOwner'] != 'true'
+    end.map do |attendee|
+      attendee['accountEmail'] ? attendee['accountEmail'] : attendee['account_email']
+    end.compact
   end
 
   def review_status_as_text
