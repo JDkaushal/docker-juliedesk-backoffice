@@ -20,7 +20,7 @@
 //= require angular
 //= require angular_common_directives
 //= require angular_common_services
-
+//= require angular_common_pipes
 
 
 //= require angular/merging_panel/ng-tags-input.min.js

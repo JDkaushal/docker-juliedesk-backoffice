@@ -135,6 +135,11 @@
       color: white;
     }
 
+    &.basic {
+      background: #ddd;
+      color: #444;
+    }
+
     &.highlighted {
       border-left: 5px solid rgba(0,0,0,0.4);
       padding-left: 5px;

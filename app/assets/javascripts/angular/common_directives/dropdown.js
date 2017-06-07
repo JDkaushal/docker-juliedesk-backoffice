@@ -4,6 +4,11 @@ angular.module('commonDirectives').directive('dropdown', function () {
         restrict: 'A',
         link: function (scope, element, attr, ctrl) {
             scope.data_items = JSON.parse(attr['dropdownData']);
+            scope.$watch(function() {
+                return attr['dropdownData'];
+            }, function(){
+                scope.data_items = JSON.parse(attr['dropdownData']);
+            });
 
             var activationElement = element;
             if (element.find('.dropdown-button').length > 0) {

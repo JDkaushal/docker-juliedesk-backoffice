@@ -1,0 +1,41 @@
+<%= javascript_include_tag 'angular_date_suggestions_full_auto_review_manager_app' %>
+<div class="col-md-8 col-md-offset-2" ng-controller="date-suggestions-full-auto-review-list-controller" id="date-suggestions-full-auto-review-manager" ng-cloak>
+  <h1>Auto Date suggestions Review</h1>
+
+
+  <div class="loading-box-on-top" ng-show="loading">Loading...</div>
+
+  <div class="btn-group" role="group" aria-label="...">
+    <div class="btn btn-default" ng-click="goToWeek(previousWeekStart())">Previous</div>
+    <div class="btn {{ end() == now ? 'btn-success' : 'btn-primary' }}">{{ start | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY" }} - {{ end() | amTimezone: 'Europe/Paris' | amDateFormat:'dddd D MMMM YYYY' }}</div>
+    <div class="btn btn-default" ng-click="goToWeek(nextWeekStart())" ng-show="shouldShowNextWeek()">Next</div>
+  </div>
+
+
+
+
+  <br/>
+  <h5 ng-show="!loading">{{ totalCount }} results</h5>
+
+
+
+  <table class="table table-striped" ng-show="!loading">
+    <tr>
+      <th class="col-md-3">Date</th>
+      <th class="col-md-2">Operator</th>
+      <th class="col-md-2">Client email</th>
+      <th class="col-md-1">Action id</th>
+      <th class="col-md-1">Status</th>
+      <th class="col-md-3">Errors</th>
+    </tr>
+
+    <tr ng-repeat="dateSuggestionsReview in julieActions | orderBy: 'date'">
+      <td>{{ dateSuggestionsReview.date | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY - HH:mm" }}</td>
+      <td>{{ dateSuggestionsReview.operator }}</td>
+      <td>{{ dateSuggestionsReview.client_email }}</td>
+      <td><a href="/review/date_suggestions_reviews/{{ dateSuggestionsReview.id }}/full_auto">{{ dateSuggestionsReview.julie_action_id }}</a></td>
+      <td>{{ dateSuggestionsReview.review_status }}</td>
+      <td>{{ dateSuggestionsReview.review_full_auto_errors }}</td>
+    </tr>
+  </table>
+</div>

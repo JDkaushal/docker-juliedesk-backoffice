@@ -3,23 +3,6 @@
     var app = angular.module('date-suggestions-comparison-manager-controllers', ['angularMoment', 'commonDirectives', 'commonServices']);
 
 
-    app.directive('constraintTile', function () {
-        function link(scope, element, attrs) {
-            new ConstraintTile(
-                $(element),
-                {
-                    data: scope.constraint,
-                    readOnly: true
-                }
-            );
-        }
-
-        return {
-            restrict: 'A',
-            link: link
-        }
-    });
-
     app.controller("date-suggestions-errors-list-controller", ['$scope', 'moment', '$http', 'conscienceApi', function ($scope, moment, $http, conscienceApi) {
         $scope.now = moment();
         $scope.start = $scope.now.clone().startOf('isoWeek');

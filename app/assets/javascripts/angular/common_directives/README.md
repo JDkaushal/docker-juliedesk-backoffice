@@ -12,6 +12,7 @@ var app = angular.module('my-controller', [..., 'commonDirectives']);
 * [Tooltip](tooltip.md)
 * [Dropdown](dropdown.md)
 * [EventTimeLine](event_time_line.md)
+* [ConstraintTile](constraint_tile.md)
 
 ## Development
 

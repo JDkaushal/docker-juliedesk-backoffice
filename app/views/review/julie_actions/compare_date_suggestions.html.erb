@@ -72,7 +72,7 @@
       <div class="section">
         <label>Constraints<span ng-show="constraints.length > 0"> ({{ constraints.length }})</span></label>
         <div class="information empty" ng-show="constraints.length == 0">None</div>
-        <div class="constraint" ng-repeat="constraint in constraints" constraint-tile></div>
+        <div class="constraint" ng-repeat="constraint in constraints" constraint-tile constraint-tile-data="constraint"></div>
       </div>
 
       <div class="section" ng-show="allTimezones.length > 1">

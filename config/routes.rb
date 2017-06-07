@@ -171,7 +171,12 @@ Rails.application.routes.draw do
     end
 
     resources :date_suggestions_reviews, only: [:show] do
+
+      collection do
+        get "full_auto", action: :full_auto_index
+      end
       member do
+        get "full_auto", action: :full_auto_show
         post "", action: :update
       end
     end

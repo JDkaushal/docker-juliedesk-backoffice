@@ -59,7 +59,6 @@ ConstraintTile.WHEN_NATURE_ALWAYS       = "always";
 
 function ConstraintTile($selector, params) {
     var constraintTile = this;
-    console.log(params);
 
     constraintTile.possibleAttendees = params.possible_attendees;
     if(!constraintTile.possibleAttendees) {

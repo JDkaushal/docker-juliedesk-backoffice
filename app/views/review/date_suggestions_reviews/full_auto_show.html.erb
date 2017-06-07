@@ -1,0 +1,227 @@
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!--   To remove when travel times will be computed in backend   -->
+<%= javascript_include_tag 'angular_dependencies' %>
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=#{ENV['GOOGLE_API_KEY']}"%>
+<script>
+    window.threadComputedData = <%== @window_thread_computed_data.to_json %>;
+    window.threadAccount =<%== @window_thread_account.to_json %>;
+</script>
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<script>
+    window.getCurrentAddressObject = function () {
+        return null;
+    };
+    window.getCurrentAppointment = function () {
+        return null;
+    };
+</script>
+<%= javascript_include_tag 'angular_date_suggestions_review_manager_app' %>
+
+<div class="calendar-in-thread-details-container">
+  <%= render template: "calendar/calendar" %>
+</div>
+
+<div id="date-suggestions-review-manager"
+     ng-controller="date-suggestions-full-auto-review-manager-controller"
+     ng-init="init({date_suggestions_review_id: <%= params[:id] %>})"
+     ng-cloak>
+  <div class="header jd-global-header full">
+    <%= link_to "Full-auto date suggestions review", action: :full_auto_index %>
+  </div>
+
+  <div class="common-right-panel with-header">
+
+
+
+    <div ng-show="isLoading()">
+      <div class="loading">Loading...</div>
+    </div>
+    <div ng-show="error">
+      <div class="error">Impossible to load this review data.</div>
+    </div>
+    <div ng-hide="isLoading() || error">
+      <div class="warning-panel" ng-show="currentNotes">{{ currentNotes }}</div>
+
+
+      <div class="section">
+        <label>Action date</label>
+        <div class="information">{{ date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
+        <div class="information small">{{ mainTimezone }}</div>
+        <br>
+        <div class="information">{{ date | amTimezone: "UTC" | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}</div>
+        <div class="information small">UTC</div>
+      </div>
+
+      <div class="section">
+        <label>Scheduling</label>
+        <div class="information big">{{ duration }}min. {{ eventType | capitalize }}</div>
+      </div>
+
+      <div class="section">
+        <label>Location</label>
+        <div class="information">{{ location }}</div>
+      </div>
+
+      <div class="section">
+        <label>Main address</label>
+        <div class="information">{{ mainAddress }}</div>
+      </div>
+
+      <div class="section">
+        <label>Constraints<span ng-show="constraints.length > 0"> ({{ constraints.length }})</span></label>
+        <div class="information empty" ng-show="constraints.length == 0">None</div>
+        <div class="constraint" ng-repeat="constraint in constraints" constraint-tile constraint-tile-data="constraint"></div>
+      </div>
+
+      <div class="section" ng-show="allTimezones.length > 1">
+        <label>Timezones</label>
+        <div class="information" ng-repeat="timezone in allTimezones">{{ timezone }}: UTC{{ date | amTimezone: timezone | amDateFormat: "Z"  }}</div>
+      </div>
+
+
+      <div class="section">
+        <label>Dates proposées</label>
+        <div class="suggested-date-timezone information">{{ mainTimezone }}</div>
+
+        <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+          <div class="suggested-date review-item"
+               ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
+
+               dropdown
+               dropdown-data="{{ possibleDateSuggestionErrors }}"
+               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            <div class="review-item-button dropdown-button"
+                 tooltip="Signal an error"
+                 tooltip-right
+                 tooltip-delay>!
+            </div>
+          </div>
+
+          <div class="left-offset">
+            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+              {{ possibleDateSuggestionErrors[error].label }}
+              <div class="free-text-container" ng-show="error == 'other'">
+                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div ng-repeat="dateSuggestion in suggestedDatesOther()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+
+
+          <div class="suggested-date review-item default"
+               ng-class="{highlighted: dateSuggestion.highlighted}"
+               dropdown
+               dropdown-data="{{ possibleDateSuggestionErrors }}"
+               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            <div class="review-item-button dropdown-button"
+                 tooltip="Signal an error"
+                 tooltip-right
+                 tooltip-delay>!
+            </div>
+          </div>
+
+          <div class="left-offset">
+            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+              {{ possibleDateSuggestionErrors[error].label }}
+              <div class="free-text-container" ng-show="error == 'other'">
+                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br>
+        <div ng-show="notCorrectConscienceDateSuggestions().length > 0">
+        <br>
+        <label>Dates modifiées</label>
+
+        <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+
+          <div class="suggested-date review-item"
+               ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
+               dropdown
+               dropdown-data="{{ possibleDateSuggestionErrors }}"
+               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+            <div class="review-item-button dropdown-button"
+                 tooltip="Signal an error"
+                 tooltip-right
+                 tooltip-delay>!
+            </div>
+          </div>
+
+          <div class="left-offset">
+            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+              {{ possibleDateSuggestionErrors[error].label }}
+              <div class="free-text-container" ng-show="error == 'other'">
+                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="information">Explanation</div>
+          <textarea disabled>{{ forceHumanReason }}</textarea>
+        </div>
+
+
+
+        <br>
+        <br>
+        <div class="review-item basic"
+             dropdown
+             dropdown-data="{{ possibleFullAutoErrorsFiltered }}"
+             dropdown-select-item="addFullAutoError(value)">
+          Operator errors
+          <div class="review-item-button dropdown-button"
+               tooltip="Signal an error"
+               tooltip-right
+               tooltip-delay>!
+          </div>
+        </div>
+
+        <div class="left-offset">
+          <div class="list-item red" ng-repeat="fullAutoError in fullAutoErrors track by $index">
+            <div class="list-item-remove-button" ng-click="removeFullAutoError(operatorError)">X</div>
+            {{ possibleFullAutoErrors[fullAutoError].label }}
+            <div class="free-text-container" ng-show="fullAutoError == 'other'">
+              <input class="free-text" id="abc" ng-model="$parent.fullAutoCustomError" placeholder="Commentaire...">
+            </div>
+          </div>
+        </div>
+
+
+
+
+    </div>
+
+
+    <div class="section">
+      <div class="information">Commentaire</div>
+      <textarea ng-model="comment"></textarea>
+    </div>
+    <div class="section">
+      <a class="btn btn-primary" href="{{ reviewThreadLink }}" target="_blank">View thread context</a>
+
+      <div class="btn btn-success" ng-disabled="saving" ng-click="validateReview()">Validate</div>
+    </div>
+  </div>
+
+  <div id="event-to-check-for-calendar-html-in-review" style="display: none">
+    <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'
+         onmouseenter="document.dispatchEvent(new CustomEvent('mouseEnterOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))"
+         onmouseleave="document.dispatchEvent(new CustomEvent('mouseLeaveOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">
+      <div style="position: absolute; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; font-weight: 600; text-transform: uppercase; padding: 0 0 0 10px; color: $TEXT_COLOR$">$START$</div>
+    </div>
+  </div>
+
+</div>
+</div>

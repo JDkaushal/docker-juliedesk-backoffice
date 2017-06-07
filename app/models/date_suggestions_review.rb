@@ -24,6 +24,10 @@ class DateSuggestionsReview< ActiveRecord::Base
     self.review_set_errors = params[:set_errors] || []
     self.review_items_errors = params[:items_errors] || {}
 
+    self.review_full_auto_errors = params[:full_auto_errors] || []
+    self.review_full_auto_custom_error = params[:full_auto_custom_error].present? ? params[:full_auto_custom_error] : nil
+    self.comment = params[:comment].present? ? params[:comment] : nil
+
     self.review_items_incorrect_count = self.review_items_errors.keys.length
     self.reviewed_by_operator_id = params[:operator_id]
     self.review_status = REVIEW_STATUS_REVIEWED

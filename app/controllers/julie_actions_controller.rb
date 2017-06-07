@@ -118,6 +118,10 @@ class JulieActionsController < ApplicationController
         date_suggestions_full_ai: params[:date_suggestions_full_ai] == 'true'
      })
 
+    if julie_action.date_suggestions_full_ai
+      DateSuggestionsReview.generate_from_julie_action(julie_action.id)
+    end
+
     if params[:messages_thread_id].present?
       data = {last_operator_id: session[:operator_id]}
 
