@@ -264,7 +264,9 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
 };
 
 Calendar.prototype.refreshMeetingRoomSelectOptions = function() {
-    $('#meeting-rooms-manager').scope().populateCreateEventRoomSelect();
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+    if(meetingRoomsManager)
+        meetingRoomsManager.populateCreateEventRoomSelect();
 };
 
 Calendar.prototype.selectEvent = function (event, selectingOccurrence) {
