@@ -253,7 +253,13 @@
         $scope.listenToDocumentForInteractions = function() {
             document.addEventListener("clickOnDateSuggestionAddErrorButtonInReviewMode", function (e) {
                 var selectedDateSuggestion = $scope.findDateSuggestionByDate(e.detail.start);
-                angular.element(document.getElementById("date-suggestion-" + selectedDateSuggestion.date.format())).scope().$broadcast("SHOW_DROPDOWN");
+                $scope.$broadcast("HIDE_DROPDOWN");
+                var element = document.getElementById("date-suggestion-" + selectedDateSuggestion.date.format());
+                angular.element(element).scope().$broadcast("SHOW_DROPDOWN");
+                
+                $('.common-right-panel').animate({
+                    scrollTop: $(element).offset().top + $('.common-right-panel').scrollTop() - 100
+                }, 300);
 
             });
             document.addEventListener("mouseEnterOnDateSuggestionInReviewMode", function (e) {
@@ -387,8 +393,6 @@
                         $scope.possibleFullAutoErrorsFiltered[k] = v;
                     }
                 });
-
-                console.log($scope.possibleFullAutoErrorsFiltered);
 
                 $scope.populateErrors($scope.conscienceDateSuggestions);
             });

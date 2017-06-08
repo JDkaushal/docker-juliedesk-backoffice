@@ -15,7 +15,7 @@ angular.module('commonDirectives').directive('dropdown', function () {
                 activationElement = angular.element(element.find('.dropdown-button')[0]);
             }
             activationElement.on('click', function () {
-                scope.showDropDown();
+                setTimeout(scope.showDropDown, 0);
             });
 
             scope.hideDropdown = function () {
@@ -36,6 +36,11 @@ angular.module('commonDirectives').directive('dropdown', function () {
                     $scope.isShown = true;
                 });
             });
+            $scope.$on('HIDE_DROPDOWN', function (event, data) {
+                $scope.$apply(function () {
+                    $scope.isShown = false;
+                });
+            });
 
             this.showHover = function () {
                 $scope.isShown = !$scope.isShown;
@@ -52,7 +57,7 @@ angular.module('commonDirectives').directive('dropdown', function () {
         },
         template: function (element, attr) {
             var htmlTemplate =
-                '<div class="custom-dropdown-container" ng-show="isShown">' +
+                '<div class="custom-dropdown-container" ng-show="isShown" click-outside="hideDropdown()">' +
                 '<div class="custom-dropdown">' +
                 '<div class="custom-dropdown-option" ng-repeat="(data_id, data_item) in data_items" ng-click="hideDropdown(); selectItem({value: data_id})">{{ data_item.label }}</div>' +
                 '</div>' +

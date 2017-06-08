@@ -139,7 +139,6 @@
 
         <br>
         <div ng-show="notCorrectConscienceDateSuggestions().length > 0">
-        <br>
         <label>Dates modifiées</label>
 
         <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
@@ -174,7 +173,6 @@
 
 
 
-        <br>
         <br>
         <div class="review-item basic"
              dropdown
@@ -216,9 +214,10 @@
   </div>
 
   <div id="event-to-check-for-calendar-html-in-review" style="display: none">
-    <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white'
+    <div style='background: $COLOR$; width: 100%; height: 100%; min-height: 20px; color: #000; position: relative; border: 1px solid white; cursor: pointer'
          onmouseenter="document.dispatchEvent(new CustomEvent('mouseEnterOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))"
-         onmouseleave="document.dispatchEvent(new CustomEvent('mouseLeaveOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">
+         onmouseleave="document.dispatchEvent(new CustomEvent('mouseLeaveOnDateSuggestionInReviewMode', { 'detail': {'start': '$RAW_START$' }}))"
+         onclick="document.dispatchEvent(new CustomEvent('clickOnDateSuggestionAddErrorButtonInReviewMode', { 'detail': {'start': '$RAW_START$' }}))">
       <div style="position: absolute; top: 50%; margin-top: -15px; height: 30px; line-height: 30px; font-weight: 600; text-transform: uppercase; padding: 0 0 0 10px; color: $TEXT_COLOR$">$START$</div>
     </div>
   </div>

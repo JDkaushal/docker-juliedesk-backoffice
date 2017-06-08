@@ -1,1 +1,1 @@
-angular.module('commonDirectives', ['commonServices']);
+angular.module('commonDirectives', ['commonServices', "angular-click-outside"]);

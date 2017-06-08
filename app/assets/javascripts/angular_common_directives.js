@@ -1,3 +1,5 @@
+//= require angular/external_modules/clickoutside.directive
+
 //= require angular/common_directives/base
 //= require angular/common_directives/tooltip
 //= require angular/common_directives/dropdown
