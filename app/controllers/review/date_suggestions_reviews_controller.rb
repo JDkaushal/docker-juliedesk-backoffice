@@ -21,7 +21,7 @@ class Review::DateSuggestionsReviewsController < ReviewController
                       julie_action_id: dsr.julie_action.id,
                       operator: dsr.julie_action.message_classification.operator,
                       client_email: dsr.julie_action.message_classification.message.messages_thread.account_email,
-                      data: dsr.action_at,
+                      date: dsr.action_at,
                       review_status: dsr.review_status,
                       review_full_auto_errors: dsr.review_full_auto_errors
                   }
@@ -82,7 +82,8 @@ class Review::DateSuggestionsReviewsController < ReviewController
                   items_errors: dsr.review_items_errors || [],
                   comment: dsr.comment,
                   full_auto_errors: dsr.review_full_auto_errors || [],
-                  full_auto_custom_error: dsr.review_full_auto_custom_error
+                  full_auto_custom_error: dsr.review_full_auto_custom_error,
+                  review_thread_link: "/review/messages_threads/#{mt.id}/review"
               }
           }
       end

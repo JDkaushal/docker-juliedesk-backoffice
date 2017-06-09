@@ -53,11 +53,14 @@
             $scope.location = data.location;
             $scope.constraints = data.constraints_data;
             $scope.date = data.date;
+            $scope.mainAddress = data.main_address;
 
             $scope.itemsErrorsData = data.items_errors;
             $scope.fullAutoErrors = data.full_auto_errors;
             $scope.fullAutoCustomError = data.full_auto_custom_error;
             $scope.comment = data.comment;
+
+            $scope.reviewThreadLink = data.review_thread_link;
 
             window.otherAttendeesWithAccount = _.filter($scope.attendees, function (attendee) {
                 return attendee.isPresent && attendee.isClient && attendee.accountEmail && attendee.accountEmail != threadAccountEmail;
@@ -256,7 +259,7 @@
                 $scope.$broadcast("HIDE_DROPDOWN");
                 var element = document.getElementById("date-suggestion-" + selectedDateSuggestion.date.format());
                 angular.element(element).scope().$broadcast("SHOW_DROPDOWN");
-                
+
                 $('.common-right-panel').animate({
                     scrollTop: $(element).offset().top + $('.common-right-panel').scrollTop() - 100
                 }, 300);

@@ -29,7 +29,7 @@
       <th class="col-md-3">Errors</th>
     </tr>
 
-    <tr ng-repeat="dateSuggestionsReview in julieActions | orderBy: 'date'">
+    <tr ng-repeat="dateSuggestionsReview in julieActions | orderBy:'date':true">
       <td>{{ dateSuggestionsReview.date | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY - HH:mm" }}</td>
       <td>{{ dateSuggestionsReview.operator }}</td>
       <td>{{ dateSuggestionsReview.client_email }}</td>
