@@ -448,10 +448,11 @@ Calendar.prototype.fullCalendarInit = function() {
                 $element.find('.fc-event-title').html('<span class="sprite"></span><span class="text">Busy</span>');
                 $element.width(columnWidth);
 
-                var columnNumber = Math.floor(parseInt($element.css('left')) / columnWidthInt);
+                //var columnNumber = Math.floor(parseInt($element.css('left')) / columnWidthInt);
 
                 // Allow to stick the meeting room label on the left of the row
-                $element.css('left', (columnWidthInt * columnNumber + offsetRowInt) + 'px');
+                //$element.css('left', (columnWidthInt * columnNumber + offsetRowInt) + 'px');
+                $element.css('left', (columnWidthInt * (event.start.day() - 1) + offsetRowInt) + 'px');
             }
 
             if(event.isVirtualResource) {
