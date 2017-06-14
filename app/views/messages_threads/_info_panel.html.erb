@@ -1504,7 +1504,7 @@
       <div class="data-entry linear-form-entry appointment-type-selects" data-entry-name="appointmentType">
         <% messages_thread_account_appointments = @messages_thread.account.appointments %>
         <% selectOption = Struct.new(:id, :name)%>
-        <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.map{|app| app['appointment_kind_hash']['family_kind']}.uniq.map{|family_kind| selectOption.new(family_kind, family_kind) }.sort_by{|option| option.name} %>
+        <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.group_by{|app| app['appointment_kind_hash']['family_kind']}.map{|family_kind, aks| selectOption.new(family_kind, aks.length > 1 ? family_kind : aks.first['designation']) }.sort_by{|option| option.name} %>
         <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['designation']) } %>
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
         <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
