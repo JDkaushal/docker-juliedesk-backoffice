@@ -40,7 +40,7 @@
             if (recipients == "only_client") {
                 var client = window.clientRecipient();
 
-                if(client.name == '') {
+                if(client.name == '' || client.name == null) {
                     client = window.emailSender();
                 }
 
