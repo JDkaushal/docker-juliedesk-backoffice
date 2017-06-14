@@ -1505,7 +1505,7 @@
         <% messages_thread_account_appointments = @messages_thread.account.appointments %>
         <% selectOption = Struct.new(:id, :name)%>
         <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.map{|app| app['appointment_kind_hash']['family_kind']}.uniq.map{|family_kind| selectOption.new(family_kind, family_kind) }.sort_by{|option| option.name} %>
-        <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['label']) } %>
+        <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['designation']) } %>
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
         <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
         <div class="data-entry-name"><%= I18n.t("info_box.computed_appointment_type") %></div>
