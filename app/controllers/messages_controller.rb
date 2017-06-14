@@ -96,6 +96,9 @@ class MessagesController < ApplicationController
     @messages_thread.re_import
 
     @message = @messages_thread.messages.select{|m| m.id == @message.id}.first
+
+  rescue ActiveRecord::RecordNotFound => e
+    render status: :not_found, text: 'Sorry, this message does not exists.'
   end
 
   def let_ai_process

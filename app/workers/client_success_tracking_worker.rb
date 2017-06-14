@@ -1,3 +1,5 @@
+require 'resque-timeout'
+
 class ClientSuccessTrackingWorker
 
   @queue = :client_success_tracking
@@ -10,6 +12,7 @@ class ClientSuccessTrackingWorker
     begin
       ClientSuccessTrackingHelpers.track(event_name, account_email, properties)
     rescue Exception => e
+      print e.inspect
       print "TRACKING WORKER EXCEPTION\n"
       raise e
     end

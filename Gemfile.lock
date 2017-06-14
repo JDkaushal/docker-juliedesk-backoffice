@@ -236,6 +236,8 @@ GEM
       redis-namespace (~> 1.3)
       sinatra (>= 0.9.2)
       vegas (~> 0.1.2)
+    resque-timeout (1.0.0)
+      resque (~> 1.0)
     resque-workers-lock (2.0.1)
       resque
     rspec (3.4.0)
@@ -363,6 +365,7 @@ DEPENDENCIES
   rails-settings-cached
   redis
   resque (~> 1.26.0)
+  resque-timeout
   resque-workers-lock
   rspec-rails (~> 3.0)
   sass-rails (~> 4.0.3)
@@ -375,6 +378,9 @@ DEPENDENCIES
   unicorn
   webmock-rspec-helper
   whenever
+
+RUBY VERSION
+   ruby 2.2.0p0
 
 BUNDLED WITH
    1.13.6

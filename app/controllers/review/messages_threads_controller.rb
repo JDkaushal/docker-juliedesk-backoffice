@@ -31,7 +31,10 @@ class Review::MessagesThreadsController < ReviewController
 
   def from_server_thread_id
     messages_thread = MessagesThread.find_by server_thread_id: params[:server_thread_id]
-    raise "No thread with that id" unless messages_thread
+
+    unless messages_thread
+      render status: :not_found, text: "No thread with that id"
+    end
 
     redirect_to action: :review, id: messages_thread.id
   end
