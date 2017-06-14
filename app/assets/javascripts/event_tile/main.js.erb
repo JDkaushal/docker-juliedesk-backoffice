@@ -252,9 +252,26 @@ EventTile.prototype.redraw = function() {
     eventTile.$selector.find("input.location").val(eventTile.event.location);
     if(window.featuresHelper.isFeatureActive("show_ai_event_interpretation") && eventTile.event.aiMetadata) {
 
-        eventTile.$selector.find("input.ai-sanitized-location").val(eventTile.event.aiMetadata.sanitized_location);
-        eventTile.$selector.find("input.ai-event-type").val(eventTile.event.aiMetadata.event_type);
-        eventTile.$selector.find(".ai-event-interpretation").show();
+        var aiMetaData = {
+            "ai-sanitized-location": eventTile.event.aiMetadata.sanitized_location,
+            "ai-event-type": eventTile.event.aiMetadata.event_type,
+            "ai-location-indication": eventTile.event.aiMetadata.location_indication,
+            "ai-timezone-indication": eventTile.event.aiMetadata.timezone_indication
+        }
+        _.each(aiMetaData, function(value, klass) {
+            eventTile.$selector.find("input." + klass).val(value);
+            if(value && value != '') {
+                eventTile.$selector.find("input." + klass).closest(".ai-event-interpretation-container").addClass("valid")
+            }
+        });
+
+        if(eventTile.event.allDay) {
+            eventTile.$selector.find(".ai-event-interpretation").show();
+        }
+        else {
+            eventTile.$selector.find(".ai-event-interpretation:not(.only-all-day)").show();
+        }
+        eventTile.$selector.find(".hide-if-ai-event-interpretation").hide();
     }
 
     eventTile.$selector.find("textarea.notes").val(eventTile.event.description);

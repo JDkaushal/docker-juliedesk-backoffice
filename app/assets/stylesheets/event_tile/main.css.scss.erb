@@ -419,6 +419,13 @@
     .ai-event-interpretation-container {
       position: relative;
       color: $aiControlColor;
+      margin: -10px -28px -10px -50px;
+      padding: 10px 28px 10px 50px;
+      background: #eedbff;
+
+      input {
+        background: transparent;
+      }
 
       .ai-sanitized-location {
         width: 100%;
@@ -426,13 +433,28 @@
       .ai-indicator {
         border-left: 6px solid $aiControlColor;
         position: absolute;
-        top: -6px;
-        left: -45px;
-        bottom: -6px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+
+        span {
+          margin: 15px;
+          color: $aiControlColorBackground-40pct;
+        }
+      }
+
+      &.valid {
+        span {
+          color: $aiControlColor;
+        }
       }
     }
     .ai-event-interpretation {
       display: none;
+
+      &.border {
+        border-color: $aiControlColorBackground-20pct;
+      }
     }
 
     &.editing {
