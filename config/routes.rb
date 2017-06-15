@@ -73,8 +73,6 @@ Rails.application.routes.draw do
     end
   end
 
-
-
   namespace :admin do
     resources :operators, only: [:show, :index, :new, :create, :update, :edit] do
       member do
