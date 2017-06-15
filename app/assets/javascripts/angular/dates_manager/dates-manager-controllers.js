@@ -205,6 +205,10 @@
                         meetingRoomsToShow[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
                     });
 
+                    var version = "stable";
+                    if(!window.featuresHelper.isFeatureActive("trust_julia_suggestion")) {
+                        version = "beta";
+                    }
                     var fetchParams = {
                         account_email: window.threadAccount.email,
                         thread_data: window.threadComputedData,
@@ -215,7 +219,8 @@
                         julie_action_id: window.julie_action_id,
                         multi_clients: false,
                         meeting_rooms_to_show: meetingRoomsToShow,
-                        asap: window.threadComputedData.asap_constraint
+                        asap: window.threadComputedData.asap_constraint,
+                        version: version
                     };
 
                     if(window.currentCalendar.initialData.constraintsData) {
