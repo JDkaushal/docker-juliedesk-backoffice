@@ -63,16 +63,27 @@
                 }
             }
 
+            if(window.formFirstPass) {
+                $scope.handleAiAsapMode();
+            }
+
             if(featuresHelper.isFeatureActive("constraints_from_ai")) {
                 if (window.formFirstPass) {
-                    $scope.addAIConstraintTiles()
+                    $scope.addAIConstraintTiles();
                 }
             }
 
             if(featuresHelper.isFeatureActive("location_from_ai")) {
                 if (window.formFirstPass) {
-                    $scope.addAILocationTile()
+                    $scope.addAILocationTile();
                 }
+            }
+        };
+
+        $scope.handleAiAsapMode = function() {
+            var mainInterpretation = messageInterpretationsService.getMainInterpretation();
+            if(mainInterpretation.asap) {
+                $("#asap_constraint").prop('checked', true).addClass("ai-checked");
             }
         };
 

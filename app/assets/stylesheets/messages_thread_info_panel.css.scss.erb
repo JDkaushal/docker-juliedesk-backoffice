@@ -53,12 +53,25 @@
     margin: 10px 0;
     cursor: pointer;
     font-weight: 400;
+    position: relative;
 
-    input {
+    input[type=checkbox] {
       cursor: inherit;
       outline: none;
     }
 
+    .checkbox-container-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: -1;
+    }
+
+    input[type=checkbox].ai-checked:checked + .checkbox-container-background {
+      background: $aiControlColorBackground-40pct;
+    }
     &.disabled {
       cursor: not-allowed;
       background: #f0f0f0;
