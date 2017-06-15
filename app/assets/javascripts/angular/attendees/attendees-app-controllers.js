@@ -458,7 +458,7 @@
                     assisted.assistedBy.guid = a.guid;
                 }
 
-                if(!a.isClient && !a.company && !!a.email) {
+                if(!a.isClient && !a.aIHasBeenConfirmed && !a.company && !!a.email) {
                     var attendeeDomain = a.email.substring(a.email.lastIndexOf("@") + 1);
                     attendeesDomainsWithoutCompany.add(attendeeDomain);
                 }
