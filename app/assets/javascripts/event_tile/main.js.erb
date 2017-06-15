@@ -256,7 +256,8 @@ EventTile.prototype.redraw = function() {
             "ai-sanitized-location": eventTile.event.aiMetadata.sanitized_location,
             "ai-event-type": eventTile.event.aiMetadata.event_type,
             "ai-location-indication": eventTile.event.aiMetadata.location_indication,
-            "ai-timezone-indication": eventTile.event.aiMetadata.timezone_indication
+            "ai-timezone-indication": eventTile.event.aiMetadata.timezone_indication,
+            "ai-availability": eventTile.event.aiMetadata.availability
         }
         _.each(aiMetaData, function(value, klass) {
             eventTile.$selector.find("input." + klass).val(value);
