@@ -82,7 +82,7 @@
 
         $scope.handleAiAsapMode = function() {
             var mainInterpretation = messageInterpretationsService.getMainInterpretation();
-            if(mainInterpretation.asap) {
+            if(mainInterpretation && mainInterpretation.asap) {
                 $("#asap_constraint").prop('checked', true).addClass("ai-checked");
             }
         };

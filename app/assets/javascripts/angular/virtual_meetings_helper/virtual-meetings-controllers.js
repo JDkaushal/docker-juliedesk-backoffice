@@ -245,6 +245,7 @@
                     ];
 
                     if($scope.currentConf.target == 'client' && currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
+                        supports.push({name: 'Video Conference', value: 'video_conference'});
                         _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
                             var currentText = companyConfig.resource_type;
                             currentText = currentText.charAt(0).toUpperCase() + currentText.substr(1).toLowerCase();
@@ -568,6 +569,9 @@
                                 case 'confcall':
                                     details = attendee.confCallInstructions;
                                     break;
+                                case 'video_conference':
+                                    details = attendee.videoConferenceInstructions;
+                                    break;
                             }
 
                             if(attendee.isClient)
@@ -748,13 +752,11 @@
 
                                 eventInstructions = content;
                             }
-                            else if($scope.currentConf.support == 'confcall'){
+                            else if($scope.currentConf.support == 'confcall' || $scope.currentConf.support == 'video_conference'){
                                 content = localize("events.call_instructions.give_confcall", {
                                     target_name: $scope.currentConf.targetInfos.name,
                                     details: $scope.currentConf.details
                                 });
-
-
 
                                 eventInstructions = localize("events.call_instructions.instructions_in_notes", {
                                     locale: usedLocale
@@ -1091,7 +1093,7 @@
                         return false;
                     var currentVAConfig = virtualMeetingsHelperCtrl.currentVAConfig;
 
-                    return currentVAConfig.rescue_with_confcall || currentVAConfig.rescue_with_landline || currentVAConfig.rescue_with_mobile || currentVAConfig.rescue_with_skype;
+                    return currentVAConfig.rescue_with_confcall || currentVAConfig.rescue_with_landline || currentVAConfig.rescue_with_mobile || currentVAConfig.rescue_with_skype || currentVAConfig.rescue_with_video_conference;
                 };
 
                 checkIfThreadDataOk = function(){

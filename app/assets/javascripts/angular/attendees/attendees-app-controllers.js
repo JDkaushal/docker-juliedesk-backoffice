@@ -505,6 +505,7 @@
                 mobile: window.threadAccount.mobile_number,
                 skypeId: window.threadAccount.skype,
                 confCallInstructions: window.threadAccount.confcall_instructions,
+                videoConferenceInstructions: window.threadAccount.video_conference_instructions,
                 isPresent: true,
                 isClient: true,
                 isThreadOwner: true
@@ -569,6 +570,7 @@
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
+                videoConferenceInstructions: informations.video_conference_instructions,
                 isPresent: isPresent,
                 alreadySetPresent: isPresent || alreadyPresent,
                 isClient: isClient,

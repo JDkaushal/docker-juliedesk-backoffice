@@ -17,6 +17,7 @@ class Account
                 :mobile_number,
                 :landline_number,
                 :confcall_instructions,
+                :video_conference_instructions,
                 :skype,
                 :means_of_transport,
                 :awaiting_current_notes,
@@ -80,6 +81,7 @@ class Account
     account.mobile_number = data['mobile_number']
     account.landline_number = data['landline_number']
     account.confcall_instructions = data['confcall_instructions']
+    account.video_conference_instructions = data['video_conference_instructions']
     account.skype = data['skype']
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']

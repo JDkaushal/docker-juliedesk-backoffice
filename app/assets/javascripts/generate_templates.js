@@ -515,7 +515,7 @@ window.generateEmailTemplate = function (params) {
         else if(params.virtualResourcesUsed) {
             callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
         } else if(callInstructions.details != '' && callInstructions.details != null && callInstructions.details != undefined) {
-            if(callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall')) {
+            if(callInstructions.targetInfos.name != '' && (callInstructions.support == 'mobile' || callInstructions.support == 'landline' || callInstructions.support == 'confcall' || callInstructions.support == 'video_conference')) {
                 callInstructionsMessage = localize("email_templates.send_call_instructions.placed_in_notes");
             } else if (callInstructions.support == 'skype') {
                 var names = callInstructions.targetInfos.name.split(" ");
