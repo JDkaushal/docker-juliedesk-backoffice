@@ -244,14 +244,17 @@
                         {name:"Confcall" + suffixConfcall, value:'confcall'}
                     ];
 
-                    if($scope.currentConf.target == 'client' && currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
+                    if($scope.currentConf.target == 'client') {
                         supports.push({name: 'Video Conference', value: 'video_conference'});
-                        _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
-                            var currentText = companyConfig.resource_type;
-                            currentText = currentText.charAt(0).toUpperCase() + currentText.substr(1).toLowerCase();
 
-                            supports.push({name: 'Ressource ' + currentText, value: companyConfig.resource_type});
-                        });
+                        if(currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
+                            _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
+                                var currentText = companyConfig.resource_type;
+                                currentText = currentText.charAt(0).toUpperCase() + currentText.substr(1).toLowerCase();
+
+                                supports.push({name: 'Ressource ' + currentText, value: companyConfig.resource_type});
+                            });
+                        }
                     }
 
                     return supports;
