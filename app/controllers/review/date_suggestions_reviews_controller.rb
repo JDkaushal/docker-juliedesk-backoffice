@@ -23,7 +23,8 @@ class Review::DateSuggestionsReviewsController < ReviewController
                       client_email: dsr.julie_action.message_classification.message.messages_thread.account_email,
                       date: dsr.action_at,
                       review_status: dsr.review_status,
-                      review_full_auto_errors: dsr.review_full_auto_errors
+                      review_full_auto_errors: dsr.review_full_auto_errors,
+                      comment: dsr.comment
                   }
                 },
                 total_count: date_suggestions_reviews.count

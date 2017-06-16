@@ -27,6 +27,7 @@
       <th class="col-md-1">Action id</th>
       <th class="col-md-1">Status</th>
       <th class="col-md-3">Errors</th>
+      <th class="col-md-3">Comment</th>
     </tr>
 
     <tr ng-repeat="dateSuggestionsReview in julieActions | orderBy:'date':true">
@@ -36,6 +37,7 @@
       <td><a href="/review/date_suggestions_reviews/{{ dateSuggestionsReview.id }}/full_auto">{{ dateSuggestionsReview.julie_action_id }}</a></td>
       <td>{{ dateSuggestionsReview.review_status }}</td>
       <td>{{ dateSuggestionsReview.review_full_auto_errors }}</td>
+      <td>{{ dateSuggestionsReview.comment }}</td>
     </tr>
   </table>
 </div>
