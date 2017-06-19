@@ -246,6 +246,7 @@
 
                     if($scope.currentConf.target == 'client') {
                         supports.push({name: 'Video Conference', value: 'video_conference'});
+                        
 
                         if(currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
                             _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
