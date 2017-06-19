@@ -47,7 +47,7 @@ class JulieActionsController < ApplicationController
                 free_notes_present: false,
                 linked_attendees_present: false,
                 all_clients_on_calendar_server: true,
-                main_client_auto_date_suggestions_on: true,
+                #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false
             },
             front_conditions: {
