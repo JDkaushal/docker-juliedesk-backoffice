@@ -19,3 +19,4 @@ config/database-ey.yml
 config/database-jd.yml
 config/database-release.yml
 public/assets*
+/config/environments/release.rb
