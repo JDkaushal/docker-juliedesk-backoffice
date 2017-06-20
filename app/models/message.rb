@@ -624,7 +624,7 @@ class Message < ActiveRecord::Base
 
               if secondary_client_company.present?
                 # Need to normalize the company names for data aggregation in customer IO and mixpanel
-                secondary_client_company = I18n.transliterate(secondary_client_company).upcase
+                secondary_client_company = I18n.transliterate(secondary_client_company).mb_chars.upcase.to_s
               end
 
               ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client.email, {
