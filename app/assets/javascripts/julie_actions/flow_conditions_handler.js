@@ -1,5 +1,9 @@
 window.flowConditionsHandler = {};
 
+window.flowConditionsHandler.conditionCouldBeReached = function(flowConditions, conditionName) {
+    return _.keys(flowConditions).indexOf(conditionName) > -1;
+};
+
 window.availableFrontFlowConditionsGroups = function(groupName) {
     return {
         conscience_suggestion: {

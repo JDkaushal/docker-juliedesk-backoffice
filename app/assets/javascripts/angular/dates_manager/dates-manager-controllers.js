@@ -206,7 +206,7 @@
                     });
 
                     var version = "stable";
-                    if(!window.featuresHelper.isFeatureActive("trust_julia_suggestion")) {
+                    if(!window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions")) {
                         version = "beta";
                     }
                     var fetchParams = {
