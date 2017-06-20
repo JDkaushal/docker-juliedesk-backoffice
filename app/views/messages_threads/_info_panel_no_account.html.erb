@@ -60,6 +60,10 @@
       return window.threadComputedData.allowed_attendees && window.threadComputedData.allowed_attendees.length > 0;
     }
 
+    function getCurrentOperatorPrivilegeLevel() {
+        return $('body').data('operatorPrivilege');
+    }
+
     window.addAllowedAttendeesEmailsFromCurrentNotes = function(currentNotes) {
       var emails = extractEmails(currentNotes);
 
