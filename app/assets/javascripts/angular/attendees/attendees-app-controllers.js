@@ -490,6 +490,7 @@
             var threadOwner = new Attendee({
                 guid: -1,
                 email: threadOwnerEmail,
+                email_aliases: window.threadAccount.email_aliases,
                 firstName: threadAccountFullName[0],
                 lastName: threadAccountFullName.splice(1, threadAccountFullName.length).join(' '),
                 name: window.threadAccount.full_name,

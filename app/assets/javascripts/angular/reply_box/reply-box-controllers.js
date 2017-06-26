@@ -300,8 +300,15 @@
                 $toTokenNode.siblings('.token-input-list-facebook').remove();
                 $ccTokenNode.siblings('.token-input-list-facebook').remove();
             }
+
+            var threadRecipients = window.threadComputedData.thread_recipients;
+            var aliasesFromNotPresentClientsAttendees = _.compact(_.flatten(_.map($scope.attendeesApp.getAttendeesOnlyClients(), function(client) { return client.email_aliases; })));
+            // return the clients aliases not present as recipients of any emails of the thread
+            var clientsAliasesNotPresentsInRecipients = _.difference(aliasesFromNotPresentClientsAttendees, threadRecipients);
+
             var allowedEmailsSuggestions = _.map(window.allowedAttendeesEmails, function(email) { return {name: email}});
 
+            allowedEmailsSuggestions = _.difference(allowedEmailsSuggestions, clientsAliasesNotPresentsInRecipients);
             // var prePopulateTo = window.initialToRecipients();
             // var prePopulateCc = window.initialCcRecipients();
             var toParams = {
