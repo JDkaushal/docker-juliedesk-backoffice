@@ -306,9 +306,9 @@
             // return the clients aliases not present as recipients of any emails of the thread
             var clientsAliasesNotPresentsInRecipients = _.difference(aliasesFromNotPresentClientsAttendees, threadRecipients);
 
-            var allowedEmailsSuggestions = _.map(window.allowedAttendeesEmails, function(email) { return {name: email}});
+            var allowedSuggestions = _.difference(window.allowedAttendeesEmails, clientsAliasesNotPresentsInRecipients);
+            var allowedEmailsSuggestions = _.map(allowedSuggestions, function(email) { return {name: email}});
 
-            allowedEmailsSuggestions = _.difference(allowedEmailsSuggestions, clientsAliasesNotPresentsInRecipients);
             // var prePopulateTo = window.initialToRecipients();
             // var prePopulateCc = window.initialCcRecipients();
             var toParams = {
