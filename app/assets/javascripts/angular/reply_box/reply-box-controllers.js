@@ -302,7 +302,7 @@
             }
 
             var threadRecipients = window.threadComputedData.thread_recipients;
-            var aliasesFromNotPresentClientsAttendees = _.compact(_.flatten(_.map($scope.attendeesApp.getAttendeesOnlyClients(), function(client) { return client.email_aliases; })));
+            var aliasesFromNotPresentClientsAttendees = $scope.attendeesApp ? _.compact(_.flatten(_.map($scope.attendeesApp.getAttendeesOnlyClients(), function(client) { return client.email_aliases; }))) : [];
             // return the clients aliases not present as recipients of any emails of the thread
             var clientsAliasesNotPresentsInRecipients = _.difference(aliasesFromNotPresentClientsAttendees, threadRecipients);
 
