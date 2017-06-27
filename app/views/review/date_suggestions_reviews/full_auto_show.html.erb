@@ -138,7 +138,7 @@
         </div>
 
         <br>
-        <div ng-show="notCorrectConscienceDateSuggestions().length > 0">
+        <div ng-show="notCorrectConscienceDateSuggestions().length > 0 || forceHumanReason">
         <label>Dates modifiées</label>
 
         <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
