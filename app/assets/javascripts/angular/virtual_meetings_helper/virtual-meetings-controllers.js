@@ -420,6 +420,9 @@
                             case 'Webex':
                                 initialConfSupport = 'confcall';
                                 break;
+                            case 'Video Conference':
+                                initialConfSupport = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? 'video_conference' : '';
+                                break;
                             default:
                                 initialConfSupport = '';
                         }
