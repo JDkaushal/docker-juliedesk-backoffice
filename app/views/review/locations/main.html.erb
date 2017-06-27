@@ -1,0 +1,345 @@
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_API_KEY']}&libraries=places" %>
+
+<script>
+    var app = angular.module("locationsApp", []);
+
+    app.directive('googleplace', [function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attrs, model) {
+                scope.gPlace = new google.maps.places.Autocomplete(element[0]);
+
+                google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
+                    scope.$apply(function () {
+                        model.$setViewValue(element.val());
+                    });
+                });
+            }
+        };
+    }]);
+
+    app.directive("resultsNavigator", function () {
+        return {
+            restrict: 'E',
+            link: function (scope, element, attrs, ctrl) {
+
+            },
+            scope: {
+                offset: "=",
+                totalCount: "=",
+                itemsPerPage: "="
+            },
+            controller: ['$scope', function ($scope) {
+                $scope.firstItem = function () {
+                    return Math.max($scope.offset + 1);
+
+                };
+                $scope.lastItem = function () {
+                    return Math.min($scope.offset + $scope.itemsPerPage, $scope.totalCount);
+                };
+                $scope.previousPage = function () {
+                    $scope.offset -= $scope.itemsPerPage;
+                };
+                $scope.nextPage = function () {
+                    $scope.offset += $scope.itemsPerPage;
+                };
+
+                $scope.isFirstPage = function () {
+                    return $scope.offset == 0;
+                };
+                $scope.isLastPage = function () {
+                    return $scope.offset + $scope.itemsPerPage >= $scope.totalCount;
+                };
+
+            }],
+            template: function (element, attr) {
+                var htmlTemplate =
+                    '<div ng-show="totalCount > 0">' +
+                    '<span class="btn" disabled>{{ firstItem() }} - {{ lastItem() }} / {{ totalCount }}</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isFirstPage()" ng-click="previousPage()"><</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isLastPage()" ng-click="nextPage()">></span>' +
+                    '</div>' +
+                    '<div ng-show="totalCount == 0" class="btn" disabled>' +
+                    '' +
+                    '</div>';
+                return htmlTemplate
+            }
+        }
+    });
+
+    app.service('conscienceService', ['$http','$q', function($http, $q) {
+        this.get = function(path) {
+          return this.request(path, 'get');
+        };
+        this.post = function(path, data) {
+            return this.request(path, 'post', data);
+        };
+        this.request = function(path, method, data) {
+           var basePath = '<%= ENV['CONSCIENCE_BASE_PATH'] %>';
+           var authorization = '<%= ENV['CONSCIENCE_API_KEY'] %>';
+
+           if(method === 'post') {
+               return $http.post(basePath + path, data, {
+                       headers: {
+                           'Accept': 'application/json',
+                           'Authorization': authorization
+                       }
+                   })
+           }
+           else if(method === 'get') {
+               return $http.get(basePath + path, {
+                   headers: {
+                       'Accept': 'application/json',
+                       'Authorization': authorization
+                   }
+               })
+           }
+           else {
+               throw 'Unsupported request method';
+           }
+       };
+    }]);
+
+    app.controller("locationsController", ['$scope', '$http', '$timeout', 'conscienceService', function ($scope, $http, $timeout, conscienceService) {
+
+        $scope.loading = false;
+
+        $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
+        $scope.offset = 0;
+        $scope.itemsPerPage = 100;
+        $scope.searchQuery = "";
+        $scope.allStatusesActive = {
+            'unchecked': true,
+            'valid': true,
+            'invalid': true,
+            'unknown': true
+        };
+        $scope.fetchMode = function () {
+            $http.get("", {
+                headers: {'Accept': 'application/json'}
+            }).then(function (response) {
+
+                $scope.mode = response.data.mode;
+                if ($scope.mode == 'admin') {
+                    $scope.statuses = $scope.allStatusesActive
+                }
+                else {
+                    $scope.statuses = {
+                        'unchecked': true,
+                    };
+                }
+                $scope.fetch();
+            })
+        };
+        $scope.fetch = function () {
+            $scope.loading = true;
+            var url = "/api/v1/locations";
+            url += "?offset=" + $scope.offset + "&limit=" + $scope.itemsPerPage;
+            var status = [];
+            _.each($scope.statuses, function (v, k) {
+                if (v) {
+                    status.push(k);
+                }
+            });
+            if (status.length > 0) {
+                url += "&status=" + status.join(",");
+            }
+            if ($scope.searchQuery.length > 0) {
+                url += "&query=" + $scope.searchQuery;
+            }
+            conscienceService.get(url).then(function (response) {
+                $scope.locations = response.data.data;
+                $scope.totalCount = response.data.total_count;
+                $scope.loading = false;
+            })
+        };
+
+        $scope.locationIsChecked = function (location) {
+            return location.status !== "unchecked" &&
+                !$scope.locationIsInvalidAndNotCorrected(location)
+        };
+
+        $scope.validateData = function () {
+            var notReadyLocations = _.filter($scope.locations, function (location) {
+                return !$scope.locationIsChecked(location)
+            });
+            _.each(notReadyLocations, function (location) {
+                location.highlighted = true;
+            });
+            $timeout(function () {
+                _.each(notReadyLocations, function (location) {
+                    location.highlighted = false;
+                });
+            }, 1000);
+
+            return notReadyLocations.length === 0;
+        };
+
+        $scope.validateBatch = function () {
+            if ($scope.validateData()) {
+                var data = _.map($scope.locations, function (location) {
+                    return {
+                        id: location.id,
+                        status: location.status,
+                        corrected_sanitized: location.corrected_sanitized
+                    }
+                });
+
+                $scope.loading = true;
+                conscienceService.post("/api/v1/locations/validate", data).then(function () {
+                    $scope.fetch();
+                });
+            }
+        };
+
+        $scope.setStatus = function (location, status) {
+            location.status = status;
+            if (status === "invalid") {
+                $timeout(function () {
+                    var element = $("#correction-" + location.id)[0];
+                    element.focus();
+                });
+            }
+            else {
+                location.corrected_sanitized = null;
+            }
+
+
+        };
+
+        $scope.locationIsInvalidAndNotCorrected = function (location) {
+            return location.status == 'invalid' &&
+                (location.corrected_sanitized == '' || location.corrected_sanitized == null);
+        };
+
+        $scope.$watch("statuses", function () {
+            $scope.fetch();
+        }, true);
+
+        $scope.$watch("offset", function () {
+            $scope.fetch();
+        });
+
+
+        $scope.$watch("searchQuery", function () {
+            clearTimeout($scope.timeoutCode);
+            $scope.timeoutCode = setTimeout(function () {
+                $scope.fetch();
+            }, 500);
+        });
+
+
+        $scope.fetchMode();
+
+    }]);
+</script>
+
+<style>
+  .check-btn {
+    opacity: 0.4;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .check-btn.checked {
+    opacity: 1.0;
+  }
+
+  .check-btn.success {
+    color: #5cb85c;
+  }
+
+  .check-btn.error {
+    color: #d9534f;
+  }
+
+  .check-btn.warning {
+    color: #d321f0;
+  }
+
+  input[type=text] {
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    padding: 0 5px;
+  }
+
+  input[type=text].error {
+    border-color: #d9534f;
+  }
+
+  td {
+    position: relative;
+  }
+
+  td.bigWarning::before {
+    content: "";
+    background: #d9534f;
+    position: absolute;
+    left: -30px;
+    top: 10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+  }
+
+</style>
+
+<div ng-app="locationsApp"
+     ng-controller="locationsController"
+     class="col-md-offset-2 col-md-8">
+  <h1>Locations <span ng-show="loading"> [ Loading... ]</span></h1>
+
+  <h4 ng-show="mode == 'review'">Sanitized locations to check: {{ totalCount }}</h4>
+
+  <div ng-show="mode == 'admin'"
+       class="alert alert-info row">
+    <div class="col-md-4">
+      <h4>Status:</h4>
+      <div ng-repeat="statusItem in availableStatuses"><input type="checkbox" ng-model="statuses[statusItem]"> {{
+        statusItem }}
+      </div>
+    </div>
+    <div class="col-md-4">
+
+      <input ng-model="searchQuery" placeholder="Search for locations...">
+    </div>
+    <div class="col-md-4">
+      <results-navigator offset="offset" total-count="totalCount" items-per-page="itemsPerPage"></results-navigator>
+    </div>
+
+  </div>
+
+  <table class="table table-striped">
+    <tr>
+      <th>Location</th>
+      <th>Sanitized location</th>
+      <th>Status</th>
+      <th>Corrected location</th>
+    </tr>
+    <tr ng-repeat="location in locations" ng-class="{warning: !locationIsChecked(location)}">
+      <td ng-class="{bigWarning: location.highlighted}">{{ location.pre_sanitized }}</td>
+      <td>{{ location.sanitized }}</td>
+      <td>
+        <span class="fa fa-check check-btn success"
+              ng-class="{checked: location.status == 'valid'}"
+              ng-click="setStatus(location, 'valid')"></span>
+        <span class="fa fa-times check-btn error"
+              ng-class="{checked: location.status == 'invalid'}"
+              ng-click="setStatus(location, 'invalid')"></span>
+        <span class="fa fa-question check-btn warning"
+              ng-class="{checked: location.status == 'unknown'}"
+              ng-click="setStatus(location, 'unknown')"></span>
+      </td>
+      <td><input id="correction-{{ location.id }}"
+                 googleplace
+                 placeholder="{{ location.status !== 'invalid' ? '' : 'Enter a valid address...' }}"
+                 ng-model="location.corrected_sanitized"
+                 ng-class="{error: locationIsInvalidAndNotCorrected(location)}"
+                 ng-disabled="location.status != 'invalid'"/></td>
+    </tr>
+  </table>
+
+  <div class="btn btn-success" ng-click="validateBatch()">Validate</div>
+
+</div>
