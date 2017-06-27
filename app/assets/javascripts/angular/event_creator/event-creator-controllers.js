@@ -162,13 +162,18 @@
 
                 _.each(timezones, function(timezone) {
                     //if(timezone != window.threadComputedData.timezone) {
-                        var currentTimezonedDate = currentDate.tz(timezone);
+                    var currentTimezonedDate = currentDate.tz(timezone);
+                    var dateIsOutOfBoundsForTimezone = $scope.datesManager.checkSuggestionTimeOutBound(currentTimezonedDate);
 
-                        dateInOtherTimezones.push({
-                            displayText: currentDate.tz(timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")),
-                            timezone: timezone,
-                            isOutBound: $scope.datesManager.checkSuggestionTimeOutBound(currentTimezonedDate)
-                        });
+                    if(dateIsOutOfBoundsForTimezone) {
+                        $scope.hasDateOutOfBounds = true;
+                    }
+
+                    dateInOtherTimezones.push({
+                        displayText: currentDate.tz(timezone).locale(window.threadComputedData.locale).format(localize("email_templates.common.full_date_format")),
+                        timezone: timezone,
+                        isOutBound: dateIsOutOfBoundsForTimezone
+                    });
                     //}
 
                 });
