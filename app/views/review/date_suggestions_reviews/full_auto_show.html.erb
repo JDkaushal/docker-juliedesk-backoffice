@@ -81,87 +81,89 @@
 
       <div class="section">
         <label>Dates proposées</label>
-        <div class="suggested-date-timezone information">{{ mainTimezone }}</div>
+        <div ng-repeat="timezone in allTimezones">
+          <div class="suggested-date-timezone information">{{ timezone }}</div>
 
-        <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
-          <div class="suggested-date review-item"
-               ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
+          <div ng-repeat="dateSuggestion in correctConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+            <div class="suggested-date review-item"
+                 ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
 
-               dropdown
-               dropdown-data="{{ possibleDateSuggestionErrors }}"
-               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
-            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
-            <div class="review-item-button dropdown-button"
-                 tooltip="Signal an error"
-                 tooltip-right
-                 tooltip-delay>!
+                 dropdown
+                 dropdown-data="{{ possibleDateSuggestionErrors }}"
+                 dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+              {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+              <div class="review-item-button dropdown-button"
+                   tooltip="Signal an error"
+                   tooltip-right
+                   tooltip-delay>!
+              </div>
             </div>
+
+            <div class="left-offset">
+              <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+                <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+                {{ possibleDateSuggestionErrors[error].label }}
+                <div class="free-text-container" ng-show="error == 'other'">
+                  <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div class="left-offset">
-            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
-              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
-              {{ possibleDateSuggestionErrors[error].label }}
-              <div class="free-text-container" ng-show="error == 'other'">
-                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+          <div ng-repeat="dateSuggestion in suggestedDatesOther()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
+
+
+            <div class="suggested-date review-item default"
+                 ng-class="{highlighted: dateSuggestion.highlighted}"
+                 dropdown
+                 dropdown-data="{{ possibleDateSuggestionErrors }}"
+                 dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+              {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+              <div class="review-item-button dropdown-button"
+                   tooltip="Signal an error"
+                   tooltip-right
+                   tooltip-delay>!
+              </div>
+            </div>
+
+            <div class="left-offset">
+              <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+                <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+                {{ possibleDateSuggestionErrors[error].label }}
+                <div class="free-text-container" ng-show="error == 'other'">
+                  <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+                </div>
               </div>
             </div>
           </div>
 
-        </div>
+          <br>
+          <div ng-show="notCorrectConscienceDateSuggestions().length > 0 || forceHumanReason">
+            <label>Dates modifiées</label>
+            <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
 
-        <div ng-repeat="dateSuggestion in suggestedDatesOther()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
-
-
-          <div class="suggested-date review-item default"
-               ng-class="{highlighted: dateSuggestion.highlighted}"
-               dropdown
-               dropdown-data="{{ possibleDateSuggestionErrors }}"
-               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
-            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
-            <div class="review-item-button dropdown-button"
-                 tooltip="Signal an error"
-                 tooltip-right
-                 tooltip-delay>!
-            </div>
-          </div>
-
-          <div class="left-offset">
-            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
-              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
-              {{ possibleDateSuggestionErrors[error].label }}
-              <div class="free-text-container" ng-show="error == 'other'">
-                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+              <div class="suggested-date review-item"
+                   ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
+                   dropdown
+                   dropdown-data="{{ possibleDateSuggestionErrors }}"
+                   dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
+                {{ dateSuggestion.date | amTimezone: timezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
+                <div class="review-item-button dropdown-button"
+                     tooltip="Signal an error"
+                     tooltip-right
+                     tooltip-delay>!
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <br>
-        <div ng-show="notCorrectConscienceDateSuggestions().length > 0 || forceHumanReason">
-        <label>Dates modifiées</label>
-
-        <div ng-repeat="dateSuggestion in notCorrectConscienceDateSuggestions()" id="date-suggestion-{{ dateSuggestion.date.format() }}">
-
-          <div class="suggested-date review-item"
-               ng-class="{'ai-full': dateSuggestion.status == true, 'ai-40': dateSuggestion.status == 'moved' || dateSuggestion.status == 'removed', 'ai-20': dateSuggestion.status == false, highlighted: dateSuggestion.highlighted}"
-               dropdown
-               dropdown-data="{{ possibleDateSuggestionErrors }}"
-               dropdown-select-item="addDateSuggestionError(value, dateSuggestion)">
-            {{ dateSuggestion.date | amTimezone: mainTimezone | amDateFormat:'dddd D MMMM YYYY - HH:mm' }}
-            <div class="review-item-button dropdown-button"
-                 tooltip="Signal an error"
-                 tooltip-right
-                 tooltip-delay>!
-            </div>
-          </div>
-
-          <div class="left-offset">
-            <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
-              <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
-              {{ possibleDateSuggestionErrors[error].label }}
-              <div class="free-text-container" ng-show="error == 'other'">
-                <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+              <div class="left-offset">
+                <div class="list-item red" ng-repeat="error in dateSuggestion.errors track by $index">
+                  <div class="list-item-remove-button" ng-click="removeDateSuggestionError(error, dateSuggestion)">X</div>
+                  {{ possibleDateSuggestionErrors[error].label }}
+                  <div class="free-text-container" ng-show="error == 'other'">
+                    <input class="free-text" ng-model="dateSuggestion.customError" placeholder="Commentaire...">
+                  </div>
+                </div>
               </div>
             </div>
           </div>

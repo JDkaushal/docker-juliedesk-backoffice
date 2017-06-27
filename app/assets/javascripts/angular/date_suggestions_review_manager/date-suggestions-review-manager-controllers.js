@@ -74,9 +74,11 @@
 
             $scope.populateErrors($scope.suggestedDates);
 
-            $scope.allTimezones = _.uniq(_.map(data.date_suggestions, function(dateSuggestion) {
+            /*$scope.allTimezones = _.uniq(_.map(data.date_suggestions, function(dateSuggestion) {
                 return dateSuggestion.timezone;
-            }));
+            }));*/
+
+            $scope.allTimezones = _.uniq(data.used_timezones);
             $scope.mainTimezone = $scope.allTimezones[0];
         };
 
@@ -241,7 +243,7 @@
                 full_auto_custom_error: $scope.fullAutoCustomError,
                 comment: $scope.comment
             }).then(function(response) {
-                window.location = window.location.href;
+                window.history.back()
             }, function(response) {
                 $scope.saving = false;
             });
