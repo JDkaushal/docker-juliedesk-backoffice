@@ -896,8 +896,9 @@
                     }
 
                     $scope.selectedTimezone = selectedTimezone;
-
                     //$scope.setTimezoneOnAppointment();
+                }else {
+                    $scope.selectedTimezone = window.threadAccount.default_timezone_id;
                 }
 
             }
