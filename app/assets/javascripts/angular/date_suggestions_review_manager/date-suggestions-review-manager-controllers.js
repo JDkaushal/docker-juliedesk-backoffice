@@ -243,7 +243,10 @@
                 full_auto_custom_error: $scope.fullAutoCustomError,
                 comment: $scope.comment
             }).then(function(response) {
-                window.history.back()
+                window.close();
+                setTimeout(function() {
+                    window.location = window.location.href
+                }, 500);
             }, function(response) {
                 $scope.saving = false;
             });

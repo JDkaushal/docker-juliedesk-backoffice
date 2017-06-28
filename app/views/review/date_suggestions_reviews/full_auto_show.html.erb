@@ -169,9 +169,12 @@
           </div>
         </div>
 
-        <div class="information">Explanation</div>
+
+        <div ng-show="notCorrectConscienceDateSuggestions().length > 0 || forceHumanReason">
+          <div class="information">Explanation</div>
           <textarea disabled>{{ forceHumanReason }}</textarea>
         </div>
+      </div>
 
 
 

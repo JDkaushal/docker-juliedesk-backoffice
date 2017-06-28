@@ -30,6 +30,10 @@
             return end > $scope.now ? $scope.now : end;
         };
 
+        $scope.openLink = function(dateSuggestionsReview) {
+            window.open("/review/date_suggestions_reviews/" + dateSuggestionsReview.id + "/full_auto");
+        };
+
 
 
 

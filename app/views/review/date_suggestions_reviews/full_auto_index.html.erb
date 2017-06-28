@@ -34,7 +34,7 @@
       <td>{{ dateSuggestionsReview.date | amTimezone: 'Europe/Paris' | amDateFormat: "dddd D MMMM YYYY - HH:mm" }}</td>
       <td>{{ dateSuggestionsReview.operator }}</td>
       <td>{{ dateSuggestionsReview.client_email }}</td>
-      <td><a href="/review/date_suggestions_reviews/{{ dateSuggestionsReview.id }}/full_auto">{{ dateSuggestionsReview.julie_action_id }}</a></td>
+      <td ng-click="openLink(dateSuggestionsReview)"><a>{{ dateSuggestionsReview.julie_action_id }}</a></td>
       <td>{{ dateSuggestionsReview.review_status }}</td>
       <td>{{ dateSuggestionsReview.review_full_auto_errors }}</td>
       <td>{{ dateSuggestionsReview.comment }}</td>
