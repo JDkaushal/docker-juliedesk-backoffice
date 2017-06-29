@@ -9,6 +9,13 @@
             link: function (scope, element, attrs, model) {
                 scope.gPlace = new google.maps.places.Autocomplete(element[0]);
 
+                element.bind('blur', function() {
+                    element.val("");
+                    scope.$apply(function () {
+                        model.$setViewValue("");
+                    });
+                });
+
                 google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
                     scope.$apply(function () {
                         model.$setViewValue(element.val());
@@ -149,6 +156,13 @@
             }
             conscienceService.get(url).then(function (response) {
                 $scope.locations = response.data.data;
+                if($scope.mode === 'review') {
+                    _.each($scope.locations, function(location) {
+                        if(location.status === 'unchecked') {
+                            location.status = 'valid';
+                        }
+                    });
+                }
                 $scope.totalCount = response.data.total_count;
                 $scope.loading = false;
             })
@@ -212,20 +226,28 @@
                 (location.corrected_sanitized == '' || location.corrected_sanitized == null);
         };
 
-        $scope.$watch("statuses", function () {
-            $scope.fetch();
+        $scope.$watch("statuses", function (newValue, oldValue) {
+            if(oldValue !== undefined) {
+                $scope.fetch();
+            }
+
         }, true);
 
-        $scope.$watch("offset", function () {
-            $scope.fetch();
+        $scope.$watch("offset", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                $scope.fetch();
+            }
+
         });
 
 
-        $scope.$watch("searchQuery", function () {
-            clearTimeout($scope.timeoutCode);
-            $scope.timeoutCode = setTimeout(function () {
-                $scope.fetch();
-            }, 500);
+        $scope.$watch("searchQuery", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                clearTimeout($scope.timeoutCode);
+                $scope.timeoutCode = setTimeout(function () {
+                    $scope.fetch();
+                }, 500);
+            }
         });
 
 
@@ -318,9 +340,11 @@
       <th>Corrected location</th>
     </tr>
     <tr ng-repeat="location in locations" ng-class="{warning: !locationIsChecked(location)}">
-      <td ng-class="{bigWarning: location.highlighted}">{{ location.pre_sanitized }}</td>
-      <td>{{ location.sanitized }}</td>
-      <td>
+      <td class="col-md-3"
+          ng-class="{bigWarning: location.highlighted}">{{ location.pre_sanitized }}</td>
+      <td class="col-md-4">{{ location.sanitized }}</td>
+      <td class="col-md-1"
+          style="min-width: 120px">
         <span class="fa fa-check check-btn success"
               ng-class="{checked: location.status == 'valid'}"
               ng-click="setStatus(location, 'valid')"></span>
@@ -331,12 +355,14 @@
               ng-class="{checked: location.status == 'unknown'}"
               ng-click="setStatus(location, 'unknown')"></span>
       </td>
-      <td><input id="correction-{{ location.id }}"
-                 googleplace
-                 placeholder="{{ location.status !== 'invalid' ? '' : 'Enter a valid address...' }}"
-                 ng-model="location.corrected_sanitized"
-                 ng-class="{error: locationIsInvalidAndNotCorrected(location)}"
-                 ng-disabled="location.status != 'invalid'"/></td>
+      <td class="col-md-4">
+        <input type="text"
+               id="correction-{{ location.id }}"
+               googleplace
+               placeholder="{{ location.status !== 'invalid' ? '' : 'Enter a valid address...' }}"
+               ng-model="location.corrected_sanitized"
+               ng-class="{error: locationIsInvalidAndNotCorrected(location)}"
+               ng-disabled="location.status != 'invalid'"/></td>
     </tr>
   </table>
 
