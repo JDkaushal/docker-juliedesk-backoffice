@@ -472,10 +472,15 @@ EventTile.prototype.redraw = function() {
 
 EventTile.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
     var eventTile = this;
+    var organizer = eventTile.event.organizer;
 
     var $attendee = $(HandlebarsTemplates['event_tile/attendee'](attendee));
 
-    if(attendee.is_organizer)  $attendee.addClass("organizer");
+    if(attendee.is_organizer)
+      $attendee.addClass("organizer");
+    else if (organizer && organizer.email == attendee.email)
+      $attendee.addClass("organizer");
+
     eventTile.$selector.find(".attendees .attendees-list").append($attendee);
 
     eventTile.redrawAttendeesCountBadge();
@@ -699,6 +704,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         location: ev.location,
         description: ev.description,
         attendees: ev.attendees,
+        organizer: ev.organizer,
         startEditable: false,
         durationEditable: false,
         calId: ev.calId,
