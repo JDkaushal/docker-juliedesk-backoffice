@@ -477,9 +477,11 @@ EventTile.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
     var $attendee = $(HandlebarsTemplates['event_tile/attendee'](attendee));
 
     if(attendee.is_organizer)
-      $attendee.addClass("organizer");
-    else if (organizer && organizer.email == attendee.email)
-      $attendee.addClass("organizer");
+        $attendee.addClass("organizer");
+    else if(organizer && organizer.email == attendee.email)
+        $attendee.addClass("organizer");
+    else if(eventTile.event.organizerEmail == attendee.email)
+        $attendee.addClass("organizer");
 
     eventTile.$selector.find(".attendees .attendees-list").append($attendee);
 
