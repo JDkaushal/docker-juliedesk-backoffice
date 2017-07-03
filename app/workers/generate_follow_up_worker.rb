@@ -9,6 +9,8 @@ class GenerateFollowUpWorker
     messages_thread = MessagesThread.find messages_thread_id
     messages_thread.update_attributes(should_follow_up: true, follow_up_instruction: instruction)
 
+    messages_thread.track_thread_in_inbox
+
     real_operator_id = Operator.find_by_email("computer@operator.juliedesk.com").id
     OperatorAction.create({
                               initiated_at: DateTime.now,

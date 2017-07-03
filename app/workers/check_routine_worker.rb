@@ -18,6 +18,7 @@ class CheckRoutineWorker
         mt.update(follow_up_reminder_date: nil)
       else
         mt.update(should_follow_up: true, follow_up_reminder_date: nil)
+        mt.track_thread_in_inbox
       end
     end
   end
