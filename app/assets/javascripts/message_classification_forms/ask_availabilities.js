@@ -105,6 +105,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
                     attendees: $('#attendeesCtrl').scope().attendees,
                     check_differences: true,
+                    julie_action_id: window.julie_action_id
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
