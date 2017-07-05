@@ -25,6 +25,10 @@ module TemplateGeneratorHelper
     request("/api/v1/templates/usage_name", template_data)
   end
 
+  def get_invitations_sent_template template_data
+    request("/api/v1/templates/send_invitations", template_data)
+  end
+
   private
 
   def request path, body=nil

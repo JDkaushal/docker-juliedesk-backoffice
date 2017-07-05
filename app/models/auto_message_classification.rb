@@ -146,8 +146,9 @@ class AutoMessageClassification < MessageClassification
     m = m.messages_thread.messages.find{|me| me.id == m.id}
 
     # Verify client sent the email
-    from_email = ApplicationHelper.strip_email(m.server_message['from'])
-    raise "Client is not the sender" unless account.all_emails.map(&:downcase).include? "#{from_email}".downcase
+    # Skipped - not needed
+    # from_email = ApplicationHelper.strip_email(m.server_message['from'])
+    # raise "Client is not the sender" unless account.all_emails.map(&:downcase).include? "#{from_email}".downcase
 
 
     # Verify it's not multi-clients
@@ -155,7 +156,7 @@ class AutoMessageClassification < MessageClassification
     cc_emails = ApplicationHelper.find_addresses("#{m.server_message['cc']}").addresses.map(&:address)
     all_emails = ([from_email] + to_emails + cc_emails).uniq
     all_account_emails = all_emails.map{|email| Account.find_account_email(email, {})}.compact.uniq
-    raise "Multi-clients: #{all_account_emails.join(", ")}" unless all_account_emails.length == 1
+    raise "Multi-clients: #{all_account_emails.join(", ")}" if all_account_emails.length >= 1
 
     processing_date = m.received_at + 5.minutes
 
@@ -167,17 +168,21 @@ class AutoMessageClassification < MessageClassification
       entities_interpretation.process
     end
 
+
+
+
     if main_message_interpretation.present?
       main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
+      computed_data = m.messages_thread.computed_data
 
       # Build interpretation hash in backoffice format
       interpretation = {
           :classification => main_interpretation["request_classif"],
-          :appointment => main_interpretation['appointment_classif'],
+          :appointment => computed_data[:appointment_nature] || main_interpretation['appointment_classif'],
           :locale => main_interpretation["language_detected"],
           :entities => {},
-          attendees: MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
+          attendees: computed_data[:attendees] || MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
             human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
             company_response = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: att[:email], message: "" })
 
@@ -193,9 +198,9 @@ class AutoMessageClassification < MessageClassification
             }
           end,
           constraints_data: main_interpretation['constraints_data'],
-          duration: main_interpretation['duration'],
-          location: main_interpretation['location_data'].try(:[], 'text'),
-          location_nature: main_interpretation['location_data'].try(:[], 'location_nature'),
+          duration: computed_data[:duration] || main_interpretation['duration'],
+          location: computed_data[:location] || main_interpretation['location_data'].try(:[], 'text'),
+          location_nature: computed_data[:location_nature] || main_interpretation['location_data'].try(:[], 'location_nature'),
           is_formal: main_interpretation['formal_language']
       }
 
@@ -261,17 +266,18 @@ class AutoMessageClassification < MessageClassification
                                                      formal: is_formal
                                                  })
         end
+
         amc.assign_attributes({
                                   appointment_nature: interpretation[:appointment],
                                   summary: nil,
-                                  location:  location,
+                                  location: location,
                                   location_nature: location_nature,
                                   attendees: attendees.to_json,
                                   notes: nil,
-                                  date_times: "[]",
+                                  date_times: '[]',
                                   locale: interpretation[:locale],
                                   timezone: client_preferences[:timezone],
-                                  constraints_data: (interpretation[:constraints_data] || []).to_json,
+                                  constraints_data: ((computed_data[:constraints_data] || []) + (interpretation[:constraints_data] || [])).to_json,
                                   duration: interpretation[:duration] || appointment['duration'],
                                   call_instructions: {
                                       target: target,
@@ -308,7 +314,7 @@ class AutoMessageClassification < MessageClassification
         if date_suggestions.length < 2
           raise "Less than two dates found for suggestions. Not able to continue."
         end
-        amc.date_times = (date_suggestions || []).to_json
+        amc.julie_action.date_times = (date_suggestions || []).map{|ds| {timezone: amc.timezone, date: ds}}.to_json
 
         # Handle template generation
         client_names = interpretation[:attendees].select{|att| att['isPresent'] && att['account_email']}.map do |att|
@@ -343,6 +349,57 @@ class AutoMessageClassification < MessageClassification
         }
 
         text_template = get_suggest_dates_template data_for_template
+
+        say_hi_text = get_say_hi_template({
+                                              recipient_names: attendees.map{|att| att[:assisted_by_name] || att[:name]},
+                                              should_say_hi: true,
+                                              locale: interpretation[:locale]
+                                          })
+
+        if say_hi_text.present?
+          say_hi_text = "#{say_hi_text}\n\n"
+        end
+
+        amc.julie_action.text = "#{say_hi_text}#{text_template}"
+      elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
+
+        amc.date_times = (main_interpretation["dates_to_check"] || []).to_json
+        raise "No date was found in response" if amc.date_times.length == 0
+        #raise "Several dates were found in response" if amc.date_times.length > 1
+
+        date = JSON.parse(amc.date_times).first
+
+        client_names = interpretation[:attendees].select{|att| att['isPresent'] && att['account_email']}.map do |att|
+          att['usageName']
+        end
+
+        attendees = interpretation[:attendees].select{|att| att['isPresent'] && !att['account_email']}.map do |att|
+          {
+              name: att['usageName']
+          }
+        end
+
+        data_for_template = {
+            client_names: client_names,
+            timezones: [client_preferences[:timezone]],
+            locale: interpretation[:locale],
+            is_virtual: false,
+            attendees: attendees,
+            appointment_in_email: {
+                en: appointment['title_in_email']['en'],
+                fr: appointment['title_in_email']['fr']
+            },
+            location_in_email: {
+                en: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+                fr: appointment['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+            },
+            should_ask_location: false,
+            missing_contact_info: nil,
+
+            date: date
+        }
+
+        text_template = get_invitations_sent_template data_for_template
 
         say_hi_text = get_say_hi_template({
                                               recipient_names: attendees.map{|att| att[:assisted_by_name] || att[:name]},
