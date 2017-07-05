@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :message do
 
+    received_at Time.now
+
     factory :message_complete do
       after(:create) do |message|
         create(:message_classification_complete, message: message)

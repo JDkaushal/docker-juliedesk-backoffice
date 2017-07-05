@@ -2,11 +2,13 @@ require "rails_helper"
 
 describe AccountFlows::ClientUnsubscribed do
   let(:client_email) { 'toto@email.com' }
-  let!(:messages_threads) { FactoryGirl.create_list(:messages_thread_with_messages, 10, account_email: client_email) }
   let(:client_unsubscribed_flow) { AccountFlows::ClientUnsubscribed.new(client_email) }
   let!(:julie_alias) { create(:julie_alias, { email: 'julie@juliedesk.com', signature_en: 'toto', signature_fr: 'tata', footer_en: 'tete', footer_fr: 'frfr'}) }
 
+
   describe 'flow' do
+    let!(:messages_threads) { FactoryGirl.create_list(:messages_thread_with_messages, 10, account_email: client_email) }
+
     before :example do
       allow(Account).to receive(:accounts_cache).with(mode: 'light').and_return({ 'toto@email.com' => { 'subscribed' => false } })
     end
@@ -75,5 +77,21 @@ describe AccountFlows::ClientUnsubscribed do
         client_unsubscribed_flow.trigger
       end
     end
+  end
+
+  describe '#get_account_scheduling_threads' do
+    let(:messages_thread) { create(:messages_thread_with_messages, account_email: client_email, messages_count: 0, status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT) }
+    subject { client_unsubscribed_flow.send(:get_account_scheduling_threads) }
+
+    context 'when last thread message is < 1 month' do
+      let! (:message) { create(:message, messages_thread: messages_thread, received_at: 1.day.ago) }
+      it { is_expected.to match_array([messages_thread]) }
+    end
+
+    context 'when last thread message is > 1 month' do
+      let! (:message) { create(:message, messages_thread: messages_thread, received_at: 1.month.ago) }
+      it { is_expected.to eq([]) }
+    end
+
   end
 end

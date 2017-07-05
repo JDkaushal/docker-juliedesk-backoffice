@@ -50,7 +50,14 @@ module AccountFlows
     end
 
     def get_account_scheduling_threads
-      MessagesThread.includes(:messages).select(:id, :status, :account_email, :server_thread_id, :subject, :account_request_auto_email_sent, :accounts_candidates_primary_list, :clients_in_recipients, :updated_at).where(account_email: @account_email, status: THREAD_SCHEDULING_STATUSES)
+      fields = [:id, :status, :account_email, :server_thread_id, :subject, :account_request_auto_email_sent, :accounts_candidates_primary_list, :clients_in_recipients, :updated_at]
+      threads = MessagesThread.includes(:messages).select(fields).where(account_email: @account_email, status: THREAD_SCHEDULING_STATUSES)
+      threads.all.select do |thread|
+        last_message = thread.get_last_message
+        last_message && last_message.received_at > 1.month.ago
+      end
     end
+
+
   end
 end
