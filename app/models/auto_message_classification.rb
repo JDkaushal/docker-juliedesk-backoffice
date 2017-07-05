@@ -174,7 +174,10 @@ class AutoMessageClassification < MessageClassification
     if main_message_interpretation.present?
       main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
-      computed_data = m.messages_thread.computed_data
+      computed_data = {}
+      if m.messages_thread.messages.map(&:message_classifications).flatten.sort_by(&:updated_at).select(&:has_data?).compact.length > 0
+        computed_data = m.messages_thread.computed_data
+      end
       m.messages_thread.instance_variable_set(:@computed_data, nil)
 
       # Build interpretation hash in backoffice format
@@ -183,7 +186,7 @@ class AutoMessageClassification < MessageClassification
           :appointment => computed_data[:appointment_nature] || main_interpretation['appointment_classif'],
           :locale => main_interpretation["language_detected"],
           :entities => {},
-          attendees: computed_data[:attendees] || MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
+          attendees: computed_data[:attendees].length > 0 ? computed_data[:attendees] : MessagesThread.contacts({server_messages_to_look: [m.server_message]}).map do |att|
             human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
             company_response = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: att[:email], message: "" })
 
