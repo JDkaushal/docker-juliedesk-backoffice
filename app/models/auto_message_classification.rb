@@ -368,7 +368,7 @@ class AutoMessageClassification < MessageClassification
       elsif amc.julie_action.action_nature == JulieAction::JD_ACTION_CHECK_AVAILABILITIES
 
         amc.date_times = (main_interpretation["dates_to_check"] || []).to_json
-        raise "No date was found in response" if amc.date_times.length == 0
+        raise "No date was found in response" if JSON.parse(amc.date_times.length) == 0
         #raise "Several dates were found in response" if amc.date_times.length > 1
 
         date = JSON.parse(amc.date_times).first
