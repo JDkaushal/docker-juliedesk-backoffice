@@ -397,6 +397,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
           $.ajax({
             url: host + "/api/v1/calendar_proxy/last_change",
             type: "POST",
+            tryCount : 0,
+            retryLimit : 2,
             contentType: "application/json",
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization", access_key);
@@ -408,7 +410,25 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
                 alert("L'événement n'a pas été créé car le calendrier d'un des clients ne semble plus à jour, veuillez recharger la page et reprendre votre vérification des disponibilités.");
               else
                 createEvent();
-            }
+            },
+            error: function(xhr) {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    console.log("Retrying...");
+                    var ajaxRequest = this;
+                    setTimeout(function() {
+                        $.ajax(ajaxRequest);
+                    }, 5000);
+                    return;
+                }
+                else {
+                    if(xhr.responseJSON && xhr.responseJSON.error_code) {
+                        var failedSyncStatuses = ['CALENDAR_SYNC_FAILED', 'CALENDAR_SYNC_TIMEOUT', 'CALENDAR_SYNC_LOCKED'];
+                        if(failedSyncStatuses.indexOf(xhr.responseJSON.error_code) > -1)
+                            alert("Calendar synchronisation failed ("+ xhr.responseJSON.error_code +")");
+                    }
+                }
+              }
           });
         }
         else
