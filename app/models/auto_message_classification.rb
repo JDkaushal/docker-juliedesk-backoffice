@@ -145,9 +145,9 @@ class AutoMessageClassification < MessageClassification
     m.messages_thread.re_import
     m = m.messages_thread.messages.find{|me| me.id == m.id}
 
+    from_email = ApplicationHelper.strip_email(m.server_message['from'])
     # Verify client sent the email
     # Skipped - not needed
-    # from_email = ApplicationHelper.strip_email(m.server_message['from'])
     # raise "Client is not the sender" unless account.all_emails.map(&:downcase).include? "#{from_email}".downcase
 
 
