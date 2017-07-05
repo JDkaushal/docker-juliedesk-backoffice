@@ -25,7 +25,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten
 
   end
 
@@ -54,7 +54,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|k, account| [account['email']] + account['email_aliases']}.flatten
   end
 
   def group_review
@@ -67,7 +67,7 @@ class Review::MessagesThreadsController < ReviewController
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.map{|k, account| [account['email']] + account['email_aliases']}.flatten
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|k, account| [account['email']] + account['email_aliases']}.flatten
   end
 
   def learnt
