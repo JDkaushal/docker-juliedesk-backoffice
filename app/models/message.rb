@@ -414,127 +414,7 @@ class Message < ActiveRecord::Base
     end
     result
   end
-
-  def self.import_specific_emails(specific_ids)
-
-    # Get server threads in inbox, only versions (quick call)
-    server_threads = EmailServer.list_messages_threads(specific_ids: specific_ids)
-    inbox_server_thread_ids = server_threads.map{|st| st['id']}
-    inbox_messages_threads = MessagesThread.where(server_thread_id: inbox_server_thread_ids)
-
-    #First, remove from inbox all messages_thread that should not be in inbox anymore
-    MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
-    #Then, put in inbox the others, remove should follow up ones as they have received a new message
-    MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids).update_all(in_inbox: true, should_follow_up: false)
-
-    server_thread_ids_to_update = []
-    server_thread_ids_to_create = []
-
-    server_threads.each do |server_thread|
-      messages_thread = inbox_messages_threads.find{|mt| mt.server_thread_id == server_thread['id']}
-      if messages_thread
-        if "#{messages_thread.server_version}" == "#{server_thread['version']}"
-          # Nothing to do
-        else
-          server_thread_ids_to_update << server_thread['id']
-        end
-      else
-        server_thread_ids_to_create << server_thread['id']
-      end
-    end
-
-    if (server_thread_ids_to_update + server_thread_ids_to_create).empty?
-      return []
-    end
-
-    server_threads = EmailServer.list_messages_threads(specific_ids: server_thread_ids_to_update + server_thread_ids_to_create, limit: 1000, full: true)
-
-    # Julie aliases in cache
-    julie_aliases = JulieAlias.all
-    # Accounts in cache (light mode)
-    accounts_cache = Account.accounts_cache(mode: "light")
-
-    # Store the messages_thread_ids that will be updated by this method
-    updated_messages_thread_ids = []
-
-    server_threads.each do |server_thread|
-      should_update_thread = true
-
-      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze
-        should_update_thread = false
-      else
-        messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
-        if messages_thread
-          should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
-          messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
-        end
-      end
-
-      if should_update_thread
-
-        if messages_thread
-          if messages_thread.account_email == nil
-            account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-            account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-            messages_thread.update_attributes({
-                                                  account_email: account_email,
-                                                  account_name: account.try(:usage_name)
-                                              })
-          end
-        else
-          account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-          account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-          messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, account_email: account_email, account_name: account.try(:usage_name)
-
-          if MessagesThread.several_accounts_detected(server_thread, {accounts_cache: accounts_cache})
-            messages_thread.tag_as_multi_clients
-          end
-
-          ClientSuccessTrackingHelpers.async_track("New Request Sent", account_email, {
-              bo_thread_id: messages_thread.id,
-              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL'])
-          })
-        end
-
-        messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
-
-        server_thread['messages'].each do |server_message|
-          message = Message.find_by_server_message_id server_message['id']
-
-          unless message
-            m = messages_thread.messages.create server_message_id: server_message['id'],
-                                                received_at: DateTime.parse(server_message['date']),
-                                                reply_all_recipients: Message.generate_reply_all_recipients(server_message).to_json,
-                                                from_me: server_message['from_me']
-
-            # Added by Nico to interprete
-            # We don't consider that a email sent by Julie means that the thread was updated
-            unless m.from_me
-              ConscienceWorker.enqueue m.id
-
-              updated_messages_thread_ids << messages_thread.id
-            end
-
-            if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
-              #m.server_message = server_message
-              messages_thread.update(handled_by_ai: true)
-              Message.delegate_to_julia_async(m.id)
-            end
-
-          end
-        end
-
-        messages_thread.find_or_compute_request_date
-
-        # Check if there are several julie aliases only if there was a new message
-        if updated_messages_thread_ids.include? messages_thread.id && MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).length > 1
-          messages_thread.tag_as_multi_clients
-        end
-      end
-    end
-
-    updated_messages_thread_ids.uniq
-  end
+  
 
   def self.import_emails
     Rails.logger.info "Importing emails"
@@ -692,6 +572,16 @@ class Message < ActiveRecord::Base
 
             if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
               #m.server_message = server_message
+              unless messages_thread.account
+                account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
+                if account_email
+                  account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+                  messages_thread.update_attributes({
+                                                        account_email: account_email,
+                                                        account_name: account.try(:usage_name)
+                                                    })
+                end
+              end
               messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
               should_call_conscience = false
