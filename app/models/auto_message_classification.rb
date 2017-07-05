@@ -175,6 +175,7 @@ class AutoMessageClassification < MessageClassification
       main_interpretation = JSON.parse(main_message_interpretation.raw_response)
 
       computed_data = m.messages_thread.computed_data
+      m.messages_thread.instance_variable_set(:@computed_data, nil)
 
       # Build interpretation hash in backoffice format
       interpretation = {
