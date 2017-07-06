@@ -163,9 +163,9 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     }
                     if (canVerifyWithAiV2()) {
 
-                        verifyParams.raw_constraints_data = _.groupBy(window.threadComputedData.constraints_data, function (data) {
-                            return data.attendee_email;
-                        });
+                        verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
+                            return $(this).data("constraint")
+                        }).get();
 
                         verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
 
