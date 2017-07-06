@@ -167,7 +167,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                         verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
 
-                        aiDatesVerificationManager.verifyDatesV2(verifyParams);
+                        aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
+                            function(response) {
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
+                            }, function(error) {
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
+                            }
+                        );
                     }
                 } else {
                     askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
