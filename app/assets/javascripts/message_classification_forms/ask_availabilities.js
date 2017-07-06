@@ -171,11 +171,11 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                         aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
                             function(response) {
-                                if(!submitForm) {
+                                if(submitForm) {
                                     askAvailabilitiesForm.sendForm();
                                 }
                             }, function(error) {
-                                if(!submitForm) {
+                                if(submitForm) {
                                     askAvailabilitiesForm.sendForm();
                                 }
                             }
