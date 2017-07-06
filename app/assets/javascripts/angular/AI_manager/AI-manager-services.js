@@ -72,6 +72,20 @@
                 return {error: true, details: httpError};
             });
         };
+
+        this.verifyDatesV2 = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates_v2',
+                method: "POST",
+                data: params,
+                timeout: 10000
+            }).then(function(response) {
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
+        };
     }]);
 
     app.service('messageInterpretationsService', function(){

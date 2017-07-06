@@ -620,6 +620,10 @@
             return aIDatesVerificationService.verifyDates(params);
         };
 
+        $scope.verifyDatesV2 = function(params) {
+            return aIDatesVerificationService.verifyDatesV2(params);
+        };
+
         $scope.init();
     }]);
 

@@ -74,29 +74,40 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         );
     };
 
+    function canVerifyWithAiV2() {
+        return (
+            !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
+            !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
+            $('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
+            everyClientUsingCalendarServer()
+        );
+    };
+
+    function everyClientUsingCalendarServer() {
+        return _.all(window.clientAccountTilesScope.accounts, function(acc) { return acc.using_calendar_server; });
+    }
+
     window.submitClassification = function () {
-        if(window.featuresHelper.isFeatureActive('ai_dates_verification') && canVerifyWithAi() ) {
-            showAiThinkingLoader();
+        if(window.featuresHelper.isFeatureActive('ai_dates_verification')) {
+            if (canVerifyWithAi() || canVerifyWithAiV2()) {
+                var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
+                    return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+                });
+                var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
 
-            var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
-                return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
-            });
-            var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
+                var datesToVerify = _.compact(_.map(classificationForm.getSuggestedDateTimes(), function(date) {
+                    var currentDate = moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+                    var result = undefined;
 
-            var datesToVerify = _.compact(_.map(classificationForm.getSuggestedDateTimes(), function(date) {
-                var currentDate = moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
-                var result = undefined;
-                
-                if(datesFromLastSuggestions.indexOf(currentDate) > -1) {
-                    result = currentDate;
-                }
+                    if(datesFromLastSuggestions.indexOf(currentDate) > -1) {
+                        result = currentDate;
+                    }
 
-                return result
-            }));
+                    return result
+                }));
 
-            var highlightedEmailNode = $('.email.highlighted');
+                var highlightedEmailNode = $('.email.highlighted');
 
-            if(datesToVerify.length > 0) {
                 var verifyParams = {
                     account_email: window.threadAccount.email,
                     thread_data: window.threadComputedData,
@@ -109,40 +120,60 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
-                aiDatesVerificationManager.verifyDates(verifyParams).then(
-                    function(response) {
-                        //hideAiThinkingLoader();
-                        var verifiedDatesByAI = undefined;
+                if(datesToVerify.length > 0) {
 
-                        if(!response.error && response.status != 'fail') {
-                            var verifiedDates = [];
-                            var now = moment();
-                            _.each(response.dates_validate, function (validated, date) {
-                                if (validated && moment(date).isAfter(now)) {
-                                    // Add Z at the end of the date string to specify momentJS it is an utc date
-                                    verifiedDates.push(date+'Z');
+                    if (canVerifyWithAi()) {
+                        showAiThinkingLoader();
+
+                        aiDatesVerificationManager.verifyDates(verifyParams).then(
+                            function(response) {
+                                //hideAiThinkingLoader();
+                                var verifiedDatesByAI = undefined;
+
+                                if(!response.error && response.status != 'fail') {
+                                    var verifiedDates = [];
+                                    var now = moment();
+                                    _.each(response.dates_validate, function (validated, date) {
+                                        if (validated && moment(date).isAfter(now)) {
+                                            // Add Z at the end of the date string to specify momentJS it is an utc date
+                                            verifiedDates.push(date+'Z');
+                                        }
+                                    });
+
+                                    if(verifiedDates.length > 0) {
+                                        verifiedDates = _.sortBy(verifiedDates, function(date) {
+                                            return moment(date).valueOf();
+                                        });
+
+                                        verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                                    } else {
+                                        verifiedDatesByAI = {no_suitable_dates: true};
+                                    }
+                                } else {
+                                    var errorStr = response.error ? 'timeout' : 'fail';
+                                    verifiedDatesByAI = {error_response:  errorStr};
                                 }
-                            });
-
-                            if(verifiedDates.length > 0) {
-                                verifiedDates = _.sortBy(verifiedDates, function(date) {
-                                    return moment(date).valueOf();
-                                });
-
-                                verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
-                            } else {
-                                verifiedDatesByAI = {no_suitable_dates: true};
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
+                            }, function(error) {
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
                             }
-                        } else {
-                            var errorStr = response.error ? 'timeout' : 'fail';
-                            verifiedDatesByAI = {error_response:  errorStr};
-                        }
-                        askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
-                }, function(error) {
-                        askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
-                });
+                        );
+                    }
+                    if (canVerifyWithAiV2()) {
+
+                        verifyParams.raw_constraints_data = _.groupBy(window.threadComputedData.constraints_data, function (data) {
+                            return data.attendee_email;
+                        });
+
+                        verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+
+                        aiDatesVerificationManager.verifyDatesV2(verifyParams);
+                    }
+                } else {
+                    askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
+                }
             } else {
-                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
+                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made'}});
             }
         } else {
             askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made'}});

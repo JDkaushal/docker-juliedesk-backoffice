@@ -391,6 +391,20 @@
                     return activeFilters;
                 };
 
+                // Used in AI verify dates call in ask_availabilities.js
+                $scope.getCurrentMeetingRoomsToDisplay = function() {
+                    var result = [];
+
+                    if($scope.roomsSelectionMode && $scope.roomsSelectionMode.id.indexOf('auto_room_selection') > -1) {
+                        result = $scope.determineFittingMeetingRooms();
+                    }else {
+                        if($scope.selectedRoom)
+                            result.push($scope.selectedRoom);
+                    }
+
+                    return result;
+                };
+
                 $scope.getMeetingRoomsToDisplay = function() {
                     var result = [];
 
