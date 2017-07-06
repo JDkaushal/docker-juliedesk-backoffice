@@ -116,7 +116,8 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
                     attendees: $('#attendeesCtrl').scope().attendees,
                     check_differences: true,
-                    julie_action_id: window.julie_action_id
+                    message_id: window.classificationForm.messageId,
+                    message_classification_identifier: window.classificationForm.messageId + '-' + window.classificationForm.startedAt
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
@@ -155,9 +156,9 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                     var errorStr = response.error ? 'timeout' : 'fail';
                                     verifiedDatesByAI = {error_response:  errorStr};
                                 }
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
                             }, function(error) {
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
+                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
                             }
                         );
                     }
@@ -172,11 +173,11 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                         aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
                             function(response) {
                                 if(submitForm) {
-                                    askAvailabilitiesForm.sendForm();
+                                    askAvailabilitiesForm.sendForm({message_classification_identifier: verifyParams.message_classification_identifier});
                                 }
                             }, function(error) {
                                 if(submitForm) {
-                                    askAvailabilitiesForm.sendForm();
+                                    askAvailabilitiesForm.sendForm({message_classification_identifier: verifyParams.message_classification_identifier});
                                 }
                             }
                         );
