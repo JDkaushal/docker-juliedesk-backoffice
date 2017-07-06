@@ -454,7 +454,6 @@ module ThreadAccountAssociation
 
     def get_clients_from_ics_in_messages
       clients_from_ics = @messages_thread.messages.inject([]){|array, m| array += m.get_ics_attendees_if_any}
-
       @data_holder.get_clients_accounts(clients_from_ics)
     end
 
