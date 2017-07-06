@@ -120,11 +120,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     //message_id: highlightedEmailNode.data('message-id'),
                 };
 
+                var submitForm = true;
+
                 if(datesToVerify.length > 0) {
 
                     if (canVerifyWithAi()) {
                         showAiThinkingLoader();
-
+                        submitForm = false;
                         aiDatesVerificationManager.verifyDates(verifyParams).then(
                             function(response) {
                                 //hideAiThinkingLoader();
@@ -169,9 +171,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                         aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
                             function(response) {
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI});
+                                if(!submitForm) {
+                                    askAvailabilitiesForm.sendForm();
+                                }
                             }, function(error) {
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}});
+                                if(!submitForm) {
+                                    askAvailabilitiesForm.sendForm();
+                                }
                             }
                         );
                     }
