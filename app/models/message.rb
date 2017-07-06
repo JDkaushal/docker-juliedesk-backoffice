@@ -28,7 +28,9 @@ class Message < ActiveRecord::Base
             event = parsed_ics_data.first.events.first
             # .reject{|a| a == nil} because compact does not work, it is not really a nil that is returned when the .attendee method, it is an instance of Icalendar::Values::CalAddress evaluating to nil so compact does not work on it
             @ics_attendees = event.attendee.reject{|a| a == nil}.map(&:to)
-            @ics_attendees.push(event.organizer.to)
+            if event.organizer.present?
+              @ics_attendees.push(event.organizer.to)
+            end
           end
         end
       end
