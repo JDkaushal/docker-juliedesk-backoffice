@@ -434,7 +434,7 @@ class Message < ActiveRecord::Base
     messages_threads_previously_not_in_inbox = MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids)
     messages_threads_previously_not_in_inbox.update_all(in_inbox: true, should_follow_up: false)
 
-    messages_threads_previously_not_in_inbox.each(&:track_thread_in_inbox)
+    messages_threads_previously_not_in_inbox.each{ |mt| mt.track_thread_in_inbox(:main) }
 
     server_thread_ids_to_update = []
     server_thread_ids_to_create = []
