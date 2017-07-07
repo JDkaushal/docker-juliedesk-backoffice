@@ -105,7 +105,7 @@ class Message < ActiveRecord::Base
 
   def auto_reply_mailing_list
     account = self.messages_thread.account
-    I18n.locale = account.locale
+    I18n.locale = account.locale || :en
 
     if ENV['DEFAULT_JULIE_ALIAS_EMAIL'] != ENV['COMMON_JULIE_ALIAS_EMAIL']
       text = I18n.t("automatic_reply_emails.mailing_list.text_specific_tenant", client_name: account.usage_name)
