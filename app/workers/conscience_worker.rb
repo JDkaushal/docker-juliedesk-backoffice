@@ -6,7 +6,7 @@ class ConscienceWorker
   end
 
   def self.perform (id)
-    m = Message.find id
-    m.interprete
+    m = Message.find_by_id id
+    m.interprete unless m.nil?
   end
 end
