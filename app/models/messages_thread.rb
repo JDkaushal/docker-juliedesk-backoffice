@@ -1004,6 +1004,7 @@ class MessagesThread < ActiveRecord::Base
                 MessageClassification::ASK_DATE_SUGGESTIONS,
                 MessageClassification::ASK_AVAILABILITIES,
                 MessageClassification::WAIT_FOR_CONTACT,
+                MessageClassification::FOLLOW_UP_CONTACTS,
                 MessageClassification::FOLLOW_UP_CLIENT,
                 MessageClassification::INVITATION_ALREADY_SENT
             ],
