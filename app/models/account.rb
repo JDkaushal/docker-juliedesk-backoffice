@@ -51,7 +51,8 @@ class Account
                 :auto_date_suggestions,
                 :configured,
                 :subscribed,
-                :configuration_needed
+                :configuration_needed,
+                :state
 
 
   RULE_VALIDATED = "rule_validated"
@@ -113,6 +114,7 @@ class Account
 
     account.configured = data['configured']
     account.subscribed = data['subscribed']
+    account.state = data['state']
 
     account.configuration_needed = !account.configured
 
@@ -149,6 +151,22 @@ class Account
     end
 
     account
+  end
+
+  def self.find_active_account_email email, params={}
+    if params[:accounts_cache]
+      accounts = params[:accounts_cache].values
+    else
+      accounts = Account.get_active_account_emails detailed: true
+    end
+
+    accounts.each do |account|
+      if (account['subscribed'] && (([account['email']] + account['email_aliases']).map(&:downcase).include? "#{email}".downcase))
+        return account['email']
+      end
+    end
+
+    nil
   end
 
   def self.find_account_email email, params={}

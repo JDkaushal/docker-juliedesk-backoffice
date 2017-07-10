@@ -687,7 +687,7 @@ module ThreadAccountAssociation
     end
 
     def find_account_email(email)
-      Account.find_account_email(email, {accounts_cache: @data_holder.accounts_cache})
+      Account.find_active_account_email(email, {accounts_cache: @data_holder.accounts_cache})
     end
 
     def extract_recipients_emails(recipients)

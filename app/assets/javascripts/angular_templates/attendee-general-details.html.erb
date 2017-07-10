@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <div class="row ellipsable" ng-show="attendee.assisted && attendee.subscribed">
+  <div class="row ellipsable" ng-show="attendee.assisted && attendee.state != 'ghost'">
       <cite class="attendee-assistant" ng-show="attendee.assisted">Assisté par {{attendee.assistedBy.displayName || attendee.assistedBy.usageName()}} ({{attendee.assistedBy.email}})</cite>
   </div>
 
