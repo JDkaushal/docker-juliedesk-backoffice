@@ -525,6 +525,7 @@
             });
 
             reProcessTitle();
+            $scope.checkAssistantsPresence();
             $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
             $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
         };
@@ -784,6 +785,22 @@
 
                return authorizedEmail;
             });
+        };
+
+        // Check if every assistant is present as attendee
+        // If not we remove him/her from the assisted client
+        $scope.checkAssistantsPresence = function() {
+            var presentAttendees = $scope.getAttendeesOnPresence(true);
+            var presentAttendeesEmails = _.map(presentAttendees, function(att) { return att.email; });
+            _.each(presentAttendees, function(att) {
+                if(att.assistedBy && att.assistedBy.email) {
+                    // If the assitant is not present as attendee
+                    if(!(_.contains(presentAttendeesEmails), att.assistedBy.email)) {
+                        att.assistedBy = null;
+                        att.assisted = false;
+                    }
+                }
+            })
         };
 
         $scope.confirmAIOnPresentAttendees = function() {
