@@ -795,7 +795,7 @@
             _.each(presentAttendees, function(att) {
                 if(att.assistedBy && att.assistedBy.email) {
                     // If the assitant is not present as attendee
-                    if(!(_.contains(presentAttendeesEmails), att.assistedBy.email)) {
+                    if(!(_.contains(presentAttendeesEmails, att.assistedBy.email))) {
                         att.assistedBy = null;
                         att.assisted = false;
                     }
