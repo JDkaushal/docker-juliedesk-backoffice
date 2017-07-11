@@ -434,8 +434,6 @@ class Message < ActiveRecord::Base
     messages_threads_previously_not_in_inbox = MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids)
     messages_threads_previously_not_in_inbox.update_all(in_inbox: true, should_follow_up: false)
 
-    messages_threads_previously_not_in_inbox.each{ |mt| mt.track_thread_in_inbox(:main) }
-
     server_thread_ids_to_update = []
     server_thread_ids_to_create = []
 
@@ -524,6 +522,8 @@ class Message < ActiveRecord::Base
           messages_thread = MessagesThread.create server_thread_id: server_thread['id'], in_inbox: true, server_version: server_thread['version']
           new_thread = true
         end
+
+        messages_thread.track_thread_in_inbox(:main)
 
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
 
