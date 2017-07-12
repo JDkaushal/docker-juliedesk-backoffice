@@ -1036,9 +1036,10 @@
 
     function refreshVirtualAppointmentsHelper(){
         var virtualMeetingsHelper = angular.element($('#virtual-meetings-helper')).scope();
+        var currentAppointNatureSelected = $("select#appointment_nature").val();
 
         if(window.threadDataIsEditable && $.isEmptyObject(window.threadComputedData.call_instructions) && !window.currentEventTile
-                || ($("select#appointment_nature").val() == 'skype' || $("select#appointment_nature").val() == 'webex' || $("select#appointment_nature").val() == 'hangout') && window.lastAppointmentType != ''
+                || (currentAppointNatureSelected == 'skype' || currentAppointNatureSelected == 'visio' || currentAppointNatureSelected == 'webex' || currentAppointNatureSelected == 'hangout') && window.lastAppointmentType != ''
                 || $("select#appointment_family_nature").val() == 'call' && window.lastAppointmentType != ''){
             if(virtualMeetingsHelper) virtualMeetingsHelper.loadDefaultConfig(true);
         }
