@@ -97,12 +97,12 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.account.only_admin_can_process ||
         messages_thread.account.only_support_can_process ||
         messages_thread.to_be_merged || messages_thread.thread_blocked ||
-        messages_thread.has_inactive_owner
+        messages_thread.owner_needs_configuration
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
     messages_thread.sent_to_admin ||
-        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked || messages_thread.has_inactive_owner
+        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked || messages_thread.owner_needs_configuration
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
@@ -216,6 +216,10 @@ class MessagesThread < ActiveRecord::Base
 
   def check_if_owner_inactive
     @has_inactive_owner ||= !self.account.subscribed
+  end
+
+  def owner_needs_configuration
+    @has_unconfigured_owner ||= self.account.configuration_needed
   end
 
   def async_archive

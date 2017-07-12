@@ -23,7 +23,7 @@ module LinkedAttendees
 
       # Separate clients from non clients in a beautiful and magnificent way
       recipients = attendees_to_check.partition {|r_email| Account.find_active_and_configured_account_email(r_email, {accounts_cache: @accounts_cache}).present?}
-      
+
       #clients_recipients = recipients[0].map{|client_recipient| Account.find_account_email(client_recipient, {accounts_cache: @accounts_cache})}
       #clients_recipients = [@messages_thread.account_email]
       clients_recipients = @messages_thread.get_clients_with_linked_attendees_enabled.map(&:email)
