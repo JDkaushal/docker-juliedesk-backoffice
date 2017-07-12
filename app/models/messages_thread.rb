@@ -219,7 +219,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def owner_needs_configuration
-    @has_unconfigured_owner ||= self.account.configuration_needed
+    @has_unconfigured_owner ||= (self.account.present? && self.account.configuration_needed)
   end
 
   def async_archive
