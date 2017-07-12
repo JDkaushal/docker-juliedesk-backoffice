@@ -588,13 +588,15 @@ describe MessagesThread, :type => :model do
               'email' => 'client1@email.com',
               'email_aliases' => [],
               'linked_attendees_enabled' => true,
-              'subscribed' => true
+              'subscribed' => true,
+              'configured' => true
           },
           'client2@email.com' => {
               'email' => 'client2@email.com',
               'email_aliases' => [],
               'linked_attendees_enabled' => true,
-              'subscribed' => true
+              'subscribed' => true,
+              'configured' => true
           }
       }
     }
@@ -604,13 +606,15 @@ describe MessagesThread, :type => :model do
                                                                                                     'email' => 'client1@email.com',
                                                                                                     'email_aliases' => [],
                                                                                                     'linked_attendees_enabled' => true,
-                                                                                                    'subscribed' => true
+                                                                                                    'subscribed' => true,
+                                                                                                    'configured' => true
                                                                                                 })
       allow(Account).to receive(:accounts_cache_for_email).with('client2@email.com').and_return({
                                                                                                     'email' => 'client2@email.com',
                                                                                                     'email_aliases' => [],
                                                                                                     'linked_attendees_enabled' => true,
-                                                                                                    'subscribed' => true
+                                                                                                    'subscribed' => true,
+                                                                                                    'configured' => true
                                                                                                 })
       @messages_thread.account_email = 'client1@email.com'
     end
