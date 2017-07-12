@@ -153,6 +153,22 @@ class Account
     account
   end
 
+  def self.find_active_and_configured_account_email email, params={}
+    if params[:accounts_cache]
+      accounts = params[:accounts_cache].values
+    else
+      accounts = Account.get_active_account_emails detailed: true
+    end
+
+    accounts.each do |account|
+      if (account['subscribed'] && account['configured'] && (([account['email']] + account['email_aliases']).map(&:downcase).include? "#{email}".downcase))
+        return account['email']
+      end
+    end
+
+    nil
+  end
+
   def self.find_active_account_email email, params={}
     if params[:accounts_cache]
       accounts = params[:accounts_cache].values

@@ -91,7 +91,7 @@ class MessagesThreadsController < ApplicationController
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     julie_aliases = JulieAlias.all
     @julie_emails = julie_aliases.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] && account['configured'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten
 
     # Fresh Thread == Thread not yet classified
     @fresh_thread = @messages_thread.computed_data[:appointment_nature].blank?
@@ -321,7 +321,7 @@ class MessagesThreadsController < ApplicationController
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] && account['configured'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten
 
     render action: :preview, layout: "review"
   end

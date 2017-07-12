@@ -17,7 +17,7 @@ class JulieActionsController < ApplicationController
 
     @accounts_cache_light = Account.accounts_cache(mode: "light")
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
-    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten.map(&:downcase)
+    @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] && account['configured'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten.map(&:downcase)
 
     OperatorAction.create_and_verify({
                                          initiated_at: DateTime.now,

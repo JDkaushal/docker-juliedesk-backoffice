@@ -56,6 +56,11 @@ module ThreadAccountAssociation
       @logger = Rails.logger
 
       @pick_new_thread_owner = @messages_thread.account_email.blank?
+
+      if @server_thread.present?
+        # Make sure the thread has the server_thread data if they are present
+        @messages_thread.instance_variable_set('@server_thread', @server_thread)
+      end
     end
 
     def compute_association
