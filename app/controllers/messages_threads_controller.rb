@@ -328,17 +328,22 @@ class MessagesThreadsController < ApplicationController
 
   def remove_data
     messages_thread = MessagesThread.find params[:id]
-    messages_thread.operator_actions_groups.destroy_all
-    messages_thread.mt_operator_actions.destroy_all
-    # We reset the eventual auto matic follow up date, so it doesn't trigger in the future
-    # We also
-    messages_thread.update_attributes(
-        was_merged: true,
-        follow_up_reminder_date: nil,
-        in_inbox: false
-    )
+    messages_thread.re_import
 
-    WebSockets::Manager.trigger_archive(messages_thread.id)
+    if messages_thread.messages.empty?
+      messages_thread.operator_actions_groups.destroy_all
+      messages_thread.mt_operator_actions.destroy_all
+      # We reset the eventual auto matic follow up date, so it doesn't trigger in the future
+      # We also
+      messages_thread.update_attributes(
+          was_merged: true,
+          follow_up_reminder_date: nil,
+          in_inbox: false
+      )
+
+      WebSockets::Manager.trigger_archive(messages_thread.id)
+    end
+
     render json: { status: "success", data: {} }
   end
 
