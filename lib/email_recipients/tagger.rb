@@ -59,7 +59,7 @@ module EmailRecipients
     def tag_as_linked_attendee_if_necessary
       linked_attendees = (@messages_thread.computed_data[:linked_attendees] || {}).values.flatten
 
-      if linked_attendees.include?(@sanitized_email)
+      if linked_attendees.include?(@sanitized_email) && !@client_emails.include?(@sanitized_email)
         @qualifying_classes.push(:linked_attendee)
         @recipient_html += "<span class='linked-attendee-sprite' title='Récipiendaire lié'></span>"
       end
