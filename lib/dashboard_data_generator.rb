@@ -72,7 +72,7 @@ module DashboardDataGenerator
 
   def self.generate_inbox_count_data
     # Get inbox messages_threads and associated accounts
-    messages_threads = MessagesThread.where(in_inbox: true)
+    messages_threads = MessagesThread.where(in_inbox: true, was_merged: false, handled_by_ai: false, handled_by_automation: false)
     accounts_cache = Account.accounts_cache(mode: "light")
     messages_threads.each{|mt| mt.account(accounts_cache: accounts_cache)}
 
@@ -123,7 +123,7 @@ module DashboardDataGenerator
     # Get follow_up_messages_threads
     follow_up_messages_threads = messages_threads.select{|mt|
       "#{mt.subject}".downcase.include?("Récapitulatif hebdomadaire de la semaine du") || "#{mt.subject}".downcase.include?("weekly recap")
-    } + MessagesThread.where(should_follow_up: true)
+    } + MessagesThread.where(should_follow_up: true, was_merged: false, handled_by_ai: false, handled_by_automation: false)
 
     # Filter in prioritary messages_threads among follow_up_messages_threads
     follow_up_messages_threads_priority = follow_up_messages_threads.select{|mt|
