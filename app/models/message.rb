@@ -432,7 +432,9 @@ class Message < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
     #Then, put in inbox the others, remove should follow up ones as they have received a new message
     messages_threads_previously_not_in_inbox = MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids)
-    messages_threads_previously_not_in_inbox.update_all(in_inbox: true, should_follow_up: false)
+    
+    # Reset follow up and follow_up_reminder_date
+    messages_threads_previously_not_in_inbox.update_all(in_inbox: true, should_follow_up: false, follow_up_reminder_date: nil)
 
     server_thread_ids_to_update = []
     server_thread_ids_to_create = []
