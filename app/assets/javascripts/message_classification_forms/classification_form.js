@@ -171,6 +171,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         location_changed: window.threadComputedData.location != $("#location").val(),
         before_update_data: params.before_update_data,
         verified_dates_by_ai: params.verifiedDatesByAI,
+        passed_conditions: params.passed_conditions,
         message_classification_identifier: params.message_classification_identifier,
         language_level: $("input[name='language_level']:checked").val(),
         asap_constraint: $("input[name='asap_constraint']:checked").length > 0

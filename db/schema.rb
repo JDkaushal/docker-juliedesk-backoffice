@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170706135515) do
+ActiveRecord::Schema.define(version: 20170719084515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -279,6 +279,7 @@ ActiveRecord::Schema.define(version: 20170706135515) do
     t.string   "language_level"
     t.boolean  "asap_constraint",            default: false
     t.string   "identifier"
+    t.json     "passed_conditions"
   end
 
   add_index "message_classifications", ["identifier"], name: "index_message_classifications_on_identifier", using: :btree

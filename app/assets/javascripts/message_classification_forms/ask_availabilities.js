@@ -74,13 +74,54 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         );
     };
 
+    function canVerifyWithAiTest() {
+        var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
+        var notChangedType = checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual);
+        var notIncreasedDuration = checkAppointmentDuration();
+        var notChangedLocation = locationIsSame(currentAppointmentIsVirtual);
+        var notChangedTimezone = window.threadComputedData.timezone == $("#timezone").val().trim();
+        var netChangedAttendees = checkAttendeesWhereInPreviousForm();
+
+        return {
+            notChangedType: notChangedType,
+            notIncreasedDuration: notIncreasedDuration,
+            notChangedLocation: notChangedLocation,
+            notChangedTimezone: notChangedTimezone,
+            netChangedAttendees: netChangedAttendees
+        };
+        // return (
+        //     notChangedType &&
+        //     notIncreasedDuration &&
+        //     //checkNoDatesSuggestionsFullAi() &&
+        //     notChangedLocation &&
+        //     notChangedTimezone &&
+        //     //window.presentAttendees().length == 2 &&
+        //     //!$('#meeting-rooms-manager').scope().usingMeetingRoom &&
+        //     //!$('#virtual-meetings-helper').scope().usingVirtualResources() &&
+        //     //!$('#dates-identifications-manager').scope().showDetectedDatesArea &&
+        //     //$('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
+        //     netChangedAttendees
+        // );
+    };
+
     function canVerifyWithAiV2() {
-        return (
-            !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
-            !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
-            $('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
-            everyClientUsingCalendarServer()
-        );
+        var noMeetingRoom = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
+        var noVirtualResources = !$('#virtual-meetings-helper').scope().usingVirtualResources();
+        var noLinkedAttendees = $('#attendeesCtrl').scope().getLinkedAttendees().length == 0;
+        var allCalendarServer = everyClientUsingCalendarServer();
+
+        return {
+            noMeetingRoom: noMeetingRoom,
+            noVirtualResources: noVirtualResources,
+            noLinkedAttendees: noLinkedAttendees,
+            allCalendarServer: allCalendarServer
+        };
+        // return (
+        //     noMeetingRoom &&
+        //     noVirtualResources &&
+        //     noLinkedAttendees &&
+        //     allCalendarServer
+        // );
     };
 
     function everyClientUsingCalendarServer() {
@@ -89,7 +130,16 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     window.submitClassification = function () {
         if(window.featuresHelper.isFeatureActive('ai_dates_verification')) {
-            if (canVerifyWithAi() || canVerifyWithAiV2()) {
+            var canVerifyV1 = canVerifyWithAi();
+            var canVerifyV2Result = canVerifyWithAiV2();
+            var canVerifyV1TestResult = canVerifyWithAiTest();
+
+            var canVerifyV1Test = _.all(canVerifyV1TestResult, function(v,k) { return v;});
+            var canVerifyV2 = _.all(canVerifyV2Result, function(v,k) { return v;});
+
+            var passedConditions = Object.assign(canVerifyV1Test, canVerifyV2);
+
+            if (canVerifyV1 || canVerifyV2) {
                 var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
                     return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
                 });
@@ -125,7 +175,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                 if(datesToVerify.length > 0) {
 
-                    if (canVerifyWithAi()) {
+                    if (canVerifyV1) {
                         showAiThinkingLoader();
                         submitForm = false;
                         aiDatesVerificationManager.verifyDates(verifyParams).then(
@@ -156,40 +206,40 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                     var errorStr = response.error ? 'timeout' : 'fail';
                                     verifiedDatesByAI = {error_response:  errorStr};
                                 }
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
+                                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
                             }, function(error) {
-                                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
+                                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
                             }
                         );
                     }
-                    if (canVerifyWithAiV2()) {
-
+                    if (canVerifyV2) {
                         verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
                             return $(this).data("constraint")
                         }).get();
 
                         verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+                        verifyParams.all_conditions_satisfied = canVerifyV1Test;
 
                         aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
                             function(response) {
                                 if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({message_classification_identifier: verifyParams.message_classification_identifier});
+                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, message_classification_identifier: verifyParams.message_classification_identifier});
                                 }
                             }, function(error) {
                                 if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({message_classification_identifier: verifyParams.message_classification_identifier});
+                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, message_classification_identifier: verifyParams.message_classification_identifier});
                                 }
                             }
                         );
                     }
                 } else {
-                    askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
+                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
                 }
             } else {
-                askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made'}});
+                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}});
             }
         } else {
-            askAvailabilitiesForm.sendForm({verifiedDatesByAI: {error_response: 'No call made'}});
+            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}});
         }
 
         //askAvailabilitiesForm.sendForm();

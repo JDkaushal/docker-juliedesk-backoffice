@@ -107,6 +107,7 @@ class MessageClassification < ActiveRecord::Base
           virtual_resource_used: last_classification_with_data.try(:virtual_resource_used),
           before_update_data: params[:before_update_data],
           verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
+          passed_conditions: (params[:passed_conditions] || {}).to_json,
           language_level: last_classification_with_data.try(:language_level),
           asap_constraint: params[:asap_constraint],
           identifier: params[:message_classification_identifier]
