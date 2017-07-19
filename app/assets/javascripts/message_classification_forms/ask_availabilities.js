@@ -137,7 +137,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             var canVerifyV1Test = _.all(canVerifyV1TestResult, function(v,k) { return v;});
             var canVerifyV2 = _.all(canVerifyV2Result, function(v,k) { return v;});
 
-            var passedConditions = Object.assign(canVerifyV1Test, canVerifyV2);
+            var passedConditions = Object.assign(canVerifyV1TestResult, canVerifyV2Result);
 
             if (canVerifyV1 || canVerifyV2) {
                 var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
