@@ -161,6 +161,7 @@ class MessageClassification < ActiveRecord::Base
           virtual_resource_used: params[:virtual_resource_used],
           before_update_data: params[:before_update_data],
           verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
+          passed_conditions: (params[:passed_conditions] || {}).to_json,
           ignore_linked_attendees: params[:ignore_linked_attendees],
           language_level: params[:language_level],
           asap_constraint: params[:asap_constraint],
