@@ -80,14 +80,14 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         var notIncreasedDuration = checkAppointmentDuration();
         var notChangedLocation = locationIsSame(currentAppointmentIsVirtual);
         var notChangedTimezone = window.threadComputedData.timezone == $("#timezone").val().trim();
-        var netChangedAttendees = checkAttendeesWhereInPreviousForm();
+        var notChangedAttendees = checkAttendeesWhereInPreviousForm();
 
         return {
             notChangedType: notChangedType,
             notIncreasedDuration: notIncreasedDuration,
             notChangedLocation: notChangedLocation,
             notChangedTimezone: notChangedTimezone,
-            netChangedAttendees: netChangedAttendees
+            notChangedAttendees: notChangedAttendees
         };
         // return (
         //     notChangedType &&
