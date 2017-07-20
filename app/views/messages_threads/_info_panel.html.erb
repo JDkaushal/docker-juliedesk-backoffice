@@ -784,6 +784,7 @@
         var possibleAttendees = window.presentAttendees();
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
+        var currentAppointment = window.getCurrentAppointment();
         var newConstraint = new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
             possible_attendees: possibleAttendees,
             locale: "<%= I18n.locale %>",
@@ -791,7 +792,7 @@
             data: data,
             expand: expand,
             fromAI: fromAI,
-            timezoneDisabled: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+            timezoneDisabled: currentAppointment && currentAppointment.appointment_kind_hash.is_virtual,
             cloneCallback: function(data) {
                 newConstraintTile(data, true);
             }
