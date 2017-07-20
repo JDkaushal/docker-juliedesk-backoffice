@@ -13,7 +13,9 @@ class DelegatedSegmentClient < SimpleDelegator
   end
 end
 
-SEGMENT_CLIENT = DelegatedSegmentClient.new(SimpleSegment::Client.new({write_key: ENV['SEGMENT_WRITE_KEY']}))
+if ENV['SEGMENT_WRITE_KEY']
+  SEGMENT_CLIENT = DelegatedSegmentClient.new(SimpleSegment::Client.new({write_key: ENV['SEGMENT_WRITE_KEY']}))
+end
 ################################################################
 
 

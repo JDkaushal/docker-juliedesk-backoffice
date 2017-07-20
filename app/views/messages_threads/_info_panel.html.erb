@@ -100,6 +100,7 @@
             window.titlePreferenceOverridden = true;
         });
 
+
         $("#appointment_nature").change(function () {
             var currentAppointment = window.getCurrentAppointment();
             if(window.lastAppointmentType == '')
@@ -107,9 +108,11 @@
 
             setAppointmentValues();
 
-            if($(".linear-form-entry[data-entry-name='timezone']:hidden").length > 0 && $(".linear-form-entry[data-entry-name='appointmentType']:hidden").length == 0 && $("#appointment_nature").val()) {
+            // Appointment type selection is current step, we validate
+            if($(".linear-form-entry:visible:eq(-1)").hasClass("appointment-type-selects")) {
                 askNextLinearFormEntry();
             }
+
             redrawDifferentTimezoneWarner();
 
             refreshVirtualAppointmentsHelper();
@@ -171,12 +174,7 @@
         initAppointments();
 
         $(".validate-linear-form-entry-button").click(function() {
-          var that = $(this);
           askNextLinearFormEntry();
-
-          if(that.hasClass('validate-locale') && window.threadAccount.language_level == 'soutenu') {
-            askNextLinearFormEntry();
-          }
         });
 
         $(".client-current-time").html(moment.tz(window.threadAccount.default_timezone_id).format("DD/MM YYYY, HH:mm:ss"));
@@ -222,6 +220,10 @@
             updateNotesCallingInfos();
             reProcessTitle();
             updateAttendeesUsageNames();
+            // Appointment type selection is current step, we validate
+            if($(".linear-form-entry:visible:eq(-1)").hasClass("locale-selection")) {
+                askNextLinearFormEntry();
+            }
         });
 
         $("body").on("change", "input#attendee", function() {
@@ -277,7 +279,7 @@
                 });
                 window.submitClassification();
             }
-            trackActionV2('Click_on_save_form', {first_time: !window.threadComputedData.appointment_nature, ux_element: 'form'});
+            trackActionV2('Click_on_save_form', {first_time: window.formFirstPass, ux_element: 'form'});
         });
 
 //        $("body").on("change", "input[type=checkbox]#attendee", function() {
@@ -1046,18 +1048,20 @@
     }
 
     function redrawLinearForm() {
-        if(!window.threadComputedData.appointment_nature) {
+        if(window.formFirstPass) {
             $(".linear-form-entry").hide();
         }
         else {
             $(".linear-form-entry .validate-linear-form-entry-button").hide();
         }
         if(window.threadDataIsEditable) {
-            if(window.threadComputedData.appointment_nature) {
-                $(".save-info-container").show();
+            if(window.formFirstPass) {
+                setTimeout(function() {
+                    askNextLinearFormEntry();
+                }, 10);
             }
             else {
-                $(".linear-form-entry:hidden:eq(0)").show();
+                $(".save-info-container").show();
             }
         }
 
@@ -1069,10 +1073,12 @@
             $(".save-info-container").show();
         }
         else {
-            var currentHiddenDiv = $(".linear-form-entry:hidden:not(.dont-show):eq(0)").show();
-          // When ai has found an appointment type
-          if(currentHiddenDiv.hasClass('appointment-type-selects') && $('#appointment_family_nature').val()) {
-            askNextLinearFormEntry();
+          var currentHiddenDiv = $(".linear-form-entry:hidden:not(.dont-show):eq(0)").show();
+
+          // When we are not able to modify the form entry
+          // or when ai has found an appointment type
+          if(currentHiddenDiv.hasClass('disabled') || currentHiddenDiv.hasClass('set-by-ai')) {
+              askNextLinearFormEntry();
           }
 
         }
@@ -1490,13 +1496,13 @@
         <div class="validate-linear-form-entry-button btn btn-success btn-sm validate-locale" data-tracking-event="Click_on_validate_language"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry linear-form-entry language-level-selection">
+      <div class="data-entry linear-form-entry language-level-selection <%=  messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL ? 'disabled' : '' %>">
         <div class="data-entry-name"><%= I18n.t("info_box.language_level.title") %></div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, "normal", (messages_thread.computed_data[:language_level] != 'soutenu'), {class: 'locale-radio', disabled: messages_thread.account.language_level == 'soutenu'} %> <%= I18n.t("info_box.language_level.normal") %>
+          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_NORMAL, (messages_thread.computed_data[:language_level] != Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL} %> <%= I18n.t("info_box.language_level.normal") %>
         </div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, "soutenu", (messages_thread.computed_data[:language_level] == 'soutenu'), {class: 'locale-radio', disabled: messages_thread.account.language_level == 'soutenu'} %> <%= I18n.t("info_box.language_level.soutenu") %>
+          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_FORMAL, (messages_thread.computed_data[:language_level] == Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL} %> <%= I18n.t("info_box.language_level.soutenu") %>
         </div>
 
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_select_language"><%= I18n.t("common.validate") %></div>

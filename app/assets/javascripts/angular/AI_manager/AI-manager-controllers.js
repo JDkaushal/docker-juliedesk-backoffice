@@ -30,12 +30,7 @@
                 if(!!$scope.currentLocale && window.formFirstPass) {
                     $scope.checkLocaleConsistency(e.currentTarget.value, function() {
                         if(!$scope.localeValidated) {
-                            askNextLinearFormEntry();
                             $scope.localeValidated = true;
-
-                            // if($('#appointment_family_nature').val()) {
-                            //     askNextLinearFormEntry();
-                            // }
                         }
                     });
                 }
@@ -53,7 +48,7 @@
                     // If the AI locale detected is the same as the current used locale in the thread
                     if($scope.currentLocale == window.currentLocale) {
                         // Bypass the locale selection step
-                        askNextLinearFormEntry();
+                        $(".linear-form-entry.locale-selection").addClass("set-by-ai");
                         $scope.localeValidated = true;
                     } else {
                         $scope.checkLocaleConsistency(window.currentLocale);
@@ -209,10 +204,15 @@
                     $scope.currentAppointmentType = mainInterpretation.appointment_classif;
                     setTimeout(function() {
                         $scope.setAppointmentType();
+                        $scope.tagFormEntry();
                     }, 500);
                     //$scope.tagInputToVerify();
                 }
             }
+        };
+
+        $scope.tagFormEntry = function() {
+            $('.linear-form-entry.appointment-type-selects').addClass('set-by-ai');
         };
 
         $scope.tagInputToVerify = function() {
