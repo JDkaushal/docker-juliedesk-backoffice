@@ -130,7 +130,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     window.submitClassification = function () {
         if(window.featuresHelper.isFeatureActive('ai_dates_verification')) {
-            var canVerifyV1 = canVerifyWithAi();
+            // var canVerifyV1 = canVerifyWithAi();
             var canVerifyV2Result = canVerifyWithAiV2();
             var canVerifyV1TestResult = canVerifyWithAiTest();
 
@@ -139,7 +139,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
             var passedConditions = Object.assign(canVerifyV1TestResult, canVerifyV2Result);
 
-            if (canVerifyV1 || canVerifyV2) {
+            if (canVerifyV2) {
                 var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
                     return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
                 });
@@ -175,12 +175,57 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                 if(datesToVerify.length > 0) {
 
-                    if (canVerifyV1) {
+                    // if (canVerifyV1) {
+                    //     showAiThinkingLoader();
+                    //     submitForm = false;
+                    //     aiDatesVerificationManager.verifyDates(verifyParams).then(
+                    //         function(response) {
+                    //             //hideAiThinkingLoader();
+                    //             var verifiedDatesByAI = undefined;
+                    //
+                    //             if(!response.error && response.status != 'fail') {
+                    //                 var verifiedDates = [];
+                    //                 var now = moment();
+                    //                 _.each(response.dates_validate, function (validated, date) {
+                    //                     if (validated && moment(date).isAfter(now)) {
+                    //                         // Add Z at the end of the date string to specify momentJS it is an utc date
+                    //                         verifiedDates.push(date+'Z');
+                    //                     }
+                    //                 });
+                    //
+                    //                 if(verifiedDates.length > 0) {
+                    //                     verifiedDates = _.sortBy(verifiedDates, function(date) {
+                    //                         return moment(date).valueOf();
+                    //                     });
+                    //
+                    //                     verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                    //                 } else {
+                    //                     verifiedDatesByAI = {no_suitable_dates: true};
+                    //                 }
+                    //             } else {
+                    //                 var errorStr = response.error ? 'timeout' : 'fail';
+                    //                 verifiedDatesByAI = {error_response:  errorStr};
+                    //             }
+                    //             askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
+                    //         }, function(error) {
+                    //             askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
+                    //         }
+                    //     );
+                    // }
+                    if (canVerifyV2) {
                         showAiThinkingLoader();
-                        submitForm = false;
-                        aiDatesVerificationManager.verifyDates(verifyParams).then(
+                        //submitForm = false;
+
+                        verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
+                            return $(this).data("constraint")
+                        }).get();
+
+                        verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+                        verifyParams.all_conditions_satisfied = canVerifyV1Test;
+
+                        aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
                             function(response) {
-                                //hideAiThinkingLoader();
+
                                 var verifiedDatesByAI = undefined;
 
                                 if(!response.error && response.status != 'fail') {
@@ -206,29 +251,14 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                     var errorStr = response.error ? 'timeout' : 'fail';
                                     verifiedDatesByAI = {error_response:  errorStr};
                                 }
-                                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-                            }, function(error) {
-                                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-                            }
-                        );
-                    }
-                    if (canVerifyV2) {
-                        verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
-                            return $(this).data("constraint")
-                        }).get();
 
-                        verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
-                        verifyParams.all_conditions_satisfied = canVerifyV1Test;
-
-                        aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
-                            function(response) {
-                                if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, message_classification_identifier: verifyParams.message_classification_identifier});
-                                }
+                                //if(submitForm) {
+                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
+                                //}
                             }, function(error) {
-                                if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, message_classification_identifier: verifyParams.message_classification_identifier});
-                                }
+                                //if(submitForm) {
+                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
+                                //}
                             }
                         );
                     }
