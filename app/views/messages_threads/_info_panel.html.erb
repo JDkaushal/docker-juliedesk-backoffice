@@ -792,7 +792,7 @@
             data: data,
             expand: expand,
             fromAI: fromAI,
-            timezoneDisabled: currentAppointment && currentAppointment.appointment_kind_hash.is_virtual,
+            timezoneDisabled: currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual,
             cloneCallback: function(data) {
                 newConstraintTile(data, true);
             }
