@@ -82,6 +82,7 @@ function ConstraintTile($selector, params) {
     constraintTile.timezone = "GMT";
     if(params.timezone)  constraintTile.timezone = params.timezone;
     constraintTile.cloneCallback = null;
+    if(params.timezoneDisabled) constraintTile.timezoneDisabled = true;
     if(params.cloneCallback) constraintTile.cloneCallback = params.cloneCallback;
     if(params.fromAI) {
         constraintTile.fromAI = params.fromAI;
@@ -139,6 +140,9 @@ ConstraintTile.prototype.render = function() {
     var $timezonePicker = constraintTile.$selector.find(".timezone");
     $timezonePicker.timezonePicker();
     $timezonePicker.val(constraintTile.timezone);
+    if(constraintTile.timezoneDisabled) {
+        $timezonePicker.attr("disabled", true);
+    }
 
     // Init actions
     constraintTile.initActions();

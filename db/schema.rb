@@ -193,13 +193,6 @@ ActiveRecord::Schema.define(version: 20170719084515) do
     t.datetime "updated_at"
   end
 
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -429,24 +422,5 @@ ActiveRecord::Schema.define(version: 20170719084515) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_messages_thread_archive_actions", force: true do |t|
-    t.integer "messages_thread_id"
-    t.boolean "currently_archived"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
 end

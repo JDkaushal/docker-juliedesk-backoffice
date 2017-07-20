@@ -791,6 +791,7 @@
             data: data,
             expand: expand,
             fromAI: fromAI,
+            timezoneDisabled: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
             cloneCallback: function(data) {
                 newConstraintTile(data, true);
             }
@@ -1528,6 +1529,12 @@
         </div>
       </div>
 
+      <div class="data-entry linear-form-entry" data-entry-name="duration">
+        <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
+        <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_duration"><%= I18n.t("common.validate") %></div>
+      </div>
+
       <div class="data-entry linear-form-entry" data-entry-name="timezone">
         <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
         <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
@@ -1544,6 +1551,25 @@
       </div>
 
       <%= render partial: "messages_threads/partials/attendees", locals: {messages_thread: messages_thread} %>
+
+      <div class="data-entry linear-form-entry" data-entry-name="location">
+        <div class="ai-suggested-location-container"></div>
+
+        <div class="location-part-container">
+          <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
+          <%= select_tag :location_nature, "", class: "data-entry form-control" %>
+          <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+          <%= hidden_field_tag :location_coordinates %>
+
+          <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
+        </div>
+
+        <div class="number-to-call-part-container">
+          <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
+        </div>
+        <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
+        <div class="validate-linear-form-entry-button btn btn-success btn-sm" id="location_instructions_tracking_btn" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
+      </div>
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.time_constraints") %></div>
@@ -1583,30 +1609,9 @@
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_title"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
-        <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_duration"><%= I18n.t("common.validate") %></div>
-      </div>
 
-      <div class="data-entry linear-form-entry">
-        <div class="ai-suggested-location-container"></div>
 
-        <div class="location-part-container">
-            <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
-            <%= select_tag :location_nature, "", class: "data-entry form-control" %>
-            <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
-            <%= hidden_field_tag :location_coordinates %>
 
-            <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
-        </div>
-
-        <div class="number-to-call-part-container">
-            <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
-        </div>
-            <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" id="location_instructions_tracking_btn" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
-      </div>
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>
