@@ -761,9 +761,9 @@ class Message < ActiveRecord::Base
                                         subject: julie_message_hash['subject'],
                                         from: julie_alias_from,
                                         to: julie_alias_from,
-                                        text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
-                                        html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
-                                        quote: false,
+                                        text: "#{strip_tags(julie_message_hash['html'])}",
+                                        html: "#{julie_message_hash['html']}",
+                                        quote_replied_message: true,
                                         reply_to_message_id:  copy_response['id']
                                     })
       else
@@ -783,9 +783,9 @@ class Message < ActiveRecord::Base
           subject: julie_message_hash['subject'],
           from: julie_alias_from,
           to: julie_alias_from,
-          text: "#{strip_tags(julie_message_hash['html'])}\n\n\n\nPrevious messages:\n\n#{cache_server_message['text']}",
-          html: julie_message_hash['html'] + "<br><br><br><br>Previous message:<br><br>" + cache_server_message['parsed_html'],
-          quote: false,
+          text: "#{strip_tags(julie_message_hash['html'])}",
+          html: "#{julie_message_hash['html']}",
+          quote_replied_message: true,
           reply_to_message_id: copy_response['id']
         }
 
