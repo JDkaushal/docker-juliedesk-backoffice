@@ -1170,8 +1170,14 @@
     }
 
     function locationIsSettled() {
-      if(isCurrentAppointmentVirtual())
-        return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || window.getCurrentAppointment().kind == 'skype';
+      if(isCurrentAppointmentVirtual()) {
+          var skypeLocationSettled = false;
+          if(window.getCurrentAppointment().kind == 'skype' && window.threadAccount.skype) {
+              skypeLocationSettled = true;
+          }
+
+          return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || skypeLocationSettled;
+      }
 
       return locationFieldIsSet();
     }
