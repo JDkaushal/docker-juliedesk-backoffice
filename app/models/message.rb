@@ -505,7 +505,7 @@ class Message < ActiveRecord::Base
       should_update_thread = true
       new_thread = false
 
-      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze
+      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze || server_message['from'].include?('julie.aliastest@gmail.com')
         should_update_thread = false
       else
         messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
