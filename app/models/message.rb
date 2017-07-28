@@ -871,7 +871,7 @@ class Message < ActiveRecord::Base
   def interprete
     if self.message_interpretations.empty?
       MessageInterpretation.questions.each do |question|
-        self.message_interpretations << MessageInterpretation.new(question: question)
+        self.message_interpretations.build(question: question)
       end
 
       self.message_interpretations.each do |message_interpretation|
