@@ -624,6 +624,10 @@
             return aIDatesVerificationService.verifyDatesV2(params);
         };
 
+        $scope.verifyDatesV3 = function(params) {
+            return aIDatesVerificationService.verifyDatesV3(params);
+        };
+
         $scope.init();
     }]);
 

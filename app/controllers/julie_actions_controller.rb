@@ -45,7 +45,7 @@ class JulieActionsController < ApplicationController
                 should_book_resource: false,
                 current_notes_present: false,
                 free_notes_present: false,
-                linked_attendees_present: false,
+                #linked_attendees_present: false,
                 all_clients_on_calendar_server: true,
                 #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false

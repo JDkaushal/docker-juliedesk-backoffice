@@ -56,25 +56,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
         return window.threadComputedData.date_suggestions_full_ai == false;
     }
 
-    function canVerifyWithAi() {
-        var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
-
-        return (
-            checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual) &&
-            checkAppointmentDuration() &&
-            checkNoDatesSuggestionsFullAi() &&
-            locationIsSame(currentAppointmentIsVirtual) &&
-            window.threadComputedData.timezone == $("#timezone").val().trim() &&
-            window.presentAttendees().length == 2 &&
-            !$('#meeting-rooms-manager').scope().usingMeetingRoom &&
-            !$('#virtual-meetings-helper').scope().usingVirtualResources() &&
-            !$('#dates-identifications-manager').scope().showDetectedDatesArea &&
-            $('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
-            checkAttendeesWhereInPreviousForm()
-        );
-    };
-
-    function canVerifyWithAiTest() {
+    function canVerifyWithAiV1() {
         var currentAppointmentIsVirtual = isVirtual(window.getCurrentAppointment());
         var notChangedType = checkIfAppointmentTypeChangedFromVirtual(currentAppointmentIsVirtual);
         var notIncreasedDuration = checkAppointmentDuration();
@@ -89,19 +71,6 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             notChangedTimezone: notChangedTimezone,
             notChangedAttendees: notChangedAttendees
         };
-        // return (
-        //     notChangedType &&
-        //     notIncreasedDuration &&
-        //     //checkNoDatesSuggestionsFullAi() &&
-        //     notChangedLocation &&
-        //     notChangedTimezone &&
-        //     //window.presentAttendees().length == 2 &&
-        //     //!$('#meeting-rooms-manager').scope().usingMeetingRoom &&
-        //     //!$('#virtual-meetings-helper').scope().usingVirtualResources() &&
-        //     //!$('#dates-identifications-manager').scope().showDetectedDatesArea &&
-        //     //$('#attendeesCtrl').scope().getLinkedAttendees().length == 0 &&
-        //     netChangedAttendees
-        // );
     };
 
     function canVerifyWithAiV2() {
@@ -116,160 +85,134 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             noLinkedAttendees: noLinkedAttendees,
             allCalendarServer: allCalendarServer
         };
-        // return (
-        //     noMeetingRoom &&
-        //     noVirtualResources &&
-        //     noLinkedAttendees &&
-        //     allCalendarServer
-        // );
-    };
+    }
+
+    function canVerifyWithAiV3() {
+
+        var noMeetingRoom = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
+        var noVirtualResources = !$('#virtual-meetings-helper').scope().usingVirtualResources();
+        var allCalendarServer = everyClientUsingCalendarServer();
+
+        return {
+            noMeetingRoom: noMeetingRoom,
+            noVirtualResources: noVirtualResources,
+            allCalendarServer: allCalendarServer
+        };
+    }
 
     function everyClientUsingCalendarServer() {
         return _.all(window.clientAccountTilesScope.accounts, function(acc) { return acc.using_calendar_server; });
     }
 
     window.submitClassification = function () {
+
+        var message_classification_identifier = window.classificationForm.messageId + '-' + window.classificationForm.startedAt;
+
+        var canVerifyV1Result = canVerifyWithAiV1();
+        var canVerifyV2Result = canVerifyWithAiV2();
+        var canVerifyV3Result = canVerifyWithAiV3();
+
+        var canVerifyV1 = _.all(canVerifyV1Result, function(v,k) { return v;});
+        var canVerifyV2 = _.all(canVerifyV2Result, function(v,k) { return v;});
+        var canVerifyV3 = _.all(canVerifyV3Result, function(v,k) { return v;});
+
+        var passedConditions = Object.assign(canVerifyV1Result, canVerifyV2Result);
+
         if(window.featuresHelper.isFeatureActive('ai_dates_verification')) {
-            // var canVerifyV1 = canVerifyWithAi();
-            var canVerifyV2Result = canVerifyWithAiV2();
-            var canVerifyV1TestResult = canVerifyWithAiTest();
 
-            var canVerifyV1Test = _.all(canVerifyV1TestResult, function(v,k) { return v;});
-            var canVerifyV2 = _.all(canVerifyV2Result, function(v,k) { return v;});
+            var highlightedEmailNode = $('.email.highlighted');
 
-            var passedConditions = Object.assign(canVerifyV1TestResult, canVerifyV2Result);
+            var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
+                return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+            });
+            var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
+
+            var datesToVerify = _.compact(_.map(classificationForm.getSuggestedDateTimes(), function(date) {
+                var currentDate = moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
+                var result = undefined;
+
+                if(datesFromLastSuggestions.indexOf(currentDate) > -1) {
+                    result = currentDate;
+                }
+
+                return result
+            }));
+
+            var verifyParams = {
+                account_email: window.threadAccount.email,
+                thread_data: window.threadComputedData,
+                dates_to_check: datesToVerify,
+                server_message_id: highlightedEmailNode.attr('id'),
+                today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
+                attendees: $('#attendeesCtrl').scope().attendees,
+                check_differences: true,
+                message_id: window.classificationForm.messageId,
+                message_classification_identifier: message_classification_identifier
+                //message_id: highlightedEmailNode.data('message-id'),
+            };
+
+            verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
+                return $(this).data("constraint")
+            }).get();
+
+            verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+            verifyParams.all_conditions_satisfied = canVerifyV1;
+            
+            if (canVerifyV3 && classificationForm.getSuggestedDateTimes().length > 0) {
+                aiDatesVerificationManager.verifyDatesV3(verifyParams).then(
+                    function(response) {
+                    }, function(error) {
+                    }
+                );
+            }
 
             if (canVerifyV2) {
-                var datesFromLastSuggestions = _.map($('.dates-identification-panel').data('last-dates-suggested'), function(date) {
-                    return moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
-                });
-                var aiDatesVerificationManager = $('#ai_dates_verification_manager').scope();
-
-                var datesToVerify = _.compact(_.map(classificationForm.getSuggestedDateTimes(), function(date) {
-                    var currentDate = moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss");
-                    var result = undefined;
-
-                    if(datesFromLastSuggestions.indexOf(currentDate) > -1) {
-                        result = currentDate;
-                    }
-
-                    return result
-                }));
-
-                var highlightedEmailNode = $('.email.highlighted');
-
-                var verifyParams = {
-                    account_email: window.threadAccount.email,
-                    thread_data: window.threadComputedData,
-                    dates_to_check: datesToVerify,
-                    server_message_id: highlightedEmailNode.attr('id'),
-                    today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),
-                    attendees: $('#attendeesCtrl').scope().attendees,
-                    check_differences: true,
-                    message_id: window.classificationForm.messageId,
-                    message_classification_identifier: window.classificationForm.messageId + '-' + window.classificationForm.startedAt
-                    //message_id: highlightedEmailNode.data('message-id'),
-                };
-
-                var submitForm = true;
-
                 if(datesToVerify.length > 0) {
 
-                    // if (canVerifyV1) {
-                    //     showAiThinkingLoader();
-                    //     submitForm = false;
-                    //     aiDatesVerificationManager.verifyDates(verifyParams).then(
-                    //         function(response) {
-                    //             //hideAiThinkingLoader();
-                    //             var verifiedDatesByAI = undefined;
-                    //
-                    //             if(!response.error && response.status != 'fail') {
-                    //                 var verifiedDates = [];
-                    //                 var now = moment();
-                    //                 _.each(response.dates_validate, function (validated, date) {
-                    //                     if (validated && moment(date).isAfter(now)) {
-                    //                         // Add Z at the end of the date string to specify momentJS it is an utc date
-                    //                         verifiedDates.push(date+'Z');
-                    //                     }
-                    //                 });
-                    //
-                    //                 if(verifiedDates.length > 0) {
-                    //                     verifiedDates = _.sortBy(verifiedDates, function(date) {
-                    //                         return moment(date).valueOf();
-                    //                     });
-                    //
-                    //                     verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
-                    //                 } else {
-                    //                     verifiedDatesByAI = {no_suitable_dates: true};
-                    //                 }
-                    //             } else {
-                    //                 var errorStr = response.error ? 'timeout' : 'fail';
-                    //                 verifiedDatesByAI = {error_response:  errorStr};
-                    //             }
-                    //             askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-                    //         }, function(error) {
-                    //             askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-                    //         }
-                    //     );
-                    // }
-                    if (canVerifyV2) {
-                        showAiThinkingLoader();
-                        //submitForm = false;
+                    showAiThinkingLoader();
+                    aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
+                        function(response) {
 
-                        verifyParams.raw_constraints_data = $(".constraint-tile-container").map(function () {
-                            return $(this).data("constraint")
-                        }).get();
+                            var verifiedDatesByAI = undefined;
 
-                        verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
-                        verifyParams.all_conditions_satisfied = canVerifyV1Test;
+                            if(!response.error && response.status != 'fail') {
+                                var verifiedDates = [];
+                                var now = moment();
+                                _.each(response.dates_validate, function (validated, date) {
+                                    if (validated && moment(date).isAfter(now)) {
+                                        // Add Z at the end of the date string to specify momentJS it is an utc date
+                                        verifiedDates.push(date+'Z');
+                                    }
+                                });
 
-                        aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
-                            function(response) {
-
-                                var verifiedDatesByAI = undefined;
-
-                                if(!response.error && response.status != 'fail') {
-                                    var verifiedDates = [];
-                                    var now = moment();
-                                    _.each(response.dates_validate, function (validated, date) {
-                                        if (validated && moment(date).isAfter(now)) {
-                                            // Add Z at the end of the date string to specify momentJS it is an utc date
-                                            verifiedDates.push(date+'Z');
-                                        }
+                                if(verifiedDates.length > 0) {
+                                    verifiedDates = _.sortBy(verifiedDates, function(date) {
+                                        return moment(date).valueOf();
                                     });
 
-                                    if(verifiedDates.length > 0) {
-                                        verifiedDates = _.sortBy(verifiedDates, function(date) {
-                                            return moment(date).valueOf();
-                                        });
-
-                                        verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
-                                    } else {
-                                        verifiedDatesByAI = {no_suitable_dates: true};
-                                    }
+                                    verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
                                 } else {
-                                    var errorStr = response.error ? 'timeout' : 'fail';
-                                    verifiedDatesByAI = {error_response:  errorStr};
+                                    verifiedDatesByAI = {no_suitable_dates: true};
                                 }
-
-                                //if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-                                //}
-                            }, function(error) {
-                                //if(submitForm) {
-                                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-                                //}
+                            } else {
+                                var errorStr = response.error ? 'timeout' : 'fail';
+                                verifiedDatesByAI = {error_response:  errorStr};
                             }
-                        );
-                    }
+
+                            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
+                        }, function(error) {
+                            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
+                        }
+                    );
+
                 } else {
-                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}});
+                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}, message_classification_identifier: message_classification_identifier});
                 }
             } else {
-                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}});
+                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}, message_classification_identifier: message_classification_identifier});
             }
         } else {
-            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}});
+            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}, message_classification_identifier: message_classification_identifier});
         }
 
         //askAvailabilitiesForm.sendForm();
