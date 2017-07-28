@@ -434,7 +434,9 @@ EventTile.prototype.redraw = function() {
         }
         else {
          //if(eventTile.event.owned)
-        eventTile.$selector.find("#event-edit-button").show();
+        if(eventTile.event.organizerEmail == eventTile.accountEmail)
+          eventTile.$selector.find("#event-edit-button").show();
+
         eventTile.$selector.find("#event-delete-button").show();
         }
     }
