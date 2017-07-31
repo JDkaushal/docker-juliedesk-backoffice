@@ -159,7 +159,11 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             verifyParams.all_conditions_satisfied = canVerifyV1;
             
             if (canVerifyV3 && classificationForm.getSuggestedDateTimes().length > 0) {
-                verifyParams.dates_to_check = classificationForm.getSuggestedDateTimes();
+                verifyParams.dates_to_check = [];
+
+                _.each(classificationForm.getSuggestedDateTimes(), function(date) {
+                    verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
+                });
 
                 aiDatesVerificationManager.verifyDatesV3(verifyParams).then(
                     function(response) {
