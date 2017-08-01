@@ -434,7 +434,7 @@ EventTile.prototype.redraw = function() {
         }
         else {
          //if(eventTile.event.owned)
-        if(eventTile.event.organizerEmail == eventTile.accountEmail)
+        if((eventTile.event.calendar_login_type == "IcloudLogin" && eventTile.event.organizerEmail == undefined) || (eventTile.event.organizerEmail == eventTile.accountEmail))
           eventTile.$selector.find("#event-edit-button").show();
 
         eventTile.$selector.find("#event-delete-button").show();
