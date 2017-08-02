@@ -17,24 +17,6 @@ class MessagesController < ApplicationController
     @julie_emails = JulieAlias.all.map(&:email).map(&:downcase)
     @client_emails = @accounts_cache_light.select { |_, account| account['subscribed'] && account['configured'] }.map{|_, account| [account['email']] + account['email_aliases']}.flatten.map(&:downcase)
 
-    begin
-      open_thread_date = begin
-        DateTime.strptime(params[:started_at], "%Q").strftime("%Y-%m-%dT%H:%M:%S")
-        rescue
-          nil
-      end
-    ClientSuccessTrackingHelpers.async_track("Julie Made An Action", @message.messages_thread.account_email, {
-        bo_thread_id:  @message.messages_thread_id,
-        bo_message_id:  @message.id,
-        thread_messages_count:  @message.messages_thread.messages.count,
-        current_classification: @classification,
-        new_email_received_date: @message.created_at.strftime("%Y-%m-%dT%H:%M:%S"),
-        thread_is_open_date: open_thread_date,
-        thread_status: @message.messages_thread.status,
-        first_time: @message.messages_thread.messages.map(&:message_classifications).flatten.length <= 1
-    })
-    rescue
-    end
 
     if @classification == MessageClassification::FORWARD_TO_CLIENT ||
         @classification == MessageClassification::UNKNOWN ||
