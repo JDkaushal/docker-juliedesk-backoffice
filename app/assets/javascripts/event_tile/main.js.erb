@@ -709,6 +709,7 @@ EventTile.prototype.eventDataFromEvent = function(ev) {
         description: ev.description,
         attendees: ev.attendees,
         organizer: ev.organizer,
+        organizerEmail: ev.organizer && ev.organizer.email,
         startEditable: false,
         durationEditable: false,
         calId: ev.calId,
