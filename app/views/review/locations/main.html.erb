@@ -173,8 +173,7 @@
         };
 
         $scope.locationIsChecked = function (location) {
-            return location.status !== "unchecked" &&
-                !$scope.locationIsInvalidAndNotCorrected(location)
+            return location.status !== "unchecked"
         };
 
         $scope.validateData = function () {
@@ -223,11 +222,6 @@
             }
 
 
-        };
-
-        $scope.locationIsInvalidAndNotCorrected = function (location) {
-            return location.status == 'invalid' &&
-                (location.corrected_sanitized == '' || location.corrected_sanitized == null);
         };
 
         $scope.$watch("statuses", function (newValue, oldValue) {
@@ -365,7 +359,6 @@
                googleplace
                placeholder="{{ location.status !== 'invalid' ? '' : 'Enter a valid address...' }}"
                ng-model="location.corrected_sanitized"
-               ng-class="{error: locationIsInvalidAndNotCorrected(location)}"
                ng-disabled="location.status != 'invalid'"/></td>
     </tr>
   </table>
