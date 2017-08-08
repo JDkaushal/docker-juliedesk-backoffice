@@ -3,7 +3,7 @@
   <h1>Auto Date suggestions Review</h1>
 
 
-  <div class="loading-box-on-top" ng-show="loading">Loading...</div>
+  <div class="loading-box-on-top" ng-show="loading || conscienceLoading">Loading...</div>
 
   <div class="btn-group" role="group" aria-label="...">
     <div class="btn btn-default" ng-click="goToWeek(previousWeekStart())">Previous</div>
@@ -26,7 +26,8 @@
       <th class="col-md-2">Client email</th>
       <th class="col-md-1">Action id</th>
       <th class="col-md-1">Status</th>
-      <th class="col-md-3">Errors</th>
+      <th class="col-md-3">Review Errors</th>
+      <th class="col-md-3">Operator force human reason</th>
       <th class="col-md-3">Comment</th>
     </tr>
 
@@ -37,6 +38,7 @@
       <td ng-click="openLink(dateSuggestionsReview)"><a>{{ dateSuggestionsReview.julie_action_id }}</a></td>
       <td>{{ dateSuggestionsReview.review_status }}</td>
       <td>{{ dateSuggestionsReview.review_full_auto_errors }}</td>
+      <td>{{ dateSuggestionsReview.auto_process_force_human_reason }}</td>
       <td>{{ dateSuggestionsReview.comment }}</td>
     </tr>
   </table>

@@ -4,6 +4,10 @@ angular.module('commonServices').service('conscienceApi', ['$http', function ($h
     var conscienceApiKey = "<%= ENV['CONSCIENCE_API_KEY'] %>";
 
 
+    this.suggestedDatesListRequest = function(params) {
+        return this.request("/suggested_dates/list_from_julie_action_ids", params);
+    };
+
     this.suggestedDatesListErrorsRequest = function(params) {
         return this.request("/suggested_dates/errors", params);
     };
