@@ -486,6 +486,15 @@
                 });
             }
 
+            var threadOwnerAttendee = _.find(window.currentAttendees, function(attendee) {
+                return attendee.email == threadOwnerEmail;
+            });
+
+            var threadOwnerAttendeeTimezone = null;
+            if(threadOwnerAttendee) {
+                threadOwnerAttendeeTimezone = threadOwnerAttendee.timezone;
+            }
+
             var threadOwner = new Attendee({
                 guid: -1,
                 email: threadOwnerEmail,
@@ -501,7 +510,7 @@
                 assistedBy: {email: window.currentJulieAlias.email, displayName: window.currentJulieAlias.name},
                 company: companyName,
                 validatedCompany: companyName,
-                timezone: window.threadAccount.default_timezone_id,
+                timezone: threadOwnerAttendeeTimezone || window.threadAccount.default_timezone_id,
                 landline: window.threadAccount.landline_number,
                 mobile: window.threadAccount.mobile_number,
                 skypeId: window.threadAccount.skype,
@@ -1030,16 +1039,16 @@
             });
         };
 
-        $scope.displayExtendedInfos = function(){
+        $scope.currentAppointmentIsVirtual = function() {
             var currentAppointment = window.getCurrentAppointment();
-            if(currentAppointment && currentAppointment.appointment_kind_hash) {
-                var currentAppointmentIsVirtual = currentAppointment.appointment_kind_hash.is_virtual;
+            return currentAppointment &&
+                currentAppointment.appointment_kind_hash &&
+                currentAppointment.appointment_kind_hash.is_virtual;
+        };
 
-                $scope.displayAttendeesTimezone = currentAppointmentIsVirtual;
-            } else {
-                $scope.displayAttendeesTimezone = false;
-            }
 
+        $scope.displayExtendedInfos = function(){
+            return $scope.displayAttendeesTimezone = currentAppointmentIsVirtual();
         };
 
         $scope.lookupAttendeesMissingInfos = function(){

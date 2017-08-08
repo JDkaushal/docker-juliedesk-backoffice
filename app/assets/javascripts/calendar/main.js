@@ -1094,89 +1094,93 @@ Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
     // return result;
 };
 
+Calendar.prototype.bookingHoursUnavailabilities = function(startTime, endTime, accountPreferencesHash, clientTimezone, targetTimezone) {
+
+    var eventTitle = "Not available";
+    if(accountPreferencesHash.full_name) {
+        eventTitle += ' [' +  accountPreferencesHash.full_name + ']';
+    }
+    var color = "#444";
+    var textColor = "#aaa";
+    var calId = "juliedesk-unavailable";
+
+    var mStartTime = moment(startTime);
+    var mEndTime = moment(endTime);
+    var mCurrentTime = mStartTime.clone().tz(clientTimezone);
+    mCurrentTime.hours(0);
+    mCurrentTime.minutes(0);
+
+    var events = [];
+
+    while (mCurrentTime < mEndTime) {
+        var dayKeyInClientTimezone = mCurrentTime.tz(clientTimezone).locale("en").format("ddd").toLowerCase();
+        var unbookingHoursSlotsForDay = accountPreferencesHash.unbooking_hours[dayKeyInClientTimezone] || [];
+
+        _.each(unbookingHoursSlotsForDay, function (slot) {
+            var eventStartTime = mCurrentTime.clone();
+            eventStartTime.hours(slot[0] / 100);
+            eventStartTime.minutes(slot[0] % 100);
+            eventStartTime.tz(targetTimezone);
+
+            var eventEndTime = mCurrentTime.clone();
+            eventEndTime.hours(slot[1] / 100);
+            eventEndTime.minutes(slot[1] % 100);
+            eventEndTime.tz(targetTimezone);
+
+            var url = "NOTAVAILABLE-" + eventStartTime.format("YYYY-MM-DDTHH:mm:ssZ");
+
+            events.push({
+                summary: eventTitle,
+                start: {
+                    dateTime: eventStartTime.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                end: {
+                    dateTime: eventEndTime.format("YYYY-MM-DDTHH:mm:ssZ")
+                },
+                url: url,
+                startEditable: false,
+                durationEditable: false,
+                color: color,
+                textColor: textColor,
+                calId: calId,
+                isNotAvailableEvent: true
+            });
+        });
+
+        mCurrentTime.add(1, 'days');
+    }
+
+    return events;
+};
+
 Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, accountPreferencesHash) {
     var calendar = this;
-    var result = [];
-    var currentTimezone = calendar.getCalendarTimezone();
-    var usingAnotherTimeZone = window.threadAccount && window.threadComputedData.timezone != currentTimezone;
 
     var virtualAppointment = window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual;
 
-    var tz = (window.threadComputedData && window.threadComputedData.timezone) ? window.threadComputedData.timezone : currentTimezone;
+    var currentTimezone = calendar.getCalendarTimezone();
+    var clientTimezone = currentTimezone;
+    if(virtualAppointment) {
+        var accountAttendee = _.find(window.threadComputedData.attendees, function(attendee) {
+            return attendee.email == accountPreferencesHash.email;
+        });
+        if(accountAttendee && accountAttendee.timezone) {
+            clientTimezone = accountAttendee.timezone;
+        }
+        else {
+            clientTimezone = accountPreferencesHash.default_timezone_id;
+        }
 
-    for (var day in accountPreferencesHash.unbooking_hours) {
-        var slots = accountPreferencesHash.unbooking_hours[day];
-        var mCurrentTime = moment(startTime);
-
-        while (mCurrentTime < moment(endTime)) {
-            if (mCurrentTime.locale("en").format("ddd").toLowerCase() == day) {
-
-                var currentDay = mCurrentTime.day();
-                $(slots).each(function (k, slot) {
-                    var eventStartTime = mCurrentTime.clone().tz(tz);
-                    eventStartTime.day(currentDay);
-                    eventStartTime.hours(slot[0] / 100);
-                    eventStartTime.minutes(slot[0] % 100);
-
-                    var eventEndTime = mCurrentTime.clone().tz(tz);
-                    eventEndTime.day(currentDay);
-                    eventEndTime.hours(slot[1] / 100);
-                    eventEndTime.minutes(slot[1] % 100);
-
-                    if(usingAnotherTimeZone) {
-                        eventStartTime.tz(currentTimezone);
-                        eventEndTime.tz(currentTimezone);
-                    }
-                    
-                    var event_title = "Not available";
-
-                    if(accountPreferencesHash.full_name) {
-                        event_title += ' [' +  accountPreferencesHash.full_name + ']';
-                    }
-
-                    var event = {
-                        summary: event_title,
-                        start: {
-                            dateTime: eventStartTime.format("YYYY-MM-DDTHH:mm:ssZ")
-                        },
-                        end: {
-                            dateTime: eventEndTime.format("YYYY-MM-DDTHH:mm:ssZ")
-                        },
-                        url: "NOTAVAILABLE-" + eventStartTime.format("YYYY-MM-DDTHH:mm:ssZ"),
-                        startEditable: false,
-                        durationEditable: false,
-                        color: "#444",
-                        textColor: "#aaa",
-                        calId: "juliedesk-unavailable",
-                        isNotAvailableEvent: true
-                    };
-                    result.push(event);
-                });
-            }
-            mCurrentTime.add(1, 'days');
+    }
+    else {
+        if(window.threadComputedData && window.threadComputedData.timezone) {
+            clientTimezone = window.threadComputedData.timezone
         }
     }
+    var targetTimezone = currentTimezone;
 
-    for(var i=0; i<accountPreferencesHash.temporary_unavailabilities.length; i++) {
-        var unavailability = accountPreferencesHash.temporary_unavailabilities[i];
-        var event = {
-            summary: "Temporary not available",
-            start: {
-                dateTime: moment(unavailability.start).format("YYYY-MM-DDTHH:mm:ssZ")
-            },
-            end: {
-                dateTime: moment(unavailability.end).format("YYYY-MM-DDTHH:mm:ssZ")
-            },
-            url: "NOTAVAILABLE-" + moment(unavailability.start).format("YYYY-MM-DDTHH:mm:ssZ"),
-            startEditable: false,
-            durationEditable: false,
-            color: "#444",
-            textColor: "#aaa",
-            calId: "juliedesk-unavailable",
-            isNotAvailableEvent: true
-        };
-        result.push(event);
-    }
+    var result = calendar.bookingHoursUnavailabilities(startTime, endTime, accountPreferencesHash, clientTimezone, targetTimezone);
+
 
     if(!calendar.publicHolidaysAdded) {
         for(var i=0; i<accountPreferencesHash.public_holidays_dates.length; i++) {

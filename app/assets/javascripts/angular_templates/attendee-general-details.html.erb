@@ -100,8 +100,8 @@
   </div>
 
   <div class="row ellipsable timezone" ng-show="displayAttendeesTimezone || attendee.isClient">
-    <%= label_tag :timezone, 'Timezone' %>
-    <%= text_field_tag :timezone, "",{'ng-model' => 'attendee.timezone', 'ng-disabled' => 'attendee.isClient || attendees_manager.readOnly', class: 'form-control attendee-timezone'} %>
+    <label for="timezone">{{ attendee.isClient && currentAppointmentIsVirtual() ? "Timezone for this virtual meeting" : "Timezone" }}</label>
+    <%= text_field_tag :timezone, '', {'ng-model' => 'attendee.timezone', 'ng-disabled' => '(attendee.isClient && !currentAppointmentIsVirtual()) || attendees_manager.readOnly', class: 'form-control attendee-timezone'} %>
   </div>
 
   <div ng-if="!attendee.isClient">
