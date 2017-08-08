@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170719084515) do
+ActiveRecord::Schema.define(version: 20170808162947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 20170719084515) do
     t.text     "annotated_reply"
     t.string   "language_level"
     t.boolean  "asap_constraint",            default: false
+    t.json     "client_on_trip"
   end
 
   create_table "client_contacts", force: true do |t|
@@ -193,6 +194,19 @@ ActiveRecord::Schema.define(version: 20170719084515) do
     t.datetime "updated_at"
   end
 
+  create_table "geo_zones", force: true do |t|
+    t.string   "label"
+    t.string   "country_code"
+    t.string   "country"
+    t.integer  "population"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.string   "kind"
+    t.string   "timezone"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -273,6 +287,7 @@ ActiveRecord::Schema.define(version: 20170719084515) do
     t.boolean  "asap_constraint",            default: false
     t.string   "identifier"
     t.json     "passed_conditions"
+    t.json     "client_on_trip"
   end
 
   add_index "message_classifications", ["identifier"], name: "index_message_classifications_on_identifier", using: :btree

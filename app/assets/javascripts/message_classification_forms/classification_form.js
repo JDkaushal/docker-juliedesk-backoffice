@@ -142,6 +142,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         duration: $("#duration").val(),
         location_nature: $("#location_nature").val(),
         location: $("#location").val(),
+        client_on_trip: $("#client-on-trip-data-entry").scope().value,
         location_coordinates: $('#location_coordinates').val(),
         call_instructions: window.getCallInstructions(),
         notes: $("#notes").val(),

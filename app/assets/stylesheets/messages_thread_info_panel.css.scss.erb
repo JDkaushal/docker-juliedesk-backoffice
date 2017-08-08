@@ -648,6 +648,24 @@
       display: inline-block;
       width: 40%;
     }
+
+    &.custom-data-entry {
+      padding: 15px 0 5px 0;
+
+      input {
+        margin: 5px 0;
+      }
+
+      select {
+        width: 100%;
+      }
+    }
+
+    .checkbox-and-span {
+      input:checked+span {
+        font-weight: bold;
+      }
+    }
     .data-entry-name {
       font-size: 11px;
       opacity: 0.8;
@@ -659,7 +677,6 @@
       input {
         word-break: normal;
       }
-
     }
     #contacts-data-list {
       .contact {

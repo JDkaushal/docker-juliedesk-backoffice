@@ -404,7 +404,10 @@ window.wordings['en'] = {
     info_panel: {
         event_does_not_exist_anymore: "This event does not exists anymore.",
         invitation_does_not_exist_anymore: "This invitation does not exists anymore.",
-        remove_link: "Remove association"
+        remove_link: "Remove association",
+        client_on_trip: {
+            label: "Client(s) on trip to..."
+        }
     },
     classification_forms: {
         common: {

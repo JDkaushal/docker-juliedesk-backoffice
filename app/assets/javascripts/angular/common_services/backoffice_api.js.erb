@@ -1,5 +1,8 @@
 angular.module('commonServices').service('backofficeApi', ['$http', function ($http) {
 
+    this.geoZonesAutocompleteRequest = function(params) {
+        return this.request("/geo_zones/autocomplete", params);
+    };
 
     this.accountDetailsRequest = function(params) {
         return this.request("/accounts", params);

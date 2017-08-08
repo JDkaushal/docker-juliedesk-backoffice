@@ -407,7 +407,10 @@ window.wordings['fr'] = {
     info_panel: {
         event_does_not_exist_anymore: "Cet évènement n'existe plus.",
         invitation_does_not_exist_anymore: "Le client a refusé l'invitation",
-        remove_link: "Supprimer l'association"
+        remove_link: "Supprimer l'association",
+        client_on_trip: {
+            label: "Client(s) en déplacement à..."
+        }
     },
     classification_forms: {
         common: {

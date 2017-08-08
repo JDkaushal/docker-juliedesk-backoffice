@@ -19,6 +19,12 @@ Rails.application.routes.draw do
 
   resources :event_operator_interactions, only: [:create]
 
+  resources :geo_zones, only: [] do
+    collection do
+      get :autocomplete
+    end
+  end
+
 
   resources :messages_threads, only: [:show, :index] do
     collection do

@@ -471,6 +471,7 @@ class MessagesThread < ActiveRecord::Base
           attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
           notes: last_message_classification.try(:notes),
           other_notes: last_message_classification.try(:other_notes),
+          client_on_trip: last_message_classification.try(:client_on_trip),
 
           is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
 

@@ -2,6 +2,7 @@
 <%= javascript_include_tag 'classif_form_tracking' %>
 <!-- For google Places and google Matrix Distance used to compute the travel time -->
 <%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=#{@messages_thread.computed_data[:locale]}&key=#{ENV['GOOGLE_API_KEY']}"%>
+<%= javascript_include_tag 'angular_info_panel_app' %>
 <script>
     <% @currentAttendees = [] %>
     <% attendees = messages_thread.computed_data[:attendees] || [] %>
@@ -169,6 +170,8 @@
             window.lastAppointmentType = $("#appointment_nature").val();
             refreshAttendeesMissingInformations();
             refreshDisplayedAttendeesInfos();
+
+            $("#info-panel-app-container-1").scope().$apply();
         });
 
         initAppointments();
@@ -196,6 +199,8 @@
         }
         else {
             $('.data input, .data textarea').prop('readOnly', true);
+            $('.data input[type=checkbox]').prop('disabled', true);
+            $('.data input[type=radio]').prop('disabled', true);
             $notes = $('.data textarea.constraints');
             if($notes.val() == '')
               $notes.parent().hide();
@@ -1536,6 +1541,8 @@
         </div>
       </div>
 
+
+
       <div class="data-entry linear-form-entry" data-entry-name="duration">
         <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
         <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
@@ -1558,6 +1565,13 @@
       </div>
 
       <%= render partial: "messages_threads/partials/attendees", locals: {messages_thread: messages_thread} %>
+
+      <div id="info-panel-app-container-1" ng-controller="blankInfoPanelController">
+        <info-panel-client-on-trip-field label="client_on_trip"
+                                         value="threadComputedData.client_on_trip"
+                                         ng-show="!currentAppointmentIsVirtual()"></info-panel-client-on-trip-field>
+
+      </div>
 
       <div class="data-entry linear-form-entry" data-entry-name="location">
         <div class="ai-suggested-location-container"></div>

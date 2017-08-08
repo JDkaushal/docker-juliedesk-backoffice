@@ -39,6 +39,7 @@ Rails.application.config.assets.precompile += [
     "angular_date_suggestions_comparison_manager_app.js",
     "angular_calendar_viewer.js",
     "julie_actions/julie_action_show.js",
-    "angular_date_suggestions_full_auto_review_manager_app.js"
+    "angular_date_suggestions_full_auto_review_manager_app.js",
+    "angular_info_panel_app.js"
 ]
 
