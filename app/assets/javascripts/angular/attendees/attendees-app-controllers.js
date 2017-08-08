@@ -1048,7 +1048,7 @@
 
 
         $scope.displayExtendedInfos = function(){
-            return $scope.displayAttendeesTimezone = currentAppointmentIsVirtual();
+            return $scope.displayAttendeesTimezone = $scope.currentAppointmentIsVirtual();
         };
 
         $scope.lookupAttendeesMissingInfos = function(){
