@@ -1,5 +1,5 @@
 <div id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry'>
-    <div class='checkbox-and-span'>
+    <div class='checkbox-and-span' ng-show="!!shouldShow">
         <input type='checkbox' ng-model='activated'/> <span>{{ localizedLabel }}</span>
     </div>
     <div ng-show="activated">

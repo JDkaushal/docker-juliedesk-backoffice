@@ -22,7 +22,8 @@
             restrict : "E",
             scope: {
                 "value": "=",
-                "label": "@"
+                "label": "@",
+                "shouldShow": "=    "
             },
             controller: ['$scope', function ($scope) {
                 $scope.knownZones = 'other';
