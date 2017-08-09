@@ -135,7 +135,7 @@ class MessageClassification < ActiveRecord::Base
           appointment_nature: params[:appointment_nature],
           summary: params[:summary],
           duration: params[:duration],
-          client_on_trip: params[:client_on_trip],
+          client_on_trip: params[:client_on_trip].blank? ? nil : params[:client_on_trip],
           location_nature: params[:location_nature],
           location: params[:location],
           location_coordinates: (params[:location_coordinates] || []),
