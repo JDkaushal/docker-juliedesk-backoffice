@@ -132,10 +132,17 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         return;
     }
 
+    var timezone = $("#timezone").val().trim();
+    if(vmHelper && vmHelper.isVirtualAppointment()) {
+        timezone = _.find(window.getInfoPanelAttendeesForSendForm(), function(attendee) {
+            return attendee.email == threadAccount.email;
+        }).timezone;
+    }
+
     var data = {
         locale: $("input[name='locale']:checked").val(),
         // Need to trim the timezone because it can lead to bug as 'Europe/Berlin  ' is not recognized as a correct timezone
-        timezone: $("#timezone").val().trim(),
+        timezone: timezone,
         classification: classificationForm.classification,
         appointment_nature: $("#appointment_nature").val(),
         summary: $("#summary").val(),

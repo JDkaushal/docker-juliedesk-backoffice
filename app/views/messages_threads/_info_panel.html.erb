@@ -1030,6 +1030,12 @@
         if (window.threadComputedData.appointment_nature) {
             initAddresses();
             setLocationOrNumberToCallPart();
+
+            var currentAppointment = window.getCurrentAppointment();
+            if(currentAppointment && window.virtualAppointmentNatures.indexOf(currentAppointment.label) > -1) {
+                $(".linear-form-entry[data-entry-name='timezone']").find(".linear-form-entry-subcontainer").hide();
+            }
+
             if (window.threadComputedData.location_nature) {
                 $("select#location_nature").val(window.threadComputedData.location_nature);
                 var address = _.find(window.threadAccount.addresses, function (addressObject) {
@@ -1074,6 +1080,12 @@
 
     }
 
+    function askNextLinearFormEntryIfNeeded() {
+        if($(".linear-form-entry:visible:not(.dont-show):eq(-1)").hasClass('linear-skip')) {
+            askNextLinearFormEntry()
+        }
+    }
+
     function askNextLinearFormEntry() {
         $(".linear-form-entry:visible .validate-linear-form-entry-button").hide();
         if($(".linear-form-entry:hidden:not(.dont-show)").length ==0) {
@@ -1084,7 +1096,7 @@
 
           // When we are not able to modify the form entry
           // or when ai has found an appointment type
-          if(currentHiddenDiv.hasClass('disabled') || currentHiddenDiv.hasClass('set-by-ai')) {
+          if(currentHiddenDiv.hasClass('disabled') || currentHiddenDiv.hasClass('linear-skip') || currentHiddenDiv.hasClass('set-by-ai')) {
               askNextLinearFormEntry();
           }
 
@@ -1113,12 +1125,16 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        var $timezoneEntryName = $(".linear-form-entry[data-entry-name='timezone']").find(".data-entry-name");
+        var $timezoneEntry = $(".linear-form-entry[data-entry-name='timezone']");
         if(window.virtualAppointmentNatures.indexOf(appointment.label) > -1) {
-            $timezoneEntryName.html("<%= I18n.t("info_box.timezone_for_virtual") %>");
+            $timezoneEntry.addClass("linear-skip");
+            $timezoneEntry.find(".linear-form-entry-subcontainer").hide();
+            //$timezoneEntry.find(".data-entry-name").html("<%= I18n.t("info_box.timezone_for_virtual") %>");
         }
         else {
-            $timezoneEntryName.html("<%= I18n.t("info_box.timezone_for_physical") %>");
+            $timezoneEntry.removeClass("linear-skip");
+            $timezoneEntry.find(".linear-form-entry-subcontainer").show();
+            $timezoneEntry.find(".data-entry-name").html("<%= I18n.t("info_box.timezone_for_physical") %>");
         }
 
         $("input#duration").val(appointment.duration);
@@ -1130,6 +1146,7 @@
         setNumberToCallValue();
 
         setLocationOrNumberToCallPart();
+        askNextLinearFormEntryIfNeeded();
     }
 
     function setLocationOrNumberToCallPart() {
@@ -1550,16 +1567,18 @@
       </div>
 
       <div class="data-entry linear-form-entry" data-entry-name="timezone">
-        <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
-        <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_appointment_type"><%= I18n.t("common.validate") %></div>
+        <div class="linear-form-entry-subcontainer">
+          <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
+          <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
+          <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_appointment_type"><%= I18n.t("common.validate") %></div>
 
-        <div class="different-timezone-warner">
-          <div class="warning">
-            <%= I18n.t("info_box.warning_different_timezones") %>
-          </div>
-          <div class="forbidden">
-              <%= I18n.t("info_box.forbidden_different_timezones") %>
+          <div class="different-timezone-warner">
+            <div class="warning">
+              <%= I18n.t("info_box.warning_different_timezones") %>
+            </div>
+            <div class="forbidden">
+                <%= I18n.t("info_box.forbidden_different_timezones") %>
+            </div>
           </div>
         </div>
       </div>

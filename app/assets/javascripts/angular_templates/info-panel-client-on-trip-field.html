@@ -1,24 +1,26 @@
-<div id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry'>
-    <div class='checkbox-and-span' ng-show="!!shouldShow">
-        <input type='checkbox' ng-model='activated'/> <span>{{ localizedLabel }}</span>
-    </div>
-    <div ng-show="activated">
-        <select ng-model="knownZones" class="form-control" ng-hide="true">
-            <option ng-repeat="availableKnownZone in availableKnownZones" value="{{ availableKnownZone.value }}">{{ availableKnownZone.label }}</option>
-        </select>
-        <angucomplete-alt
-            ng-show="knownZones=='other'"
-            placeholder="Search a city or a country..."
-            pause="500"
-            selected-object="selectZone"
-            remote-url="/geo_zones/autocomplete?query="
-            remote-url-data-field="data"
-            title-field="label_and_country"
-            minlength="3"
-            input-class="form-control"
-            match-class="highlight"
-            initial-value="value.title"
-            ></angucomplete-alt>
+<div id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry' ng-class="{'linear-skip': !shouldShow }">
+    <div ng-show="!!shouldShow">
+        <div class='checkbox-and-span'>
+            <input type='checkbox' ng-model='activated'/> <span>{{ localizedLabel }}</span>
         </div>
-    <div class='validate-linear-form-entry-button btn btn-success btn-sm'>Validate</div>
+        <div ng-show="activated">
+            <select ng-model="knownZones" class="form-control" ng-hide="true">
+                <option ng-repeat="availableKnownZone in availableKnownZones" value="{{ availableKnownZone.value }}">{{ availableKnownZone.label }}</option>
+            </select>
+            <angucomplete-alt
+                ng-show="knownZones=='other'"
+                placeholder="Search a city or a country..."
+                pause="500"
+                selected-object="selectZone"
+                remote-url="/geo_zones/autocomplete?query="
+                remote-url-data-field="data"
+                title-field="label_and_country"
+                minlength="3"
+                input-class="form-control"
+                match-class="highlight"
+                initial-value="value.title"
+                ></angucomplete-alt>
+            </div>
+        <div class='validate-linear-form-entry-button btn btn-success btn-sm'>Validate</div>
+    </div>
 </div>
