@@ -135,7 +135,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     var timezone = $("#timezone").val().trim();
     if(vmHelper && vmHelper.isVirtualAppointment()) {
         timezone = _.find(window.getInfoPanelAttendeesForSendForm(), function(attendee) {
-            return attendee.email == threadAccount.email;
+            return threadAccount.email_aliases.concat([threadAccount.email]).indexOf(attendee.email) > -1;
         }).timezone;
     }
 
