@@ -1,6 +1,7 @@
 # http://download.geonames.org/export/dump/cities15000.txt
 # http://download.geonames.org/export/dump/countryInfo.txt
 
+
 `wget http://download.geonames.org/export/dump/cities15000.zip`
 `unzip cities15000.zip && cities15000.zip`
 cities_file_name = "cities15000.txt"
@@ -28,7 +29,11 @@ cities_geo_zone_attributes = cities_lines.map do |line|
   }
 end
 
-GeoZone.create(cities_geo_zone_attributes)
+values = cities_geo_zone_attributes.map { |cities_geo_zone_attributes|
+  "(" + cities_geo_zone_attributes.map{|k, value| [:label, :country_code, :timezone, :kind].include?(k) ? "'#{value.gsub("'", "''")}'" : "#{value}"}.join(", ") + ")"
+}.join(", ")
+ActiveRecord::Base.connection.execute("INSERT INTO geo_zones (#{cities_geo_zone_attributes.first.keys.join(",")}) VALUES #{values}")
+
 
 
 `wget http://download.geonames.org/export/dump/countryInfo.txt`
