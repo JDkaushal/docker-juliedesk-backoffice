@@ -138,7 +138,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                 return result
             }));
 
-            let clientOnTripScope = $("#client-on-trip-data-entry").scope();
+            var clientOnTripScope = $("#client-on-trip-data-entry").scope();
             var verifyParams = {
                 account_email: window.threadAccount.email,
                 thread_data: window.threadComputedData,
