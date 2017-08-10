@@ -138,6 +138,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                 return result
             }));
 
+            let clientOnTripScope = $("#client-on-trip-data-entry").scope();
             var verifyParams = {
                 account_email: window.threadAccount.email,
                 thread_data: window.threadComputedData,
@@ -147,7 +148,8 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                 attendees: $('#attendeesCtrl').scope().attendees,
                 check_differences: true,
                 message_id: window.classificationForm.messageId,
-                message_classification_identifier: message_classification_identifier
+                message_classification_identifier: message_classification_identifier,
+                client_on_trip: clientOnTripScope && clientOnTripScope.value
                 //message_id: highlightedEmailNode.data('message-id'),
             };
 

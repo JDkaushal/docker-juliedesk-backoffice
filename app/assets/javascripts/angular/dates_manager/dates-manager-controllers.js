@@ -220,7 +220,8 @@
                         multi_clients: false,
                         meeting_rooms_to_show: meetingRoomsToShow,
                         asap: window.threadComputedData.asap_constraint,
-                        version: version
+                        version: version,
+                        client_on_trip: window.threadComputedData.client_on_trip
                     };
 
                     if(window.currentCalendar.initialData.constraintsData) {
