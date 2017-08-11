@@ -25,6 +25,7 @@
   window.afterMessageSentUrl = "<%= messages_thread_path(@messages_thread, scroll_to_bottom: true) %>";
   window.initial_recipients = <%== @julie_action.initial_recipients.to_json %>;
   window.message_email_sender = "<%= @message.get_email_sender %>";
+  window.reply_all_recipients = <%== JSON.parse(@message.reply_all_recipients || '{}').to_json %>
   window.isFirstDateSuggestion = <%= @is_first_date_suggestion ? 'true' : 'false' %>;
   window.flowConditions = <%== @flow_conditions.to_json %>;
 </script>

@@ -139,9 +139,13 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             }));
 
             var clientOnTripScope = $("#client-on-trip-data-entry").scope();
+
+            var threadData = $.extend({}, window.threadComputedData);
+            threadData.appointment_nature = thread_data.appointment_nature || $('#appointment_nature').val();
+
             var verifyParams = {
                 account_email: window.threadAccount.email,
-                thread_data: window.threadComputedData,
+                thread_data: threadData,
                 dates_to_check: datesToVerify,
                 server_message_id: highlightedEmailNode.attr('id'),
                 today_date: moment().utc().format("YYYY-MM-DDTHH:mm:ss"),

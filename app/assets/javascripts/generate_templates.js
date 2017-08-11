@@ -217,6 +217,10 @@ window.generateEmailTemplate = function (params) {
             tomorrow = today.clone().add(1, "d");
         }
 
+        if (params.thankAttendeeForInput) {
+            message += localize("email_templates.follow_up_contacts.thank_attendee_for_input");
+        }
+
         message += localize("email_templates.follow_up_contacts.before_dates", {
             clients: [params.client].concat(params.other_clients).join(', '),
             appointment_nature: params.appointment.designation_in_email[params.locale],

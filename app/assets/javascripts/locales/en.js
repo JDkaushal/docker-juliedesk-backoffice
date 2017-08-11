@@ -66,7 +66,8 @@ window.wordings['en'] = {
                     multiple_attendees_assisted: "\nCould you let me know the preference of %{assisted_attendees}?\nThank you.",
                     multiple_attendees_mix: "\nCould you let me know your preference?\nThank you."
                 }
-            }
+            },
+            thank_attendee_for_input: "Thanks for your feedback.\n"
         },
         suggest_dates: {
             ask_agreement: {

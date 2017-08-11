@@ -110,9 +110,13 @@ window.redrawTimeSlotsToSuggestContainer = function (params) {
 };
 
 $(function () {
-    for (var i = 0; i < window.specialCallbacks.length; i++) {
-        window.specialCallbacks[i]();
+
+    if (window.specialCallbacks) {
+        for (var i = 0; i < window.specialCallbacks.length; i++) {
+            window.specialCallbacks[i]();
+        }
     }
+
 
     $("#show-calendar-button").click(function () {
         trackActionV2("Click_on_open_calendar", {

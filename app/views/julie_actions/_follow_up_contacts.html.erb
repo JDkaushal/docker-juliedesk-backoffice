@@ -29,6 +29,13 @@
         var messageBuilder = $('#reply-area').scope();
         var threadComputedData = window.threadComputedData;
 
+        var thankAttendeeForInput = false;
+        var presentAttendeesEmails = _.map($('#attendeesCtrl').scope().getAttendeesOnPresence(true), function(att) {return att.email;});
+
+        if (window.reply_all_recipients && window.reply_all_recipients.from && window.reply_all_recipients.from[0] && window.reply_all_recipients.from[0].email) {
+          thankAttendeeForInput = presentAttendeesEmails.indexOf(window.reply_all_recipients.from[0].email) > -1;
+        }
+
         message += messageBuilder.generateReply({
             action: "follow_up_contacts",
             locale: threadComputedData.locale,
@@ -52,7 +59,8 @@
             }),
             timezoneId: threadComputedData.timezone,
             defaultTimezoneId: window.threadAccount.default_timezone_id,
-            callInstructions: threadComputedData.call_instructions
+            callInstructions: threadComputedData.call_instructions,
+            thankAttendeeForInput: thankAttendeeForInput
         });
 
         window.setReplyMessage(message, "all", window.otherEmails);

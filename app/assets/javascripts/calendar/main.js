@@ -95,7 +95,8 @@ function Calendar($selector, params, synchronize) {
             if(synchronize)
                 calendar.triggerCalendarsSync();
 
-            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement) {
+            // Don't ask AI for dates suggestions in the follow up contacts flow
+            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement && window.classification != 'follow_up_contacts') {
                 new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
             }
             
