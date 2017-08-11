@@ -141,7 +141,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             var clientOnTripScope = $("#client-on-trip-data-entry").scope();
 
             var threadData = $.extend({}, window.threadComputedData);
-            threadData.appointment_nature = thread_data.appointment_nature || $('#appointment_nature').val();
+            threadData.appointment_nature = threadData.appointment_nature || $('#appointment_nature').val();
 
             var verifyParams = {
                 account_email: window.threadAccount.email,
