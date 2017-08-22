@@ -432,6 +432,7 @@ class Message < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).where.not(server_thread_id: inbox_server_thread_ids).update_all(in_inbox: false)
     #Then, put in inbox the others, remove should follow up ones as they have received a new message
     messages_threads_previously_not_in_inbox = MessagesThread.where(in_inbox: false, server_thread_id: inbox_server_thread_ids)
+    messages_threads_previously_not_in_inbox_ids = messages_threads_previously_not_in_inbox.map(&:id)
 
     # Reset follow up and follow_up_reminder_date
     messages_threads_previously_not_in_inbox.update_all(in_inbox: true, should_follow_up: false, follow_up_reminder_date: nil)
@@ -514,7 +515,7 @@ class Message < ActiveRecord::Base
           Rails.logger.info "For thread #{messages_thread.id} server versions BO: #{messages_thread.server_version}, Email Server: #{server_thread['version']}"
           should_update_thread = ("#{messages_thread.server_version}" != "#{server_thread['version']}" || messages_thread.account_email.nil?)
 
-          messages_thread.track_thread_in_inbox(:main) if messages_threads_previously_not_in_inbox.map(&:id).include?(messages_thread.id)
+          messages_thread.track_thread_in_inbox(:main) if messages_threads_previously_not_in_inbox_ids.include?(messages_thread.id)
           messages_thread.update_attributes({in_inbox: true, server_version: server_thread['version']})
         end
       end
