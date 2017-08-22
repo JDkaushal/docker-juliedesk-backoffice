@@ -64,6 +64,11 @@ describe MessagesThread, :type => :model do
         no_creation_1: {
             done: true,
         },
+        creation_0: {
+            action_nature: JulieAction::JD_ACTION_CREATE_EVENT,
+            done: true,
+            events: "[{\"id\":\"6997703\"}]"
+        },
         creation_1: {
             done: true,
             event_id: "eid1",
@@ -497,10 +502,21 @@ describe MessagesThread, :type => :model do
       before do
         message = @messages_thread.messages.create
         mc = message.message_classifications.create(@message_classification_params[:create_events_1])
-        mc.create_julie_action(@julie_action_params[:no_creation_1])
+        mc.create_julie_action(@julie_action_params[:creation_0])
       end
       it "should be events created" do
         expect(@messages_thread.scheduling_status).to equal(MessagesThread::EVENTS_CREATED)
+      end
+    end
+
+    context "messages_thread with create events but events were deleted" do
+      before do
+        message = @messages_thread.messages.create
+        mc = message.message_classifications.create(@message_classification_params[:create_events_1])
+        mc.create_julie_action(@julie_action_params[:no_creation_1])
+      end
+      it "should be events created" do
+        expect(@messages_thread.scheduling_status).to be(nil)
       end
     end
 

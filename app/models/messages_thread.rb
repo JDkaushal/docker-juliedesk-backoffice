@@ -784,7 +784,9 @@ class MessagesThread < ActiveRecord::Base
 
   def scheduling_status
     sorted_mcs = sorted_message_classifications
-    if sorted_mcs.select{|mc| mc.classification == MessageClassification::ASK_CREATE_EVENT && mc.julie_action.done}.length > 0
+    # We check if there has been an MessageClassification::ASK_CREATE_EVENT that was initiated and finished (julie_action.done), we also check if the events has not been deleted after that
+    # with created_events_data.present?
+    if sorted_mcs.select{|mc| mc.classification == MessageClassification::ASK_CREATE_EVENT && mc.julie_action.done}.length > 0 && created_events_data.present?
       EVENTS_CREATED
     elsif event_data[:event_id]
       EVENT_SCHEDULED
