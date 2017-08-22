@@ -785,21 +785,36 @@
         }
     }
 
+    function getConstraintTimezone() {
+      var currentAppointment = window.getCurrentAppointment();
+      var timezone = window.threadAccount.default_timezone_id;
+
+      if(currentAppointment) {
+        if(!currentAppointment.appointment_kind_hash.is_virtual) {
+          timezone = $('.data-entry#timezone').val();
+        }
+      }
+
+      return timezone;
+    }
+
     function newConstraintTile(data, expand, fromAI) {
         var possibleAttendees = window.presentAttendees();
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
         var currentAppointment = window.getCurrentAppointment();
+        var timezone = getConstraintTimezone();
+
         var newConstraint = new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
             possible_attendees: possibleAttendees,
             locale: "<%= I18n.locale %>",
-            timezone: window.threadAccount.default_timezone_id,
+            timezone: timezone,
             data: data,
             expand: expand,
             fromAI: fromAI,
             timezoneDisabled: currentAppointment && !currentAppointment.appointment_kind_hash.is_virtual,
             cloneCallback: function(data) {
-                newConstraintTile(data, true);
+              newConstraintTile(data, true);
             }
         });
 
