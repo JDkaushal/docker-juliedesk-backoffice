@@ -69,19 +69,28 @@
         cursor: pointer;
         @include box-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
     }
-    .template-manager-search {
-      position: relative;
-      top: 37px;
 
-      input {
-        width: 100%;
-        padding: 5px;
+  .menu-container {
+    float: right;
+    position: relative;
+    top: 37px;
+    outline: none !important;
+
+    .main-menu-container {
+      max-width: 350px;
+
+      .template-manager-search {
+        position: relative;
+
+        input {
+          width: 100%;
+          padding: 5px;
+        }
       }
     }
 
-    .template-manager-menu {
+    .template-manager-menu, .template-manager-sub-menu {
       position: relative;
-      top: 37px;
       background: white;
       border-top: 1px solid #ddd;
       border-left: 1px solid #ddd;
@@ -89,17 +98,37 @@
       z-index: 2;
 
       max-height: 380px;
+      width:100%;
+
       overflow: auto;
 
       .template-manager-menu-item {
-          border-bottom: 1px solid #ddd;
-          width: 500px;
-          padding: 5px 20px;
-          cursor: pointer;
+        border-bottom: 1px solid #ddd;
+        //width: 500px;
+        padding: 5px 20px;
+        cursor: pointer;
 
-          &:hover {
-              background-color: #fafafa;
-          }
+        &.highlighted {
+          background-color: $darkBlue;
+          color: white;
+        }
+
+        &:hover {
+          background-color: $darkBlue;
+          color: white;
+        }
+      }
+
+      .template-manager-menu-tag {
+        font-weight: bold;
       }
     }
+
+    .template-manager-sub-menu {
+      //left: -501px;
+      position: absolute;
+      max-width: 520px;
+      width: max-content;
+    }
+  }
 }

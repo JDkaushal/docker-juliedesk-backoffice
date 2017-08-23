@@ -5,10 +5,15 @@ var TemplateManager = function(params){
     this.menuPanelWrapperNode = params.menuPanelWrapperNode || $(".template-manager-menu-wrapper");
     this.filterQueryInputNode = params.filterQueryInputNode || $("#template_manager_query_input");
     this.menuPanelNode = params.menuPanelNode || $(".template-manager-menu");
+    this.subMenuPanelNode = params.subMenuPanelNode || $(".template-manager-sub-menu");
     this.menuPanelItemClass = params.menuPanelItemClass || "template-manager-menu-item";
+    this.subMenuPanelClass = params.subMenuPanelClass || "template-manager-sub-menu";
+    this.tagItemClass = params.tagItemClass || "template-manager-menu-tag";
 
     this.templates = [];
     this.currentSelectedTemplate = null;
+
+    this.subMenuItems = {};
 
     this.skipDefaultItem = params.skipDefaultItem || false;
 
@@ -44,12 +49,33 @@ var TemplateManager = function(params){
             },
             success: function (response) {
                 var data = response.data;
+                //console.log(data);
                 that.menuPanelNode.html("");
                 that.menuPanelWrapperNode.hide();
-                _(data).each(function (item) {
-                    var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('title', item.title);
-                    that.templates.push($menuItem);
-                    that.menuPanelNode.append($menuItem);
+                _(data).each(function (items, tag) {
+                    console.log(items, tag);
+                    // When tag is equal to "" it means that the related julie templates are not tagged at all
+                    if(tag == '') {
+                        _.each(items, function(item) {
+                            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+                            that.templates.push($menuItem);
+                            that.menuPanelNode.append($menuItem);
+                        });
+                    } else {
+                        var $menuItem = $("<div>").addClass(that.menuPanelItemClass).addClass(that.tagItemClass).html(tag).data("is-tag", true).data('tag', tag);
+                        //that.templates.push($menuItem);
+                        that.menuPanelNode.append($menuItem);
+
+                        that.subMenuItems[tag] = items
+
+//                        _.each(items, function(item) {
+//                            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+//                            that.templates.push($menuItem);
+//                            that.subMenuPanelNode.append($menuItem);
+//                        });
+                    }
+
+
                 });
 
                 setTimeout(function() {
@@ -70,6 +96,37 @@ var TemplateManager = function(params){
                 }, 500);
             }
         });
+    };
+
+    this.addItemsToSubMenu = function(tagNode) {
+        var tag = tagNode.data('tag');
+        tagNode.addClass('highlighted');
+
+        that.subMenuPanelNode.empty();
+
+      _.each(this.subMenuItems[tag], function(item) {
+        var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data('is-sub-menu-item', true).data('associated-tag', tag).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+        that.templates.push($menuItem);
+        that.subMenuPanelNode.append($menuItem);
+      });
+
+      that.subMenuPanelNode.css('top', $(tagNode).position().top + 34);
+      // SO the DOM will display the row entirely
+      //that.subMenuPanelNode.css('left', -1000px);
+
+      that.subMenuPanelNode.css('left', -($(that.subMenuPanelNode).width()));
+      that.subMenuPanelNode.show();
+    };
+
+    this.openSubMenu = function() {
+      that.subMenuPanelNode.show();
+    };
+
+    this.closeSubMenu = function() {
+        that.subMenuPanelNode.empty();
+        that.subMenuPanelNode.hide();
+
+        $('.template-manager-menu-tag.highlighted').removeClass('highlighted');
     };
 
     this.onQueryInputKeyup = function() {
@@ -110,11 +167,48 @@ var TemplateManager = function(params){
       that.onQueryInputKeyup();
     });
 
-    this.menuPanelNode.on("click", "." + that.menuPanelItemClass, function() {
+//    this.menuPanelWrapperNode.on("mouseenter", '.' + that.subMenuPanelNode, function() {
+//        var currentItem = $(this);
+//        that.openSubMenu();
+//    });
+
+    this.menuPanelWrapperNode.on("mouseenter", '.' + that.menuPanelItemClass, function() {
         var currentItem = $(this);
 
-        trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: currentItem.text()});
-        that.clickOnTemplateItem(currentItem);
+        if(currentItem.data('is-tag')) {
+            that.addItemsToSubMenu(currentItem);
+
+            _.each($('.template-manager-menu-tag.highlighted'), function(node) {
+                var currentNode = $(node);
+               if (!currentNode.is(currentItem)) {
+                   currentNode.removeClass('highlighted');
+               }
+            });
+
+
+        } else {
+            if(!currentItem.data('is-sub-menu-item')) {
+              that.closeSubMenu();
+            }
+        }
+    });
+
+    this.menuPanelWrapperNode.on("mouseleave", '.' + that.subMenuPanelClass, function() {
+        var currentItem = $(this);
+        that.closeSubMenu();
+    });
+
+    this.menuPanelWrapperNode.on("click", "." + that.menuPanelItemClass, function() {
+        var currentItem = $(this);
+
+        if(!currentItem.data('is-tag')) {
+            trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: currentItem.text(), template_tag: currentItem.data('associated-tag')});
+            that.clickOnTemplateItem(currentItem);
+            //that.addItemsToSubMenu(currentItem.data('tag'));
+        } else {
+//            trackActionV2('Click_on_template', {ux_element: 'backoffice', template_title: currentItem.text()});
+//            that.clickOnTemplateItem(currentItem);
+        }
     });
 
     this.clickOnTemplateItem = function($item) {
@@ -160,4 +254,13 @@ var TemplateManager = function(params){
 
         return template;
     };
+
+    $('.menu-container').on('mouseenter', function(e) {
+        $(this).focus();
+    });
+
+    $('.menu-container').on('focusout', function () {
+        that.closeSubMenu();
+        that.menuPanelWrapperNode.hide();
+    });
 };

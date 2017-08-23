@@ -23,7 +23,9 @@ class MessagesThread < ActiveRecord::Base
   attr_accessor :thread_blocked,
                 :clients_with_linked_attendees_enabled,
                 :clients,
-                :has_inactive_owner
+                :has_inactive_owner,
+                # Instance variable used to store whether we should track when this thread enter the inbox
+                :track_inbox
 
   scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ? AND sent_to_admin = ?", true, true, false, false, false, false) }
 
