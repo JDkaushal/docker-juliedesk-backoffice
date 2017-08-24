@@ -32,11 +32,49 @@ var TemplateManager = function(params){
     this.menuPanelWrapperNode.hide();
 
     this.currentQuery = '';
+    this.allData = {};
 
     var host = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
     var accessKey = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
 
     var that = this;
+
+    this.displaySelectedTemplates = function(templates) {
+        that.menuPanelNode.html("");
+
+        _.each(templates, function(template) {
+            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(template.title).data("template-en", template.template_en).data("template-fr", template.template_fr).data('is-tag', false).data('title', template.title);
+            that.menuPanelNode.append($menuItem);
+        });
+    };
+
+    this.displayAllData = function() {
+        that.menuPanelNode.html("");
+        _(this.allData).each(function (items, tag) {
+            // When tag is equal to "" it means that the related julie templates are not tagged at all
+            if(tag == '') {
+                _.each(items, function(item) {
+                    $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+                    //that.templates.push($menuItem);
+                    that.menuPanelNode.append($menuItem);
+                });
+            } else {
+                var $menuItem = $("<div>").addClass(that.menuPanelItemClass).addClass(that.tagItemClass).html(tag).data("is-tag", true).data('tag', tag);
+                //that.templates.push($menuItem);
+                that.menuPanelNode.append($menuItem);
+
+                //that.templates = that.templates.concat(items);
+                that.subMenuItems[tag] = items
+
+//                        _.each(items, function(item) {
+//                            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+//                            that.templates.push($menuItem);
+//                            that.subMenuPanelNode.append($menuItem);
+//                        });
+            }
+        });
+
+    };
 
     this.fetchTemplates = function() {
         $.ajax({
@@ -49,32 +87,10 @@ var TemplateManager = function(params){
             },
             success: function (response) {
                 var data = response.data;
-                that.menuPanelNode.html("");
-                that.menuPanelWrapperNode.hide();
-                _(data).each(function (items, tag) {
-                    // When tag is equal to "" it means that the related julie templates are not tagged at all
-                    if(tag == '') {
-                        _.each(items, function(item) {
-                            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
-                            that.templates.push($menuItem);
-                            that.menuPanelNode.append($menuItem);
-                        });
-                    } else {
-                        var $menuItem = $("<div>").addClass(that.menuPanelItemClass).addClass(that.tagItemClass).html(tag).data("is-tag", true).data('tag', tag);
-                        //that.templates.push($menuItem);
-                        that.menuPanelNode.append($menuItem);
+                that.allData = data
+                that.displayAllData();
 
-                        that.subMenuItems[tag] = items
-
-//                        _.each(items, function(item) {
-//                            $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
-//                            that.templates.push($menuItem);
-//                            that.subMenuPanelNode.append($menuItem);
-//                        });
-                    }
-
-
-                });
+                that.templates = _.uniq(_.flatten(Object.values(data)), function(temp) { return temp.id;});
 
                 setTimeout(function() {
                   var templateSet = false;
@@ -104,7 +120,7 @@ var TemplateManager = function(params){
 
       _.each(this.subMenuItems[tag], function(item) {
         var $menuItem = $("<div>").addClass(that.menuPanelItemClass).html(item.title).data('is-sub-menu-item', true).data('associated-tag', tag).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
-        that.templates.push($menuItem);
+        //that.templates.push($menuItem);
         that.subMenuPanelNode.append($menuItem);
       });
 
@@ -137,20 +153,22 @@ var TemplateManager = function(params){
     };
 
     this.filterTemplates = function() {
-      _.each(that.templates, function(template) {
-        var filtered = true;
 
-        if(that.currentQuery && that.currentQuery != '') {
-          filtered = template.text().toLowerCase().indexOf(that.currentQuery.toLowerCase()) > -1;
-        }
+       if(that.currentQuery && that.currentQuery != '') {
+           var templatesToDisplay = [];
 
-        if(filtered) {
-          template.show();
-        } else {
-          template.hide();
-        }
+           _.each(that.templates, function(template) {
+               var filtered = template.title.indexOf(that.currentQuery.toLowerCase()) > -1;
 
-      });
+               if(filtered) {
+                   templatesToDisplay.push(template);
+               }
+           });
+
+           that.displaySelectedTemplates(templatesToDisplay);
+       } else {
+          that.displayAllData();
+       }
     };
 
     this.refreshCurrentSelectedTemplate = function(noTemplateSelectedCallback) {
@@ -259,7 +277,7 @@ var TemplateManager = function(params){
 
     $('.menu-container').on('focusout', function (e) {
         var $that = $(this);
-        if($(e.relatedTarget).is($('#template_manager_query_input'))) {
+        if($(e.relatedTarget).is($('#template_manager_query_input')) || $(e.relatedTarget).is($('.menu-container')) || $(e.relatedTarget).is($('#token-input-recipients-to-input'))) {
             //$that.focus();
         } else {
             that.closeSubMenu();
