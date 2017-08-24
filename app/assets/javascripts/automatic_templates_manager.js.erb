@@ -49,11 +49,9 @@ var TemplateManager = function(params){
             },
             success: function (response) {
                 var data = response.data;
-                //console.log(data);
                 that.menuPanelNode.html("");
                 that.menuPanelWrapperNode.hide();
                 _(data).each(function (items, tag) {
-                    console.log(items, tag);
                     // When tag is equal to "" it means that the related julie templates are not tagged at all
                     if(tag == '') {
                         _.each(items, function(item) {
