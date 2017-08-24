@@ -76,6 +76,10 @@ var TemplateManager = function(params){
 
     };
 
+    this.convertTemplateToDomElem = function(item) {
+        return $("<div>").addClass(that.menuPanelItemClass).html(item.title).data("template-en", item.template_en).data("template-fr", item.template_fr).data('is-tag', false).data('title', item.title);
+    };
+
     this.fetchTemplates = function() {
         $.ajax({
             url: host + "/api/v1/julie_templates",
@@ -96,16 +100,16 @@ var TemplateManager = function(params){
                   var templateSet = false;
                   if(that.defaultTemplate) {
                     var foundTemplate = _.find(that.templates, function(template) {
-                      return template.text().toLowerCase() == that.defaultTemplate.toLowerCase();
+                      return template.title == that.defaultTemplate;
                     });
                     if(foundTemplate) {
-                      that.clickOnTemplateItem(foundTemplate);
+                      that.clickOnTemplateItem(that.convertTemplateToDomElem(foundTemplate));
                       templateSet = true;
                     }
                   }
 
                   if(!templateSet && !that.skipDefaultItem) {
-                    that.clickOnTemplateItem(that.templates[0]);
+                    that.clickOnTemplateItem(that.convertTemplateToDomElem(that.templates[0]));
                   }
                 }, 500);
             }
