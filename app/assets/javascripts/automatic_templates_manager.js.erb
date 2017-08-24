@@ -257,8 +257,14 @@ var TemplateManager = function(params){
         $(this).focus();
     });
 
-    $('.menu-container').on('focusout', function () {
-        that.closeSubMenu();
-        that.menuPanelWrapperNode.hide();
+    $('.menu-container').on('focusout', function (e) {
+        var $that = $(this);
+        if($(e.relatedTarget).is($('#template_manager_query_input'))) {
+            //$that.focus();
+        } else {
+            that.closeSubMenu();
+            that.menuPanelWrapperNode.hide();
+        }
+
     });
 };
