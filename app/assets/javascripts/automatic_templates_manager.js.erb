@@ -131,9 +131,22 @@ var TemplateManager = function(params){
       that.subMenuPanelNode.css('top', $(tagNode).position().top + 34);
       // SO the DOM will display the row entirely
       //that.subMenuPanelNode.css('left', -1000px);
+      //setTimeout(function() {
+      that.subMenuPanelNode.show();
+
+      var leftColumnNodeHeight = $('.left-column').height();
+      var subMenuPanelNodeBottomBound = that.subMenuPanelNode.height() + that.subMenuPanelNode[0].getBoundingClientRect().top;
+
+      var topOffset = subMenuPanelNodeBottomBound > leftColumnNodeHeight ? (subMenuPanelNodeBottomBound - leftColumnNodeHeight) + 30 : 0;
+
+      console.log(that.subMenuPanelNode.height(), that.subMenuPanelNode[0].getBoundingClientRect().top, subMenuPanelNodeBottomBound, topOffset);
+      if(topOffset > 0) {
+          that.subMenuPanelNode.css('top', parseInt(that.subMenuPanelNode.css('top')) - topOffset);
+      }
 
       that.subMenuPanelNode.css('left', -($(that.subMenuPanelNode).width()));
-      that.subMenuPanelNode.show();
+      //});
+
     };
 
     this.openSubMenu = function() {
