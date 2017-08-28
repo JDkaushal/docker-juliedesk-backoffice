@@ -819,7 +819,7 @@ class MessagesThread < ActiveRecord::Base
     possible_attendees.uniq!{ |att| att[:email] }
 
     # Add the attendees without an email at the end, so they won't be removed by a uniq email operation (This would cause to remove every attendee without an email except the first)
-    current_attendees.concat(already_registered_contacts_without_emails)
+    possible_attendees.concat(already_registered_contacts_without_emails)
   end
 
   def full_contacts
