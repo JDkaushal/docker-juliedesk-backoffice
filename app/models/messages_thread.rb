@@ -815,7 +815,7 @@ class MessagesThread < ActiveRecord::Base
     contacts_from_same_company = self.account.contacts_from_same_company
 
     possible_attendees = [already_registered_contacts_with_emails, contacts_from_same_company, parsed_contacts].inject([], :concat).map(&:symbolize_keys)
-    possible_attendees.each{ |att| att[:email].downcase! }
+    possible_attendees.each{ |att| att[:email] = att[:email].downcase }
     possible_attendees.uniq!{ |att| att[:email] }
 
     # Add the attendees without an email at the end, so they won't be removed by a uniq email operation (This would cause to remove every attendee without an email except the first)
