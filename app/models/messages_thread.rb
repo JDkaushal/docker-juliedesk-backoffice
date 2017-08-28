@@ -799,6 +799,52 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
+  def compute_contacts
+    possible_attendees = []
+    current_attendees = []
+
+    already_registered_contacts = (self.computed_data[:attendees] || [])
+    already_registered_contacts.each do |attendee|
+      unless attendee['isPresent'] == 'false'
+        attendee['isPresent'] = 'true'
+      end
+    end
+
+    already_registered_contacts_with_emails, already_registered_contacts_without_emails = already_registered_contacts.partition{ |att| att[:email].present? }
+    parsed_contacts = self.full_contacts
+    contacts_from_same_company = self.account.contacts_from_same_company
+
+    possible_attendees = [already_registered_contacts_with_emails, contacts_from_same_company, parsed_contacts].inject([], :concat).map(&:symbolize_keys)
+    possible_attendees.each{ |att| att[:email].downcase! }
+    possible_attendees.uniq!{ |att| att[:email] }
+
+    # Add the attendees without an email at the end, so they won't be removed by a uniq email operation (This would cause to remove every attendee without an email except the first)
+    current_attendees.concat(already_registered_contacts_without_emails)
+  end
+
+  def full_contacts
+    accounts = Account.accounts_cache(mode: "light")
+
+    contacts.each do |attendee|
+      accounts.each do |email, account|
+        all_emails = [account['email']] + account['email_aliases']
+
+        if all_emails.include? attendee[:email]
+          julie_alias = account['julie_aliases'] && account['julie_aliases'].first
+          json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"}.to_json : nil
+          attendee.merge!({
+                          email: email,
+                          account_email: email,
+                          name: account['full_name'],
+                          isClient: 'true',
+                          assisted: "#{json_julie_alias.present?}",
+                          assistedBy: json_julie_alias
+                        })
+        end
+      end
+    end
+  end
+
   def possible_contacts_for_cache
     thread_contacts = []
     accounts = Account.accounts_cache(mode: "light")
@@ -812,6 +858,7 @@ class MessagesThread < ActiveRecord::Base
           json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"}.to_json : nil
           thread_contacts << {
               email: email,
+              account_email: email,
               name: account['full_name'],
               isClient: 'true',
               assisted: "#{json_julie_alias.present?}",
