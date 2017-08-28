@@ -810,7 +810,7 @@ class MessagesThread < ActiveRecord::Base
       end
     end
 
-    already_registered_contacts_with_emails, already_registered_contacts_without_emails = already_registered_contacts.partition{ |att| att[:email].present? }
+    already_registered_contacts_with_emails, already_registered_contacts_without_emails = already_registered_contacts.partition{ |att| att['email'].present? }
     parsed_contacts = self.full_contacts
     contacts_from_same_company = self.account.contacts_from_same_company
 
