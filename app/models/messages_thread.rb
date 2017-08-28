@@ -939,7 +939,7 @@ class MessagesThread < ActiveRecord::Base
 
   def event_data
     if @event_data.blank?
-      julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).select(&:done).sort_by(&:updated_at)
+      julie_actions = self.messages.map(&:message_classifications).flatten.map(&:julie_action).compact.select(&:done).sort_by(&:updated_at)
 
       last_cancellation = julie_actions.select{|ja|
         ja.deleted_event
