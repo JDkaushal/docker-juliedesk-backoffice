@@ -143,7 +143,12 @@ class Message < ActiveRecord::Base
     locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
     current_messages_thread = self.messages_thread
     current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
-    to = current_reply_all_recipients['from'].first['email']
+
+    to = if self.messages_thread.account
+           self.messages_thread.account.email
+         else
+           current_reply_all_recipients['from'].first['email']
+         end
 
     julie_alias = current_messages_thread.julie_alias
 
