@@ -454,6 +454,36 @@
           color: $aiControlColor;
         }
       }
+
+      &.ai-sanitized-location-container {
+        .ai-indicator {
+          display: none;
+
+          span:nth-child(2) {
+            margin-left: -16px;
+            background: none;
+            font-size: 14px;
+            osition: relative;
+            top: 2px;
+          }
+        }
+
+        &.status-reviewed {
+          .ai-indicator.status-reviewed {
+            display: block;
+          }
+        }
+        &.status-not-reviewed {
+          .ai-indicator.status-not-reviewed {
+            display: block;
+          }
+        }
+        &.status-ambiguous {
+          .ai-indicator.status-ambiguous {
+            display: block;
+          }
+        }
+      }
     }
     .ai-event-interpretation {
       display: none;

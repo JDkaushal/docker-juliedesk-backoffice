@@ -85,9 +85,18 @@
           <input class="ai-event-type"/>
         </div>
 
-        <div class="ai-event-interpretation ai-event-interpretation-container">
-            <div class="ai-indicator">
+        <div class="ai-event-interpretation ai-event-interpretation-container ai-sanitized-location-container">
+            <div class="ai-indicator status-reviewed">
               <span class="fa fa-map-marker"></span>
+              <span class="fa fa-check"></span>
+            </div>
+            <div class="ai-indicator status-not-reviewed">
+              <span class="fa fa-map-marker"></span>
+              <span class="fa fa-times"></span>
+            </div>
+            <div class="ai-indicator status-ambiguous">
+              <span class="fa fa-map-marker"></span>
+              <span class="fa fa-question"></span>
             </div>
             <input class="ai-sanitized-location"/>
         </div>

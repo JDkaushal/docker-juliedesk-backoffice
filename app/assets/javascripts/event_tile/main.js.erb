@@ -266,6 +266,15 @@ EventTile.prototype.redraw = function() {
             }
         });
 
+        var locationReviewStatus = {
+            'valid': 'status-reviewed',
+            'invalid': 'status-reviewed',
+            'unchecked': 'status-not-reviewed',
+            'unknown': 'status-ambiguous'
+        }[eventTile.event.aiMetadata.sanitized_location_review_status];
+        eventTile.$selector.find("input.ai-sanitized-location").closest(".ai-event-interpretation-container").addClass(locationReviewStatus);
+
+
         if(eventTile.event.allDay) {
             eventTile.$selector.find(".ai-event-interpretation").show();
         }
