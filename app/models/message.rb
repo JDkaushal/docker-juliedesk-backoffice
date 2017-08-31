@@ -748,7 +748,8 @@ class Message < ActiveRecord::Base
       # Try to find an existing thread which would have resulted in the given event
       existing_message = JulieAction.where(event_id: event_id, calendar_id: calendar_id).first.try(:message_classification).try(:message)
 
-      unless existing_message.present?
+      # When we specifically select an occurrence, we will not try to find the master event
+      if existing_message.blank? && !selectingOccurrence
         found_main_event = PostponeEvents::CalendarServerEventFinder.new(start_date: julie_message_hash['start_date'], summary: julie_message_hash['summary'], organizer_email: julie_message_hash['organizerEmail']).find
         if found_main_event['success']
           event_id = found_main_event['event_id']
