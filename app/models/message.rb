@@ -761,6 +761,7 @@ class Message < ActiveRecord::Base
           duration = found_main_event['duration']
           notes = found_main_event['notes']
         end
+
         existing_message = JulieAction.where(event_id: event_id.to_s, calendar_id: calendar_id.to_s).first.try(:message_classification).try(:message)
       end
 
@@ -786,6 +787,8 @@ class Message < ActiveRecord::Base
             event_id = created_occurrence_in_db['event_id']
           end
         end
+
+
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
 
         email_params = {
