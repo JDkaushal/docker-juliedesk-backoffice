@@ -37,6 +37,7 @@ ErrorManager.prototype.sendData = function(data, level, callback) {
     var errorManager = this;
     data.level = level || "info";
     data.application = "backoffice";
+    data.referer = window.location.href;
 
     $.ajax({
         url: this.endpoint,
