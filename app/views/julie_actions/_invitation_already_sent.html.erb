@@ -129,8 +129,8 @@
     };
 
     window.addEventListener("message", function (event) {
-        window.setReplyMessage("");
         if(event.data.message == "drawExternalEventSelection") {
+            window.setReplyMessage("");
             var events = event.data.events;
             var currentSelectedEvent = _.last(events);
 
@@ -147,6 +147,7 @@
                 setInvitationConfirmedReplyText();
             }
         }else if(event.data.message == "drawExternalEventsList") {
+            window.setReplyMessage("");
             window.timeSlotsToSuggest = event.data.date_times;
             window.redrawTimeSlotsToSuggestContainer();
             setInvitationDeclinedNewAvailabilitesReplyText();

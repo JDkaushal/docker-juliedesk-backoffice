@@ -16,13 +16,16 @@
 
         var selectedEvent = window.selectedEvents[0];
         if(window.selectedEvents.length > 0) {
-            data['event_id'] = window.selectedEvents[0].id;
-            data['event_url'] = window.selectedEvents[0].url;
-            data['calendar_login_username'] = window.selectedEvents[0].calendar_login_username;
-            data['calendar_id'] = window.selectedEvents[0].calId;
+            data['event_id'] = selectedEvent.id;
+            data['event_url'] = selectedEvent.url;
+            data['start_date'] = selectedEvent.start.format();
+            data['end_date'] = selectedEvent.end.format();
+            data['calendar_login_username'] = selectedEvent.calendar_login_username;
+            data['calendar_id'] = selectedEvent.calId;
             data['event_from_invitation'] = true;
-            data['event_from_invitation_organizer'] = window.selectedEvents[0].organizerEmail;
+            data['event_from_invitation_organizer'] = selectedEvent.organizerEmail;
             data['client_settings'] = window.getClientSettings();
+            data['selectingOccurrence'] = selectedEvent.selectingOccurrence;
         }
 
         $.ajax({

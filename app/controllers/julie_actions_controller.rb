@@ -101,6 +101,14 @@ class JulieActionsController < ApplicationController
     # rescue
     # end
 
+    if params[:selectingOccurrence] && params[:event_id].to_s.include?('__')
+      created_occurrence_in_db = PostponeEvents::OccurrenceCreator.new({event_id: params[:event_id], start_date: params[:start_date], end_date: params[:end_date]}).create
+
+      if created_occurrence_in_db.present? && created_occurrence_in_db['event_id'].present?
+        params[:event_id] = created_occurrence_in_db['event_id']
+      end
+    end
+
     julie_action.update_attributes({
         text: params[:text],
         generated_text: params[:generated_text],
