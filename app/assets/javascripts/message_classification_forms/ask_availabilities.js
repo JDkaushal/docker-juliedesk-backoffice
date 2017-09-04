@@ -163,8 +163,11 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
             verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
             verifyParams.all_conditions_satisfied = canVerifyV1;
+
+            var filterCanVerifyV3 = canVerifyV3;
+            var hasSelectedDatesToVerify = classificationForm.getSuggestedDateTimes().length > 0;
             
-            if (canVerifyV3 && classificationForm.getSuggestedDateTimes().length > 0) {
+            if (filterCanVerifyV3 && hasSelectedDatesToVerify) {
                 verifyParams.dates_to_check = [];
 
                 _.each(classificationForm.getSuggestedDateTimes(), function(date) {
@@ -250,10 +253,10 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             //     }
             // }
             else {
-                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}, message_classification_identifier: message_classification_identifier});
+                askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because ' + 'filterV3passed:' + filterCanVerifyV3 + ' hasSelectedDates:' + hasSelectedDatesToVerify}, message_classification_identifier: message_classification_identifier});
             }
         } else {
-            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made'}, message_classification_identifier: message_classification_identifier});
+            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because the feature is not active for this operator'}, message_classification_identifier: message_classification_identifier});
         }
 
         //askAvailabilitiesForm.sendForm();
