@@ -443,8 +443,13 @@ EventTile.prototype.redraw = function() {
         }
         else {
          //if(eventTile.event.owned)
-          var organizerEmails = window.threadAccount.email_aliases.concat(window.threadAccount.email);
+          var clientAttendees = (window.currentAttendees || [])
+              .filter(function(attendee) { return attendee["isClient"] == "true" && attendee["isPresent"] == "true" })
+              .map(function(attendee) { return attendee.account_email });
+
+          var organizerEmails = window.threadAccount.email_aliases.concat(window.threadAccount.email).concat(clientAttendees);
           var organizerEmail = eventTile.event.organizerEmail ? eventTile.event.organizerEmail.toLowerCase() : "";
+
         if((eventTile.event.calendar_login_type == "IcloudLogin" && eventTile.event.organizerEmail == undefined) || organizerEmails.indexOf(organizerEmail) > -1)
           eventTile.$selector.find("#event-edit-button").show();
 
