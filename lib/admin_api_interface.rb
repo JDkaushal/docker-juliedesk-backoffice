@@ -4,7 +4,8 @@ class AdminApiInterface < BaseApiCaller
       get_owner_event: {type: :get, url: '/api/v1/calendar_proxy/event_get'}.freeze,
       constraints_conflict: {type: :post, url: '/api/v1/calendar_proxy/constraints_conflict'}.freeze,
       set_awaiting_current_notes: {type: :post, url: '/api/v1/accounts/set_awaiting_current_notes'}.freeze,
-      notify_blocked_threads: {type: :post, url: '/api/v1/calendar_access_lost/notify_email_blocked'}.freeze
+      notify_blocked_threads: {type: :post, url: '/api/v1/calendar_access_lost/notify_email_blocked'}.freeze,
+      get_blocking_users_calendars_renew_links: {type: :get, url: '/api/v1/calendar_access_lost/get_renew_access_links'}.freeze
   }.freeze
 
   def initialize

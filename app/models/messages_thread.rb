@@ -211,6 +211,51 @@ class MessagesThread < ActiveRecord::Base
 
     # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
     if recipients_with_lost_access.size > 0
+      last_message = self.messages.sort_by(&:updated_at).last
+      body = {blocking_users_emails: recipients_with_lost_access, originated_from_thread_id: self.id}
+      calendars_renew_links = ADMIN_API_INTERFACE.build_request(:get_blocking_users_calendars_renew_links, body)
+      
+      calendars_renew_links.each do |client_main_email, links|
+        julie_sharings, links_to_renew = links.partition{|l| l[1] == 'julie_sharing'}
+        
+        if links_to_renew.size > 0
+          AutoEmailWorker.enqueue(
+            last_message.id,
+            'blocked_request_notification.with_renew_links.body',
+            {
+              client_name: accounts_cache[client_main_email]["usage_name"],
+              links_to_renew: links_to_renew.map{|l| I18n.translate('automatic_reply_emails.blocked_request_notification.formatted_links', {calendar_type: l[0], link_to_renew: l[1]})}.join(''),
+              count: links_to_renew.size
+            },
+            client_main_email
+          )
+        end
+
+        if julie_sharings.size > 0
+          AutoEmailWorker.enqueue(
+              last_message.id,
+              'blocked_request_notification.with_calendar_sharing.body',
+              {
+                  client_name: accounts_cache[client_main_email]["usage_name"],
+              },
+              client_main_email
+          )
+        end
+      end
+    end
+  end
+
+  # DEPRECATED
+  def old_handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+    # recipients et users_with_lost_access sont des Set
+    # on récupère les éléments en commun entre ces deux sets en utilisant l'opérateur '&'
+    # Les éléments en commun sont les récipiendaires qui sont clients chez nous et dont on a perdu les accès à l'un de leurs calendriers
+    recipients_clients = recipients.select{|recipient_email| accounts_cache[recipient_email].present?}
+
+    recipients_with_lost_access = blocking_users(Set.new(recipients_clients), users_with_lost_access)
+
+    # Means the thread will be blocked because we have lost the calendar access of at least one the recipients
+    if recipients_with_lost_access.size > 0
       body = {blocking_users_emails: recipients_with_lost_access, originated_from_thread_id: self.id}
       ADMIN_API_INTERFACE.build_request(:notify_blocked_threads, body)
       Rails.logger.info "Sent Blocked users for thread #{self.id}"

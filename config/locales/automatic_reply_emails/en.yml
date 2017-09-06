@@ -65,3 +65,34 @@ en:
         2. If I was right ignoring this email, please delete me from the mailing list I received this email from to avoid receiving this warning again.
 
         Thanks for understanding,
+    blocked_request_notification:
+      formatted_links: "<li>calendar %{calendar_type} : %{link_to_renew}</li>"
+      with_renew_links:
+        body:
+          one: |
+            Hi %{client_name},
+
+            Please note this request is blocked as I lost access to your calendar.
+
+            In order to enable me dealing with your request again, please follow through a private window of your browser the link below : <ul>%{links_to_renew}</ul>
+
+            Thank you,
+          other: |
+            Hi %{client_name},
+
+            Please note this request is blocked as I lost access to your calendar.
+
+            In order to enable me dealing with your request again, please follow through a private window of your browser the links below : <ul>%{links_to_renew}</ul>
+
+            Thank you,
+      with_calendar_sharing:
+        body: |
+          Hi %{client_name},
+
+          Please note this request is blocked as I have problems accessing your calendar.
+
+          Our technical team is on it. Everything will get back to normal as soon as it is resolved.
+
+          If you are aware of a change in your calendar sharing parameters, please inform my team at hello@juliedesk.com.
+
+          Thank you for your understanding.

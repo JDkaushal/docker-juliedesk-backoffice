@@ -67,3 +67,34 @@ fr:
         2. Si je dois bien ignorer cet email, merci de me supprimer de la mailing list associée pour ne plus recevoir ce message à l'avenir.
 
         Merci de votre compréhension,
+    blocked_request_notification:
+      formatted_links: "<li>calendrier %{calendar_type} : %{link_to_renew}</li>"
+      with_renew_links:
+        body:
+          one: |
+            Bonjour %{client_name},
+
+            Je vous informe que cette demande est bloquée en raison d'un problème d'accès à votre calendrier.
+
+            Afin que je puisse reprendre le traitement de vos demandes, merci de suivre, depuis une fenêtre privée de votre navigateur, le lien ci-dessous : %{links_to_renew}
+
+            Merci beaucoup,
+          other: |
+            Bonjour %{client_name},
+
+            Je vous informe que cette demande est bloquée en raison d'un problème d'accès à votre calendrier.
+
+            Afin que je puisse reprendre le traitement de vos demandes, merci de suivre, depuis une fenêtre privée de votre navigateur, les liens ci-dessous : %{links_to_renew}
+
+            Merci beaucoup,
+      with_calendar_sharing:
+        body: |
+          Bonjour %{client_name},
+
+          Je vous informe que cette demande est bloquée en raison d'un problème d'accès à votre calendrier.
+
+          Notre équipe technique est sur le coup. Tout rentrera dans l'ordre dès résolution du problème.
+
+          Si vous avez connaissance d'une modification de paramètre de partage de votre calendrier, merci d'en avertir mon équipe à l'adresse hello@juliedesk.com.
+
+          Merci de votre compréhension.

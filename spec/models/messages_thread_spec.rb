@@ -1082,7 +1082,6 @@ describe MessagesThread, :type => :model do
     end
   end
 
-
   describe '.add_syncing_tag' do
     let(:account_email) { "bob@juliedesk.com" }
 
@@ -1235,4 +1234,114 @@ describe MessagesThread, :type => :model do
     end
   end
 
+  describe 'handle_recipients_lost_access' do
+    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: true, messages_count: 3) }
+    let(:recipients) { ['recipient1@gmail.com'] }
+    let(:users_with_lost_access) { ['recipient1@gmail.com', 'recipient2@gmail.com', 'recipient3@gmail.com'] }
+    let(:accounts_cache) {
+      {
+          'recipient1@gmail.com' => {
+              'email' => 'client1@email.com',
+              'usage_name' => 'Recipient 1'
+          },
+          'client2@email.com' => {
+              'email' => 'client2@email.com',
+              'usage_name' => 'Recipient 2'
+          }
+      }
+    }
+
+    context 'With renew links' do
+      context 'Locale is en' do
+        before(:example) do
+          I18n.locale = :en
+        end
+
+        it 'should enqueue the correct workers' do
+          body = {blocking_users_emails: ['recipient1@gmail.com'], originated_from_thread_id: messages_thread.id}
+          expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew']]})
+          expect(AutoEmailWorker).to receive(:enqueue).with(
+              messages_thread.messages.sort_by(&:updated_at).last.id,
+              'blocked_request_notification.with_renew_links.body',
+              {
+                  client_name: 'Recipient 1',
+                  links_to_renew: "<li>calendar Google : https://test.renew</li>",
+                  count: 1
+              },
+              'recipient1@gmail.com'
+          )
+          messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+        end
+      end
+
+      context 'Locale is fr' do
+        before(:example) do
+          I18n.locale = :fr
+        end
+
+        it 'should enqueue the correct workers' do
+          body = {blocking_users_emails: ['recipient1@gmail.com'], originated_from_thread_id: messages_thread.id}
+          expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew']]})
+          expect(AutoEmailWorker).to receive(:enqueue).with(
+              messages_thread.messages.sort_by(&:updated_at).last.id,
+              'blocked_request_notification.with_renew_links.body',
+              {
+                  client_name: 'Recipient 1',
+                  links_to_renew: "<li>calendrier Google : https://test.renew</li>",
+                  count: 1
+              },
+              'recipient1@gmail.com'
+          )
+          messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+        end
+      end
+    end
+
+    context 'With julie sharing' do
+      it 'should enqueue the correct workers' do
+        body = {blocking_users_emails: ['recipient1@gmail.com'], originated_from_thread_id: messages_thread.id}
+        expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Exchange', 'julie_sharing']]})
+        expect(AutoEmailWorker).to receive(:enqueue).with(
+          messages_thread.messages.sort_by(&:updated_at).last.id,
+          'blocked_request_notification.with_calendar_sharing.body',
+          {
+            client_name: 'Recipient 1'
+          },
+          'recipient1@gmail.com'
+        )
+        messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+      end
+    end
+
+    context 'With renew links plus julie sharing' do
+      before(:example) do
+        I18n.locale = :en
+      end
+      
+      it 'should enqueue the correct workers' do
+        body = {blocking_users_emails: ['recipient1@gmail.com'], originated_from_thread_id: messages_thread.id}
+        expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew'], ['Exchange', 'julie_sharing']]})
+        expect(AutoEmailWorker).to receive(:enqueue).with(
+          messages_thread.messages.sort_by(&:updated_at).last.id,
+          'blocked_request_notification.with_renew_links.body',
+          {
+            client_name: 'Recipient 1',
+            links_to_renew: "<li>calendar Google : https://test.renew</li>",
+            count: 1
+          },
+          'recipient1@gmail.com'
+        )
+
+        expect(AutoEmailWorker).to receive(:enqueue).with(
+          messages_thread.messages.sort_by(&:updated_at).last.id,
+          'blocked_request_notification.with_calendar_sharing.body',
+          {
+            client_name: 'Recipient 1'
+          },
+          'recipient1@gmail.com'
+        )
+        messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+      end
+    end
+  end
 end

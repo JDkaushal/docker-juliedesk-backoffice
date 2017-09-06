@@ -269,6 +269,48 @@ class Message < ActiveRecord::Base
     EmailServer.deliver_message(email_params)['id']
   end
 
+  def send_auto_email(email_type, translation_params = {}, email_to_send_to = nil)
+    self.interprete if Rails.env.production?
+
+    locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
+    current_messages_thread = self.messages_thread
+
+    current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
+    to = current_reply_all_recipients['from'].first['email']
+
+    julie_alias = current_messages_thread.julie_alias
+    # In case the julie alias associated with the thread is not working, we will fallback to the main Julie for sending the automated message
+    unless julie_alias.last_test_result == 'success'
+      julie_alias = JulieAlias.where(email: 'julie@juliedesk.com').first
+    end
+
+    html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
+    text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+
+    text = I18n.t("automatic_reply_emails.#{email_type}", {locale: locale_to_use}.merge(translation_params))
+
+    if locale_to_use == "fr"
+      html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
+      text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
+    end
+
+    email_params = {
+        subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
+        from: julie_alias.generate_from,
+        to: [to].join(','),
+        cc: [].join(','),
+        bcc: ["hello@juliedesk.com"].join(','),
+        text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
+        html: "#{text_to_html_with_tags("#{text}#{text_signature}")}#{html_signature}",
+        quote_replied_message: true,
+        reply_to_message_id:  self.server_message_id
+    }
+
+    current_messages_thread.update(account_request_auto_email_sent: true)
+
+    EmailServer.deliver_message(email_params)['id']
+  end
+
   def initial_recipients params={}
     # Get basic reply all recipients (details in message#generate_reply_all_recipients)
     reply_all_recipients = JSON.parse(self.reply_all_recipients || "{}")
@@ -424,7 +466,6 @@ class Message < ActiveRecord::Base
     end
     result
   end
-  
 
   def self.import_emails
     Rails.logger.info "Importing emails"
@@ -628,7 +669,6 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access, accounts_cache)
         messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
         computed_recipients_changed = messages_thread.computed_recipients_changed?
@@ -718,7 +758,11 @@ class Message < ActiveRecord::Base
           end
         end
         ## --
+        # Need the accounts candidates to have been computed before doing it
+        messages_thread.compute_allowed_attendees
+        messages_thread.save
 
+        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access, accounts_cache)
 
       end
     end
@@ -1026,6 +1070,11 @@ class Message < ActiveRecord::Base
   end
 
   private
+
+  # Does not escape the html tags, so we can use html formatting in translations (used in some automatics emails)
+  def text_to_html_with_tags text
+    text.split("\n").map{|line| "<div>#{(line.present?)?h(line.html_safe):"<br>"}</div>"}.join("\n")
+  end
 
   def text_to_html text
     text.split("\n").map{|line| "<div>#{(line.present?)?h(line):"<br>"}</div>"}.join("\n").html_safe
