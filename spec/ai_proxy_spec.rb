@@ -6,20 +6,20 @@ describe AiProxy do
 
     describe 'parse_human_civilities' do
       it 'should return the correct values' do
-        expect(AiProxy.get_endpoint(:parse_human_civilities)).to eq( { type: :get, url: 'test_ai_conscience_path/api/v3/firstlastnames/' } )
+        expect(AiProxy.get_endpoint(:parse_human_civilities, {})).to eq( { type: :get, url: 'test_ai_conscience_path/api/v3/firstlastnames/' } )
       end
     end
 
     describe 'get_company_name' do
       it 'should return the correct values' do
-        expect(AiProxy.get_endpoint(:get_company_name)).to eq( { type: :post, url: 'test_ai_conscience_path/api/v1/companynames/' } )
+        expect(AiProxy.get_endpoint(:get_company_name, {})).to eq( { type: :post, url: 'test_ai_conscience_path/api/v1/companynames/' } )
       end
     end
 
     describe 'endpoint does not exists' do
       it 'should raise an error' do
         expect{
-          AiProxy.get_endpoint(:dont_exist)
+          AiProxy.get_endpoint(:dont_exist, {})
         }.to raise_error( AIEndPointUnknown, 'The specified endpoint has not been registered' )
       end
     end
@@ -34,7 +34,7 @@ describe AiProxy do
         key = :test_key
         data = {key1: 'val1', key2: 'val2'}
 
-        expect(AiProxy).to receive(:get_endpoint).with(key).and_return({ type: :get, url: 'http://test.com/api/v1' })
+        expect(AiProxy).to receive(:get_endpoint).with(key, data).and_return({ type: :get, url: 'http://test.com/api/v1' })
         expect(proxy).to receive(:set_url_params).with(URI.parse('http://test.com/api/v1'), data).and_return('url_formatted')
         expect(proxy).to receive(:dispatch_request).with(:get, 'url_formatted', data)
 
@@ -49,7 +49,7 @@ describe AiProxy do
         key = :test_key
         data = {key1: 'val1', key2: 'val2'}
 
-        expect(AiProxy).to receive(:get_endpoint).with(key).and_return({ type: :post, url: 'http://test.com/api/v1' })
+        expect(AiProxy).to receive(:get_endpoint).with(key, data).and_return({ type: :post, url: 'http://test.com/api/v1' })
         expect(proxy).not_to receive(:set_url_params)
         expect(proxy).to receive(:dispatch_request).with(:post, URI.parse('http://test.com/api/v1'), data)
 
