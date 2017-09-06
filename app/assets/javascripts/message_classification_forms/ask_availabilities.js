@@ -161,7 +161,22 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                 return $(this).data("constraint")
             }).get();
 
-            verifyParams.meeting_rooms_to_show =  _.map($('#meeting-rooms-manager').scope().getCurrentMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+            var meetingRoomsScope = $('#meeting-rooms-manager').scope();
+
+            if(meetingRoomsScope.usingMeetingRoom) {
+                var meetingRooms = {};
+                var meetingRoomsToDisplay = _.map(meetingRoomsScope.getCurrentMeetingRoomsToDisplay(), function(mR) { return {id: mR.id, calendar_login_username: mR.calendar_login_username}; });
+
+                _.each(meetingRoomsToDisplay, function(mR) {
+                    meetingRooms[mR.calendar_login_username] = meetingRooms[mR.calendar_login_username] || [];
+                    meetingRooms[mR.calendar_login_username].push(mR.id);
+                });
+
+                verifyParams.meeting_rooms_to_show =  meetingRooms;
+            } else {
+                verifyParams.meeting_rooms_to_show = {}
+            }
+
             verifyParams.all_conditions_satisfied = canVerifyV1;
 
             var filterCanVerifyV3 = canVerifyV3;
