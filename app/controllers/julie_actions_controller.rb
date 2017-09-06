@@ -35,7 +35,7 @@ class JulieActionsController < ApplicationController
     @is_first_date_suggestion = @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES &&
         !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
 
-    @flow_conditions = handle_flow_conditions({
+    @flow_conditions = handle_flow_conditions(julie_action, {
         trust_julia_suggestions: {
             label: 'We can trust Jul.IA date suggestions',
             back_conditions: {
@@ -205,18 +205,25 @@ class JulieActionsController < ApplicationController
 
   private
 
-  def handle_flow_conditions(flow_conditions)
+  def handle_flow_conditions(julie_action, flow_conditions)
     Rails.logger.debug('- ' * 50)
+    filters_results = julie_action.ai_filters_results
     puts 'Handling flow conditions...'
-    flow_conditions.select do |flow_identifier, flow_data|
+    selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
+      filters_results[flow_identifier+'_back_conditions'] = {}
       Rails.logger.debug("  Flow: #{flow_identifier}")
       a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
+        filters_results[flow_identifier][condition_identifier] = result
         result == false
       end
       !a_condition_fails
     end
+    
+    julie_action.update(ai_filters_results: filters_results)
+    
+    selected_conditions
   end
 
   def validate_flow_condition(condition_identifier, condition_value)
