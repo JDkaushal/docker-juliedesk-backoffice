@@ -207,6 +207,7 @@ class JulieActionsController < ApplicationController
 
   def handle_flow_conditions(julie_action, flow_conditions)
     Rails.logger.debug('- ' * 50)
+    # Reinitialize the JSON because if we use the saved JSON and change it, il results in the record not being properly updated
     filters_results = {}
     puts 'Handling flow conditions...'
     selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
@@ -215,6 +216,7 @@ class JulieActionsController < ApplicationController
       Rails.logger.debug("  Flow: #{flow_identifier}")
       a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
+        xx
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
         filters_results[identifier][condition_identifier.to_s] = result.to_s
         result == false
@@ -222,7 +224,7 @@ class JulieActionsController < ApplicationController
       !a_condition_fails
     end
 
-    julie_action.update(ai_filters_results: {"trust_julia_suggestions_back_conditions"=>{"feature_active"=>"false"}})
+    julie_action.update(ai_filters_results: filters_results)
 
     selected_conditions
   end
