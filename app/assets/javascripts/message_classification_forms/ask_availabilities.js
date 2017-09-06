@@ -174,6 +174,14 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
                 });
 
+                aiDatesVerificationManager.verifyDatesWithVersion('4', verifyParams).then(
+                    function(response) {
+                        console.log('response Verify Dates V4', response);
+                    }, function(error) {
+                        console.log('error Verify Dates V4', error);
+                    }
+                );
+
                 aiDatesVerificationManager.verifyDatesV3(verifyParams).then(
                     function(response) {
                         var verifiedDatesByAI = undefined;

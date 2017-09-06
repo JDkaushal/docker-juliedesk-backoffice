@@ -22,13 +22,22 @@ class AiProxy
       verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
       verify_dates_v2: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v2/calendar/validate_dates/' }.freeze,
       verify_dates_v3: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/calendar/validate_dates/' }.freeze,
+      verify_dates_versioned: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v%{api_version}/calendar/validate_dates/' }.freeze,
 
       calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,
   }.freeze
 
-  def self.get_endpoint(key)
+  def self.get_endpoint(key, data)
     endpoint_infos = AI_ENDPOINTS[key]
+
     raise AIEndPointUnknown if endpoint_infos.blank?
+
+    # If the url is versionned
+    if endpoint_infos[:url].include?('%{api_version}')
+      endpoint_infos[:url].gsub!('%{api_version}', data[:api_version].to_s)
+    end
+
+    puts endpoint_infos.inspect
 
     endpoint_infos
   end
@@ -40,7 +49,7 @@ class AiProxy
   end
 
   def build_request(key, data = nil)
-    endpoint_infos = AiProxy.get_endpoint(key)
+    endpoint_infos = AiProxy.get_endpoint(key, data)
     type = endpoint_infos[:type]
     url = URI.parse(endpoint_infos[:url])
 

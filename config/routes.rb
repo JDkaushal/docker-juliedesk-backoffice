@@ -225,6 +225,7 @@ Rails.application.routes.draw do
       post :verify_dates
       post :verify_dates_v2
       post :verify_dates_v3
+      post :verify_dates_with_version
     end
 
     namespace :events_metadata do
