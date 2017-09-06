@@ -216,7 +216,6 @@ class JulieActionsController < ApplicationController
       Rails.logger.debug("  Flow: #{flow_identifier}")
       a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
-        xx
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
         filters_results[identifier][condition_identifier.to_s] = result.to_s
         result == false
