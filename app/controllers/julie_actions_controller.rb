@@ -210,12 +210,13 @@ class JulieActionsController < ApplicationController
     filters_results = julie_action.ai_filters_results
     puts 'Handling flow conditions...'
     selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
-      filters_results[flow_identifier.to_s+'_back_conditions'] = {}
+      identifier = flow_identifier.to_s+'_back_conditions'
+      filters_results[identifier] = {}
       Rails.logger.debug("  Flow: #{flow_identifier}")
       a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
-        filters_results[flow_identifier][condition_identifier] = result
+        filters_results[identifier][condition_identifier] = result
         result == false
       end
       !a_condition_fails
