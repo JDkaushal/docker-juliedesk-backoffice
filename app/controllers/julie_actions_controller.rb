@@ -207,7 +207,7 @@ class JulieActionsController < ApplicationController
 
   def handle_flow_conditions(julie_action, flow_conditions)
     Rails.logger.debug('- ' * 50)
-    filters_results = julie_action.ai_filters_results
+    filters_results = {}
     puts 'Handling flow conditions...'
     selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
       identifier = flow_identifier.to_s+'_back_conditions'
@@ -216,14 +216,14 @@ class JulieActionsController < ApplicationController
       a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
         result = validate_flow_condition(condition_identifier, condition_value)
         Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
-        filters_results[identifier][condition_identifier] = result
+        filters_results[identifier][condition_identifier.to_s] = result.to_s
         result == false
       end
       !a_condition_fails
     end
-    
-    julie_action.update(ai_filters_results: filters_results)
-    
+
+    julie_action.update(ai_filters_results: {"trust_julia_suggestions_back_conditions"=>{"feature_active"=>"false"}})
+
     selected_conditions
   end
 

@@ -37,8 +37,6 @@ class AiProxy
       endpoint_infos[:url].gsub!('%{api_version}', data[:api_version].to_s)
     end
 
-    puts endpoint_infos.inspect
-
     endpoint_infos
   end
 
