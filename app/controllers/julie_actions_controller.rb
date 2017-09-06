@@ -35,7 +35,7 @@ class JulieActionsController < ApplicationController
     @is_first_date_suggestion = @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES &&
         !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
 
-    @flow_conditions = handle_flow_conditions(julie_action, {
+    @flow_conditions = handle_flow_conditions(@julie_action, {
         trust_julia_suggestions: {
             label: 'We can trust Jul.IA date suggestions',
             back_conditions: {
