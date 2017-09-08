@@ -156,7 +156,7 @@ class AutoMessageClassification < MessageClassification
     cc_emails = ApplicationHelper.find_addresses("#{m.server_message['cc']}").addresses.map(&:address)
     all_emails = ([from_email] + to_emails + cc_emails).uniq
     all_account_emails = all_emails.map{|email| Account.find_account_email(email, {})}.compact.uniq
-    raise "Multi-clients: #{all_account_emails.join(", ")}" if all_account_emails.length > 1
+    #raise "Multi-clients: #{all_account_emails.join(", ")}" if all_account_emails.length > 1
 
     processing_date = m.received_at + 5.minutes
 
