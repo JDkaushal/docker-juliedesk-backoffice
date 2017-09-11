@@ -23,10 +23,11 @@ class Message < ActiveRecord::Base
       if FETCHED_ATTACHMENT_TYPES.include?(attachment_data_type)
         ics_data = fetch_ics
         if ics_data.present?
+          ics_data.gsub!(/\n\./, "\n") # TODO : manager better / dirty fix
           parsed_ics_data = Icalendar::Calendar.parse(ics_data)
           if parsed_ics_data.present?
             event = parsed_ics_data.first.events.first
-            # .reject{|a| a == nil} because compact does not work, it is not really a nil that is returned when the .attendee method, it is an instance of Icalendar::Values::CalAddress evaluating to nil so compact does not work on it
+            # .reject{|a| a == nil}git  because compact does not work, it is not really a nil that is returned when the .attendee method, it is an instance of Icalendar::Values::CalAddress evaluating to nil so compact does not work on it
             @ics_attendees = event.attendee.reject{|a| a == nil}.map(&:to)
             if event.organizer.present?
               @ics_attendees.push(event.organizer.to)
