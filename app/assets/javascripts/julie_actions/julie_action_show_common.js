@@ -143,6 +143,11 @@ $(function () {
     });
 
     $("body").on("click", ".time-slots-to-suggest-list-container .time-slot-to-suggest", function (e) {
+        // Prevent open-calendar hack when full-ai mode
+        if(getDatesSuggestionManager().trustMode == "trusted") {
+            return;
+        }
+
         var that = $(this);
         var dateTime = that.data("date-time");
         $(".calendar-container").removeClass("minimized");
