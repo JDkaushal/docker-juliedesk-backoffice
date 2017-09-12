@@ -109,7 +109,6 @@ module EmailServer
       raise MessageDeliveryError.new("Can't deliver message: EmailServer error")
     end
 
-
     message = res['message']
 
     if ENV['STAGING_APP']
@@ -122,20 +121,26 @@ module EmailServer
       cloned_message['messages_thread_id'] = opts[:server_thread_id]
 
       messages_thread_id = nil
-      message = Message.find_by_server_message_id(opts[:reply_to_message_id])
-      if message.present?
-        messages_thread_id = message.messages_thread_id
+      existing_message = Message.find_by_server_message_id(opts[:reply_to_message_id])
+      if existing_message.present?
+        messages_thread_id = existing_message.messages_thread_id
+        StagingHelpers::MessagesThreadsHelper.save_message_server(messages_thread_id, cloned_message)
+        message = existing_message
       end
 
-      StagingHelpers::MessagesThreadsHelper.save_message_server(messages_thread_id, cloned_message)
     end
+
+
+    # puts '*' * 50
+    # puts message.inspect
+    # puts '*' * 50
 
     message
   end
 
   def self.copy_message_to_new_thread opts={}
     raise CopyToNewThreadError.new("No message id given") unless opts[:server_message_id]
-    return if ENV['STAGING_APP']
+    #return if ENV['STAGING_APP']
 
     copy_options = {}
     if opts[:force_subject]
@@ -152,12 +157,12 @@ module EmailServer
     raise CopyToExistingThreadError.new("No message id given") unless opts[:server_message_id]
     raise CopyToExistingThreadError.new("No thread id given") unless opts[:server_thread_id]
 
-    return if ENV['STAGING_APP']
+    #return if ENV['STAGING_APP']
 
     res = self.make_request :post,
                             "/messages/#{opts[:server_message_id]}/copy_to_existing_thread",
                             {
-                                messages_thread_id: opts[:server_thread_id]
+                              messages_thread_id: opts[:server_thread_id]
                             }
     res
   end

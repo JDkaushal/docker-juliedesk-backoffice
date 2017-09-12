@@ -790,7 +790,6 @@ class Message < ActiveRecord::Base
           end
         end
 
-
         copy_response = EmailServer.copy_message_to_new_thread server_message_id: self.server_message_id, force_subject: julie_message_hash['subject']
 
         email_params = {
