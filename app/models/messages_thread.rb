@@ -829,19 +829,21 @@ class MessagesThread < ActiveRecord::Base
 
     contacts.each do |attendee|
       accounts.each do |email, account|
-        all_emails = [account['email']] + account['email_aliases']
+        if account["state"] == "active_state"
+          all_emails = [account['email']] + account['email_aliases']
 
-        if all_emails.include? attendee[:email]
-          julie_alias = account['julie_aliases'] && account['julie_aliases'].first
-          json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"}.to_json : nil
-          attendee.merge!({
-                          email: email,
-                          account_email: email,
-                          name: account['full_name'],
-                          isClient: 'true',
-                          assisted: "#{json_julie_alias.present?}",
-                          assistedBy: json_julie_alias
-                        })
+          if all_emails.include? attendee[:email]
+            julie_alias = account['julie_aliases'] && account['julie_aliases'].first
+            json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"}.to_json : nil
+            attendee.merge!({
+                            #email: email,
+                            account_email: email,
+                            name: account['full_name'],
+                            isClient: 'true',
+                            assisted: "#{json_julie_alias.present?}",
+                            assistedBy: json_julie_alias
+                          })
+          end
         end
       end
     end

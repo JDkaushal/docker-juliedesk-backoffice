@@ -487,6 +487,9 @@ class Message < ActiveRecord::Base
 
     # Store the messages_thread_ids that will be updated by this method
     updated_messages_thread_ids = []
+    # Store a bit-array associated to every updated messages thread, to allow to decide weither or not we will include them in next socket update
+    # The bit-array is composed of the read status of every new message imported in the thread
+    messages_thread_candidates_for_notice = {}
 
     server_threads.each do |server_thread|
       if server_thread['messages'].blank?
@@ -555,6 +558,8 @@ class Message < ActiveRecord::Base
                                                 from_me: server_message['from_me']
 
             m.server_message = server_message
+
+
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
             should_call_conscience = false
@@ -582,6 +587,8 @@ class Message < ActiveRecord::Base
               else
                 messages_thread.update(handled_by_automation: false)
               end
+
+              messages_thread_candidates_for_notice[messages_thread.id] = messages_thread_candidates_for_notice.fetch(messages_thread.id, []).push(server_message["duplicate"])
 
               updated_messages_thread_ids << messages_thread.id
             end
@@ -689,7 +696,9 @@ class Message < ActiveRecord::Base
       end
     end
 
-    updated_messages_thread_ids.uniq
+    # Only trigger the new email event for threads that have
+    messages_thread_candidates_for_notice.select{|_, bit_array| bit_array.any?{|bit| !bit}}.keys
+    #updated_messages_thread_ids.uniq
   end
 
 

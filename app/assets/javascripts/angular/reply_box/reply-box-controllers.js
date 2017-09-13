@@ -71,6 +71,8 @@
                         }
                     }
 
+                    $scope.ccs = $scope.ccs.concat(window.initialCcRecipients());
+
                     var tos = tos_attendees.map(function (attendee) {
                         return {name: attendee["email"]};
                     });
