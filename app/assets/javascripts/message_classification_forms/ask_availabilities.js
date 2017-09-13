@@ -189,15 +189,15 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
                 });
 
-                aiDatesVerificationManager.verifyDatesWithVersion('4', verifyParams).then(
+                aiDatesVerificationManager.verifyDatesWithVersion('5', verifyParams).then(
                     function(response) {
-                        console.log('response Verify Dates V4', response);
+                        console.log('response Verify Dates V5', response);
                     }, function(error) {
-                        console.log('error Verify Dates V4', error);
+                        console.log('error Verify Dates V5', error);
                     }
                 );
 
-                aiDatesVerificationManager.verifyDatesV3(verifyParams).then(
+                aiDatesVerificationManager.verifyDatesWithVersion('4', verifyParams).then(
                     function(response) {
                         var verifiedDatesByAI = undefined;
 
@@ -231,50 +231,6 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     }
                 );
             }
-
-            // if (canVerifyV2) {
-            //     if(datesToVerify.length > 0) {
-            //
-            //         showAiThinkingLoader();
-            //         aiDatesVerificationManager.verifyDatesV2(verifyParams).then(
-            //             function(response) {
-            //
-            //                 var verifiedDatesByAI = undefined;
-            //
-            //                 if(!response.error && response.status != 'fail') {
-            //                     var verifiedDates = [];
-            //                     var now = moment();
-            //                     _.each(response.dates_validate, function (validated, date) {
-            //                         if (validated && moment(date).isAfter(now)) {
-            //                             // Add Z at the end of the date string to specify momentJS it is an utc date
-            //                             verifiedDates.push(date+'Z');
-            //                         }
-            //                     });
-            //
-            //                     if(verifiedDates.length > 0) {
-            //                         verifiedDates = _.sortBy(verifiedDates, function(date) {
-            //                             return moment(date).valueOf();
-            //                         });
-            //
-            //                         verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
-            //                     } else {
-            //                         verifiedDatesByAI = {no_suitable_dates: true};
-            //                     }
-            //                 } else {
-            //                     var errorStr = response.error ? 'timeout' : 'fail';
-            //                     verifiedDatesByAI = {error_response:  errorStr};
-            //                 }
-            //
-            //                 askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-            //             }, function(error) {
-            //                 askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-            //             }
-            //         );
-            //
-            //     } else {
-            //         askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because no dates to verify'}, message_classification_identifier: message_classification_identifier});
-            //     }
-            // }
             else {
                 askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because ' + 'filterV3passed:' + filterCanVerifyV3 + ' hasSelectedDates:' + hasSelectedDatesToVerify}, message_classification_identifier: message_classification_identifier});
             }
