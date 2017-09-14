@@ -1047,6 +1047,24 @@
             });
         };
 
+        // Usage
+        // First create some filters
+        // var filter1 = $scope.createAttendeesFilter('isPresent')(true)
+        // var filter2 = $scope.createAttendeesFilter('isClient')(true)
+
+        // Then execute the search
+        // var result = $scope.filterAttendees([filter1, filter2])
+
+        $scope.filterAttendees = function(filters) {
+            return _.filter($scope.attendees,function(attendee) {
+               return _.all(filters, function(filter) {
+                   return filter(attendee);
+               })
+            });
+        };
+
+        $scope.createAttendeesFilter = (attr) => (val) => (attendee) => {return attendee[attr] === val};
+
         $scope.getAttendeesWithoutClients = function() {
             return _.filter($scope.attendees, function(a) {
                 return !a.isClient;

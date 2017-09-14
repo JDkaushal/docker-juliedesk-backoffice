@@ -1520,10 +1520,10 @@
       <div class="data-entry linear-form-entry language-level-selection <%=  messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL ? 'disabled' : '' %>">
         <div class="data-entry-name"><%= I18n.t("info_box.language_level.title") %></div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_NORMAL, (messages_thread.computed_data[:language_level] != Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL} %> <%= I18n.t("info_box.language_level.normal") %>
+          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_NORMAL, (messages_thread.computed_data[:language_level] != Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %> <%= I18n.t("info_box.language_level.normal") %>
         </div>
         <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_FORMAL, (messages_thread.computed_data[:language_level] == Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL} %> <%= I18n.t("info_box.language_level.soutenu") %>
+          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_FORMAL, (messages_thread.computed_data[:language_level] == Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %> <%= I18n.t("info_box.language_level.soutenu") %>
         </div>
 
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_select_language"><%= I18n.t("common.validate") %></div>

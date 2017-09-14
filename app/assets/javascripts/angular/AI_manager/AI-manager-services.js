@@ -225,6 +225,14 @@
             return result;
         };
 
+        this.buildFilter = function(attr, val) {
+          return attendeesApp.createAttendeesFilter(attr)(val);
+        };
+
+        this.filterAttendees = function(filters) {
+          return attendeesApp.filterAttendees(filters);
+        };
+
         this.getAttendeesWithoutClients = function(){
             return attendeesApp.getAttendeesWithoutClients();
         };
