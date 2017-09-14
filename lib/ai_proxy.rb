@@ -22,6 +22,8 @@ class AiProxy
       verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
       verify_dates_v2: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v2/calendar/validate_dates/' }.freeze,
       verify_dates_v3: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/calendar/validate_dates/' }.freeze,
+      verify_dates_v4: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v4/calendar/validate_dates/' }.freeze,
+      verify_dates_v5: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v5/calendar/validate_dates/' }.freeze,
       verify_dates_versioned: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v%{api_version}/calendar/validate_dates/' }.freeze,
 
       calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,

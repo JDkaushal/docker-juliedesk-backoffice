@@ -628,6 +628,14 @@
             return aIDatesVerificationService.verifyDatesV3(params);
         };
 
+        $scope.verifyDatesV4 = function(params) {
+            return aIDatesVerificationService.verifyDatesV4(params);
+        };
+
+        $scope.verifyDatesV5 = function(params) {
+            return aIDatesVerificationService.verifyDatesV5(params);
+        };
+
         $scope.verifyDatesWithVersion = function(apiVersion, params) {
             return aIDatesVerificationService.verifyDatesWithVersion(apiVersion, params);
         };

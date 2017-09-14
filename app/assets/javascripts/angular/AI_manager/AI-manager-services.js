@@ -101,6 +101,34 @@
             });
         };
 
+        this.verifyDatesV4 = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates_v4',
+                method: "POST",
+                data: params,
+                timeout: 10000
+            }).then(function(response) {
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
+        };
+
+        this.verifyDatesV5 = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates_v5',
+                method: "POST",
+                data: params,
+                timeout: 10000
+            }).then(function(response) {
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
+        };
+
         this.verifyDatesWithVersion = function(apiVersion, params) {
             params.api_version = apiVersion;
 
