@@ -36,8 +36,8 @@ class JulieActionsController < ApplicationController
         !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
 
     @flow_conditions = handle_flow_conditions(@julie_action, {
-        trust_julia_suggestions: {
-            label: 'We can trust Jul.IA date suggestions',
+        trust_julia_suggestions_virtual: {
+            label: 'We can trust Jul.IA date suggestions for virtual appointments',
             back_conditions: {
                 feature_active: "trust_julia_suggestion",
                 action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
@@ -48,7 +48,31 @@ class JulieActionsController < ApplicationController
                 #linked_attendees_present: false,
                 all_clients_on_calendar_server: true,
                 #main_client_auto_date_suggestions_on: true,
-                constraints_conflicts: false
+                constraints_conflicts: false,
+                client_on_trip: false
+            },
+            front_conditions: {
+                conscience_suggestion: {
+                    count: 4#,
+                    #suggestion_on_all_day_event: false
+                }
+            },
+            flow_action: 'autoProcessDateSuggestions'
+        },
+        trust_julia_suggestions_physical: {
+            label: 'We can trust Jul.IA date suggestions for physical appointments',
+            back_conditions: {
+                feature_active: "trust_julia_suggestion",
+                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                event_type: MessageClassification::PHYSICAL_EVENT_TYPES,
+                should_book_resource: false,
+                current_notes_present: false,
+                free_notes_present: false,
+                #linked_attendees_present: false,
+                all_clients_on_calendar_server: true,
+                #main_client_auto_date_suggestions_on: true,
+                constraints_conflicts: false,
+                client_on_trip: false
             },
             front_conditions: {
                 conscience_suggestion: {
@@ -252,6 +276,8 @@ class JulieActionsController < ApplicationController
         Account.create_from_email(@messages_thread.account_email).try(:auto_date_suggestions).present?
       when :constraints_conflicts
         AdminApiInterface.constraints_conflicts(JSON.parse(@julie_action.message_classification.constraints_data || "[]")) == condition_value
+      when :client_on_trip
+        validation_flow_condition_include_or_equals condition_value, @julie_action.message_classification.client_on_trip != nil
       else
         raise "Unsupported flow condition: #{condition_identifier}"
     end

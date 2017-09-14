@@ -55,6 +55,7 @@ class MessageClassification < ActiveRecord::Base
   THREAD_STATUS_OTHER                           = "other"
 
   VIRTUAL_EVENT_TYPES = ['call', 'confcall', 'skype', 'hangout', 'webex']
+  PHYSICAL_EVENT_TYPES = ['appointment', 'meeting', 'lunch', 'coffee', 'work_session', 'dinner', 'breakfast', 'drink']
 
   def clean_delete
     if self.julie_action
@@ -196,6 +197,10 @@ class MessageClassification < ActiveRecord::Base
 
   def is_virtual_appointment?
     VIRTUAL_EVENT_TYPES.include? self.appointment_nature
+  end
+
+  def is_physical_appointment?
+    PHYSICAL_EVENT_TYPES.include? self.appointment_nature
   end
 
   def self.clean_and_categorize_clients attendees
