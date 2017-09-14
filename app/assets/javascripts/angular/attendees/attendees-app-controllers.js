@@ -1063,7 +1063,13 @@
             });
         };
 
-        $scope.createAttendeesFilter = (attr) => (val) => (attendee) => {return attendee[attr] === val};
+        $scope.createAttendeesFilter = function(attr) {
+            return function(val) {
+                return function(attendee) {
+                    return attendee[attr] === val;
+                };
+            };
+        };
 
         $scope.getAttendeesWithoutClients = function() {
             return _.filter($scope.attendees, function(a) {
