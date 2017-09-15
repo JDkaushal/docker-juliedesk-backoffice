@@ -662,33 +662,43 @@ class Message < ActiveRecord::Base
           end
         end
 
-        if new_thread && messages_thread.account_email.present?
-          ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
-              bo_thread_id: messages_thread.id,
-              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL'])
-          })
-
-          secondary_clients = messages_thread.secondary_clients
-          if secondary_clients.present?
-            secondary_clients.each do |secondary_client|
-              secondary_client_company = secondary_client.company
-
-              if secondary_client_company.present?
-                # Need to normalize the company names for data aggregation in customer IO and mixpanel
-                secondary_client_company = I18n.transliterate(secondary_client_company).mb_chars.upcase.to_s
-              end
-
-              ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client.email, {
-                  bo_thread_id: messages_thread.id,
-                  'Company Name' => secondary_client_company
-              })
-            end
-          end
-        end
-
         if messages_thread.should_reprocess_linked_attendees(computed_recipients_changed)
           messages_thread.compute_linked_attendees(accounts_cache)
         end
+
+        if new_thread && messages_thread.account_email.present?
+          secondary_clients = messages_thread.secondary_clients
+
+          attendees_count = thread_recipients.size
+          internal_attendees_count = secondary_clients.size + messages_thread.linked_attendees.values.flatten.size + 1 # Add 1 to include the thread owner (main client)
+          external_attendees_count = attendees_count - internal_attendees_count
+
+          ClientSuccessTrackingHelpers.async_track("New Request Sent", messages_thread.account_email, {
+              bo_thread_id: messages_thread.id,
+              julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL']),
+              'Number of Participants' => attendees_count,
+              'Number of External Participants' => external_attendees_count,
+              'Number of Internal Participants' => internal_attendees_count
+          })
+
+          # if secondary_clients.present?
+          #   secondary_clients.each do |secondary_client|
+          #     secondary_client_company = secondary_client.company
+          #
+          #     if secondary_client_company.present?
+          #       # Need to normalize the company names for data aggregation in customer IO and mixpanel
+          #       secondary_client_company = I18n.transliterate(secondary_client_company).mb_chars.upcase.to_s
+          #     end
+          #
+          #     ClientSuccessTrackingHelpers.async_track("Included in New Request Sent", secondary_client.email, {
+          #         bo_thread_id: messages_thread.id,
+          #         'Company Name' => secondary_client_company
+          #     })
+          #   end
+          # end
+        end
+
+
 
         # Need the accounts candidates to have been computed before doing it
         messages_thread.compute_allowed_attendees
