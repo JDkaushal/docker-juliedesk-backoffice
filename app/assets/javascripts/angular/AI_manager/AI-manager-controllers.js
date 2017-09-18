@@ -329,7 +329,7 @@
 
                     var filterOnPresence = attendeesService.buildFilter('isPresent', true);
                     var filterOnNotClient = attendeesService.buildFilter('isClient', false);
-                    var filterOnWasPresent = attendeesService.build('alreadySetPresent', true);
+                    var filterOnWasPresent = attendeesService.buildFilter('alreadySetPresent', true);
                     $scope.attendees = attendeesService.filterAttendees([filterOnPresence, filterOnWasPresent, filterOnNotClient]);
                     $scope.currentDetectedSupportType = entity_type;
                     $scope.currentClickedEntityNode = currentTargetNode;
