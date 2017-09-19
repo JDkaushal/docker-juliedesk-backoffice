@@ -166,6 +166,8 @@ GEM
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
     json (1.8.3)
+    json-schema (2.8.0)
+      addressable (>= 2.4)
     json_pure (1.8.3)
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
@@ -189,6 +191,9 @@ GEM
     net-ssh (3.2.0)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
+    paper_trail (7.1.2)
+      activerecord (>= 4.0, < 5.2)
+      request_store (~> 1.1)
     pg (0.18.4)
     phantomjs (2.1.1.0)
     pusher (0.17.0)
@@ -230,6 +235,7 @@ GEM
     redis (3.2.2)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
+    request_store (1.3.2)
     resque (1.26.0)
       mono_logger (~> 1.0)
       multi_json (~> 1.0)
@@ -350,11 +356,13 @@ DEPENDENCIES
   jquery-minicolors-rails
   jquery-rails
   jquery-ui-rails
+  json-schema
   lograge (= 0.4.1)
   mail (= 2.6.3)
   memory_profiler
   mixpanel-ruby
   nokogiri
+  paper_trail
   pg
   pusher
   rack-cors
@@ -378,6 +386,9 @@ DEPENDENCIES
   unicorn
   webmock-rspec-helper
   whenever
+
+RUBY VERSION
+   ruby 2.2.0p0
 
 BUNDLED WITH
    1.13.6

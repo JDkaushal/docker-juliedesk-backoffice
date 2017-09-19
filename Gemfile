@@ -118,3 +118,7 @@ gem 'resque-workers-lock'
 gem 'resque-timeout'
 
 gem 'icalendar'
+
+#active record history
+gem 'json-schema'
+gem 'paper_trail'

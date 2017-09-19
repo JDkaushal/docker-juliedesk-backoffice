@@ -1,4 +1,5 @@
 class Api::V1::MessagesThreadsController < Api::ApiV1Controller
+  include Api::V1::Concerns::MessagesThreadsMethods
 
   def sent_messages_stats
     sent_messages_stats_data = DashboardDataGenerator.generate_sent_messages_stat_data({
@@ -71,4 +72,19 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   def fetch_messages_threads
     render json: EmailServer.fetch_messages_thread(params)
   end
+
+  def remove_syncing_tag
+    data = valid_remove_syncing_tag_params(params)
+    nb_updated_threads = MessagesThread.remove_syncing_tag(data[:account_email])
+    WebSockets::Manager.trigger_new_email([]) if nb_updated_threads > 0
+    render json: { nb_updated_threads: nb_updated_threads }, status: :ok
+  end
+
+  def add_syncing_tag
+    data = valid_add_syncing_tag_params(params)
+    nb_updated_threads = MessagesThread.add_syncing_tag(data[:account_email])
+    WebSockets::Manager.trigger_new_email([]) if nb_updated_threads > 0
+    render json: { nb_updated_threads: nb_updated_threads }, status: :ok
+  end
+
 end

@@ -1,4 +1,5 @@
 class MessagesThread < ActiveRecord::Base
+  has_paper_trail only: [:tags]
 
   class SplitError < Exception
   end
@@ -6,6 +7,9 @@ class MessagesThread < ActiveRecord::Base
   EVENT_SCHEDULED = "event_scheduled"
   SCHEDULING_EVENT = "scheduling_events"
   EVENTS_CREATED = "events_created"
+
+  SYNCING_TAG = "syncing"
+  AVAILABLE_TAGS = [SYNCING_TAG]
 
   has_many :messages
   has_many :operator_actions, as: :target
@@ -30,6 +34,10 @@ class MessagesThread < ActiveRecord::Base
   scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ? AND sent_to_admin = ?", true, true, false, false, false, false) }
 
   scope :in_inbox_only, -> { where("in_inbox = ? AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, false, false, false) }
+
+  scope :syncing, -> { where('? = ANY(tags)', 'syncing') }
+  scope :not_syncing, -> { where('NOT (? = ANY(tags))', 'syncing') }
+  scope :with_this_client, -> (account_email) { where('? = ANY(clients_in_recipients)', account_email) }
 
   include ApplicationHelper
   include TemplateGeneratorHelper
@@ -101,12 +109,16 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.account.only_admin_can_process ||
         messages_thread.account.only_support_can_process ||
         messages_thread.to_be_merged || messages_thread.thread_blocked ||
-        messages_thread.owner_needs_configuration
+        messages_thread.owner_needs_configuration ||
+        messages_thread.has_tag?(MessagesThread::SYNCING_TAG)
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
     messages_thread.sent_to_admin ||
-        (messages_thread.account && messages_thread.account.only_admin_can_process) || messages_thread.thread_blocked || messages_thread.owner_needs_configuration
+        (messages_thread.account && messages_thread.account.only_admin_can_process) ||
+        messages_thread.thread_blocked ||
+        messages_thread.owner_needs_configuration ||
+        messages_thread.has_tag?(MessagesThread::SYNCING_TAG)
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
@@ -1282,7 +1294,43 @@ class MessagesThread < ActiveRecord::Base
     self.update(follow_up_reminder_date: nil)
   end
 
+
+  def self.remove_syncing_tag(account_email)
+    raise "account email should be present" if account_email.blank?
+    MessagesThread.in_inbox.syncing.with_this_client(account_email).update_all("tags = array_remove(tags, '#{SYNCING_TAG}')")
+  end
+
+  def self.add_syncing_tag(account_email)
+    raise "account email should be present" if account_email.blank?
+    MessagesThread.in_inbox.not_syncing.with_this_client(account_email).update_all("tags = array_append(tags, '#{SYNCING_TAG}')")
+  end
+
+  def remove_tag(tag)
+    manage_tag(:delete, verify_tag(tag))
+  end
+
+  def add_tag(tag)
+    return true if self.has_tag?(tag)
+    manage_tag(:push, verify_tag(tag))
+  end
+
+  def has_tag?(tag)
+    !!self.tags && self.tags.include?(tag)
+  end
+
   private
+
+  def verify_tag(tag)
+    raise "tag #{tag} is not allowed" unless AVAILABLE_TAGS.include?(tag)
+    tag
+  end
+
+  def manage_tag(method, tag)
+    raise "#{method} is not supported" unless [:push, :delete].include?(method)
+    self.tags_will_change!
+    self.tags.send(method, tag)
+    self.save
+  end
 
   def owner_changed?
     if self.account_email_changed?

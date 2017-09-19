@@ -17,21 +17,23 @@ var TagsManager = (function() {
     const TOKEN_EXPIRED_TAG = 'office_365_refresh_token_expired';
     const CALENDAR_ACCESS_EXPIRED_TAG = 'thread_blocked';
     const CONFIGURATION_NEEDED_TAG = 'configuration_needed';
+    const SYNCING_TAG = 'syncing';
 
-    const THREAD_TAGS = [ADMIN_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG, CALENDAR_ACCESS_EXPIRED_TAG];
+    const THREAD_TAGS = [ADMIN_TAG, SYNCING_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG, CALENDAR_ACCESS_EXPIRED_TAG];
     const ACCOUNT_TAGS = [ADMIN_ONLY_TAG, VIP_TAG, TOKEN_EXPIRED_TAG, CONFIGURATION_NEEDED_TAG];
 
     const TAGS_PRIORITY = {};
 
-    TAGS_PRIORITY[ADMIN_TAG] = 1;
-    TAGS_PRIORITY[CALENDAR_ACCESS_EXPIRED_TAG] = 2;
-    TAGS_PRIORITY[CONFIGURATION_NEEDED_TAG] = 2;
-    TAGS_PRIORITY[ADMIN_ONLY_TAG] = 3;
-    TAGS_PRIORITY[TOKEN_EXPIRED_TAG] = 4;
-    TAGS_PRIORITY[TO_MERGE_TAG] = 5;
-    TAGS_PRIORITY[MULTI_CLIENT_TAG] = 6;
-    TAGS_PRIORITY[VIP_TAG] = 7;
-    TAGS_PRIORITY[SUPPORT_TAG] = 8;
+    TAGS_PRIORITY[ADMIN_TAG]                    = 1;
+    TAGS_PRIORITY[SYNCING_TAG]                  = 2;
+    TAGS_PRIORITY[CALENDAR_ACCESS_EXPIRED_TAG]  = 3;
+    TAGS_PRIORITY[CONFIGURATION_NEEDED_TAG]     = 3;
+    TAGS_PRIORITY[ADMIN_ONLY_TAG]               = 4;
+    TAGS_PRIORITY[TOKEN_EXPIRED_TAG]            = 5;
+    TAGS_PRIORITY[TO_MERGE_TAG]                 = 6;
+    TAGS_PRIORITY[MULTI_CLIENT_TAG]             = 7;
+    TAGS_PRIORITY[VIP_TAG]                      = 8;
+    TAGS_PRIORITY[SUPPORT_TAG]                  = 9;
 
     var Tag = function(params) {
 
@@ -45,6 +47,9 @@ var TagsManager = (function() {
             switch(that.name) {
                 case ADMIN_TAG:
                     that.textToDisplay = 'Admin';
+                    break;
+                case SYNCING_TAG:
+                    that.textToDisplay = 'Syncing...';
                     break;
                 case ADMIN_ONLY_TAG:
                     that.textToDisplay = 'Admin Only';
@@ -112,10 +117,11 @@ var TagsManager = (function() {
         }
 
         function determineTags(messagesThread) {
+            console.log("TAGS", messagesThread.tags);
             var tags = [];
 
             _.each(THREAD_TAGS, function(tag) {
-                if(messagesThread[tag]) {
+                if(messagesThread[tag] || (messagesThread.tags && messagesThread.tags.indexOf(tag) > -1)) {
                     tags.push(new Tag({name: tag}));
                 }
             });

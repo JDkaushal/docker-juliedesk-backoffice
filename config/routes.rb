@@ -211,6 +211,11 @@ Rails.application.routes.draw do
       get "/messages_threads/inbox_client_emails", controller: :messages_threads, action: :inbox_client_emails
       get "/messages_threads/only_inbox_messages_server_ids", controller: :messages_threads, action: :only_inbox_messages_server_ids
       get "/messages_threads/fetch_messages_threads", controller: :messages_threads, action: :fetch_messages_threads
+
+      resources :messages_threads do
+        post :remove_syncing_tag, on: :collection
+        post :add_syncing_tag, on: :collection
+      end
     end
   end
 

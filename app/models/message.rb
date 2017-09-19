@@ -703,6 +703,22 @@ class Message < ActiveRecord::Base
         # Need the accounts candidates to have been computed before doing it
         messages_thread.compute_allowed_attendees
         messages_thread.save
+
+        # -- Manage 'syncing' tag
+        messages_thread.clients_in_recipients.each do |client_email|
+          json_account_cache = REDIS_FOR_ACCOUNTS_CACHE.get(client_email)
+          unless json_account_cache.nil?
+            account_cache = JSON.parse(json_account_cache)
+            last_sync_date = DateTime.parse(account_cache["last_sync_date"]) rescue nil
+            if last_sync_date < (ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] || 4).to_i.minutes.ago
+              messages_thread.add_tag(MessagesThread::SYNCING_TAG)
+              break
+            end
+          end
+        end
+        ## --
+
+
       end
     end
 

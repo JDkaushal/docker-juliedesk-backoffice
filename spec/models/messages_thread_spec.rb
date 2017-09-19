@@ -92,6 +92,62 @@ describe MessagesThread, :type => :model do
 
     }
   end
+
+
+  # Scopes
+  describe '.with_this_client' do
+    let(:account_email) { "" }
+    let(:clients_in_recipients) { [account_email] }
+    let!(:messages_thread) { create(:messages_thread, clients_in_recipients: clients_in_recipients) }
+
+    subject { MessagesThread.with_this_client(account_email).count }
+
+    context 'when no thread with this client' do
+      let(:account_email) { "bob@juliedesk.com" }
+      let(:clients_in_recipients) { ["john@juliedesk.com"] }
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when there is a thread with this client' do
+      let(:account_email) { "bob@juliedesk.com" }
+      it { is_expected.to eq(1) }
+    end
+  end
+
+
+  describe '.syncing' do
+    let(:tags) { [] }
+    let!(:messages_thread) { create(:messages_thread, tags: tags) }
+
+    subject { MessagesThread.syncing.count }
+
+    context 'when no thread has syncing tag' do
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when a thread has syncing tag' do
+      let(:tags) { [MessagesThread::SYNCING_TAG] }
+      it { is_expected.to eq(1) }
+    end
+  end
+
+  describe '.not_syncing' do
+    let(:tags) { [] }
+    let!(:messages_thread) { create(:messages_thread, tags: tags) }
+
+    subject { MessagesThread.not_syncing.count }
+
+    context 'when thread has no tag' do
+      it { is_expected.to eq(2) }
+    end
+
+    context 'when thread has syncing tag' do
+      let(:tags) { [MessagesThread::SYNCING_TAG] }
+      it { is_expected.to eq(1) }
+    end
+  end
+
   describe "#virtual_appointment_natures" do
     it "should return virtual appointment natures" do
       expect(MessagesThread.virtual_appointment_natures).to eq(["skype", "call", "webex", "confcall", "hangout", "visio"])
@@ -1025,4 +1081,158 @@ describe MessagesThread, :type => :model do
       expect(MessagesThread.only_in_inbox_messages_server_ids).to eq([0, 1, 2, 3, 4, 5, 6, 7])
     end
   end
+
+
+  describe '.add_syncing_tag' do
+    let(:account_email) { "bob@juliedesk.com" }
+
+    let(:thread_account_email) { account_email }
+    let(:clients_in_recipients) { [thread_account_email] }
+    let(:inbox_status) { true }
+    let(:tags) { [] }
+    let!(:messages_thread) { create(:messages_thread, in_inbox: inbox_status, account_email: thread_account_email, clients_in_recipients: clients_in_recipients, tags: tags) }
+
+    before(:each) { MessagesThread.add_syncing_tag(account_email) }
+    subject { messages_thread.reload.tags }
+
+    context "when thread is owned by account" do
+      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+    end
+
+
+    context "when thread include account in recipients" do
+      let(:thread_account_email) { "john@juliedesk.com" }
+      let(:clients_in_recipients) { ["john@juliedesk.com", "bob@juliedesk.com"]}
+      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when thread does not include client in recipients" do
+      let(:thread_account_email) { "john@juliedesk.com" }
+      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when thread is not in inbox" do
+      let(:inbox_status) { false }
+      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when tag is already present" do
+      let(:tags) { [MessagesThread::SYNCING_TAG] }
+      it { is_expected.to eq([MessagesThread::SYNCING_TAG]) }
+    end
+  end
+
+  describe '.remove_syncing_tag' do
+    let(:account_email) { "bob@juliedesk.com" }
+
+    let(:thread_account_email) { account_email }
+    let(:clients_in_recipients) { [thread_account_email] }
+    let(:inbox_status) { true }
+    let!(:messages_thread) do
+      create(:messages_thread,
+             tags: [MessagesThread::SYNCING_TAG],
+             in_inbox: inbox_status,
+             account_email: thread_account_email,
+             clients_in_recipients: clients_in_recipients
+      )
+    end
+
+    before(:each) { MessagesThread.remove_syncing_tag(account_email) }
+    subject { messages_thread.reload.tags }
+
+    context "when thread is owned by account" do
+      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when thread include account in recipients" do
+      let(:thread_account_email) { "john@juliedesk.com" }
+      let(:clients_in_recipients) { ["john@juliedesk.com", "bob@juliedesk.com"]}
+      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when thread does not include client in recipients" do
+      let(:thread_account_email) { "john@juliedesk.com" }
+      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+    end
+
+    context "when thread is not in inbox" do
+      let(:inbox_status) { false }
+      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+    end
+  end
+
+
+  describe '#add_tag' do
+    let(:tag_to_add) { "" }
+    let(:messages_thread) { create(:messages_thread) }
+    subject { -> { messages_thread.add_tag(tag_to_add) } }
+
+    context 'when tag is invalid' do
+      let(:tag_to_add) { "unrecognized_tag" }
+      it { is_expected.to raise_exception }
+    end
+
+    context 'when tag is "syncing"' do
+      let(:tag_to_add) { MessagesThread::SYNCING_TAG }
+      it "includes syncing tag" do
+        is_expected.to change { messages_thread.tags }.from([]).to([MessagesThread::SYNCING_TAG])
+      end
+    end
+
+    context 'when tag is already present' do
+      let(:messages_thread) { create(:messages_thread, tags: [MessagesThread::SYNCING_TAG]) }
+      let(:tag_to_add) { MessagesThread::SYNCING_TAG }
+
+      it "does nothing" do
+        messages_thread.add_tag(tag_to_add)
+        expect(messages_thread.reload.tags).to eq([MessagesThread::SYNCING_TAG])
+      end
+    end
+
+  end
+
+  describe '#remove_tag' do
+    let(:tag_to_remove) { "" }
+    let(:messages_thread) { create(:messages_thread, tags: [MessagesThread::SYNCING_TAG]) }
+    subject { -> { messages_thread.remove_tag(tag_to_remove) } }
+
+    context 'when tag is invalid' do
+      let(:tag_to_remove) { "unrecognized_tag" }
+      it { is_expected.to raise_exception }
+    end
+
+    context 'when tag is "syncing"' do
+      let(:tag_to_remove) { MessagesThread::SYNCING_TAG }
+      it "includes syncing tag" do
+        is_expected.to change { messages_thread.tags }.from([MessagesThread::SYNCING_TAG]).to([])
+      end
+    end
+  end
+
+  describe '#has_tag?' do
+    let(:tag_to_check) { "" }
+    let(:tags) { [] }
+    let(:messages_thread) { create(:messages_thread, tags: tags) }
+    subject { messages_thread.has_tag?(tag_to_check) }
+
+
+    context 'when tags are nil' do
+      let(:tag_to_check) { MessagesThread::SYNCING_TAG }
+      let(:tags) { nil }
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when tag is present' do
+      let(:tag_to_check) { MessagesThread::SYNCING_TAG }
+      let(:tags) { [MessagesThread::SYNCING_TAG] }
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when tag is not present' do
+      let(:tag_to_check) { MessagesThread::SYNCING_TAG }
+      let(:tags) { [] }
+      it { is_expected.to eq(false) }
+    end
+  end
+
 end

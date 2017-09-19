@@ -407,7 +407,7 @@ class MessagesThreadsController < ApplicationController
 
         MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)
 
-        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients])
+        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked], only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients, :tags])
         operators_data = @operators_on_planning.as_json
 
         render json: {

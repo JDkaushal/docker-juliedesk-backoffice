@@ -92,7 +92,7 @@
                 url: '/ai/dates_verification/verify_dates_v3',
                 method: "POST",
                 data: params,
-                timeout: 10000
+                timeout: 20000
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
