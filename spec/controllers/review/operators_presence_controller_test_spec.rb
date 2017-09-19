@@ -281,13 +281,13 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         expect(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should send the correct request to the AI' do
@@ -295,13 +295,13 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should call the correct method to handle the planning data' do
@@ -309,13 +309,13 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should render the correct json' do
@@ -323,13 +323,13 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date}
+        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
 
         expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\",\"filename\":\"planning_constraints_01-01-2016T12:00:00.csv\"}")
       end
