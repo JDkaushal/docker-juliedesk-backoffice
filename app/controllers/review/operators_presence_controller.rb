@@ -96,7 +96,7 @@ class Review::OperatorsPresenceController < ReviewController
 
         Uploaders::AmazonAws.store_file(filename, params[:file])
 
-        result = AI_PROXY_INTERFACE.build_request(:initiate_planning, { productivity: params[:productivity], filename: filename, date: params[:start_date] })
+        result = AI_PROXY_INTERFACE.build_request(:initiate_planning, { n_new_clients: params[:n_new_clients], productivity: params[:productivity], filename: filename, date: params[:start_date] })
 
         unless result[:error]
           result.merge!('start_date' => params[:start_date])
