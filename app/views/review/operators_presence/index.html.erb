@@ -5,6 +5,7 @@
         moment.locale('fr');
         //var operatorEmailByHourRate = 7.5;
         $scope.operatorEmailByHourRate = $('#operator_hourly_productivity').val();
+        $scope.newClientsCount = $('#new_clients_count').val();
         var aiForecastWindow = 45;
 
         $scope.startWeekDate = moment.tz('Indian/Antananarivo').startOf("isoweek").utc().add(6, 'h');
@@ -484,7 +485,8 @@
 
             $http.put("/admin/settings", {
                 settings: {
-                    'planning.operator_hourly_productivity': $scope.operatorEmailByHourRate
+                    'planning.operator_hourly_productivity': $scope.operatorEmailByHourRate,
+                    'planning.new_clients_count': $scope.newClientsCount
                 }
             }).then(function() {
                 $scope.loading = false;
@@ -510,6 +512,7 @@
             var formData = new FormData(form);
             formData.append('start_date', formattedStartDate);
             formData.append('productivity', $scope.operatorEmailByHourRate);
+            formData.append('n_new_clients', $scope.newClientsCount);
 
             $scope.loading = true;
 
@@ -635,6 +638,8 @@
 
   <label>Number of emails processed per hour per operator</label>
   <input id="operator_hourly_productivity" ng-model="operatorEmailByHourRate" value="<%= MySettings['planning.operator_hourly_productivity'] || 5 %>">
+  <label>Number of new clients</label>
+  <input id="new_clients_count" ng-model="newClientsCount" value="<%= MySettings['planning.new_clients_count'] || 5 %>">
   <div class="btn btn-primary btn-xs" ng-click="updateOperatorHourlyProductivity()">Update</div>
 
 
