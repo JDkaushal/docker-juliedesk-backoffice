@@ -710,7 +710,7 @@ class Message < ActiveRecord::Base
           unless json_account_cache.nil?
             account_cache = JSON.parse(json_account_cache)
             last_sync_date = DateTime.parse(account_cache["last_sync_date"]) rescue nil
-            if last_sync_date < (ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] || 4).to_i.minutes.ago
+            if last_sync_date.nil? || (last_sync_date < (ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] || 4).to_i.minutes.ago)
               messages_thread.add_tag(MessagesThread::SYNCING_TAG)
               break
             end

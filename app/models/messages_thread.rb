@@ -1311,6 +1311,7 @@ class MessagesThread < ActiveRecord::Base
 
   def add_tag(tag)
     return true if self.has_tag?(tag)
+    self.tags = [] if self.tags.nil?
     manage_tag(:push, verify_tag(tag))
   end
 
