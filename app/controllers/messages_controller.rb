@@ -8,6 +8,7 @@ class MessagesController < ApplicationController
 
 
   def classifying
+
     @message = Message.find params[:id]
     @classification = params[:classification]
 
@@ -90,6 +91,10 @@ class MessagesController < ApplicationController
   end
 
   def classify
+    initiated_time = Time.now
+
+
+
     @message = Message.find(params[:id])
     params[:operator] = session[:user_username]
 
@@ -128,9 +133,12 @@ class MessagesController < ApplicationController
     #   messages_thread.compute_linked_attendees(Account.accounts_cache(mode: "light"))
     # end
 
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'messages#classify:initiated', julie_action_id: @message_classification.julie_action.id, distinct_id: @message_classification.julie_action.id}})
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'messages#classify:done', julie_action_id: @message_classification.julie_action.id, distinct_id: @message_classification.julie_action.id}})
+
     render json: {
-        status: "success",
-        message: "",
+        status: 'success',
+        message: '',
         redirect_url: julie_action_path(@message_classification.julie_action),
         data: {}
     }

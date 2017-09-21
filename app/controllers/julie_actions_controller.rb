@@ -5,12 +5,16 @@ class JulieActionsController < ApplicationController
   before_action :check_staging_mode
 
   def show
+
+
     begin
       @julie_action = JulieAction.find params[:id]
     rescue ActiveRecord::RecordNotFound
       render status: :not_found, text: 'Sorry, this action does not exist.'
       return
     end
+
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'julie_actions#show:initiated', julie_action_id: @julie_action.id, distinct_id: @julie_action.id}})
 
     @message_classification = @julie_action.message_classification
     @message = @message_classification.message
@@ -34,6 +38,8 @@ class JulieActionsController < ApplicationController
 
     @is_first_date_suggestion = @julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES &&
         !@messages_thread.has_already_processed_action_once(MessageClassification::ASK_DATE_SUGGESTIONS)
+
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'julie_actions#show:database_loaded', julie_action_id: @julie_action.id, distinct_id: @julie_action.id}})
 
     @flow_conditions = handle_flow_conditions(@julie_action, {
         trust_julia_suggestions_virtual: {
@@ -84,7 +90,12 @@ class JulieActionsController < ApplicationController
         }
     })
 
+
     @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
+
+    if @flow_conditions.length > 0
+      JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'julie_actions#show:done', julie_action_id: @julie_action.id, distinct_id: @julie_action.id}})
+    end
   end
 
   def update
