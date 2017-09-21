@@ -1,11 +1,11 @@
 class Ai::DatesSuggestionsController < ApplicationController
 
   def fetch
-    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'date_suggestions#fetch:initiated', julie_action_id: params[:julie_action_id], distinct_id: params[:julie_action_id]}})
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'date_suggestions#fetch:initiated', julie_action_id: params[:julie_action_id], distinct_id: params[:julie_action_id]}})
 
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, params)
 
-    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'date_suggestions#fetch:done', julie_action_id: params[:julie_action_id], distinct_id: params[:julie_action_id]}})
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'date_suggestions#fetch:done', julie_action_id: params[:julie_action_id], distinct_id: params[:julie_action_id]}})
 
     render json: json
     #render json: {"status":"success","timezone":"Europe/Berlin","algo_duration":2,"suggested_dates":["2017-02-20T10:00:00+0000","2017-02-20T13:00:00+0000","2017-02-20T15:00:00+0000","2017-02-20T17:00:00+0000"],"suggested_dates_id":8164}

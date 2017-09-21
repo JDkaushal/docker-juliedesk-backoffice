@@ -9,7 +9,9 @@ class JuliedeskTrackerInterface < BaseApiCaller
   end
 
   def build_request(key, data = {})
-    super(key, data)
+    if ENV['BACKOFFICE_ANALYTICS_BASE_PATH']
+      super(key, data)
+    end
   end
 
   private
