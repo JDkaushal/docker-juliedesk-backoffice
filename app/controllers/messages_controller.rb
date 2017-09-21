@@ -133,8 +133,8 @@ class MessagesController < ApplicationController
     #   messages_thread.compute_linked_attendees(Account.accounts_cache(mode: "light"))
     # end
 
-    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'messages#classify:initiated', julie_action_id: @message_classification.julie_action.id, distinct_id: @message_classification.julie_action.id}})
-    JuliedeskTrackerInterface.new.build_request(:track, {name: 'auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'messages#classify:done', julie_action_id: @message_classification.julie_action.id, distinct_id: @message_classification.julie_action.id}})
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'messages#classify:initiated', julie_action_id: @message_classification.julie_action.id}, distinct_id: @message_classification.julie_action.id})
+    JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'messages#classify:done', julie_action_id: @message_classification.julie_action.id}, distinct_id: @message_classification.julie_action.id})
 
     render json: {
         status: 'success',
