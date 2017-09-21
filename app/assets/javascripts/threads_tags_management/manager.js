@@ -25,8 +25,8 @@ var TagsManager = (function() {
     const TAGS_PRIORITY = {};
 
     TAGS_PRIORITY[ADMIN_TAG]                    = 1;
-    TAGS_PRIORITY[SYNCING_TAG]                  = 2;
-    TAGS_PRIORITY[CALENDAR_ACCESS_EXPIRED_TAG]  = 3;
+    TAGS_PRIORITY[CALENDAR_ACCESS_EXPIRED_TAG]  = 2;
+    TAGS_PRIORITY[SYNCING_TAG]                  = 3;
     TAGS_PRIORITY[CONFIGURATION_NEEDED_TAG]     = 3;
     TAGS_PRIORITY[ADMIN_ONLY_TAG]               = 4;
     TAGS_PRIORITY[TOKEN_EXPIRED_TAG]            = 5;
