@@ -63,3 +63,5 @@ after :deploy_sequence, :restart_server
 after :deploy_sequence, :update_crontab
 after :deploy_sequence, :run_resque
 after :deploy_sequence, :deploy_doc
+
+before :restart_server, :set_acl
