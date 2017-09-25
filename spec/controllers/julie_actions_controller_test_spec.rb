@@ -24,6 +24,7 @@ describe JulieActionsController, :type => :controller do
 
     before(:each) do
       @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+      allow_any_instance_of(JuliedeskTrackerInterface).to receive(:build_request)
     end
 
     describe 'Show' do

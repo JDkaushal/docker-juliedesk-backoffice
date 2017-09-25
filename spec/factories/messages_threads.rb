@@ -33,7 +33,6 @@ FactoryGirl.define do
       after(:create) do |messages_thread, evaluator|
         create_list(:message_complete,  evaluator.messages_count, messages_thread: messages_thread)
       end
-
     end
 
   end

@@ -7,6 +7,9 @@ class AutoEmailWorker
   end
 
   def self.perform id, email_type, translation_params, email_to_send_to = nil
-    Message.find(id).send_auto_email(email_type, translation_params, email_to_send_to)
+
+    AutomaticsEmails::Manager.new(Message.find(id)).send(email_type, translation_params, email_to_send_to)
+
+    #Message.find(id).send_auto_email(email_type, translation_params, email_to_send_to)
   end
 end

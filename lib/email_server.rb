@@ -85,7 +85,8 @@ module EmailServer
             html: opts[:html],
             quote_replied_message: opts[:quote_replied_message],
             quote_forward_message: opts[:quote_forward_message],
-            reply_to_message_id: opts[:reply_to_message_id]
+            reply_to_message_id: opts[:reply_to_message_id],
+            is_auto_email: opts[:is_auto_email]
         }
     }
 

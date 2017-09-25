@@ -308,4 +308,83 @@ describe Message do
     end
 
   end
+
+  describe 'send_auto_email' do
+    let(:julie_alias) { FactoryGirl.create(:julie_alias_random, name: "Julie Alias", email: 'juliealias@gmail.com', signature_en: 'signature EN', footer_en: 'footer EN', signature_fr: 'signature FR', footer_fr: 'footer FR') }
+    let!(:default_julie_alias) { FactoryGirl.create(:julie_alias_random, name: "Default Julie", email: 'julie@juliedesk.com', signature_en: 'signature EN', footer_en: 'footer EN', signature_fr: 'signature FR', footer_fr: 'footer FR') }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread) }
+    let(:message) {
+      FactoryGirl.create(
+        :message,
+        reply_all_recipients: {from: [{email: "nmarlier@gmail.com"}], cc: []}.to_json,
+        messages_thread: messages_thread
+      )
+    }
+
+    before(:example) do
+      expect(message).to receive(:interprete)
+      message.message_interpretations.create(question: MessageInterpretation::QUESTION_MAIN, raw_response: "{\"body\": \"Merci !\\n\", \"email_id\": 278000, \"request_classif\": \"classif\", \"request_threshold\": 0.46, \"appointment_classif\": \"appointment\", \"dates_to_check\": {}, \"language_detected\": \"fr\", \"request_proba\": null, \"appointment_threshold\": 0.78, \"algo_duration\": [6, 3, 0, 3], \"appointment_proba\": 0.94}")
+      expect(messages_thread).to receive(:julie_alias).and_return(julie_alias)
+    end
+
+    context 'The used julie alias is able to send emails' do
+
+      before(:example) do
+        expect(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).with('working_julie_aliases_cache').and_return([julie_alias.email].to_json)
+      end
+
+      it 'should trigger the correct actions' do
+
+        expect(EmailServer).to receive(:deliver_message).with(
+            {
+                :subject=>"Re: ",
+                :from=>"Julie Alias <juliealias@gmail.com>",
+                :to=>"nmarlier@gmail.com",
+                :cc=>"",
+                :bcc=>"hello@juliedesk.com",
+                :text=>"translation missing: fr.automatic_reply_emails.auto_email_typefooter FRsignature FR",
+                :html=>"<div>translation missing: fr.automatic_reply_emails.auto_email_typefooter FR</div>signature FR",
+                :quote_replied_message=>true,
+                :reply_to_message_id=>nil,
+                :is_auto_email=>true
+            }
+        ).and_return({'id' => 1})
+        message.send_auto_email(:auto_email_type, {translation_param: "translation param value"})
+
+        message.reload
+        expect(message.auto_email_kind).to eq('auto_email_type')
+
+      end
+    end
+
+
+    context 'The used julie alias is not able to send emails' do
+
+      before(:example) do
+        expect(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).with('working_julie_aliases_cache').and_return([].to_json)
+      end
+
+      it 'should trigger the correct actions' do
+        expect(EmailServer).to receive(:deliver_message).with(
+            {
+                :subject=>"Re: ",
+                :from=>"Default Julie <julie@juliedesk.com>",
+                :to=>"nmarlier@gmail.com",
+                :cc=>"",
+                :bcc=>"hello@juliedesk.com",
+                :text=>"translation missing: fr.automatic_reply_emails.auto_email_typefooter FRsignature FR",
+                :html=>"<div>translation missing: fr.automatic_reply_emails.auto_email_typefooter FR</div>signature FR",
+                :quote_replied_message=>true,
+                :reply_to_message_id=>nil,
+                :is_auto_email=>true
+            }
+        ).and_return({'id' => 1})
+        message.send_auto_email(:auto_email_type, {translation_param: "translation param value"})
+
+        message.reload
+        expect(message.auto_email_kind).to eq('auto_email_type')
+      end
+    end
+
+  end
 end

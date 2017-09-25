@@ -128,6 +128,8 @@ describe MessagesController, :type => :controller do
     describe 'Classify' do
       before(:each) do
         allow(DateTime).to receive(:now).and_return(DateTime.new(2015, 10, 10, 12, 00, 00))
+
+        allow_any_instance_of(JuliedeskTrackerInterface).to receive(:build_request)
       end
 
       it 'should populate the correct instance variables' do

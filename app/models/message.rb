@@ -270,17 +270,18 @@ class Message < ActiveRecord::Base
   end
 
   def send_auto_email(email_type, translation_params = {}, email_to_send_to = nil)
-    self.interprete if Rails.env.production?
+    self.interprete unless Rails.env.development?
 
     locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
     current_messages_thread = self.messages_thread
 
     current_reply_all_recipients = JSON.parse(self.reply_all_recipients)
-    to = current_reply_all_recipients['from'].first['email']
+
+    to = email_to_send_to || current_reply_all_recipients['from'].first['email']
 
     julie_alias = current_messages_thread.julie_alias
     # In case the julie alias associated with the thread is not working, we will fallback to the main Julie for sending the automated message
-    unless julie_alias.last_test_result == 'success'
+    unless julie_alias.can_send?
       julie_alias = JulieAlias.where(email: 'julie@juliedesk.com').first
     end
 
@@ -303,10 +304,14 @@ class Message < ActiveRecord::Base
         text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
         html: "#{text_to_html_with_tags("#{text}#{text_signature}")}#{html_signature}",
         quote_replied_message: true,
-        reply_to_message_id:  self.server_message_id
+        reply_to_message_id:  self.server_message_id,
+        is_auto_email: true
     }
 
     current_messages_thread.update(account_request_auto_email_sent: true)
+    self.update(auto_email_kind: email_type)
+
+
 
     EmailServer.deliver_message(email_params)['id']
   end

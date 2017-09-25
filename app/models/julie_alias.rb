@@ -4,6 +4,11 @@ class JulieAlias < ActiveRecord::Base
     "#{self.name} <#{self.email}>"
   end
 
+  def can_send?
+    can_send_julie_alias = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('working_julie_aliases_cache'))
+    can_send_julie_alias.include?(self.email)
+  end
+
   def generate_footer_and_signature locale
     html_signature = self.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
     text_signature = self.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
