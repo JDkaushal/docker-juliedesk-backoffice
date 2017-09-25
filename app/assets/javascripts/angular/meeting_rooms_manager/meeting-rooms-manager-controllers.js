@@ -415,6 +415,7 @@
                             result.push($scope.selectedRoom);
                     }
 
+                    // randomize meeting room order
                     return result;
                 };
 
@@ -565,6 +566,8 @@
                                 }
                                 available.push(currentAvailability);
                             });
+                            
+                            available = _.sortBy(available, function(_) { return Math.random()  });
 
                             // Whenever we check for the currently selected room availability, we wiil not select automatically
                             // an available room if any (case when we changed the room in the select, this way the operator can
