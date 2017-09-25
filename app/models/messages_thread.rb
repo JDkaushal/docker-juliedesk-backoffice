@@ -1133,7 +1133,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def current_status
-    self.status || self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).map(&:thread_status).compact.last
+    self.status || self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.try(:done)}.sort_by(&:updated_at).map(&:thread_status).compact.last
   end
 
   def self.julie_aliases_from_server_thread server_thread, params={}
