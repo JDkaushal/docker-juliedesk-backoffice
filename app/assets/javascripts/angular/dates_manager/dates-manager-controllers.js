@@ -37,6 +37,8 @@
             }
         ];
 
+        $scope.aiResult = '';
+
         var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
 
         // - - - - - - - DIRTY FIX DUE TO CHROME VERSION 57 BUG - - - - - //
@@ -275,10 +277,19 @@
                             });
                         }
 
+                        $scope.aiResult = 'succeed';
+
                     }, function(error) {
                         //console.log('error', error);
                         $scope.showAiError = true;
                         $scope.$apply();
+
+                        $scope.aiResult = 'fail';
+                        console.log('error', error);
+
+                        if(error.status == 408) {
+                            $scope.aiResult = 'timeout';
+                        }
 
                         if(window.consienceSuggestionCallbacks) {
                             _.each(window.consienceSuggestionCallbacks, function(consienceSuggestionCallback) {

@@ -58,7 +58,7 @@ class AiProxy
     end
 
     Timeout::timeout(ENV['CONSCIENCE_API_TIMEOUT'].to_i || 20) do
-      dispatch_request(type, url, data)
+        dispatch_request(type, url, data)
     end
 
   rescue Timeout::Error => e

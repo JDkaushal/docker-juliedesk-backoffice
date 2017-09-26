@@ -243,6 +243,8 @@
     };
 
     window.suggestDateReplyFunction = function () {
+        var datesManagerScope = $('#dates-suggestion-manager').scope();
+
         $.ajax({
             url: "/julie_actions/" + window.julie_action_id + "/update",
             method: "post",
@@ -259,7 +261,8 @@
                 messages_thread_id: window.processingMessageThreadId,
                 client_settings: window.getClientSettings(),
                 annotated_reply: window.annotatedReply,
-                date_suggestions_full_ai: getDatesSuggestionManager().dateSuggestionsFullAi == true
+                date_suggestions_full_ai: getDatesSuggestionManager().dateSuggestionsFullAi == true,
+                ai_call_status: {suggest_dates: datesManagerScope.aiResult}
             }
         });
         window.sendReply();

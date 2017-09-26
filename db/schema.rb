@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914154700) do
+ActiveRecord::Schema.define(version: 20170926093800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,6 +207,13 @@ ActiveRecord::Schema.define(version: 20170914154700) do
     t.datetime "updated_at"
   end
 
+  create_table "global_settings", force: true do |t|
+    t.string   "name",       null: false
+    t.string   "value",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
@@ -229,6 +236,7 @@ ActiveRecord::Schema.define(version: 20170914154700) do
     t.string   "event_from_invitation_organizer"
     t.boolean  "date_suggestions_full_ai",        default: false
     t.json     "ai_filters_results",              default: {}
+    t.json     "ai_call_status"
   end
 
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
@@ -316,6 +324,7 @@ ActiveRecord::Schema.define(version: 20170914154700) do
     t.integer  "server_message_id"
     t.datetime "request_at"
     t.string   "allowed_attendees",    default: [],    array: true
+    t.string   "auto_email_kind"
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree

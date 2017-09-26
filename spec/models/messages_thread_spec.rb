@@ -1078,7 +1078,7 @@ describe MessagesThread, :type => :model do
     end
 
     it 'should return the messages server_message_id of the threads that are present in the inbox' do
-      expect(MessagesThread.only_in_inbox_messages_server_ids).to eq([0, 1, 2, 3, 4, 5, 6, 7])
+      expect(MessagesThread.only_in_inbox_messages_server_ids).to match_array([0, 1, 2, 3, 4, 5, 6, 7])
     end
   end
 

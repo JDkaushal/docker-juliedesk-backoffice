@@ -144,6 +144,12 @@ class JulieActionsController < ApplicationController
       end
     end
 
+    if params[:ai_call_status]
+      current_julie_action_ai_call_status = julie_action.ai_call_status || {}
+      current_julie_action_ai_call_status = current_julie_action_ai_call_status.dup
+      current_julie_action_ai_call_status.merge!(params[:ai_call_status])
+    end
+
     julie_action.update_attributes({
         text: params[:text],
         generated_text: params[:generated_text],
@@ -158,7 +164,8 @@ class JulieActionsController < ApplicationController
         deleted_event: params[:deleted_event],
         event_from_invitation: params[:event_from_invitation],
         event_from_invitation_organizer: params[:event_from_invitation_organizer],
-        date_suggestions_full_ai: params[:date_suggestions_full_ai] == 'true'
+        date_suggestions_full_ai: params[:date_suggestions_full_ai] == 'true',
+        ai_call_status: current_julie_action_ai_call_status
      })
 
     if julie_action.date_suggestions_full_ai
