@@ -345,22 +345,25 @@
                 };
 
                 $scope.updateSelectedCallTargetInfos = function() {
-                    if($scope.currentConf.target == 'interlocutor') {
-                        if($scope.callTargetsInfos.length == 1) {
-                            var selectedTargetInfos =  $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
-                            var selectedSupport = $scope.determineDefaultSupport(findTargetAttendee($scope.currentConf.targetInfos));
+                    // Added check on $scope.formEditMode because when 2 attendees and a target of 'interlocutor', when the event attendeesRefreshed is triggered it would set the support to 'mobile' no matter what was set on the event
+                    if($scope.formEditMode) {
+                        if($scope.currentConf.target == 'interlocutor') {
+                            if($scope.callTargetsInfos.length == 1) {
+                                var selectedTargetInfos =  $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
+                                var selectedSupport = $scope.determineDefaultSupport(findTargetAttendee($scope.currentConf.targetInfos));
 
-                            var newData = {};
-                            if(selectedTargetInfos) newData.targetInfos = selectedTargetInfos;
-                            if(selectedSupport) newData.support = selectedSupport;
+                                var newData = {};
+                                if(selectedTargetInfos) newData.targetInfos = selectedTargetInfos;
+                                if(selectedSupport) newData.support = selectedSupport;
 
-                            $scope.currentConf = Object.assign($scope.currentConf, newData);
+                                $scope.currentConf = Object.assign($scope.currentConf, newData);
 
-                            //$scope.computeCallDetails(true);
-                            //Set the correct attendee in the targetInfos select if there is one
-                            //$scope.updateTargetInfosSelect();
+                                //$scope.computeCallDetails(true);
+                                //Set the correct attendee in the targetInfos select if there is one
+                                //$scope.updateTargetInfosSelect();
 
-                            //updateNotesCallingInfos();
+                                //updateNotesCallingInfos();
+                            }
                         }
                     }
                 };
