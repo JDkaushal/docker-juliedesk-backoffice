@@ -139,7 +139,6 @@ var TemplateManager = function(params){
 
       var topOffset = subMenuPanelNodeBottomBound > leftColumnNodeHeight ? (subMenuPanelNodeBottomBound - leftColumnNodeHeight) + 30 : 0;
 
-      console.log(that.subMenuPanelNode.height(), that.subMenuPanelNode[0].getBoundingClientRect().top, subMenuPanelNodeBottomBound, topOffset);
       if(topOffset > 0) {
           that.subMenuPanelNode.css('top', parseInt(that.subMenuPanelNode.css('top')) - topOffset);
       }

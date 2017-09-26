@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'automatic_templates_manager' %>
 <script>
     window.leftColumnMessage = "Suggest dates";
     window.isPostpone = <%= (messages_thread.event_data[:event_id].present?)?'true':'false' %>;
@@ -25,7 +26,7 @@
 
     window.afterReplyBoxInitCallback = function () {
         window.setReplyMessage("");
-        window.initializeEmailLanguageSelector(suggestDatesSetReplyMessage);
+        //window.initializeEmailLanguageSelector(suggestDatesSetReplyMessage);
 
         if (window.threadComputedData.client_agreement) {
             if (isPostpone) {
@@ -75,6 +76,8 @@
                 "only_client"
             );
         }
+
+        window.templateManager.fetchTemplates();
     };
 
     window.otherClients = function () {
@@ -280,5 +283,23 @@
             suggestDateReplyFunction()
         }
     };
+
+
+    $(function() {
+        window.templateManager = new TemplateManager({
+            categories: ['free_reply'],
+            skipDefaultItem: true,
+            onItemSelected: function(clickedNode, template) {
+                window.setReplyMessage(template, "only_client");
+            }
+        });
+
+        var callback = function() {
+            window.templateManager.refreshCurrentSelectedTemplate(function() {
+                window.suggestDatesSetReplyMessage();
+            });
+        };
+        initializeEmailLanguageSelector(callback);
+    });
 
 </script>

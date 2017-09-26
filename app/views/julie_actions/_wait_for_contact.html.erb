@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'automatic_templates_manager' %>
 <script>
     var isPostpone = <%= (messages_thread.event_data[:event_id].present?)?"true":"false" %>;
     var previousAppointment = $.grep(window.threadAccount.appointments,function(v) {
@@ -43,6 +44,8 @@
         else {
             setWaitingForContactReplyMesssage();
         }
+
+        window.templateManager.fetchTemplates();
     };
 
     var waitingForContactReplyFunction = function() {
@@ -74,5 +77,22 @@
             waitingForContactReplyFunction()
         }
     };
+
+    $(function() {
+        window.templateManager = new TemplateManager({
+            categories: ['free_reply'],
+            skipDefaultItem: true,
+            onItemSelected: function(clickedNode, template) {
+                window.setReplyMessage(template, "only_client");
+            }
+        });
+
+        var callback = function() {
+            window.templateManager.refreshCurrentSelectedTemplate(function() {
+                //window.suggestDatesSetReplyMessage();
+            });
+        };
+        //initializeEmailLanguageSelector(callback);
+    })
 
 </script>

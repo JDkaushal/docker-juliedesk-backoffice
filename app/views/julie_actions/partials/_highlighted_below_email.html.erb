@@ -18,7 +18,18 @@
             </div>
         <% end %>
 
-        <% if @julie_action.action_nature == JulieAction::JD_ACTION_FORWARD_TO_SUPPORT || @julie_action.action_nature == JulieAction::JD_ACTION_FOLLOW_UP_CLIENT || @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
+        <% if [
+            JulieAction::JD_ACTION_FORWARD_TO_SUPPORT,
+            JulieAction::JD_ACTION_FOLLOW_UP_CLIENT,
+            JulieAction::JD_ACTION_FREE_ACTION,
+            JulieAction::JD_ACTION_SUGGEST_DATES,
+            JulieAction::JD_ACTION_CHECK_AVAILABILITIES,
+            JulieAction::JD_ACTION_WAIT_FOR_CONTACT,
+            JulieAction::JD_ACTION_SEND_CONFIRMATION,
+            JulieAction::JD_ACTION_UPDATE_EVENT
+            ].include?(@julie_action.action_nature) %>
+
+
             <div class="template-manager-container">
               <div class="template-manager-menu-button"></div>
               <div class="template-manager-menu-wrapper">

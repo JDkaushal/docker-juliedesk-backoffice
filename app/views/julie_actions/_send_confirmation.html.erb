@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'automatic_templates_manager' %>
 <script>
     // Do not open calendars for the following classifications
     window.do_not_open_calendar_classifications = ['give_info', 'update_event'];
@@ -8,6 +9,21 @@
     $(function() {
       useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2_for_update_event") && window.classification == 'update_event';
       currentAppointmentIsVirtual = window.getCurrentAppointment().appointment_kind_hash.is_virtual;
+
+        window.templateManager = new TemplateManager({
+            categories: ['free_reply'],
+            skipDefaultItem: true,
+            onItemSelected: function(clickedNode, template) {
+                window.setReplyMessage(template, "only_client");
+            }
+        });
+
+        var callback = function() {
+            window.templateManager.refreshCurrentSelectedTemplate(function() {
+                window.setReplyMessageActions();
+            });
+        };
+        initializeEmailLanguageSelector(callback);
     });
 
     window.drawCalendarCallback = function(){
@@ -170,9 +186,10 @@
 
     window.afterReplyBoxInitCallback = function() {
       if(!useTemplateGenerationService) {
-        window.initializeEmailLanguageSelector(window.setReplyMessageActions);
+        //window.initializeEmailLanguageSelector(window.setReplyMessageActions);
         window.setReplyMessageActions();
       }
+        window.templateManager.fetchTemplates();
     };
 
 </script>
