@@ -9,12 +9,12 @@ task :set_acl do
      execute "chmod 2770 " + release_path.to_s + "/tmp"
 
      # Shared
-     execute "find " + shared_path.to_s + "/public -type f -exec chmod 0640 {} \\;"
-     execute "find " + shared_path.to_s + "/public -type d -exec chmod 0750 {} \\;"
+     execute "(test -d \"" + shared_path.to_s + "/public\" && find " + shared_path.to_s + "/public -type f -exec chmod 0640 {} \\;) || echo \"nothing to do\""
+     execute "(test -d \"" + shared_path.to_s + "/public\" && find " + shared_path.to_s + "/public -type d -exec chmod 0750 {} \\;) || echo \"nothing to do\""
 
      # Config
-     execute "find " + shared_path.to_s + "/config -type f -exec chmod 0640 {} \\;"
-     execute "find " + shared_path.to_s + "/config -type d -exec chmod 0750 {} \\;"
+     execute "(test -d \"" + shared_path.to_s + "/config\" && find " + shared_path.to_s + "/config -type f -exec chmod 0640 {} \\;) || echo \"nothing to do\""
+     execute "(test -d \"" + shared_path.to_s + "/config\" && find " + shared_path.to_s + "/config -type d -exec chmod 0750 {} \\;) || echo \"nothing to do\""
 
      # .env
      execute "chmod 0640 " + shared_path.to_s + "/.env"
