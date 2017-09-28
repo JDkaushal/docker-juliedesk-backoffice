@@ -309,12 +309,22 @@
                 var currentEventNotes = currentEventNotesNode.val();
                 var newEventDescription = '';
                 if(vmHelper && vmHelper.isVirtualAppointment()){
-                  var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
+
+                  /*var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
                   var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
                   if(regExResult != null){
                     newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
                     description = newEventDescription;
+                  }*/
+
+                  var ourNotesRegexp = /-(.+)----\n[\s\S]+----\n/gm;
+                  if (currentEventNotes.match(ourNotesRegexp)) {
+                      description = currentEventNotes.replace(ourNotesRegexp, $('.classic-info-panel #notes').val() + "\n" + $('#other_notes').val() + "\n");
                   }
+                  else {
+                      description = $('.classic-info-panel #notes').val() + "\n" + $('#other_notes').val() + "\n\n" + currentEventNotes;
+                  }
+
                 }
               }
             }

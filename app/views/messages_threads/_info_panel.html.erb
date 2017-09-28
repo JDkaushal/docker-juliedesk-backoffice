@@ -741,7 +741,7 @@
             updateCurrentEventNotes();
     }
 
-    function updateCurrentEventNotes() {
+    /*function updateCurrentEventNotes() {
         if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
             //var vmHelper = angular.element($('#event_update_vm_ctrl')).scope();
 
@@ -759,7 +759,25 @@
                 }
             //}
         }
+    }*/
+
+
+    function updateCurrentEventNotes() {
+        if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
+            var currentEventNotesNode = $('.created-event-panel .notes');
+            var currentEventNotes = currentEventNotesNode.val();
+            var ourNotesRegexp = /-(.+)----\n[\s\S]+----\n/gm;
+            if(currentEventNotes.match(ourNotesRegexp)) {
+                newNotes = currentEventNotes.replace(ourNotesRegexp, $('.classic-info-panel #notes').val() + "\n");
+            }
+            else {
+                newNotes = $('.classic-info-panel #notes').val() + "\n\n" + currentEventNotes;
+            }
+
+            currentEventNotesNode.val(newNotes);
+        }
     }
+
 
     function getConstraintTimezone() {
       var currentAppointment = window.getCurrentAppointment();

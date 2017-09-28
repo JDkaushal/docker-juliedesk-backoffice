@@ -21,7 +21,7 @@ window.classificationForms.giveInfoForm = function (params) {
             window.currentEventTile.doneEditingCallback = function() {
                 $("#summary").val(window.currentEventTile.event.title);
                 $("#location").val(window.currentEventTile.event.location);
-                $("#other_notes").val(window.currentEventTile.event.description);
+                //$("#other_notes").val(window.currentEventTile.event.description);
 
                 giveInfoForm.sendForm({
                     before_update_data: beforeUpdateData
