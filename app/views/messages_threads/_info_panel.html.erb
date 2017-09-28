@@ -771,7 +771,7 @@
                 newNotes = currentEventNotes.replace(ourNotesRegexp, $('.classic-info-panel #notes').val() + "\n");
             }
             else {
-                newNotes = $('.classic-info-panel #notes').val() + "\n\n" + currentEventNotes;
+                newNotes = $('.classic-info-panel #notes').val() + currentEventNotes;
             }
 
             currentEventNotesNode.val(newNotes);
