@@ -139,6 +139,11 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         }).timezone;
     }
 
+    var constraints_data = $(".constraint-tile-container").map(function () {
+        return $(this).data("constraint")
+    }).get();
+    
+
     var data = {
         locale: $("input[name='locale']:checked").val(),
         // Need to trim the timezone because it can lead to bug as 'Europe/Berlin  ' is not recognized as a correct timezone
@@ -159,9 +164,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         old_attendees: _.filter(window.threadComputedData.attendees, function(att) { return att.isPresent == 'true' }),
         attendees: window.getInfoPanelAttendeesForSendForm(),
         constraints: $("#constraints").val(),
-        constraints_data: $(".constraint-tile-container").map(function () {
-            return $(this).data("constraint")
-        }).get(),
+        constraints_data: constraints_data,
         client_agreement: true,
         attendees_are_noticed: $(".attendees-are-noticed-panel").data("attendees-are-noticed"),
         number_to_call: $("#number_to_call").val(),

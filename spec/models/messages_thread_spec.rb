@@ -1235,8 +1235,9 @@ describe MessagesThread, :type => :model do
   end
 
   describe 'handle_recipients_lost_access' do
-    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: true, messages_count: 3) }
     let(:recipients) { ['recipient1@gmail.com'] }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, in_inbox: true, messages_count: 3, clients_in_recipients: recipients) }
+
     let(:users_with_lost_access) { ['recipient1@gmail.com', 'recipient2@gmail.com', 'recipient3@gmail.com'] }
     let(:accounts_cache) {
       {
@@ -1270,7 +1271,7 @@ describe MessagesThread, :type => :model do
               },
               'recipient1@gmail.com'
           )
-          messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+          messages_thread.handle_recipients_lost_access(users_with_lost_access, accounts_cache)
         end
       end
 
@@ -1292,7 +1293,7 @@ describe MessagesThread, :type => :model do
               },
               'recipient1@gmail.com'
           )
-          messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+          messages_thread.handle_recipients_lost_access(users_with_lost_access, accounts_cache)
         end
       end
     end
@@ -1309,7 +1310,7 @@ describe MessagesThread, :type => :model do
           },
           'recipient1@gmail.com'
         )
-        messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+        messages_thread.handle_recipients_lost_access(users_with_lost_access, accounts_cache)
       end
     end
 
@@ -1340,7 +1341,7 @@ describe MessagesThread, :type => :model do
           },
           'recipient1@gmail.com'
         )
-        messages_thread.handle_recipients_lost_access(recipients, users_with_lost_access, accounts_cache)
+        messages_thread.handle_recipients_lost_access(users_with_lost_access, accounts_cache)
       end
     end
   end

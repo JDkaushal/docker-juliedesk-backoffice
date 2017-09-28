@@ -282,11 +282,15 @@ class Message < ActiveRecord::Base
     julie_alias = current_messages_thread.julie_alias
     # In case the julie alias associated with the thread is not working, we will fallback to the main Julie for sending the automated message
     unless julie_alias.can_send?
-      julie_alias = JulieAlias.where(email: 'julie@juliedesk.com').first
+      julie_alias = JulieAlias.where(email: ENV['DEFAULT_JULIE_ALIAS_EMAIL']).first
     end
 
     html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
     text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
+
+    if translation_params['count'].present?
+      translation_params[:count] = translation_params['count']
+    end
 
     text = I18n.t("automatic_reply_emails.#{email_type}", {locale: locale_to_use}.merge(translation_params))
 
@@ -310,8 +314,6 @@ class Message < ActiveRecord::Base
 
     current_messages_thread.update(account_request_auto_email_sent: true)
     self.update(auto_email_kind: email_type)
-
-
 
     EmailServer.deliver_message(email_params)['id']
   end
@@ -767,7 +769,7 @@ class Message < ActiveRecord::Base
         messages_thread.compute_allowed_attendees
         messages_thread.save
 
-        messages_thread.handle_recipients_lost_access(thread_recipients, users_with_lost_access, accounts_cache)
+        messages_thread.handle_recipients_lost_access(users_with_lost_access, accounts_cache)
 
       end
     end

@@ -346,7 +346,7 @@
 
                 $scope.updateSelectedCallTargetInfos = function() {
                     // Added check on $scope.formEditMode because when 2 attendees and a target of 'interlocutor', when the event attendeesRefreshed is triggered it would set the support to 'mobile' no matter what was set on the event
-                    if($scope.formEditMode) {
+                    if($scope.formEditMode && !$scope.currentConf.details) {
                         if($scope.currentConf.target == 'interlocutor') {
                             if($scope.callTargetsInfos.length == 1) {
                                 var selectedTargetInfos =  $scope.currentConf.targetInfos = $scope.callTargetsInfos[0];
