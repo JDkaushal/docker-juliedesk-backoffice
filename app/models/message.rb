@@ -307,13 +307,23 @@ class Message < ActiveRecord::Base
         html: "#{text_to_html_with_tags("#{text}#{text_signature}")}#{html_signature}",
         quote_replied_message: true,
         reply_to_message_id:  self.server_message_id,
-        is_auto_email: true
+        tags: ["EMAIL_AUTO_#{email_type}"]
     }
 
     current_messages_thread.update(account_request_auto_email_sent: true)
-    self.update(auto_email_kind: email_type)
 
-    EmailServer.deliver_message(email_params)['id']
+    server_message = EmailServer.deliver_message(email_params)
+
+    message_recipients = Message.generate_reply_all_recipients(server_message, JulieAlias.all.map(&:email))
+
+    m = self.messages_thread.messages.create server_message_id: server_message['id'],
+                                        received_at: DateTime.parse(server_message['date']),
+                                        reply_all_recipients: message_recipients.to_json,
+                                        from_me: server_message['from_me'],
+                                             auto_email_kind: email_type
+    m.server_message = server_message
+
+    m.id
   end
 
   def initial_recipients params={}
