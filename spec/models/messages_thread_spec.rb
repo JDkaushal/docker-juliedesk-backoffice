@@ -1263,7 +1263,7 @@ describe MessagesThread, :type => :model do
           expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew']]})
           expect(AutoEmailWorker).to receive(:enqueue).with(
               messages_thread.messages.sort_by(&:updated_at).last.id,
-              AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
+              AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_NATIVE_CONNEXION,
               {
                   key: 'blocked_request_notification.with_renew_links.body',
                   client_name: 'Recipient 1',
@@ -1286,7 +1286,7 @@ describe MessagesThread, :type => :model do
           expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew']]})
           expect(AutoEmailWorker).to receive(:enqueue).with(
               messages_thread.messages.sort_by(&:updated_at).last.id,
-              AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
+              AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_NATIVE_CONNEXION,
               {
                   key: 'blocked_request_notification.with_renew_links.body',
                   client_name: 'Recipient 1',
@@ -1306,7 +1306,7 @@ describe MessagesThread, :type => :model do
         expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Exchange', 'julie_sharing']]})
         expect(AutoEmailWorker).to receive(:enqueue).with(
           messages_thread.messages.sort_by(&:updated_at).last.id,
-          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
+          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_SHARED_CONNEXION,
           {
             key: 'blocked_request_notification.with_calendar_sharing.body',
             client_name: 'Recipient 1'
@@ -1327,7 +1327,7 @@ describe MessagesThread, :type => :model do
         expect(ADMIN_API_INTERFACE).to receive(:build_request).with(:get_blocking_users_calendars_renew_links, body).and_return({'recipient1@gmail.com' => [['Google', 'https://test.renew'], ['Exchange', 'julie_sharing']]})
         expect(AutoEmailWorker).to receive(:enqueue).with(
           messages_thread.messages.sort_by(&:updated_at).last.id,
-          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
+          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_NATIVE_CONNEXION,
           {
             key: 'blocked_request_notification.with_renew_links.body',
             client_name: 'Recipient 1',
@@ -1339,7 +1339,7 @@ describe MessagesThread, :type => :model do
 
         expect(AutoEmailWorker).to receive(:enqueue).with(
           messages_thread.messages.sort_by(&:updated_at).last.id,
-          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
+          AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_SHARED_CONNEXION,
           {
             key: 'blocked_request_notification.with_calendar_sharing.body',
             client_name: 'Recipient 1'

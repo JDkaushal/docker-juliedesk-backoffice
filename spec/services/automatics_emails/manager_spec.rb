@@ -6,7 +6,7 @@ describe AutomaticsEmails::Manager do
 
     context 'TYPE_ACCESS_LOST_IN_THREAD' do
 
-      let(:automatic_email_type) { AutomaticsEmails::Manager::TYPE_ACCESS_LOST_IN_THREAD }
+      let(:automatic_email_type) { AutomaticsEmails::Manager::TYPE_ACCESS_LOST_IN_THREAD_SHARED_CONNEXION }
 
       let(:account_email) { 'account@gmail.com' }
       let(:messages_thread_1) { FactoryGirl.create(:messages_thread, account_email: account_email) }
