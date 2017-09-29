@@ -56,7 +56,7 @@ describe AccountFlows::ClientUnsubscribed do
       end
 
       it 'should retrieve the correct threads from the BD' do
-        expect(client_unsubscribed_flow.send(:get_account_scheduling_threads).map(&:id)).to eq([messages_threads[3].id, messages_threads[5].id, messages_threads[8].id])
+        expect(client_unsubscribed_flow.send(:get_account_scheduling_threads).map(&:id)).to match_array([messages_threads[3].id, messages_threads[5].id, messages_threads[8].id])
       end
 
       it 'should send an automatic email to the necessary threads' do

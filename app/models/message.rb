@@ -302,7 +302,7 @@ class Message < ActiveRecord::Base
         from: julie_alias.generate_from,
         to: [to].join(','),
         cc: [].join(','),
-        bcc: ["hello@juliedesk.com"].join(','),
+        bcc: ["product@juliedesk.com"].join(','),
         text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
         html: "#{text_to_html_with_tags("#{text}#{text_signature}")}#{html_signature}",
         quote_replied_message: true,
