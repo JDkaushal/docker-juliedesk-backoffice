@@ -349,7 +349,7 @@ describe Message do
                 :is_auto_email=>true
             }
         ).and_return({'id' => 1})
-        message.send_auto_email(:auto_email_type, {translation_param: "translation param value"})
+        message.send_auto_email(:auto_email_type, {translation_param: "translation param value", 'key' => :auto_email_type})
 
         message.reload
         expect(message.auto_email_kind).to eq('auto_email_type')
@@ -379,7 +379,7 @@ describe Message do
                 :is_auto_email=>true
             }
         ).and_return({'id' => 1})
-        message.send_auto_email(:auto_email_type, {translation_param: "translation param value"})
+        message.send_auto_email(:auto_email_type, {translation_param: "translation param value", 'key' => :auto_email_type})
 
         message.reload
         expect(message.auto_email_kind).to eq('auto_email_type')

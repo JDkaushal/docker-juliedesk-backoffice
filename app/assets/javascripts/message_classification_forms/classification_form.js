@@ -142,7 +142,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     var constraints_data = $(".constraint-tile-container").map(function () {
         return $(this).data("constraint")
     }).get();
-    
+
 
     var data = {
         locale: $("input[name='locale']:checked").val(),

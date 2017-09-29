@@ -222,8 +222,9 @@ class MessagesThread < ActiveRecord::Base
           if links_to_renew.size > 0
             AutoEmailWorker.enqueue(
                 last_message.id,
-                'blocked_request_notification.with_renew_links.body',
+                AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
                 {
+                    key: 'blocked_request_notification.with_renew_links.body',
                     client_name: accounts_cache[client_main_email]["usage_name"],
                     links_to_renew: links_to_renew.map{|l| I18n.translate('automatic_reply_emails.blocked_request_notification.formatted_links', {calendar_type: l[0], link_to_renew: l[1]})}.join(''),
                     count: links_to_renew.size
@@ -235,8 +236,9 @@ class MessagesThread < ActiveRecord::Base
           if julie_sharings.size > 0
             AutoEmailWorker.enqueue(
                 last_message.id,
-                'blocked_request_notification.with_calendar_sharing.body',
+                AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD,
                 {
+                    key: 'blocked_request_notification.with_calendar_sharing.body',
                     client_name: accounts_cache[client_main_email]["usage_name"],
                 },
                 client_main_email

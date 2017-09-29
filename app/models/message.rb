@@ -292,7 +292,7 @@ class Message < ActiveRecord::Base
       translation_params[:count] = translation_params['count']
     end
 
-    text = I18n.t("automatic_reply_emails.#{email_type}", {locale: locale_to_use}.merge(translation_params))
+    text = I18n.t("automatic_reply_emails.#{translation_params['key']}", {locale: locale_to_use}.merge(translation_params))
 
     if locale_to_use == "fr"
       html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")

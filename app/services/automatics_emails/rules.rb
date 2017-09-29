@@ -1,6 +1,6 @@
 module AutomaticsEmails
   module Rules
-    TYPE_ACCESS_LOST_IN_THREAD = 'blocked_request_notification.with_renew_links.body'
+    TYPE_ACCESS_LOST_IN_THREAD = :access_lost_in_thread
 
     RULES = {}
 
