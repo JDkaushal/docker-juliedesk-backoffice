@@ -346,14 +346,12 @@ describe Message do
                 :html=>"<div>translation missing: fr.automatic_reply_emails.auto_email_typefooter FR</div>signature FR",
                 :quote_replied_message=>true,
                 :reply_to_message_id=>nil,
-                :is_auto_email=>true
+                :tags=>["EMAIL_AUTO_auto_email_type"]
             }
-        ).and_return({'id' => 1})
+        ).and_return({'id' => 1, 'date' => Time.now.to_s, 'from_me' => true})
         message.send_auto_email(:auto_email_type, {translation_param: "translation param value", 'key' => :auto_email_type})
 
-        message.reload
-        expect(message.auto_email_kind).to eq('auto_email_type')
-
+        expect(Message.last.auto_email_kind).to eq('auto_email_type')
       end
     end
 
@@ -376,13 +374,12 @@ describe Message do
                 :html=>"<div>translation missing: fr.automatic_reply_emails.auto_email_typefooter FR</div>signature FR",
                 :quote_replied_message=>true,
                 :reply_to_message_id=>nil,
-                :is_auto_email=>true
+                :tags=>["EMAIL_AUTO_auto_email_type"]
             }
-        ).and_return({'id' => 1})
+        ).and_return({'id' => 1, 'date' => Time.now.to_s, 'from_me' => true})
         message.send_auto_email(:auto_email_type, {translation_param: "translation param value", 'key' => :auto_email_type})
 
-        message.reload
-        expect(message.auto_email_kind).to eq('auto_email_type')
+        expect(Message.last.auto_email_kind).to eq('auto_email_type')
       end
     end
 
