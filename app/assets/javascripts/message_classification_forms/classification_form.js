@@ -114,6 +114,26 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
     });
 };
 
+window.classificationForms.classificationForm.prototype.validateConstaintsData = function (constraints_data) {
+    var valid = true;
+
+    _.each(constraints_data, function(constraint) {
+       if(constraint.start_time && constraint.end_time) {
+           var startTimeSplitted = constraint.start_time.split(':');
+           var endTimeSplitted = constraint.end_time.split(':');
+
+           var startTime = moment().hour(startTimeSplitted[0]).minute(startTimeSplitted[1]).second(0);
+           var endTime = moment().hour(endTimeSplitted[0]).minute(endTimeSplitted[1]).second(0);
+
+           if(startTime.isAfter(endTime)) {
+               valid = false;
+           }
+       }
+    });
+
+    return valid;
+};
+
 window.classificationForms.classificationForm.prototype.sendForm = function (params) {
     params = params || {};
     var classificationForm = this;
@@ -126,6 +146,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     $(".constraint-tile-container").each(function () {
         errorInConstraintTiles = errorInConstraintTiles || ($(this).data("constraint") == null);
     });
+
     if(errorInConstraintTiles) {
         alert("Please fix incorrect constraints.");
         $(".submit-classification").removeAttr('disabled');
@@ -143,6 +164,11 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         return $(this).data("constraint")
     }).get();
 
+    if(!classificationForm.validateConstaintsData(constraints_data)) {
+        alert('Some constraints are invalid, please make sure that the constraints starting dates are sooner than the ending dates');
+        $(".submit-classification").removeAttr('disabled');
+        return
+    }
 
     var data = {
         locale: $("input[name='locale']:checked").val(),
