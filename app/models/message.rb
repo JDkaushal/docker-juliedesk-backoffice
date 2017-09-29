@@ -288,11 +288,9 @@ class Message < ActiveRecord::Base
     html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
     text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
 
-    if translation_params['count'].present?
-      translation_params[:count] = translation_params['count']
-    end
+    translation_params.symbolize_keys!
 
-    text = I18n.t("automatic_reply_emails.#{translation_params['key']}", {locale: locale_to_use}.merge(translation_params))
+    text = I18n.t("automatic_reply_emails.#{translation_params[:key]}", {locale: locale_to_use}.merge(translation_params))
 
     if locale_to_use == "fr"
       html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
