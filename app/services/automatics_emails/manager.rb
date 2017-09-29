@@ -36,7 +36,7 @@ module AutomaticsEmails
     end
 
     def select_rules
-      RULES[@email_type]
+      RULES.with_indifferent_access[@email_type]
     end
 
     def deliver
