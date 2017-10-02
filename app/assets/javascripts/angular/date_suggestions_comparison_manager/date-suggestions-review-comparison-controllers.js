@@ -132,13 +132,19 @@
                 julie_action_id: $scope.julieActionId
             }).then(function(response) {
                 delete $scope.loading['conscience'];
-                $scope.conscienceDateSuggestions = _.map(response.data.data.suggested_date.status, function(status) {
-                    var dateStringKey = _.keys(status)[0];
-                    return {
-                        date: moment(dateStringKey),
-                        status: status[dateStringKey]
-                    }
-                });
+                if(response.data.data.suggested_date) {
+                    $scope.conscienceDateSuggestions = _.map(response.data.data.suggested_date.status, function(status) {
+                        var dateStringKey = _.keys(status)[0];
+                        return {
+                            date: moment(dateStringKey),
+                            status: status[dateStringKey]
+                        }
+                    });
+                }
+                else {
+                    $scope.conscienceDateSuggestions = [];
+                }
+
                 $scope.activateCalendarIfReady();
             });
         };
