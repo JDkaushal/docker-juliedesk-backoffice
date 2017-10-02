@@ -854,7 +854,7 @@ class MessagesThread < ActiveRecord::Base
       EVENTS_CREATED
     elsif event_data[:event_id]
       EVENT_SCHEDULED
-    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES || mc.classification == MessageClassification::WAIT_FOR_CONTACT) && mc.julie_action.done}.length > 0
+    elsif sorted_mcs.select{|mc| (mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS || mc.classification == MessageClassification::ASK_AVAILABILITIES || mc.classification == MessageClassification::WAIT_FOR_CONTACT) && mc.julie_action.present? && mc.julie_action.done}.length > 0
       SCHEDULING_EVENT
     else
       nil
