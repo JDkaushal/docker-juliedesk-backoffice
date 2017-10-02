@@ -201,6 +201,20 @@ class Account
     nil
   end
 
+  # Usage requests_count ["julien@juliedesk.com"], DateTime.parse("2017-09-01"), DateTime.now
+  def self.requests_count(account_emails, from_date, to_date, options={})
+    messages_threads = MessagesThread.where(account_email: account_emails).where("created_at > ? AND created_at < ?", from_date, to_date).where.not(status: [nil, 'other'])
+    if options[:detailed]
+      {
+          count: messages_threads.count,
+          message_thread_ids: messages_threads.select(:id).map(&:id)
+      }
+    else
+      messages_threads.count
+    end
+  end
+
+
   def has_current_notes?
     self.current_notes.present?
   end
