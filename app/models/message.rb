@@ -426,7 +426,7 @@ class Message < ActiveRecord::Base
 
   def generator_message_classification
     messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).find{|ja|
-      ja.server_message_id && ja.server_message_id == self.server_message_id
+      ja.present? && ja.server_message_id && ja.server_message_id == self.server_message_id
     }.try(:message_classification)
   end
 
