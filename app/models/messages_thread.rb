@@ -1151,7 +1151,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def last_message_classification
-    @last_message_classification ||= self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.done}.sort_by(&:updated_at).last
+    @last_message_classification ||= self.messages.map(&:message_classifications).flatten.select{|mc| mc.julie_action.present? && mc.julie_action.done}.sort_by(&:updated_at).last
   end
 
   def last_email_status(params = {})
