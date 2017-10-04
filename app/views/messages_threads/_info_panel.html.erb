@@ -1119,8 +1119,15 @@
         })[0];
 
         $("select#location_nature").html("");
+        var currentLabel = '';
         _.each(window.threadAccount.addresses, function(addressObject) {
-            $("select#location_nature").append($("<option>").val(addressObject.label).html(addressObject.label));
+          if(addressObject.is_main_address) {
+              currentLabel = '[MAIN] ' + addressObject.label;
+          } else {
+              currentLabel = addressObject.label;
+          }
+
+          $("select#location_nature").append($("<option>").val(addressObject.label).html(currentLabel));
         });
         $("select#location_nature").append($("<option>").val("Custom").html("Custom"));
         $("select#location_nature").val("Custom");
