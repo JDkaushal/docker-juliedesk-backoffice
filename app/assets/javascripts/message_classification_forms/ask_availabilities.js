@@ -142,6 +142,9 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
             var threadData = $.extend({}, window.threadComputedData);
             threadData.appointment_nature = $('#appointment_nature').val();
+            threadData.duration = $('#duration').val();
+            threadData.timezone = $('#timezone').val();
+            threadData.location = $('#location').val();
 
             var verifyParams = {
                 account_email: window.threadAccount.email,
@@ -174,7 +177,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
                 verifyParams.meeting_rooms_to_show =  meetingRooms;
             } else {
-                verifyParams.meeting_rooms_to_show = {}
+                verifyParams.meeting_rooms_to_show = {};
             }
 
             verifyParams.all_conditions_satisfied = canVerifyV1;
