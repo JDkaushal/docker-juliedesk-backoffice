@@ -142,7 +142,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
             var threadData = $.extend({}, window.threadComputedData);
             threadData.appointment_nature = $('#appointment_nature').val();
-            threadData.duration = $('#duration').val();
+            threadData.duration = parseInt($('#duration').val());
             threadData.timezone = $('#timezone').val();
             threadData.location = $('#location').val();
 
