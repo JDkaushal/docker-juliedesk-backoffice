@@ -115,22 +115,23 @@
 
 
             // Reject Julie Alias not assisting any clients in the thread if any
-            var assistingJulies = _.map(window.julieAliases, function(jA) { return jA.email; });
-            var juliesAssistingClientsInThread = _.map($scope.attendeesApp.getAttendeesOnlyClients(), function(att) {
-                return att.assistedBy && att.assistedBy.email;
-            });
-            juliesAssistingClientsInThread = juliesAssistingClientsInThread.concat(window.threadAccount.julie_aliases);
+            if($scope.attendeesApp) {
+                var assistingJulies = _.map(window.julieAliases, function(jA) { return jA.email; });
+                var juliesAssistingClientsInThread = _.map($scope.attendeesApp.getAttendeesOnlyClients(), function(att) {
+                    return att.assistedBy && att.assistedBy.email;
+                });
+                juliesAssistingClientsInThread = juliesAssistingClientsInThread.concat(window.threadAccount.julie_aliases);
 
-            var authorizedJulies = _.intersection(assistingJulies, juliesAssistingClientsInThread);
+                var authorizedJulies = _.intersection(assistingJulies, juliesAssistingClientsInThread);
 
-            $scope.ccs = _.reject($scope.ccs, function(a) {
-                return assistingJulies.indexOf(a.name) > -1 && authorizedJulies.indexOf(a.name) === -1;
-            });
+                $scope.ccs = _.reject($scope.ccs, function(a) {
+                    return assistingJulies.indexOf(a.name) > -1 && authorizedJulies.indexOf(a.name) === -1;
+                });
 
-            $scope.tos = _.reject($scope.tos, function(a) {
-                return assistingJulies.indexOf(a.name) > -1 && authorizedJulies.indexOf(a.name) === -1;
-            });
-
+                $scope.tos = _.reject($scope.tos, function(a) {
+                    return assistingJulies.indexOf(a.name) > -1 && authorizedJulies.indexOf(a.name) === -1;
+                });
+            }
         };
 
         $scope.setDefaultRecipients = function(otherRecipients, presentAttendees) {
