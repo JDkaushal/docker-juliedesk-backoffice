@@ -203,7 +203,13 @@ class Account
 
   # Usage requests_count ["julien@juliedesk.com"], DateTime.parse("2017-09-01"), DateTime.now
   def self.requests_count(account_emails, from_date, to_date, options={})
-    messages_threads = MessagesThread.where(account_email: account_emails).where("created_at > ? AND created_at < ?", from_date, to_date).where.not(status: [nil, 'other'])
+    not_request_statuses = [
+        nil,
+        'other',
+        'does_not_concern_client',
+        'handled_in_other_threads'
+    ]
+    messages_threads = MessagesThread.where(account_email: (account_emails || [])).where("created_at > ? AND created_at < ?", from_date, to_date).where.not(status: not_request_statuses)
     if options[:detailed]
       {
           count: messages_threads.count,
