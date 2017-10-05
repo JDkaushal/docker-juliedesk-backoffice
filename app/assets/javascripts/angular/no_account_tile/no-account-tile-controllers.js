@@ -102,7 +102,7 @@
         };
 
         $scope.clickOnNotEnoughInfos = function() {
-            var lastMessageId = $('.email').last().data('message-id');
+            var lastMessageId = $('.email[data-message-id]').last().data('message-id');
 
             if(lastMessageId) {
                 window.location = '/messages/' + lastMessageId + '/classifying/unknown?started_at=' + window.startedAt + '&default_template=Demander%20quel%20est%20le%20client%20concerné';
