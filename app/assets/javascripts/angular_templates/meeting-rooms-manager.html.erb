@@ -3,6 +3,8 @@
     <input type="checkbox" ng-model="usingMeetingRoom" ng-disabled="formDisabled">
     <label>Salle de réunion</label>
   </div>
+
+  <select id="location_select" class="form-control" ng-model="roomLocation" ng-change="roomLocationChanged()" ng-options="location as location.label for location in locations" ng-show="shouldDisplayLocationfield()" ng-disabled="formDisabled"></select>
   <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="roomsSelectionMode" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
 
   <div ng-show="displayCustomSelectionFilters && usingMeetingRoom">
@@ -10,7 +12,7 @@
     <div >
       <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>
       <%= label_tag :meeting_rooms_custom_attendees_count, 'Nombre de Participants'%>
-      <%= select_tag :meeting_rooms_attendees_count, options_for_select(2..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+      <%= select_tag :meeting_rooms_attendees_count, options_for_select(1..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
     </div>
 
     <div>

@@ -1118,21 +1118,16 @@
             return v.label == $("#appointment_nature").val();
         })[0];
 
-        $("select#location_nature").html("");
-        var currentLabel = '';
-        _.each(window.threadAccount.addresses, function(addressObject) {
-          if(addressObject.is_main_address) {
-              currentLabel = '[MAIN] ' + addressObject.label;
-          } else {
-              currentLabel = addressObject.label;
-          }
+        var $locationsSelect = $("select#location_nature");
 
-          $("select#location_nature").append($("<option>").val(addressObject.label).html(currentLabel));
+        $locationsSelect.html("");
+        _.each(window.threadAccount.addresses, function(addressObject) {
+            $locationsSelect.append($("<option>").val(addressObject.label).html(addressObject.label));
         });
-        $("select#location_nature").append($("<option>").val("Custom").html("Custom"));
-        $("select#location_nature").val("Custom");
+        $locationsSelect.append($("<option>").val("Custom").html("Custom"));
+        $locationsSelect.val("Custom");
         if (appointment && appointment.default_address) {
-            $("select#location_nature").val(appointment.default_address.label).trigger('change');
+            $locationsSelect.val(appointment.default_address.label).trigger('change');
         }
     }
 
@@ -1198,9 +1193,17 @@
     }
 
     function getCurrentAddressObject() {
-        return _.find(window.threadAccount.addresses, function (addressObject) {
+        var address = _.find(window.threadAccount.addresses, function (addressObject) {
             return addressObject.label == $("select#location_nature").val();
         });
+
+        if(!address && window.getCurrentAppointment().appointment_kind_hash.is_virtual && window.threadComputedData.meeting_room_details && window.threadComputedData.meeting_room_details.location) {
+            address = _.find(window.threadAccount.addresses, function (addressObject) {
+                return addressObject.address == window.threadComputedData.meeting_room_details.location;
+            });
+        }
+
+        return address;
     }
 
     function locationFieldIsSet() {
