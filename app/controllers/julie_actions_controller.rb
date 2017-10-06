@@ -1,6 +1,7 @@
 class JulieActionsController < ApplicationController
 
   include ProfilerHelper
+  include FlowConditionsHelper
 
   before_action :check_staging_mode
 
@@ -41,7 +42,50 @@ class JulieActionsController < ApplicationController
 
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'julie_actions#show:database_loaded', julie_action_id: @julie_action.id}, distinct_id: @julie_action.id})
 
-    @flow_conditions = handle_flow_conditions(@julie_action, {
+    @flow_conditions = handle_flow_conditions({
+                                                  julie_action: @julie_action,
+                                                  messages_thread: @messages_thread
+                                              }, {
+        trust_julia_suggestions_virtual_from_backend: {
+            label: 'We can trust Jul.IA date suggestions for virtual appointments - from Backend',
+            back_conditions: {
+                feature_active: "trust_julia_suggestion",
+                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                event_type: MessageClassification::VIRTUAL_EVENT_TYPES,
+                should_book_resource: false,
+                current_notes_present: false,
+                free_notes_present: false,
+                #linked_attendees_present: false,
+                all_clients_on_calendar_server: true,
+                #main_client_auto_date_suggestions_on: true,
+                constraints_conflicts: false,
+                client_on_trip: false,
+                date_times_from_ai_count: 4
+            },
+            front_conditions: {
+            }
+        },
+        trust_julia_suggestions_physical_from_backend: {
+            label: 'We can trust Jul.IA date suggestions for physical appointments - from Backend',
+            back_conditions: {
+                feature_active: "trust_julia_suggestion",
+                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                event_type: MessageClassification::PHYSICAL_EVENT_TYPES,
+                should_book_resource: false,
+                current_notes_present: false,
+                free_notes_present: false,
+                #linked_attendees_present: false,
+                all_clients_on_calendar_server: true,
+                #main_client_auto_date_suggestions_on: true,
+                constraints_conflicts: false,
+                client_on_trip: false,
+                date_times_from_ai_count: 4,
+                date_times_from_ai_on_all_day_event: false
+            },
+            front_conditions: {
+
+            }
+        },
         trust_julia_suggestions_virtual: {
             label: 'We can trust Jul.IA date suggestions for virtual appointments',
             back_conditions: {
@@ -55,7 +99,8 @@ class JulieActionsController < ApplicationController
                 all_clients_on_calendar_server: true,
                 #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false,
-                client_on_trip: false
+                client_on_trip: false,
+                date_times_from_ai_count: 0
             },
             front_conditions: {
                 conscience_suggestion: {
@@ -78,7 +123,8 @@ class JulieActionsController < ApplicationController
                 all_clients_on_calendar_server: true,
                 #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false,
-                client_on_trip: false
+                client_on_trip: false,
+                date_times_from_ai_count: 0
             },
             front_conditions: {
                 conscience_suggestion: {
@@ -93,8 +139,14 @@ class JulieActionsController < ApplicationController
 
     @is_discussion_client_julie_only = @message.is_discussion_client_julie_only
 
-    if @flow_conditions.length > 0
+    if (@flow_conditions.keys & [:trust_julia_suggestions_virtual_from_backend, :trust_julia_suggestions_physical_from_backend]).length > 0
+      @julie_action.update(date_suggestions_full_ai_capacity: true)
+
       JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'julie_actions#show:done', julie_action_id: @julie_action.id}, distinct_id: @julie_action.id})
+      # Throw the dice to know if we help operator with AI or not
+      should_help_with_ai = true#rand >= 0.5
+
+      @julie_action.update(date_suggestions_full_ai: should_help_with_ai)
     end
   end
 
@@ -243,65 +295,5 @@ class JulieActionsController < ApplicationController
 
         }
     }
-  end
-
-  private
-
-  def handle_flow_conditions(julie_action, flow_conditions)
-    Rails.logger.debug('- ' * 50)
-    # Reinitialize the JSON because if we use the saved JSON and change it, il results in the record not being properly updated
-    filters_results = {}
-    puts 'Handling flow conditions...'
-    selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
-      identifier = flow_identifier.to_s+'_back_conditions'
-      filters_results[identifier] = {}
-      Rails.logger.debug("  Flow: #{flow_identifier}")
-      a_condition_fails = flow_data[:back_conditions].any? do |condition_identifier, condition_value|
-        result = validate_flow_condition(condition_identifier, condition_value)
-        Rails.logger.debug("    #{condition_identifier} | expected: #{condition_value} | condition_respected: #{result}")
-        filters_results[identifier][condition_identifier.to_s] = result.to_s
-        result == false
-      end
-      !a_condition_fails
-    end
-
-    julie_action.update(ai_filters_results: filters_results)
-
-    selected_conditions
-  end
-
-  def validate_flow_condition(condition_identifier, condition_value)
-    case condition_identifier
-      when :feature_active
-        feature_active? condition_value, session[:operator_id], session[:privilege]
-      when :action_nature
-        validation_flow_condition_include_or_equals condition_value, @julie_action.action_nature
-      when :event_type
-        validation_flow_condition_include_or_equals condition_value, @julie_action.message_classification.appointment_nature
-      when :should_book_resource
-        validation_flow_condition_include_or_equals condition_value, @julie_action.should_book_resource
-      when :current_notes_present
-        all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
-        all_account_emails.map{|email| Account.create_from_email(email).try(:has_current_notes?)}.include?(true) == condition_value
-      when :free_notes_present
-        validation_flow_condition_include_or_equals condition_value, @julie_action.free_notes_present
-      when :linked_attendees_present
-        validation_flow_condition_include_or_equals condition_value, @messages_thread.linked_attendees.present?
-      when :all_clients_on_calendar_server
-        all_account_emails = @julie_action.message_classification.other_account_emails + [@messages_thread.account_email]
-        !all_account_emails.map{|email| Account.create_from_email(email).try(:using_calendar_server)}.include?(false) == condition_value
-      when :main_client_auto_date_suggestions_on
-        Account.create_from_email(@messages_thread.account_email).try(:auto_date_suggestions).present?
-      when :constraints_conflicts
-        AdminApiInterface.constraints_conflicts(JSON.parse(@julie_action.message_classification.constraints_data || "[]")) == condition_value
-      when :client_on_trip
-        validation_flow_condition_include_or_equals condition_value, @julie_action.message_classification.client_on_trip != nil
-      else
-        raise "Unsupported flow condition: #{condition_identifier}"
-    end
-  end
-
-  def validation_flow_condition_include_or_equals(condition_value, value_to_check)
-    condition_value.is_a?(Array) ? condition_value.include?(value_to_check) : value_to_check == condition_value
   end
 end

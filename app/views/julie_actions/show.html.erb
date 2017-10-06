@@ -2,6 +2,10 @@
   window.specialCallbacks = [];
   window.julie_action_nature = '<%= @julie_action.action_nature %>';
   window.julie_action_id = <%= @julie_action.id %>;
+
+  window.fullAiFromBackend = <%= @julie_action.date_suggestions_full_ai && @julie_action.date_suggestions_full_ai_capacity  ? "true" : "false" %>;
+  window.shouldNotCallJulIA = <%= !@julie_action.date_suggestions_full_ai && @julie_action.date_suggestions_full_ai_capacity  ? "true" : "false" %>;
+  window.julie_action_date_times_from_ai = <%== @julie_action.date_times_from_ai.to_json %>;
   window.classification = '<%= @message_classification.classification %>';
 
   window.currentFullMessageWithFooter = "";

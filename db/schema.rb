@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170926093800) do
+ActiveRecord::Schema.define(version: 20170927065740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,36 +207,31 @@ ActiveRecord::Schema.define(version: 20170926093800) do
     t.datetime "updated_at"
   end
 
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "julie_actions", force: true do |t|
     t.integer  "message_classification_id"
     t.string   "action_nature"
-    t.text     "date_times",                      default: "[]"
+    t.text     "date_times",                        default: "[]"
     t.text     "text"
-    t.boolean  "done",                            default: false
-    t.boolean  "pending",                         default: false
+    t.boolean  "done",                              default: false
+    t.boolean  "pending",                           default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "processed_in"
     t.text     "calendar_id"
     t.text     "event_id"
-    t.text     "events",                          default: "[]"
-    t.boolean  "deleted_event",                   default: false
+    t.text     "events",                            default: "[]"
+    t.boolean  "deleted_event",                     default: false
     t.string   "event_url"
     t.string   "calendar_login_username"
     t.integer  "server_message_id"
     t.text     "generated_text"
-    t.boolean  "event_from_invitation",           default: false
+    t.boolean  "event_from_invitation",             default: false
     t.string   "event_from_invitation_organizer"
-    t.boolean  "date_suggestions_full_ai",        default: false
-    t.json     "ai_filters_results",              default: {}
+    t.boolean  "date_suggestions_full_ai",          default: false
+    t.json     "ai_filters_results",                default: {}
     t.json     "ai_call_status"
+    t.json     "date_times_from_ai"
+    t.boolean  "date_suggestions_full_ai_capacity", default: false
   end
 
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
@@ -324,7 +319,6 @@ ActiveRecord::Schema.define(version: 20170926093800) do
     t.integer  "server_message_id"
     t.datetime "request_at"
     t.string   "allowed_attendees",    default: [],    array: true
-    t.string   "auto_email_kind"
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
@@ -448,25 +442,6 @@ ActiveRecord::Schema.define(version: 20170926093800) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_messages_thread_archive_actions", force: true do |t|
-    t.integer "messages_thread_id"
-    t.boolean "currently_archived"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "versions", force: true do |t|
     t.string   "item_type",  null: false

@@ -100,7 +100,7 @@ window.classificationForms.classificationForm.prototype.sendFormOnlyLocale = fun
         locale: $("input[name='locale_only']:checked").val(),
         processed_in: Date.now() - classificationForm.startedAt
     };
-    console.log(classificationForm);
+
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
         type: "POST",
@@ -210,6 +210,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         verified_dates_by_ai: params.verifiedDatesByAI,
         passed_conditions: params.passed_conditions,
         message_classification_identifier: params.message_classification_identifier,
+        date_suggestions_from_ai: params.dateSuggestionsFromAi,
         language_level: $("input[name='language_level']:checked").val(),
         asap_constraint: $("input[name='asap_constraint']:checked").length > 0
     };

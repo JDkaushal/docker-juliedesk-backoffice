@@ -106,8 +106,10 @@ class MessagesController < ApplicationController
     messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
 
     @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
+    @message_classification.julie_action.update_initial_attributes(params)
+
     OperatorAction.create_and_verify({
-                                         initiated_at: DateTime.now - ((params[:processed_in] || "0").to_i / 1000).seconds,
+                                         initiated_at: DateTime.now - ((params[:processed_in] || '0').to_i / 1000).seconds,
                                          target: @message_classification,
                                          nature: OperatorAction::NATURE_OPEN,
                                          operator_id: session[:operator_id],
@@ -127,6 +129,8 @@ class MessagesController < ApplicationController
       #                                                                                               awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
       #                                                                                           })
     end
+
+
 
     # if messages_thread.has_clients_with_linked_attendees_enabled && messages_thread.attendees_has_changed(params[:old_attendees], params[:attendees])
     #   puts 'Computing linked attendees'

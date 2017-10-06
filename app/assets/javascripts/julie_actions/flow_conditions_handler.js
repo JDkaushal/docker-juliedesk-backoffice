@@ -43,13 +43,12 @@ window.flowConditionsHandler.processFlowConditions = function(flowConditions) {
             window.flowConditionsHandler.processFlowConditionsGroup(conditionsGroupName, conditions, function(result) {
                 flowConditionsPromises[flowName][conditionsGroupName] = result;
                 var allFlowsResult = window.flowConditionsHandler.handleFlowConditionsPromises(flowConditionsPromises);
-                if(allFlowsResult.status === 'success') {
+                if(allFlowsResult.status === 'success' && flowData.flow_action) {
                     window[flowData.flow_action]();
                 }
             });
         })
     });
-    //window.flowConditionsHandler.waitingForFlowConditionsToResolve("Waiting for flow validation...");
     window.flowConditionsHandler.handleFlowConditionsPromises(flowConditionsPromises);
 };
 
@@ -96,20 +95,17 @@ window.flowConditionsHandler.handleFlowConditionsPromises = function(flowConditi
                 positiveFlowNames.push(flowName);
             }
         });
-        if(positiveFlowNames.length == 0) {
-            //window.flowConditionsHandler.flowConditionsResolved("No flow found");
+        if(positiveFlowNames.length === 0) {
             return {
                 status: "no_flow"
             }
         }
         else if(positiveFlowNames.length > 1) {
-            //window.flowConditionsHandler.flowConditionsResolved("Several flows found");
             return {
                 status: "several_flows"
             }
         }
         else {
-            //window.flowConditionsHandler.flowConditionsResolved();
             return {
                 status: "success",
                 flow: positiveFlowNames[0]
@@ -118,35 +114,3 @@ window.flowConditionsHandler.handleFlowConditionsPromises = function(flowConditi
 
     }
 };
-
-window.flowConditionsHandler.waitingForFlowConditionsToResolve = function(message) {
-    window.flowConditionsHandler.getOrCreateLoadingPanel().html(message).show();
-};
-
-window.flowConditionsHandler.flowConditionsResolved = function() {
-    window.flowConditionsHandler.getOrCreateLoadingPanel().hide();
-};
-
-window.flowConditionsHandler.getOrCreateLoadingPanel = function() {
-    var $panel = $("#flow-conditions-handler-loading-panel");
-    if($panel.length > 0) {
-        return $panel;
-    }
-    else {
-        $( "body" ).append( $( "<div>" ).attr("id", "flow-conditions-handler-loading-panel").css({
-            'position': 'fixed',
-            'top': 0,
-            'left': 0,
-            'right': 0,
-            'bottom': 0,
-            'z-index': 100,
-            'background': 'rgba(255, 255, 255, 0.9)',
-            'display': 'none',
-            'text-align': 'center',
-            'padding': '200px 0',
-            'font-size': '16px'
-        }) );
-        return $("#flow-conditions-handler-loading-panel");
-    }
-};
-

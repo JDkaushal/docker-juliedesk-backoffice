@@ -75,6 +75,14 @@ class JulieAction < ActiveRecord::Base
     end
   end
 
+  def update_initial_attributes params
+    if self.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+      self.update({
+                      date_times_from_ai: params[:date_suggestions_from_ai]
+                  })
+    end
+  end
+
   def self.reassociate_events_to_calendar_server_if_possible(date, specific_ids = [])
     puts "Reassociating Julie Actions from #{date} | With specific ids: #{specific_ids}"
 

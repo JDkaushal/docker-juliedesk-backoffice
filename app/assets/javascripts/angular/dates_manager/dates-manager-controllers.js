@@ -41,14 +41,6 @@
 
         var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
 
-        // - - - - - - - DIRTY FIX DUE TO CHROME VERSION 57 BUG - - - - - //
-        // - TO REMOVE WHEN CHROM V.58 IS PUBLIC  - - - - - - - - - - - - //
-        if(!aiDatesSuggestionManagerScope.fetchSuggestedDatesByAi) {
-            console.log("Scope error due to Chrome v57.");
-            aiDatesSuggestionManagerScope = aiDatesSuggestionManagerScope.$$childHead;
-        }
-        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -//
-
         $scope.init = function() {
             $scope.attachEventsToDom();
         };
@@ -78,35 +70,6 @@
 
         $scope.nextBtnDisabled = function() {
             return $scope.aiSuggestionsRemaining();
-        };
-
-        // Aggregate the current thread constraint with the current appointment default constraints
-        $scope.generateTimeConstraints = function() {
-            var calendar = window.currentCalendar;
-            var timezone = calendar.getCalendarTimezone();
-
-            var today = moment().startOf('day').tz(timezone);
-            var allConstraints = _.flatten(_.values(calendar.initialData.constraintsData || {}));
-            var allConstraintsDates = _.map(allConstraints, function(constraint){
-                    return _.map(constraint.dates, function(date) {
-                        var time = constraint.end_time == '' ? '' : 'T' + constraint.end_time;
-                        return moment(date + time);
-                    })
-                }
-            );
-
-            var maximumConstraintDate = null;
-            if(allConstraintsDates) {
-                var flattenedConstraintsDates = _.flatten(allConstraintsDates);
-
-                if(flattenedConstraintsDates.length > 0) {
-                    maximumConstraintDate = _.max(flattenedConstraintsDates, function(date) {return date.valueOf()});
-                }
-            }
-
-            var upperLimit = (maximumConstraintDate || moment()).clone().add(1, 'month');
-
-            return window.currentCalendar.getConstraintsDataEvents(today, upperLimit);
         };
 
         $scope.mouseEnterSuggestionNode = function(suggestion, $event) {
@@ -178,7 +141,61 @@
             $scope.setSuggestions();
         };
 
+        $scope.processFullAiDateSuggestions = function(data) {
+
+            data.suggested_dates = _.sortBy(data.suggested_dates);
+            $scope.AIsuggestionsTrackingId = data.suggested_dates_id;
+            $scope.fullAiFromBackendSlots = data.suggested_dates;
+            $scope.trustMode = "trusted";
+            $scope.sendDatesSuggestionsAutoProcessUpdate();
+
+
+            setTimeout(function() {
+                window.postMessage({
+                    message: "drawExternalEventsList",
+                    date_times: data.suggested_dates
+                }, "*");
+            }, 10);
+
+            $scope.$apply();
+        };
+
+        $scope.getCalendar = function() {
+            return window.currentCalendar;
+        };
+
+        $scope.fetchAiDatesSuggestionsIfNeeded = function() {
+            if(window.threadComputedData.client_agreement &&
+                window.classification !== 'follow_up_contacts' &&
+                !window.shouldNotCallJulIA &&
+                window.featuresHelper.isFeatureActive('ai_dates_suggestions')) {
+                $scope.fetchAiDatesSuggestions();
+            }
+        };
+
         $scope.fetchAiDatesSuggestions = function(forceFetch) {
+            if(window.fullAiFromBackend) {
+
+                var currentTimezone = $scope.getCalendar().getCalendarTimezone();
+
+                _.each($scope.fullAiFromBackendSlots, function(slot) {
+                    var realStart = moment(slot).tz(currentTimezone);
+                    var realEnd = realStart.clone();
+                    realEnd.add($scope.getCalendar().getCurrentDuration(), 'm');
+                    var eventData = $scope.getCalendar().generateEventData({
+                        title: $scope.getCalendar().generateDelayTitle(),
+                        start: realStart,
+                        end: realEnd,
+                        calendar_login_username: $scope.getCalendar().initialData.default_calendar_login_username,
+                        calendar_login_type: $scope.getCalendar().initialData.default_calendar_login_type,
+                        calendar_login_email: $scope.getCalendar().initialData.email//,
+                        //trackingId: slotToAccept.trackingId
+                    });
+                    $scope.getCalendar().$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
+                });
+                return;
+            }
+
             if(forceFetch || $scope.shouldFetchAiSuggestedDates()) {
                 var fetch = true;
                 var suggestionsToGet = 4;
@@ -214,7 +231,6 @@
                     var fetchParams = {
                         account_email: window.threadAccount.email,
                         thread_data: window.threadComputedData,
-                        //time_constraints: $scope.generateTimeConstraints(),
                         n_suggested_dates: suggestionsToGet,
                         attendees: $('#attendeesCtrl').scope().attendees,
                         message_id: $('.email.highlighted').data('message-id'),
@@ -355,7 +371,7 @@
             });
 
             // We don't display the slot anymore on the right because it will be replaced with a real suggestion as if
-            // the operator selected it (which will be binded to the calendar)
+            // the operator selected it (which will be bound to the calendar)
             slotToAccept.display = false;
             slotToAccept.accepted = true;
             $scope.removeAiEventFromCalendar(slot, false);
@@ -438,6 +454,7 @@
         $scope.sendDatesSuggestionsAutoProcessUpdate = function() {
             aiDatesSuggestionManagerScope.datesSuggestionsAutoProcessUpdate({
                 id: $scope.AIsuggestionsTrackingId,
+                julie_action_id: window.julie_action_id,
                 auto_process_passed_conditions: true,
                 auto_process_force_human_reason: $scope.reasonToOpenCalendarWhenTrustingJulia,
                 auto_process_force_human_reason_details: $scope.reasonDetailsToOpenCalendarWhenTrustingJulia

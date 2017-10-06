@@ -96,8 +96,8 @@ function Calendar($selector, params, synchronize) {
                 calendar.triggerCalendarsSync();
 
             // Don't ask AI for dates suggestions in the follow up contacts flow
-            if(aiDatesSuggestionsManager && window.threadComputedData.client_agreement && window.classification != 'follow_up_contacts') {
-                new Feature('ai_dates_suggestions', aiDatesSuggestionsManager).fetchAiDatesSuggestions();
+            if(aiDatesSuggestionsManager) {
+                aiDatesSuggestionsManager.fetchAiDatesSuggestionsIfNeeded();
             }
             
             if(timeTravelManager) {
@@ -688,15 +688,6 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
     calendar.currentlyFetchingWeeks[formattedStart] = 0;
 
-    // Constraints now computed in backend
-
-    // if(calendar.initialData.computeConstraintsViaBackend) {
-    //     calendar.addConstraintsDataEventsViaBackend(start, end);
-    // }
-    // else {
-    //     calendar.addCal(calendar.getConstraintsDataEvents(start, end));
-    // }
-
 
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
@@ -1044,56 +1035,6 @@ Calendar.prototype.computeConstraintsDataEvents = function(data, startTime, endT
     return result;
 };
 
-
-
-Calendar.prototype.getConstraintsDataEvents = function(startTime, endTime) {
-    var calendar = this;
-
-
-    return calendar.computeConstraintsDataEvents(calendar.initialData.constraintsData, startTime, endTime);
-    // var result = [];
-    // var calendar = this;
-    // _.each(calendar.initialData.constraintsData, function(dataEntries, attendeeEmail) {
-    //     var eventsFromData = ConstraintTile.getEventsFromData(dataEntries, moment(startTime), moment(endTime));
-    //     _.each(eventsFromData.cant, function(ev) {
-    //
-    //         var event = {
-    //             summary: attendeeEmail + " not available",
-    //             start: {
-    //                 dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
-    //             },
-    //             end: {
-    //                 dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
-    //             },
-    //             startEditable: false,
-    //             durationEditable: false,
-    //             calId: "juliedesk-strong-constraints",
-    //             isNotAvailableEvent: true
-    //         };
-    //         result.push(event);
-    //     });
-    //
-    //     _.each(eventsFromData.dontPrefer, function(ev) {
-    //         var event = {
-    //             summary: attendeeEmail + " prefers not",
-    //             start: {
-    //                 dateTime: ev.start.tz(calendar.getCalendarTimezone()).format()
-    //             },
-    //             end: {
-    //                 dateTime: ev.end.tz(calendar.getCalendarTimezone()).format()
-    //             },
-    //             startEditable: false,
-    //             durationEditable: false,
-    //             calId: "juliedesk-light-constraints",
-    //             isNotAvailableEvent: true
-    //         };
-    //         result.push(event);
-    //     });
-    // });
-    //
-    //
-    // return result;
-};
 
 Calendar.prototype.bookingHoursUnavailabilities = function(startTime, endTime, accountPreferencesHash, clientTimezone, targetTimezone) {
 

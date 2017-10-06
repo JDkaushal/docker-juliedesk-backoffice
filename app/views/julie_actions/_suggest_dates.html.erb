@@ -22,6 +22,12 @@
             email: window.threadAccount.email,
             duration: window.threadComputedData.duration
         });
+
+        if(window.fullAiFromBackend) {
+            $(".calendar-container").addClass("minimized");
+            $("#show-calendar-button").hide();
+            getDatesSuggestionManager().processFullAiDateSuggestions(window.julie_action_date_times_from_ai);
+        }
     };
 
     window.afterReplyBoxInitCallback = function () {
@@ -248,25 +254,32 @@
     window.suggestDateReplyFunction = function () {
         var datesManagerScope = $('#dates-suggestion-manager').scope();
 
+        var data = {
+            text: $("textarea#reply-text").val(),
+            generated_text: window.currentFullMessageWithFooter,
+            timezone: $('#dates_suggestion_timezone').val(),
+            to: window.currentRecipients().to,
+            cc: window.currentRecipients().cc,
+            date_times: window.timeSlotsToSuggest,
+            deleted_event: window.actionDeletedEvent,
+            done: true,
+            processed_in: Date.now() - window.startedAt,
+            messages_thread_id: window.processingMessageThreadId,
+            client_settings: window.getClientSettings(),
+            annotated_reply: window.annotatedReply,
+
+        };
+        if(window.fullAiFromBackend) {
+
+        }
+        else {
+            data.date_suggestions_full_ai = getDatesSuggestionManager().dateSuggestionsFullAi == true;
+            data.ai_call_status = {suggest_dates: datesManagerScope.aiResult};
+        }
         $.ajax({
             url: "/julie_actions/" + window.julie_action_id + "/update",
             method: "post",
-            data: {
-                text: $("textarea#reply-text").val(),
-                generated_text: window.currentFullMessageWithFooter,
-                timezone: $('#dates_suggestion_timezone').val(),
-                to: window.currentRecipients().to,
-                cc: window.currentRecipients().cc,
-                date_times: window.timeSlotsToSuggest,
-                deleted_event: window.actionDeletedEvent,
-                done: true,
-                processed_in: Date.now() - window.startedAt,
-                messages_thread_id: window.processingMessageThreadId,
-                client_settings: window.getClientSettings(),
-                annotated_reply: window.annotatedReply,
-                date_suggestions_full_ai: getDatesSuggestionManager().dateSuggestionsFullAi == true,
-                ai_call_status: {suggest_dates: datesManagerScope.aiResult}
-            }
+            data: data
         });
         window.sendReply();
     };
