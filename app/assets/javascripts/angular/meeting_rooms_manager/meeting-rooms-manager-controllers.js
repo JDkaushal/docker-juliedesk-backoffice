@@ -368,8 +368,8 @@
                         $scope.usingMeetingRoom = currentAddress.meeting_rooms_enabled || currentAppointment.meeting_room_used;
 
                         if($scope.usingMeetingRoom) {
-                            var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room;
-                            var addressSelectedMeetingRoom = currentAddress.selected_meeting_room;
+                            var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || {};
+                            var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || {};
                             var selectedMeetingRoom = undefined;
 
                             var usedMeetingRoom = appointmentSelectedMeetingRoom;
