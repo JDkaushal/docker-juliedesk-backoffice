@@ -625,8 +625,8 @@ class MessagesThread < ActiveRecord::Base
   def check_recompute_linked_attendees(old_attendees, new_attendees)
     old_attendees ||= {}
     if new_attendees.present?
-      old_attendees_emails = old_attendees.values.map{|a| a['email']}.compact.sort
-      new_attendees_emails = new_attendees.values.map{|a| a['isPresent'] == 'true' ? a['email'] : nil}.compact.sort
+      old_attendees_emails = (old_attendees.class == Array ? old_attendees : old_attendees.values).map{|a| a['email']}.compact.sort
+      new_attendees_emails = (new_attendees.class == Array ? new_attendees : new_attendees.values).map{|a| a['isPresent'] == 'true' ? a['email'] : nil}.compact.sort
 
       if self.has_clients_with_linked_attendees_enabled && self.attendees_has_changed(old_attendees_emails, new_attendees_emails)
         self.compute_linked_attendees(Account.accounts_cache(mode: "light"), new_attendees_emails)

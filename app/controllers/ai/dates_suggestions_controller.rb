@@ -3,6 +3,18 @@ class Ai::DatesSuggestionsController < ApplicationController
   def fetch
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'date_suggestions#fetch:initiated', julie_action_id: params[:julie_action_id]}, distinct_id: params[:julie_action_id]})
 
+    if params[:compute_linked_attendees]
+      messages_thread = Message.find(params[:message_id]).messages_thread
+      p "*" * 50
+      p params[:attendees].class
+      p params[:attendees]
+      p "*" * 50
+      messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
+      params[:thread_data][:linked_attendees] = messages_thread.linked_attendees
+    end
+
+    render json: params and return
+
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, params)
 
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'date_suggestions#fetch:done', julie_action_id: params[:julie_action_id]}, distinct_id: params[:julie_action_id]})

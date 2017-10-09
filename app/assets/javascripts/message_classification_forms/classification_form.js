@@ -134,6 +134,18 @@ window.classificationForms.classificationForm.prototype.validateConstaintsData =
     return valid;
 };
 
+window.classificationForms.classificationForm.prototype.getTimezoneForSendForm = function() {
+    var timezone = $("#timezone").val().trim();
+    var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
+
+    if(vmHelper && vmHelper.isVirtualAppointment()) {
+        timezone = _.find(window.getInfoPanelAttendeesForSendForm(), function(attendee) {
+            return threadAccount.email_aliases.concat([threadAccount.email]).indexOf(attendee.email) > -1;
+        }).timezone;
+    }
+    return timezone;
+};
+
 window.classificationForms.classificationForm.prototype.sendForm = function (params) {
     params = params || {};
     var classificationForm = this;
@@ -153,12 +165,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         return;
     }
 
-    var timezone = $("#timezone").val().trim();
-    if(vmHelper && vmHelper.isVirtualAppointment()) {
-        timezone = _.find(window.getInfoPanelAttendeesForSendForm(), function(attendee) {
-            return threadAccount.email_aliases.concat([threadAccount.email]).indexOf(attendee.email) > -1;
-        }).timezone;
-    }
+    var timezone = classificationForm.getTimezoneForSendForm();
 
     var constraints_data = $(".constraint-tile-container").map(function () {
         return $(this).data("constraint")

@@ -10,9 +10,10 @@ window.classificationForms.askDateSuggestionsForm = function (params) {
     window.submitClassification = function () {
         if(window.featuresHelper.isFeatureActive("auto_date_suggestions_from_backend")) {
             currentClassifForm.fetchDateSuggestionsFromAi(function(dateSuggestionsFromAi) {
-                askDateSuggestionsForm.sendForm({
+                /*askDateSuggestionsForm.sendForm({
                     dateSuggestionsFromAi: dateSuggestionsFromAi
-                });
+                })
+                ;*/
             });
         }
         else {
@@ -49,7 +50,14 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
 
     var fetchParams = {
         account_email: window.threadAccount.email,
-        thread_data: window.threadComputedData,
+        thread_data: {
+            appointment_nature: $("#appointment_nature").val(),
+            location: $("#location").val(),
+            duration: $("#duration").val(),
+            timezone: askDateSuggestionsForm.getTimezoneForSendForm(),
+        },
+        compute_linked_attendees: true,
+        old_attendees: _.filter(window.threadComputedData.attendees, function(att) { return att.isPresent == 'true' }),
         n_suggested_dates: suggestionsToGet,
         attendees: attendeesControllerScope.attendees,
         message_id: $('.email.highlighted').data('message-id'),
