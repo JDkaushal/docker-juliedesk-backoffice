@@ -102,12 +102,13 @@
 
                 $scope.init = function() {
                     $scope.initLocations();
+                    var currentAppointment = window.getCurrentAppointment();
 
                     if(!window.formFirstPass || window.julie_action_nature) {
                         $scope.setMeetingRoomManagerDefaultState();
                     }
 
-                    if(window.getCurrentAppointment().appointment_kind_hash.is_virtual) {
+                    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
                         $scope.refreshRoomsList(true);
                     }
                 };
@@ -124,6 +125,7 @@
                 });
 
                 $('#appointment_nature').change(function(e) {
+                    $scope.refreshRoomsList();
                     $scope.setDefaultSelectedRoom();
                     $scope.determineFittingMeetingRooms();
                     $scope.$apply();
@@ -174,7 +176,7 @@
 
                 $scope.initLocations = function() {
                     $scope.locations = $.extend({}, _.filter(window.threadAccount.addresses, function(address) {
-                        return address.meeting_room_used;
+                        return address.meeting_rooms_enabled;
                     }));
                 };
 
@@ -260,7 +262,7 @@
                     if(currentAppointment) {
                         var currentAppointmentIsVirtual = currentAppointment.appointment_kind_hash.is_virtual;
                         var userHasRoomsOnLocations = _.any(window.threadAccount.addresses, function(address) {
-                           return address.meeting_room_used;
+                           return address.meeting_rooms_enabled;
                         });
 
                         var shouldDisplayForPhysicalAppointment = !currentAppointmentIsVirtual && (currentAppointment.meeting_room_used || address && address.meeting_room_used);
