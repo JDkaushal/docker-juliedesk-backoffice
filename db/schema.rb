@@ -319,6 +319,7 @@ ActiveRecord::Schema.define(version: 20170927065740) do
     t.integer  "server_message_id"
     t.datetime "request_at"
     t.string   "allowed_attendees",    default: [],    array: true
+    t.string   "auto_email_kind"
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
