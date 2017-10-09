@@ -66,9 +66,9 @@
                 });
 
                 $scope.$watch('roomsSelectionMode', function(newVal, oldVal) {
-                    $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
                     newVal = newVal || {};
                     oldVal = oldVal || {};
+                    $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
 
                     if(newVal && newVal.id != oldVal.id  && !window.julie_action_nature) {
                         if(newVal.id.indexOf('auto_room_selection') > - 1) {
