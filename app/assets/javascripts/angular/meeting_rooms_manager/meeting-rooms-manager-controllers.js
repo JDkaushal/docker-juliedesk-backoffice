@@ -263,7 +263,7 @@
                            return address.meeting_room_used;
                         });
 
-                        var shouldDisplayForPhysicalAppointment = !currentAppointmentIsVirtual && (currentAppointment.meeting_room_used || address && address.meeting_rooms_enabled);
+                        var shouldDisplayForPhysicalAppointment = !currentAppointmentIsVirtual && (currentAppointment.meeting_room_used || address && address.meeting_room_used);
                         var shouldDisplayForVirtualAppointment = currentAppointmentIsVirtual && userHasRoomsOnLocations;
 
                         shouldDisplay = shouldDisplayForPhysicalAppointment || shouldDisplayForVirtualAppointment;
@@ -291,7 +291,7 @@
                     var address = window.getCurrentAddressObject();
                     var currentAppointment = window.getCurrentAppointment();
 
-                    if(currentAppointment && currentAppointment.meeting_room_used && address && address.meeting_rooms_enabled) {
+                    if(currentAppointment && currentAppointment.meeting_room_used || address && address.meeting_room_used) {
                         $scope.usingMeetingRoom = true;
                         // $scope.availableRooms = address.available_meeting_rooms;
                         // $scope.setRoomsList();
@@ -365,7 +365,7 @@
 
                     if(currentAddress) {
 
-                        $scope.usingMeetingRoom = currentAddress.meeting_rooms_enabled || currentAppointment.meeting_room_used;
+                        $scope.usingMeetingRoom = currentAddress.meeting_room_used || currentAppointment.meeting_room_used;
 
                         if($scope.usingMeetingRoom) {
                             var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
@@ -416,7 +416,7 @@
                 $scope.setSelectedRoom = function() {
                     var address = window.getCurrentAddressObject();
 
-                    $scope.displayForm = address && address.meeting_rooms_enabled;
+                    $scope.displayForm = address && address.meeting_room_used;
                     $scope.usingMeetingRoom = window.threadComputedData.using_meeting_room;
                     if(!$.isEmptyObject(window.threadComputedData.meeting_room_details)) {
                         var threadDataRoomsDetails = angular.copy(window.threadComputedData.meeting_room_details);
