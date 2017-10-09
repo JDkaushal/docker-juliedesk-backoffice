@@ -52,7 +52,7 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
         thread_data: {
             appointment_nature: $("#appointment_nature").val(),
             location: $("#location").val(),
-            duration: $("#duration").val(),
+            duration: parseInt($("#duration").val(), 10),
             timezone: askDateSuggestionsForm.getTimezoneForSendForm(),
         },
         compute_linked_attendees: true,
