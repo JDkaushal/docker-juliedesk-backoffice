@@ -18,6 +18,7 @@ class CheckRoutineWorker
         mt.update(follow_up_reminder_date: nil)
       else
         mt.update(should_follow_up: true, follow_up_reminder_date: nil)
+        mt.add_tag(MessagesThread::SYNCING_TAG)
         mt.track_thread_in_inbox(:follow_up)
       end
     end
