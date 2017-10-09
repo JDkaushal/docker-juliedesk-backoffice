@@ -10,10 +10,9 @@ window.classificationForms.askDateSuggestionsForm = function (params) {
     window.submitClassification = function () {
         if(window.featuresHelper.isFeatureActive("auto_date_suggestions_from_backend")) {
             currentClassifForm.fetchDateSuggestionsFromAi(function(dateSuggestionsFromAi) {
-                /*askDateSuggestionsForm.sendForm({
+                askDateSuggestionsForm.sendForm({
                     dateSuggestionsFromAi: dateSuggestionsFromAi
-                })
-                ;*/
+                });
             });
         }
         else {

@@ -5,15 +5,9 @@ class Ai::DatesSuggestionsController < ApplicationController
 
     if params[:compute_linked_attendees]
       messages_thread = Message.find(params[:message_id]).messages_thread
-      p "*" * 50
-      p params[:attendees].class
-      p params[:attendees]
-      p "*" * 50
       messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
       params[:thread_data][:linked_attendees] = messages_thread.linked_attendees
     end
-
-    render json: params and return
 
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, params)
 
