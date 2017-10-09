@@ -1197,7 +1197,7 @@
             return addressObject.label == $("select#location_nature").val();
         });
 
-        if(!address && window.getCurrentAppointment().appointment_kind_hash.is_virtual && window.threadComputedData.meeting_room_details && window.threadComputedData.meeting_room_details.location) {
+        if(!address && window.getCurrentAppointment() && window.getCurrentAppointment().appointment_kind_hash.is_virtual && window.threadComputedData.meeting_room_details && window.threadComputedData.meeting_room_details.location) {
             address = _.find(window.threadAccount.addresses, function (addressObject) {
                 return addressObject.address == window.threadComputedData.meeting_room_details.location;
             });
