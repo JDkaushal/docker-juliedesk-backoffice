@@ -231,7 +231,7 @@ ActiveRecord::Schema.define(version: 20170927065740) do
     t.json     "ai_filters_results",                default: {}
     t.json     "ai_call_status"
     t.json     "date_times_from_ai"
-    t.boolean  "date_suggestions_full_ai_capacity", default: false
+    t.boolean  "date_suggestions_full_ai_capacity"
   end
 
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
