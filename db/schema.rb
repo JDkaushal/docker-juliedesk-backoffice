@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171009084904) do
+ActiveRecord::Schema.define(version: 20171009101652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -231,7 +231,7 @@ ActiveRecord::Schema.define(version: 20171009084904) do
     t.json     "ai_filters_results",                default: {}
     t.json     "ai_call_status"
     t.json     "date_times_from_ai"
-    t.boolean  "date_suggestions_full_ai_capacity"
+    t.boolean  "date_suggestions_full_ai_capacity", default: false
   end
 
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
