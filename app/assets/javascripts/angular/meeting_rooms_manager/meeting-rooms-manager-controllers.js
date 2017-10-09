@@ -416,7 +416,7 @@
                 $scope.setSelectedRoom = function() {
                     var address = window.getCurrentAddressObject();
 
-                    $scope.displayForm = address && address.meeting_room_used;
+                    $scope.displayForm = address && address.meeting_rooms_enabled;
                     $scope.usingMeetingRoom = window.threadComputedData.using_meeting_room;
                     if(!$.isEmptyObject(window.threadComputedData.meeting_room_details)) {
                         var threadDataRoomsDetails = angular.copy(window.threadComputedData.meeting_room_details);
