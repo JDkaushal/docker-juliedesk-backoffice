@@ -70,7 +70,7 @@
                     oldVal = oldVal || {};
                     $scope.displayCustomSelectionFilters = newVal.id == 'auto_room_selection';
 
-                    if(newVal && newVal.id != oldVal.id  && !window.julie_action_nature) {
+                    if(newVal && newVal.id && newVal.id != oldVal.id  && !window.julie_action_nature) {
                         if(newVal.id.indexOf('auto_room_selection') > - 1) {
                             $scope.selectedRoom = undefined;
                         } else {
