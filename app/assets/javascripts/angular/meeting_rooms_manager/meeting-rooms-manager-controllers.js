@@ -95,6 +95,9 @@
                     $('.create-event-meeting-rooms-container input[type="checkbox"]').prop('checked', newVal);
                     if(newVal) {
                         createEventMeetingRoomContainerSelect.show();
+                        if(window.isCurrentAppointmentVirtual()) {
+                            $scope.preselectAddress();
+                        }
                     } else {
                         createEventMeetingRoomContainerSelect.hide();
                     }
@@ -108,7 +111,7 @@
                         $scope.setMeetingRoomManagerDefaultState();
                     }
 
-                    if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+                    if(window.isCurrentAppointmentVirtual()) {
                         $scope.refreshRoomsList(true);
                     }
                 };
@@ -146,21 +149,44 @@
                 });
 
                 $scope.roomLocationChanged = function() {
-                  var usableRooms = $scope.roomLocation.available_meeting_rooms;
+                    var usableRooms = $scope.roomLocation.available_meeting_rooms;
+                    var currentAppointment = window.getCurrentAppointment();
+
                     $scope.roomsList = [autoRoomMode];
 
-                  _.each(usableRooms, function(meetingRoom) {
-                      meetingRoom.capacity = meetingRoom.capacity || undefined;
-                      $scope.roomsList.push({id: meetingRoom.id, summary: meetingRoom.summary, calendar_login_username: meetingRoom.calendar_login_username});
-                  });
+                    _.each(usableRooms, function(meetingRoom) {
+                        meetingRoom.capacity = meetingRoom.capacity || undefined;
+                        $scope.roomsList.push({id: meetingRoom.id, summary: meetingRoom.summary, calendar_login_username: meetingRoom.calendar_login_username});
+                    });
 
-                  if($scope.roomLocation.selected_meeting_room.indexOf('auto_room_selection') > -1) {
-                      $scope.setDefaultFilters($scope.roomLocation.selected_meeting_room);
-                      $scope.setRoom('auto_room_selection');
-                  } else {
-                      $scope.setRoom($scope.roomLocation.selected_meeting_room);
-                      $scope.noFittingRooms = false;
-                  }
+                    $scope.setAvailableRooms($scope.roomLocation);
+
+                    var usedRoom = $scope.determineUsedMeetingRoom((currentAppointment && currentAppointment.selected_meeting_room) || '', $scope.roomLocation.selected_meeting_room || '');
+
+                    if(usedRoom.indexOf('auto_room_selection') > -1) {
+                        $scope.setDefaultFilters($scope.roomLocation.selected_meeting_room);
+                        $scope.setRoom('auto_room_selection');
+                        $scope.determineFittingMeetingRooms();
+                    } else {
+                        $scope.setRoom(usedRoom);
+                        $scope.noFittingRooms = false;
+                    }
+                };
+
+                $scope.preselectAddress = function() {
+                    var mainAddress = _.find($scope.locations, function(location) {
+                       return location.is_main_address;
+                    });
+
+                    if(mainAddress) {
+                        $scope.roomLocation = mainAddress;
+                    } else {
+                        $scope.roomLocation = $scope.locations[0];
+                    }
+
+                    if($scope.roomLocation) {
+                        $scope.roomLocationChanged();
+                    }
                 };
 
                 $scope.setRoom = function(roomId) {
@@ -353,6 +379,27 @@
                     return 'auto_room_selection|' + summedFilters.join(';');
                 };
 
+                $scope.getUsedMeetingRoom = function(currentAppointment, currentAddress) {
+                    var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
+                    var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || '';
+
+                    return $scope.determineUsedMeetingRoom(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom);
+                };
+
+                $scope.determineUsedMeetingRoom = function(appointmentMeetingRoomConfig, addressMeetingRoomConfig) {
+                    var usedMeetingRoom = appointmentMeetingRoomConfig;
+
+                    if(addressMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+                        usedMeetingRoom = addressMeetingRoomConfig;
+                    } else if(appointmentMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+                        usedMeetingRoom = appointmentMeetingRoomConfig;
+                    } else {
+                        usedMeetingRoom = $scope.computeDefaultFilters(appointmentMeetingRoomConfig, addressMeetingRoomConfig)
+                    }
+
+                    return usedMeetingRoom;
+                };
+
                 $scope.setDefaultSelectedRoom = function() {
                     var currentAddress = window.getCurrentAddressObject();
                     var currentAppointment = window.getCurrentAppointment();
@@ -370,19 +417,19 @@
                         $scope.usingMeetingRoom = currentAddress.meeting_room_used || currentAppointment.meeting_room_used;
 
                         if($scope.usingMeetingRoom) {
-                            var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
-                            var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || '';
+                            // var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
+                            // var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || '';
                             var selectedMeetingRoom = undefined;
 
-                            var usedMeetingRoom = appointmentSelectedMeetingRoom;
+                            var usedMeetingRoom = $scope.getUsedMeetingRoom(currentAppointment, currentAddress);
 
-                            if(addressSelectedMeetingRoom.indexOf('auto_room_selection') === -1) {
-                                usedMeetingRoom = addressSelectedMeetingRoom;
-                            } else if(appointmentSelectedMeetingRoom.indexOf('auto_room_selection') === -1) {
-                                usedMeetingRoom = appointmentSelectedMeetingRoom;
-                            } else {
-                                usedMeetingRoom = $scope.computeDefaultFilters(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom)
-                            }
+                            // if(addressSelectedMeetingRoom.indexOf('auto_room_selection') === -1) {
+                            //     usedMeetingRoom = addressSelectedMeetingRoom;
+                            // } else if(appointmentSelectedMeetingRoom.indexOf('auto_room_selection') === -1) {
+                            //     usedMeetingRoom = appointmentSelectedMeetingRoom;
+                            // } else {
+                            //     usedMeetingRoom = $scope.computeDefaultFilters(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom)
+                            // }
 
                             if(usedMeetingRoom.indexOf('auto_room_selection') > -1) {
                                 $scope.setDefaultFilters(usedMeetingRoom);
