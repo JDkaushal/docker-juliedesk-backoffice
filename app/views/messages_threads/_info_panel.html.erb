@@ -1121,8 +1121,15 @@
         var $locationsSelect = $("select#location_nature");
 
         $locationsSelect.html("");
+        var currentLabel = '';
         _.each(window.threadAccount.addresses, function(addressObject) {
-            $locationsSelect.append($("<option>").val(addressObject.label).html(addressObject.label));
+            if(addressObject.is_main_address) {
+                currentLabel = '[MAIN] ' + addressObject.label;
+            } else {
+                currentLabel = addressObject.label;
+            }
+
+            $locationsSelect.append($("<option>").val(addressObject.label).html(currentLabel));
         });
         $locationsSelect.append($("<option>").val("Custom").html("Custom"));
         $locationsSelect.val("Custom");
