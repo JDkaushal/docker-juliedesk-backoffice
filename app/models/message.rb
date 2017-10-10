@@ -626,7 +626,9 @@ class Message < ActiveRecord::Base
               if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
                 if messages_thread.account
-                  m.async_auto_reply_mailing_list
+                  unless m.server_message['was_split']
+                    m.async_auto_reply_mailing_list
+                  end
                 else
                   account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
                   if account_email
@@ -635,7 +637,10 @@ class Message < ActiveRecord::Base
                                                           account_email: account_email,
                                                           account_name: account.try(:usage_name)
                                                       })
-                    m.async_auto_reply_mailing_list
+
+                    unless m.server_message['was_split']
+                      m.async_auto_reply_mailing_list
+                    end
                   end
                 end
                 messages_thread.async_archive
