@@ -225,7 +225,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                             }
                         } else {
                             var errorStr = response.error_code === 'AI_TIMEOUT' ? 'timeout' : 'fail';
-                            verifiedDatesByAI = {error_response:  errorStr};
+                            verifiedDatesByAI = {error_response:  errorStr, raw_response: response};
                         }
 
                         askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
