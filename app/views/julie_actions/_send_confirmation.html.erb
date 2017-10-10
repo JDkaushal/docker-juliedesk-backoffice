@@ -42,8 +42,11 @@
 
     function getRestaurantBookingUpdateStatus(eventOrganizationUpdated, attendeesChanged) {
       var usingRestaurantBooking = window.threadComputedData.using_restaurant_booking;
+      var currentLocation = $('#location').val();
 
-      return usingRestaurantBooking && (eventOrganizationUpdated || attendeesChanged);
+      var locationIsSet = !!currentLocation && currentLocation.length > 0;
+
+      return locationIsSet && usingRestaurantBooking && (eventOrganizationUpdated || attendeesChanged);
     };
 
     window.getEventModifications = function() {
