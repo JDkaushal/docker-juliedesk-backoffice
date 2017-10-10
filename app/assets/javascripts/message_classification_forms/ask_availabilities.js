@@ -224,7 +224,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                 verifiedDatesByAI = {no_suitable_dates: true};
                             }
                         } else {
-                            var errorStr = response.error ? 'timeout' : 'fail';
+                            var errorStr = response.error_code === 'AI_TIMEOUT' ? 'timeout' : 'fail';
                             verifiedDatesByAI = {error_response:  errorStr};
                         }
 
