@@ -146,6 +146,12 @@ window.classificationForms.classificationForm.prototype.getTimezoneForSendForm =
     return timezone;
 };
 
+window.classificationForms.classificationForm.prototype.getConstraintsDataForSendForm = function() {
+    return $(".constraint-tile-container").map(function () {
+        return $(this).data("constraint")
+    }).get();
+};
+
 window.classificationForms.classificationForm.prototype.sendForm = function (params) {
     params = params || {};
     var classificationForm = this;
@@ -167,9 +173,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
 
     var timezone = classificationForm.getTimezoneForSendForm();
 
-    var constraints_data = $(".constraint-tile-container").map(function () {
-        return $(this).data("constraint")
-    }).get();
+    var constraints_data = classificationForm.getConstraintsDataForSendForm();
 
     if(!classificationForm.validateConstaintsData(constraints_data)) {
         alert('Some constraints are invalid, please make sure that the constraints starting dates are sooner than the ending dates');

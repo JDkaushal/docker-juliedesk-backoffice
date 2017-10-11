@@ -62,10 +62,10 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
         message_id: $('.email.highlighted').data('message-id'),
         multi_clients: false,
         meeting_rooms_to_show: meetingRoomsToShow,
-        asap: window.threadComputedData.asap_constraint,
+        asap: $("input[name='asap_constraint']:checked").length > 0,
         version: version,
-        client_on_trip: window.threadComputedData.client_on_trip,
-        raw_constraints_data: window.threadComputedData.constraints_data
+        client_on_trip: $("#client-on-trip-data-entry").scope().value,
+        raw_constraints_data: askDateSuggestionsForm.getConstraintsDataForSendForm()
     };
 
     aiDatesSuggestionsManagerScope.fetchSuggestedDatesByAi(fetchParams).then(function(response) {
