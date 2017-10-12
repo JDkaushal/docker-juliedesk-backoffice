@@ -210,14 +210,15 @@
                 defaultRecipientsWhenOnlyClientAttendees(clientsAttendees);
             }
 
-            if(threadOwner.email != 'pierre-louis@juliedesk.com') {
+            //if(threadOwner.email != 'pierre-louis@juliedesk.com') {
                 // We don't add the client email if we are already responding to one of its aliases or it's main email
-                var threadOwnerEmailsInCcs = _.intersection(_.map($scope.ccs, function(cc){return cc.name;}), [window.threadAccount.email].concat(window.threadAccount.email_aliases));
 
-                if( threadOwnerEmailsInCcs.length == 0 ) {
+                // 12 octobre 2017, client a une assistante utilisant un de ses alias, on doit laisser les 2 addresses en participants
+                //var threadOwnerEmailsInCcs = _.intersection(_.map($scope.ccs, function(cc){return cc.name;}), [window.threadAccount.email].concat(window.threadAccount.email_aliases));
+                //if( threadOwnerEmailsInCcs.length == 0 ) {
                     $scope.ccs.push({name: threadOwner.email});
-                }
-            }
+                //}
+            //}
 
             $scope.tos = _.flatten($scope.tos);
             $scope.ccs = _.flatten($scope.ccs);
