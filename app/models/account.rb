@@ -370,6 +370,23 @@ class Account
     JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(email) || "{}")
   end
 
+  def self.is_synced?(account_email)
+    sync_limit_date = (ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] || 4).to_i.minutes.ago
+    account_cache = self.accounts_cache_for_email(account_email)
+    return false if account_cache.blank?
+
+    # We consider synced a calendar which is not on calendar server
+    return true unless account_cache["using_calendar_server"]
+
+    last_sync_date = DateTime.parse(account_cache["last_sync_date"]) rescue nil
+    return false if last_sync_date.nil?
+    last_sync_date > sync_limit_date
+  end
+
+  def self.not_synced?(account_email)
+    !self.is_synced?(account_email)
+  end
+
   def find_calendar_login_with_rule_data rule_data
     computed_rules = (self.calendar_logins || []).map{|calendar_login|
       {

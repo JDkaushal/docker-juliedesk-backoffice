@@ -356,4 +356,42 @@ describe Account do
       expect(account.is_in_circle_of_trust?('email3@email.com')).to be(false)
     end
   end
+
+  describe '.is_synced?' do
+    let(:email_to_check) { "bob@juliedesk.com" }
+    let(:account_email) { email_to_check }
+    let(:account_cache) { {} }
+    before(:each) {
+      ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] = '5'
+      REDIS_FOR_ACCOUNTS_CACHE.set(account_email, account_cache.to_json)
+    }
+
+    subject { Account.is_synced?(email_to_check) }
+
+    context 'when no cache' do
+      let(:account_email) { "john@juliuedesk.com" }
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when last sync date is nil' do
+      let(:account_cache) { { last_sync_date: nil, using_calendar_server: true } }
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when last sync date < 5 minutes ago' do
+      let(:account_cache) { {last_sync_date: 10.minutes.ago, using_calendar_server: true } }
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when last sync date > 5 minutes ago' do
+      let(:account_cache) { {last_sync_date: 3.minutes.ago.to_s, using_calendar_server: true} }
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when client is not on calendar server' do
+      let(:account_cache) { {last_sync_date: nil, using_calendar_server: false} }
+      it { is_expected.to eq(true) }
+    end
+
+  end
 end

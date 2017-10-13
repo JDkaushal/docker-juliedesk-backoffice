@@ -1122,8 +1122,16 @@ describe MessagesThread, :type => :model do
   end
 
   describe '.remove_syncing_tag' do
-    let(:account_email) { "bob@juliedesk.com" }
+    shared_context 'all_calendars_synced' do
+      before(:each) { allow_any_instance_of(MessagesThread).to receive(:calendars_synced?).and_return(true) }
+    end
 
+    shared_context 'calendars_not_synced' do
+      before(:each) { allow_any_instance_of(MessagesThread).to receive(:calendars_synced?).and_return(false) }
+    end
+
+
+    let(:account_email) { "bob@juliedesk.com" }
     let(:thread_account_email) { account_email }
     let(:clients_in_recipients) { [thread_account_email] }
     let(:inbox_status) { true }
@@ -1136,28 +1144,80 @@ describe MessagesThread, :type => :model do
       )
     end
 
-    before(:each) { MessagesThread.remove_syncing_tag(account_email) }
     subject { messages_thread.reload.tags }
 
     context "when thread is owned by account" do
-      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+      include_context 'all_calendars_synced'
+
+      it 'removes syncing tag' do
+        MessagesThread.remove_syncing_tag(account_email)
+        is_expected.not_to include(MessagesThread::SYNCING_TAG)
+      end
     end
 
     context "when thread include account in recipients" do
+      include_context 'all_calendars_synced'
       let(:thread_account_email) { "john@juliedesk.com" }
       let(:clients_in_recipients) { ["john@juliedesk.com", "bob@juliedesk.com"]}
-      it { is_expected.not_to include(MessagesThread::SYNCING_TAG) }
+      it 'removes syncing tag' do
+        MessagesThread.remove_syncing_tag(account_email)
+        is_expected.not_to include(MessagesThread::SYNCING_TAG)
+      end
     end
 
     context "when thread does not include client in recipients" do
+      include_context 'all_calendars_synced'
       let(:thread_account_email) { "john@juliedesk.com" }
-      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+
+      it 'does not remove syncing tag' do
+        MessagesThread.remove_syncing_tag(account_email)
+        is_expected.to include(MessagesThread::SYNCING_TAG)
+      end
     end
 
     context "when thread is not in inbox" do
       let(:inbox_status) { false }
-      it { is_expected.to include(MessagesThread::SYNCING_TAG) }
+      it 'does not remove syncing tag' do
+        MessagesThread.remove_syncing_tag(account_email)
+        is_expected.to include(MessagesThread::SYNCING_TAG)
+      end
     end
+
+    context "calendars are not synced" do
+      include_context 'calendars_not_synced'
+
+      it 'removes syncing tag' do
+        MessagesThread.remove_syncing_tag(account_email)
+        is_expected.to include(MessagesThread::SYNCING_TAG)
+      end
+    end
+  end
+
+
+  describe '#calendars_synced?' do
+    let(:clients_in_recipients) { ["bob@juliedesk.com", "john@juliedesk.com"] }
+    let(:messages_thread) { create(:messages_thread, clients_in_recipients: clients_in_recipients) }
+    subject { messages_thread.calendars_synced? }
+
+    context 'when no client in recipients' do
+      let(:clients_in_recipients) { [] }
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when one of the client is not synced' do
+      before(:example) do
+        allow(Account).to receive(:is_synced?).with("bob@juliedesk.com").and_return(false)
+        allow(Account).to receive(:is_synced?).with("john@juliedesk.com").and_return(true)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when all client are synced' do
+      before(:example) { allow(Account).to receive(:is_synced?).with(anything).and_return(true) }
+      it { is_expected.to eq(true) }
+    end
+
   end
 
 

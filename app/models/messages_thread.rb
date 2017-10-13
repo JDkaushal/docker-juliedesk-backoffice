@@ -1345,7 +1345,8 @@ class MessagesThread < ActiveRecord::Base
 
   def self.remove_syncing_tag(account_email)
     raise "account email should be present" if account_email.blank?
-    MessagesThread.in_inbox.syncing.with_this_client(account_email).update_all("tags = array_remove(tags, '#{SYNCING_TAG}')")
+    messages_thread_ids = MessagesThread.in_inbox.syncing.with_this_client(account_email).select(&:calendars_synced?).map(&:id)
+    MessagesThread.where(id: messages_thread_ids).update_all("tags = array_remove(tags, '#{SYNCING_TAG}')")
   end
 
   def self.add_syncing_tag(account_email)
@@ -1365,6 +1366,11 @@ class MessagesThread < ActiveRecord::Base
 
   def has_tag?(tag)
     !!self.tags && self.tags.include?(tag)
+  end
+
+  def calendars_synced?
+    return true if self.clients_in_recipients.blank?
+    self.clients_in_recipients.all? { |email| Account.is_synced?(email) }
   end
 
   private
