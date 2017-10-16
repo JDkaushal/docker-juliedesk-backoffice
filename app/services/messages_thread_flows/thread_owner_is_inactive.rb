@@ -86,7 +86,9 @@ module MessagesThreadFlows
     end
 
     def send_notice_email_to_old_client(last_message, email_to_send_to)
-      AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_deactivated.client', email_to_send_to)
+      account = Account.create_from_email(email_to_send_to)
+
+      AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_deactivated.client', email_to_send_to, account.try(:usage_name))
       #last_message.send_account_notice_email('account_deactivated.client', email_to_send_to)
     end
 
