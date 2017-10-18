@@ -502,7 +502,7 @@
 
                 $scope.updateAttendeesCountSelect = function(attendees) {
 
-                    if(attendees){
+                    if(attendees && attendees.length > 0){
                         // TODO When in a vitual Appointment, only take into account attendees from the same company than the threadOwner
                         var currentAppointment = window.getCurrentAppointment();
                         var presentAttendeesCount;
