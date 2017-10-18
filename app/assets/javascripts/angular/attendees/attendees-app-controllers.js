@@ -1302,9 +1302,13 @@
 
         $scope.getPresentAttendeesFromOtherCompanies = function(){
             var threadOwner = $scope.getThreadOwner();
-            return _($scope.attendees).filter(function(a) {
-                return a.isPresent && a.company !== threadOwner.company;
-            });
+            if(!!threadOwner.company) {
+                return _($scope.attendees).filter(function(a) {
+                    return a.isPresent && a.company !== threadOwner.company;
+                });
+            } else {
+                return $scope.attendees;
+            }
         };
 
         $scope.getAttendeesWithoutAssistant = function() {

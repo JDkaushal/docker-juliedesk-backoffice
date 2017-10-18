@@ -1123,32 +1123,34 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
 
     var result = calendar.bookingHoursUnavailabilities(startTime, endTime, accountPreferencesHash, clientTimezone, targetTimezone);
 
-
     if(!calendar.publicHolidaysAdded) {
         for(var i=0; i<accountPreferencesHash.public_holidays_dates.length; i++) {
             var publicHoliday = accountPreferencesHash.public_holidays_dates[i];
-            var mStartDate = moment(publicHoliday.date);
-            var mEndDate = mStartDate.clone();
-            mEndDate.add(1, 'd');
 
-            var event = {
-                summary: "FERIE : " + publicHoliday.name,
-                start: {
-                    date: mStartDate.format("YYYY-MM-DD")
-                },
-                end: {
-                    date: mEndDate.format("YYYY-MM-DD")
-                },
-                url: "PUBLIC-HOLLIDAY-" + publicHoliday.date + "-" + publicHoliday.name,
-                startEditable: false,
-                durationEditable: false,
-                color: "#444",
-                textColor: "#aaa",
-                calId: "juliedesk-public-holidays",
-                isNotAvailableEvent: true,
-                busyLocked: true
-            };
-            result.push(event);
+            if(!!publicHoliday) {
+                var mStartDate = moment(publicHoliday.date);
+                var mEndDate = mStartDate.clone();
+                mEndDate.add(1, 'd');
+
+                var event = {
+                    summary: "FERIE : " + publicHoliday.name,
+                    start: {
+                        date: mStartDate.format("YYYY-MM-DD")
+                    },
+                    end: {
+                        date: mEndDate.format("YYYY-MM-DD")
+                    },
+                    url: "PUBLIC-HOLLIDAY-" + publicHoliday.date + "-" + publicHoliday.name,
+                    startEditable: false,
+                    durationEditable: false,
+                    color: "#444",
+                    textColor: "#aaa",
+                    calId: "juliedesk-public-holidays",
+                    isNotAvailableEvent: true,
+                    busyLocked: true
+                };
+                result.push(event);
+            }
         }
         calendar.publicHolidaysAdded = true;
     }
