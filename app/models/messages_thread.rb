@@ -887,7 +887,7 @@ class MessagesThread < ActiveRecord::Base
   def full_contacts
     accounts = Account.accounts_cache(mode: "light")
 
-    contacts.each do |attendee|
+    full_details_contacts = contacts.each do |attendee|
       accounts.each do |email, account|
         if account["state"] == "active_state"
           all_emails = [account['email']] + account['email_aliases']
@@ -907,6 +907,12 @@ class MessagesThread < ActiveRecord::Base
         end
       end
     end
+
+    full_details_contacts_clients, full_details_contacts_non_clients = full_details_contacts.partition{|c| c[:account_email].present?}
+
+    full_details_contacts_clients.uniq!{|c| c[:account_email]}
+
+    full_details_contacts_clients + full_details_contacts_non_clients
   end
 
   def possible_contacts_for_cache
