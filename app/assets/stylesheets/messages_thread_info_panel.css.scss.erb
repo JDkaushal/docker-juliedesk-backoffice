@@ -1,3 +1,5 @@
+//@import 'common';
+
 .messages-thread-info-panel {
   position: fixed;
   top: 0;
@@ -845,9 +847,93 @@
     }
   }
 
+  .meeting-rooms-manager {
+    margin-top: 5px;
+  }
+
   .meeting-rooms-manager-wrapper {
+
+    .meeting-rooms-manager-widget {
+      border: solid 1px $meetingRoomsFeatureColor;
+      margin-bottom: 10px;
+
+      .widget-header {
+        text-align: center;
+        background-color: $meetingRoomsFeatureColor;
+        color: white;
+
+        .widget-header-inside {
+          padding: 10px;
+          position: relative;
+
+          .delete-btn {
+            cursor: pointer;
+            background: white;
+            color: $meetingRoomsFeatureColor;
+            border-radius: 15px;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            left: 303px;
+            top: 5px;
+
+            .delete-text {
+              font-size: 16px;
+              position: relative;
+              top: -1px;
+            }
+          }
+
+          .client-selection-area {
+
+            .client-selection {
+              color: black;
+            }
+
+            .client-selection-text {
+              font-style: italic;
+              font-weight: lighter;
+              font-size: 12px;
+            }
+          }
+
+        }
+
+        label {
+          font-size: 20px;
+        }
+      }
+
+      .widget-body {
+        background-color: rgba(172, 114, 102,0.2);
+
+        .widget-body-inside {
+          padding: 10px;
+
+          .location-text {
+            margin-bottom: 5px;
+            text-transform: uppercase;
+          }
+
+          .location-select {
+            margin-bottom: 5px;
+          }
+
+          .filters-area {
+            padding: 10px;
+            background-color: white;
+            border: solid 1px $borderGrey;
+
+            .filter-label {
+              font-weight: 400;
+            }
+          }
+        }
+      }
+    }
+
     label {
-      font-weight: 400;
+      font-weight: 200;
     }
     .checkbox-header {
       margin-top: 5px;
@@ -859,9 +945,27 @@
     .meeting-rooms-warning-area {
       color: #EA5959;
       font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+
+      .warning-sprite {
+        @include warning-sprite-red;
+      }
     }
 
+    .add-widget-btn {
+      color: white;
+      background-color: $meetingRoomsFeatureColor;
+      border: none;
+      border-radius: 5px;
+      height: 30px;
+      width: 155px;
+      text-transform: uppercase;
+      font-weight: 200;
+    }
   }
+
+
 
   .restaurant-booking-manager-wrapper, .create-event-restaurant-booking-manager-wrapper {
     margin-top: 5px;

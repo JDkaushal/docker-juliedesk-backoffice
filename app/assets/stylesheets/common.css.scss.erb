@@ -29,6 +29,27 @@ $aiControlHighlightedColor: #5F09AA;
 $aiEventsHighlightedColor: #D707AA;
 $aiControlInputBorderColor: #D9AEFF;
 
+$meetingRoomsFeatureColor: #AE7264;
+$meetingRoomsFeatureColorLight: rgba(172, 114, 102,0.2);
+
+@mixin warning-sprite-purple {
+  background-image: url(<%= asset_path 'warning2x.png' %>);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+  width: 30px;
+  display: inline-block;
+  height: 30px;
+}
+
+@mixin warning-sprite-red {
+  background-image: url(<%= asset_path 'warning_red2x.png' %>);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+  width: 30px;
+  display: inline-block;
+  height: 30px;
+}
+
 html {
   height: 100%;
 }

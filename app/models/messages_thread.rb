@@ -561,6 +561,7 @@ class MessagesThread < ActiveRecord::Base
           location_coordinates: last_message_classification.try(:location_coordinates),
           using_meeting_room: last_message_classification.try(:using_meeting_room),
           meeting_room_details: last_message_classification.try(:meeting_room_details),
+          booked_rooms_details: last_message_classification.try(:booked_rooms_details),
           using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
           restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
           virtual_resource_used: last_message_classification.try(:virtual_resource_used),

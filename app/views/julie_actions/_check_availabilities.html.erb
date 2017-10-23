@@ -28,6 +28,7 @@
         %>";
 
     window.drawCalendarCallback = function(){
+        var meetingRoomsManager = $('#meeting-rooms-manager').scope();
         window.activateCalendarWithParams({
             mode: "create_event",
             // We do .uniq{|date_object| date_object['date']} so we will keep only the first occurrence of a date, aka the "to_check" version if there are several
@@ -52,6 +53,10 @@
                     if (dateTime) {
                         setTimeout(function() {
                             window.currentCalendar.selectSuggestedEvent(dateTime);
+
+                            if(meetingRoomsManager) {
+                                meetingRoomsManager.checkIfDetectAvailabilities();
+                            }
                         }, 100);
                     }
                 }
@@ -686,11 +691,26 @@
             }
 
             var meetingRoomBooked = false;
-            var meetingRoomName = '';
+            var meetingRoomsDetails = [];
 
-            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
-              meetingRoomBooked = true;
-              meetingRoomName = meetingRoomsManager.selectedRoom.summary;
+            if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom) {
+               var bookedRooms = meetingRoomsManager.getBookedRoomsDetails();
+
+               if(bookedRooms && _.keys(bookedRooms).length > 0) {
+                   meetingRoomBooked = true;
+                   var currentLocationAddress = window.getCurrentAddress().address;
+
+                   _.each(bookedRooms, function(roomDetails, address) {
+                       meetingRoomsDetails.push({
+                           summary: roomDetails.summary,
+                           onSameLocationThanMeeting: currentLocationAddress === address,
+                           location: address
+                       })
+                   });
+               }
+
+                data.booked_rooms_details = meetingRoomsManager.getBookedRoomsDetails() || undefined;
+
             }
 
             var haveAllAvailibilities = !!window.threadComputedData.do_not_ask_suggestions;
@@ -714,7 +734,7 @@
               location_is_settled: window.locationIsSettled(),
               main_client_company: mainClientCompanyName,
               meeting_room_booked: meetingRoomBooked,
-              meeting_room_name: meetingRoomName,
+              meeting_rooms_details: meetingRoomsDetails,
               missing_contact_info: attendeesMng.missingContactInfo(),
               restaurant_booking_activated: window.threadComputedData.using_restaurant_booking,
               should_ask_location: window.shouldAskLocation(),

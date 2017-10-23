@@ -1,0 +1,49 @@
+<div class="meeting-rooms-manager-widget">
+
+  <div class="widget-header">
+    <div class="widget-header-inside">
+      <label>Salle de réunion</label>
+      <div class="delete-btn" ng-click="deleteWidget()"><span class="delete-text">x</span></div>
+      <div class="client-selection-area">
+        <span class="client-selection-text">associated to</span>
+        <select class="client-selection" ng-change="clientChanged()" ng-options="client as client.email for client in clientsList track by client.email" ng-model="client"></select>
+      </div>
+    </div>
+  </div>
+
+  <div ng-show="shouldDisplayFields()" class="widget-body">
+    <div class="widget-body-inside">
+      <div class="location-text">Lieu</div>
+
+      <select id="location_select" class="form-control location-select" ng-model="roomLocation" ng-change="roomLocationChanged()" ng-options="location as location.label for location in locations" ng-disabled="formDisabled"></select>
+      <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-change="roomSelectionModeChanged()" ng-model="roomsSelectionMode" ng-disabled="formDisabled"></select>
+
+      <div ng-show="displayCustomSelectionFilters" class="filters-area">
+
+        <div>
+          <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>
+          <%= label_tag :meeting_rooms_custom_attendees_count, 'Nombre de Participants', class: 'filter-label' %>
+          <%= select_tag :meeting_rooms_attendees_count, options_for_select(1..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+        </div>
+
+        <div>
+          <%= check_box_tag :meeting_rooms_custom_can_confcall, false, {}, {'ng-model' => 'useCanConfCallFilter', 'ng-disabled' => 'formDisabled'} %>
+          <%= label_tag :meeting_rooms_custom_can_confcall, 'Matériel de Confcall', class: 'filter-label' %>
+        </div>
+
+        <div>
+          <%= check_box_tag :meeting_rooms_custom_can_visio, false, {}, {'ng-model' => 'useCanVisioFilter', 'ng-disabled' => 'formDisabled'} %>
+          <%= label_tag :meeting_rooms_custom_can_visio, 'Matériel de Visio', class: 'filter-label' %>
+        </div>
+      </div>
+
+      <div class="meeting-rooms-warning-area" ng-show="noFittingRooms">
+        <div id="no_fitting_rooms">Aucune salle de disponible suivant ces filtres</div>
+      </div>
+
+      <div class="meeting-rooms-warning-area" ng-show="locationDifferentThanAppointment">
+        <div id="no_fitting_rooms"><div class="warning-sprite"></div><div>Le lieu sélectionné est différent de celui du rendez-vous<div></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -60,6 +60,10 @@
       var updatedEventData = window.currentEventTile.event;
       var beforeUpdateAttendees = window.beforeUpdateData.attendees;
       var updatedAttendees = window.threadComputedData.attendees;
+      var beforeUpdateMeetingRoomsDetails = window.beforeUpdateData.meeting_rooms;
+      var updatedMeetingRoomsDetails = window.threadComputedData.booked_rooms_details;
+
+      var currentAddress = window.getCurrentAddress();
 
       beforeUpdateEvent.appointment = window.beforeUpdateData.appointment;
       updatedEventData.appointment = window.threadComputedData.appointment_nature;
@@ -84,6 +88,7 @@
       var eventOrganizationUpdated = false;
       var eventAnnexeAttributesChanged = [];
       var addedAttendees = [];
+      var resourcesChanged = [];
 
       // We only take the location into account to notify the event organization infos update when we are not in a virtual appointment
       if(!currentAppointmentIsVirtual) {
@@ -105,7 +110,13 @@
       var updatedEventAttendees = _.map(updatedEventData.attendees, function(attendee) { return attendee.email; });
       var beforeUpdateEventAttendees = _.map(beforeUpdateEvent.attendees, function(attendee) { return attendee.email; });
 
-      var removedAttendees = _.difference(beforeUpdateEventAttendees, updatedEventAttendees);
+        // We use it to remove the meeting rooms froms the attendees, so they will not be considered as one when we will be computing the changes
+        var availableRoomsIds = _.map($('#meeting-rooms-manager').scope().getEveryPossibleMeetingRooms(), function(room) {return room.id});
+        updatedEventAttendees = _.reject(updatedEventAttendees, function(attEmail) { return availableRoomsIds.indexOf(attEmail) > -1 });
+        beforeUpdateEventAttendees = _.reject(beforeUpdateEventAttendees, function(attEmail) { return availableRoomsIds.indexOf(attEmail) > -1 });
+
+
+        var removedAttendees = _.difference(beforeUpdateEventAttendees, updatedEventAttendees);
 
       if(removedAttendees.length == 0) {
         addedAttendees = _.difference(updatedEventAttendees, beforeUpdateEventAttendees);
@@ -134,11 +145,40 @@
 
       var attendeesChanged = addedAttendees.length > 0 || removedAttendees.length > 0;
 
+      if(beforeUpdateMeetingRoomsDetails) {
+        var beforeUpdateMeetingRooms = _.map(_.values(beforeUpdateMeetingRoomsDetails), function(roomDetails) {
+            return roomDetails.id;
+        });
+        var afterUpdateMeetingRooms = _.map(_.values(updatedMeetingRoomsDetails), function(roomDetails) {
+           return roomDetails.id;
+        });
+
+        beforeUpdateMeetingRooms = beforeUpdateMeetingRooms.sort();
+        afterUpdateMeetingRooms = afterUpdateMeetingRooms.sort();
+
+          var currentLocation = undefined;
+
+         if(currentAddress) {
+             currentLocation = currentAddress.address;
+         }
+
+        if(!_.isEqual(beforeUpdateMeetingRooms, afterUpdateMeetingRooms)) {
+            _.each(updatedMeetingRoomsDetails, function(roomDetails, address) {
+                resourcesChanged.push({
+                    summary: roomDetails.summary,
+                    onSameLocationThanMeeting: address === currentLocation,
+                    location: address
+                });
+            });
+        }
+      }
+
       return {
         event_organization_updated: eventOrganizationUpdated,
         removed_attendees: removedAttendees,
         added_attendees: addedAttendees,
         event_annexe_attributes_changed: eventAnnexeAttributesChanged,
+        resources_changed: resourcesChanged,
         restaurant_booking_changed: getRestaurantBookingUpdateStatus(eventOrganizationUpdated, attendeesChanged)
       };
     };
@@ -184,8 +224,21 @@
     };
 
     window.afterEventFetched = function() {
-      window.setReplyMessageActions();
+        if(!window.threadComputedData.meeting_room_details) {
+            window.setReplyMessageActions();
+        }
     };
+
+    // We need to know every possible rooms that could be booked for the thread to check against it and not count them as attendees
+    angular.element(document).ready(function () {
+        var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+
+        if(meetingRoomsManager) {
+            meetingRoomsManager.$on('meetingRoomsInitialized', function(event, args) {
+                window.setReplyMessageActions();
+            });
+        }
+    });
 
     window.afterReplyBoxInitCallback = function() {
       if(!useTemplateGenerationService) {

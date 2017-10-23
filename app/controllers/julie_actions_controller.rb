@@ -257,15 +257,15 @@ class JulieActionsController < ApplicationController
 
     if params[:call_instructions].present?
       message_classification_params_to_update[:call_instructions] = params[:call_instructions].to_json
+    end
 
-      #julie_action.message_classification.update(call_instructions: params[:call_instructions].to_json)
+    if params[:booked_rooms_details].present?
+      message_classification_params_to_update[:booked_rooms_details] = params[:booked_rooms_details].to_json
     end
 
     if params[:using_meeting_room].present?
       message_classification_params_to_update[:using_meeting_room] = params[:using_meeting_room]
       message_classification_params_to_update[:meeting_room_details] = params[:meeting_room_details]
-
-      #julie_action.message_classification.update(using_meeting_room: params[:using_meeting_room], meeting_room_details: params[:meeting_room_details])
     end
 
     if params[:notes_updated].present?

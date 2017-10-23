@@ -1,32 +1,11 @@
 <div class="meeting-rooms-manager-wrapper" ng-show="displayForm">
-  <div class="checkbox-header">
-    <input type="checkbox" ng-model="usingMeetingRoom" ng-disabled="formDisabled">
-    <label>Salle de réunion</label>
-  </div>
-
-  <select id="location_select" class="form-control" ng-model="roomLocation" ng-change="roomLocationChanged()" ng-options="location as location.label for location in locations" ng-show="shouldDisplayLocationfield()" ng-disabled="formDisabled"></select>
-  <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-model="roomsSelectionMode" ng-show="usingMeetingRoom" ng-disabled="formDisabled"></select>
-
-  <div ng-show="displayCustomSelectionFilters && usingMeetingRoom">
-
-    <div >
-      <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>
-      <%= label_tag :meeting_rooms_custom_attendees_count, 'Nombre de Participants'%>
-      <%= select_tag :meeting_rooms_attendees_count, options_for_select(1..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+  <div>
+    <div>
+      <meeting-rooms-widget ng-repeat="widget in widgets" widget-data="widget" clients-list="clientsList" currently-choosen-rooms="currentlyChoosenRooms"/>
     </div>
 
     <div>
-      <%= check_box_tag :meeting_rooms_custom_can_confcall, false, {}, {'ng-model' => 'useCanConfCallFilter', 'ng-disabled' => 'formDisabled'} %>
-      <%= label_tag :meeting_rooms_custom_can_confcall, 'Matériel de Confcall'%>
-    </div>
-
-    <div>
-      <%= check_box_tag :meeting_rooms_custom_can_visio, false, {}, {'ng-model' => 'useCanVisioFilter', 'ng-disabled' => 'formDisabled'} %>
-      <%= label_tag :meeting_rooms_custom_can_visio, 'Matériel de Visio'%>
-    </div>
-
-    <div class="meeting-rooms-warning-area">
-      <div id="no_fitting_rooms" ng-show="noFittingRooms">Aucune salle de disponible suivant ces filtres</div>
+      <button ng-click="addWidget()" class="add-widget-btn">+ Ajouter Salle</button>
     </div>
   </div>
 </div>

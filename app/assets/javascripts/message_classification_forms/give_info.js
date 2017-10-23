@@ -8,9 +8,11 @@ window.classificationForms.giveInfoForm = function (params) {
     window.submitClassification = function () {
         if(window.currentEventTile && window.currentEventTile.isEditing()) {
             var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
+            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
             var data = {event: window.currentEventTile.event};
             data.appointment = window.threadComputedData.appointment_nature;
             data.attendees = window.threadComputedData.attendees;
+            data.meeting_rooms = window.threadComputedData.booked_rooms_details;
 
             // if(virtualMeetingHelper) {
             //     // Looking for differences in details should be enough to tell if the call instructions changed

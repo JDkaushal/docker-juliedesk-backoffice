@@ -1,3 +1,5 @@
+//@import 'common';
+
 .create-event-panel {
   display: none;
   padding: 0 0 30px 0;
@@ -167,6 +169,77 @@
     text-align: center;
     color: red;
     font-size: 16px;
+  }
+}
+
+.meeting-rooms-availabilities-details-container {
+  margin-bottom: 10px;
+
+  &.event-creator {
+    margin-top: 10px;
+  }
+
+  .meeting-rooms-availabilities-details-wrapper {
+    border: solid 1px $meetingRoomsFeatureColor;
+
+    .meeting-rooms-availabilities-header {
+      color: white;
+      text-align: center;
+      padding: 10px;
+      background-color: $meetingRoomsFeatureColor;
+    }
+
+    .meeting-rooms-availabilities-body {
+      background-color:  $meetingRoomsFeatureColorLight;
+      padding: 10px;
+
+      .meeting-rooms-availabilities-details-content {
+        display: -webkit-flex;
+        display: flex;
+        margin-top: 10px;
+
+        .room-availability-sprite {
+          background-position: center;
+          background-size: 22px 22px;
+          background-repeat: no-repeat;
+          width: 28px;
+          display: inline-block;
+          margin-right: 10px;
+
+          &.room-available {
+            background-image: url(<%= asset_path 'check_greenx2.png' %>);
+          }
+
+          &.room-unavailable {
+            background-image: url(<%= asset_path 'cross_red.png' %>);
+          }
+        }
+      }
+    }
+  }
+
+  .meeting-rooms-warning-container {
+    margin-bottom: 15px;
+
+    .warning-content {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+
+      .warning-sprite-container {
+        margin-top: 10px;
+
+        .warning-sprite {
+          background-image: url(<%= asset_path 'warning_red2x.png' %>);
+          background-position: center;
+          background-size: 28px 26px;
+          background-repeat: no-repeat;
+          width: 28px;
+          height: 28px;
+          display: inline-block;
+        }
+      }
+    }
   }
 }
 

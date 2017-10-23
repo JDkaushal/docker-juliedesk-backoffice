@@ -39,10 +39,24 @@
 
         $scope.aiResult = '';
 
+        $scope.meetingRoomsAvailabilities = [];
+        $scope.canDisplayMeetingRoomsAvailabilities = false;
+        $scope.noMeetingRoomsAvailable = false;
+
         var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
 
         $scope.init = function() {
             $scope.attachEventsToDom();
+        };
+
+        $scope.displayMeetingRoomsAvailabilities = function(roomsAvailabilities) {
+            $scope.meetingRoomsAvailabilities = roomsAvailabilities;
+
+            $scope.canDisplayMeetingRoomsAvailabilities = $scope.meetingRoomsAvailabilities && $scope.meetingRoomsAvailabilities.length > 0;
+
+            $scope.noMeetingRoomsAvailable = $scope.canDisplayMeetingRoomsAvailabilities && _.any($scope.meetingRoomsAvailabilities, function(availabilitiesDetails) {
+                    return availabilitiesDetails.isAvailable !== undefined && !availabilitiesDetails.isAvailable;
+                });
         };
 
         $scope.scrollToAiSuggestionInCalendar = function(suggestedDate) {
@@ -675,6 +689,8 @@
 
             if(!$scope.$$phase)
                 $scope.$apply();
+
+            $scope.$broadcast('suggestionAdded');
         };
 
         $scope.addTimeSlotSuggestion = function(timezone, suggestion) {

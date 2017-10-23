@@ -13,9 +13,15 @@
 
         $scope.doNotAskSuggestionsMode = false;
 
+
+
         $scope.verifiedDatesByAi = angular.copy(window.verifiedDatesByAi);
         $scope.aiDatesVerificationIsActive = window.featuresHelper.isFeatureActive('ai_dates_verification');
         $scope.aiDatesSuggestionsIsActive = window.featuresHelper.isFeatureActive('ai_dates_suggestions');
+
+        $scope.meetingRoomsAvailabilities = [];
+        $scope.canDisplayMeetingRoomsAvailabilities = false;
+
 
         $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
             if(newVal != oldVal) {
@@ -45,6 +51,19 @@
             $scope.selectedDate = undefined;
         };
 
+        $scope.displayMeetingRoomsAvailabilities = function(roomsAvailabilities) {
+            $scope.noMeetingRoomsAvailable = false;
+
+            $scope.meetingRoomsAvailabilities = roomsAvailabilities;
+
+            $scope.canDisplayMeetingRoomsAvailabilities = $scope.meetingRoomsAvailabilities && $scope.meetingRoomsAvailabilities.length > 0;
+
+            if($scope.canDisplayMeetingRoomsAvailabilities && _.any($scope.meetingRoomsAvailabilities, function(availabilitiesDetails) {
+                return availabilitiesDetails.isAvailable !== undefined && !availabilitiesDetails.isAvailable;
+            })) {
+                $scope.noMeetingRoomsAvailable = true;
+            }
+        };
 
         $scope.showAiNoDatesValidated = function() {
             // It is undefined when no dates where submitted to the AI

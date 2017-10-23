@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171009101652) do
+ActiveRecord::Schema.define(version: 20171106112336) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(version: 20171009101652) do
     t.string   "identifier"
     t.json     "passed_conditions"
     t.json     "client_on_trip"
+    t.json     "booked_rooms_details"
   end
 
   add_index "message_classifications", ["identifier"], name: "index_message_classifications_on_identifier", using: :btree

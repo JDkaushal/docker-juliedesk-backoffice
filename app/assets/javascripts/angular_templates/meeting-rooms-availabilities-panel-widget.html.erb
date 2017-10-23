@@ -1,0 +1,27 @@
+<div class="meeting-rooms-availabilities-details-container" ng-show="displayWidget">
+
+  <div class="meeting-rooms-availabilities-details-wrapper">
+    <div class="meeting-rooms-availabilities-header">
+      <div class="header-text">Salles de réunion</div>
+    </div>
+
+    <div class="meeting-rooms-availabilities-body">
+      <div class="meeting-rooms-availabilities-details-content" ng-repeat="availabilitiesDetails in meetingRoomsAvailabilities track by $index">
+        <div class="room-availability-sprite" ng-class="{'room-available': availabilitiesDetails.isAvailable, 'room-unavailable': !availabilitiesDetails.isAvailable}"></div>
+        <div class="room-details">
+          <div class="room-location">{{availabilitiesDetails.location.label}} <span class="room-owner">(Associated to {{availabilitiesDetails.clientUsageName}})</span></div>
+          <div class="room-name">{{availabilitiesDetails.roomName || '...'}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meeting-rooms-warning-container" ng-show="noMeetingRoomsAvailable">
+    <div class="warning-content">
+      <div class="warning-sprite-container">
+        <div class="warning-sprite"></div>
+      </div>
+      Certaines salles de réunion à réserver ne sont pas disponibles
+    </div>
+  </div>
+</div>

@@ -856,7 +856,7 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
 
     if(window.classification == 'update_event' && meetingRoomManager) {
       // In case we are using meeting rooms, we clean the current room
-      var availableRoomsIds = _.map(meetingRoomManager.availableRooms, function(room) {return room.id});
+      var availableRoomsIds = _.map(meetingRoomManager.getEveryPossibleMeetingRooms(), function(room) {return room.id});
       attendees = _.reject(attendees, function(att) { return availableRoomsIds.indexOf(att.email) > -1 });
     }
 
@@ -1158,7 +1158,7 @@ EventTile.prototype.initActions = function() {
         eventTile.redrawDatePicker();
 
         $('.event-tile-container .create-event-meeting-rooms-wrapper').show();
-        meetingRoomsNode.scope().scaleEventTile();
+        //meetingRoomsNode.scope().scaleEventTile();
 
         if(currentAppointment) {
             if(currentAppointment.appointment_kind_hash.is_virtual) {

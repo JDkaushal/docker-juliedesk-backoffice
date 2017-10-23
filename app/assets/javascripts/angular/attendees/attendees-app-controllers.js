@@ -245,12 +245,16 @@
             $scope.messageBuilder = $scope.messageBuilder || $('#reply-area').scope();
         });
 
+        $scope.readyToOpenCalendar = false;
+
         this.loaded = false;
         $scope.attendees = [];
         $scope.missingInformationLookedFor = '';
         $scope.displayAttendeesTimezone = false;
         this.readOnly = window.threadDataIsEditable == undefined;
         this.usageNamev2Enabled = window.featuresHelper.isFeatureActive('usage_name_v2');
+
+        $scope.meetingRoomsManager = $scope.meetingRoomsManager || $('#meeting-rooms-manager').scope();
 
         //Watchers------------------------------------------------------------------------
         $scope.$watch('attendees', function (newVal, oldVal){
@@ -275,6 +279,17 @@
         //Events Listeners----------------------------------------------------------------
         $scope.$on('attendeeAdded', function(event, args) {
             $scope.attendees.push(args.attendee);
+        });
+
+        angular.element(document).ready(function () {
+            $scope.meetingRoomsManager = $scope.meetingRoomsManager || $('#meeting-rooms-manager').scope();
+
+            if($scope.meetingRoomsManager) {
+                $scope.meetingRoomsManager.$on('meetingRoomsInitialized', function(event, args) {
+                    if($scope.readyToOpenCalendar && !window.currentCalendar && window.drawCalendarCallback)
+                        window.drawCalendarCallback();
+                });
+            }
         });
         //--------------------------------------------------------------------------------
 
@@ -753,9 +768,9 @@
                 attendeesCtrl.loaded = true;
                 attendeesCtrl.populateAttendeesDetails(attendeesDetails.data);
                 $scope.exposeAttendeesToGlobalScope();
-                //$rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
                 $(".attendee-timezone").timezonePicker();
                 $scope.displayExtendedInfos();
+                $rootScope.$broadcast('attendeesInitialized', {attendees: $scope.attendees});
             }, function error(response){
                 attendeesCtrl.loaded = true;
                 console.log("Error: ", response);
@@ -864,8 +879,10 @@
 
             window.clientAccountTilesScope.fetchOtherAccounts();
 
-            if(window.drawCalendarCallback)
-                window.drawCalendarCallback();
+            // if(window.drawCalendarCallback)
+            //     window.drawCalendarCallback();
+
+            $scope.readyToOpenCalendar = true;
         };
 
         $scope.setTitlePreference = function() {

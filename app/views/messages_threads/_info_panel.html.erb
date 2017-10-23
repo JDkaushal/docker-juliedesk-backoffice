@@ -131,11 +131,11 @@
                         $('.event-tile-panel #calling-infos-missing').hide();
                         $('#event_tile_location_selector').show();
 
-                        var meetingRoomNode = $('#meeting-rooms-manager');
-
-                        if(meetingRoomNode.length > 0) {
-                            meetingRoomNode.scope().scaleEventTile();
-                        }
+//                        var meetingRoomNode = $('#meeting-rooms-manager');
+//
+//                        if(meetingRoomNode.length > 0) {
+//                            meetingRoomNode.scope().scaleEventTile();
+//                        }
                     }
                     var eventUpdateNode = $('#event_update_virtual_meetings_helper');
                     if(eventUpdateNode.length > 0){
@@ -725,13 +725,13 @@
             }
         }
 
-        if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
+        //if(currentAppointment && currentAppointment.appointment_kind_hash.is_virtual) {
             var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
             if(meetingRoomsManager) {
                 meetingRoomsManager.setMeetingRoomInfosInNotes();
             }
-        }
+        //}
 
         var notes = $('#notes').val().trim().replace(/\n/g, '__n');
         $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
@@ -760,7 +760,6 @@
             //}
         }
     }*/
-
 
     function updateCurrentEventNotes() {
         if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
@@ -1139,6 +1138,8 @@
         $locationsSelect.val("Custom");
         if (appointment && appointment.default_address) {
             $locationsSelect.val(appointment.default_address.label).trigger('change');
+            // Used in meeting rooms, to get previous value after changes
+            $locationsSelect.data('prevValue', appointment.default_address.address);
         }
     }
 
@@ -1501,6 +1502,11 @@
   <%= render partial: "messages_threads/client_agreement_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
 
   <%= render partial: "messages_threads/attendees_are_noticed_panel", locals: {messages_thread: messages_thread, classification: local_assigns[:classification]} %>
+
+  <!-- We display the meeting rooms availabiltiies widget only in the update events scenario, because it is incorporated in the event_creator app in the cas eof a verify_disponibilities -->
+  <% if @classification.present? && @classification == 'update_event' %>
+    <%= render partial: "messages_threads/partials/meeting_rooms_availabilities_panel" %>
+  <% end %>
 
   <div class="created-event-panel"></div>
 

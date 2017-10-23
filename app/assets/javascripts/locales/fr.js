@@ -374,8 +374,8 @@ window.wordings['fr'] = {
         notes: {
             address_details_boundary: 'Complément-Adresse',
             meeting_rooms: {
-                boundary: '-Salle-de-Réunion------',
-                sentence: 'Salle de réunion réservée chez %{company_name} : %{meeting_room_name}'
+                boundary: '-Salles-de-Réunion------',
+                sentence: '%{meeting_room_name} (%{meeting_room_location})'
             }
         }
     },

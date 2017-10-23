@@ -77,15 +77,26 @@
         window.currentEventTile.$selector.find(".end-hours").val(mEndDate.format("HH"));
         window.currentEventTile.$selector.find(".end-minutes").val(mEndDate.format("mm"));
 
+        // Manually trigger a change event on those inputs, because some code is listening to it, for example the meeting_rooms_manager
+        $('input.event-dates').trigger('change');
+
         window.currentEventTile.enterEditMode();
       };
 
       window.drawCalendarCallback = function(){
+          var meetingRoomsManager = $('#meeting-rooms-manager').scope();
           window.activateCalendarWithParams({
               mode: "create_event",
               date_times: [],
               email: "<%= @message.messages_thread.account_email %>",
-              duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>
+              duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>,
+              calendarandEventsLoadedFirstTimeCallback: function() {
+                  setTimeout(function() {
+                      if(window.currentEventTile && meetingRoomsManager) {
+                          meetingRoomsManager.checkIfDetectAvailabilities();
+                      }
+                  }, 100);
+              }
           });
           window.currentCalendar.redrawFullCalendar();
       };

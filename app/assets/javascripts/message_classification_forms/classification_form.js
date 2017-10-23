@@ -233,6 +233,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         // on the model without having to link into the JSON
         using_meeting_room: meetingRoomManager.getUsingMeetingRoom() || undefined,
         meeting_room_details: meetingRoomManager.getMeetingRoomDetails() || undefined,
+        booked_rooms_details: meetingRoomManager.getBookedRoomsDetails() || undefined,
         // We separate using_meeting_room and meeting_room_details to have a quick access to the using_restaurant_booking boolean
         // on the model without having to link into the JSON
         using_restaurant_booking: restaurantBookingManager.getUsingRestaurantBooking() || undefined,

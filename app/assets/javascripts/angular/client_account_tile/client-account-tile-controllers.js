@@ -114,15 +114,32 @@
         });
 
         $scope.fetchOtherAccounts = function() {
-            _.each(window.otherAccountEmails, function(otherAccountEmail) {
-                $.get("/accounts?email=" + otherAccountEmail).then(function (response) {
-                    var account = response.data.account;
-                    $scope.processAccount(account);
-                    $scope.accounts.push(account);
-                }, function (response) {
-                    console.log("Error while getting account " + otherAccountEmail + " : " + response.message)
+            var otherAccountsCount = window.otherAccountEmails.length;
+            var accountsFetchedCount = 0;
+
+            if(otherAccountsCount > 0) {
+                _.each(window.otherAccountEmails, function(otherAccountEmail) {
+                    $.get("/accounts?email=" + otherAccountEmail).then(function (response) {
+                        accountsFetchedCount++;
+                        var account = response.data.account;
+                        $scope.processAccount(account);
+                        $scope.accounts.push(account);
+
+                        if(accountsFetchedCount >= otherAccountsCount) {
+                            $scope.broadcastAllAccountsFetched();
+                        }
+                    }, function (response) {
+                        console.log("Error while getting account " + otherAccountEmail + " : " + response.message)
+                    });
                 });
-            });
+            } else {
+                $scope.broadcastAllAccountsFetched();
+            }
+
+        };
+
+        $scope.broadcastAllAccountsFetched = function() {
+            $scope.$broadcast('allAccountsFetched', {accounts: $scope.accounts});
         };
 
         $scope.computeAccountGender = function(account) {

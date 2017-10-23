@@ -45,6 +45,8 @@ function Calendar($selector, params, synchronize) {
     this.virtualResourcesEvents = {};
     this.calendarAllEvents = {};
 
+    this.currentlyFetchedMeetingRooms = [];
+
     var calendar = this;
 
     // Event handlers
@@ -265,9 +267,9 @@ Calendar.prototype.determineCalendarInitialStartDate = function() {
 };
 
 Calendar.prototype.refreshMeetingRoomSelectOptions = function() {
-    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
-    if(meetingRoomsManager)
-        meetingRoomsManager.populateCreateEventRoomSelect();
+    // var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+    // if(meetingRoomsManager)
+    //     meetingRoomsManager.populateCreateEventRoomSelect();
 };
 
 Calendar.prototype.selectEvent = function (event, selectingOccurrence) {
@@ -292,32 +294,32 @@ Calendar.prototype.registerCalendarCallback = function(type, callback) {
     calendar.$selector.find('#calendar').fullCalendar(type, callback);
 };
 
-Calendar.prototype.getMode = function () {
+Calendar.prototype.getMode = function() {
     var calendar = this;
     return calendar.initialData.mode;
 };
 
-    Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
-        var calendar = this;
-        var accountPreferences = calendar.accountPreferences[calendarItem.email];
-        if($('#meeting-rooms-manager').length > 0) {
-            var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
-        }
-        else {
-            var meetingRoomsToDisplayIds = [];
-        }
+Calendar.prototype.shouldDisplayCalendarItem = function (calendarItem) {
+    var calendar = this;
+    var accountPreferences = calendar.accountPreferences[calendarItem.email];
+    if($('#meeting-rooms-manager').length > 0) {
+        var meetingRoomsToDisplayIds = _.map($('#meeting-rooms-manager').scope().getMeetingRoomsToDisplay(), function(mR) { return mR.id; });
+    }
+    else {
+        var meetingRoomsToDisplayIds = [];
+    }
 
 
-        return (
-            accountPreferences &&
-            accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
-            accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
-            ) ||
-            calendar.isFakeCalendarId(calendarItem.id) ||
-            // If the calendar is a meeting room that we should display
-            meetingRoomsToDisplayIds.indexOf(calendarItem.id) >- 1;
+    return (
+        accountPreferences &&
+        accountPreferences.calendars_to_show[calendarItem.calendar_login_username] &&
+        accountPreferences.calendars_to_show[calendarItem.calendar_login_username].indexOf(calendarItem.id) > -1
+        ) ||
+        calendar.isFakeCalendarId(calendarItem.id) ||
+        // If the calendar is a meeting room that we should display
+        meetingRoomsToDisplayIds.indexOf(calendarItem.id) >- 1;
 
-    };
+};
 
 Calendar.prototype.isFakeCalendarId = function(calendarId) {
     var calendar = this;
@@ -386,18 +388,17 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
                 $div.data("calendar-login-username", calendarItem.calendar_login_username);
                 $div.data("calendar-summary", calendarItem.summary);
 
-                // For meeting rooms
-                $div.data("room-capacity", calendarItem.capacity);
-                $div.data("room-can-visio", calendarItem.can_visio);
-                $div.data("room-can-confcall", calendarItem.can_confcall);
-
                 if(calendarItem.is_resource) {
                     $div.addClass('is-meeting-room');
+                    // For meeting rooms
+                    $div.data("room-capacity", calendarItem.capacity);
+                    $div.data("room-can-visio", calendarItem.can_visio);
+                    $div.data("room-can-confcall", calendarItem.can_confcall);
                 }
 
                 var $checkbox = $("<input type='checkbox'>");
 
-                if(calendarItem.email != calendar.initialData.email) {
+                if(calendarItem.email != calendar.initialData.email && !calendarItem.is_resource) {
                     $checkbox.prop("disabled", "disabled");
                 }
 
@@ -413,9 +414,9 @@ Calendar.prototype.redrawCalendarsListPopup = function () {
         }
     }
 
-    if(meetingRoomsManager) {
-        meetingRoomsManager.populateCreateEventRoomSelect();
-    }
+    // if(meetingRoomsManager) {
+    //     meetingRoomsManager.populateCreateEventRoomSelect();
+    // }
 
 };
 
@@ -450,32 +451,48 @@ Calendar.prototype.fetchCalendars = function (callback) {
     var allEmails = calendar.allEmails();
     var accountsToWait = 0;
     calendar.calendars = [];
+    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
     // Here we are setting the Ews meeting rooms in the calendars property to handle them as normal calendars
     // This way they will appear in the meeting rooms section in the calendar selection Popup of the display calendar
-    if(getCurrentAddressObject) {
+    if(meetingRoomsManager) {
+        var meetingRooms = [];
 
-        var currentAddress = getCurrentAddressObject();
-
-        if(currentAddress) {
-
-            var meetingRooms = angular.copy(currentAddress.available_meeting_rooms);
-            _.each(meetingRooms, function(mR) {
-                mR.is_resource = true;
-                mR.groupEmail = 'Meeting Rooms';
-                mR.email = calendar.initialData.email;
+        _.each(meetingRoomsManager.getAvailableMeetingRooms(), function(mRs, clientEmail) {
+            _.each(mRs, function(room) {
+                room.is_resource = true;
+                room.groupEmail = 'Meeting Rooms';
+                room.email = clientEmail;
+                meetingRooms.push(room)
             });
+        });
 
-            // var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
-            //     mR.is_resource = true;
-            //     mR.groupEmail = 'Meeting Rooms';
-            //     mR.email = calendar.initialData.email;
-            //     return mR.calendar_login_username == "ews_company_meeting_room";
-            // });
-
-            calendar.calendars = calendar.calendars.concat(meetingRooms);
-        }
+        calendar.calendars = calendar.calendars.concat(meetingRooms);
     }
+
+    // if(getCurrentAddressObject) {
+    //
+    //     var currentAddress = getCurrentAddressObject();
+    //
+    //     if(currentAddress) {
+    //
+    //         var meetingRooms = angular.copy(currentAddress.available_meeting_rooms);
+    //         _.each(meetingRooms, function(mR) {
+    //             mR.is_resource = true;
+    //             mR.groupEmail = 'Meeting Rooms';
+    //             mR.email = calendar.initialData.email;
+    //         });
+    //
+    //         // var ewsMeetingRooms = _.filter(currentAddress.available_meeting_rooms, function(mR) {
+    //         //     mR.is_resource = true;
+    //         //     mR.groupEmail = 'Meeting Rooms';
+    //         //     mR.email = calendar.initialData.email;
+    //         //     return mR.calendar_login_username == "ews_company_meeting_room";
+    //         // });
+    //
+    //         calendar.calendars = calendar.calendars.concat(meetingRooms);
+    //     }
+    // }
 
     for(var i = 0; i < allEmails.length; i++) {
         var email = allEmails[i];
@@ -499,11 +516,11 @@ Calendar.prototype.fetchCalendars = function (callback) {
                 for(var j=0; j < response.items.length; j++) {
                     var calendarItem = response.items[j];
                     calendarItem.email = response.email;
-                    if(calendarItem.is_resource) {
-                        calendarItem.groupEmail = 'Meeting Rooms';
-                    }else {
+                    // if(calendarItem.is_resource) {
+                    //     calendarItem.groupEmail = 'Meeting Rooms';
+                    // }else {
                         calendarItem.groupEmail = response.email;
-                    }
+                    //}
                     calendar.calendars.push(calendarItem);
                 }
 
@@ -688,13 +705,14 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
 
     calendar.currentlyFetchingWeeks[formattedStart] = 0;
 
-
     for(var email in calendar.accountPreferences) {
         localWaitingAccounts += 1;
 
         calendar.currentlyFetchingWeeks[formattedStart] += 1;
         var preferenceHash = calendar.accountPreferences[email];
         allClientsPreferencesHash.push(preferenceHash);
+
+
 
         calendar.fetchEvents(start, end, preferenceHash, function(responseItems) {
             localWaitingAccounts -= 1;
@@ -770,6 +788,8 @@ Calendar.prototype.redrawFullCalendar = function() {
 Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, callback, trackingOptions) {
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
+    var meetingRoomsManager =  $('#meeting-rooms-manager').scope();
+    var neededMeetingRoomsCount = 0;
     var currentAppointment = window.getCurrentAppointment();
     var unavailableEvents = [];
     //var allEvents = [];
@@ -781,20 +801,33 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         meeting_rooms_to_show = calendar.initialData.meeting_rooms_to_show;
     }
 
-    if (window.threadAccount) {
-        if (accountPreferencesHash.email == window.threadAccount.email) {
-            _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
-                var calendarItemNode = $(c).closest('.calendar-item');
+    if (window.threadAccount && accountPreferencesHash.email === window.threadAccount.email) {
+        //meeting_rooms_to_show[window.threadAccount.email] = [];
+        //if (accountPreferencesHash.email == window.threadAccount.email) {
+        _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
+            var calendarItemNode = $(c).closest('.calendar-item');
+            //var currentRoomId = calendarItemNode.data('calendar-id');
+            meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
+            meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
 
-                meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
-                meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
-            });
+            // Only fetch the meeting room if it is not already being fetched for another client
+            // if(calendarItemNode.data('email') === accountPreferencesHash.email) {
+            //     meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
+            //     meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
+            // }
+        });
+        //}
+
+        meeting_rooms_to_show[window.threadAccount.email] = _.uniq(meeting_rooms_to_show[window.threadAccount.email]);
+
+        if(meeting_rooms_to_show[window.threadAccount.email].length > 0) {
+            neededMeetingRoomsCount = meetingRoomsManager.widgets.length;
         }
 
         if (currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
             window.threadComputedData && window.threadComputedData.call_instructions) {
             var virtualAppoinementCompanySupport = _.find(window.threadAccount.virtual_appointments_company_support_config, function (support) {
-                return support.resource_type == window.threadComputedData.call_instructions.support
+                return support.resource_type == window.threadComputedData.call_instructions.support;
             });
 
             if (virtualAppoinementCompanySupport && virtualAppoinementCompanySupport.virtual_resources) {
@@ -835,6 +868,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         email: accountPreferencesHash.email,
         calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
         meeting_rooms_to_show: meeting_rooms_to_show,
+        needed_meeting_rooms_count: neededMeetingRoomsCount,
         virtual_resources_to_show: virtualResourcesToShow,
         start: start,
         end: end,
@@ -1228,7 +1262,6 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         travel_time_after: ev.travel_time_after,
         position: ev.position,
         max_duration_before: ev.max_duration_before,
-        max_duration_before: ev.max_duration_before,
         description: ev.description,
         attendees: ev.attendees,
         startEditable: false,
@@ -1321,7 +1354,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
 
     var meetingRoomsIds = [];
     if(meetingRoomsManager) {
-        _.each(meetingRoomsManager.availableRooms, function(mR) {
+        _.each(_.flatten(_.values(meetingRoomsManager.getAvailableMeetingRooms())), function(mR) {
             meetingRoomsIds.push(mR.id);
             localMeetingRoomsEvents[mR.id] = [];
             calendar.meetingRoomsEvents[mR.id] = calendar.meetingRoomsEvents[mR.id] || [];
@@ -1513,6 +1546,11 @@ Calendar.prototype.refreshEvents = function() {
     var calendar = this;
     calendar.$selector.find('#calendar').fullCalendar('removeEvents');
     calendar.fetchAllAccountsEvents(calendar.dispStart.format() + "T00:00:00Z", calendar.dispEnd.format() + "T00:00:00Z");
+};
+
+Calendar.prototype.resetMeetingRoomsEvents = function() {
+    var calendar = this;
+    calendar.meetingRoomsEvents = {};
 };
 
 Calendar.prototype.triggerCalendarsSync = function() {
