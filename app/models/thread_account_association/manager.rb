@@ -38,11 +38,14 @@ module ThreadAccountAssociation
                 { method: :thread_has_no_owner? },
                 { method: :cannot_suggest_merging? },
                 { method: :can_send_automatic_message? },
-                { method: :accounts_lists_are_empty? }
+                { method: :accounts_lists_are_empty? },
+                { method: :not_a_meeting_response? }
             ],
             action: :send_automatic_email_then_archive
         }
     ]
+
+    MEETING_RESPONSE_LABEL = 'MEETING_RESPONSE'
 
 
     def initialize(params)
@@ -166,6 +169,14 @@ module ThreadAccountAssociation
         false
       end
     end
+
+
+    def not_a_meeting_response?
+      first_message = get_first_thread_message
+      labels = first_message['labels'] || []
+      !labels.include?(MEETING_RESPONSE_LABEL)
+    end
+
 
     def suggest_merging
       if @merging_data.present?
