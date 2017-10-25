@@ -235,6 +235,7 @@ Rails.application.routes.draw do
       post :verify_dates_v5
       post :verify_dates_v6
       post :verify_dates_v7
+      post :verify_dates_v8
       post :verify_dates_with_version
     end
 

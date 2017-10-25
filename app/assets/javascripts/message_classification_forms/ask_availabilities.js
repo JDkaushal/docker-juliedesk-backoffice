@@ -192,15 +192,15 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
                 });
 
-                aiDatesVerificationManager.verifyDatesV7($.extend({}, verifyParams)).then(
+                aiDatesVerificationManager.verifyDatesV8($.extend({}, verifyParams)).then(
                     function(response) {
-                        console.log('response Verify Dates V5', response);
+                        console.log('response Verify Dates V8', response);
                     }, function(error) {
-                        console.log('error Verify Dates V5', error);
+                        console.log('error Verify Dates V8', error);
                     }
                 );
 
-                aiDatesVerificationManager.verifyDatesV6($.extend({}, verifyParams)).then(
+                aiDatesVerificationManager.verifyDatesV7($.extend({}, verifyParams)).then(
                     function(response) {
                         var verifiedDatesByAI = undefined;
 

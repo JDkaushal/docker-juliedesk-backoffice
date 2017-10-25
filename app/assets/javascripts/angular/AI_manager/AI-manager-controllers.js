@@ -647,6 +647,10 @@
             return aIDatesVerificationService.verifyDatesV7(params);
         };
 
+        $scope.verifyDatesV8 = function(params) {
+            return aIDatesVerificationService.verifyDatesV8(params);
+        };
+
         $scope.verifyDatesWithVersion = function(apiVersion, params) {
             return aIDatesVerificationService.verifyDatesWithVersion(apiVersion, params);
         };
