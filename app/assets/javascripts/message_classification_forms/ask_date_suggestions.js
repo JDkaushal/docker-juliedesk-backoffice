@@ -21,6 +21,15 @@ window.classificationForms.askDateSuggestionsForm = function (params) {
 
     };
 
+    if(window.messagesDispatcher) {
+        window.messagesDispatcher.registerListener("info-panel-next-item-event", function () {
+            if(window.featuresHelper.isFeatureActive("auto_date_suggestions_from_backend") && $(".subject-form-entry:visible").length > 0) {
+                askDateSuggestionsForm.initiatePutsCalendarInConscienceCacheIfNeeded();
+            }
+        });
+    }
+
+
     $(function () {
         $(".client-agreement-panel .yes-button").click(function () {
             window.acceptClientAgreement();
@@ -35,6 +44,57 @@ window.classificationForms.askDateSuggestionsForm = function (params) {
     window.acceptClientAgreement = function() {
         askDateSuggestionsForm.validateClientAgreement(true, false);
     };
+};
+window.classificationForms.askDateSuggestionsForm.prototype.initiatePutsCalendarInConscienceCacheIfNeeded = function() {
+    var askDateSuggestionsForm = this;
+    if(askDateSuggestionsForm.calendarConscienceCacheInitiated) {
+        return;
+    }
+    askDateSuggestionsForm.calendarConscienceCacheInitiated = true;
+    askDateSuggestionsForm.calendarConscienceCacheLoading(true);
+    askDateSuggestionsForm.putsCalendarInConscienceCache(function() {
+        askDateSuggestionsForm.calendarConscienceCacheLoading(false);
+    }, function() {
+        askDateSuggestionsForm.calendarConscienceCacheLoading(false);
+    });
+};
+window.classificationForms.askDateSuggestionsForm.prototype.calendarConscienceCacheLoading = function(isLoading) {
+    if(isLoading) {
+        $(".submit-classification").prop("disabled", true)
+    }
+    else {
+        $(".submit-classification").prop("disabled", false)
+    }
+};
+window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConscienceCache = function(successCallback, errorCallback) {
+    var askDateSuggestionsForm = this;
+    var attendeesControllerScope = $('#attendeesCtrl').scope();
+    var aiDatesSuggestionsManagerScope = $('#ai_dates_suggestions_manager').scope();
+
+    var meetingRoomsToShow = askDateSuggestionsForm.getMeetingRoomsToShow();
+
+    var fetchParams = {
+        account_email: window.threadAccount.email,
+        attendees: attendeesControllerScope.attendees,
+        thread_data: {
+            appointment_nature: $("#appointment_nature").val(),
+            location: $("#location").val(),
+            duration: parseInt($("#duration").val(), 10),
+            timezone: askDateSuggestionsForm.getTimezoneForSendForm()
+        },
+        raw_constraints_data: askDateSuggestionsForm.getConstraintsDataForSendForm(),
+        compute_linked_attendees: true,
+        message_id: $('.email.highlighted').data('message-id'),
+        old_attendees: _.filter(window.threadComputedData.attendees, function(att) { return att.isPresent == 'true' }),
+        meeting_rooms_to_show: meetingRoomsToShow
+    };
+
+    aiDatesSuggestionsManagerScope.putsCalendarInConscienceCache(fetchParams).then(function(response) {
+        var data = response.data;
+        successCallback(data);
+    }, function(error) {
+        errorCallback(error.status === 408 ? 'timeout' : 'error');
+    });
 };
 
 window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestionsFromAi = function(successCallback, errorCallback) {

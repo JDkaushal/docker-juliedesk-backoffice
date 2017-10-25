@@ -1111,6 +1111,10 @@
 
         }
         $(".messages-thread-info-panel").scrollTop($(".messages-thread-info-panel")[0].scrollHeight);
+        if(window.messagesDispatcher) {
+            window.messagesDispatcher.dispatch("info-panel-next-item-event");
+        }
+
     }
 
     function initAddresses() {
@@ -1652,7 +1656,7 @@
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
       </div>
 
-      <div class="data-entry linear-form-entry">
+      <div class="data-entry linear-form-entry subject-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
         <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
         <div class="title-preferences-checkboxes">

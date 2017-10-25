@@ -224,6 +224,7 @@ Rails.application.routes.draw do
     namespace :dates_suggestions do
       post :fetch
       post :send_learning_data
+      post :puts_calendar_in_conscience_cache
       post :dates_suggestions_auto_process_update
     end
 

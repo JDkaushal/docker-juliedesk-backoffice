@@ -574,6 +574,10 @@
             return aIDatesSuggestionService.fetch(params);
         };
 
+        $scope.putsCalendarInConscienceCache = function (params) {
+            return aIDatesSuggestionService.putsCalendarInConscienceCache(params);
+        };
+
         $scope.sendLearningData = function (params) {
             return aIDatesSuggestionService.sendLearningData(params);
         };

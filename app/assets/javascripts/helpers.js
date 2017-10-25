@@ -34,4 +34,23 @@ window.helpers.getQueryParams = function(queryString) {
     }
 
     return params;
-}
+};
+
+window.messagesDispatcher = {
+    listeners: {
+
+    },
+    dispatch: function(message, data) {
+        if(window.messagesDispatcher.listeners[message]) {
+            _.each(window.messagesDispatcher.listeners[message], function(callback) {
+                callback(data);
+            });
+        }
+    },
+    registerListener: function(message, callback) {
+        if(!window.messagesDispatcher.listeners[message]) {
+            window.messagesDispatcher.listeners[message] = [];
+        }
+        window.messagesDispatcher.listeners[message].push(callback);
+    }
+};

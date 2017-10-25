@@ -26,6 +26,21 @@
                 });
         };
 
+        this.putsCalendarInConscienceCache = function (params) {
+            return $http({
+                url: '/ai/dates_suggestions/puts_calendar_in_conscience_cache',
+                method: "POST",
+                data: params
+            }).then(
+                function (response) {
+                    return {
+                        data: response.data
+                    };
+                }, function (httpError) {
+                    console.log(httpError);
+                });
+        };
+
         this.datesSuggestionsAutoProcessUpdate = function (params) {
             return $http({
                 url: '/ai/dates_suggestions/dates_suggestions_auto_process_update',

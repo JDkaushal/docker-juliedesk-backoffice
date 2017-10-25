@@ -16,6 +16,7 @@ class AiProxy
       parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/parsersncf/'}.freeze,
 
       fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggest_dates/' }.freeze,
+      puts_calendar_in_conscience_cache: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/list_events_cache/' }.freeze,
       send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
       dates_suggestions_auto_process_update: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggested_date_auto_process_update/' }.freeze,
 

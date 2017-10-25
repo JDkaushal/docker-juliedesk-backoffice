@@ -19,6 +19,18 @@ class Ai::DatesSuggestionsController < ApplicationController
       render json: { error_code: "AI:TIMEOUT", message: "Timeout error" }, status: :request_timeout
   end
 
+  def puts_calendar_in_conscience_cache
+    if params[:compute_linked_attendees]
+      messages_thread = Message.find(params[:message_id]).messages_thread
+      messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
+      params[:thread_data][:linked_attendees] = messages_thread.linked_attendees
+    end
+
+    json = AI_PROXY_INTERFACE.build_request(:puts_calendar_in_conscience_cache, params)
+
+    render json: json
+  end
+
   def send_learning_data
     render json: AI_PROXY_INTERFACE.build_request(:send_dates_suggestions_learning_data, params)
   rescue AiProxy::TimeoutError
