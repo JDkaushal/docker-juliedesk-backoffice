@@ -225,7 +225,8 @@
                     });
 
                     var version = "stable";
-                    if(!window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions")) {
+                    if(!window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions_virtual") &&
+                        !window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions_physical")) {
                         version = "beta";
                     }
                     var fetchParams = {
