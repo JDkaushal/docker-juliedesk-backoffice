@@ -242,19 +242,11 @@
                 });
             }
             else {
-                console.log(all_day.corrected_availability)
-                console.log(all_day.corrected_location_indication)
-                console.log(all_day.corrected_timezone_indication)
                 all_day.corrected_availability = all_day.availability;
                 all_day.corrected_location_indication = all_day.location_indication;
                 all_day.corrected_timezone_indication = all_day.timezone_indication;
                 $scope.$broadcast('angucomplete-alt:clearInput', 'correction-'+all_day.id);
                 $scope.$broadcast('angucomplete-alt:changeInput', 'correction-'+all_day.id, all_day.location_indication);
-
-                
-                console.log(all_day.corrected_availability)
-                console.log(all_day.corrected_location_indication)
-                console.log(all_day.corrected_timezone_indication)
             }
 
 
