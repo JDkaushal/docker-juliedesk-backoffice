@@ -1,0 +1,453 @@
+<%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_API_KEY']}&libraries=places" %>
+
+<script>
+    var app = angular.module("allDaysApp", ["angucomplete-alt"]);
+
+    app.directive('googleplace', [function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attrs, model) {
+                scope.gPlace = new google.maps.places.Autocomplete(element[0]);
+
+                element.bind('blur', function() {
+                    if(element.data("google-location") !== element.val()) {
+                        element.val("")
+                        scope.$apply(function () {
+                            model.$setViewValue("");
+                        });
+                    }
+                });
+
+                google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
+                    element.data("google-location", element.val());
+                    scope.$apply(function () {
+
+                        model.$setViewValue(element.val());
+                    });
+                });
+            }
+        };
+    }]);
+
+    app.directive('timezonepicker', [function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attrs, model) {
+
+                scope.timezone = new $(element[0]).timezonePicker();
+
+            }
+        };
+    }]);
+
+    app.directive("resultsNavigator", function () {
+        return {
+            restrict: 'E',
+            link: function (scope, element, attrs, ctrl) {
+
+            },
+            scope: {
+                offset: "=",
+                totalCount: "=",
+                itemsPerPage: "="
+            },
+            controller: ['$scope', function ($scope) {
+                $scope.firstItem = function () {
+                    return Math.max($scope.offset + 1);
+
+                };
+                $scope.lastItem = function () {
+                    return Math.min($scope.offset + $scope.itemsPerPage, $scope.totalCount);
+                };
+                $scope.previousPage = function () {
+                    $scope.offset -= $scope.itemsPerPage;
+                };
+                $scope.nextPage = function () {
+                    $scope.offset += $scope.itemsPerPage;
+                };
+
+                $scope.isFirstPage = function () {
+                    return $scope.offset == 0;
+                };
+                $scope.isLastPage = function () {
+                    return $scope.offset + $scope.itemsPerPage >= $scope.totalCount;
+                };
+
+            }],
+            template: function (element, attr) {
+                var htmlTemplate =
+                    '<div ng-show="totalCount > 0">' +
+                    '<span class="btn" disabled>{{ firstItem() }} - {{ lastItem() }} / {{ totalCount }}</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isFirstPage()" ng-click="previousPage()"><</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isLastPage()" ng-click="nextPage()">></span>' +
+                    '</div>' +
+                    '<div ng-show="totalCount == 0" class="btn" disabled>' +
+                    '' +
+                    '</div>';
+                return htmlTemplate
+            }
+        }
+    });
+
+    app.service('conscienceService', ['$http','$q', function($http, $q) {
+        this.get = function(path) {
+          return this.request(path, 'get');
+        };
+        this.post = function(path, data) {
+            return this.request(path, 'post', data);
+        };
+        this.request = function(path, method, data) {
+           var basePath = '<%= ENV['CONSCIENCE_BASE_PATH'] %>';
+           var authorization = '<%= ENV['CONSCIENCE_API_KEY'] %>';
+
+           if(method === 'post') {
+               return $http.post(basePath + path, data, {
+                       headers: {
+                           'Accept': 'application/json',
+                           'Authorization': authorization
+                       }
+                   })
+           }
+           else if(method === 'get') {
+               return $http.get(basePath + path, {
+                   headers: {
+                       'Accept': 'application/json',
+                       'Authorization': authorization
+                   }
+               })
+           }
+           else {
+               throw 'Unsupported request method';
+           }
+       };
+    }]);
+
+    app.controller("allDaysController", ['$scope', '$http', '$timeout', 'conscienceService', function ($scope, $http, $timeout, conscienceService) {
+
+        $scope.loading = false;
+
+        $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
+        $scope.offset = 0;
+        $scope.itemsPerPage = 100;
+        $scope.searchQuery = "";
+        $scope.allStatusesActive = {
+            'unchecked': true,
+            'valid': true,
+            'invalid': true,
+            'unknown': true
+        };
+        
+        $scope.availabilities = {
+          'busy': 'Busy',
+          'free': 'Free',
+          'no_call': 'No call',
+          'wfh': 'Call only'
+        }
+
+        $scope.fetchMode = function () {
+            $http.get("", {
+                headers: {'Accept': 'application/json'}
+            }).then(function (response) {
+
+                $scope.mode = response.data.mode;
+                if ($scope.mode == 'admin') {
+                    $scope.statuses = $scope.allStatusesActive
+                }
+                else {
+                    $scope.statuses = {
+                        'unchecked': true,
+                    };
+                }
+                $scope.fetch();
+            })
+        };
+        $scope.fetch = function () {
+            $scope.loading = true;
+            var url = "/api/v1/all_days";
+            url += "?offset=" + $scope.offset + "&limit=" + $scope.itemsPerPage;
+            var status = [];
+            _.each($scope.statuses, function (v, k) {
+                if (v) {
+                    status.push(k);
+                }
+            });
+            if (status.length > 0) {
+                url += "&status=" + status.join(",");
+            }
+            if ($scope.searchQuery.length > 0) {
+                url += "&query=" + $scope.searchQuery;
+            }
+            conscienceService.get(url).then(function (response) {
+                $scope.all_days = response.data.data;
+                if($scope.mode === 'review') {
+                    _.each($scope.all_days, function(all_day) {
+                        if(all_day.status === 'unchecked') {
+                            all_day.status = 'valid';
+                            all_day.corrected_availability = all_day.availability;
+                            all_day.corrected_location_indication = all_day.location_indication;
+                            all_day.corrected_timezone_indication = all_day.timezone_indication;
+                        }
+                    });
+                }
+                $scope.totalCount = response.data.total_count;
+                $scope.loading = false;
+            })
+        };
+
+        $scope.allDayIsChecked = function (all_day) {
+            return all_day.status !== "unchecked"
+        };
+
+        $scope.validateData = function () {
+            var notReadyAllDays = _.filter($scope.all_days, function (all_day) {
+                return !$scope.allDayIsChecked(all_day)
+            });
+            _.each(notReadyAllDays, function (all_day) {
+                all_day.highlighted = true;
+            });
+            $timeout(function () {
+                _.each(notReadyAllDays, function (all_day) {
+                    all_day.highlighted = false;
+                });
+            }, 1000);
+
+            return notReadyAllDays.length === 0;
+        };
+
+        $scope.validateBatch = function () {
+            if ($scope.validateData()) {
+                var data = _.map($scope.all_days, function (all_day) {
+                    return {
+                        id: all_day.id,
+                        status: all_day.status,
+                        corrected_availability: all_day.corrected_availability,
+                        corrected_location_indication: all_day.corrected_location_indication,
+                        corrected_timezone_indication: all_day.corrected_timezone_indication
+                    }
+                });
+
+                $scope.loading = true;
+                conscienceService.post("/api/v1/all_days/validate", data).then(function () {
+                    $scope.fetch();
+                });
+            }
+        };
+
+        $scope.setStatus = function (all_day, status) {
+            all_day.status = status;
+            if (status === "invalid") {
+                $timeout(function () {
+                    var element = $("#correction-" + all_day.id)[0];
+                    element.focus();
+                });
+            }
+            else {
+                console.log(all_day.corrected_availability)
+                console.log(all_day.corrected_location_indication)
+                console.log(all_day.corrected_timezone_indication)
+                all_day.corrected_availability = all_day.availability;
+                all_day.corrected_location_indication = all_day.location_indication;
+                all_day.corrected_timezone_indication = all_day.timezone_indication;
+                $scope.$broadcast('angucomplete-alt:clearInput', 'correction-'+all_day.id);
+                $scope.$broadcast('angucomplete-alt:changeInput', 'correction-'+all_day.id, all_day.location_indication);
+
+                
+                console.log(all_day.corrected_availability)
+                console.log(all_day.corrected_location_indication)
+                console.log(all_day.corrected_timezone_indication)
+            }
+
+
+        };
+
+        $scope.setZone = function(all_day) {
+          if (typeof all_day.selected_object != "undefined") {
+            all_day.corrected_location_indication = all_day.selected_object.originalObject.label;
+            all_day.corrected_timezone_indication = all_day.selected_object.originalObject.timezone;
+          }
+        };
+
+        $scope.$watch("statuses", function (newValue, oldValue) {
+            if(oldValue !== undefined) {
+                $scope.fetch();
+            }
+
+        }, true);
+
+        $scope.$watch("offset", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                $scope.fetch();
+            }
+
+        });
+
+
+        $scope.$watch("searchQuery", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                clearTimeout($scope.timeoutCode);
+                $scope.timeoutCode = setTimeout(function () {
+                    $scope.fetch();
+                }, 500);
+            }
+        });
+
+
+        $scope.fetchMode();
+
+    }]);
+</script>
+
+<style>
+  .check-btn {
+    opacity: 0.4;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .check-btn.checked {
+    opacity: 1.0;
+  }
+
+  .check-btn.success {
+    color: #5cb85c;
+  }
+
+  .check-btn.error {
+    color: #d9534f;
+  }
+
+  .check-btn.warning {
+    color: #d321f0;
+  }
+
+  select {
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    padding: 0 5px;
+    border-radius: 0px;
+    background: white;
+    -webkit-appearance: none;
+  }
+
+  input[type=text] {
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    padding: 0 5px;
+  }
+
+  input[type=text].error {
+    border-color: #d9534f;
+  }
+
+  td {
+    position: relative;
+  }
+
+  td.bigWarning::before {
+    content: "";
+    background: #d9534f;
+    position: absolute;
+    left: -30px;
+    top: 10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+  }
+
+</style>
+
+<div ng-app="allDaysApp"
+     ng-controller="allDaysController"
+     class="col-md-offset-2 col-md-8">
+  <h1>All Days <span ng-show="loading"> [ Loading... ]</span></h1>
+
+  <h4 ng-show="mode == 'review'">All days availabilities to check: {{ totalCount }}</h4>
+
+  <div ng-show="mode == 'admin'"
+       class="alert alert-info row">
+    <div class="col-md-4">
+      <h4>Status:</h4>
+      <div ng-repeat="statusItem in availableStatuses"><input type="checkbox" ng-model="statuses[statusItem]"> {{
+        statusItem }}
+      </div>
+    </div>
+    <div class="col-md-4">
+
+      <input ng-model="searchQuery" placeholder="Search for all days...">
+    </div>
+    <div class="col-md-4">
+      <results-navigator offset="offset" total-count="totalCount" items-per-page="itemsPerPage"></results-navigator>
+    </div>
+
+  </div>
+
+  <table class="table table-striped">
+    <tr>
+      <th>Summary</th>
+      <th>Busy</th>
+      <th>Location</th>
+      <th>Availability</th>
+      <th>Location indication</th>
+      <th>Timezone indication</th>
+      <th>Status</th>
+    </tr>
+    <tr ng-repeat="all_day in all_days" ng-class="{warning: !allDayIsChecked(all_day)}">
+      <td class="col-md-2"
+          ng-class="{bigWarning: all_day.highlighted}">{{ all_day.summary }}</td>
+      <td class="col-md-1">{{ all_day.busy }}</td>
+      <td class="col-md-2">{{ all_day.location }}</td>
+      <td class="col-md-1">
+        <select ng-model="all_day.corrected_availability"
+                id="correction-{{ all_day.id }}"
+                ng-options="key as value for (key, value) in availabilities"
+                ng-init="all_day.corrected_availability"
+                ng-disabled="all_day.status != 'invalid'">
+          <option value="" disabled selected>{{ all_day.status !== 'invalid' ? '' : 'Enter a valid availability...' }}</option>
+        </select>
+      </td>
+      <td class="col-md-2">
+        <angucomplete-alt
+                id="correction-{{ all_day.id }}"
+                placeholder=""
+                pause="500"
+                selected-object="all_day.selected_object"
+                ng-click="setZone(all_day)"
+                remote-url="/geo_zones/autocomplete?query="
+                remote-url-data-field="data"
+                title-field="label_and_country"
+                minlength="3"
+                match-class="highlight"
+                initial-value="all_day.corrected_location_indication"
+                disable-input="all_day.status != 'invalid'"
+                ></angucomplete-alt>
+      </td>
+
+      <td class="col-md-2">
+        <input type="text"
+               id="correction-{{ all_day.id }}"
+               timezonepicker
+               placeholder="{{ all_day.status !== 'invalid' ? '' : '' }}"
+               ng-model="all_day.corrected_timezone_indication"
+               ng-init="all_day.corrected_timezone_indication"
+               ng-disabled="all_day.status != 'invalid'"/>
+      </td>
+      <td class="col-md-1"
+          style="min-width: 120px">
+        <span class="fa fa-check check-btn success"
+              ng-class="{checked: all_day.status == 'valid'}"
+              ng-click="setStatus(all_day, 'valid')"></span>
+        <span class="fa fa-times check-btn error"
+              ng-class="{checked: all_day.status == 'invalid'}"
+              ng-click="setStatus(all_day, 'invalid')"></span>
+        <span class="fa fa-question check-btn warning"
+              ng-class="{checked: all_day.status == 'unknown'}"
+              ng-click="setStatus(all_day, 'unknown')"></span>
+      </td>
+    </tr>
+  </table>
+
+  <div class="btn btn-success" ng-click="validateBatch()">Validate</div>
+
+</div>

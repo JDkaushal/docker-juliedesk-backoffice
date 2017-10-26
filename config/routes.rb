@@ -158,6 +158,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :all_days, only: [] do
+      collection do
+        get "", action: :main
+        get "review", action: :review
+      end
+    end
+
 
     resources :messages_threads, only: [] do
       member do
