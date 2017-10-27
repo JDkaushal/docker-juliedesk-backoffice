@@ -378,7 +378,7 @@
   <table class="table table-striped">
     <tr>
       <th>Summary</th>
-      <th>Busy</th>
+      <th>Free / Busy</th>
       <th>Location</th>
       <th>Availability</th>
       <th>Location indication</th>
@@ -388,7 +388,7 @@
     <tr ng-repeat="all_day in all_days" ng-class="{warning: !allDayIsChecked(all_day)}">
       <td class="col-md-2"
           ng-class="{bigWarning: all_day.highlighted}">{{ all_day.summary }}</td>
-      <td class="col-md-1">{{ all_day.busy }}</td>
+      <td class="col-md-1">{{ all_day.busy === false ? 'Free' : 'Busy' }}</td>
       <td class="col-md-2">{{ all_day.location }}</td>
       <td class="col-md-1">
         <select ng-model="all_day.corrected_availability"
