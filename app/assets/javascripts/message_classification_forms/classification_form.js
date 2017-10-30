@@ -152,6 +152,15 @@ window.classificationForms.classificationForm.prototype.getConstraintsDataForSen
     }).get();
 };
 
+window.classificationForms.classificationForm.prototype.sendFormLoading = function(loading) {
+    if(loading) {
+        $(".save-info-container .basic-loader").show();
+    }
+    else {
+        $(".save-info-container .basic-loader").hide();
+    }
+};
+
 window.classificationForms.classificationForm.prototype.sendForm = function (params) {
     params = params || {};
     var classificationForm = this;
@@ -159,6 +168,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     var restaurantBookingManager = $('#restaurant-booking-manager').scope();
     var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
     var currentAppointment = window.getCurrentAppointment();
+
+    classificationForm.sendFormLoading(true);
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
@@ -252,6 +263,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         },
         error: function (e) {
             console.log("Error: ", e);
+            classificationForm.sendFormLoading(false);
         }
     });
 

@@ -1703,6 +1703,9 @@
         <br>
         <br>
         <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
+        <div class="basic-loader">
+          <span><%= image_tag 'ajax-loader.gif' %></span>
+        </div>
         <div class="ai-thinking-loader">
           <span><%= image_tag 'ai_processing_loader.gif', {class: 'ai-thinking-gif'} %></span>
           <span class="ai-thinking-text">Jul.IA réfléchie</span>
