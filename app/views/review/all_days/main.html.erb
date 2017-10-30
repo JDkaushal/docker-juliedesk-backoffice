@@ -260,6 +260,13 @@
           }
         };
 
+        $scope.setFocusOut = function(input, all_day) {
+          if(input == undefined) {
+                all_day.corrected_location_indication = ""
+                $scope.$broadcast('angucomplete-alt:clearInput', 'correction-'+all_day.id);
+            }
+        };
+
         $scope.$watch("statuses", function (newValue, oldValue) {
             if(oldValue !== undefined) {
                 $scope.fetch();
@@ -405,6 +412,8 @@
                 id="correction-{{ all_day.id }}"
                 placeholder=""
                 pause="500"
+                input-name="input"
+                focus-out="setFocusOut(input, all_day)"
                 selected-object="all_day.selected_object"
                 ng-click="setZone(all_day)"
                 remote-url="/geo_zones/autocomplete?query="
