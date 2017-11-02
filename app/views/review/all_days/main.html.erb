@@ -360,7 +360,7 @@
 
 <div ng-app="allDaysApp"
      ng-controller="allDaysController"
-     class="col-md-offset-1 col-md-10">
+     class="col-md-offset-2 col-md-8">
   <h1>All Days <span ng-show="loading"> [ Loading... ]</span></h1>
 
   <h4 ng-show="mode == 'review'">All days availabilities to check: {{ totalCount }}</h4>
@@ -391,14 +391,13 @@
       <th>Location</th>
       <th>Availability</th>
       <th>Location indication</th>
-      <th>Timezone indication</th>
       <th>Status</th>
     </tr>
     <tr ng-repeat="all_day in all_days" ng-class="{warning: !allDayIsChecked(all_day)}">
       <td class="col-md-2"
           ng-class="{bigWarning: all_day.highlighted}">{{ all_day.summary }}</td>
       <td class="col-md-2">{{ all_day.client_name }}</td>
-      <td class="col-md-1">{{ all_day.busy === false ? 'Free' : 'Busy' }}</td>
+      <td class="col-md-1">{{ all_day.busy === false ? 'Free' : all_day.busy === true ? 'Busy' : ''}}</td>
       <td class="col-md-1">{{ all_day.location }}</td>
       <td class="col-md-1">
         <select ng-model="all_day.corrected_availability"
@@ -426,16 +425,6 @@
                 initial-value="all_day.corrected_location_indication"
                 disable-input="all_day.status != 'invalid'"
                 ></angucomplete-alt>
-      </td>
-
-      <td class="col-md-2">
-        <input type="text"
-               id="correction-{{ all_day.id }}"
-               timezonepicker
-               placeholder="{{ all_day.status !== 'invalid' ? '' : '' }}"
-               ng-model="all_day.corrected_timezone_indication"
-               ng-init="all_day.corrected_timezone_indication"
-               ng-disabled="all_day.status != 'invalid'"/>
       </td>
       <td class="col-md-1"
           style="min-width: 120px">
