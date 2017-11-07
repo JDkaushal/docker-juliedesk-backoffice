@@ -186,6 +186,19 @@
             });
         };
 
+        this.verifyDatesV9 = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates_v9',
+                method: "POST",
+                data: params,
+                timeout: 10000
+            }).then(function(response) {
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
+        };
 
         this.verifyDatesWithVersion = function(apiVersion, params) {
             params.api_version = apiVersion;

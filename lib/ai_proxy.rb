@@ -28,6 +28,8 @@ class AiProxy
       verify_dates_v6: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v6/calendar/validate_dates/' }.freeze,
       verify_dates_v7: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v7/calendar/validate_dates/' }.freeze,
       verify_dates_v8: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v8/calendar/validate_dates/' }.freeze,
+      verify_dates_v9: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v9/calendar/validate_dates/' }.freeze,
+      
       verify_dates_versioned: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v%{api_version}/calendar/validate_dates/' }.freeze,
 
       calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,
