@@ -1702,13 +1702,19 @@
       <div class="save-info-container">
         <br>
         <br>
-        <button class="btn btn-block btn-success submit-classification"><%= I18n.t("common.save") %></button>
+        <button class="btn btn-block btn-success submit-classification">
+          <div class="basic-loader-in-save-button">
+            <%= image_tag 'ajax-loader-on-green.gif' %>
+            <span class="basic-loader-in-save-button-text">YO</span>
+          </div>
+          <span class="submit-classification-text"><%= I18n.t("common.save") %></span>
+        </button>
         <div class="basic-loader">
           <span><%= image_tag 'ajax-loader.gif' %></span>
         </div>
         <div class="ai-thinking-loader">
           <span><%= image_tag 'ai_processing_loader.gif', {class: 'ai-thinking-gif'} %></span>
-          <span class="ai-thinking-text">Jul.IA réfléchie</span>
+          <span class="ai-thinking-text">Jul.IA réfléchit</span>
         </div>
       </div>
 

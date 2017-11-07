@@ -152,12 +152,22 @@ window.classificationForms.classificationForm.prototype.getConstraintsDataForSen
     }).get();
 };
 
-window.classificationForms.classificationForm.prototype.sendFormLoading = function(loading) {
-    if(loading) {
-        $(".save-info-container .basic-loader").show();
+window.classificationForms.classificationForm.prototype.sendFormConscienceLoading = function(isLoading) {
+    this.sendFormLoading(isLoading, "Jul.IA is thinking...");
+};
+
+window.classificationForms.classificationForm.prototype.sendFormLoading = function(isLoading, loadingMessage) {
+    if(isLoading) {
+        $(".submit-classification").prop("disabled", true);
+        $(".submit-classification .submit-classification-text").hide();
+        $(".submit-classification .basic-loader-in-save-button-text").html(loadingMessage);
+        $(".submit-classification .basic-loader-in-save-button").show();
     }
     else {
-        $(".save-info-container .basic-loader").hide();
+        $(".submit-classification").prop("disabled", false);
+        $(".submit-classification .basic-loader-in-save-button").hide();
+        $(".submit-classification .basic-loader-in-save-button-text").html("");
+        $(".submit-classification .submit-classification-text").show();
     }
 };
 
@@ -169,7 +179,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
     var currentAppointment = window.getCurrentAppointment();
 
-    classificationForm.sendFormLoading(true);
+    classificationForm.sendFormLoading(true, "Loading...");
 
     var errorInConstraintTiles = false;
     $(".constraint-tile-container").each(function () {
@@ -178,7 +188,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
 
     if(errorInConstraintTiles) {
         alert("Please fix incorrect constraints.");
-        $(".submit-classification").removeAttr('disabled');
+        classificationForm.sendFormLoading(false);
         return;
     }
 
@@ -188,7 +198,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
 
     if(!classificationForm.validateConstaintsData(constraints_data)) {
         alert('Some constraints are invalid, please make sure that the constraints starting dates are sooner than the ending dates');
-        $(".submit-classification").removeAttr('disabled');
+        classificationForm.sendFormLoading(false);
         return
     }
 
@@ -268,6 +278,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     });
 
 };
+
+
 
 window.classificationForms.classificationForm.prototype.getSuggestedDateTimes = function () {
     return [];

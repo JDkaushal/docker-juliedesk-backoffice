@@ -57,21 +57,13 @@ window.classificationForms.askDateSuggestionsForm.prototype.initiatePutsCalendar
 
     });
 };
-window.classificationForms.askDateSuggestionsForm.prototype.infoPanelConscienceLoading = function(isLoading) {
-    if(isLoading) {
-        $(".submit-classification").prop("disabled", true);
-        $('.ai-thinking-loader').show();
-    }
-    else {
-        $(".submit-classification").prop("disabled", false);
-        $('.ai-thinking-loader').hide();
-    }
-};
+
 window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConscienceCache = function(successCallback, errorCallback) {
     var askDateSuggestionsForm = this;
 
 
-    askDateSuggestionsForm.infoPanelConscienceLoading(true);
+    askDateSuggestionsForm.sendFormConscienceLoading(true);
+
     var attendeesControllerScope = $('#attendeesCtrl').scope();
     var aiDatesSuggestionsManagerScope = $('#ai_dates_suggestions_manager').scope();
 
@@ -95,10 +87,10 @@ window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConsci
 
     aiDatesSuggestionsManagerScope.putsCalendarInConscienceCache(fetchParams).then(function(response) {
         var data = response.data;
-        askDateSuggestionsForm.infoPanelConscienceLoading(false);
+        askDateSuggestionsForm.sendFormConscienceLoading(false);
         successCallback(data);
     }, function(error) {
-        askDateSuggestionsForm.infoPanelConscienceLoading(false);
+        askDateSuggestionsForm.sendFormConscienceLoading(false);
         errorCallback(error.status === 408 ? 'timeout' : 'error');
     });
 };
@@ -106,7 +98,7 @@ window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConsci
 window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestionsFromAi = function(successCallback, errorCallback) {
     var askDateSuggestionsForm = this;
 
-    askDateSuggestionsForm.infoPanelConscienceLoading(true);
+    askDateSuggestionsForm.sendFormConscienceLoading(true);
 
     var suggestionsToGet = 4;
     var attendeesControllerScope = $('#attendeesCtrl').scope();
@@ -139,10 +131,10 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
 
     aiDatesSuggestionsManagerScope.fetchSuggestedDatesByAi(fetchParams).then(function(response) {
         var data = response.data;
-        askDateSuggestionsForm.infoPanelConscienceLoading(false);
+        askDateSuggestionsForm.sendFormConscienceLoading(false);
         successCallback(data);
     }, function(error) {
-        askDateSuggestionsForm.infoPanelConscienceLoading(false);
+        askDateSuggestionsForm.sendFormConscienceLoading(false);
         errorCallback(error.status === 408 ? 'timeout' : 'error');
     });
 };
