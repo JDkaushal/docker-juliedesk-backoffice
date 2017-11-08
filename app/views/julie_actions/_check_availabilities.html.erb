@@ -698,7 +698,7 @@
 
                if(bookedRooms && _.keys(bookedRooms).length > 0) {
                    meetingRoomBooked = true;
-                   var currentLocationAddress = window.getCurrentAddress().address;
+                   var currentLocationAddress = (window.getCurrentAddress() || {}).address;
 
                    _.each(bookedRooms, function(roomDetails, address) {
                        meetingRoomsDetails.push({

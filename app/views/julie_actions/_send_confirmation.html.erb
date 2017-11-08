@@ -5,6 +5,7 @@
     window.beforeUpdateData = <%== @message_classification.before_update_data.to_json %>
     var useTemplateGenerationService = false;
     var currentAppointmentIsVirtual = false;
+    var emailGenerated = false;
 
     $(function() {
       useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2_for_update_event") && window.classification == 'update_event';
@@ -224,8 +225,9 @@
     };
 
     window.afterEventFetched = function() {
-        if(!window.threadComputedData.meeting_room_details) {
+        if(!emailGenerated && $('#meeting-rooms-manager').scope().initialized) {
             window.setReplyMessageActions();
+            emailGenerated = true;
         }
     };
 
@@ -235,7 +237,10 @@
 
         if(meetingRoomsManager) {
             meetingRoomsManager.$on('meetingRoomsInitialized', function(event, args) {
-                window.setReplyMessageActions();
+                if(!emailGenerated && window.currentEventTile && window.currentEventTile.event && window.currentEventTile.event.start) {
+                    emailGenerated = true;
+                    window.setReplyMessageActions();
+                }
             });
         }
     });

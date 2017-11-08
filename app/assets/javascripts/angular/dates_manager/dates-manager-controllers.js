@@ -690,7 +690,9 @@
             if(!$scope.$$phase)
                 $scope.$apply();
 
-            $scope.$broadcast('suggestionAdded');
+            if(window.timeSlotsToSuggest && window.timeSlotsToSuggest.length > 0) {
+                $scope.$broadcast('suggestionAdded');
+            }
         };
 
         $scope.addTimeSlotSuggestion = function(timezone, suggestion) {

@@ -359,7 +359,7 @@
                 var roomsAvailabilities = [];
 
                 if($scope.usingMeetingRoom) {
-                    roomsAvailabilities = _.map($scope.widgets, function(widget) {
+                    roomsAvailabilities = _.map(_.filter($scope.widgets, function(w) {return w.roomAvailable !== undefined}), function(widget) {
                         return {clientUsageName: widget.clientUsageName, location: widget.roomLocation, roomName: widget.roomAvailableName, isAvailable: widget.roomAvailable};
                     });
                 }
@@ -1234,8 +1234,6 @@
                 var available = [];
 
                 if(selectedDateStartTime) {
-
-                    console.log('checkMeetingRoomAvailability', selectedDateStartTime.format());
 
                     // TODO: Optimize this algorythm as now we are ordering the rooms by their capacity so
                     // we could stop iterate after the first time we find a room available because it will be
