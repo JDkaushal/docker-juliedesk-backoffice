@@ -38,19 +38,9 @@
                 var sortedOldVal = oldVal.sort();
                 var sortedNewVal = newVal.sort();
 
-                if(!_.isEqual(sortedOldVal, sortedNewVal)) {
+                if (!_.isEqual(sortedOldVal, sortedNewVal)) {
                     $scope.reloadCalendar();
                 }
-
-                // We check if the newRooms we are using were previously fetched
-                // In that case we don't need to reload the calendar to fetch these rooms events
-                // var roomsWereAldreadyFetched = _.every(newVal, function(item) {
-                //     return oldVal.indexOf(item) !== -1;
-                // });
-                //
-                // if(!roomsWereAldreadyFetched) {
-                //     $scope.reloadCalendar();
-                // }
             }
         });
 
@@ -64,15 +54,6 @@
                 });
             }
         };
-
-        // $scope.$watch('usingMeetingRoom', function(newVal, oldVal) {
-        //     if(newVal) {
-        //         if(window.isCurrentAppointmentVirtual()) {
-        //             $scope.preselectAddress();
-        //         }
-        //     } else {
-        //     }
-        // });
 
         if($scope.datesSuggestionManager) {
             $scope.datesSuggestionManager.$on('suggestionAdded', function(event, args) {
@@ -124,10 +105,6 @@
                     $scope.addWidget(details.client, details);
                 });
             }
-
-            // if(!window.formFirstPass || window.julie_action_nature) {
-            //     $scope.checkMeetingRoomsActivation();
-            // }
 
             $scope.checkMeetingRoomsActivation();
 
@@ -690,14 +667,8 @@
             $scope.initLocations();
             $scope.resetLocation();
 
-            if(!window.formFirstPass || window.julie_action_nature) {
-                // Will set the roomLocation to the previous saved location if any
-                $scope.setMeetingRoomManagerDefaultState();
-            }
-
-            if(!$scope.roomLocation && $scope.widgetData.initialConfiguration && $scope.widgetData.initialConfiguration.location) {
-                $scope.roomLocation = $scope.getRoomLocation($scope.widgetData.initialConfiguration.location);
-                $scope.widgetData.roomLocation = $scope.roomLocation;
+            if($scope.widgetData.initialConfiguration && $scope.widgetData.initialConfiguration.location) {
+                $scope.setMeetingRoomManagerDefaultState($scope.widgetData.initialConfiguration.location);
             }
 
             // // Don't preselect an address if one was already set in a previous form filling for the current client
@@ -709,6 +680,19 @@
             $scope.widgetData.targetEmail = $scope.client.email;
 
             $scope.$emit('clientChanged');
+        };
+
+        $scope.setMeetingRoomManagerDefaultState = function(location) {
+            var address = _.find($scope.client.addresses, function(address) {
+                    return address.address === location;
+                });
+
+            if(address) {
+                $scope.setAvailableRooms(address);
+                $scope.setSelectedRoom();
+                $scope.roomLocation = address;
+                $scope.widgetData.roomLocation = $scope.roomLocation;
+            }
         };
 
         $scope.getClient = function(clientEmail) {
@@ -766,7 +750,7 @@
 
         $scope.checkIfLocationDifferentThanAppointment = function() {
             // When the current Appointment is physical
-            $scope.locationDifferentThanAppointment = !window.isCurrentAppointmentVirtual() && (window.getCurrentAddressObject().address !== ($scope.roomLocation || {}).address);
+            $scope.locationDifferentThanAppointment = !window.isCurrentAppointmentVirtual() && ((window.getCurrentAddressObject() || {}).address !== ($scope.roomLocation || {}).address);
         };
 
         $scope.preselectAddress = function() {
@@ -795,22 +779,6 @@
             if(room) {
                 $scope.roomsSelectionMode = room;
                 $scope.selectedRoom = room;
-            }
-        };
-
-        $scope.setMeetingRoomManagerDefaultState = function() {
-            var address = undefined;
-
-            if($scope.widgetData.initialConfiguration && $scope.widgetData.initialConfiguration.location && $scope.widgetData.initialConfiguration.client === $scope.client.email) {
-                address = _.find($scope.client.addresses, function(address) {
-                    return address.address === $scope.widgetData.initialConfiguration.location;
-                });
-            }
-            if(address) {
-                $scope.setAvailableRooms(address);
-                $scope.setSelectedRoom();
-                $scope.roomLocation = address;
-                $scope.widgetData.roomLocation = $scope.roomLocation;
             }
         };
 

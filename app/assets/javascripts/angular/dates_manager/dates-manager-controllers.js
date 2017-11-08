@@ -44,6 +44,7 @@
         $scope.noMeetingRoomsAvailable = false;
 
         var aiDatesSuggestionManagerScope = $('#ai_dates_suggestions_manager').scope();
+        $scope.meetingRoomsManager = undefined;
 
         $scope.init = function() {
             $scope.attachEventsToDom();
@@ -226,6 +227,10 @@
                     if(fetch) {
                         suggestionsToGet -= alreadySuggestedDates.length;
                     }
+                }
+
+                if(window.classification === 'ask_date_suggestions' && $scope.meetingRoomsManager && $scope.meetingRoomsManager.widgets && $scope.meetingRoomsManager.widgets.length > 1) {
+                    fetch = false;
                 }
 
                 if(fetch) {
@@ -1000,6 +1005,7 @@
 
         angular.element(document).ready(function() {
             $scope.listenToAttendeesAppEvents();
+            $scope.meetingRoomsManager = $('#meeting-rooms-manager').scope();
         });
 
     }])
