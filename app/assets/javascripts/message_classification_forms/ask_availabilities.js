@@ -210,7 +210,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                             _.each(response.dates_validate, function (validatedDateDetails) {
                                 if (moment.tz(validatedDateDetails.date, 'UTC').isAfter(now)) {
                                     // Add Z at the end of the date string to specify momentJS it is an utc date
-                                    verifiedDates.push(date+'Z');
+                                    verifiedDates.push(validatedDateDetails.date+'Z');
                                 }
                             });
 
