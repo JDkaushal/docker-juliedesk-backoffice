@@ -515,13 +515,19 @@ Calendar.prototype.fetchCalendars = function (callback) {
             } else {
                 for(var j=0; j < response.items.length; j++) {
                     var calendarItem = response.items[j];
-                    calendarItem.email = response.email;
+                    // calendarItem.email = response.email;
                     // if(calendarItem.is_resource) {
                     //     calendarItem.groupEmail = 'Meeting Rooms';
                     // }else {
+                    //     calendarItem.groupEmail = response.email;
+                    // }
+                    // calendar.calendars.push(calendarItem);
+
+                    if(!calendarItem.is_resource) {
+                        calendarItem.email = response.email;
                         calendarItem.groupEmail = response.email;
-                    //}
-                    calendar.calendars.push(calendarItem);
+                        calendar.calendars.push(calendarItem);
+                    }
                 }
 
                 accountsToWait --;

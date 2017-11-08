@@ -190,14 +190,15 @@
         //
 
         $scope.addClientsIfNecessary = function() {
-            if(window.isCurrentAppointmentVirtual()) {
+            //if(window.isCurrentAppointmentVirtual()) {
                 var currentAppointment = window.getCurrentAppointment();
                 var usedClients = _.map($scope.widgets, function(widget) { return widget.targetEmail });
+                var currentAppointmentIsVirtual = window.isCurrentAppointmentVirtual();
 
               _.each($scope.clientsList, function(client) {
 
                   // Don't open a widget for the client if one is already open
-                  if(usedClients.indexOf(client.email) === -1) {
+                  if((currentAppointmentIsVirtual || client.email === window.threadAccount.email) && usedClients.indexOf(client.email) === -1) {
 
                       var currentClientAppointment = _.find(client.appointments, function(appointment) {
                           return appointment.kind === currentAppointment.kind
@@ -214,7 +215,7 @@
                       }
                   }
               });
-            }
+            //}
         };
 
         $scope.checkMeetingRoomsActivation = function() {
