@@ -90,6 +90,7 @@
               date_times: [],
               email: "<%= @message.messages_thread.account_email %>",
               duration: <%= @message.messages_thread.computed_data[:duration] || 60 %>,
+              compute_meeting_rooms_via_backend: true,
               calendarandEventsLoadedFirstTimeCallback: function() {
                   setTimeout(function() {
                       if(window.currentEventTile && meetingRoomsManager) {
