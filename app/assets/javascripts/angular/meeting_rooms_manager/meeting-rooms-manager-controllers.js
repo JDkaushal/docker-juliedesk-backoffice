@@ -180,11 +180,12 @@
         });
         //
         $('#appointment_nature').change(function(e) {
+            $scope.addClientsIfNecessary();
+
             $scope.$broadcast ('setDefaults');
             $scope.$broadcast('appointmentTypeChanged');
 
             //$scope.checkMeetingRoomsActivation();
-            $scope.addClientsIfNecessary();
             $scope.$apply();
         });
         //
