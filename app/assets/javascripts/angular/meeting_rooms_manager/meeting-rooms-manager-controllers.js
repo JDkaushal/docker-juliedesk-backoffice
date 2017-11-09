@@ -157,6 +157,8 @@
         });
         //
         $('#appointment_nature').change(function(e) {
+            $scope.cleanWidgets();
+            
             $scope.addClientsIfNecessary();
 
             $scope.$broadcast ('setDefaults');
@@ -166,6 +168,10 @@
             $scope.$apply();
         });
         //
+
+        $scope.cleanWidgets = function() {
+            $scope.widgets = [];
+        };
 
         $scope.addClientsIfNecessary = function() {
             //if(window.isCurrentAppointmentVirtual()) {

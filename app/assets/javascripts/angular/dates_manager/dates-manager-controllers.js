@@ -229,7 +229,7 @@
                     }
                 }
 
-                if(window.classification === 'ask_date_suggestions' && $scope.meetingRoomsManager && $scope.meetingRoomsManager.widgets && $scope.meetingRoomsManager.widgets.length > 1) {
+                if(window.classification === 'ask_date_suggestions' && _.keys(window.threadComputedData.meeting_room_details).length > 1) {
                     fetch = false;
                 }
 
