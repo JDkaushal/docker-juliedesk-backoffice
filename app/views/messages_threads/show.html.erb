@@ -1,9 +1,5 @@
 <%= javascript_include_tag 'client_agreement_management/manager' %>
 
-<% if ENV['ZENDESK_WIDGET_ACTIVATED'].present? %>
-  <%= render partial: 'messages_threads/partials/zendesk_widget' %>
-<% end %>
-
 <script>
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 

@@ -29,6 +29,10 @@
     });
 </script>
 
+<% if ENV['ZENDESK_WIDGET_ACTIVATED'].present? %>
+    <%= render partial: 'common/zendesk_widget' %>
+<% end %>
+
 <%= render partial: "common/footer" %>
 
 </body>

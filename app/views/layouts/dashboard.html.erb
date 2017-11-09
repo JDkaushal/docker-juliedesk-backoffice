@@ -21,5 +21,11 @@
         trackActionV2('Focus_out_backoffice', {url: window.location.href})
     });
 </script>
+
+<% if ENV['ZENDESK_WIDGET_ACTIVATED'].present? %>
+    <%= render partial: 'common/zendesk_widget' %>
+<% end %>
+
+
 </body>
 </html>
