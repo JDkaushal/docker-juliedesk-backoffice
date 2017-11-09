@@ -707,10 +707,10 @@
                            location: address
                        })
                    });
-               }
+              }
 
-                data.booked_rooms_details = meetingRoomsManager.getBookedRoomsDetails() || undefined;
-
+              data.booked_rooms_details = bookedRooms || undefined;
+              data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
             }
 
             var haveAllAvailibilities = !!window.threadComputedData.do_not_ask_suggestions;
