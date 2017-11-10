@@ -164,11 +164,11 @@
          }
 
         if(!_.isEqual(beforeUpdateMeetingRooms, afterUpdateMeetingRooms)) {
-            _.each(updatedMeetingRoomsDetails, function(roomDetails, address) {
+            _.each(updatedMeetingRoomsDetails, function(roomDetails) {
                 resourcesChanged.push({
                     summary: roomDetails.summary,
-                    onSameLocationThanMeeting: address === currentLocation,
-                    location: address
+                    onSameLocationThanMeeting: roomDetails.address === currentLocation,
+                    location: roomDetails.address
                 });
             });
         }

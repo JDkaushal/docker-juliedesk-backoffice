@@ -23,7 +23,7 @@
         <div>
           <%= check_box_tag :meeting_rooms_custom_attendees_count, false, {}, {'ng-model' => 'useAttendeesCountFilter', 'ng-disabled' => 'formDisabled'} %>
           <%= label_tag :meeting_rooms_custom_attendees_count, 'Nombre de Participants', class: 'filter-label' %>
-          <%= select_tag :meeting_rooms_attendees_count, options_for_select(1..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-disabled' => 'formDisabled'} %>
+          <%= select_tag :meeting_rooms_attendees_count, options_for_select(1..50), {'ng-show' => 'useAttendeesCountFilter', 'ng-model' => 'selectedAttendeesNb', 'ng-change' => 'selectedAttendeesNbChanged()', 'ng-disabled' => 'formDisabled'} %>
         </div>
 
         <div>

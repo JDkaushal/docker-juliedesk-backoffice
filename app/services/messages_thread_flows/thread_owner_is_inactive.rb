@@ -48,7 +48,7 @@ module MessagesThreadFlows
           if  client_emails_in_recipients.present?
             send_notice_email_to_old_client(last_message, client_emails_in_recipients.first)
           else
-            send_notice_email_to_interlocutor(last_message)
+            send_notice_email_to_interlocutor(last_message, @messages_thread.account_email)
           end
         end
       end
@@ -92,8 +92,10 @@ module MessagesThreadFlows
       #last_message.send_account_notice_email('account_deactivated.client', email_to_send_to)
     end
 
-    def send_notice_email_to_interlocutor(last_message)
-      AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_deactivated.interlocutor')
+    def send_notice_email_to_interlocutor(last_message, client_email)
+      account = Account.create_from_email(client_email)
+
+      AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_deactivated.interlocutor', nil, account.try(:usage_name))
       #last_message.send_account_notice_email('account_deactivated.interlocutor')
     end
 

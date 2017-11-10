@@ -1,7 +1,7 @@
 <div class="meeting-rooms-manager-wrapper" ng-show="displayForm">
   <div>
     <div>
-      <meeting-rooms-widget ng-repeat="widget in widgets" widget-data="widget" clients-list="clientsList" currently-choosen-rooms="currentlyChoosenRooms"/>
+      <meeting-rooms-widget ng-repeat="widget in widgets" widget-data="widget" form-disabled="formDisabled" clients-list="clientsList" currently-choosen-rooms="currentlyChoosenRooms"/>
     </div>
 
     <div>

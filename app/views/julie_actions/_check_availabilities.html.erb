@@ -301,9 +301,7 @@
               forceUpdateNotesCallingInfos();
             }
 
-            //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
-            // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
-            var description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
+              var description = '';
 
             if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
               if(window.threadComputedData.call_instructions.event_instructions)
@@ -332,6 +330,14 @@
 
                 }
               }
+            }
+
+            if(description === '') {
+                //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
+                // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
+                description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
+            } else {
+                description = description + emailInNotes;
             }
 
             requestParams = $.extend(requestParams, {
@@ -700,11 +706,11 @@
                    meetingRoomBooked = true;
                    var currentLocationAddress = (window.getCurrentAddress() || {}).address;
 
-                   _.each(bookedRooms, function(roomDetails, address) {
+                   _.each(bookedRooms, function(roomDetails) {
                        meetingRoomsDetails.push({
                            summary: roomDetails.summary,
-                           onSameLocationThanMeeting: currentLocationAddress === address,
-                           location: address
+                           onSameLocationThanMeeting: currentLocationAddress === roomDetails.location,
+                           location: roomDetails.location
                        })
                    });
               }

@@ -123,7 +123,7 @@ describe MessagesThreadFlows::ThreadOwnerIsInactive do
           end
 
           it 'should send the right automatic email' do
-            expect(thread_owner_is_inactive_flow).to receive(:send_notice_email_to_interlocutor).with(Message.last)
+            expect(thread_owner_is_inactive_flow).to receive(:send_notice_email_to_interlocutor).with(Message.last, 'captain.flamme@nocompany.com')
             expect(messages_thread).to receive(:archive)
             thread_owner_is_inactive_flow.trigger
           end

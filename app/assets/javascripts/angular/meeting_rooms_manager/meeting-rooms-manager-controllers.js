@@ -176,13 +176,15 @@
         $scope.addClientsIfNecessary = function() {
             //if(window.isCurrentAppointmentVirtual()) {
                 var currentAppointment = window.getCurrentAppointment();
-                var usedClients = _.map($scope.widgets, function(widget) { return widget.targetEmail });
+
+                var usedLocations = [];
+
                 var currentAppointmentIsVirtual = window.isCurrentAppointmentVirtual();
 
               _.each($scope.clientsList, function(client) {
 
                   // Don't open a widget for the client if one is already open
-                  if((currentAppointmentIsVirtual || client.email === window.threadAccount.email) && usedClients.indexOf(client.email) === -1) {
+                  if(currentAppointmentIsVirtual || client.email === window.threadAccount.email) {
 
                       var currentClientAppointment = _.find(client.appointments, function(appointment) {
                           return appointment.kind === currentAppointment.kind
@@ -195,7 +197,16 @@
                               initialConfiguration.roomsSelectionMode = {id: currentClientAppointment.selected_meeting_room, summary: "Sélection Auto Par Filtres"}
                           }
 
-                          $scope.addWidget(client.email, initialConfiguration);
+                          var addWidget = true;
+                          // When the appointment is virtual,
+                          if(currentAppointmentIsVirtual && usedLocations.indexOf(initialConfiguration.location) > -1) {
+                              addWidget = false;
+                          }
+
+                          if(addWidget) {
+                              $scope.addWidget(client.email, initialConfiguration);
+                              usedLocations.push(initialConfiguration.location);
+                          }
                       }
                   }
               });
@@ -236,8 +247,8 @@
 
             if(bookedRooms && _.keys(bookedRooms).length > 0 && $scope.attendeesManagerCtrl.attendees && $scope.attendeesManagerCtrl.attendees.length > 0) {
                 meetingRoomInfos += "-" + localize("events.notes.meeting_rooms.boundary", {locale: window.currentLocale}) + "-------------------";
-                _.each(bookedRooms, function(roomDetails, address) {
-                    meetingRoomInfos += "\n " + localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, meeting_room_name: roomDetails.summary, meeting_room_location: address});
+                _.each(bookedRooms, function(roomDetails) {
+                    meetingRoomInfos += "\n " + localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, meeting_room_name: roomDetails.summary, meeting_room_location: roomDetails.location});
                 });
                 meetingRoomInfos += "\n----------------------------------------";
             }
@@ -250,7 +261,7 @@
                 // if(notes.replace(/\n/g,'').length > 0)
                 //     notes += "\n\n";
                 notes = meetingRoomInfos + "\n\n" + notes;
-                notes += meetingRoomInfos;
+                //notes += meetingRoomInfos;
             }else{
                 // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
                 var usedRegex = regexFrResult != null ? meetingRoomsReFr : meetingRoomsReEn;
@@ -424,14 +435,14 @@
         $scope.getBookedRoomsDetails = function() {
             if(!$scope.usingMeetingRoom) return {};
 
-            var result = {};
+            var result = [];
 
             $scope.$broadcast('getEventMeetingRoomDetails');
 
             _.each($scope.widgets, function(widget) {
                 if(widget.roomAvailable) {
                     if(widget.reservationData && widget.reservationData.selected) {
-                        result[widget.roomLocation.address] = {summary: widget.reservationData.selected.summary, id: widget.reservationData.selected.id};
+                        result.push({summary: widget.reservationData.selected.summary, id: widget.reservationData.selected.id, location: widget.roomLocation.address});
                     }
                 }
             });
@@ -499,7 +510,7 @@
         $scope.computedDataRoomsSelectionMode;
 
         $scope.locationDifferentThanAppointment = false;
-
+        
         $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
             // We only update the attendees count accordindly of adding or deleting them when we havent saved the count yet
             if($scope.usingMeetingRoom && ( !$scope.widgetData.initialConfiguration || ( $scope.widgetData.initialConfiguration && !$scope.widgetData.initialConfiguration.attendees_count_for_meeting_room ) ) )
@@ -645,6 +656,10 @@
             return currentAppointmentForClient.default_address;
         };
 
+        $scope.selectedAttendeesNbChanged = function() {
+            $scope.determineFittingMeetingRooms();
+        };
+
         $scope.init = function() {
             // Initializations are done when the client variable is changed (watcher)
 
@@ -660,7 +675,8 @@
                 $scope.widgetData.initialConfiguration.client = targetEmail;
             }
 
-            $scope.clientChanged();
+            $scope.initialClientConfiguration();
+            //$scope.clientChanged();
             $scope.$emit('widgetAdded');
         };
 
@@ -669,7 +685,7 @@
           $scope.widgetData.roomLocation = undefined;
         };
 
-        $scope.clientChanged = function() {
+        $scope.initialClientConfiguration = function() {
             $scope.initLocations();
             $scope.resetLocation();
 
@@ -678,7 +694,20 @@
             }
 
             // // Don't preselect an address if one was already set in a previous form filling for the current client
-            if(!$scope.roomLocation && (!$scope.widgetData.initialConfiguration || ($scope.widgetData.initialConfiguration && $scope.widgetData.initialConfiguration.client !== $scope.client.email))) {
+            if(!$scope.roomLocation) {
+                $scope.preselectAddress();
+            }
+
+            $scope.widgetData.clientUsageName = $scope.client.usage_name;
+            $scope.widgetData.targetEmail = $scope.client.email;
+        };
+
+        $scope.clientChanged = function() {
+            $scope.initLocations();
+            $scope.resetLocation();
+
+            // // Don't preselect an address if one was already set in a previous form filling for the current client
+            if(!$scope.roomLocation) {
                 $scope.preselectAddress();
             }
             
@@ -737,7 +766,7 @@
 
                 $scope.setAvailableRooms($scope.roomLocation);
 
-                var usedRoom = $scope.determineUsedMeetingRoom((currentAppointment && currentAppointment.selected_meeting_room) || '', $scope.roomLocation.selected_meeting_room || '');
+                var usedRoom = $scope.determineUsedMeetingRoom((currentAppointment && currentAppointment.meeting_room_used && currentAppointment.selected_meeting_room) || '', ($scope.roomLocation.meeting_room_used && $scope.roomLocation.selected_meeting_room) || '');
 
                 if(usedRoom.indexOf('auto_room_selection') > -1) {
                     $scope.setDefaultFilters($scope.roomLocation.selected_meeting_room);
@@ -759,14 +788,28 @@
             $scope.locationDifferentThanAppointment = !window.isCurrentAppointmentVirtual() && ((window.getCurrentAddressObject() || {}).address !== ($scope.roomLocation || {}).address);
         };
 
-        $scope.preselectAddress = function() {
-            var mainAddress = _.find($scope.locations, function(location) {
-                return location.is_main_address;
-            });
+        $scope.getMainAddressForCurrentAppointment = function() {
+            var clientCurrentAppointment = $scope.getCurrentAppointmentForClient();
+            var mainAddress = undefined;
 
-            if(mainAddress) {
-                $scope.roomLocation = mainAddress;
+            // Try to get the default location for the appointment type if it uses some meeting rooms
+            // Otherwise we will try to get the client general default address (if it is present in the $scope.locations variable)
+            // which would mean that is owns some meeting rooms
+            if(clientCurrentAppointment.meeting_room_used && clientCurrentAppointment.default_address) {
+                mainAddress = $scope.getRoomLocation(clientCurrentAppointment.default_address.address);
             } else {
+                mainAddress = _.find($scope.locations, function(location) {
+                    return location.is_main_address;
+                });
+            }
+
+            return mainAddress;
+        };
+
+        $scope.preselectAddress = function() {
+            $scope.roomLocation = $scope.getMainAddressForCurrentAppointment();
+
+            if(!$scope.roomLocation) {
                 $scope.roomLocation = $scope.locations[0];
             }
 
@@ -806,6 +849,13 @@
 
         $scope.roomSelectionModeChanged = function() {
           $scope.$emit('roomChanged');
+
+          // Clear the no fitting rooms for used filters message if necessary
+          if($scope.roomsSelectionMode.id.indexOf('auto_room_selection') > -1) {
+              $scope.determineFittingMeetingRooms();
+          } else {
+              $scope.noFittingRooms = false;
+          }
         };
 
         $scope.shouldDisplayLocationfield = function() {
@@ -1423,7 +1473,8 @@
             scope: {
                 widgetData: '=',
                 clientsList: '=',
-                currentlyChoosenRooms: '='
+                currentlyChoosenRooms: '=',
+                formDisabled: '='
             },
             controller: 'meetingRoomsWidgetController',
             controllerAs: 'meetingRoomsWidgetCtrl'
