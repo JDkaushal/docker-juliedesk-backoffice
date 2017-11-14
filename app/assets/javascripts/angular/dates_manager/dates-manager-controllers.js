@@ -229,9 +229,9 @@
                     }
                 }
 
-                if(window.classification === 'ask_date_suggestions' && _.keys(window.threadComputedData.meeting_room_details).length > 1) {
-                    fetch = false;
-                }
+                // if(window.classification === 'ask_date_suggestions' && _.keys(window.threadComputedData.meeting_room_details).length > 1) {
+                //     fetch = false;
+                // }
 
                 if(fetch) {
                     var meetingRoomsToShow = {};
