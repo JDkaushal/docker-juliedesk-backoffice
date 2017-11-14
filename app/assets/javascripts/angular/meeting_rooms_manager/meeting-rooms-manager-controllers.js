@@ -298,6 +298,18 @@
             });
         };
 
+        $scope.getMeetingRoomsToDisplayRaw = function() {
+            if(!$scope.usingMeetingRoom) return;
+
+            $scope.$broadcast('getMeetingRoomsToDisplay');
+
+            return _.map($scope.widgets, function(widget) {
+                return _.map(widget.meetingRoomsToDisplay, function(room) {
+                    return room.id;
+                });
+            });
+        };
+
         $scope.getMeetingRoomsToDisplay = function() {
             if(!$scope.usingMeetingRoom) return;
 

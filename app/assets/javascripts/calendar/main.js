@@ -824,11 +824,15 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         });
         //}
 
-        meeting_rooms_to_show[window.threadAccount.email] = _.uniq(meeting_rooms_to_show[window.threadAccount.email]);
-
-        if(meeting_rooms_to_show[window.threadAccount.email].length > 0) {
-            neededMeetingRoomsCount = meetingRoomsManager.widgets.length;
-        }
+        // meeting_rooms_to_show[window.threadAccount.email] = _.uniq(meeting_rooms_to_show[window.threadAccount.email]);
+        //
+        //
+        //
+        // if(meeting_rooms_to_show[window.threadAccount.email].length > 0) {
+        //     neededMeetingRoomsCount = meetingRoomsManager.widgets.length;
+        // }
+        
+        var grouped_meeting_rooms_to_show = meetingRoomsManager.getMeetingRoomsToDisplayRaw();
 
         if (currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
             window.threadComputedData && window.threadComputedData.call_instructions) {
@@ -874,6 +878,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         email: accountPreferencesHash.email,
         calendar_ids: accountPreferencesHash.calendar_ids_to_show_override,
         meeting_rooms_to_show: meeting_rooms_to_show,
+        grouped_meeting_rooms_to_show: grouped_meeting_rooms_to_show,
         needed_meeting_rooms_count: neededMeetingRoomsCount,
         virtual_resources_to_show: virtualResourcesToShow,
         start: start,
