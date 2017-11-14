@@ -840,6 +840,12 @@
         };
 
         $scope.init();
+
+
+        angular.element(document).ready(function() {
+            //$scope.listenToAttendeesAppEvents();
+            $scope.meetingRoomsManager = $('#meeting-rooms-manager').scope();
+        });
     }]);
 
     app.controller('datesIdentificationsManager', ['$scope', 'attendeesService', 'messageInterpretationsService', function($scope, attendeesService, messageInterpretationsService) {
