@@ -87,6 +87,11 @@
 
                     this.attendeeInForm.alreadySetPresent = this.attendeeInForm.isPresent;
 
+                    // Otherwise, Conscience will fail with no key exception
+                    this.attendeeInForm.isThreadOwner = false;
+                    // Otherwise, Conscience will fail with no key exception
+                    this.attendeeInForm.isClient = false;
+
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
                         sharedProperties.notifyAttendeeAdded(this.attendeeInForm);
