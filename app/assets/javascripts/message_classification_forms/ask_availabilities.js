@@ -176,8 +176,10 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                 });
 
                 verifyParams.meeting_rooms_to_show =  meetingRooms;
+                verifyParams.grouped_meeting_rooms_to_show = meetingRoomsScope.getMeetingRoomsToDisplayRaw();
             } else {
                 verifyParams.meeting_rooms_to_show = {};
+                verifyParams.grouped_meeting_rooms_to_show = {};
             }
 
             verifyParams.all_conditions_satisfied = canVerifyV1;

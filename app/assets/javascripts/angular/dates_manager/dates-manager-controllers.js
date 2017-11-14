@@ -243,6 +243,8 @@
                         meetingRoomsToShow[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
                     });
 
+
+
                     var version = "stable";
                     if(!window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions_virtual") &&
                         !window.flowConditionsHandler.conditionCouldBeReached(window.flowConditions, "trust_julia_suggestions_physical")) {
@@ -264,6 +266,10 @@
 
                     if(window.currentCalendar.initialData.constraintsData) {
                         fetchParams.raw_constraints_data = _.flatten(_.values(currentCalendar.initialData.constraintsData));
+                    }
+
+                    if($scope.meetingRoomsManager && $scope.meetingRoomsManager.usingMeetingRoom) {
+                        fetchParams.grouped_meeting_rooms_to_show = $scope.meetingRoomsManager.getMeetingRoomsToDisplayRaw();
                     }
 
                     $scope.showAiLoader = true;
