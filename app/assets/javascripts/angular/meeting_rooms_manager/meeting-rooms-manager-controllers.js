@@ -936,10 +936,10 @@
         $scope.determineUsedMeetingRoom = function(appointmentMeetingRoomConfig, addressMeetingRoomConfig) {
             var usedMeetingRoom = appointmentMeetingRoomConfig;
 
-            if(addressMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
-                usedMeetingRoom = addressMeetingRoomConfig;
-            } else if(appointmentMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+            if(appointmentMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
                 usedMeetingRoom = appointmentMeetingRoomConfig;
+            } else if(addressMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+                usedMeetingRoom = addressMeetingRoomConfig;
             } else {
                 usedMeetingRoom = $scope.computeDefaultFilters(appointmentMeetingRoomConfig, addressMeetingRoomConfig)
             }
