@@ -543,6 +543,7 @@
 
             var threadOwner = new Attendee({
                 guid: -1,
+                accountEmail: window.threadAccount.email,
                 email: threadOwnerEmail,
                 email_aliases: window.threadAccount.email_aliases,
                 firstName: threadAccountFullName[0],
