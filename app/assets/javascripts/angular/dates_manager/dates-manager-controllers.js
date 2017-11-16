@@ -162,6 +162,7 @@
             $scope.AIsuggestionsTrackingId = data.suggested_dates_id;
             $scope.fullAiFromBackendSlots = data.suggested_dates;
             $scope.trustMode = "trusted";
+            $scope.dateSuggestionsFullAi = true;
             $scope.sendDatesSuggestionsAutoProcessUpdate();
 
 
