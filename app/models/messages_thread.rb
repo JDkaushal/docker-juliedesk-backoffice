@@ -186,6 +186,10 @@ class MessagesThread < ActiveRecord::Base
     recipients & users_with_lost_access
   end
 
+  def self.users_with_threads_blocked
+    Set.new(REDIS_FOR_ACCOUNTS_CACHE.smembers('user_threads_blocked'))
+  end
+
   def check_if_blocked(users_with_lost_access, all_clients_emails)
     thread_computed_data_attendees = self.computed_data_only_attendees
     true_str = 'true'

@@ -392,7 +392,7 @@ class MessagesThreadsController < ApplicationController
         @messages_thread = MessagesThread.where("(in_inbox = TRUE OR should_follow_up = TRUE) AND handled_by_ai = FALSE AND handled_by_automation = FALSE").includes(locked_by_operator: {}, messages: :message_classifications).select { |mt| mt.messages.count > 0 }.sort_by { |mt| mt.find_or_compute_request_date }
 
         accounts_cache = Account.accounts_cache(mode: "light")
-        users_access_lost_cache = Account.users_with_lost_access
+        users_access_lost_cache = MessagesThread.users_with_threads_blocked
 
         # Allow to easily check if an email is attached to a client (main email or email alias)
         all_clients_emails = accounts_cache.map{|acc| acc[1]['email_aliases'] + [ acc[1]['email']]}.flatten
