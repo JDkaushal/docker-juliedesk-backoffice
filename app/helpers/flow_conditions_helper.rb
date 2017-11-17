@@ -27,6 +27,10 @@ module FlowConditionsHelper
     case condition_identifier
       when :feature_active
         feature_active? condition_value, session[:operator_id], session[:privilege]
+      when :features_active
+        condition_value.map do |feature_name, should_be_active|
+          validation_flow_condition_include_or_equals feature_active?(feature_name, session[:operator_id], session[:privilege]), should_be_active
+        end
       when :action_nature
         validation_flow_condition_include_or_equals condition_value, required_input_object(input_objects, :julie_action).action_nature
       when :event_type

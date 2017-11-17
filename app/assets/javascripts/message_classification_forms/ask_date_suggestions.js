@@ -9,9 +9,13 @@ window.classificationForms.askDateSuggestionsForm = function (params) {
 
     window.submitClassification = function () {
         if(window.featuresHelper.isFeatureActive("auto_date_suggestions_from_backend")) {
-            currentClassifForm.fetchDateSuggestionsFromAi(function(dateSuggestionsFromAi) {
+            askDateSuggestionsForm.fetchDateSuggestionsFromAi(function(dateSuggestionsFromAi) {
                 askDateSuggestionsForm.sendForm({
                     dateSuggestionsFromAi: dateSuggestionsFromAi
+                });
+            },function(errorResponse) {
+                askDateSuggestionsForm.sendForm({
+                    dateSuggestionsFromAi: errorResponse
                 });
             });
         }
@@ -135,7 +139,9 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
         successCallback(data);
     }, function(error) {
         askDateSuggestionsForm.sendFormConscienceLoading(false);
-        errorCallback(error.status === 408 ? 'timeout' : 'error');
+        errorCallback({
+            status: error.status === 408 ? 'timeout' : 'error'
+        });
     });
 };
 

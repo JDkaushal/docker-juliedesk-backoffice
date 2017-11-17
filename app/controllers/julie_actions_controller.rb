@@ -49,7 +49,10 @@ class JulieActionsController < ApplicationController
         trust_julia_suggestions_virtual_from_backend: {
             label: 'We can trust Jul.IA date suggestions for virtual appointments - from Backend',
             back_conditions: {
-                feature_active: "trust_julia_suggestion",
+                features_active: {
+                    Feature::FEATURE_TRUST_JULIA_SUGGESTION => true,
+                    Feature::FEATURE_AUTO_DATE_SUGGESTIONS_FROM_BACKEND => true
+                },
                 action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
                 event_type: MessageClassification::VIRTUAL_EVENT_TYPES,
                 should_book_resource: false,
@@ -68,7 +71,10 @@ class JulieActionsController < ApplicationController
         trust_julia_suggestions_physical_from_backend: {
             label: 'We can trust Jul.IA date suggestions for physical appointments - from Backend',
             back_conditions: {
-                feature_active: "trust_julia_suggestion",
+                features_active: {
+                    Feature::FEATURE_TRUST_JULIA_SUGGESTION => true,
+                    Feature::FEATURE_AUTO_DATE_SUGGESTIONS_FROM_BACKEND => true
+                },
                 action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
                 event_type: MessageClassification::PHYSICAL_EVENT_TYPES,
                 should_book_resource: false,
@@ -89,7 +95,10 @@ class JulieActionsController < ApplicationController
         trust_julia_suggestions_virtual: {
             label: 'We can trust Jul.IA date suggestions for virtual appointments',
             back_conditions: {
-                feature_active: "trust_julia_suggestion",
+                features_active: {
+                    Feature::FEATURE_TRUST_JULIA_SUGGESTION => true,
+                    Feature::FEATURE_AUTO_DATE_SUGGESTIONS_FROM_BACKEND => false
+                },
                 action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
                 event_type: MessageClassification::VIRTUAL_EVENT_TYPES,
                 should_book_resource: false,
@@ -113,7 +122,10 @@ class JulieActionsController < ApplicationController
         trust_julia_suggestions_physical: {
             label: 'We can trust Jul.IA date suggestions for physical appointments',
             back_conditions: {
-                feature_active: "trust_julia_suggestion",
+                features_active: {
+                    Feature::FEATURE_TRUST_JULIA_SUGGESTION => true,
+                    Feature::FEATURE_AUTO_DATE_SUGGESTIONS_FROM_BACKEND => false
+                },
                 action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
                 event_type: MessageClassification::PHYSICAL_EVENT_TYPES,
                 should_book_resource: false,

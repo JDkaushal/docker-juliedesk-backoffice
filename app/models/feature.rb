@@ -5,6 +5,9 @@ class Feature < ActiveRecord::Base
   ACTIVE_MODE_SPECIFIC_OPERATOR_IDS = "specific_operator_ids"
   ACTIVE_MODE_SPECIFIC_OPERATOR_PRIVILEGES = "specific_operator_privileges"
 
+  FEATURE_AUTO_DATE_SUGGESTIONS_FROM_BACKEND = 'auto_date_suggestions_from_backend'
+  FEATURE_TRUST_JULIA_SUGGESTION = 'trust_julia_suggestion'
+
   def active_for_operator? operator_id, operator_privilege
     case active_mode
       when ACTIVE_MODE_ALL
