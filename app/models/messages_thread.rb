@@ -16,6 +16,7 @@ class MessagesThread < ActiveRecord::Base
   has_many :operator_actions_groups
   has_many :mt_operator_actions, class_name: "OperatorAction", foreign_key: "messages_thread_id"
   has_many :event_title_reviews
+  has_one :client_request
 
   after_update :owner_changed?
 

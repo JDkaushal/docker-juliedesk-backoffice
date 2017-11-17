@@ -105,6 +105,15 @@ ActiveRecord::Schema.define(version: 20171122092833) do
 
   add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree
 
+  create_table "client_requests_tables", force: true do |t|
+    t.integer  "user_id"
+    t.string   "team_identifier"
+    t.datetime "date"
+    t.integer  "messages_thread_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "company_domain_associations", force: true do |t|
     t.string   "company_name"
     t.string   "domain"
@@ -203,13 +212,6 @@ ActiveRecord::Schema.define(version: 20171122092833) do
     t.float    "longitude"
     t.string   "kind"
     t.string   "timezone"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "global_settings", force: true do |t|
-    t.string   "name",       null: false
-    t.string   "value",      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -452,25 +454,6 @@ ActiveRecord::Schema.define(version: 20171122092833) do
   end
 
   add_index "settings", ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true, using: :btree
-
-  create_table "staging_event_attendees", force: true do |t|
-    t.string   "event_id"
-    t.text     "attendees"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "staging_messages_thread_archive_actions", force: true do |t|
-    t.integer "messages_thread_id"
-    t.boolean "currently_archived"
-  end
-
-  create_table "staging_server_messages", force: true do |t|
-    t.integer  "messages_thread_id"
-    t.text     "server_message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "versions", force: true do |t|
     t.string   "item_type",  null: false

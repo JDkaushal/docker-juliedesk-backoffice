@@ -52,7 +52,8 @@ class Account
                 :configured,
                 :subscribed,
                 :configuration_needed,
-                :state
+                :state,
+                :user_id
 
 
   RULE_VALIDATED = "rule_validated"
@@ -111,6 +112,7 @@ class Account
     account.lunch_time_preference = data['lunch_time_preference']
     account.gender = data['gender']
     account.auto_date_suggestions = data['auto_date_suggestions']
+    account.user_id = data['id']
 
     account.configured = data['configured']
     account.subscribed = data['subscribed']
