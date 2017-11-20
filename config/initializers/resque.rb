@@ -1,5 +1,11 @@
 require 'resque/server'
 
+require 'resque/failure/multiple'
+require 'resque/failure/redis'
+
+Resque::Failure::Multiple.classes = [Resque::Failure::Redis, Resque::Failure::Airbrake]
+Resque::Failure.backend = Resque::Failure::Multiple
+
 Resque.redis = RESQUE_REDIS
 begin
   Resque.logger = Logger.new(Rails.root.join('log', "resque.#{Rails.env}.log"))

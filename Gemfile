@@ -13,10 +13,6 @@ end
 gem 'rails', '4.1.15'
 ruby '2.2.0'
 
-
-#Error tracking
-gem 'airbrake', '~> 5.0'
-
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
@@ -122,3 +118,7 @@ gem 'icalendar'
 #active record history
 gem 'json-schema'
 gem 'paper_trail'
+
+
+#Error tracking
+gem 'airbrake', '~> 5.0'
