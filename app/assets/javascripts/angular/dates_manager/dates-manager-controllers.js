@@ -198,6 +198,7 @@
                     var realStart = moment(slot).tz(currentTimezone);
                     var realEnd = realStart.clone();
                     realEnd.add($scope.getCalendar().getCurrentDuration(), 'm');
+
                     var eventData = $scope.getCalendar().generateEventData({
                         title: $scope.getCalendar().generateDelayTitle(),
                         start: realStart,
@@ -209,6 +210,9 @@
                     });
                     $scope.getCalendar().$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
                 });
+
+
+
                 return;
             }
 
@@ -807,21 +811,33 @@
         };
 
         $scope.sendLearningData = function() {
-            if($scope.timeSlotsSuggestedByAi && $scope.timeSlotsSuggestedByAi.length > 0) {
-                var suggestionsStatus = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
-                    return $scope.computeLearningStatusOnSuggestion(slot);
-                });
+            var data = undefined;
 
-                var data = {
-                    suggestions_status: suggestionsStatus,
+            if(window.fullAiFromBackend) {
+                data = {
+                    suggestions_status: _.map(window.fullAiFromBackendSlots, function(slot) { return true; }),
                     id: $scope.AIsuggestionsTrackingId,
                     operator_id: $('body').data('operatorId'),
                     classification: window.classification,
                 };
+            } else {
+                if($scope.timeSlotsSuggestedByAi && $scope.timeSlotsSuggestedByAi.length > 0) {
+                    var suggestionsStatus = _.map($scope.timeSlotsSuggestedByAi, function(slot) {
+                        return $scope.computeLearningStatusOnSuggestion(slot);
+                    });
 
+                    data = {
+                        suggestions_status: suggestionsStatus,
+                        id: $scope.AIsuggestionsTrackingId,
+                        operator_id: $('body').data('operatorId'),
+                        classification: window.classification,
+                    };
+                }
+            }
+
+            if(data) {
                 aiDatesSuggestionManagerScope.sendLearningData(data);
             }
-            
         };
 
         $scope.trackSuggestedDates = function() {
@@ -834,10 +850,9 @@
                     suggested_dates_count: $scope.timeSlotsSuggestions[Object.keys($scope.timeSlotsSuggestions)[0]].length,
                     operator_id: $('body').data('operatorId')
                 });
-
-                $scope.sendLearningData();
             }
-            
+
+            $scope.sendLearningData();
         };
 
         $scope.init();

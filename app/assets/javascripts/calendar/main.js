@@ -809,29 +809,13 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     }
 
     if (window.threadAccount && accountPreferencesHash.email === window.threadAccount.email) {
-        //meeting_rooms_to_show[window.threadAccount.email] = [];
-        //if (accountPreferencesHash.email == window.threadAccount.email) {
+
         _.each($('.calendar-item.is-meeting-room input[type="checkbox"]:checked'), function (c) {
             var calendarItemNode = $(c).closest('.calendar-item');
             //var currentRoomId = calendarItemNode.data('calendar-id');
             meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
             meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
-
-            // Only fetch the meeting room if it is not already being fetched for another client
-            // if(calendarItemNode.data('email') === accountPreferencesHash.email) {
-            //     meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] = meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')] || [];
-            //     meeting_rooms_to_show[calendarItemNode.data('calendar-login-username')].push(calendarItemNode.data('calendar-id'));
-            // }
         });
-        //}
-
-        // meeting_rooms_to_show[window.threadAccount.email] = _.uniq(meeting_rooms_to_show[window.threadAccount.email]);
-        //
-        //
-        //
-        // if(meeting_rooms_to_show[window.threadAccount.email].length > 0) {
-        //     neededMeetingRoomsCount = meetingRoomsManager.widgets.length;
-        // }
 
         if(meetingRoomsManager) {
             grouped_meeting_rooms_to_show = meetingRoomsManager.getMeetingRoomsToDisplayRaw();
