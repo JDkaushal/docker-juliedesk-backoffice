@@ -689,7 +689,7 @@ class Message < ActiveRecord::Base
           end
         end
 
-        messages_thread.assign_attributes(request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
+        messages_thread.assign_attributes(last_message_imported_at: messages_thread.compute_last_message_imported_at, request_date: messages_thread.compute_request_date, computed_recipients: thread_recipients.to_a)
 
         computed_recipients_changed = messages_thread.computed_recipients_changed?
 
@@ -757,12 +757,6 @@ class Message < ActiveRecord::Base
           #   end
           # end
         end
-
-
-
-        # Need the accounts candidates to have been computed before doing it
-        messages_thread.compute_allowed_attendees
-        messages_thread.save
 
         # -- Manage 'syncing' tag
         if messages_thread.clients_in_recipients.any? { |client_email| Account.not_synced?(client_email) }

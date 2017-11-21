@@ -459,16 +459,38 @@ class MessagesThread < ActiveRecord::Base
     }
   end
 
-  def find_or_compute_request_date
-    unless request_date
-      self.update_attribute :request_date, self.compute_request_date
+  def find_or_compute_thread_dates
+    unless request_date.present?
+      self.request_date = self.compute_request_date
     end
-    request_date
+
+    unless last_message_imported_at.present?
+      self.last_message_imported_at = self.compute_last_message_imported_at
+    end
+
+    if self.changed?
+      self.save
+    end
+
+    last_message_imported_at
   end
+
+  # def find_or_compute_request_date
+  #   unless request_date
+  #     self.update_attribute :request_date, self.compute_request_date
+  #   end
+  #   request_date
+  # end
 
   def compute_request_date
     self.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
         self.messages.map{|m| m.received_at}.max ||
+        DateTime.parse("2500-01-01")
+  end
+
+  def compute_last_message_imported_at
+    self.messages.select{|m| !m.archived}.map{|m| m.created_at}.min ||
+        self.messages.map{|m| m.created_at}.max ||
         DateTime.parse("2500-01-01")
   end
 
@@ -808,6 +830,14 @@ class MessagesThread < ActiveRecord::Base
     computed_request_date = self.compute_request_date
     if self.request_date != computed_request_date
       self.request_date = computed_request_date
+    end
+
+    computed_last_message_imported_at = self.compute_last_message_imported_at
+    if self.last_message_imported_at != computed_last_message_imported_at
+      self.last_message_imported_at = computed_last_message_imported_at
+    end
+
+    if self.changed?
       self.save
     end
 
