@@ -801,6 +801,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     //var allEvents = [];
     var meeting_rooms_to_show = {};
     var virtualResourcesToShow = [];
+    var grouped_meeting_rooms_to_show = [];
     var momentedStart = moment(start);
 
     if(calendar.initialData.meeting_rooms_to_show) {
@@ -831,8 +832,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         // if(meeting_rooms_to_show[window.threadAccount.email].length > 0) {
         //     neededMeetingRoomsCount = meetingRoomsManager.widgets.length;
         // }
-        
-        var grouped_meeting_rooms_to_show = meetingRoomsManager.getMeetingRoomsToDisplayRaw();
+
+        if(meetingRoomsManager) {
+            grouped_meeting_rooms_to_show = meetingRoomsManager.getMeetingRoomsToDisplayRaw();
+        }
 
         if (currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
             window.threadComputedData && window.threadComputedData.call_instructions) {

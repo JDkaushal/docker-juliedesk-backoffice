@@ -382,27 +382,32 @@
             }).then(function(response) {
                 //console.log("fetched from conscience");
                 $scope.endLoading('conscience');
-                $scope.forceHumanReason = response.data.data.suggested_date.auto_process_force_human_reason;
-                if(response.data.data.suggested_date.auto_process_force_human_reason_details) {
-                    $scope.forceHumanReason = response.data.data.suggested_date.auto_process_force_human_reason_details;
+
+                if(response.data.message === "No suggested date") {
+                    alert('No dates suggested by AI');
+                } else {
+                    $scope.forceHumanReason = response.data.data.suggested_date.auto_process_force_human_reason;
+                    if(response.data.data.suggested_date.auto_process_force_human_reason_details) {
+                        $scope.forceHumanReason = response.data.data.suggested_date.auto_process_force_human_reason_details;
+                    }
+                    $scope.conscienceDateSuggestions = _.map(response.data.data.suggested_date.status, function(status) {
+                        var dateStringKey = _.keys(status)[0];
+                        return {
+                            date: moment(dateStringKey),
+                            status: status[dateStringKey]
+                        }
+                    });
+
+
+                    _.each($scope.possibleFullAutoErrors, function(v, k) {
+                        if(($scope.notCorrectConscienceDateSuggestions().length > 0 && v.when_force) ||
+                            ($scope.notCorrectConscienceDateSuggestions().length == 0 && v.when_no_force)) {
+                            $scope.possibleFullAutoErrorsFiltered[k] = v;
+                        }
+                    });
+
+                    $scope.populateErrors($scope.conscienceDateSuggestions);
                 }
-                $scope.conscienceDateSuggestions = _.map(response.data.data.suggested_date.status, function(status) {
-                    var dateStringKey = _.keys(status)[0];
-                    return {
-                        date: moment(dateStringKey),
-                        status: status[dateStringKey]
-                    }
-                });
-
-
-                _.each($scope.possibleFullAutoErrors, function(v, k) {
-                    if(($scope.notCorrectConscienceDateSuggestions().length > 0 && v.when_force) ||
-                        ($scope.notCorrectConscienceDateSuggestions().length == 0 && v.when_no_force)) {
-                        $scope.possibleFullAutoErrorsFiltered[k] = v;
-                    }
-                });
-
-                $scope.populateErrors($scope.conscienceDateSuggestions);
             });
         };
 
