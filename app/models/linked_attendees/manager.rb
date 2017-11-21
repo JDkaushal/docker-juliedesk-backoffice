@@ -19,7 +19,17 @@ module LinkedAttendees
     def fetch_call(forced_emails_to_check)
       client = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
 
-      attendees_to_check = forced_emails_to_check.present? ? forced_emails_to_check : @messages_thread.computed_recipients
+      attendees_to_check = if forced_emails_to_check.present?
+                             forced_emails_to_check
+                           else
+                             computed_data_only_attendees = @messages_thread.computed_data_only_attendees[:attendees]
+
+                              if computed_data_only_attendees.present?
+                                computed_data_only_attendees.select{|o| o["isPresent"] == "true" && o["isThreadOwner"] == "false"}.map{|m| m["email"]}
+                              else
+                                @messages_thread.computed_recipients
+                              end
+                           end
 
       # Separate clients from non clients in a beautiful and magnificent way
       recipients = attendees_to_check.partition {|r_email| Account.find_active_and_configured_account_email(r_email, {accounts_cache: @accounts_cache}).present?}
