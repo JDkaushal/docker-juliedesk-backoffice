@@ -413,57 +413,6 @@
                     informations.company = companies[informations.email];
                 }
 
-                //If the current email is the principal email for a user
-                // if(aliasedEmails.indexOf(informations.email) > -1) {
-                //     //informations.isClient = "true";
-                //     //informations.company = companies[informations.email];
-                //
-                //     // If it is in the recipients, we create the attendee, because if there will be an alias for this email in the recipients, it will be discarded
-                //     if(window.currentToCC.indexOf(informations.email.toLowerCase()) > -1) {
-                //         attendeesCtrl.createAttendee(informations, attendee);
-                //      // If it is not in the recipients, we check to see if an alias for this email is in the recipients, if not we create the attendee, if yes we don't because we will use the alias instead
-                //     }else{
-                //         var aliasInTheRecipients = false;
-                //
-                //         // Check if an alias for this email is in the recipients
-                //         _.each(aliases[informations.email], function(alias){
-                //             if(window.currentToCC.indexOf(alias.toLowerCase()) > -1)
-                //                 aliasInTheRecipients = true;
-                //         });
-                //         // If yes we don't create the attendee, because we will use the alias
-                //         if(aliasInTheRecipients){
-                //
-                //          // If no, we use the main email and we create the attendee
-                //         }else{
-                //             attendeesCtrl.createAttendee(informations, attendee);
-                //         }
-                //     }
-                //     // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
-                //
-                //  // If the current email is an alias for a client
-                // } else if(aliasEmails.indexOf(informations.email) > -1) {
-                //     //informations.isClient = "true";
-                //
-                //     //We find the client main email
-                //     var clientMainEmail;
-                //     _.each(aliases, function (aliases, aliased) {
-                //         if (aliases.indexOf(informations.email) > -1)
-                //             clientMainEmail = aliased;
-                //     });
-                //
-                //     if(clientMainEmail)
-                //         informations.company = companies[clientMainEmail];
-                //
-                //     // We found the client main email and it is the recipients, so we will use it as the attendee, we do nothing here
-                //     if (clientMainEmail && window.currentToCC.indexOf(clientMainEmail.toLowerCase()) > -1) {
-                //     }
-                //     // If we found it or not and it is not in the recipients, we can create the attendee
-                //     else {
-                //         // If the current attendee was in the aliases repsonse from the server, it means it is in the accounts cache => he is client
-                //         attendeesCtrl.createAttendee(informations, attendee);
-                //     }
-                //     // If the email is not an aliased email nor a alias email, we create the attendee
-                // }
 
                 if(aliasedEmails.indexOf(informations.email) > -1) {
                     // If main email is not in recipients we will check which alias is, so we will use it, in case several are present we will use the first found
@@ -477,8 +426,6 @@
                         }
                     }
                 } else if (aliasEmails.indexOf(informations.email) > -1) {
-                    //informations.isClient = "true";
-
                     //We find the client main email
                     var clientMainEmail;
                     _.each(aliases, function (aliases, aliased) {
@@ -624,7 +571,7 @@
                 subscribed: informations.subscribed == "true",
                 company: company,
                 validatedCompany: validatedCompany,
-                timezone: informations.timezone || window.threadAccount.default_timezone_id,
+                timezone: attendee.timezone || informations.timezone || window.threadAccount.default_timezone_id,
                 landline: informations.landline,
                 mobile: informations.mobile,
                 skypeId: informations.skypeId,
