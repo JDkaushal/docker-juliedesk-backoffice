@@ -90,7 +90,7 @@
                     // Otherwise, Conscience will fail with no key exception
                     this.attendeeInForm.isThreadOwner = false;
                     // Otherwise, Conscience will fail with no key exception
-                    this.attendeeInForm.isClient = false;
+                    this.attendeeInForm.isClient = !!this.attendeeInForm.isClient;
 
                     if(attendeesFormCtrl.currentMode == 'new')
                     {
