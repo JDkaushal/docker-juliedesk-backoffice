@@ -30,7 +30,6 @@ class ClientRequest < ActiveRecord::Base
     ]
 
     return if not_request_statuses.include? messages_thread.status
-    return if ClientRequest.client_request_id.present?
 
     User.find_or_create_by(messages_thread_id: messages_thread.id) do |client_request|
       client_request.date = messages_thread.created_at
