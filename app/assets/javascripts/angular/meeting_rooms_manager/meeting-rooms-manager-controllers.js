@@ -546,13 +546,13 @@
             oldVal = oldVal || {};
             $scope.displayCustomSelectionFilters = newVal.id === 'auto_room_selection';
 
-            if(newVal && newVal.id && newVal.id !== oldVal.id && !window.julie_action_nature) {
-                if(newVal.id.indexOf('auto_room_selection') > - 1) {
-                    $scope.selectedRoom = undefined;
-                } else {
-                    $scope.selectedRoom = angular.copy(newVal);
-                }
-            }
+            // if(newVal && newVal.id && newVal.id !== oldVal.id && !window.julie_action_nature) {
+            //     if(newVal.id.indexOf('auto_room_selection') > - 1) {
+            //         $scope.selectedRoom = undefined;
+            //     } else {
+            //         $scope.selectedRoom = angular.copy(newVal);
+            //     }
+            // }
         });
 
         $scope.$on('appointmentTypeChanged', function() {
@@ -868,6 +868,14 @@
           } else {
               $scope.noFittingRooms = false;
           }
+
+            if($scope.roomsSelectionMode && $scope.roomsSelectionMode.id && !window.julie_action_nature) {
+                if($scope.roomsSelectionMode.id.indexOf('auto_room_selection') > - 1) {
+                    $scope.selectedRoom = undefined;
+                } else {
+                    $scope.selectedRoom = angular.copy($scope.roomsSelectionMode);
+                }
+            }
         };
 
         $scope.shouldDisplayLocationfield = function() {
@@ -1217,18 +1225,18 @@
             return roomCanVisio === 'true';
         };
 
-        $scope.setNewSelectedRoom = function(roomId) {
-            $scope.selectedRoom = _.find($scope.availableRooms, function(room) {
-                return room.id === roomId;
-            });
-
-            if(!$.isEmptyObject($scope.selectedRoom)) {
-                $scope.checkMeetingRoomAvailability(true);
-            }
-        };
+        // $scope.setNewSelectedRoom = function(roomId) {
+        //     $scope.selectedRoom = _.find($scope.availableRooms, function(room) {
+        //         return room.id === roomId;
+        //     });
+        //
+        //     if(!$.isEmptyObject($scope.selectedRoom)) {
+        //         $scope.checkMeetingRoomAvailability(true);
+        //     }
+        // };
 
         $scope.checkIfDetectAvailabilities = function(dateToCheck) {
-            if($scope.roomsSelectionMode && $scope.roomsSelectionMode.id.indexOf('auto_room_selection') === -1 ) {
+            if( ($scope.selectedRoom && $scope.selectedRoom.id && $scope.selectedRoom.id.indexOf('auto_room_selection') === -1) || ($scope.roomsSelectionMode && $scope.roomsSelectionMode.id.indexOf('auto_room_selection') === -1) ) {
                 $scope.checkMeetingRoomAvailability(true, dateToCheck);
             } else {
                 $scope.checkMeetingRoomAvailability(false, dateToCheck);
@@ -1325,6 +1333,7 @@
                             $scope.widgetData.roomAvailable = true;
                             $scope.widgetData.roomAvailableName = $scope.roomsSelectionMode.summary;
                             sharedProperties.addChoosenRooms($scope.roomsSelectionMode.id);
+                            $scope.selectRoom($scope.roomsSelectionMode.id);
                             //$scope.currentlyChoosenRooms.push($scope.roomsSelectionMode.id);
                             $scope.hideNonAvailableMessage();
                         } else {
@@ -1340,7 +1349,6 @@
                         // If there are no first available room, it means every rooms are busy
                         if (firstAvailableRoom) {
                             $scope.hideNonAvailableMessage();
-                            $scope.selectRoom(firstAvailableRoom);
                             $scope.widgetData.roomAvailable = true;
                             $scope.widgetData.roomAvailableName = $scope.selectedRoom.summary;
                             //$scope.currentlyChoosenRooms.push($scope.selectedRoom.id);
