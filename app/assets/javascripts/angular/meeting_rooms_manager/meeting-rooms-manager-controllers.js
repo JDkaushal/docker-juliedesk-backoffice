@@ -865,7 +865,7 @@
         };
 
         $scope.roomSelectionModeChanged = function() {
-          $scope.$emit('roomChanged');
+
 
           // Clear the no fitting rooms for used filters message if necessary
           if($scope.roomsSelectionMode.id.indexOf('auto_room_selection') > -1) {
@@ -881,6 +881,8 @@
                     $scope.selectedRoom = angular.copy($scope.roomsSelectionMode);
                 }
             }
+
+            $scope.$emit('roomChanged');
         };
 
         $scope.shouldDisplayLocationfield = function() {
