@@ -1236,7 +1236,7 @@
         // };
 
         $scope.checkIfDetectAvailabilities = function(dateToCheck) {
-            if( ($scope.selectedRoom && $scope.selectedRoom.id && $scope.selectedRoom.id.indexOf('auto_room_selection') === -1) || ($scope.roomsSelectionMode && $scope.roomsSelectionMode.id.indexOf('auto_room_selection') === -1) ) {
+            if($scope.roomsSelectionMode && $scope.roomsSelectionMode.id.indexOf('auto_room_selection') === -1) {
                 $scope.checkMeetingRoomAvailability(true, dateToCheck);
             } else {
                 $scope.checkMeetingRoomAvailability(false, dateToCheck);
@@ -1326,7 +1326,7 @@
                     // have the current availability state of the selected Room
                     if (checkSelectedRoom) {
                         var selectedRoomAvailability = _.find(available, function(hash) {
-                            return hash.id === $scope.roomsSelectionMode.id;
+                            return hash.id === $scope.selectedRoom.id;
                         });
 
                         if(selectedRoomAvailability && selectedRoomAvailability.isAvailable) {
