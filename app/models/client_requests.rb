@@ -1,8 +1,7 @@
 class ClientRequest < ActiveRecord::Base
   belongs_to :messages_thread
 
-  def self.compute_count(user_ids=nil, team_identifiers=nil, from_date, to_date, options={})
-    raise
+  def self.compute_count(user_ids=nil, team_identifiers=nil, options={}, from_date, to_date)
     client_requests = ClientRequest.where('date > ? AND date < ?', from_date, to_date)
     if user_ids.present?
       raise 'Cannot provide both user_ids and team_identifiers params' if team_identifiers.present?
