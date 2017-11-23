@@ -63,6 +63,8 @@
                     // if(this.attendeeInForm.usageName == '' || this.attendeeInForm.usageName === undefined)
                     //     this.attendeeInForm.usageName = this.attendeeInForm.firstName;
 
+
+
                     if(this.attendeeInForm.company === undefined)
                         this.attendeeInForm.company = '';
 
@@ -283,7 +285,11 @@
 
         //Events Listeners----------------------------------------------------------------
         $scope.$on('attendeeAdded', function(event, args) {
-            $scope.attendees.push(args.attendee);
+            var existingAttendee = _.find($scope.attendees, function(attendee) { return attendee.email == args.attendee.email });
+            if(existingAttendee)
+                existingAttendee.isPresent = true;
+            else
+                $scope.attendees.push(args.attendee);
         });
 
         angular.element(document).ready(function () {
