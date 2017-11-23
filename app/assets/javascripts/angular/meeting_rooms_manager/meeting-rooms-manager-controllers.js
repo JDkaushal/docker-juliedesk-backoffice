@@ -100,9 +100,14 @@
             // Deep Copy of the array;
             $scope.clientsList = JSON.parse(JSON.stringify(clientsList));
 
+            var clientsEmails = _.flatten(_.map($scope.clientsList, function(client) { return client.email_aliases.concat(client.email)}));
+
             if(window.threadComputedData.meeting_room_details) {
                 _.each(window.threadComputedData.meeting_room_details, function(details) {
-                    $scope.addWidget(details.client, details);
+                    // Only add the widget if the client is still client and is attending the appointment
+                    if(clientsEmails.indexOf(details.client) > -1) {
+                        $scope.addWidget(details.client, details);
+                    }
                 });
             }
 
