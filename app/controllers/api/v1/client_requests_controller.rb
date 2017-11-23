@@ -7,7 +7,9 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
 
     render json: {
         status: 'success',
-        data: data
+        data: params[:detailed].present? ? {
+            count: data
+        } : data
     }
   end
 end
