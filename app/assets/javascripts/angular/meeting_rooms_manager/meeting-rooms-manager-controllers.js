@@ -1319,7 +1319,18 @@
                         available.push(currentAvailability);
                     });
 
-                    available = _.sortBy(available, function(_) { return Math.random()  });
+                    // We place the currently selected Room at the top of the availabilities so it get taken first if we check a new timeslot
+                    var selectedRoomId = ($scope.selectedRoom && $scope.selectedRoom.id) || null;
+                    var currentlySelectedRoom = undefined;
+                    if(selectedRoomId && available[0].id === selectedRoomId) {
+                        currentlySelectedRoom = available.shift();
+                    }
+
+                    available = _.sortBy(available, function(_) { return Math.random(); });
+
+                    if(currentlySelectedRoom) {
+                        available.unshift(currentlySelectedRoom);
+                    }
 
                     // Whenever we check for the currently selected room availability, we will not select automatically
                     // an available room if any (case when we changed the room in the select, this way the operator can
