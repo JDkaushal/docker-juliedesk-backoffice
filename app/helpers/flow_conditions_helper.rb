@@ -54,12 +54,16 @@ module FlowConditionsHelper
       when :client_on_trip
         validation_flow_condition_include_or_equals condition_value, required_input_object(input_objects, :julie_action).message_classification.client_on_trip != nil
       when :date_times_from_ai_count
-        validation_flow_condition_include_or_equals condition_value, ((required_input_object(input_objects, :julie_action).date_times_from_ai || {})['suggested_dates'] || []).length
+        validation_flow_condition_superior_or_equals condition_value, ((required_input_object(input_objects, :julie_action).date_times_from_ai || {})['suggested_dates'] || []).length
       when :date_times_from_ai_on_all_day_event
         validation_flow_condition_include_or_equals condition_value, (required_input_object(input_objects, :julie_action).date_times_from_ai || {})['all_days_on_suggestions'] == 'true'
       else
         raise "Unsupported flow condition: #{condition_identifier}"
     end
+  end
+
+  def validation_flow_condition_superior_or_equals(condition_value, value_to_check)
+    value_to_check >= condition_value
   end
 
   def validation_flow_condition_include_or_equals(condition_value, value_to_check)

@@ -63,7 +63,7 @@ class JulieActionsController < ApplicationController
                 #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false,
                 client_on_trip: false,
-                date_times_from_ai_count: 4
+                date_times_from_ai_count: 3
             },
             front_conditions: {
             }
@@ -85,7 +85,7 @@ class JulieActionsController < ApplicationController
                 #main_client_auto_date_suggestions_on: true,
                 constraints_conflicts: false,
                 client_on_trip: false,
-                date_times_from_ai_count: 4,
+                date_times_from_ai_count: 3,
                 date_times_from_ai_on_all_day_event: false
             },
             front_conditions: {
