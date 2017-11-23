@@ -1333,7 +1333,6 @@
                             $scope.widgetData.roomAvailable = true;
                             $scope.widgetData.roomAvailableName = $scope.roomsSelectionMode.summary;
                             sharedProperties.addChoosenRooms($scope.roomsSelectionMode.id);
-                            $scope.selectRoom($scope.roomsSelectionMode.id);
                             //$scope.currentlyChoosenRooms.push($scope.roomsSelectionMode.id);
                             $scope.hideNonAvailableMessage();
                         } else {
@@ -1349,6 +1348,7 @@
                         // If there are no first available room, it means every rooms are busy
                         if (firstAvailableRoom) {
                             $scope.hideNonAvailableMessage();
+                            $scope.selectRoom(firstAvailableRoom);
                             $scope.widgetData.roomAvailable = true;
                             $scope.widgetData.roomAvailableName = $scope.selectedRoom.summary;
                             //$scope.currentlyChoosenRooms.push($scope.selectedRoom.id);
