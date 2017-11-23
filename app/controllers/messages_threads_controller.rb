@@ -191,7 +191,7 @@ class MessagesThreadsController < ApplicationController
 
       WebSockets::Manager.trigger_archive(messages_thread.id)
 
-      #ClientRequest.create_if_needed(messages_thread)
+      ClientRequest.create_if_needed(messages_thread)
       # if ENV['PUSHER_APP_ID']
       #   Pusher.trigger('private-global-chat', 'archive', {
       #       :message => 'archive',
