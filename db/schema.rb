@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171122092833) do
+ActiveRecord::Schema.define(version: 20171123085929) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "ai_email_flow_forecasts", force: true do |t|
     t.datetime "datetime"
@@ -105,7 +104,7 @@ ActiveRecord::Schema.define(version: 20171122092833) do
 
   add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree
 
-  create_table "client_requests_tables", force: true do |t|
+  create_table "client_requests", force: true do |t|
     t.integer  "user_id"
     t.string   "team_identifier"
     t.datetime "date"
@@ -113,6 +112,10 @@ ActiveRecord::Schema.define(version: 20171122092833) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "client_requests", ["messages_thread_id"], name: "index_client_requests_on_messages_thread_id", using: :btree
+  add_index "client_requests", ["team_identifier"], name: "index_client_requests_on_team_identifier", using: :btree
+  add_index "client_requests", ["user_id"], name: "index_client_requests_on_user_id", using: :btree
 
   create_table "company_domain_associations", force: true do |t|
     t.string   "company_name"
