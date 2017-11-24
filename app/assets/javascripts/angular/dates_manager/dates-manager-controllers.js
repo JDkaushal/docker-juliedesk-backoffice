@@ -815,10 +815,14 @@
 
             if(window.fullAiFromBackend) {
                 data = {
-                    suggestions_status: _.map(window.fullAiFromBackendSlots, function(slot) { return true; }),
+                    suggestions_status: _.map($scope.fullAiFromBackendSlots, function(slot) {
+                        var result = {};
+                        result[slot] = true;
+                        return result;
+                    }),
                     id: $scope.AIsuggestionsTrackingId,
                     operator_id: $('body').data('operatorId'),
-                    classification: window.classification,
+                    classification: window.classification
                 };
             } else {
                 if($scope.timeSlotsSuggestedByAi && $scope.timeSlotsSuggestedByAi.length > 0) {
