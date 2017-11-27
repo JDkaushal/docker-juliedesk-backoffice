@@ -774,10 +774,23 @@
 
         $scope.getDisplayedAttendees = function() {
           return _.filter($scope.attendees, function(a) {
-             return (a.alreadySetPresent || !a.company || (a.company && a.isPresent));
+             return (a.alreadySetPresent || !a.company || (a.company && a.isPresent) || a.status);
           });
         };
 
+
+        $scope.initAttendeeStatus = function(attendee) {
+            if(attendee.isPresent) {
+                if(!attendee.status)
+                    attendee.status = 'present';
+            }
+            else {
+                if(!attendee.status)
+                    attendee.status = 'not_present';
+            }
+
+            attendee.isPresent = attendee.status === 'present';
+        };
 
         $scope.setStatus = function(attendee, status) {
             attendee.status = status;
