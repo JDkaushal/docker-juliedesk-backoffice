@@ -11,7 +11,10 @@ function Calendar($selector, params, synchronize) {
         other_emails: []
     };
 
-    var presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
+    var presentAttendeesEmails = [];
+    if(window.presentAttendees)
+        presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
+
     for (var paramName in params) {
         if(paramName == 'constraintsData') {
             var constraints = params[paramName];
