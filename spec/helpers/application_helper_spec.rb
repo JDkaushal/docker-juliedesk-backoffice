@@ -84,7 +84,11 @@ describe ApplicationHelper do
       it { is_expected.to match_array(["bob@gmail.com"]) }
     end
 
-  end
+    context "name starts with a '" do
+      let(:content) { "'bob@gmail.com'" }
+      it { is_expected.to match_array(["bob@gmail.com"]) }
+    end
 
+  end
 
 end
