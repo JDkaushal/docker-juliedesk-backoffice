@@ -445,7 +445,7 @@ ConstraintTile.prototype.initActions = function() {
     });
 
     constraintTile.$selector.find(".constraint-nature-selector .nature-option").click(function() {
-        if(!$(this).closest(".input-like").hasfClass("disabled"))  {
+        if(!$(this).closest(".input-like").hasClass("disabled"))  {
             constraintTile.$selector.find(".constraint-nature-selector .nature-option").removeClass("selected");
             $(this).addClass("selected");
 
