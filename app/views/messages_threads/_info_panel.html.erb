@@ -792,14 +792,24 @@
     }
 
     function newConstraintTile(data, expand, fromAI) {
-        var possibleAttendees = window.presentAttendees();
+        var allAttendees = window.threadComputedData.attendees;
+        var optionalAttendees = window.optinalAttendees() || [];
+        var possibleAttendees = window.presentAttendees().concat(optionalAttendees);
 
         $(".messages-thread-info-panel .constraint-tiles-container").append($("<div>").addClass("constraint-tile-container"));
         var currentAppointment = window.getCurrentAppointment();
         var timezone = getConstraintTimezone();
 
+
+        var attendee = _.find(allAttendees, function(attendee) {
+            return data && attendee.email == data.attendee_email;
+        });
+
+
         var newConstraint = new ConstraintTile($(".messages-thread-info-panel .constraint-tiles-container").find(".constraint-tile-container").last(), {
+            disabled: data ? (attendee && attendee.isPresent === 'false') : false,
             possible_attendees: possibleAttendees,
+            all_attendees : allAttendees,
             locale: "<%= I18n.locale %>",
             timezone: timezone,
             data: data,
@@ -1434,6 +1444,7 @@
           mobile: attendee.mobile,
           skypeId: attendee.skypeId,
           confCallInstructions: attendee.confCallInstructions,
+          status: attendee.status,
           isPresent: attendee.isPresent,
           isClient: attendee.isClient,
           isThreadOwner: attendee.isThreadOwner,
@@ -1458,6 +1469,12 @@
     window.presentAttendees = function() {
         return _.filter(window.getInfoPanelAttendees(), function(attendee) {
             return attendee.isPresent;
+        });
+    };
+
+    window.optinalAttendees = function() {
+        return _.filter(window.getInfoPanelAttendees(), function(attendee) {
+            return attendee.status === 'optional';
         });
     };
 

@@ -10,10 +10,19 @@ function Calendar($selector, params, synchronize) {
         date_times: [],
         other_emails: []
     };
+
+    var presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
     for (var paramName in params) {
+        if(paramName == 'constraintsData') {
+            var constraints = params[paramName];
+            for(var attendeeEmail in constraints) {
+                if(presentAttendeesEmails.indexOf(attendeeEmail) === -1)
+                    delete constraints[attendeeEmail];
+            }
+        }
+
         this.initialData[paramName] = params[paramName];
     }
-
     this.fakeCalendarIds = ["juliedesk-unavailable", "juliedesk-strong-constraints", "juliedesk-light-constraints", "juliedesk-public-holidays"];
 
     // Init variables

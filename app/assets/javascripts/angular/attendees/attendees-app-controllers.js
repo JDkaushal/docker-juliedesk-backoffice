@@ -238,6 +238,12 @@
         $scope.attendeeSearchFilter = '';
         $scope.currentlySelectedSearchedAttendeeIndex = -1;
 
+        $scope.availableStatuses = [
+            { id: 'present',     label: 'present' },
+            { id: 'optional',    label: 'optional' },
+            { id: 'not_present', label: 'not_present' }
+        ];
+
         // Used for the actions tracking (provide some context on the tracking like the id of the tracking in the form of
         // operator_id-messagesThreadId
         var messagesContainerNode = $('#messages_container');
@@ -583,6 +589,7 @@
                 skypeId: informations.skypeId,
                 confCallInstructions: informations.confCallInstructions,
                 videoConferenceInstructions: informations.video_conference_instructions,
+                status: attendee.status,
                 isPresent: isPresent,
                 alreadySetPresent: isPresent || alreadyPresent,
                 isClient: isClient,
@@ -769,6 +776,31 @@
           return _.filter($scope.attendees, function(a) {
              return (a.alreadySetPresent || !a.company || (a.company && a.isPresent));
           });
+        };
+
+
+        $scope.setStatus = function(attendee, status) {
+            attendee.status = status;
+            attendee.isPresent = attendee.status === 'present';
+            $.each(window.contraintsTiles, function(i, constraintTile) {
+                var constraintData = constraintTile.getData();
+                if(constraintData.attendee_email === attendee.email) {
+                    var constraintAttendee = _.find(constraintTile.allAttendees, function(possibleAttendee) { return possibleAttendee.email === attendee.email  });
+                    if(constraintAttendee)
+                        constraintAttendee.status = attendee.status;
+
+                    if(attendee.isPresent) {
+                        constraintTile.enable();
+                        constraintTile.redrawSentence();
+                    }
+                    else {
+                        constraintTile.disable();
+                        constraintTile.redrawSentence();
+                    }
+
+                }
+
+            });
         };
 
         $scope.getRegisteredAvailableAttendees = function() {

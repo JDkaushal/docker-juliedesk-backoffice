@@ -113,8 +113,31 @@
     padding: 10px;
     margin: 5px auto 10px auto;
     font-size: 12px;
+  position: relative;
 
+    .constraintDisabled {
+      background: grey;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.6;
+      z-index: 0;
 
+      .constraintStatus {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        .fa-question { color: #ffffff  }
+
+        .fa-times, .fa-inverse { font-size: 15px }
+
+        &.notPresentStatus .fa-circle { color: black  }
+        &.optionalStatus .fa-circle   { color: darkorange  }
+      }
+    }
 
 
 
@@ -412,6 +435,7 @@
     .constraint-buttons-container {
         padding: 20px 0 0 0;
         text-align: right;
+        position: relative;
 
         .expand-constraint-button {
             display: none !important;

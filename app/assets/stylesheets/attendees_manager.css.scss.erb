@@ -10,6 +10,10 @@ $errorColor: #EA5959;
 $validColor: #62AF0A;
 $invalidButtonColor: #cacece;
 
+$presentAttendeeColor: #2EC094;
+$optionalAttendeeColor: #F5A623;
+$notPresentAttendeeColor: #453c3c;
+
 .attendees-manager{
 
     margin-top: 30px;
@@ -161,6 +165,7 @@ $invalidButtonColor: #cacece;
         display: table;
         float: left;
         width: 100%;
+        position: relative;
 
         .attendee-checkbox{
             padding-left: 5px;
@@ -179,6 +184,60 @@ $invalidButtonColor: #cacece;
             height: 20px;
         }
     }
+
+  .attendeeStatus {
+    width: 40px;
+    padding-left: 10px;
+    padding-right: 0;
+
+    button {
+      padding: 0;
+      width: 25px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+
+    .fa-check-circle {
+      color: $presentAttendeeColor;
+    }
+    .fa-question-circle {
+      color: $optionalAttendeeColor;
+    }
+    .fa-times-circle {
+      color: $notPresentAttendeeColor;
+    }
+
+    .dropdown-menu {
+      border-radius: 0;
+      min-width: auto;
+      top: -2px;
+      left: 8px;
+      margin: 0;
+      padding: 2px 0;
+
+      li {
+        a { padding: 2px 5px; }
+
+        &:hover {
+          .fa-check-circle    { color: cornflowerblue; }
+          .fa-question-circle { color: cornflowerblue; }
+          .fa-times-circle    { color: cornflowerblue; }
+        }
+
+        &.selectedStatus {
+          .fa-check-circle    { color: $presentAttendeeColor; }
+          .fa-question-circle { color: $optionalAttendeeColor }
+          .fa-times-circle    { color: $notPresentAttendeeColor }
+        }
+
+        .fa-check-circle    { color: grey; }
+        .fa-question-circle { color: grey; }
+        .fa-times-circle    { color: grey; }
+      }
+    }
+  }
 
     .search-list-wrapper {
         position: relative;
@@ -328,9 +387,9 @@ $invalidButtonColor: #cacece;
     .attendee-update-button-container{
         display: table-cell;
         vertical-align: middle;
-        position: relative;
-        top: 7px;
-        left: 12px;
+        position: absolute;
+        top: 5px;
+        right: 10px;
         button{
             width: 20px;
             height: 20px;

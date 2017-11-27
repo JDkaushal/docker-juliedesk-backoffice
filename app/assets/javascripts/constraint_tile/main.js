@@ -60,7 +60,13 @@ ConstraintTile.WHEN_NATURE_ALWAYS       = "always";
 function ConstraintTile($selector, params) {
     var constraintTile = this;
 
+    constraintTile.disabled = !!params.disabled;
     constraintTile.possibleAttendees = params.possible_attendees;
+    constraintTile.allAttendees = params.all_attendees || [];
+
+    if(params.data && params.data.attendee_email)
+        constraintTile.attendee_email = params.data.attendee_email;
+
     if(!constraintTile.possibleAttendees) {
         constraintTile.possibleAttendees = [];
     }
@@ -108,6 +114,8 @@ function ConstraintTile($selector, params) {
     };
 
     constraintTile.render();
+
+    constraintTile.expanded = params.expand;
 
     if(!params.expand) {
         constraintTile.$selector.find(".constraint-tile").addClass("notransition");
@@ -277,6 +285,20 @@ ConstraintTile.prototype.redrawDatesContainer = function() {
     }
 };
 
+ConstraintTile.prototype.enable = function() {
+    var constraintTile = this;
+    constraintTile.disabled = false;
+    //constraintTile.$selector.find(".constraintDisabled").hide();
+};
+
+ConstraintTile.prototype.disable = function() {
+    var constraintTile = this;
+    constraintTile.disabled = true;
+    //constraintTile.$selector.find(".constraintDisabled").show();
+};
+
+
+
 ConstraintTile.prototype.whenNatureChanged = function() {
     var constraintTile = this;
     constraintTile.redrawDatesContainer();
@@ -369,6 +391,14 @@ ConstraintTile.prototype.startTimeEndTimeChanged = function() {
     constraintTile.redrawSentence();
 };
 
+ConstraintTile.prototype.attendeeChanged = function() {
+    var constraintTile = this;
+    constraintTile.attendee_email = constraintTile.$selector.find(".constraint-attendee-email").val();
+    var attendee = constraintTile.getAttendee();
+    if(attendee)
+        constraintTile.disabled = !attendee.isPresent;
+};
+
 ConstraintTile.prototype.initActions = function() {
   var constraintTile = this;
 
@@ -405,8 +435,17 @@ ConstraintTile.prototype.initActions = function() {
         constraintTile.startTimeEndTimeChanged();
     });
 
+    constraintTile.$selector.find(".constraint-attendee-email").change(function() {
+        constraintTile.attendeeChanged();
+        var attendee = constraintTile.getAttendee();
+        if(attendee && !attendee.isPresent) {
+            constraintTile.disabled = true;
+        }
+        constraintTile.redrawSentence();
+    });
+
     constraintTile.$selector.find(".constraint-nature-selector .nature-option").click(function() {
-        if(!$(this).closest(".input-like").hasClass("disabled"))  {
+        if(!$(this).closest(".input-like").hasfClass("disabled"))  {
             constraintTile.$selector.find(".constraint-nature-selector .nature-option").removeClass("selected");
             $(this).addClass("selected");
 
@@ -456,9 +495,22 @@ ConstraintTile.prototype.initActions = function() {
         }
     });
 
-    constraintTile.$selector.find(".expand-constraint-button, .minimize-constraint-button").click(function() {
+
+    constraintTile.$selector.find(".expand-constraint-button").click(function() {
         constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
+        constraintTile.expanded = true;
+        //constraintTile.$selector.find(".constraintDisabled").hide();
+        constraintTile.redrawSentence();
     });
+
+    constraintTile.$selector.find(".minimize-constraint-button").click(function() {
+        constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
+        constraintTile.expanded = false;
+        if(constraintTile.disabled)
+            //constraintTile.$selector.find(".constraintDisabled").show();
+            constraintTile.redrawSentence();
+    });
+
     constraintTile.$selector.find(".clone-constraint-button").click(function() {
         if(constraintTile.cloneCallback) {
             constraintTile.$selector.find(".constraint-tile").addClass("minimized");
@@ -467,7 +519,12 @@ ConstraintTile.prototype.initActions = function() {
     });
 };
 
-
+ConstraintTile.prototype.getAttendee = function() {
+    var constraintTile = this;
+    return _.find(constraintTile.possibleAttendees, function(possibleAttendee) {
+       return possibleAttendee.email === constraintTile.attendee_email;
+    });
+};
 
 ConstraintTile.prototype.redrawSentence = function() {
     var constraintTile = this;
@@ -480,7 +537,7 @@ ConstraintTile.prototype.redrawSentence = function() {
         sentence = "<span class='invalid'>" + localize("constraints.invalid_constraint") + "</span>";
     }
     else {
-        var attendee = _.find(constraintTile.possibleAttendees, function(attendee) {
+        var attendee = _.find(constraintTile.allAttendees, function(attendee) {
             return attendee.email == data.attendee_email;
         });
 
@@ -519,6 +576,18 @@ ConstraintTile.prototype.redrawSentence = function() {
         if(data.start_time) {
             sentence += "<br/>" + localize("constraints.from") + " <span class='time'>" + data.start_time + "</span> " + localize("constraints.to") + " <span class='time'>" + data.end_time + "</span><br/><span class='timezone'>" + data.timezone + "</span>";
         }
+
+        if(constraintTile.disabled && !constraintTile.expanded) {
+            constraintTile.$selector.find(".constraintDisabled").show();
+            constraintTile.$selector.find(".constraintStatus").hide();
+
+            if(attendee.status === 'optional')
+                constraintTile.$selector.find(".constraintStatus.optionalStatus").show();
+            else
+                constraintTile.$selector.find(".constraintStatus.notPresentStatus").show();
+        }
+        else
+            constraintTile.$selector.find(".constraintDisabled").hide();
     }
 
 
@@ -581,9 +650,10 @@ ConstraintTile.prototype.getData = function() {
     var timezone = constraintTile.$selector.find(".timezone").val();
 
     return {
-        attendee_email: constraintTile.$selector.find(".constraint-attendee-email").val(),
+        attendee_email: constraintTile.attendee_email || constraintTile.$selector.find(".constraint-attendee-email").val(),
         constraint_nature: constraintTile.getConstraintNature(),
         constraint_when_nature: whenNature,
+        disabled: constraintTile.disabled,
 
         dates: dates,
 

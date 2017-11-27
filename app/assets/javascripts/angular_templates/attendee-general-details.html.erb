@@ -1,9 +1,16 @@
-<div class="attendee-checkbox col-xs-1" ng-if="attendee.isThreadOwner">
-  <%= check_box_tag :attendee_thread_owner, '', true, {'ng-model' => 'attendee.isPresent', disabled: true} %>
+<div class="col-xs-2 btn-group attendeeStatus" uib-dropdown is-open="status.isopen" ng-init="attendee.status = attendee.status || 'present'">
+  <button id="single-button" type="button" class="" uib-dropdown-toggle ng-disabled="attendee.isThreadOwner || attendees_manager.readOnly">
+    <i ng-if="attendee.status == 'present'" class="fa fa-lg fa-check-circle" aria-hidden="true"></i>
+    <i ng-if="attendee.status == 'optional'" class="fa fa-lg fa-question-circle" aria-hidden="true"></i>
+    <i ng-if="attendee.status == 'not_present'" class="fa fa-lg fa-times-circle" aria-hidden="true"></i>
+  </button>
+  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+    <li ng-class="{ 'selectedStatus': attendee.status == 'present' }" role="menuitem"><a ng-click="setStatus(attendee, 'present')" href="#"><i class="fa fa-lg fa-check-circle" aria-hidden="true"></i></a></li>
+    <li ng-class="{ 'selectedStatus': attendee.status == 'optional' }" role="menuitem"><a ng-click="setStatus(attendee, 'optional')" href="#"><i class="fa fa-lg fa-question-circle" aria-hidden="true"></i></a></li>
+    <li ng-class="{ 'selectedStatus': attendee.status == 'not_present' }" role="menuitem"><a ng-click="setStatus(attendee, 'not_present')"href="#"><i class="fa fa-lg fa-times-circle" aria-hidden="true"></i></a></li>
+  </ul>
 </div>
-<div class="attendee-checkbox col-xs-1" ng-if="!attendee.isThreadOwner">
-  <%= check_box_tag :attendee, '', true, {'ng-model' => 'attendee.isPresent', 'ng-disabled' => 'attendees_manager.readOnly'} %>
-</div>
+
 <div class="col-xs-1 client-picto-contact" ng-show="attendee.isClient">
   <%= image_tag 'client_picto.png', width: 20, height: 20 %>
 </div>
