@@ -86,7 +86,8 @@ class JulieActionsController < ApplicationController
                 constraints_conflicts: false,
                 client_on_trip: false,
                 date_times_from_ai_count: 3,
-                date_times_from_ai_on_all_day_event: false
+                #date_times_from_ai_on_all_day_event: false,
+                date_times_from_ai_on_all_day_unknown: false
             },
             front_conditions: {
 
