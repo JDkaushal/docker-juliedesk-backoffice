@@ -13,13 +13,13 @@ function Calendar($selector, params, synchronize) {
 
     var presentAttendeesEmails = [];
     if(window.presentAttendees)
-        presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email});
+        presentAttendeesEmails = _.map(window.presentAttendees(), function(att){return att.email.toLowerCase()});
 
     for (var paramName in params) {
         if(paramName == 'constraintsData') {
             var constraints = params[paramName];
             for(var attendeeEmail in constraints) {
-                if(presentAttendeesEmails.indexOf(attendeeEmail) === -1)
+                if(presentAttendeesEmails.indexOf(attendeeEmail.toLowerCase()) === -1)
                     delete constraints[attendeeEmail];
             }
         }
