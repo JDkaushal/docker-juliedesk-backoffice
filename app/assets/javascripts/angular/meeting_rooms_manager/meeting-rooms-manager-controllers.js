@@ -2,7 +2,7 @@
 
     var app = angular.module('meeting-rooms-manager-controllers', ['templates']);
 
-    app.controller('meetingRoomsController', ['$scope', '$element', '$timeout', 'sharedProperties' , function($scope, $element, $timeout, sharedProperties){
+    app.controller('meetingRoomsController', ['$scope', '$element', '$timeout', 'sharedProperties', 'defaultInitializationsService' , function($scope, $element, $timeout, sharedProperties, defaultInitializationsService){
 
         $scope.displayForm = false;
         //$scope.selectedAttendeesNb = "2";
@@ -157,6 +157,7 @@
 
             $scope.$broadcast ('locationChanged', {prevValue: previousLocation, newValue: newLocation});
 
+            $scope.addClientsIfNecessary();
             //$scope.checkMeetingRoomsActivation();
             $scope.$apply();
         });
@@ -195,11 +196,15 @@
                           return appointment.kind === currentAppointment.kind
                       });
 
-                      if(currentClientAppointment && currentClientAppointment.meeting_room_used) {
+                      var currentAddress = window.getCurrentAddressObject();
+
+                      if( (currentClientAppointment && currentClientAppointment.meeting_room_used) || (currentAddress && currentAddress.meeting_room_used) ) {
                             var initialConfiguration = {client: client.email, location: currentClientAppointment.default_address.address};
 
-                          if(currentClientAppointment.selected_meeting_room.indexOf('auto_room_selection') > - 1) {
-                              initialConfiguration.roomsSelectionMode = {id: currentClientAppointment.selected_meeting_room, summary: "Sélection Auto Par Filtres"}
+                            var usedRoom = defaultInitializationsService.getMeetingRoomToUse(currentClientAppointment || {}, currentAddress || {});
+
+                          if(usedRoom.indexOf('auto_room_selection') > - 1) {
+                              initialConfiguration.roomsSelectionMode = {id: usedRoom, summary: "Sélection Auto Par Filtres"}
                           }
 
                           var addWidget = true;
@@ -507,7 +512,7 @@
         $scope.init();
     }]);
 
-    app.controller('meetingRoomsWidgetController', ['$scope', '$element', 'sharedProperties' , function($scope, $element, sharedProperties){
+    app.controller('meetingRoomsWidgetController', ['$scope', '$element', 'sharedProperties', 'defaultInitializationsService' , function($scope, $element, sharedProperties, defaultInitializationsService){
 
         var autoRoomMode = {id: 'auto_room_selection', summary: 'Sélection Auto Par Filtres'};
         var autoRoomModeWithFilters = {id: 'auto_room_selection|attendees_count', summary: 'Sélection Auto Par Filtres'};
@@ -783,7 +788,8 @@
 
                 $scope.setAvailableRooms($scope.roomLocation);
 
-                var usedRoom = $scope.determineUsedMeetingRoom((currentAppointment && currentAppointment.meeting_room_used && currentAppointment.selected_meeting_room) || '', ($scope.roomLocation.meeting_room_used && $scope.roomLocation.selected_meeting_room) || '');
+                //var usedRoom = $scope.determineUsedMeetingRoom((currentAppointment && currentAppointment.meeting_room_used && currentAppointment.selected_meeting_room) || '', ($scope.roomLocation.meeting_room_used && $scope.roomLocation.selected_meeting_room) || '');
+                var usedRoom = defaultInitializationsService.determineMeetingRoomToUse((currentAppointment && currentAppointment.meeting_room_used && currentAppointment.selected_meeting_room) || '', ($scope.roomLocation.meeting_room_used && $scope.roomLocation.selected_meeting_room) || '');
 
                 if(usedRoom.indexOf('auto_room_selection') > -1) {
                     $scope.setDefaultFilters($scope.roomLocation.selected_meeting_room);
@@ -932,35 +938,37 @@
             });
         };
 
-        $scope.computeDefaultFilters = function(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom) {
-            var filtersFromAppointments = appointmentSelectedMeetingRoom.split('|')[1].split(';');
-            var filtersFromAddress = addressSelectedMeetingRoom.split('|')[1].split(';');
-
-            var summedFilters = _.uniq(filtersFromAppointments.concat(filtersFromAddress));
-
-            return 'auto_room_selection|' + summedFilters.join(';');
-        };
+        // $scope.computeDefaultFilters = function(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom) {
+        //     var filtersFromAppointments = appointmentSelectedMeetingRoom.split('|')[1].split(';');
+        //     var filtersFromAddress = addressSelectedMeetingRoom.split('|')[1].split(';');
+        //
+        //     var summedFilters = _.uniq(filtersFromAppointments.concat(filtersFromAddress));
+        //
+        //     return 'auto_room_selection|' + summedFilters.join(';');
+        // };
 
         $scope.getUsedMeetingRoom = function(currentAppointment, currentAddress) {
-            var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
-            var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || '';
+            // var appointmentSelectedMeetingRoom = currentAppointment.selected_meeting_room || '';
+            // var addressSelectedMeetingRoom = currentAddress.selected_meeting_room || '';
+            //
+            // return $scope.determineUsedMeetingRoom(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom);
 
-            return $scope.determineUsedMeetingRoom(appointmentSelectedMeetingRoom, addressSelectedMeetingRoom);
+            return defaultInitializationsService.getMeetingRoomToUse(currentAppointment, currentAddress);
         };
 
-        $scope.determineUsedMeetingRoom = function(appointmentMeetingRoomConfig, addressMeetingRoomConfig) {
-            var usedMeetingRoom = appointmentMeetingRoomConfig;
-
-            if(appointmentMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
-                usedMeetingRoom = appointmentMeetingRoomConfig;
-            } else if(addressMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
-                usedMeetingRoom = addressMeetingRoomConfig;
-            } else {
-                usedMeetingRoom = $scope.computeDefaultFilters(appointmentMeetingRoomConfig, addressMeetingRoomConfig)
-            }
-
-            return usedMeetingRoom;
-        };
+        // $scope.determineUsedMeetingRoom = function(appointmentMeetingRoomConfig, addressMeetingRoomConfig) {
+        //     var usedMeetingRoom = appointmentMeetingRoomConfig;
+        //
+        //     if(appointmentMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+        //         usedMeetingRoom = appointmentMeetingRoomConfig;
+        //     } else if(addressMeetingRoomConfig.indexOf('auto_room_selection') === -1) {
+        //         usedMeetingRoom = addressMeetingRoomConfig;
+        //     } else {
+        //         usedMeetingRoom = $scope.computeDefaultFilters(appointmentMeetingRoomConfig, addressMeetingRoomConfig)
+        //     }
+        //
+        //     return usedMeetingRoom;
+        // };
 
         $scope.getCurrentAppointmentForClient = function() {
             var currentAppointmentKind = window.getCurrentAppointment().kind;
