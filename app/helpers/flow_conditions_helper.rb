@@ -58,7 +58,7 @@ module FlowConditionsHelper
       when :date_times_from_ai_on_all_day_event
         validation_flow_condition_include_or_equals condition_value, (required_input_object(input_objects, :julie_action).date_times_from_ai || {})['all_days_on_suggestions'] == 'true'
       when :date_times_from_ai_on_all_day_unknown
-        validation_flow_condition_include_or_equals condition_value, (required_input_object(input_objects, :julie_action).date_times_from_ai || {})['all_days_unknown'] == 'true'
+        validation_flow_condition_include_or_equals condition_value, (required_input_object(input_objects, :julie_action).date_times_from_ai || {})['all_days_unknown_on_suggestions'] == 'true'
       else
         raise "Unsupported flow condition: #{condition_identifier}"
     end
