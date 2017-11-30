@@ -9,6 +9,7 @@
         };
         $scope.fetch = function() {
             $scope.threadComputedData = window.threadComputedData;
+            $scope.threadAccount = window.threadAccount;
         };
         $scope.fetch();
     }]);

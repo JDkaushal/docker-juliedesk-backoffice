@@ -23,7 +23,8 @@
             scope: {
                 "value": "=",
                 "label": "@",
-                "shouldShow": "=    "
+                "shouldShow": "=",
+                "accountEmail": "="
             },
             controller: ['$scope', function ($scope) {
                 $scope.knownZones = 'other';
