@@ -5,7 +5,7 @@ class GeoZonesController < ActionController::Base
     # 2017-11-28 by Nico
     # Dirty static modification for Engie, as a POC. This has to integrated in a cleaner way in the future
     all_client_specific_zones = {
-        'angelique.stoffels@engie.com': [
+        'angelique.stoffels@engie.com' => [
             'ZONE 1 _ LIEGE CENTRE',
             'ZONE 2 _ LIEGE PERIPHERIE',
             'ZONE 3 _ CANTONS DE L\'EST',
