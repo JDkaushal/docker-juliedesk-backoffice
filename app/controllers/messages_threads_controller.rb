@@ -191,9 +191,11 @@ class MessagesThreadsController < ApplicationController
 
       WebSockets::Manager.trigger_archive(messages_thread.id)
 
-      ClientRequest.create_if_needed(messages_thread)
+      client_request_created = ClientRequest.create_if_needed(messages_thread)
 
-      ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+      if client_request_created
+        ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+      end
 
       # if ENV['PUSHER_APP_ID']
       #   Pusher.trigger('private-global-chat', 'archive', {

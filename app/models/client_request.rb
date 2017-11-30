@@ -30,13 +30,19 @@ class ClientRequest < ActiveRecord::Base
         MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT
     ]
 
-    return if not_request_statuses.include? messages_thread.status
-    return unless messages_thread.account
+    return false if not_request_statuses.include? messages_thread.status
+    return false unless messages_thread.account
 
-    ClientRequest.find_or_create_by(messages_thread_id: messages_thread.id) do |client_request|
-      client_request.date = messages_thread.created_at
-      client_request.user_id = messages_thread.account.user_id
-      client_request.team_identifier = messages_thread.account.company_hash.try(:[], 'identifier')
+    if ClientRequest.find_by_messages_thread_id(messages_thread.id)
+      false
+    else
+      ClientRequest.create(
+          messages_thread_id: messages_thread.id,
+          date: messages_thread.created_at,
+          user_id: messages_thread.account.user_id,
+          team_identifier: messages_thread.account.company_hash.try(:[], 'identifier')
+      )
+      true
     end
 
   end
