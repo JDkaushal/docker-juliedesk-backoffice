@@ -24,9 +24,10 @@ class ClientRequest < ActiveRecord::Base
   def self.create_if_needed(messages_thread)
     not_request_statuses = [
         nil,
-        'other',
-        'does_not_concern_client',
-        'handled_in_other_threads'
+        MessageClassification::THREAD_STATUS_OTHER,
+        MessageClassification::THREAD_STATUS_DOES_NOT_CONCERN_CLIENT,
+        MessageClassification::THREAD_STATUS_HANDLED_IN_OTHER_THREADS,
+        MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT
     ]
 
     return if not_request_statuses.include? messages_thread.status
