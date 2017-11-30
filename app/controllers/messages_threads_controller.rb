@@ -193,7 +193,7 @@ class MessagesThreadsController < ApplicationController
 
       ClientRequest.create_if_needed(messages_thread)
 
-      # ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+      ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
 
       # if ENV['PUSHER_APP_ID']
       #   Pusher.trigger('private-global-chat', 'archive', {
