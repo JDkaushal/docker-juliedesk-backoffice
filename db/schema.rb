@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171130151700) do
+ActiveRecord::Schema.define(version: 20171130161600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -254,6 +254,7 @@ ActiveRecord::Schema.define(version: 20171130151700) do
     t.boolean  "date_suggestions_full_ai_capacity", default: false
   end
 
+  add_index "julie_actions", ["created_at"], name: "index_julie_actions_on_created_at", using: :btree
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
 
   create_table "julie_aliases", force: true do |t|
@@ -406,6 +407,7 @@ ActiveRecord::Schema.define(version: 20171130151700) do
     t.text     "message"
   end
 
+  add_index "operator_actions", ["messages_thread_id"], name: "index_operator_actions_on_messages_thread_id", using: :btree
   add_index "operator_actions", ["operator_actions_group_id"], name: "index_operator_actions_on_operator_actions_group_id", using: :btree
 
   create_table "operator_actions_groups", force: true do |t|
