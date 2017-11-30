@@ -157,7 +157,7 @@ class JulieActionsController < ApplicationController
 
       JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'julie_actions#show:done', julie_action_id: @julie_action.id}, distinct_id: @julie_action.id})
       # Throw the dice to know if we help operator with AI or not
-      should_help_with_ai = true#rand >= 0.5
+      should_help_with_ai = rand >= 0.5
 
       @julie_action.update(date_suggestions_full_ai: should_help_with_ai)
     end
