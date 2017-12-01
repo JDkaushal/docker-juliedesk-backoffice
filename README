@@ -38,7 +38,7 @@ Create DB (first time) :
 
 Connect to local postgres and create DB :
 ---
-docker -it passenger-backoffice bash
+docker exec -it passenger-backoffice bash
 $ cd /home/app/juliedesk-backoffice
 $ bin/rake db:create RAILS_ENV=development
 $ bin/rake db:migrate RAILS_ENV=development

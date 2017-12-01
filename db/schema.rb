@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171130161600) do
+ActiveRecord::Schema.define(version: 20171201112345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(version: 20171130161600) do
   end
 
   add_index "client_contacts", ["client_email", "email"], name: "index_client_contacts_on_client_email_and_email", unique: true, using: :btree
+  add_index "client_contacts", ["email"], name: "index_client_contacts_on_email", using: :btree
 
   create_table "client_requests", force: true do |t|
     t.integer  "user_id"
@@ -188,6 +189,8 @@ ActiveRecord::Schema.define(version: 20171130161600) do
     t.datetime "updated_at"
   end
 
+  add_index "event_title_reviews", ["messages_thread_id"], name: "index_event_title_reviews_on_messages_thread_id", using: :btree
+
   create_table "events", force: true do |t|
     t.string   "email"
     t.string   "calendar_nature"
@@ -255,6 +258,7 @@ ActiveRecord::Schema.define(version: 20171130161600) do
   end
 
   add_index "julie_actions", ["created_at"], name: "index_julie_actions_on_created_at", using: :btree
+  add_index "julie_actions", ["event_id"], name: "index_julie_actions_on_event_id", using: :btree
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
 
   create_table "julie_aliases", force: true do |t|
@@ -329,6 +333,7 @@ ActiveRecord::Schema.define(version: 20171130161600) do
     t.boolean  "error"
   end
 
+  add_index "message_interpretations", ["created_at"], name: "index_message_interpretations_on_created_at", using: :btree
   add_index "message_interpretations", ["message_id"], name: "index_message_interpretations_on_message_id", using: :btree
 
   create_table "messages", force: true do |t|
@@ -346,6 +351,7 @@ ActiveRecord::Schema.define(version: 20171130161600) do
   end
 
   add_index "messages", ["messages_thread_id"], name: "index_messages_on_messages_thread_id", using: :btree
+  add_index "messages", ["received_at"], name: "index_messages_on_received_at", using: :btree
   add_index "messages", ["server_message_id"], name: "index_messages_on_server_message_id", using: :btree
 
   create_table "messages_threads", force: true do |t|
@@ -409,6 +415,7 @@ ActiveRecord::Schema.define(version: 20171130161600) do
 
   add_index "operator_actions", ["messages_thread_id"], name: "index_operator_actions_on_messages_thread_id", using: :btree
   add_index "operator_actions", ["operator_actions_group_id"], name: "index_operator_actions_on_operator_actions_group_id", using: :btree
+  add_index "operator_actions", ["target_id"], name: "index_operator_actions_on_target_id", using: :btree
 
   create_table "operator_actions_groups", force: true do |t|
     t.integer  "operator_id"
