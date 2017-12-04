@@ -813,7 +813,7 @@
         $scope.sendLearningData = function() {
             var data = undefined;
 
-            if(window.fullAiFromBackend) {
+            if(window.fullAiFromBackend && $scope.trustMode === 'trusted') {
                 data = {
                     suggestions_status: _.map($scope.fullAiFromBackendSlots, function(slot) {
                         var result = {};
