@@ -205,8 +205,8 @@
                         end: realEnd,
                         calendar_login_username: $scope.getCalendar().initialData.default_calendar_login_username,
                         calendar_login_type: $scope.getCalendar().initialData.default_calendar_login_type,
-                        calendar_login_email: $scope.getCalendar().initialData.email//,
-                        //trackingId: slotToAccept.trackingId
+                        calendar_login_email: $scope.getCalendar().initialData.email,
+                        trackingId: 'full-ai-from-backend'
                     });
                     $scope.getCalendar().$selector.find('#calendar').fullCalendar('renderEvent', eventData, true);
                 });
@@ -813,16 +813,29 @@
         $scope.sendLearningData = function() {
             var data = undefined;
 
-            if(window.fullAiFromBackend && $scope.trustMode === 'trusted') {
+            if(window.fullAiFromBackend) {
                 data = {
-                    suggestions_status: _.map($scope.fullAiFromBackendSlots, function(slot) {
-                        var result = {};
-                        result[slot] = true;
-                        return result;
-                    }),
-                    id: $scope.AIsuggestionsTrackingId,
-                    operator_id: $('body').data('operatorId'),
-                    classification: window.classification
+                        suggestions_status: _.map($scope.fullAiFromBackendSlots, function(slot) {
+                            var result = {};
+                            if($scope.trustMode === 'trusted') {
+                                result[slot] = true;
+                            }
+                            else {
+                                var calendarEvents = currentCalendar.$selector.find("#calendar").fullCalendar("clientEvents", function (ev) {
+                                    return ev.start.isSame(slot) && ev.trackingId == 'full-ai-from-backend';
+                                });
+                                if(calendarEvents.length > 0) {
+                                    result[slot] = true;
+                                }
+                                else {
+                                    result[slot] = false;
+                                }
+                            }
+                            return result;
+                        }),
+                        id: $scope.AIsuggestionsTrackingId,
+                        operator_id: $('body').data('operatorId'),
+                        classification: window.classification
                 };
             } else {
                 if($scope.timeSlotsSuggestedByAi && $scope.timeSlotsSuggestedByAi.length > 0) {
