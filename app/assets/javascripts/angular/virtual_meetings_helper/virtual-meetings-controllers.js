@@ -980,6 +980,9 @@
                                 $scope.hideNonAvailableMessage();
                                 $scope.selectedVirtualResource = firstAvailableVr;
 
+                                // TODO :  $scope.selectedVirtualResource
+                                // set on $scope.currentConf.details
+
                                 // To update the form select option if we have triggered this function from the calendar events fetched callback
                                 if(!$scope.$$phase)
                                     $scope.$apply();

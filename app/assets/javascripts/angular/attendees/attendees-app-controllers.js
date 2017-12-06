@@ -1028,7 +1028,7 @@
 
         $scope.getAttendeesWithoutThreadOwner = function(){
             return _.filter($scope.attendees, function (a) {
-                return $scope.getThreadOwnerEmails().indexOf(a.email) == -1 && a.isPresent;
+                return $scope.getThreadOwnerEmails().indexOf(a.email) == -1 && (a.isPresent || a.status === 'optional');
             });
         };
 
