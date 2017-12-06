@@ -196,7 +196,7 @@
                           return appointment.kind === currentAppointment.kind
                       });
 
-                      var currentAddress = window.getCurrentAddressObject();
+                      var currentAddress = !currentAppointmentIsVirtual && window.getCurrentAddressObject();
 
                       if( (currentClientAppointment && currentClientAppointment.meeting_room_used) || (currentAddress && currentAddress.meeting_room_used) ) {
                             var initialConfiguration = {client: client.email, location: currentClientAppointment.default_address.address};
