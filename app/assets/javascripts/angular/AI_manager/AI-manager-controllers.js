@@ -623,40 +623,16 @@
         $scope.init = function() {
         };
 
-        $scope.verifyDates = function(params) {
-            return aIDatesVerificationService.verifyDates(params);
-        };
-
-        $scope.verifyDatesV2 = function(params) {
-            return aIDatesVerificationService.verifyDatesV2(params);
-        };
-
-        $scope.verifyDatesV3 = function(params) {
-            return aIDatesVerificationService.verifyDatesV3(params);
-        };
-
-        $scope.verifyDatesV4 = function(params) {
-            return aIDatesVerificationService.verifyDatesV4(params);
-        };
-
-        $scope.verifyDatesV5 = function(params) {
-            return aIDatesVerificationService.verifyDatesV5(params);
-        };
-
-        $scope.verifyDatesV6 = function(params) {
-            return aIDatesVerificationService.verifyDatesV6(params);
-        };
-
-        $scope.verifyDatesV7 = function(params) {
-            return aIDatesVerificationService.verifyDatesV7(params);
-        };
-
         $scope.verifyDatesV8 = function(params) {
             return aIDatesVerificationService.verifyDatesV8(params);
         };
 
         $scope.verifyDatesV9 = function(params) {
             return aIDatesVerificationService.verifyDatesV9(params);
+        };
+
+        $scope.verifyDatesV10 = function(params) {
+            return aIDatesVerificationService.verifyDatesV10(params);
         };
 
         $scope.verifyDatesWithVersion = function(apiVersion, params) {

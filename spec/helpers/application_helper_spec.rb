@@ -88,7 +88,6 @@ describe ApplicationHelper do
       let(:content) { "'bob@gmail.com'" }
       it { is_expected.to match_array(["bob@gmail.com"]) }
     end
-
   end
 
 end

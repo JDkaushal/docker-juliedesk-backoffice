@@ -1050,7 +1050,7 @@ class MessagesThread < ActiveRecord::Base
       last_cancellation = julie_actions.select{|ja|
         ja.deleted_event
       }.last
-
+      
       last_creation = julie_actions.select{|ja|
         ja.event_id
       }.last

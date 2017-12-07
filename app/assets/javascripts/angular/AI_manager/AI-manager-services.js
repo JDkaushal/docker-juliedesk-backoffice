@@ -74,103 +74,6 @@
     }]);
 
     app.service('aIDatesVerificationService', ['$http','$q', function($http, $q) {
-        this.verifyDates = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV2 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v2',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV3 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v3',
-                method: "POST",
-                data: params,
-                timeout: 20000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV4 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v4',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV5 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v5',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV6 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v6',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
-
-        this.verifyDatesV7 = function(params) {
-            return $http({
-                url: '/ai/dates_verification/verify_dates_v7',
-                method: "POST",
-                data: params,
-                timeout: 10000
-            }).then(function(response) {
-                return response.data;
-            }, function(httpError) {
-                console.log(httpError);
-                return {error: true, details: httpError};
-            });
-        };
 
         this.verifyDatesV8 = function(params) {
             return $http({
@@ -189,6 +92,20 @@
         this.verifyDatesV9 = function(params) {
             return $http({
                 url: '/ai/dates_verification/verify_dates_v9',
+                method: "POST",
+                data: params,
+                timeout: 10000
+            }).then(function(response) {
+                return response.data;
+            }, function(httpError) {
+                console.log(httpError);
+                return {error: true, details: httpError};
+            });
+        };
+
+        this.verifyDatesV10 = function(params) {
+            return $http({
+                url: '/ai/dates_verification/verify_dates_v10',
                 method: "POST",
                 data: params,
                 timeout: 10000

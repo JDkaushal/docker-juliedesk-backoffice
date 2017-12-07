@@ -20,16 +20,10 @@ class AiProxy
       send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
       dates_suggestions_auto_process_update: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggested_date_auto_process_update/' }.freeze,
 
-      verify_dates: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validate_dates/' }.freeze,
-      verify_dates_v2: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v2/calendar/validate_dates/' }.freeze,
-      verify_dates_v3: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/calendar/validate_dates/' }.freeze,
-      verify_dates_v4: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v4/calendar/validate_dates/' }.freeze,
-      verify_dates_v5: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v5/calendar/validate_dates/' }.freeze,
-      verify_dates_v6: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v6/calendar/validate_dates/' }.freeze,
-      verify_dates_v7: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v7/calendar/validate_dates/' }.freeze,
       verify_dates_v8: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v8/calendar/validate_dates/' }.freeze,
       verify_dates_v9: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v9/calendar/validate_dates/' }.freeze,
-      
+      verify_dates_v10: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v10/calendar/validate_dates/' }.freeze,
+
       verify_dates_versioned: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v%{api_version}/calendar/validate_dates/' }.freeze,
 
       calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,

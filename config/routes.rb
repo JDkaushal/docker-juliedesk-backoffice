@@ -236,15 +236,9 @@ Rails.application.routes.draw do
     end
 
     namespace :dates_verification do
-      post :verify_dates
-      post :verify_dates_v2
-      post :verify_dates_v3
-      post :verify_dates_v4
-      post :verify_dates_v5
-      post :verify_dates_v6
-      post :verify_dates_v7
       post :verify_dates_v8
       post :verify_dates_v9
+      post :verify_dates_v10
       post :verify_dates_with_version
     end
 

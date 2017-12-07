@@ -186,7 +186,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
             var filterCanVerifyV3 = canVerifyV3;
             var hasSelectedDatesToVerify = classificationForm.getSuggestedDateTimes().length > 0;
-            
+
             if (filterCanVerifyV3 && hasSelectedDatesToVerify) {
                 verifyParams.dates_to_check = [];
 
@@ -194,15 +194,15 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
                 });
 
-                aiDatesVerificationManager.verifyDatesV9($.extend({}, verifyParams)).then(
+                aiDatesVerificationManager.verifyDatesV10($.extend({}, verifyParams)).then(
                     function(response) {
-                        console.log('response Verify Dates V9', response);
+                        console.log('response Verify Dates V10', response);
                     }, function(error) {
-                        console.log('error Verify Dates V9', error);
+                        console.log('error Verify Dates V10', error);
                     }
                 );
 
-                aiDatesVerificationManager.verifyDatesV8($.extend({}, verifyParams)).then(
+                aiDatesVerificationManager.verifyDatesV9($.extend({}, verifyParams)).then(
                     function(response) {
                         var verifiedDatesByAI = undefined;
 
