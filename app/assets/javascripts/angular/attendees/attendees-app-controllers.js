@@ -1068,6 +1068,12 @@
             });
         };
 
+        $scope.getPresentOrOptionalAttendees = function(){
+            return _.filter($scope.attendees, function(a) {
+                return a.email && (a.isPresent || a.status === 'optional');
+            });
+        };
+
         // Usage
         // First create some filters
         // var filter1 = $scope.createAttendeesFilter('isPresent')(true)

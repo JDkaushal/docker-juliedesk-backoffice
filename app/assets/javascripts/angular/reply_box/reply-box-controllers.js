@@ -187,7 +187,7 @@
 
         function setDefaultRecipientsAskOrVerifyAvailabilities() {
 
-            var attendees = $scope.attendeesApp.getAttendeesWithEmailOnPresence(true);
+            var attendees = $scope.attendeesApp.getPresentOrOptionalAttendees();
             var partitionnedAttendeesWithThreadOwner = _.partition(attendees, function(a) {
                 return a.isThreadOwner;
             });
