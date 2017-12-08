@@ -60,8 +60,8 @@ describe ApplicationHelper do
     end
 
     context "when name contains numbers" do
-      let(:content) { "8765 <8765ttg@gmail.com>, Julie de Bourbon <julie.bourbon@hildebrandt-law.com>" }
-      it { is_expected.to match_array(["8765ttg@gmail.com", "julie.bourbon@hildebrandt-law.com"]) }
+      let(:content) { "8765 <8765ttg@gmail.com>, Julie de Company <julie.bourbon@some-company.com>" }
+      it { is_expected.to match_array(["8765ttg@gmail.com", "julie.bourbon@some-company.com"]) }
     end
 
     context "when name contains ⎪" do
@@ -87,6 +87,11 @@ describe ApplicationHelper do
     context "name starts with a '" do
       let(:content) { "'bob@gmail.com'" }
       it { is_expected.to match_array(["bob@gmail.com"]) }
+    end
+
+    context "when email contains a -" do
+      let(:content) { "bob.ma-boite@yopmail.com <bob.ma-boite@yopmail.com>" }
+      it { is_expected.to match_array(["bob.ma-boite@yopmail.com"]) }
     end
   end
 
