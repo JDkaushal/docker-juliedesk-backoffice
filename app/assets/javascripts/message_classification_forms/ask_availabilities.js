@@ -89,12 +89,12 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
 
     function canVerifyWithAiV3() {
 
-        var noMeetingRoom = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
+        //var noMeetingRoom = !$('#meeting-rooms-manager').scope().usingMeetingRoom;
         var noVirtualResources = !$('#virtual-meetings-helper').scope().usingVirtualResources();
         var allCalendarServer = everyClientUsingCalendarServer();
 
         return {
-            noMeetingRoom: noMeetingRoom,
+            //noMeetingRoom: noMeetingRoom,
             noVirtualResources: noVirtualResources,
             allCalendarServer: allCalendarServer
         };
@@ -202,73 +202,41 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     }
                 );
 
-                aiDatesVerificationManager.verifyDatesV9($.extend({}, verifyParams)).then(
-                    function(response) {
-                        var verifiedDatesByAI = undefined;
+                if(!meetingRoomsScope.usingMeetingRoom) {
+                    aiDatesVerificationManager.verifyDatesV9($.extend({}, verifyParams)).then(
+                        function(response) {
+                            var verifiedDatesByAI = undefined;
 
-                        if(!response.error && response.status != 'fail') {
-                            var verifiedDates = [];
-                            var now = moment();
-                            _.each(response.dates_validate, function (validatedDateDetails) {
-                                if (moment.tz(validatedDateDetails.date, 'UTC').isAfter(now)) {
-                                    // Add Z at the end of the date string to specify momentJS it is an utc date
-                                    verifiedDates.push(validatedDateDetails.date+'Z');
+                            if(!response.error && response.status != 'fail') {
+                                var verifiedDates = [];
+                                var now = moment();
+                                _.each(response.dates_validate, function (validatedDateDetails) {
+                                    if (moment.tz(validatedDateDetails.date, 'UTC').isAfter(now)) {
+                                        // Add Z at the end of the date string to specify momentJS it is an utc date
+                                        verifiedDates.push(validatedDateDetails.date+'Z');
+                                    }
+                                });
+
+                                if(verifiedDates.length > 0) {
+                                    // verifiedDates = _.sortBy(verifiedDates, function(date) {
+                                    //     return moment(date).valueOf();
+                                    // });
+
+                                    verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
+                                } else {
+                                    verifiedDatesByAI = {no_suitable_dates: true};
                                 }
-                            });
-
-                            if(verifiedDates.length > 0) {
-                                // verifiedDates = _.sortBy(verifiedDates, function(date) {
-                                //     return moment(date).valueOf();
-                                // });
-
-                                verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
                             } else {
-                                verifiedDatesByAI = {no_suitable_dates: true};
+                                var errorStr = response.error_code === 'AI_TIMEOUT' ? 'timeout' : 'fail';
+                                verifiedDatesByAI = {error_response:  errorStr, raw_response: JSON.stringify(response)};
                             }
-                        } else {
-                            var errorStr = response.error_code === 'AI_TIMEOUT' ? 'timeout' : 'fail';
-                            verifiedDatesByAI = {error_response:  errorStr, raw_response: JSON.stringify(response)};
+
+                            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
+                        }, function(error) {
+                            askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
                         }
-
-                        askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-                    }, function(error) {
-                        askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-                    }
-                );
-
-                // aiDatesVerificationManager.verifyDatesV7($.extend({}, verifyParams)).then(
-                //     function(response) {
-                //         var verifiedDatesByAI = undefined;
-                //
-                //         if(!response.error && response.status != 'fail') {
-                //             var verifiedDates = [];
-                //             var now = moment();
-                //             _.each(response.dates_validate, function (validated, date) {
-                //                 if (validated && moment.tz(date, 'UTC').isAfter(now)) {
-                //                     // Add Z at the end of the date string to specify momentJS it is an utc date
-                //                     verifiedDates.push(date+'Z');
-                //                 }
-                //             });
-                //
-                //             if(verifiedDates.length > 0) {
-                //                 verifiedDates = _.sortBy(verifiedDates, function(date) {
-                //                     return moment(date).valueOf();
-                //                 });
-                //
-                //                 verifiedDatesByAI = {verified_dates: verifiedDates, timezone: response.timezone};
-                //             } else {
-                //                 verifiedDatesByAI = {no_suitable_dates: true};
-                //             }
-                //         } else {
-                //             var errorStr = response.error_code === 'AI_TIMEOUT' ? 'timeout' : 'fail';
-                //             verifiedDatesByAI = {error_response:  errorStr, raw_response: JSON.stringify(response)};
-                //         }
-                //
-                //         askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: verifiedDatesByAI, message_classification_identifier: verifyParams.message_classification_identifier});
-                //     }, function(error) {
-                //         askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'http request failed'}, message_classification_identifier: verifyParams.message_classification_identifier});
-                //     }
-                // );
+                    );
+                }
             }
             else {
                 askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because ' + 'filterV3passed:' + filterCanVerifyV3 + ' hasSelectedDates:' + hasSelectedDatesToVerify}, message_classification_identifier: message_classification_identifier});

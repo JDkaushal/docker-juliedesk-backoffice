@@ -96,6 +96,8 @@ window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConsci
             successCallback(data);
         } else {
             askDateSuggestionsForm.sendFormConscienceLoading(false);
+            var error = new Error("putsCalendarInConscienceCache Aborted", window.location.href, "", {});
+            errorManager.sendError(error);
             errorCallback('No response (request most likely aborted');
         }
 
