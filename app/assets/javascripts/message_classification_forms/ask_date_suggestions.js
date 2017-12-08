@@ -90,9 +90,15 @@ window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConsci
     };
 
     aiDatesSuggestionsManagerScope.putsCalendarInConscienceCache(fetchParams).then(function(response) {
-        var data = response.data;
-        askDateSuggestionsForm.sendFormConscienceLoading(false);
-        successCallback(data);
+        if (response && response.data) {
+            var data = response.data;
+            askDateSuggestionsForm.sendFormConscienceLoading(false);
+            successCallback(data);
+        } else {
+            askDateSuggestionsForm.sendFormConscienceLoading(false);
+            errorCallback('No response (request most likely aborted');
+        }
+
     }, function(error) {
         askDateSuggestionsForm.sendFormConscienceLoading(false);
         errorCallback(error.status === 408 ? 'timeout' : 'error');
