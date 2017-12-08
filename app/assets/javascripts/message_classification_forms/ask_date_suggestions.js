@@ -75,7 +75,7 @@ window.classificationForms.askDateSuggestionsForm.prototype.putsCalendarInConsci
 
     var fetchParams = {
         account_email: window.threadAccount.email,
-        attendees: attendeesControllerScope.attendees,
+        attendees: attendeesControllerScope.getAttendeesOnPresence(true),
         thread_data: {
             appointment_nature: $("#appointment_nature").val(),
             location: $("#location").val(),
@@ -131,7 +131,7 @@ window.classificationForms.askDateSuggestionsForm.prototype.fetchDateSuggestions
         compute_linked_attendees: true,
         old_attendees: _.filter(window.threadComputedData.attendees, function(att) { return att.isPresent == 'true' }),
         n_suggested_dates: suggestionsToGet,
-        attendees: attendeesControllerScope.attendees,
+        attendees: attendeesControllerScope.getAttendeesOnPresence(true),
         message_id: $('.email.highlighted').data('message-id'),
         multi_clients: false,
         meeting_rooms_to_show: meetingRoomsToShow,

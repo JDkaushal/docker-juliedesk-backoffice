@@ -1457,7 +1457,7 @@
 
     window.getInfoPanelAttendees = function() {
         var contacts = angular.element($('#attendeesCtrl')).scope();
-        var attendees = contacts.attendees.slice();
+        var attendees = contacts.getDisplayedAttendees().slice();
         // We save every contact on the thread even those who will not attend
       _.each(attendees, function(attendee) {
         attendee.companyUpdated = attendee.companyAI && attendee.companyAI != attendee.company;

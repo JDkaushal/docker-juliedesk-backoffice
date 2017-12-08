@@ -259,7 +259,7 @@
                         account_email: window.threadAccount.email,
                         thread_data: window.threadComputedData,
                         n_suggested_dates: suggestionsToGet,
-                        attendees: $('#attendeesCtrl').scope().attendees,
+                        attendees: $('#attendeesCtrl').scope().getAttendeesOnPresence(true),
                         message_id: $('.email.highlighted').data('message-id'),
                         julie_action_id: window.julie_action_id,
                         multi_clients: false,
