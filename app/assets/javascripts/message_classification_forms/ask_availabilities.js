@@ -237,6 +237,9 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                         }
                     );
                 }
+                else {
+                    askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because ' + 'filterV3passed:' + filterCanVerifyV3 + ' hasSelectedDates:' + hasSelectedDatesToVerify + ' but meeting rooms were used'}, message_classification_identifier: message_classification_identifier});
+                }
             }
             else {
                 askAvailabilitiesForm.sendForm({passed_conditions: passedConditions, verifiedDatesByAI: {error_response: 'No call made because ' + 'filterV3passed:' + filterCanVerifyV3 + ' hasSelectedDates:' + hasSelectedDatesToVerify}, message_classification_identifier: message_classification_identifier});
