@@ -24,10 +24,14 @@ module WeeklyRecapHelper
     }
 
     messages_threads.select { |mt|
-      status_before_this_week = mt.messages.map(&:message_classifications).flatten.select { |mc| mc.created_at < params[:start_of_week] }.sort_by(&:created_at).map(&:thread_status).last
+      mcs = mt.messages.map(&:message_classifications).flatten
+      # When using an invitation_already_sent flow, the mt.computed_data_light[:attendees] is empty, as we do not fill the form up
+      scheduled_from_invitation = mcs.map(&:classification).include?(MessageClassification::INVITATION_ALREADY_SENT)
+
+      status_before_this_week = mcs.select { |mc| mc.created_at < params[:start_of_week] }.sort_by(&:created_at).map(&:thread_status).last
       params[:thread_statuses].include?(mt.current_status) &&
           (status_before_this_week.nil? || status_before_this_week != mt.current_status || params[:dont_check_status_has_changed_this_week]) &&
-          (mt.computed_data_light[:attendees].length > 0 || params[:dont_check_attendees_present]) &&
+          (mt.computed_data_light[:attendees].length > 0 || scheduled_from_invitation || params[:dont_check_attendees_present]) &&
           mt.messages.select { |m| !m.from_me }.length > 0
     }
   end
