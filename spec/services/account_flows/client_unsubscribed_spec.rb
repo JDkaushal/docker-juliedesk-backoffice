@@ -65,13 +65,20 @@ describe AccountFlows::ClientUnsubscribed do
         last_message_thread5_message = messages_threads[5].messages.sort_by{|m| m.received_at}.last
         last_message_thread8_message = messages_threads[8].messages.sort_by{|m| m.received_at}.last
 
+        account1 = Account.new
+        account1.email = 'titi@email.com'
+        account1.usage_name = 'titi le toto'
+        account1.email_aliases = []
+
         allow(messages_threads[3]).to receive(:get_last_message).and_return(last_message_thread3_message)
         allow(messages_threads[5]).to receive(:get_last_message).and_return(last_message_thread5_message)
         allow(messages_threads[8]).to receive(:get_last_message).and_return(last_message_thread8_message)
 
-        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread3_message.id, 'account_gone_unsubscribe.client', 'titi@email.com')
-        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread5_message.id, 'account_gone_unsubscribe.client', 'titi@email.com')
-        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread8_message.id, 'account_gone_unsubscribe.client', 'titi@email.com')
+        allow_any_instance_of(MessagesThread).to receive(:account).and_return(account1)
+
+        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread3_message.id, 'account_gone_unsubscribe.client', 'titi@email.com', account1.usage_name)
+        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread5_message.id, 'account_gone_unsubscribe.client', 'titi@email.com', account1.usage_name)
+        expect(AutoReplyAccountNoticeWorker).to receive(:enqueue).with(last_message_thread8_message.id, 'account_gone_unsubscribe.client', 'titi@email.com', account1.usage_name)
         expect(EmailServer).to receive(:archive_thread).exactly(3).times
 
         client_unsubscribed_flow.trigger

@@ -45,7 +45,7 @@ module MessagesThreadFlows
         client_emails_in_recipients = last_message_recipients & @messages_thread.account.all_emails
 
         unless @messages_thread.account_request_auto_email_sent
-          if  client_emails_in_recipients.present?
+          if client_emails_in_recipients.present?
             send_notice_email_to_old_client(last_message, client_emails_in_recipients.first)
           else
             send_notice_email_to_interlocutor(last_message, @messages_thread.account_email)
