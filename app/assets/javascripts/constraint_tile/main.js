@@ -133,6 +133,36 @@ function ConstraintTile($selector, params) {
 /*
  * Initial render
  */
+
+ConstraintTile.prototype.isValid = function() {
+    var validator = new ConstraintValidator(this.getData());
+    return validator.validate().valid;
+};
+
+ConstraintTile.prototype.validate = function() {
+    var constraintTile = this;
+    validationResult = new ConstraintValidator(this.getData()).validate();
+    constraintTile.valid = validationResult.valid;
+    return validationResult;
+};
+
+ConstraintTile.prototype.displayErrors = function(errors) {
+    var constraintTile = this;
+    errorFieldsMapping = { 'validateStartEndTime': '#startEndTimeError' }
+
+    constraintTile.$selector.find(".error").hide();
+    errors.forEach(function(error) {
+        errorFieldSelector = errorFieldsMapping[error];
+        if(errorFieldSelector)
+            constraintTile.$selector.find(errorFieldSelector).show();
+    });
+};
+
+ConstraintTile.prototype.hideErrors = function() {
+    this.$selector.find(".error").hide();
+};
+
+
 ConstraintTile.prototype.render = function() {
     var constraintTile = this;
 
@@ -455,6 +485,11 @@ ConstraintTile.prototype.initActions = function() {
 
     constraintTile.$selector.find(".from-ai-buttons .from-ai-button.reject").click(function() {
         constraintTile.$selector.remove();
+
+        // TODO: do that in a not dirty way
+        var index = window.contraintsTiles.indexOf(constraintTile);
+        if(index >= 0)
+            window.contraintsTiles.splice(index, 1);
     });
 
     constraintTile.$selector.find(".from-ai-buttons .from-ai-button.accept").click(function() {
@@ -464,6 +499,11 @@ ConstraintTile.prototype.initActions = function() {
 
     constraintTile.$selector.find(".remove-constraint-button").click(function() {
         constraintTile.$selector.remove();
+
+        // TODO: do that in a not dirty way
+        var index = window.contraintsTiles.indexOf(constraintTile);
+        if(index >= 0)
+            window.contraintsTiles.splice(index, 1);
     });
 
     constraintTile.$selector.find(".constraint-dates-days-of-week-container .day-of-week").click(function(e) {
@@ -497,18 +537,11 @@ ConstraintTile.prototype.initActions = function() {
 
 
     constraintTile.$selector.find(".expand-constraint-button").click(function() {
-        constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
-        constraintTile.expanded = true;
-        //constraintTile.$selector.find(".constraintDisabled").hide();
-        constraintTile.redrawSentence();
+        constraintTile.expand();
     });
 
     constraintTile.$selector.find(".minimize-constraint-button").click(function() {
-        constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
-        constraintTile.expanded = false;
-        if(constraintTile.disabled)
-            //constraintTile.$selector.find(".constraintDisabled").show();
-            constraintTile.redrawSentence();
+        constraintTile.minimize();
     });
 
     constraintTile.$selector.find(".clone-constraint-button").click(function() {
@@ -518,6 +551,37 @@ ConstraintTile.prototype.initActions = function() {
         }
     });
 };
+
+ConstraintTile.prototype.expand = function() {
+    var constraintTile = this;
+
+    if(constraintTile.$selector.find(".constraint-tile").hasClass("minimized"))
+        constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
+
+    constraintTile.expanded = true;
+    constraintTile.redrawSentence();
+};
+
+ConstraintTile.prototype.minimize = function() {
+    var constraintTile = this;
+
+    if(!constraintTile.$selector.find(".constraint-tile").hasClass("minimized"))
+        constraintTile.$selector.find(".constraint-tile").toggleClass("minimized");
+
+    constraintTile.expanded = false;
+    constraintTile.redrawSentence();
+};
+
+ConstraintTile.prototype.scrollTo = function(callback) {
+    var constraintTile = this;
+
+    $scrollable = constraintTile.$selector.closest('.scrollable');
+    $scrollable.animate({
+        scrollTop: $scrollable .scrollTop() + constraintTile.$selector.position().top - $('.message-container').height() - 5
+    }, 1000, function() { if(callback) callback() });
+};
+
+
 
 ConstraintTile.prototype.getAttendee = function() {
     var constraintTile = this;
@@ -577,17 +641,31 @@ ConstraintTile.prototype.redrawSentence = function() {
             sentence += "<br/>" + localize("constraints.from") + " <span class='time'>" + data.start_time + "</span> " + localize("constraints.to") + " <span class='time'>" + data.end_time + "</span><br/><span class='timezone'>" + data.timezone + "</span>";
         }
 
-        if(constraintTile.disabled && !constraintTile.expanded) {
+
+        validationResult = constraintTile.validate();
+        constraintTile.$selector.find(".constraintLayer").hide();
+        constraintTile.$selector.find(".constraintStatus").hide();
+
+        if(constraintTile.expanded) {
+            if(validationResult.valid)
+                constraintTile.hideErrors();
+            else
+                constraintTile.displayErrors(validationResult.errors);
+        }
+        else if(constraintTile.disabled) {
             constraintTile.$selector.find(".constraintDisabled").show();
-            constraintTile.$selector.find(".constraintStatus").hide();
 
             if(attendee.status === 'optional')
                 constraintTile.$selector.find(".constraintStatus.optionalStatus").show();
             else
                 constraintTile.$selector.find(".constraintStatus.notPresentStatus").show();
         }
-        else
-            constraintTile.$selector.find(".constraintDisabled").hide();
+        else {
+            if(!validationResult.valid) {
+                constraintTile.$selector.find(".constraintInvalid").show();
+                constraintTile.$selector.find(".constraintInvalid .constraintStatus").show();
+            }
+        }
     }
 
 
@@ -881,4 +959,28 @@ ConstraintTile.deployConstraints = function(data_entries, start_date, end_date, 
 
 
     return result;
+};
+
+var ConstraintValidator = function(constraintData) {
+    this.constraintData = constraintData;
+};
+
+ConstraintValidator.prototype.validators = ["validateStartEndTime"];
+
+ConstraintValidator.prototype.validate = function() {
+    var _self = this;
+    var validationErrors = this.validators
+            .map(function(validator) { return { validator: validator, valid: _self[validator]()} })
+            .filter(function(validationResult) { return !validationResult.valid });
+
+    return { valid: validationErrors.length === 0, errors: validationErrors.map(function(validationErrors) { return validationErrors.validator }) };
+}
+
+ConstraintValidator.prototype.validateStartEndTime = function() {
+    if(this.constraintData.start_time && this.constraintData.end_time) {
+        var startTime = this.constraintData.start_time + ':00';
+        var endTime = this.constraintData.end_time + ':00';
+        return Date.parse('01/01/2000 ' + startTime) < Date.parse('01/01/2000 ' + endTime);
+    }
+    return true;
 };

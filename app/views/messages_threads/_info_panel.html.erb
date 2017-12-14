@@ -235,6 +235,19 @@
         }
 
         $(".submit-classification").click(function () {
+
+            if(window.contraintsTiles) {
+                var invalidConstraints = window.contraintsTiles.filter(function(constraintTile) { return !constraintTile.valid });
+
+                if(invalidConstraints.length > 0) {
+                    invalidConstraints[0].scrollTo(function() {
+                        invalidConstraints.forEach(function(constraintTile) { constraintTile.minimize() });
+                    });
+                    return;
+                }
+            }
+
+
             var meetingRoomsManager = $('#meeting-rooms-manager').scope();
 
             if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.noFittingRooms) {
