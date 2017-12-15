@@ -608,13 +608,23 @@ class Message < ActiveRecord::Base
           thread_recipients.merge((message_recipients[:from] + message_recipients[:to] + message_recipients[:cc]).map{|recipient| recipient[:email]})
 
           unless message
-            m = messages_thread.messages.create server_message_id: server_message['id'],
-                                                received_at: DateTime.parse(server_message['date']),
-                                                reply_all_recipients: message_recipients.to_json,
-                                                from_me: server_message['from_me']
 
+            parsed_received_at = DateTime.parse(server_message['date'])
+            message_creation_params = {
+                server_message_id: server_message['id'],
+                received_at: parsed_received_at,
+                reply_all_recipients: message_recipients.to_json,
+                from_me: server_message['from_me']
+            }
+
+            # As we are now ordering messages threads on the homepage with the created_at date, we need to set it to the
+            # real received_at date so it is positioned properly on the homepage
+            if server_message['was_split']
+              message_creation_params[:created_at] = parsed_received_at
+            end
+
+            m = messages_thread.messages.create message_creation_params
             m.server_message = server_message
-
 
             # Added by Nico to interprete
             # We don't consider that a email sent by Julie means that the thread was updated
