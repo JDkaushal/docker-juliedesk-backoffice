@@ -51,6 +51,8 @@
                 var createEventRestaurantManagerSelectionSelect = $('.create-event-restaurant-booking-selection-select');
                 var createEventUsingRestaurantBookingCheckbox = $('.using-restaurant-booking-checkbox');
 
+                var restaurantBookingNotPossibleNode = $('#restaurant_booking_not_possible_widget');
+
                 $scope.attendeesManagerCtrl.$on('attendeesRefreshed', function(event, args) {
                     // We only update the attendees count accordindly of adding or deleting them when we havent saved the count yet
                     // Done so it does not override what we set earlier
@@ -120,6 +122,31 @@
                     }
 
                     $scope.formDisabled = !window.threadDataIsEditable;
+                };
+
+                $scope.checkDisplayBookingNotPossible = function() {
+                    var displayWarning = false;
+
+                    if ($scope.usingRestaurantBooking && window.currentEventTile && window.currentEventTile.event && window.currentEventTile.event.location) {
+                        var currentEventStartDate = window.currentEventTile.event.start;
+                        var now = moment();
+                        var currentDayOfWeek = now.day();
+
+                        var eventStartDateMinus72Hours = currentEventStartDate.subtract(72, 'hours');
+                        var eventStartDateMinus48Hours = currentEventStartDate.subtract(48, 'hours');
+                        var eventStartDateMinus24Hours = currentEventStartDate.subtract(24, 'hours');
+
+                        displayWarning = (currentDayOfWeek === 0 && now.isAfter(eventStartDateMinus72Hours)) ||
+                            (currentDayOfWeek === 1 && now.isAfter(eventStartDateMinus72Hours)) ||
+                            (currentDayOfWeek === 6 && now.isAfter(eventStartDateMinus48Hours)) ||
+                            ([2,3,4,5].indexOf(currentDayOfWeek) > -1 && now.isAfter(eventStartDateMinus24Hours))
+                    }
+
+                    if(displayWarning) {
+                        restaurantBookingNotPossibleNode.show();
+                    } else {
+                        restaurantBookingNotPossibleNode.hide();
+                    }
                 };
 
                 $scope.setDefaultState = function() {

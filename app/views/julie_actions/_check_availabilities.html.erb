@@ -98,6 +98,7 @@
 //                        return attendee.email;
 //                    });
                     window.otherEmails = [];
+                    $('#restaurant-booking-manager').scope().checkDisplayBookingNotPossible();
                 }
             }
             $(".messages-thread-info-panel .create-event-panel .suggested-date-time-container input[type='checkbox']").hide();
@@ -789,6 +790,8 @@
                 setTimeout(function () {
                     $(".left-column").animate({scrollTop: $(".reply-box").position().top + 30}, 300);
                 }, 1000);
+
+                $('#restaurant-booking-manager').scope().checkDisplayBookingNotPossible();
             });
 
             $.ajax({

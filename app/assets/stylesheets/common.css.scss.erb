@@ -63,6 +63,32 @@ body {
   background-color: #2EC094 !important;
   border-color: #2EC094 !important;
 }
+
+#restaurant_booking_not_possible_widget {
+  position: absolute;
+  right: 110px;
+  width: 400px;
+  bottom: 0px;
+  display: none;
+
+  .restaurant-booking-not-possible-wrapper {
+    background-color: #F7C88A;
+    padding-left: 40px;
+  }
+
+  .sprite {
+    background-image: url(<%= asset_path 'warning_red2x.png' %>);
+    background-repeat: no-repeat;
+    background-size: 33px 33px;
+    width: 33px;
+    height: 33px;
+    display: inline-block;
+    position: absolute;
+    left: 4px;
+    top: 3px;
+  }
+}
+
 .btn-primary, .btn-primary:hover {
   background-color: $darkBlue;
   border-color: $darkBlue;
