@@ -642,30 +642,26 @@ ConstraintTile.prototype.redrawSentence = function() {
         }
 
 
-        validationResult = constraintTile.validate();
-        constraintTile.$selector.find(".constraintLayer").hide();
-        constraintTile.$selector.find(".constraintStatus").hide();
+        constraintTile.$selector.find(".constraintLayer, .constraintStatus").hide();
 
         if(constraintTile.expanded) {
+            validationResult = constraintTile.validate();
+
             if(validationResult.valid)
                 constraintTile.hideErrors();
             else
                 constraintTile.displayErrors(validationResult.errors);
         }
-        else if(constraintTile.disabled) {
+        else if(constraintTile.valid === false){
+            constraintTile.$selector.find(".constraintInvalid, .constraintInvalid .constraintStatus").show();
+        }
+        else if(constraintTile.disabled){
             constraintTile.$selector.find(".constraintDisabled").show();
+            statusSelector = attendee.status === 'optional' ? ".constraintStatus.optionalStatus" : ".constraintStatus.notPresentStatus";
+            constraintTile.$selector.find(statusSelector).show();
+        }
+        else {  }
 
-            if(attendee.status === 'optional')
-                constraintTile.$selector.find(".constraintStatus.optionalStatus").show();
-            else
-                constraintTile.$selector.find(".constraintStatus.notPresentStatus").show();
-        }
-        else {
-            if(!validationResult.valid) {
-                constraintTile.$selector.find(".constraintInvalid").show();
-                constraintTile.$selector.find(".constraintInvalid .constraintStatus").show();
-            }
-        }
     }
 
 
