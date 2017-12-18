@@ -643,16 +643,15 @@ ConstraintTile.prototype.redrawSentence = function() {
 
 
         constraintTile.$selector.find(".constraintLayer, .constraintStatus").hide();
+        validationResult = constraintTile.validate();
 
         if(constraintTile.expanded) {
-            validationResult = constraintTile.validate();
-
             if(validationResult.valid)
                 constraintTile.hideErrors();
             else
                 constraintTile.displayErrors(validationResult.errors);
         }
-        else if(constraintTile.valid === false){
+        else if(validationResult.valid === false){
             constraintTile.$selector.find(".constraintInvalid, .constraintInvalid .constraintStatus").show();
         }
         else if(constraintTile.disabled){
