@@ -9,6 +9,11 @@ class GeoZonesController < ActionController::Base
             'REGION DE NAMUR',
             'CANTONS DE L\'EST',
             'PERIPHERIE DE LIEGE'
+        ],
+        'yacine@juliedesk.com' => [
+            'REGION DE NAMUR',
+            'CANTONS DE L\'EST',
+            'PERIPHERIE DE LIEGE'
         ]
     }
     client_specific_zones = (all_client_specific_zones["#{params[:account_email]}"] || []).select{|zone|
