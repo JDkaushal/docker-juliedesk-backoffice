@@ -240,7 +240,9 @@
         $scope.getSchedulingEvent = function() {
             $scope.schedulingEventProperties.aiMetadata = {};
             $scope.schedulingEventProperties.location = window.threadComputedData.location;
-            
+            $scope.schedulingEventProperties.start = {dateTime: "2018-01-10T12:30:00.000Z"};
+            $scope.schedulingEventProperties.end = {dateTime: "2018-01-10T13:30:00.000Z"};
+
             $scope.computeSchedulingEventType();
             $scope.fetchSchedulingEventMetadata();
         };
