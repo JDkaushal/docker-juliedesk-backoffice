@@ -543,6 +543,13 @@ class MessagesThread < ActiveRecord::Base
       end
 
       last_message_classification = message_classifications.last
+      client_on_trip = last_message_classification.try(:client_on_trip)
+
+      if client_on_trip.blank?
+        client_on_trip = messages.map(&:message_interpretations).flatten.sort_by(&:updated_at).find { |mi| mi.question == 'main' }.try(:client_on_trip)
+        client_on_trip = nil unless client_on_trip.is_a?(Hash)
+      end
+
       appointment_nature = last_message_classification.try(:appointment_nature)
 
       begin
@@ -565,7 +572,7 @@ class MessagesThread < ActiveRecord::Base
           attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
           notes: last_message_classification.try(:notes),
           other_notes: last_message_classification.try(:other_notes),
-          client_on_trip: last_message_classification.try(:client_on_trip),
+          client_on_trip: client_on_trip,
 
           is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
 

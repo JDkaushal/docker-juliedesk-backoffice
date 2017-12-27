@@ -7,6 +7,8 @@ class MessageClassification < ActiveRecord::Base
 
   attr_accessor :ignore_linked_attendees
 
+  before_validation :clean_client_on_trip
+
   ASK_DATE_SUGGESTIONS     = "ask_date_suggestions"
   ASK_AVAILABILITIES       = "ask_availabilities"
   ASK_CANCEL_APPOINTMENT   = "ask_cancel_appointment"
@@ -439,5 +441,13 @@ class MessageClassification < ActiveRecord::Base
 
   def thread_status_suggestion current_thread_status
 
+  end
+
+  private
+
+  def clean_client_on_trip
+    if self.client_on_trip.present?
+      self.client_on_trip.delete('from_ai')
+    end
   end
 end

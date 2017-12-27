@@ -1,7 +1,8 @@
-<div id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry' ng-class="{'linear-skip': !shouldShow }">
+<div ng-init="modified=false" id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry' ng-class="{'linear-skip': !shouldShow, 'ai': value.from_ai && !modified }">
     <div ng-show="!!shouldShow">
         <div class='checkbox-and-span'>
-            <input type='checkbox' ng-model='activated'/> <span>{{ localizedLabel }}</span>
+            <input id="clientOnTrip" class="custom" ng-change="modified=true" ng-class="{'ai': value.from_ai && !modified}" type='checkbox' ng-model='activated'/>
+            <label for="clientOnTrip">{{ localizedLabel }}</label>
         </div>
         <div ng-show="activated">
             <select ng-model="knownZones" class="form-control" ng-hide="true">
