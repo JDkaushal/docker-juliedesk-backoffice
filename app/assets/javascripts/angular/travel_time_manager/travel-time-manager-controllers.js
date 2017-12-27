@@ -240,8 +240,6 @@
         $scope.getSchedulingEvent = function() {
             $scope.schedulingEventProperties.aiMetadata = {};
             $scope.schedulingEventProperties.location = window.threadComputedData.location;
-            $scope.schedulingEventProperties.start = {dateTime: "2018-01-10T12:30:00.000Z"};
-            $scope.schedulingEventProperties.end = {dateTime: "2018-01-10T13:30:00.000Z"};
 
             $scope.computeSchedulingEventType();
             $scope.fetchSchedulingEventMetadata();
@@ -270,7 +268,8 @@
             }
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -//
             if(aiEventsMetadataManager) {
-                aiEventsMetadataManager.fetchSchedulingEventMetadata().then(function(response) {
+                // Using dummy start and end, for compatibility purpose
+                aiEventsMetadataManager.fetchSchedulingEventMetadata({dateTime: "2018-01-10T12:30:00.000Z"}, {dateTime: "2018-01-10T13:30:00.000Z"}).then(function(response) {
                     $scope.schedulingEventProperties.aiMetadata = response.scheduling_event;
                 })
             }

@@ -601,13 +601,15 @@
             });
         };
         
-        $scope.fetchSchedulingEventMetadata = function() {
+        $scope.fetchSchedulingEventMetadata = function(start, end) {
             return $scope.fetchMetadata({
                 events: [{
                     id: 'scheduling_event',
                     summary: window.threadComputedData.summary,
                     attendees: window.threadComputedData.attendees,
-                    location: window.threadComputedData.location
+                    location: window.threadComputedData.location,
+                    start: start,
+                    end: end
                 }],
                 calendar_login_username: window.threadComputedData.calendar_login_username
                 }
