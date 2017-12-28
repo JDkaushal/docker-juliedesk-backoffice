@@ -129,7 +129,7 @@
                 this.isFormValid = function(attendeesForm) {
                     var noFormError = jQuery.isEmptyObject(attendeesForm.email.$error);
                     var attendeeInForm = $scope.attendeesFormCtrl.attendeeInForm;
-                    var fullName = (!$.isEmptyObject(attendeeInForm) && attendeeInForm.fullName()) || '';
+                    var fullName = (!$.isEmptyObject(attendeeInForm) && attendeeInForm.fullName && attendeeInForm.fullName()) || '';
 
                    return noFormError && fullName.length > 0;
                 };
@@ -1395,7 +1395,7 @@
         };
 
         $scope.generateNewAttendee = function() {
-          return new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true});
+          return new Attendee({timezone: window.threadAccount.default_timezone_id, isPresent: true, status: 'present'});
         };
         //--------------------------------------------------------------------------------
 

@@ -7,9 +7,20 @@
       </div>
 
       <div ng-show="attendeesFormCtrl.isCurrentMode('update')">
-        <div class="row" style="margin-top: 10px;">
+        <div class="row" style="margin-top: 10px;position: relative">
           <div class="form-attendee-checkbox">
-            <%= check_box_tag :attendee_presence, '', true, {class: 'regular-checkbox', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.isPresent', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly'} %>
+            <div class="col-xs-2 btn-group attendeeStatus" uib-dropdown is-open="editAttendeeStatus.isopen" ng-init="initAttendeeStatus(attendeesFormCtrl.attendeeInForm)">
+              <button id="single-button" type="button" class="" uib-dropdown-toggle ng-disabled="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">
+                <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'present'" class="fa fa-lg fa-check-circle" aria-hidden="true"></i>
+                <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'optional'" class="fa fa-lg fa-question-circle" aria-hidden="true"></i>
+                <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'not_present'" class="fa fa-lg fa-times-circle" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'present' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'present')" href="#"><i class="fa fa-lg fa-check-circle" aria-hidden="true"></i></a></li>
+                <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'optional' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'optional')" href="#"><i class="fa fa-lg fa-question-circle" aria-hidden="true"></i></a></li>
+                <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'not_present' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'not_present')" href="#"><i class="fa fa-lg fa-times-circle" aria-hidden="true"></i></a></li>
+              </ul>
+            </div>
           </div>
           <div class="attendee-form-picto col-xs-1 client-picto-contact" ng-show="attendeesFormCtrl.attendeeInForm.isClient">
             <%= image_tag 'client_picto.png', width: 30, height: 30 %>
@@ -43,7 +54,18 @@
 
     <div class="row" ng-show="attendeesFormCtrl.isCurrentMode('new')" ng-class="{'header-row notClient': !attendeesFormCtrl.attendeeInForm.isClient, 'header-row isClient': attendeesFormCtrl.attendeeInForm.isClient}">
       <div ng-class="{'attendee-checkbox new-form-checkbox': !attendeesFormCtrl.attendeeInForm.isClient, 'new-form-checkbox new-form-attendee-checkbox': attendeesFormCtrl.attendeeInForm.isClient}">
-        <%= check_box_tag :attendee_presence, '', true, {class: 'regular-checkbox', 'ng-model' => 'attendeesFormCtrl.attendeeInForm.isPresent'} %>
+        <div class="col-xs-2 btn-group attendeeStatus" uib-dropdown is-open="newAttendeeStatus.isopen" ng-init="initAttendeeStatus(attendeesFormCtrl.attendeeInForm)">
+          <button id="single-button" type="button" class="" uib-dropdown-toggle ng-disabled="attendeesFormCtrl.attendeeInForm.isThreadOwner || attendees_manager.readOnly">
+            <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'present'" class="fa fa-lg fa-check-circle" aria-hidden="true"></i>
+            <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'optional'" class="fa fa-lg fa-question-circle" aria-hidden="true"></i>
+            <i ng-if="attendeesFormCtrl.attendeeInForm.status == 'not_present'" class="fa fa-lg fa-times-circle" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+            <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'present' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'present')" href="#"><i class="fa fa-lg fa-check-circle" aria-hidden="true"></i></a></li>
+            <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'optional' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'optional')" href="#"><i class="fa fa-lg fa-question-circle" aria-hidden="true"></i></a></li>
+            <li ng-class="{ 'selectedStatus': attendeesFormCtrl.attendeeInForm.status == 'not_present' }" role="menuitem"><a ng-click="setStatus(attendeesFormCtrl.attendeeInForm, 'not_present')"href="#"><i class="fa fa-lg fa-times-circle" aria-hidden="true"></i></a></li>
+          </ul>
+        </div>
       </div>
       <div class="attendee-form-picto col-xs-1 client-picto-contact" ng-class="{'attendee-form-picto': !attendeesFormCtrl.attendeeInForm.isClient, 'new-attendee-form-picto': attendeesFormCtrl.attendeeInForm.isClient}" ng-show="attendeesFormCtrl.attendeeInForm.isClient">
         <%= image_tag 'client_picto.png', width: 30, height: 30 %>
