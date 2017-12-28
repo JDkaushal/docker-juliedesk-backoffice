@@ -18,7 +18,7 @@ class MessageInterpretation < ActiveRecord::Base
   end
 
   def client_on_trip
-    data = JSON.parse(self.raw_response || {})['client_on_trip']
+    data = JSON.parse(self.raw_response || "{}")['client_on_trip'] rescue nil
     data.merge!('from_ai' => true) if data.present?
     data
   end
