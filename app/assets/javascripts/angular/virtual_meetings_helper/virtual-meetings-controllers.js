@@ -734,55 +734,52 @@
 
                     if($scope.currentConf.details){
 
-                        if($scope.currentConf.target == 'custom'){
-                            content = $scope.currentConf.details;
-                            eventInstructions = content;
-                        }else{
-                            if ($scope.currentConf.support == 'mobile' || $scope.currentConf.support == 'landline'){
-                                var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
-
-                                if(attendeesWithoutAssistant.length == 2){
-                                    if($scope.currentConf.targetInfos.guid){
-                                        var guid = $scope.currentConf.targetInfos.guid.length == 36 ? $scope.currentConf.targetInfos.guid : parseInt($scope.currentConf.targetInfos.guid);
-
-                                        var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: guid}))[0];
-
-                                        content = localize("events.call_instructions.display_single_attendee", {
-                                            target_name: $scope.currentConf.targetInfos.name,
-                                            caller_name: caller.displayNormalizedName(),
-                                            details: $scope.currentConf.details
-                                        });
-                                    }
-                                }else{
-                                    content = localize("events.call_instructions.give_target_number", {
-                                        target_name: $scope.currentConf.targetInfos.name,
-                                        details: $scope.currentConf.details
-                                    });
-                                }
-
-                                eventInstructions = content;
-                            }
-                            else if($scope.currentConf.support == 'confcall' || $scope.currentConf.support == 'video_conference'){
-                                content = localize("events.call_instructions.give_confcall", {
-                                    target_name: $scope.currentConf.targetInfos.name,
-                                    details: $scope.currentConf.details
-                                });
-
-                                eventInstructions = localize("events.call_instructions.instructions_in_notes", {
-                                    locale: usedLocale
-                                });
-                            }
-                        }
-                    } else {
                         if($scope.selectedVirtualResource) {
                             content = localize("events.call_instructions.give_confcall", {
                                 target_name: $scope.currentConf.targetInfos.name,
                                 details: $scope.selectedVirtualResource['instructions_' + usedLocale]
                             });
+                        } else {
 
-                            //eventInstructions = localize("events.call_instructions.instructions_in_notes", {
-                            //    locale: window.threadComputedData.locale
-                            //});
+                            if($scope.currentConf.target == 'custom'){
+                                content = $scope.currentConf.details;
+                                eventInstructions = content;
+                            }else{
+                                if ($scope.currentConf.support == 'mobile' || $scope.currentConf.support == 'landline'){
+                                    var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
+
+                                    if(attendeesWithoutAssistant.length == 2){
+                                        if($scope.currentConf.targetInfos.guid){
+                                            var guid = $scope.currentConf.targetInfos.guid.length == 36 ? $scope.currentConf.targetInfos.guid : parseInt($scope.currentConf.targetInfos.guid);
+
+                                            var caller = _.without(attendeesWithoutAssistant, _.findWhere(attendeesWithoutAssistant,{guid: guid}))[0];
+
+                                            content = localize("events.call_instructions.display_single_attendee", {
+                                                target_name: $scope.currentConf.targetInfos.name,
+                                                caller_name: caller.displayNormalizedName(),
+                                                details: $scope.currentConf.details
+                                            });
+                                        }
+                                    }else{
+                                        content = localize("events.call_instructions.give_target_number", {
+                                            target_name: $scope.currentConf.targetInfos.name,
+                                            details: $scope.currentConf.details
+                                        });
+                                    }
+
+                                    eventInstructions = content;
+                                }
+                                else if($scope.currentConf.support == 'confcall' || $scope.currentConf.support == 'video_conference'){
+                                    content = localize("events.call_instructions.give_confcall", {
+                                        target_name: $scope.currentConf.targetInfos.name,
+                                        details: $scope.currentConf.details
+                                    });
+
+                                    eventInstructions = localize("events.call_instructions.instructions_in_notes", {
+                                        locale: usedLocale
+                                    });
+                                }
+                            }
                         }
                     }
 
@@ -979,6 +976,7 @@
                             if (firstAvailableVr) {
                                 $scope.hideNonAvailableMessage();
                                 $scope.selectedVirtualResource = firstAvailableVr;
+                                $scope.currentConf.details = 'Visio instructions';
 
                                 // TODO :  $scope.selectedVirtualResource
                                 // set on $scope.currentConf.details

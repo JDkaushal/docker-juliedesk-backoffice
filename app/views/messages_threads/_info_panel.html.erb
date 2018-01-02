@@ -1250,11 +1250,13 @@
     function locationIsSettled() {
       if(isCurrentAppointmentVirtual()) {
           var skypeLocationSettled = false;
+          var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
+
           if(window.getCurrentAppointment().kind == 'skype' && window.threadAccount.skype) {
               skypeLocationSettled = true;
           }
 
-          return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || skypeLocationSettled;
+          return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || skypeLocationSettled || (virtualMeetingHelper && !!virtualMeetingHelper.currentConf.details);
       }
 
       return locationFieldIsSet();
