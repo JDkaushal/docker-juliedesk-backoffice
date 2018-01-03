@@ -455,29 +455,29 @@
 
       message += messageBuilder.generateReply(messageParams1);
 
-      var data = {
-        event_id: window.currentEventId,
-        event_url: window.currentEventUrl,
-        calendar_id: window.currentCalendarId,
-        calendar_login_username: window.currentCalendarLoginUsername,
-        done: true,
-        messages_thread_id: "<%= @messages_thread.id %>",
-        event_booked_date: start.format(),
-        client_settings: window.getClientSettings()
-      };
+//      var data = {
+//        event_id: window.currentEventId,
+//        event_url: window.currentEventUrl,
+//        calendar_id: window.currentCalendarId,
+//        calendar_login_username: window.currentCalendarLoginUsername,
+//        done: true,
+//        messages_thread_id: "<%= @messages_thread.id %>",
+//        event_booked_date: start.format(),
+//        client_settings: window.getClientSettings()
+//      };
 
-      if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
-        data.using_meeting_room = true;
-        //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
-        data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
-      }
+//      if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
+//        data.using_meeting_room = true;
+//        //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
+//        data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
+//      }
 
-      data.virtual_resource_used = 'undefined';
+      //data.virtual_resource_used = 'undefined';
       if(vmHelper && vmHelper.isVirtualAppointment()) {
         if(vmHelper.selectedVirtualResource !== undefined) {
-          data.notes_updated = $('#notes').val();
+          //data.notes_updated = $('#notes').val();
 
-          data.virtual_resource_used = vmHelper.selectedVirtualResource;
+          //data.virtual_resource_used = vmHelper.selectedVirtualResource;
           virtualResourcesUsed = true;
         }
       }
@@ -491,7 +491,7 @@
           else
             call_instructions = window.threadComputedData.call_instructions;
 
-          data['call_instructions'] = call_instructions;
+          //data['call_instructions'] = call_instructions;
 
           angular.element($('#attendeesCtrl')).scope().confirmAIOnPresentAttendees();
           // We resynchronize the contacts when updating the event in case we updated the call instructions of one of them
@@ -598,18 +598,17 @@
 
             if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {
               data.using_meeting_room = true;
-              //data.meeting_room_details = {selected_meeting_room: meetingRoomsManager.selectedRoom};
               data.meeting_room_details = meetingRoomsManager.getMeetingRoomDetails();
             }
 
             data.virtual_resource_used = 'undefined';
             if(vmHelper && vmHelper.isVirtualAppointment()) {
-                if(vmHelper.selectedVirtualResource !== undefined) {
-                  data.notes_updated = $('#notes').val();
+              if(vmHelper.selectedVirtualResource !== undefined) {
+                data.notes_updated = $('#notes').val();
 
-                  data.virtual_resource_used = vmHelper.selectedVirtualResource;
-                  virtualResourcesUsed = true;
-                }
+                data.virtual_resource_used = vmHelper.selectedVirtualResource;
+                virtualResourcesUsed = true;
+              }
             }
 
             if(window.threadComputedData.is_virtual_appointment){

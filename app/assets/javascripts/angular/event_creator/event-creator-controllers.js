@@ -84,7 +84,53 @@
             });
 
             if(filteredDates.length > 0) {
-                $scope.selectedDateRaw = filteredDates[0];
+                var selectedDate = filteredDates[0];
+
+                $scope.selectedDateRaw = selectedDate;
+                var roomsToBook = $scope.verifiedDatesByAi.meetingRoomsToBook[selectedDate];
+
+                if(roomsToBook && roomsToBook.length > 0) {
+                    var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+                    var meetingRoomsDetails = [];
+                    meetingRoomsManager.usingMeetingRoom = true;
+                    var accounts = $('#accounts-list-section').scope().accounts
+                    var allAddresses = _.flatten(_.map(accounts, function(acc) {
+                        var clonedAddrs = JSON.parse(JSON.stringify(acc.addresses))
+                        _.each(clonedAddrs, function(addr) { addr.accountEmail = acc.email; })
+
+                        return clonedAddrs
+                    }));
+
+                    _.each(roomsToBook, function(roomToBook) {
+                        var currentRoom;
+                        var currentRoomLocation = _.find(allAddresses, function(addr) {
+                            currentRoom = _.find(addr.available_meeting_rooms, function(room) {
+                                return room.id == roomToBook;
+                            });
+                            return currentRoom;
+                        });
+
+                        meetingRoomsDetails.push({
+                            attendees_count_for_meeting_room: '1',
+                            client: currentRoomLocation.accountEmail,
+                            location: currentRoomLocation.address,
+                            room_selection_mode: $.extend(true, {}, currentRoom),
+                            selected_meeting_room: $.extend(true, {}, currentRoom)
+                        });
+                    });
+
+                    window.threadComputedData.meeting_room_details = meetingRoomsDetails;
+
+                    meetingRoomsManager.initialize(accounts);
+                    meetingRoomsManager.$apply();
+
+                    // Manually force the room availability for each widgets to true, so it will be picked up by the formatEventMeetingRoomDetails() method
+                    // on the meeting rooms manager
+                    _.each(meetingRoomsManager.widgets, function(widget) {
+                       widget.roomAvailable = true;
+                    });
+                }
+
                 window.createEventButtonClickHandler({forceTimezone: window.verifiedDatesByAi.timezone, createdFromAI: true});
             }
         };

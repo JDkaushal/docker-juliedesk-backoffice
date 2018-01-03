@@ -97,6 +97,8 @@
 
         // Used to bootstrap the app really (called in listener of the allAccountsFetched event of the client_account_tile app)
         $scope.initialize = function(clientsList) {
+            if($scope.initialized) return;
+
             // Deep Copy of the array;
             $scope.clientsList = JSON.parse(JSON.stringify(clientsList));
 
