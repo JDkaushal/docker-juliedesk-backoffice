@@ -153,6 +153,8 @@ module ApplicationHelper
     (non_flagged_errors_count * non_flagged_actions_count * 1.0 / non_flagged_reviewed_count)
     ) / actions_count
 
+    average_duration_in_seconds = OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration)
+
     {
         "Messages and threads": {
             "Incoming messages": incoming_messages_count,
@@ -163,25 +165,25 @@ module ApplicationHelper
             "Outgoing threads per client": (real_threads_count * 1.0 / active_clients_count).round(2)
         },
         "Delays": {
-            "Average delay": "#{(delays.inject{ |sum, el| sum + el } / delays.length).round(2)}'",
-            "Delays - p10": "#{self.percentile(delays, 0.10).round(2)}'",
-            "Delays - p25": "#{self.percentile(delays, 0.25).round(2)}'",
-            "Delays - median": "#{self.percentile(delays, 0.5).round(2)}'",
-            "Delays - p75": "#{self.percentile(delays, 0.75).round(2)}'",
-            "Delays - p90": "#{self.percentile(delays, 0.9).round(2)}'"
+            "Average delay": (delays.length == 0 ? "" : "#{(delays.inject{ |sum, el| sum + el } / delays.length).round(2)}'"),
+            "Delays - p10": "#{self.percentile(delays, 0.10).try(:round, 2)}'",
+            "Delays - p25": "#{self.percentile(delays, 0.25).try(:round, 2)}'",
+            "Delays - median": "#{self.percentile(delays, 0.5).try(:round, 2)}'",
+            "Delays - p75": "#{self.percentile(delays, 0.75).try(:round, 2)}'",
+            "Delays - p90": "#{self.percentile(delays, 0.9).try(:round, 2)}'"
         },
         "Performance": {
             "Operator hours": operator_hours_count,
-            "Messages per operator hour": (incoming_messages_count / operator_hours_count).round(2),
-            "Operator time per incoming message": "#{(operator_hours_count / incoming_messages_count * 60.0).round(2)}'",
-            "Operator time per outgoing thread": "#{(operator_hours_count / real_threads_count * 60.0).round(2)}'",
-            "Cost per client": "#{(operator_hours_count / active_clients_count * 4.6).round(2)}€"
+            "Messages per operator hour": operator_hours_count == 0 ? nil : (incoming_messages_count / operator_hours_count).round(2),
+            "Operator time per incoming message": incoming_messages_count == 0 ? "" : "#{(operator_hours_count / incoming_messages_count * 60.0).round(2)}'",
+            "Operator time per outgoing thread": real_threads_count == 0 ? "" : "#{(operator_hours_count / real_threads_count * 60.0).round(2)}'",
+            "Cost per client": active_clients_count == 0 ? "" : "#{(operator_hours_count / active_clients_count * 4.6).round(2)}€"
         },
         "Quality": {
             "Error rate": "#{(errors_rate * 100.0).round(2)}%"
         },
         "Other": {
-          "Operator time < 30' spent by thread": "#{(OperatorActionsGroup.where(operator_id: Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).select(:id).map(&:id)).where("initiated_at > ? AND initiated_at < ?", start_date, end_date).where("duration < ?", 30 * 60.0).average(:duration) / 60.0).round(2)}'",
+          "Operator time < 30' spent by thread": average_duration_in_seconds == nil ? "" : "#{(average_duration_in_seconds / 60.0).round(2)}'",
           "Missing request_at count": all_messages.count - messages.count,
         }
     }
