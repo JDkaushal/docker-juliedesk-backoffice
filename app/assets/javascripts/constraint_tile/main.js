@@ -141,6 +141,10 @@ ConstraintTile.prototype.isValid = function() {
 
 ConstraintTile.prototype.validate = function() {
     var constraintTile = this;
+
+    if(constraintTile.fromAI)
+        return { valid: true, errors: []};
+
     validationResult = new ConstraintValidator(this.getData()).validate();
     constraintTile.valid = validationResult.valid;
     return validationResult;
