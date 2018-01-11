@@ -322,13 +322,11 @@ ConstraintTile.prototype.redrawDatesContainer = function() {
 ConstraintTile.prototype.enable = function() {
     var constraintTile = this;
     constraintTile.disabled = false;
-    //constraintTile.$selector.find(".constraintDisabled").hide();
 };
 
 ConstraintTile.prototype.disable = function() {
     var constraintTile = this;
     constraintTile.disabled = true;
-    //constraintTile.$selector.find(".constraintDisabled").show();
 };
 
 
@@ -658,7 +656,7 @@ ConstraintTile.prototype.redrawSentence = function() {
         else if(validationResult.valid === false){
             constraintTile.$selector.find(".constraintInvalid, .constraintInvalid .constraintStatus").show();
         }
-        else if(constraintTile.disabled){
+        else if(constraintTile.disabled && !constraintTile.fromAI){
             constraintTile.$selector.find(".constraintDisabled").show();
             statusSelector = attendee.status === 'optional' ? ".constraintStatus.optionalStatus" : ".constraintStatus.notPresentStatus";
             constraintTile.$selector.find(statusSelector).show();
