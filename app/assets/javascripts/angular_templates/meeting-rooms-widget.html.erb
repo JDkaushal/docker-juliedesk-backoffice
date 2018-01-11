@@ -15,7 +15,7 @@
     <div class="widget-body-inside">
       <div class="location-text">Lieu</div>
 
-      <select id="location_select" class="form-control location-select" ng-model="roomLocation" ng-change="roomLocationChanged()" ng-options="location as location.label for location in locations" ng-disabled="formDisabled"></select>
+      <select id="location_select" class="form-control location-select" ng-model="roomLocation" ng-change="roomLocationChanged()" ng-options="location as location.label for location in locations track by location.address" ng-disabled="formDisabled"></select>
       <select id="room_selection_select" class="form-control" ng-options="room as room.summary for room in roomsList track by room.id" ng-change="roomSelectionModeChanged()" ng-model="roomsSelectionMode" ng-disabled="formDisabled"></select>
 
       <div ng-show="displayCustomSelectionFilters" class="filters-area">

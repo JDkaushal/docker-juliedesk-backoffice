@@ -230,4 +230,85 @@
         };
 
     }]);
+
+    app.controller('locationsClusterController', ['$scope', function($scope) {
+        $scope.currentAddress = window.getCurrentAddress();
+        $scope.clusterizedLocations = [];
+
+        $scope.getClusterizedLocations = function() {
+            var clusterizedTeamAddressIds = $scope.currentAddress.child_team_addresses_ids;
+            $scope.clusterizedLocations = _.filter(window.threadAccount.addresses, function(addr) {
+               return clusterizedTeamAddressIds.indexOf(addr.team_address_id) > -1;
+            });
+        };
+
+        $scope.determineLocation = function() {
+            $scope.getClusterizedLocations();
+            return $scope.determineFromMeetingRoom() || $scope.determineFromMainClientDefaultLocation() || $scope.determineFromSecondaryClientDefaultLocation() || $scope.fallbackOnLocationsCluster();
+        };
+
+        $scope.determineFromMeetingRoom = function() {
+            var meetingRoomsManager = $('#meeting-rooms-manager').scope();
+            var result = undefined;
+
+            // Only for physical appointments we will check the meeting room
+            if(!window.isCurrentAppointmentVirtual() && meetingRoomsManager) {
+                var meetingRoomsWidget = _.find(meetingRoomsManager.widgets, function(widget) {
+                    return widget.roomLocation.address == $scope.currentAddress.address;
+                });
+
+                if(meetingRoomsWidget && meetingRoomsWidget.reservationData && meetingRoomsWidget.reservationData.used) {
+                    var selectedRoomId = meetingRoomsWidget.reservationData.selected.id;
+
+                    var firstSuitableLocation = _.find($scope.clusterizedLocations, function(location) {
+                        var availableMeetingRoomsIds = _.map(location.available_meeting_rooms, function(room) {
+                            return room.id
+                        });
+
+                       return availableMeetingRoomsIds.indexOf(selectedRoomId) > -1;
+                    });
+
+                    if(firstSuitableLocation) {
+                        result = firstSuitableLocation;
+                    }
+                }
+            }
+
+            return result;
+        };
+
+        $scope.determineFromMainClientDefaultLocation = function() {
+            var result = undefined;
+            var mainClientDefaultLocation = window.threadAccount.main_address;
+
+            if($scope.currentAddress.child_team_addresses_ids.indexOf(mainClientDefaultLocation.team_address_id) > -1) {
+                result = mainClientDefaultLocation;
+            }
+
+            return result;
+        };
+
+        $scope.determineFromSecondaryClientDefaultLocation = function() {
+            var addressInCluster = undefined;
+            var accounts = $('#accounts-list-section').scope().accounts;
+            var secondaryClients = _.filter(accounts, function(acc) {
+                return acc.email == window.threadAccount.email;
+            });
+
+            var secondaryClientsMainAddresses = _.flatten(_.map(secondaryClients, function(client) {
+               return client.main_address;
+            }));
+
+            addressInCluster = _.find(secondaryClientsMainAddresses, function(addr) {
+               return $scope.currentAddress.child_team_addresses_ids.indexOf(addr.team_address_id) > -1
+            });
+
+            return addressInCluster;
+        };
+
+        $scope.fallbackOnLocationsCluster = function() {
+            return $scope.currentAddress;
+        };
+
+    }]);
 })();

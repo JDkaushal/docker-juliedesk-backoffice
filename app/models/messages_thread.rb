@@ -568,6 +568,7 @@ class MessagesThread < ActiveRecord::Base
           duration: last_message_classification.try(:duration) || 60,
           location_nature: last_message_classification.try(:location_nature),
           location: last_message_classification.try(:location),
+          cluster_specified_location: last_message_classification.try(:cluster_specified_location),
           call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
           attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
           notes: last_message_classification.try(:notes),

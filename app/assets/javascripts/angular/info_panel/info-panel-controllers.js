@@ -14,4 +14,27 @@
         };
         $scope.fetch();
     }]);
+
+    app.controller('locationsClusterController', ['$scope', function($scope) {
+        $scope.determineLocation = function() {
+            return $scope.determineFromMeetingRoom() || $scope.determineFromMainClientDefaultLocation() || $scope.determineFromSecondaryClientDefaultLocation() || $scope.fallbackOnLocationsCluster();
+        };
+        
+        $scope.determineFromMeetingRoom = function() {
+            
+        };
+        
+        $scope.determineFromMainClientDefaultLocation = function() {
+            
+        };
+        
+        $scope.determineFromSecondaryClientDefaultLocation = function() {
+            
+        };
+        
+        $scope.fallbackOnLocationsCluster = function() {
+            
+        };
+
+    }]);
 })();

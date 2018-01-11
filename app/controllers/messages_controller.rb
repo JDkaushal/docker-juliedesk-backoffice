@@ -93,8 +93,6 @@ class MessagesController < ApplicationController
   def classify
     initiated_time = Time.now
 
-
-
     @message = Message.find(params[:id])
     params[:operator] = session[:user_username]
 

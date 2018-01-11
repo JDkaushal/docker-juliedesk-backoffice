@@ -11,6 +11,7 @@
     window.currentJulieAlias = <%== @messages_thread.julie_alias.to_json %>;
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+    window.eventData = <%== messages_thread.event_data.to_json %>;
 
     setCurrentLocale(getDefaultLocale());
 
@@ -314,16 +315,16 @@
             timezoneId: window.threadComputedData.timezone,
             mode: "read_only",
             event: {},
-            eventId: "<%= messages_thread.event_data[:event_id] %>",
-            eventUrl: "<%= messages_thread.event_data[:event_url] %>",
-            calendarId: "<%= messages_thread.event_data[:calendar_id] %>",
+            eventId: window.eventData.event_id,
+            eventUrl: window.eventData.event_url,
+            calendarId: window.eventData.calendar_id,
             accountEmail: window.threadAccount.email,
             // For backslahes to work in JS
-            calendarLoginUsername: "<%= "#{@messages_thread.event_data[:calendar_login_username]}".gsub(/\\/, "\\\\\\\\") %>",
+            calendarLoginUsername: window.eventData.calendar_login_username.replace(/\\/g, "\\\\\\\\"),
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
-            eventFromInvitation: "<%= messages_thread.event_data[:event_from_invitation] %>",
-            eventFromInvitationOrganizer: "<%= messages_thread.event_data[:event_from_invitation_organizer] %>",
+            eventFromInvitation: window.eventData.event_from_invitation,
+            eventFromInvitationOrganizer: window.eventData.event_from_invitation_organizer,
             uxElement: 'form',
             doneEditingCallback: function() {
 
@@ -1079,6 +1080,7 @@
 
             if (window.threadComputedData.location_nature) {
                 $("select#location_nature").val(window.threadComputedData.location_nature);
+
                 var address = _.find(window.threadAccount.addresses, function (addressObject) {
                     return addressObject.label == $("select#location_nature").val();
                 });
@@ -1086,6 +1088,7 @@
                 if (address && address.kind != 'ask_interlocuter') {
                     $("input#location").val(address.address);
                 }
+                setClusterSpecifiedLocation(address);
             }
         }
     }
@@ -1161,7 +1164,10 @@
         _.each(window.threadAccount.addresses, function(addressObject) {
             if(addressObject.is_main_address) {
                 currentLabel = '[MAIN] ' + addressObject.label;
-            } else {
+            }  else if(addressObject.kind == 'locations_cluster') {
+                currentLabel = addressObject.label + ' (Campus)';
+            }
+            else {
                 currentLabel = addressObject.label;
             }
 
@@ -1336,12 +1342,36 @@
         if (address) {
             locationInputs.val(address.address);
             locatePlaceWithGoogle(address.address);
+            setClusterSpecifiedLocation(address);
         }
         else {
             locationInputs.val("");
         }
 
+
+
         setNotes();
+    }
+
+    function setClusterSpecifiedLocation(address) {
+        var specifiedLocationInput = $('input#cluster_specified_location');
+        var locationsInputs = $("input#location, input#event_location");
+
+        if(address.kind == 'locations_cluster') {
+            if(window.eventData && window.eventData.event_id) {
+                var specifiedLocationAddress = _.find(window.threadAccount.addresses, function(addr) {
+                   return addr.label == window.threadComputedData.cluster_specified_location;
+                });
+
+                specifiedLocationInput.val(specifiedLocationAddress.label);
+                locationsInputs.val(specifiedLocationAddress.address);
+            }
+
+
+            specifiedLocationInput.show();
+        } else {
+            specifiedLocationInput.hide();
+        }
     }
 
     // Used to get geographic coordinates of the specified place (like when the operator select the client registered address from the location drop down
@@ -1527,6 +1557,7 @@
             attendees = scope.getAttendeesWithMissingInfos(scope.getAttendeesOnPresence(true));
         }
 
+
         return attendees;
     };
 </script>
@@ -1693,6 +1724,7 @@
         <div class="location-part-container">
           <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
           <%= select_tag :location_nature, "", class: "data-entry form-control" %>
+          <%= text_field_tag :cluster_specified_location, "", class: "data-entry form-control", placeholder: 'Sélection auto du lieu', disabled: true %>
           <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
           <%= hidden_field_tag :location_coordinates %>
 

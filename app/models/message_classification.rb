@@ -115,7 +115,8 @@ class MessageClassification < ActiveRecord::Base
           passed_conditions: (params[:passed_conditions] || {}).to_json,
           language_level: last_classification_with_data.try(:language_level),
           asap_constraint: params[:asap_constraint],
-          identifier: params[:message_classification_identifier]
+          identifier: params[:message_classification_identifier],
+          cluster_specified_location: params[:cluster_specified_location]
       )
     else
       attendees = []
@@ -172,7 +173,8 @@ class MessageClassification < ActiveRecord::Base
           ignore_linked_attendees: params[:ignore_linked_attendees],
           language_level: params[:language_level],
           asap_constraint: params[:asap_constraint],
-          identifier: params[:message_classification_identifier]
+          identifier: params[:message_classification_identifier],
+          cluster_specified_location: params[:cluster_specified_location]
       )
     end
 

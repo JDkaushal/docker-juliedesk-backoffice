@@ -289,6 +289,10 @@ class JulieActionsController < ApplicationController
       message_classification_params_to_update[:notes] = params[:notes_updated]
     end
 
+    if params[:cluster_specified_location].present?
+      message_classification_params_to_update[:cluster_specified_location] = params[:cluster_specified_location]
+    end
+
     if params[:virtual_resource_used].present?
       if params[:virtual_resource_used] == 'undefined'
         message_classification_params_to_update[:virtual_resource_used] = nil

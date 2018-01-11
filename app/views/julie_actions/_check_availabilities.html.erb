@@ -275,12 +275,23 @@
             $(".calendar-container").addClass("minimized");
 
             var location = [];
+            var requestParams = {};
 
             if(meetingRoomManager && meetingRoomManager.usingMeetingRoom && meetingRoomManager.selectedRoom && meetingRoomManager.selectedRoom.id != 'auto_room_selection') {
               location.push(meetingRoomManager.selectedRoom.summary);
             }
 
-            location.push(window.threadComputedData.location);
+            var currentAddress = window.getCurrentAddressObject();
+
+            if(currentAddress && currentAddress.kind == 'locations_cluster') {
+                var locationsClusterManager = $('#locations_cluster_controller').scope();
+                var clusterSpecifiedLocation = locationsClusterManager.determineLocation();
+                location.push(clusterSpecifiedLocation.address);
+                requestParams.cluster_specified_location = clusterSpecifiedLocation.label;
+            } else {
+                location.push(window.threadComputedData.location);
+            }
+
 
             location = location.join(', ');
 
@@ -294,7 +305,7 @@
               emailInNotes = "\n\n" + textData.text;
             }
 
-            var requestParams = {};
+
 
             if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {
               requestParams['virtual_resource_id'] = vmHelper.selectedVirtualResource.id;
@@ -594,7 +605,8 @@
                 done: true,
                 messages_thread_id: "<%= @messages_thread.id %>",
                 event_booked_date: start.format(),
-                client_settings: window.getClientSettings()
+                client_settings: window.getClientSettings(),
+                cluster_specified_location: requestParams.cluster_specified_location
             };
 
             if(meetingRoomsManager && meetingRoomsManager.usingMeetingRoom && meetingRoomsManager.selectedRoom && meetingRoomsManager.selectedRoom.id != 'auto_room_selection') {

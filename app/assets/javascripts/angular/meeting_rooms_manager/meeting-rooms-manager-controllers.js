@@ -767,9 +767,15 @@
         };
 
         $scope.initLocations = function() {
-            $scope.locations = $.extend({}, _.filter($scope.client.addresses, function(address) {
+            $scope.locations = $.extend(true, [], _.filter($scope.client.addresses, function(address) {
                 return address.meeting_rooms_enabled;
             }));
+
+            _.each($scope.locations, function(location) {
+                if(location.kind == 'locations_cluster') {
+                    location.label = location.label + ' (Campus)';
+                }
+            });
         };
 
         $scope.shouldDisplayFields = function() {
