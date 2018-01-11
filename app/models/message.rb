@@ -281,7 +281,7 @@ class Message < ActiveRecord::Base
 
     julie_alias = current_messages_thread.julie_alias
     # In case the julie alias associated with the thread is not working, we will fallback to the main Julie for sending the automated message
-    unless julie_alias.can_send?
+    if email_type == AutomaticsEmails::Rules::TYPE_ACCESS_LOST_IN_THREAD_SHARED_CONNEXION || !julie_alias.can_send?
       julie_alias = JulieAlias.where(email: ENV['DEFAULT_JULIE_ALIAS_EMAIL']).first
     end
 
