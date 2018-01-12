@@ -46,7 +46,7 @@ class MessagesThread < ActiveRecord::Base
   BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
 
   def track_thread_in_inbox(from_inbox)
-    if Rails.env.production?
+    if !Rails.env.development? && !Rails.env.test?
       JuliedeskTrackerInterface.new.build_request(:track, {name: :thread_appeared_in_inbox, date:  Time.now.to_s, properties: {messages_thread_id: self.id, messages_count: self.messages_count, inbox_type: from_inbox}, distinct_id: "thread_#{self.id}_in_inbox"})
     end
   end

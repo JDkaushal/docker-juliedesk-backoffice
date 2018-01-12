@@ -226,7 +226,7 @@ class Message < ActiveRecord::Base
   # Should refactor it to a more generic automatics emails send function
   # email_type params should be :specific_email or anything else
   def send_account_notice_email(email_type, email_to_send_to = nil, client_usage_name = nil)
-    self.interprete if Rails.env.production?
+    self.interprete if !Rails.env.development? && !Rails.env.test?
 
     locale_to_use = self.message_interpretations.find{|mI| mI.question == 'main'}.try(:json_response).try(:[], 'language_detected') || :en
     current_messages_thread = self.messages_thread
