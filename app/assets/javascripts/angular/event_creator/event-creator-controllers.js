@@ -85,9 +85,12 @@
 
             if(filteredDates.length > 0) {
                 var selectedDate = filteredDates[0];
+                var roomsToBook = [];
 
                 $scope.selectedDateRaw = selectedDate;
-                var roomsToBook = $scope.verifiedDatesByAi.meetingRoomsToBook[selectedDate];
+
+                if($scope.verifiedDatesByAi.meetingRoomsToBook)
+                    roomsToBook = $scope.verifiedDatesByAi.meetingRoomsToBook[selectedDate];
 
                 if(roomsToBook && roomsToBook.length > 0) {
                     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
