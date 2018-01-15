@@ -1274,8 +1274,24 @@
     }
 
     function shouldAskLocation() {
-      return !locationIsDefined();
+      var locationDefined =  locationIsDefined();
+
+      // Do not ask location if it is missing for skype meeting and target is "client" (propose) (it will be asked as a complementary info)
+      if(isCurrentMeeting("skype") && !locationDefined && callTargetIs("client"))
+          return false;
+      else
+          return !locationDefined;
     }
+
+    function isCurrentMeeting(meetingType) {
+        return !!(window.getCurrentAppointment() && window.getCurrentAppointment().kind == meetingType);
+    }
+
+    function callTargetIs(target) {
+        return !!(window.threadComputedData && window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == target)
+    }
+
+
 
     function missingContactInfo() {
 
