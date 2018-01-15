@@ -1758,10 +1758,10 @@ function EventManager(options) { // assumed to be a calendar
 		if (allDay) {
 			// neither date should have a time
 			if (start.hasTime()) {
-				start.stripTime();
+				//start.stripTime();
 			}
 			if (end && end.hasTime()) {
-				end.stripTime();
+				//end.stripTime();
 			}
 		}
 		else {

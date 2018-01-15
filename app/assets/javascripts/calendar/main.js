@@ -1267,11 +1267,32 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
     var sstartTime = moment(startTime).tz(calendar.getCalendarTimezone()).format();
     var sendTime = moment(endTime).tz(calendar.getCalendarTimezone()).format();
 
-    // Dont zone non-booking hours and all day events
-    if(ev.calendar_login_type != 'EwsLogin' && (calendar.isFakeCalendarId(ev.calId) || (ev.all_day))) {
+
+    if(calendar.isFakeCalendarId(ev.calId)) {
         sstartTime = startTime;
         sendTime = endTime;
     }
+    else if(ev.all) {
+        var zoned_start_time = moment(startTime).tz(calendar.getCalendarTimezone());
+        var zoned_end_time   = moment(endTime).tz(calendar.getCalendarTimezone());
+
+        if (zoned_start_time.hour() <= 16) {
+        }
+        else {
+            zoned_start_time.add(1, 'days');
+        }
+
+
+        if(zoned_end_time.hour() >= 8) {
+        }
+        else {
+            zoned_end_time.subtract(1, 'days');
+        }
+
+        sstartTime = zoned_start_time.format();
+        sendTime = zoned_end_time.format();
+    }
+
 
     var eventCalendar = _.find(calendar.calendars, function(calendarItem) {
         return calendarItem.id == ev.calId && calendar.shouldDisplayCalendarItem(calendarItem);
