@@ -16,7 +16,7 @@
       $.ajax({
           url: "/api/v1/sent_messages_stats?start_date=" + startDate.format("YYYY-MM-DDT00:00:00") + "&end_date=" + endDate.format("YYYY-MM-DDT00:00:00"),
           beforeSend: function (xhr) {
-              xhr.setRequestHeader ("Authorization", <%= ENV['API_KEY'] %>);
+              xhr.setRequestHeader ("Authorization", "<%= ENV['API_KEY'] %>");
           },
           success: function(data) {
               console.log(data);
