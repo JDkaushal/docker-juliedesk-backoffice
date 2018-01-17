@@ -60,7 +60,7 @@ gem 'simple_segment'
 
 #gem "http", path: "../http"
 
-group :production, :production_ey, :release do
+group :production, :production_ey, :production_sg, :release do
   gem 'lograge', '0.4.1'
 end
 
