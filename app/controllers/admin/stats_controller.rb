@@ -1,7 +1,7 @@
 class Admin::StatsController < AdminController
-  skip_before_filter :only_admin, only: [:production, :production_ey]
-  before_filter :only_admin_or_manager, only: [:production, :production_ey]
-  
+  skip_before_filter :only_admin, only: [:production, :production_ey, :production_sg]
+  before_filter :only_admin_or_manager, only: [:production, :production_ey, :production_sg]
+
   def main
     params[:date] ||= DateTime.now.to_s
     date = DateTime.parse(params[:date])
