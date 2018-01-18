@@ -3,6 +3,7 @@
 <!-- For google Places and google Matrix Distance used to compute the travel time -->
 <%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?libraries=places&language=#{@messages_thread.computed_data[:locale]}&key=#{ENV['GOOGLE_API_KEY']}"%>
 <%= javascript_include_tag 'angular_info_panel_app' %>
+
 <script>
     <% @currentAttendees = messages_thread.compute_contacts %>
 
@@ -43,6 +44,13 @@
     var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
 
     var notesSpacingRe = new RegExp(/(?:__n){3,}/g);
+
+    window.infoPanelAppScope = function() {
+        return $("#info-panel-app-container-1").scope();
+    };
+    window.skypeForBusinessService = function() {
+        return window.infoPanelAppScope().skypeForBusinessService;
+    };
 
     $(document).ready(function() {
 

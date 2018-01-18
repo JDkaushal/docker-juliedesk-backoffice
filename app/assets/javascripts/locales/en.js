@@ -367,7 +367,8 @@ window.wordings['en'] = {
             display_single_attendee: "%{caller_name} to call %{target_name} at %{details}",
             instructions_in_notes: "Call instructions in the notes",
             give_confcall: "%{details}",
-            give_target_number: "Reach %{target_name} at %{details}"
+            give_target_number: "Reach %{target_name} at %{details}",
+            give_skype_for_business: "In order to join the Skype call, follow this link: %{details}"
         },
         notes: {
             address_details_boundary: 'Address-Details',
@@ -414,15 +415,12 @@ window.wordings['en'] = {
         common: {
             fill_info_in: "Please fill info in"
         },
-        ask_date_suggestions: {
-
-        },
+        ask_date_suggestions: {},
         ask_availabilities: {
             dates_identification: "Dates identification",
             suggested_dates: "Suggested dates"
         }
     },
-
     dates: {
         today: 'today',
         tomorrow: 'tomorrow'

@@ -14,7 +14,7 @@ var TemplateServiceManager = (function() {
         'client_names', 'timezones', 'default_timezone', 'locale', 'is_virtual', 'attendees', 'appointment_in_email',
         'location', 'location_in_email', 'location_is_settled', 'should_ask_location', 'missing_contact_info', 'date',
         'location_kind', 'restaurant_booking_activated', 'main_client_company', 'meeting_room_booked',
-        'meeting_rooms_details', 'linked_attendees', 'have_availabilities_of_everybody', 'julie_aliases', 'new_event'
+        'meeting_rooms_details', 'linked_attendees', 'have_availabilities_of_everybody', 'julie_aliases', 'new_event', 'skype_for_business_meeting_link_present'
       ],
       update_event: ['event', 'modifications', 'appointment_nature']
     };
@@ -90,6 +90,7 @@ window.generateEmailTemplateViaServicev2 = function (params) {
     return response.data;
   });
 };
+
 
 window.generateEmailTemplateViaService = function (params, callback) {
 

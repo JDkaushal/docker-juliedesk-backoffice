@@ -53,7 +53,8 @@ class Account
                 :subscribed,
                 :configuration_needed,
                 :state,
-                :user_id
+                :user_id,
+                :skype_for_business_meeting_generation_active
 
 
   RULE_VALIDATED = "rule_validated"
@@ -117,6 +118,8 @@ class Account
     account.configured = data['configured']
     account.subscribed = data['subscribed']
     account.state = data['state']
+
+    account.skype_for_business_meeting_generation_active = data['skype_for_business_meeting_generation_active']
 
     account.configuration_needed = !account.configured
 

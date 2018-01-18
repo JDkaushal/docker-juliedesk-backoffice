@@ -369,7 +369,8 @@ window.wordings['fr'] = {
             display_single_attendee: "%{caller_name} appelle %{target_name} au %{details}",
             instructions_in_notes: "Instructions d'appel dans les notes",
             give_target_number: "Appeler %{target_name} au %{details}",
-            give_confcall: "%{details}"
+            give_confcall: "%{details}",
+            give_skype_for_business: "Afin de rejoindre la conférence Skype, cliquez sur le lien suivant : %{details}"
         },
         notes: {
             address_details_boundary: 'Complément-Adresse',

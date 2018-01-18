@@ -355,7 +355,8 @@
               start_timezone: currentTimezone,
               end_timezone: currentTimezone,
               calendar_login_username: window.threadComputedData.calendar_login_username,
-              meeting_room: meetingRoomManager.getEventMeetingRoomDetails()
+              meeting_room: meetingRoomManager.getEventMeetingRoomDetails(),
+              create_skype_for_business_meeting: skypeForBusinessService().shouldCreateMeetingIfPossible() && skypeForBusinessService().canCreateMeeting()
             });
 
             if(isPostpone && !window.currentEventFromInvitation) {
@@ -745,7 +746,8 @@
               restaurant_booking_activated: window.threadComputedData.using_restaurant_booking,
               should_ask_location: window.shouldAskLocation(),
               timezones: eventCreatorManager.getUsedTimezones(),
-              new_event: !isPostpone
+              new_event: !isPostpone,
+              skype_for_business_meeting_link_present: e.data.skype_for_business_meeting_url != undefined
             };
 
             TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function(generatedTemplate) {

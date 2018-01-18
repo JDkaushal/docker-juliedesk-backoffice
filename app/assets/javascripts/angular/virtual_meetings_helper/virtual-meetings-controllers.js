@@ -234,6 +234,7 @@
                     var suffixLandline = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Landline' ? ' (défaut)' : '';
                     var suffixSkype = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Skype' ? ' (défaut)' : '';
                     var suffixConfcall = virtualMeetingsHelperCtrl.currentVAConfig.label == 'Confcall' ? ' (défaut)' : '';
+                    var suffixSfB = virtualMeetingsHelperCtrl.currentVAConfig.label == 'SKype for Business' ? ' (défaut)' : '';
 
                     var currentAccount = window.threadAccount;
 
@@ -241,7 +242,8 @@
                         {name:"Téléphone portable" + suffixMobile, value:'mobile'},
                         {name:"Téléphone fixe" + suffixLandline, value:'landline'},
                         //{name:"Skype" + suffixSkype, value:'skype'},
-                        {name:"Confcall" + suffixConfcall, value:'confcall'}
+                        {name:"Confcall" + suffixConfcall, value:'confcall'},
+                        {name:"Skype for Business" + suffixSfB, value:'skype_for_business'}
                     ];
 
                     if($scope.currentConf.target == 'client') {
@@ -417,6 +419,9 @@
                             case 'Skype':
                                 initialConfSupport = 'skype';
                                 break;
+                            case 'Skype for Business':
+                                initialConfSupport = 'skype_for_business';
+                                break;
                             case 'Confcall':
                                 initialConfSupport = virtualMeetingsHelperCtrl.currentBehaviour == 'propose' ? 'confcall' : '';
                                 break;
@@ -579,6 +584,12 @@
                                 case 'confcall':
                                     details = attendee.confCallInstructions;
                                     break;
+                                case 'skype_for_business':
+                                    if($scope.currentConf.target == 'client' &&
+                                            skypeForBusinessService().canCreateMeeting()) {
+                                        details = "$SKYPE_FOR_BUSINESS_MEETING_LINK_TO_BE_GENERATED$";
+                                    }
+                                    break;
                                 case 'video_conference':
                                     details = attendee.videoConferenceInstructions;
                                     break;
@@ -734,6 +745,8 @@
 
                     if($scope.currentConf.details){
 
+
+
                         if($scope.selectedVirtualResource) {
                             content = localize("events.call_instructions.give_confcall", {
                                 target_name: $scope.currentConf.targetInfos.name,
@@ -745,6 +758,7 @@
                                 content = $scope.currentConf.details;
                                 eventInstructions = content;
                             }else{
+
                                 if ($scope.currentConf.support == 'mobile' || $scope.currentConf.support == 'landline'){
                                     var attendeesWithoutAssistant = $scope.attendeesManagerCtrl.getAttendeesWithoutAssistant();
 
@@ -775,6 +789,15 @@
                                         details: $scope.currentConf.details
                                     });
 
+                                    eventInstructions = localize("events.call_instructions.instructions_in_notes", {
+                                        locale: usedLocale
+                                    });
+                                }
+                                else if($scope.currentConf.support == 'skype_for_business') {
+                                    content = localize('events.call_instructions.give_skype_for_business', {
+                                        target_name: $scope.currentConf.targetInfos.name,
+                                        details: $scope.currentConf.details
+                                    });
                                     eventInstructions = localize("events.call_instructions.instructions_in_notes", {
                                         locale: usedLocale
                                     });

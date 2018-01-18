@@ -2,7 +2,8 @@
 
     var app = angular.module('info-panel-app');
 
-    app.controller('blankInfoPanelController', ['$scope', function ($scope) {
+    app.controller('blankInfoPanelController', ['$scope', 'skypeForBusinessService', function ($scope, skypeForBusinessService) {
+        $scope.skypeForBusinessService = skypeForBusinessService;
         $scope.currentAppointmentIsVirtual = function() {
             var currentAppointment = window.getCurrentAppointment();
             return currentAppointment && currentAppointment.appointment_kind_hash.is_virtual;
