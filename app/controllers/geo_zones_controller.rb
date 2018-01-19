@@ -10,6 +10,12 @@ class GeoZonesController < ActionController::Base
             'CANTONS DE L\'EST',
             'PERIPHERIE DE LIEGE'
         ],
+        'julie.lebrun@engie.com' => [
+            'Zone Luxembourg',
+            'Zone Hainaut',
+            'Zone Namur+Hainaut',
+            'Zone Namur'
+        ],
         'yacine@juliedesk.com' => [
             'REGION DE NAMUR',
             'CANTONS DE L\'EST',
