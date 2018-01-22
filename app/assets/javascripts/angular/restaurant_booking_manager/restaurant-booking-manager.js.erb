@@ -128,13 +128,12 @@
                     var displayWarning = false;
 
                     if ($scope.usingRestaurantBooking && window.currentEventTile && window.currentEventTile.event && window.currentEventTile.event.location) {
-                        var currentEventStartDate = window.currentEventTile.event.start;
                         var now = moment();
                         var currentDayOfWeek = now.day();
 
-                        var eventStartDateMinus72Hours = currentEventStartDate.subtract(72, 'hours');
-                        var eventStartDateMinus48Hours = currentEventStartDate.subtract(48, 'hours');
-                        var eventStartDateMinus24Hours = currentEventStartDate.subtract(24, 'hours');
+                        var eventStartDateMinus72Hours = angular.copy(window.currentEventTile.event.start).subtract(72, 'hours');
+                        var eventStartDateMinus48Hours = angular.copy(window.currentEventTile.event.start).subtract(48, 'hours');
+                        var eventStartDateMinus24Hours = angular.copy(window.currentEventTile.event.start).subtract(24, 'hours');
 
                         displayWarning = (currentDayOfWeek === 0 && now.isAfter(eventStartDateMinus72Hours)) ||
                             (currentDayOfWeek === 1 && now.isAfter(eventStartDateMinus72Hours)) ||
