@@ -1,0 +1,147 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<h1>Performance</h1>
+
+
+<script>
+
+    var oneMoData = "<%= @one_mo_data %>";
+
+    var downloadTest = function(callback) {
+        var t0 = performance.now();
+        $.get("/performance/download_1mo", function(e) {
+            var t1 = performance.now();
+            callback(t1 - t0)
+        });
+    };
+
+    var uploadTest = function(callback) {
+        var t0 = performance.now();
+        $.post("/performance/upload", {a: oneMoData}, function(e) {
+            var t1 = performance.now();
+            callback(t1 - t0)
+        });
+    };
+
+    var insertRowsTest = function(callback) {
+        var myTable = $("<table>").attr("id", "my-table");
+        $("html").append(myTable);
+        var t0 = performance.now();
+        for(var i=0; i<1000; i++) {
+            $('#my-table').append('<tr><td>Yo</td></tr>');
+        }
+        var t1 = performance.now();
+        $('#my-table').remove();
+        callback(t1-t0);
+    };
+
+    var blankTest = function(callback) {
+        var t0 = performance.now();
+        $.get("/performance/blank", function(e) {
+            var t1 = performance.now();
+            callback(t1 - t0)
+        });
+    };
+
+    var severalTests = function(test, times, callback, currentResults) {
+        test(function(result) {
+            if(!currentResults) {
+                currentResults = [];
+            }
+            currentResults.push(result);
+            if(times === 1) {
+                callback(processResults(currentResults));
+            }
+            else {
+                severalTests(test, times-1, callback, currentResults);
+            }
+        });
+    };
+
+
+    var processResults = function(results) {
+
+        var sum = 0;
+        var min = -1;
+        var max = -1;
+        for(var i=0; i<results.length; i++) {
+            sum += results[i];
+            if(min === -1 || results[i] < min) {
+                min = results[i];
+            }
+            if(max === -1 || results[i] > max) {
+                max = results[i];
+            }
+        }
+        return {
+            count: results.length,
+            min: min,
+            max: max,
+            mean: sum * 1.0 / results.length
+
+        };
+    };
+
+    $(function() {
+
+    });
+
+    var toHtml = function(json) {
+        var result = [];
+        for(var k in json) {
+            var v = json[k];
+            result.push(k + ": " + v);
+        }
+        return result.join("<br/>");
+    };
+    function showPerf(timing) {
+
+        return {
+            time0FromPreviousDoc: timing.fetchStart - timing.navigationStart,
+            time1BeforeConnectionStart: timing.requestStart - timing.fetchStart,
+            time2BeforeFirstReponse: timing.responseStart - timing.requestStart,
+            time3Downloading: timing.responseEnd - timing.responseStart,
+            time4DomLoading: timing.loadEventEnd - timing.responseEnd
+        };
+
+    }
+
+
+    $(function() {
+        showPerf(performance.timing);
+        $(".test-category button").click(function() {
+            var testName = $(this).closest(".test-category").data("test-name");
+            var resultsDiv = $(this).closest(".test-category").find(".results");
+            resultsDiv.html("Processing...");
+            severalTests(window[testName], 50, function(results) {
+                resultsDiv.html(toHtml(results));
+            });
+        });
+    })
+</script>
+
+<div class="test-category" data-test-name="downloadTest">
+    <h3>Download 1mo of data</h3>
+    <button>Run test</button>
+
+    <p class="results"></p>
+</div>
+
+<div class="test-category" data-test-name="blankTest">
+    <h3>Download blank data</h3>
+    <button>Run test</button>
+    <p class="results"></p>
+</div>
+
+<div class="test-category" data-test-name="uploadTest">
+    <h3>Upload 1mo of data</h3>
+    <button>Run test</button>
+    <p class="results"></p>
+</div>
+
+<div class="test-category" data-test-name="insertRowsTest">
+  <h3>Insert 1000 rows</h3>
+  <button>Run test</button>
+  <p class="results"></p>
+</div>
+
+

@@ -17,6 +17,12 @@ Rails.application.routes.draw do
     end
   end
 
+  get 'performance', controller: :performance, action: :show
+  get 'performance/download_1mo', controller: :performance, action: :download_1mo
+  post 'performance/upload', controller: :performance, action: :upload
+  get 'performance/blank', controller: :performance, action: :blank
+
+
   resources :event_operator_interactions, only: [:create]
 
   resources :geo_zones, only: [] do
