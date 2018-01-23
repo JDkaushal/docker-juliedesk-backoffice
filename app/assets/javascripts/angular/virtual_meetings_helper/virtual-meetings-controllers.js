@@ -201,7 +201,7 @@
                     var everyConfig = _.compact(window.threadAccount.virtual_appointments_support_config.concat(window.threadAccount.virtual_appointments_company_support_config));
 
                     var config = _.filter(everyConfig, function(vaConfig){
-                        return (vaConfig.label || vaConfig.resource_type).toLowerCase() == configLabel;
+                        return (vaConfig.label || vaConfig.resource_type).toLowerCase().replace(/ /g, "_") == configLabel;
                     })[0];
 
                     if(config == undefined || config == null){

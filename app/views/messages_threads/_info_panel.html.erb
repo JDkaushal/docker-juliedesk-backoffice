@@ -1268,7 +1268,7 @@
           var skypeLocationSettled = false;
           var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
 
-          if(window.getCurrentAppointment().kind == 'skype' && window.threadAccount.skype) {
+          if(window.threadComputedData.call_instructions == 'skype' && window.threadAccount.skype) {
               skypeLocationSettled = true;
           }
 
