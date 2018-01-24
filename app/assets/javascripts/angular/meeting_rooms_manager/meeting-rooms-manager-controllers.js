@@ -199,8 +199,11 @@
                       });
 
                       var currentAddress = !currentAppointmentIsVirtual && window.getCurrentAddressObject();
+                      var currentAddressIsDefaultForAppointment = currentAddress && currentClientAppointment && currentAddress.address == currentClientAppointment.default_address.address;
+                      var meetingRoomsUsedForCurrentAppointment = currentClientAppointment && currentClientAppointment.meeting_room_used;
+                      var meetingRoomsUsedForCurrentAddress = currentAddress && currentAddress.meeting_room_used;
 
-                      if( (currentClientAppointment && currentClientAppointment.meeting_room_used) || (currentAddress && currentAddress.meeting_room_used) ) {
+                      if( (currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAppointment) || (!currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAddress) ) {
                             var initialConfiguration = {client: client.email, location: currentClientAppointment.default_address.address};
 
                             var usedRoom = defaultInitializationsService.getMeetingRoomToUse(currentClientAppointment || {}, currentAddress || {});

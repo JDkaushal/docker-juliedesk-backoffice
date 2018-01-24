@@ -915,7 +915,7 @@
 
             _.each($scope.attendees, function(a){
                 // In any case if the attendee's company is not set and it is not the threadOwner (even on his aliases), we will mark the informations in the notes
-                if(a.isPresent && ((a.company == '' && $scope.getThreadOwnerEmails().indexOf(a.email) == -1 ) || a.company != $scope.getThreadOwner().company)){
+                if(a.isPresent && $scope.getThreadOwnerEmails().indexOf(a.email) == -1){
                     if(a.hasCallingInformations()){
                         // In case if the first contacts doesn't have any informations so it doesn't print a carriage return
 
