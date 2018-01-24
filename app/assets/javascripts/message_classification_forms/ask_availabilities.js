@@ -194,16 +194,16 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                     verifyParams.dates_to_check.push(moment(date.date).utc().format("YYYY-MM-DDTHH:mm:ss"));
                 });
 
-                aiDatesVerificationManager.verifyDatesV11($.extend({}, verifyParams)).then(
-                    function(response) {
-                        console.log('response Verify Dates V11', response);
-                    }, function(error) {
-                        console.log('error Verify Dates V11', error);
-                    }
-                );
+                // aiDatesVerificationManager.verifyDatesV11($.extend({}, verifyParams)).then(
+                //     function(response) {
+                //         console.log('response Verify Dates V11', response);
+                //     }, function(error) {
+                //         console.log('error Verify Dates V11', error);
+                //     }
+                // );
 
                 if(!meetingRoomsScope.usingMeetingRoom) {
-                    aiDatesVerificationManager.verifyDatesV10($.extend({}, verifyParams)).then(
+                    aiDatesVerificationManager.verifyDatesV11($.extend({}, verifyParams)).then(
                         function(response) {
                             var verifiedDatesByAI = undefined;
 
