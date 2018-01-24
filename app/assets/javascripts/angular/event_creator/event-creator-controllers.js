@@ -7,13 +7,12 @@
         $scope.rawDatesToCheck = [];
         $scope.datesToCheck = [];
         $scope.datesManager = undefined;
+        $scope.accountsManager = undefined;
         $scope.selectedDate = undefined;
 
         $scope.hasDateOutOfBounds = false;
 
         $scope.doNotAskSuggestionsMode = false;
-
-
 
         $scope.verifiedDatesByAi = angular.copy(window.verifiedDatesByAi);
         $scope.aiDatesVerificationIsActive = window.featuresHelper.isFeatureActive('ai_dates_verification');
@@ -21,6 +20,9 @@
 
         $scope.meetingRoomsAvailabilities = [];
         $scope.canDisplayMeetingRoomsAvailabilities = false;
+
+        $scope.attendeesManagerReady = false;
+        $scope.accountsManagerReady = false;
 
 
         $scope.$watch('selectedDateRaw', function(newVal, oldVal) {
@@ -278,18 +280,34 @@
             return $('#dates-suggestion-manager').scope();
         };
 
+        $scope.getAccountsApp = function() {
+          return $('#accounts-list-section').scope();
+        };
+
         $scope.listenToEvents = function() {
             $scope.datesManager = $scope.getDatesManagerApp();
+            $scope.accountsManager = $scope.getAccountsApp();
 
             if(!!$scope.datesManager) {
-                $scope.datesManager.getAttendeesApp().$on('attendeesFetched', $scope.attendeesRefreshedActions);
+                $scope.datesManager.getAttendeesApp().$on('attendeesFetched', function() {
+                    $scope.attendeesManagerReady = true;
+                    $scope.initApp();
+                });
+            }
+            if(!!$scope.accountsManager) {
+                $scope.accountsManager.$on('allAccountsFetched', function() {
+                    $scope.accountsManagerReady = true;
+                    $scope.initApp();
+                });
             }
         };
 
-        $scope.attendeesRefreshedActions = function() {
-            $scope.init();
-            if(!$scope.$$phase)
-                $scope.$apply();
+        $scope.initApp = function() {
+            if($scope.accountsManagerReady && $scope.attendeesManagerReady) {
+                $scope.init();
+                if(!$scope.$$phase)
+                    $scope.$apply();
+            }
         };
 
         angular.element(document).ready(function() {
