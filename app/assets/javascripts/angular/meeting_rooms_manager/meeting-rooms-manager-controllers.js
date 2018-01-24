@@ -160,13 +160,20 @@
                 var newLocation = currentAddress.address;
                 that.data('prevValue', newLocation);
             }
-            
+
             $scope.cleanWidgets();
 
             //$scope.$broadcast('locationChanged', {prevValue: previousLocation, newValue: newLocation});
 
             $scope.addClientsIfNecessary();
             //$scope.checkMeetingRoomsActivation();
+
+            if($scope.widgets.length === 0) {
+                // Compute the newly selectionnable meeting rooms, that should now be equal to []
+                // Will trigger a calendar reload if necessary, thus correctly displaying the meeting rooms availabilities panel
+                $scope.computeAllSelectionnableMeetingRooms();
+            }
+
             $scope.$apply();
         });
         //
