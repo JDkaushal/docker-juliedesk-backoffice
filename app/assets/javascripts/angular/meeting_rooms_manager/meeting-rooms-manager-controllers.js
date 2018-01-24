@@ -789,7 +789,7 @@
 
             _.each($scope.locations, function(location) {
                 if(location.kind == 'locations_cluster') {
-                    location.label = location.label + ' (Campus)';
+                    location.label = '[Cluster] ' + location.label;
                 }
             });
         };

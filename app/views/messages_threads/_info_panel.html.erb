@@ -1166,11 +1166,13 @@
         _.each(window.threadAccount.addresses, function(addressObject) {
             if(addressObject.is_main_address) {
                 currentLabel = '[MAIN] ' + addressObject.label;
-            }  else if(addressObject.kind == 'locations_cluster') {
-                currentLabel = addressObject.label + ' (Campus)';
             }
             else {
                 currentLabel = addressObject.label;
+            }
+
+            if(addressObject.kind == 'locations_cluster') {
+                currentLabel = '[Cluster] ' + currentLabel;
             }
 
             $locationsSelect.append($("<option>").val(addressObject.label).html(currentLabel));
