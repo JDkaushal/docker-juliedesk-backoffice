@@ -608,7 +608,7 @@
                         return location.address === args.newValue;
                     });
 
-                    if($scope.roomLocation) {
+                    if($scope.roomLocation && $scope.roomLocation.meeting_room_used) {
                         $scope.roomLocationChanged();
                     } else {
                         $scope.deleteWidget();
