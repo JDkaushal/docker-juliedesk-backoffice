@@ -153,11 +153,17 @@
         //
         $('#location_nature, #location_nature_event').change(function(e) {
             var that = $(this);
-            var previousLocation = that.data('prevValue');
-            var newLocation = window.getCurrentAddressObject().address;
-            that.data('prevValue', newLocation);
+            // var previousLocation = that.data('prevValue');
+            var currentAddress = window.getCurrentAddressObject();
 
-            $scope.$broadcast ('locationChanged', {prevValue: previousLocation, newValue: newLocation});
+            if(currentAddress) {
+                var newLocation = currentAddress.address;
+                that.data('prevValue', newLocation);
+            }
+            
+            $scope.cleanWidgets();
+
+            //$scope.$broadcast('locationChanged', {prevValue: previousLocation, newValue: newLocation});
 
             $scope.addClientsIfNecessary();
             //$scope.checkMeetingRoomsActivation();
@@ -165,11 +171,11 @@
         });
         //
         $('#appointment_nature').change(function(e) {
-            $scope.cleanWidgets();
+            //$scope.cleanWidgets();
             
-            $scope.addClientsIfNecessary();
+            //$scope.addClientsIfNecessary();
 
-            $scope.$broadcast ('setDefaults');
+            //$scope.$broadcast ('setDefaults');
             $scope.$broadcast('appointmentTypeChanged');
 
             //$scope.checkMeetingRoomsActivation();
@@ -201,10 +207,10 @@
                       var currentAddress = !currentAppointmentIsVirtual && window.getCurrentAddressObject();
                       var currentAddressIsDefaultForAppointment = currentAddress && currentClientAppointment && currentAddress.address == currentClientAppointment.default_address.address;
                       var meetingRoomsUsedForCurrentAppointment = currentClientAppointment && currentClientAppointment.meeting_room_used;
-                      var meetingRoomsUsedForCurrentAddress = currentAddress && currentAddress.meeting_room_used;
+                      var meetingRoomsUsedForCurrentAddress = currentAddress && currentAddress.meeting_room_used && currentAddress.meeting_rooms_enabled;
 
                       if( (currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAppointment) || (!currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAddress) ) {
-                            var initialConfiguration = {client: client.email, location: currentClientAppointment.default_address.address};
+                            var initialConfiguration = {client: client.email, location: currentAddress.address};
 
                             var usedRoom = defaultInitializationsService.getMeetingRoomToUse(currentClientAppointment || {}, currentAddress || {});
 

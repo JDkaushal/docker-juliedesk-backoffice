@@ -1178,10 +1178,12 @@
         $locationsSelect.append($("<option>").val("Custom").html("Custom"));
         $locationsSelect.val("Custom");
         if (appointment && appointment.default_address) {
-            $locationsSelect.val(appointment.default_address.label).trigger('change');
+            $locationsSelect.val(appointment.default_address.label);
             // Used in meeting rooms, to get previous value after changes
             $locationsSelect.data('prevValue', appointment.default_address.address);
         }
+
+        $locationsSelect.trigger('change');
     }
 
     function setAppointmentValues() {

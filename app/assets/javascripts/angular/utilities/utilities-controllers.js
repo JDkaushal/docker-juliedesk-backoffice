@@ -292,7 +292,7 @@
             var addressInCluster = undefined;
             var accounts = $('#accounts-list-section').scope().accounts;
             var secondaryClients = _.filter(accounts, function(acc) {
-                return acc.email == window.threadAccount.email;
+                return acc.email != window.threadAccount.email;
             });
 
             var secondaryClientsMainAddresses = _.flatten(_.map(secondaryClients, function(client) {
