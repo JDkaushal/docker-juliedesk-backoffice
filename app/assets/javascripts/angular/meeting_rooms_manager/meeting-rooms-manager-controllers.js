@@ -530,7 +530,7 @@
         $scope.init();
     }]);
 
-    app.controller('meetingRoomsWidgetController', ['$scope', '$element', 'sharedProperties', 'defaultInitializationsService' , function($scope, $element, sharedProperties, defaultInitializationsService){
+    app.controller('meetingRoomsWidgetController', ['$scope', '$element', 'sharedProperties', 'defaultInitializationsService', 'meetingRoomsPrioritizationService' , function($scope, $element, sharedProperties, defaultInitializationsService, meetingRoomsPrioritizationService){
 
         var autoRoomMode = {id: 'auto_room_selection', summary: 'Sélection Auto Par Filtres'};
         var autoRoomModeWithFilters = {id: 'auto_room_selection|attendees_count', summary: 'Sélection Auto Par Filtres'};
@@ -889,14 +889,19 @@
         };
 
         $scope.orderAvailableRooms = function() {
-            $scope.availableRooms = _.sortBy($scope.availableRooms, function(room) {
-                return parseInt(room.capacity);
-            });
+            // Attempt to prioritize the rooms, if an error happen we fallback on the previous behaviour
+            try {
+                $scope.availableRooms = meetingRoomsPrioritizationService.prioritizeRooms($scope.client, angular.copy($scope.availableRooms));
+            } catch(e) {
+                console.error(e);
+                console.log('Fallbacking on capacity sorting for meeting rooms');
+                $scope.availableRooms = _.sortBy($scope.availableRooms, function(room) {
+                    return parseInt(room.capacity);
+                });
+            }
         };
 
         $scope.roomSelectionModeChanged = function() {
-
-
           // Clear the no fitting rooms for used filters message if necessary
           if($scope.roomsSelectionMode.id.indexOf('auto_room_selection') > -1) {
               $scope.determineFittingMeetingRooms();
@@ -1358,18 +1363,23 @@
                         available.push(currentAvailability);
                     });
 
+                    // Update 25 Janvier 2018
+                    // We do not shuffle the available rooms anymore, because we now use a prioritization system to order them.
+                    // As we now order the rooms from most prioritized to lesser prioritized and we always take the first room available
+                    // that means we will always book the most prioritized room
+
                     // We place the currently selected Room at the top of the availabilities so it get taken first if we check a new timeslot
-                    var selectedRoomId = ($scope.selectedRoom && $scope.selectedRoom.id) || null;
-                    var currentlySelectedRoom = undefined;
-                    if(selectedRoomId && available[0].id === selectedRoomId) {
-                        currentlySelectedRoom = available.shift();
-                    }
-
-                    available = _.sortBy(available, function(_) { return Math.random(); });
-
-                    if(currentlySelectedRoom) {
-                        available.unshift(currentlySelectedRoom);
-                    }
+                    // var selectedRoomId = ($scope.selectedRoom && $scope.selectedRoom.id) || null;
+                    // var currentlySelectedRoom = undefined;
+                    // if(selectedRoomId && available[0].id === selectedRoomId) {
+                    //     currentlySelectedRoom = available.shift();
+                    // }
+                    //
+                    // available = _.sortBy(available, function(_) { return Math.random(); });
+                    //
+                    // if(currentlySelectedRoom) {
+                    //     available.unshift(currentlySelectedRoom);
+                    // }
 
                     // Whenever we check for the currently selected room availability, we will not select automatically
                     // an available room if any (case when we changed the room in the select, this way the operator can

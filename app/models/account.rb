@@ -54,7 +54,8 @@ class Account
                 :configuration_needed,
                 :state,
                 :user_id,
-                :skype_for_business_meeting_generation_active
+                :skype_for_business_meeting_generation_active,
+                :preferred_meeting_rooms
 
 
   RULE_VALIDATED = "rule_validated"
@@ -114,6 +115,7 @@ class Account
     account.gender = data['gender']
     account.auto_date_suggestions = data['auto_date_suggestions']
     account.user_id = data['id']
+    account.preferred_meeting_rooms = data['preferred_meeting_rooms'] || []
 
     account.configured = data['configured']
     account.subscribed = data['subscribed']

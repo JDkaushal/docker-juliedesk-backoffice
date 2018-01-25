@@ -155,6 +155,12 @@
         $scope.computeAccountDisplayName = function(account) {
             return [$scope.computeAccountGender(account), account.full_name].join(' ');
         };
+
+        $scope.getAccount = function(accountEmail) {
+          return _.find($scope.accounts, function(account) {
+            return account.email === accountEmail;
+          });
+        };
     }]);
 
     $(function () {
