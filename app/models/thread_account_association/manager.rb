@@ -656,8 +656,21 @@ module ThreadAccountAssociation
       to_merge
     end
 
-    def get_company_users(company_name)
-      JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(company_name) || '[]')
+    def get_company_users(company_identifier)
+      users = []
+
+      if company_identifier.present?
+        # We check wether company_identifier is an array of ids, and fallback on previous flow if not (retro-compatibility)
+        if company_identifier.is_a?(Array)
+          company_identifier.each do |id|
+            users += JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(id) || '[]')
+          end
+        else
+          users = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(company_identifier) || '[]')
+        end
+      end
+
+      users
     end
 
     def find_clients_in_recipients
