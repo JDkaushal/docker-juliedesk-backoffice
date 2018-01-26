@@ -497,6 +497,8 @@ ConstraintTile.prototype.initActions = function() {
     constraintTile.$selector.find(".from-ai-buttons .from-ai-button.accept").click(function() {
         constraintTile.fromAI = false;
         constraintTile.setAIMode();
+        constraintTile.validate();
+        constraintTile.redrawSentence();
     });
 
     constraintTile.$selector.find(".remove-constraint-button").click(function() {
