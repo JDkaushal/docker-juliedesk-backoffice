@@ -13,13 +13,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                                                                         start_date: params[:start_date],
                                                                         end_date: params[:end_date]
                                                                     })['data']
-    data_from_analytics = Hash[inbox_counts_data.map do |k, v|
-        [k, {requests_count: v['count']}]
+    data = Hash[sent_messages_stats_data.map do |k, v|
+        [k, v.merge({requests_count: inbox_counts_data[k]['count']})]
     end]
 
     render json: {
         status: "success",
-        data: sent_messages_stats_data.merge(data_from_analytics)
+        data: data
     }
   end
 
