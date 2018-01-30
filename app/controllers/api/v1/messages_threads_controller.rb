@@ -14,7 +14,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
                                                                         end_date: params[:end_date]
                                                                     })['data']
     data = Hash[sent_messages_stats_data.map do |k, v|
-        [k, v.merge({requests_count: inbox_counts_data[k]['count']})]
+        [k, v.merge({requests_count: inbox_counts_data[k].try(:[], 'count')})]
     end]
 
     render json: {
