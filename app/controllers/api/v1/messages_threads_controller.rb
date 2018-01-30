@@ -10,7 +10,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
 
     inbox_counts_data = JuliedeskTrackerInterface.new.build_request(:inbox_counts,
                                                                     {
-                                                                        start_date: params[:start_date].to_s,
+                                                                        start_date: DateTime.parse(params[:start_date] + 12.hour).to_s,
                                                                         end_date: params[:end_date].to_s
                                                                     })['data']
     data_from_analytics = Hash[inbox_counts_data.map do |k, v|
