@@ -1,7 +1,8 @@
 class JuliedeskTrackerInterface < BaseApiCaller
 
   ENDPOINTS = {
-      track: {type: :post, url: '/api/v1/track'}.freeze
+      track: {type: :post, url: '/api/v1/track'}.freeze,
+      inbox_counts: {type: :get, url: '/api/v1/inbox_counts'}.freeze
   }.freeze
 
   def initialize

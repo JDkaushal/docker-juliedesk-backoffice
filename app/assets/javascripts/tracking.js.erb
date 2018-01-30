@@ -23,6 +23,31 @@ window.trackEvent = function(event, params, callback) {
     <% end %>
 };
 
+window.trackEvent = function(event, params, callback) {
+    <% if ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>
+    $.ajax({
+        type: 'POST',
+        url: '<%= ENV['BACKOFFICE_ANALYTICS_BASE_PATH'] %>/api/v1/track',
+        crossDomain: true,
+        data: {name: event, date: (new Date()).toISOString() , properties: params, distinct_id: params.distinct_id},
+        beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "<%= ENV['JD_BACKOFFICE_API_KEY'] %>");},
+        dataType: 'json',
+        success: function(responseData, textStatus, jqXHR) {
+            if(callback)
+                callback();
+        },
+        error: function (responseData, textStatus, errorThrown) {
+            if(callback)
+                callback();
+        }
+    });
+    <% else %>
+    if(callback) {
+        callback();
+    }
+    <% end %>
+};
+
 window.trackPing = function() {
     /*var date = new Date();
     $.get("https://jd-pinguin.herokuapp.com/").success(function(data) {

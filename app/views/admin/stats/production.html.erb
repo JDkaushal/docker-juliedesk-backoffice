@@ -19,7 +19,6 @@
               xhr.setRequestHeader ("Authorization", "<%= ENV['API_KEY'] %>");
           },
           success: function(data) {
-              console.log(data);
               redrawGraph(i, data.data);
           }
       });
@@ -35,7 +34,7 @@
           var time = moment(k);
           labels.push("");
 
-          counts.push(v.count);
+          counts.push(v.requests_count);
           delays.push(v.median_delay);
           forecastCounts.push(v.forecast_count);
           delayLimits.push(20);
