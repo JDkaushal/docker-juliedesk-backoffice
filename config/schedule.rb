@@ -30,5 +30,5 @@ every 1.minute, :roles => [:tasker] do
 end
 
 every 1.hour, :roles => [:tasker] do
-  #rake 'messages_threads:follow_up_check_routine'
+  rake 'messages_threads:follow_up_check_routine'
 end
