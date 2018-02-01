@@ -1359,7 +1359,7 @@
     function getCurrentEffectiveLocation() {
         var currentAddress = window.getCurrentAddressObject();
 
-        if(currentAddress.kind === 'locations_cluster' && window.threadComputedData.cluster_specified_location) {
+        if(currentAddress && currentAddress.kind === 'locations_cluster' && window.threadComputedData.cluster_specified_location) {
             currentAddress = _.find(window.threadAccount.addresses, function(addr) {
                 return addr.label === window.threadComputedData.cluster_specified_location;
             });
