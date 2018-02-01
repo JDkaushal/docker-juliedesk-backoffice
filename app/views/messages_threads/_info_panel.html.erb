@@ -1086,10 +1086,10 @@
                 });
 
                 if (address) {
-                    setClusterSpecifiedLocation(address);
                     if(address.kind != 'ask_interlocuter') {
                         $("input#location").val(address.address);
                     }
+                    setClusterSpecifiedLocation(address);
                 }
             }
         }
@@ -1311,8 +1311,6 @@
         return !!(window.threadComputedData && window.threadComputedData.call_instructions && window.threadComputedData.call_instructions.target == target)
     }
 
-
-
     function missingContactInfo() {
 
     }
@@ -1372,7 +1370,6 @@
                 specifiedLocationInput.val(specifiedLocationAddress.label);
                 locationsInputs.val(specifiedLocationAddress.address);
             }
-
 
             specifiedLocationInput.show();
         } else {
