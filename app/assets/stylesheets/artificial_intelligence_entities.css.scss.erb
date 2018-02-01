@@ -1,5 +1,12 @@
 $aiControlColor: #9013FE;
 $aiControlInputBorderColor: #D9AEFF;
+$aiControlInputShadowColor: #6B0CBE;
+
+$aiEntityLocationColor: #E2BA97;
+$aiEntityDurationColor: #82ed74;
+$aiEntityPhoneColor: #ACDDED;
+$aiEntityPhoneHighlightedColor: #189ACA;
+
 
 select.ai-need-control {
     color: $aiControlColor;
@@ -7,7 +14,7 @@ select.ai-need-control {
 input.ai-need-control {
     border-color: $aiControlInputBorderColor !important;
     border-width: 1px;
-    box-shadow: inset 1px 1px 4px 0px #6B0CBE ;
+    box-shadow: inset 1px 1px 4px 0px $aiControlInputShadowColor ;
 }
 label.ai-need-control {
     color: $aiControlColor !important;
@@ -22,7 +29,7 @@ label.ai-need-control {
         border-color: $aiControlInputBorderColor !important;
         border-width: 1px;
 
-        box-shadow: inset 1px 1px 4px 0px #6B0CBE ;
+        box-shadow: inset 1px 1px 4px 0px $aiControlInputShadowColor ;
     }
 }
 
@@ -56,8 +63,8 @@ label.ai-need-control {
 
     &.phone {
       color: black;
-        cursor: pointer;
-      background-color: #ACDDED;
+      cursor: pointer;
+      background-color: $aiEntityPhoneColor;
       border-radius: 5px;
       background-image: url(<%= asset_path 'phone_grey.png' %>);
       background-size: 8px 13px;
@@ -67,16 +74,16 @@ label.ai-need-control {
       }
 
       &.highlighted {
-        background-color: #189ACA;
+        background-color: $aiEntityPhoneHighlightedColor;
         color: white;
         background-image: url(<%= asset_path 'phone_white.png' %>);
       }
     }
 
     &.skype {
-        cursor: pointer;
+      cursor: pointer;
       color: black;
-      background-color: #ACDDED;
+      background-color: $aiEntityPhoneColor;
       border-radius: 5px;
       padding-right: 18px;
       background-image: url(<%= asset_path 'skype_grey.png' %>);
@@ -87,26 +94,29 @@ label.ai-need-control {
       }
 
       &.highlighted {
-        background-color: #189ACA;
+        background-color: $aiEntityPhoneHighlightedColor;
         color: white;
         background-image: url(<%= asset_path 'skype_white.png' %>);
       }
     }
 
-      &.time {
-          padding: 0;
-      }
+    &.time {
+        padding: 0;
+    }
 
     &.location {
         padding-right: 0px;
-        background-color: #E2BA97;
-        /*padding: 2px;*/
-        /*border-radius: 5px;*/
+        background-color: $aiEntityLocationColor;
+    }
+
+    &.address {
+      padding-right: 0px;
+      background-color: $aiEntityLocationColor;
     }
 
     &.duration {
         padding-right: 0px;
-        background-color: #82ed74;
+        background-color: $aiEntityDurationColor;
     }
   }
 }

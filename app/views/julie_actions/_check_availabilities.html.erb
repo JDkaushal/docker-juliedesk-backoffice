@@ -735,6 +735,13 @@
             var haveAllAvailibilities = !!window.threadComputedData.do_not_ask_suggestions;
             var linkedAttendeesActivated = window.classification == 'ask_date_suggestions' && window.julie_action_nature == "check_availabilities";
 
+            var usedLocation = requestParams.location;
+            var effectiveLocation = window.getCurrentEffectiveLocation();
+
+            if(usedLocation && effectiveLocation && effectiveLocation.address_complement) {
+                usedLocation += ' (' + effectiveLocation.address_complement + ')';
+            }
+
             var serviceParams = {
               template: 'send_invitations',
               appointment_in_email: currentAppointment.title_in_email,
@@ -747,7 +754,7 @@
               julie_aliases: window.getRecipientsJulieAliases(),
               linked_attendees: linkedAttendeesForService || [],
               locale: threadComputedData.locale,
-              location: requestParams.location,
+              location: usedLocation,
               location_in_email: locationInEmail,
               location_kind: currentAppointment.kind,
               location_is_settled: window.locationIsSettled(),

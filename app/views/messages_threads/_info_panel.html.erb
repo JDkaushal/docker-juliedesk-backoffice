@@ -1352,19 +1352,30 @@
             locationInputs.val("");
         }
 
-
-
         setNotes();
+    }
+
+    // Get the current Location, return the currently specified location if a locations_cluster is currently selected
+    function getCurrentEffectiveLocation() {
+        var currentAddress = window.getCurrentAddressObject();
+
+        if(currentAddress.kind === 'locations_cluster' && window.threadComputedData.cluster_specified_location) {
+            currentAddress = _.find(window.threadAccount.addresses, function(addr) {
+                return addr.label === window.threadComputedData.cluster_specified_location;
+            });
+        }
+
+        return currentAddress;
     }
 
     function setClusterSpecifiedLocation(address) {
         var specifiedLocationInput = $('input#cluster_specified_location');
         var locationsInputs = $("input#location, input#event_location");
 
-        if(address.kind == 'locations_cluster') {
+        if(address.kind === 'locations_cluster' && window.threadComputedData.cluster_specified_location) {
             if(window.eventData && window.eventData.event_id) {
                 var specifiedLocationAddress = _.find(window.threadAccount.addresses, function(addr) {
-                   return addr.label == window.threadComputedData.cluster_specified_location;
+                   return addr.label === window.threadComputedData.cluster_specified_location;
                 });
 
                 specifiedLocationInput.val(specifiedLocationAddress.label);
