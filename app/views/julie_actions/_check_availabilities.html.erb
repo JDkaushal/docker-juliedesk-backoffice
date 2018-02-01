@@ -288,6 +288,7 @@
                 var clusterSpecifiedLocation = locationsClusterManager.determineLocation();
                 location.push(clusterSpecifiedLocation.address);
                 requestParams.cluster_specified_location = clusterSpecifiedLocation.label;
+                window.threadComputedData.cluster_specified_location = requestParams.cluster_specified_location;
             } else {
                 location.push(window.threadComputedData.location);
             }
@@ -739,7 +740,10 @@
             var effectiveLocation = window.getCurrentEffectiveLocation();
 
             if(usedLocation && effectiveLocation && effectiveLocation.address_complement) {
-                usedLocation += ' (' + effectiveLocation.address_complement + ')';
+                // The backend returns a computed address_complement when on a user_team_address which as a user_specified_address_complement set
+                // This string looks like "address_complement ↵ user_defined_address_complement"
+
+                usedLocation += ' (' + effectiveLocation.address_complement.replace("\n", " | ") + ')';
             }
 
             var serviceParams = {
