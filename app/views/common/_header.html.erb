@@ -13,7 +13,7 @@
       });
   });
 </script>
-<div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] == "ey" ? "ey-skin" : nil %>">
+<div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] ? "#{ENV['SPECIFIC_TENANT']}-skin" : nil %>">
     <div class="sound-activator <%= (session[:sound_is_activated])?"activated":"" %>">
       <div class="sound-activated"></div>
       <div class="sound-disactivated"></div>

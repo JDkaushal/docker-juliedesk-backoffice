@@ -1,4 +1,4 @@
-<div class="header jd-global-header review <%= ENV['SPECIFIC_TENANT'] == "ey" ? "ey-skin" : nil %>">
+<div class="header jd-global-header review <%= ENV['SPECIFIC_TENANT'] ? "#{ENV['SPECIFIC_TENANT']}-skin" : nil %>">
   <% if params[:controller] == "turing_review/auto_message_classifications" %>
       <%= link_to action: :main do %>
           Julie Desk Backoffice <span class="dot ai"></span> Turing Review

@@ -1,4 +1,4 @@
-<div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] == "ey" ? "ey-skin" : nil %>">
+<div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] ? "#{ENV['SPECIFIC_TENANT']}-skin" : nil %>">
 
     <%= link_to "JD", "/", class: "home-link" %>
 

@@ -276,7 +276,7 @@
 
   <div class="left-column">
 
-    <div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] == "ey" ? "ey-skin" : nil %>"></div>
+    <div class="header jd-global-header <%= ENV['SPECIFIC_TENANT'] ? "#{ENV['SPECIFIC_TENANT']}-skin" : nil %>"></div>
 
     <div class="calendar-in-thread-details-container">
         <%= render template: "calendar/calendar" %>
