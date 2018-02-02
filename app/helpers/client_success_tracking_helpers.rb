@@ -43,6 +43,7 @@ class ClientSuccessTrackingHelpers
   def self.track(event_name, account_email, properties)
     analytics = SEGMENT_CLIENT
     account_id = Account.accounts_cache(mode: 'light').find{|email, infos| email.downcase == "#{account_email}".downcase}.try('[]', 1).try('[]', 'id')
+    account_id = account_id.to_s.prepend("#{ENV['SPECIFIC_TENANT']}-") if ENV['SPECIFIC_TENANT'].present?
 
     if account_id && analytics
       analytics.track(user_id: account_id, event: event_name, properties: properties)
