@@ -1262,11 +1262,11 @@
         };
 
         $scope.canConfCallFilter = function(roomCanConfCall) {
-            return roomCanConfCall === 'true';
+            return roomCanConfCall;
         };
 
         $scope.canVisioFilter = function(roomCanVisio) {
-            return roomCanVisio === 'true';
+            return roomCanVisio;
         };
 
         // $scope.setNewSelectedRoom = function(roomId) {
