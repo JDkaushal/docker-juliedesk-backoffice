@@ -320,7 +320,7 @@
             calendarId: window.eventData.calendar_id,
             accountEmail: window.threadAccount.email,
             // For backslahes to work in JS
-            calendarLoginUsername: window.eventData.calendar_login_username.replace(/\\/g, "\\\\\\\\"),
+            calendarLoginUsername: window.eventData.calendar_login_username, //.replace(/\\/g, "\\\\\\\\"),
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
             eventFromInvitation: window.eventData.event_from_invitation,
