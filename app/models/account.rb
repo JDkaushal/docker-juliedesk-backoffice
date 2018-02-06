@@ -55,7 +55,8 @@ class Account
                 :state,
                 :user_id,
                 :skype_for_business_meeting_generation_active,
-                :preferred_meeting_rooms
+                :preferred_meeting_rooms,
+                :sfb_instructions
 
 
   RULE_VALIDATED = "rule_validated"
