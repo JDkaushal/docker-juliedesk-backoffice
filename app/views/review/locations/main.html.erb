@@ -216,6 +216,7 @@
                     var element = $("#correction-" + location.id)[0];
                     element.focus();
                 });
+                location.corrected_sanitized = location.googlemaps_result
             }
             else {
                 location.corrected_sanitized = null;
