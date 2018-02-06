@@ -2,32 +2,32 @@ class AiProxy
   class TimeoutError < Exception ; end
 
   AI_ENDPOINTS = {
-      parse_human_civilities: { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v3/firstlastnames/' }.freeze,
-      initiate_planning:      { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/initiate/'}.freeze,
-      fetch_planning:         { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/get/'}.freeze,
-      fetch_forecast:         { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/planning/'}.freeze,
-      fetch_forecast_emails:  { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/forecastemails/'}.freeze,
-      ask_julia:              { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/julia/'}.freeze,
+      parse_human_civilities: { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v3/firstlastnames/" }.freeze,
+      initiate_planning:      { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/planning/initiate/"}.freeze,
+      fetch_planning:         { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/planning/get/"}.freeze,
+      fetch_forecast:         { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/planning/"}.freeze,
+      fetch_forecast_emails:  { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/forecastemails/"}.freeze,
+      ask_julia:              { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/julia/"}.freeze,
 
-      process_entity_main:    { type: :get, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/main/'}.freeze,
-      process_entity_entities:    { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v2/entities/'}.freeze,
+      process_entity_main:    { type: :get, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/main/"}.freeze,
+      process_entity_entities:    { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v2/entities/"}.freeze,
 
-      get_company_name:       { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/companynames/' }.freeze,
-      parse_sncf_ticket:      { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/parsersncf/'}.freeze,
+      get_company_name:       { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/companynames/" }.freeze,
+      parse_sncf_ticket:      { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/parsersncf/"}.freeze,
 
-      fetch_dates_suggestions: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggest_dates/' }.freeze,
-      puts_calendar_in_conscience_cache: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/list_events_cache/' }.freeze,
-      send_dates_suggestions_learning_data: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/validated_dates/' }.freeze,
-      dates_suggestions_auto_process_update: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/suggested_date_auto_process_update/' }.freeze,
+      fetch_dates_suggestions: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/suggest_dates/" }.freeze,
+      puts_calendar_in_conscience_cache: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/list_events_cache/" }.freeze,
+      send_dates_suggestions_learning_data: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/validated_dates/" }.freeze,
+      dates_suggestions_auto_process_update: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/suggested_date_auto_process_update/" }.freeze,
 
-      verify_dates_v8: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v8/calendar/validate_dates/' }.freeze,
-      verify_dates_v9: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v9/calendar/validate_dates/' }.freeze,
-      verify_dates_v10: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v10/calendar/validate_dates/' }.freeze,
-      verify_dates_v11: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v11/calendar/validate_dates/' }.freeze,
+      verify_dates_v8: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v8/calendar/validate_dates/" }.freeze,
+      verify_dates_v9: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v9/calendar/validate_dates/" }.freeze,
+      verify_dates_v10: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v10/calendar/validate_dates/" }.freeze,
+      verify_dates_v11: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v11/calendar/validate_dates/" }.freeze,
 
-      verify_dates_versioned: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v%{api_version}/calendar/validate_dates/' }.freeze,
+      verify_dates_versioned: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v%{api_version}/calendar/validate_dates/" }.freeze,
 
-      calendar_classification: { type: :post, url: ENV['CONSCIENCE_BASE_PATH'] + '/api/v1/calendar/classification/' }.freeze,
+      calendar_classification: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/classification/" }.freeze,
   }.freeze
 
   def self.get_endpoint(key, data)
