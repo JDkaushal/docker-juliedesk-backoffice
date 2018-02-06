@@ -90,6 +90,7 @@ class Account
     account.landline_number = data['landline_number']
     account.confcall_instructions = data['confcall_instructions']
     account.video_conference_instructions = data['video_conference_instructions']
+    account.sfb_instructions = data['sfb_instructions']
     account.skype = data['skype']
     account.means_of_transport = data['means_of_transport']
     account.only_admin_can_process = data['only_admin_can_process']
