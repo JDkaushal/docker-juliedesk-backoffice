@@ -521,6 +521,7 @@
                 mobile: window.threadAccount.mobile_number,
                 skypeId: window.threadAccount.skype,
                 confCallInstructions: window.threadAccount.confcall_instructions,
+                sfbInstructions: window.threadAccount.sfb_instructions,
                 videoConferenceInstructions: window.threadAccount.video_conference_instructions,
                 isPresent: true,
                 isClient: true,
