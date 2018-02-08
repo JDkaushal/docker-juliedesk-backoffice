@@ -587,7 +587,7 @@
                                 case 'skype_for_business':
                                     if($scope.currentConf.target == 'client' &&
                                             skypeForBusinessService().canCreateMeeting()) {
-                                        details = "$SKYPE_FOR_BUSINESS_MEETING_LINK_TO_BE_GENERATED$";
+                                        details = attendee.sfbInstructions || "$SKYPE_FOR_BUSINESS_MEETING_LINK_TO_BE_GENERATED$";
                                     }
                                     break;
                                 case 'video_conference':
