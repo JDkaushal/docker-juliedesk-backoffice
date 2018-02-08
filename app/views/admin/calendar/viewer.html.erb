@@ -1,6 +1,8 @@
 <%= javascript_include_tag "angular_calendar_viewer.js" %>
 
 <script>
+    window.accountsLastSync = {};
+
     var getAsAtDate = function () {
         if ($(".calendar-viewer-panel .buttons-inline .button.activated").data("val") == "as_at_date") {
             return $("#calendar-viewer-datepicker").val() + "T" + $("#calendar-viewer-timepicker").val() + ":00+00:00";
@@ -92,7 +94,15 @@
         };
 
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
+
+        // Run syn job if not synced or synced more than 5 minutes ago
+        var lastSyncJob = window.accountsLastSync[calendarParams.email];
+        var runSyncJob = !lastSyncJob || lastSyncJob < moment().subtract(5, 'minutes');
+
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, runSyncJob);
+        if(runSyncJob)
+            window.accountsLastSync[calendarParams.email] = moment();
+
         $(".calendar-container").addClass("visible");
     };
 
