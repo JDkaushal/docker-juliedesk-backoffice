@@ -79,6 +79,11 @@ module DashboardDataGenerator
 
     # Filter out messages_threads to process later on
     messages_threads = messages_threads.select do |mt|
+      if mt.account && mt.account.calendar_access_lost
+        false
+        next
+      end
+
       if mt.account && mt.account.company_hash
         working_hours = mt.account.company_hash['working_hours']
         timezone = mt.account.company_hash['timezone']

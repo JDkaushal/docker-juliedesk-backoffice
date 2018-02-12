@@ -126,6 +126,18 @@ describe DashboardDataGenerator do
                                                                          :"follow_up_messages_threads_main" => 0
                                                                      })
     end
+
+    context 'when we lost access to thread account calendar' do
+      let(:messages_thread) { FactoryGirl.create(:messages_thread_for_inbox_count_in_inbox, account_email: 'bob@juliedesk.com') }
+      before(:example) do
+        allow(Account).to receive(:users_with_lost_access).and_return([messages_thread.account_email])
+        allow(Account).to receive(:accounts_cache).and_return({messages_thread.account_email => {'email' => messages_thread.account_email, 'only_admin_can_process' => false, 'full_name' => 'f n'}})
+      end
+
+      subject { DashboardDataGenerator.generate_inbox_count_data }
+      it { is_expected.to include(count: 0) }
+
+    end
   end
 
   describe 'generate_operators_count_at_time_data' do
