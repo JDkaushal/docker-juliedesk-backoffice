@@ -97,6 +97,11 @@ function Calendar($selector, params, synchronize) {
     calendar.$selector.find(".global-loading").show();
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
+        if(synchronize && !calendar.isSynced()) {
+            calendar.triggerCalendarsSync();
+            alert("Calendars synchronization launched, please wait and try again.");
+            return;
+        }
 
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
         var aiDatesSuggestionsManager = $('#dates-suggestion-manager').scope();
@@ -106,8 +111,6 @@ function Calendar($selector, params, synchronize) {
             calendar.generateEventsToCheck(calendar.initialData.date_times);
 
             calendar.fullCalendarInit();
-            if(synchronize)
-                calendar.triggerCalendarsSync();
 
             // Don't ask AI for dates suggestions in the follow up contacts flow
             if(aiDatesSuggestionsManager) {
@@ -121,6 +124,36 @@ function Calendar($selector, params, synchronize) {
         });
     });
 }
+
+
+
+Calendar.prototype.isSynced = function() {
+  var calendar = this;
+  var synced = true;
+
+  for(var calendarLoginUsername in calendar.accountPreferences) {
+      var lastSyncDate;
+      var usingCalendarServer = calendar.accountPreferences[calendarLoginUsername].using_calendar_server;
+      var lastSyncDateStr = calendar.accountPreferences[calendarLoginUsername].last_sync_date;
+
+      if(!usingCalendarServer)
+          continue;
+
+      if(!lastSyncDateStr) {
+          synced = false;
+          break;
+      }
+
+      lastSyncDate = moment(lastSyncDateStr);
+      if(lastSyncDate < moment().subtract(4, 'minutes')) {
+          synced = false
+          break;
+      }
+  }
+
+  return synced;
+
+};
 
 Calendar.prototype.now = function() {
     var calendar = this;
