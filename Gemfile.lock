@@ -48,9 +48,9 @@ GEM
     airbrake-ruby (1.6.0)
     airbrussh (1.1.1)
       sshkit (>= 1.6.1, != 1.7.0)
-    angular-rails-templates (0.2.0)
-      railties (>= 3.1)
-      sprockets (~> 2)
+    angular-rails-templates (1.0.2)
+      railties (>= 4.2, < 6)
+      sprockets (>= 3.0, < 5)
       tilt
     angularjs-rails (1.5.0)
     arel (6.0.4)
@@ -158,7 +158,6 @@ GEM
       sprockets (>= 2.0.0)
       tilt (>= 1.2)
     hashdiff (0.3.0)
-    hike (1.2.3)
     http (2.0.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -328,15 +327,13 @@ GEM
       jquery-rails
       kaminari (~> 0.16.1)
       rails (>= 3.2)
-    sprockets (2.11.0)
-      hike (~> 1.2)
-      multi_json (~> 1.0)
-      rack (~> 1.0)
-      tilt (~> 1.1, != 1.3.0)
-    sprockets-rails (2.3.3)
-      actionpack (>= 3.0)
-      activesupport (>= 3.0)
-      sprockets (>= 2.8, < 4.0)
+    sprockets (3.7.1)
+      concurrent-ruby (~> 1.0)
+      rack (> 1, < 3)
+    sprockets-rails (3.2.1)
+      actionpack (>= 4.0)
+      activesupport (>= 4.0)
+      sprockets (>= 3.0.0)
     sshkit (1.11.3)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -375,7 +372,7 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake (~> 5.0)
-  angular-rails-templates
+  angular-rails-templates (~> 1.0.2)
   angularjs-rails
   aws-sdk (~> 2)
   better_errors

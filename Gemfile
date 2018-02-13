@@ -49,7 +49,7 @@ gem "redis"
 gem "nokogiri"
 gem "angularjs-rails"
 # To use angular templates steamlessly
-gem 'angular-rails-templates'
+gem 'angular-rails-templates', '~> 1.0.2'
 
 
 #gem "httpclient"
