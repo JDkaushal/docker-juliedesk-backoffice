@@ -16,8 +16,8 @@ ruby '2.2.0'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 4.0.3'
-gem "compass-rails", "~> 1.1.2"
+gem 'sass-rails', '~> 5.0.7'
+gem "compass-rails", "~> 3.0.2"
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
