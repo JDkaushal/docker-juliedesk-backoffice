@@ -10,7 +10,8 @@ Rails.application.config.assets.precompile += [
     "stats.css",
     "dashboard.css",
     "operators/sources.css",
-    "planning.css"
+    "planning.css",
+    "bootstrap_v4_only"
 ]
 Rails.application.config.assets.precompile += [
     "stats.js",

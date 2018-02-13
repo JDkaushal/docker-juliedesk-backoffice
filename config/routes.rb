@@ -133,6 +133,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :anonymised_messages_threads, only: [:index, :show]
+
     resources :julie_actions, only: [] do
       collection do
         get "list_errors", action: :list_errors

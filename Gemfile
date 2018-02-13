@@ -19,6 +19,8 @@ gem 'pg'
 gem 'sass-rails', '~> 5.0.7'
 gem "compass-rails", "~> 3.0.2"
 
+gem 'webpacker', '~> 3.2'
+
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 

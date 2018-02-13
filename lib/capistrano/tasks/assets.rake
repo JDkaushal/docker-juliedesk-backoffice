@@ -54,7 +54,7 @@ namespace :deploy do
       run_locally do
         with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
-          assets_directory = fetch(:assets_dir, "assets")
+          assets_directories = fetch(:assets_dirs, %w"assets packs")
 
           fetch(:infrastructures).each do |key,value|
             # Compilation
@@ -65,7 +65,9 @@ namespace :deploy do
                 # Support ROLE Env filtering
                 if (ENV['ROLES']).nil? || /#{value[:role]}/.match(ENV['ROLES'])
                   if role == value[:role]
-                    execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    assets_directories.each do |assets_directory|
+                      execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    end
                   end
                 end
               end

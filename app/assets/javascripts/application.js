@@ -17,6 +17,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
+
 //= require angular
 //= require angular_common_directives
 //= require angular_common_services
