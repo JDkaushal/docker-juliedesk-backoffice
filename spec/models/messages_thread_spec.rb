@@ -1238,7 +1238,7 @@ describe MessagesThread, :type => :model do
 
     context 'when tag is invalid' do
       let(:tag_to_add) { "unrecognized_tag" }
-      it { is_expected.to raise_exception }
+      it { is_expected.to raise_error("tag unrecognized_tag is not allowed") }
     end
 
     context 'when tag is "syncing"' do
@@ -1267,7 +1267,7 @@ describe MessagesThread, :type => :model do
 
     context 'when tag is invalid' do
       let(:tag_to_remove) { "unrecognized_tag" }
-      it { is_expected.to raise_exception }
+      it { is_expected.to raise_error("tag unrecognized_tag is not allowed") }
     end
 
     context 'when tag is "syncing"' do

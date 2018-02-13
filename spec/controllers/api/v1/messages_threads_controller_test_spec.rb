@@ -15,8 +15,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
       @mt1 = FactoryGirl.create(:messages_thread_with_messages, server_thread_id: 666)
     end
 
-    xit 'should return the correct context for the messages_thread' do
-      pending 'Waiting for reactivation'
+    it 'should return the correct context for the messages_thread' do
+      #pending 'Waiting for reactivation'
       get :messages_thread_context, id: 666
 
       expect(JSON.parse(response.body)).to eq({
@@ -61,13 +61,15 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "allowed_attendees"=>[],
                                                       "accounts_candidates_primary_list"=>[],
                                                       "accounts_candidates_secondary_list"=>[],
-                                                      "merging_account_candidates"=>[]
+                                                      "merging_account_candidates"=>[],
+                                                      "tags"=>[],
+                                                      "last_message_imported_at"=>nil
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
                                                         "id" => m.id,
                                                         "messages_thread_id" => m.messages_thread_id,
-                                                        "received_at" => nil,
+                                                        "received_at" => m.received_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
                                                         "created_at" => m.created_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
                                                         "updated_at" => m.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%3NZ'),
                                                         "archived" => m.archived,
@@ -75,7 +77,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                         "from_me" => m.from_me,
                                                         "server_message_id" => m.server_message_id,
                                                         "request_at" => nil,
-                                                        "allowed_attendees"=>[]
+                                                        "allowed_attendees"=>[],
+                                                        "auto_email_kind"=>nil
                                                     }
                                                   },
                                                   "messages_classifications" => @mt1.messages.map { |m|
@@ -123,7 +126,12 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "verified_dates_by_ai" => nil,
                                                               "annotated_reply"=>nil,
                                                               "language_level"=>nil,
-                                                              "asap_constraint"=>false
+                                                              "asap_constraint"=>false,
+                                                              "identifier"=>nil,
+                                                              "passed_conditions"=>nil,
+                                                              "client_on_trip"=>nil,
+                                                              "booked_rooms_details"=>nil,
+                                                              "cluster_specified_location"=>nil
                                                           }
                                                         }
                                                     }
@@ -151,7 +159,11 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                             "server_message_id" => mc.julie_action.server_message_id,
                                                             "event_from_invitation"=>false,
                                                             "event_from_invitation_organizer"=>nil,
-                                                            "date_suggestions_full_ai"=>false
+                                                            "date_suggestions_full_ai"=>false,
+                                                            "ai_filters_results"=>{},
+                                                            "ai_call_status"=>nil,
+                                                            "date_times_from_ai"=>nil,
+                                                            "date_suggestions_full_ai_capacity"=>false
                                                         }
                                                     }
                                                   }

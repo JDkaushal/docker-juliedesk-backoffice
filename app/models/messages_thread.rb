@@ -43,7 +43,7 @@ class MessagesThread < ActiveRecord::Base
   include ApplicationHelper
   include TemplateGeneratorHelper
 
-  BLOCKED_THREAD_NOTIFY_URL = ENV['JULIEDESK_APP_BASE_PATH'] + '/api/v1/calendar_access_lost/notify_email_blocked'
+  BLOCKED_THREAD_NOTIFY_URL = "#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/calendar_access_lost/notify_email_blocked"
 
   def track_thread_in_inbox(from_inbox)
     if !Rails.env.development? && !Rails.env.test?

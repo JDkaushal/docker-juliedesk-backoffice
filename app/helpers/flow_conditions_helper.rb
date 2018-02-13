@@ -4,7 +4,6 @@ module FlowConditionsHelper
     Rails.logger.debug('- ' * 50)
     # Reinitialize the JSON because if we use the saved JSON and change it, il results in the record not being properly updated
     filters_results = {}
-    puts 'Handling flow conditions...'
     selected_conditions = flow_conditions.select do |flow_identifier, flow_data|
       identifier = flow_identifier.to_s+'_back_conditions'
       filters_results[identifier] = {}
