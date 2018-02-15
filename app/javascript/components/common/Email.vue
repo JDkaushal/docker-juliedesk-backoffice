@@ -1,6 +1,6 @@
 <template>
-    <div class="message-container" v-bind:class="{minimized: minimized, validated: validated}">
-        <div class="message" v-on:click="minimized = !minimized">
+    <div class="message-container" :class="{minimized: minimized, validated: validated}">
+        <div class="message" @click="minimized = !minimized">
             <div class="date">{{ message.date }}</div>
             <div class="from">{{ message.from }}</div>
             <div class="to">To: {{ message.to }}</div>
@@ -11,12 +11,12 @@
         <div class="action-button">
             <custom-checkbox
                     colors="red-green"
-                    v-on:valueChanged="checkboxChanged"
+                    @valueChanged="checkboxChanged"
             ></custom-checkbox>
 
             <div class="validation-status correct" v-if="validated">Ce mail est bien anonymisé</div>
             <div class="validation-status incorrect" v-if="!validated">Ce mail est mal anonymisé</div>
-            <div class="textarea-instructions" v-bind:class="{understood: error_description != ''}">
+            <div class="textarea-instructions" :class="{understood: error_description != ''}">
                 Merci de préciser en quoi le mail est mal anonymisé ci-dessous.<br>
                 Sinon, placer le curseur sur 'vert'.</div>
             <textarea rows="6" v-model="error_description"></textarea>
