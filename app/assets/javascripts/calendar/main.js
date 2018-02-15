@@ -1,4 +1,7 @@
-function Calendar($selector, params, synchronize) {
+function Calendar($selector, params, options) {
+    var opts = options || {};
+    this.synchronize = !!opts.synchronize;
+    this.syncRequired = !!opts.syncRequired;
 
     // Set initial parameters
     this.$selector = $selector;
@@ -97,10 +100,12 @@ function Calendar($selector, params, synchronize) {
     calendar.$selector.find(".global-loading").show();
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
-        if(synchronize && !calendar.isSynced()) {
+        if(calendar.synchronize && !calendar.isSynced()) {
             calendar.triggerCalendarsSync();
-            alert("Calendars synchronization launched, please wait and try again.");
-            return;
+            if(calendar.syncRequired) {
+                alert("Calendars synchronization launched, please wait and try again.");
+                return;
+            }
         }
 
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");

@@ -92,7 +92,7 @@
         };
 
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, true);
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, { synchronize: true, syncRequired: true });
         $(".calendar-container").addClass("visible");
     };
 

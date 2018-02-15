@@ -18,7 +18,7 @@
         calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
         calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, false);
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
         $(".calendar-container").addClass("visible minimized");
     };
 
