@@ -107,7 +107,7 @@ describe ApplicationController, :type => :controller do
       end
     end
 
-    describe 'Logout' do
+    describe 'Old Logout' do
       before(:each) do
         @op1 = FactoryGirl.create(:operator_actif)
         @op2 = FactoryGirl.create(:operator_actif)
@@ -125,7 +125,7 @@ describe ApplicationController, :type => :controller do
         [mt4, mt5].each{|mt| mt.update(locked_by_operator_id: @op2.id)}
         @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@op1.email,'password')
 
-        get :logout
+        get :old_logout
 
         mt1.reload
         mt2.reload
@@ -142,7 +142,7 @@ describe ApplicationController, :type => :controller do
         @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@op1.email,'password')
         @request.env['HTTP_HOST'] = "test-backoffice.herokuapp.com"
 
-        get :logout
+        get :old_logout
 
         expect(response).to redirect_to("https://#{@op1.email}@test-backoffice.herokuapp.com")
 

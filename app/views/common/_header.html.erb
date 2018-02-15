@@ -32,6 +32,6 @@
     <div class="logged-as">
       <%=  session[:user_name] %> -
       <%= link_to "My stats (#{OperatorActionsGroup.where(operator_id: session[:operator_id], review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN).count})", :my_stats_review_operators, class: "my-stats-link" %> -
-      <%= link_to "Disconnect", :logout, class: "disconnect-link" %>
+      <%= link_to "Disconnect", :old_logout, class: "disconnect-link" %>
     </div>
 </div>

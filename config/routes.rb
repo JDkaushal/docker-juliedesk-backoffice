@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :auth_test, only: [:index]
+
   get 'performance', controller: :performance, action: :show
   get 'performance/download_1mo', controller: :performance, action: :download_1mo
   post 'performance/upload', controller: :performance, action: :upload
@@ -270,6 +272,9 @@ Rails.application.routes.draw do
 
   post "change_sound" => "application#change_sound"
 
+  get "login" => "application#login", as: :login
+  get "process_login" => "application#process_login", as: :process_login
+  get "old_logout" => "application#old_logout", as: :old_logout
   get "logout" => "application#logout", as: :logout
 
   if ENV['STAGING_APP']

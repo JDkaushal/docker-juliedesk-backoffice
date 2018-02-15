@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   # protect_from_forgery with: :exception
   protect_from_forgery with: :null_session
 
-  before_filter :authenticate, :set_locale
+  before_filter :authenticate, :set_locale, except: [:logout, :login, :process_login]
   before_action :check_rack_mini_profiler
 
   skip_before_action :verify_authenticity_token, only: :change_sound
@@ -27,12 +27,30 @@ class ApplicationController < ActionController::Base
     }
   end
 
-  def logout
+  def login
+
+  end
+
+
+  def process_login
+    jd_auth_go_to_login(params[:url].present? ? params[:url] : request.env['HOST'])
+  end
+
+  def old_logout
     email = session[:user_username]
     operator = Operator.find_by_email(email)
     MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
     reset_session
     redirect_to "https://#{email}@#{request.env['HTTP_HOST']}"
+  end
+
+  def logout
+    email = session[:user_username]
+    operator = Operator.find_by_email(email)
+    MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
+    reset_session
+
+    redirect_to "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=#{request.referer}";
   end
 
   # Add X-Request-ID to logs
@@ -74,6 +92,29 @@ class ApplicationController < ActionController::Base
       end
 
       false
+    end
+  end
+
+  def authenticate_ja
+    sound_is_activated = session[:sound_is_activated]
+
+    return false unless jd_auth_authenticate_server
+    operator = Operator.find_by_email_and_enabled(jd_auth_current_user.email, true)
+
+    if operator
+      session[:operator_id] = operator.id
+      session[:user_username] = operator.email
+      session[:user_name] = operator.name
+      session[:privilege] = operator.privilege
+      session[:planning_access] = operator.planning_access
+      session[:can_see_operators_in_review] = operator.can_see_operators_in_review
+
+      session[:sound_is_activated] = sound_is_activated
+      return true
+    else
+      reset_session
+      render text: "Unauthorized", status: 401
+      return false
     end
   end
 

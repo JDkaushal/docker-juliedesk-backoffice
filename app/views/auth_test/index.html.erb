@@ -1,0 +1,14 @@
+<div class="col-md-8 col-md-offset-2">
+  <h1>Hello <%= session[:user_name] %>!</h1>
+
+
+  <div class="alert alert-success">
+
+    You are logged in as:
+    <br/><%= session[:user_username] %>
+    <br/><br/>With privilege:<br/>
+    <%= session[:privilege] %>
+  </div>
+
+  <%= link_to "Logout", :logout, class: "btn btn-danger" %>
+</div>
