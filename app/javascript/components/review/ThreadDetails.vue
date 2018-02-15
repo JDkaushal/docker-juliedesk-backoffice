@@ -1,11 +1,11 @@
 <template>
     <div>
-        <backoffice-header
+        <the-header
                 :paths="paths"
                 :current-title="'Thread ' + this.messagesThreadId"
                 action-button="Next"
-                v-on:clickActionButton="validate"
-        ></backoffice-header>
+                @clickActionButton="validate"
+        />
 
         <div class="min-1200">
 
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import BackofficeHeader from '../common/BackofficeHeader.vue'
+    import TheHeader from '../common/TheHeader'
     import Email from '../common/Email.vue'
     import EmailServerInterfaceService from '../../services/EmailServerInterface.service.js'
 
@@ -53,7 +53,7 @@
 
         },
         components: {
-            BackofficeHeader,
+            TheHeader,
             Email
         },
         created() {
