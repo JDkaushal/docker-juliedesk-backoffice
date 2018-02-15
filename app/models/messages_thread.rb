@@ -112,7 +112,8 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.account.only_support_can_process ||
         messages_thread.to_be_merged || messages_thread.thread_blocked ||
         messages_thread.owner_needs_configuration ||
-        messages_thread.has_tag?(MessagesThread::SYNCING_TAG)
+        messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
+        !messages_thread.can_be_processed_now
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
@@ -120,7 +121,8 @@ class MessagesThread < ActiveRecord::Base
         (messages_thread.account && messages_thread.account.only_admin_can_process) ||
         messages_thread.thread_blocked ||
         messages_thread.owner_needs_configuration ||
-        messages_thread.has_tag?(MessagesThread::SYNCING_TAG)
+        messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
+        !messages_thread.can_be_processed_now
   end
 
   def self.filter_on_privileges(privilege, messages_threads)

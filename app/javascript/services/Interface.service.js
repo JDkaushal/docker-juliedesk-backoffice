@@ -1,4 +1,5 @@
 import axios from "axios/index";
+import * as _ from 'lodash';
 
 class InterfaceService {
     constructor (params) {
@@ -7,14 +8,34 @@ class InterfaceService {
 
         this.axiosInstance = axios.create({
             baseURL: this.apiBasePath,
-            headers: {
+            withCredentials: true
+        });
+        if(this.apiKey) {
+            this.axiosInstance.headers = {
                 Authorization: this.apiKey
             }
-        });
+        }
+        this.loading = false;
     }
-    get(path) {
+    get(path, opts={}) {
+        let defaultOptions= {
+            parse: 'json_data'
+        };
+        _.mergeWith(defaultOptions, opts);
+        let self = this;
+        this.loading = true;
         return this.axiosInstance.get(path).then(function(res) {
-            return res.data.data;
+            self.loading = false;
+            if(opts.parse === 'json') {
+                return res.data;
+            }
+            else if(opts.parse === 'json_data') {
+                return res.data.data;
+            }
+            else {
+                return res;
+            }
+
         });
     }
 }
