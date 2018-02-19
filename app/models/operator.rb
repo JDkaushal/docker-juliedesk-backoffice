@@ -11,7 +11,8 @@ class Operator < ActiveRecord::Base
   PRIVILEGE_SUPER_OPERATOR_LEVEL_3 = "super_operator_level_3"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
 
-  def compute_daily_stats(ref_date = Time.now)
+
+  def daily_stats(ref_date = Time.now)
     now = ref_date.in_time_zone("Indian/Antananarivo")
 
     start_date = if now.hour < 6

@@ -256,6 +256,21 @@ class Account
     }.first.try(:[], 'number_to_call')
   end
 
+  def julie_can_process_now
+    return true unless self.company_hash
+    timezoned_now = DateTime.now.in_time_zone(self.company_hash.timezone)
+    timezoned_day = timezoned_now.strftime("%a").downcase
+    day_working_hours = self.company_hash.working_hours[timezoned_day]
+    timezoned_hour_and_minutes = timezoned_now.format("%H%m").to_i
+
+    (day_working_hours || []).any? do |working_hours_item|
+      start_hour_minutes = working_hours_item[0].to_i # Format: 1635 = 16 hours 35 minutes
+      end_hour_minutes = working_hours_item[1].to_i
+
+      start_hour_minutes < timezoned_hour_and_minutes < end_hour_minutes
+    end
+  end
+
 
   def build_contacts_from_same_company params={}
 

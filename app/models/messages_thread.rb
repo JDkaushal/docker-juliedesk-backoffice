@@ -642,6 +642,10 @@ class MessagesThread < ActiveRecord::Base
     MessagesThread.where(in_inbox: true).count
   end
 
+  def can_be_processed_now
+    !self.account || self.account.julie_can_process_now
+  end
+
   def should_reprocess_linked_attendees(computed_recipients_changed)
     computed_recipients_changed && has_clients_with_linked_attendees_enabled
   end
