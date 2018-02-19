@@ -258,9 +258,9 @@ class Account
 
   def julie_can_process_now
     return true unless self.company_hash
-    timezoned_now = DateTime.now.in_time_zone(self.company_hash.timezone)
+    timezoned_now = DateTime.now.in_time_zone(self.company_hash['timezone'])
     timezoned_day = timezoned_now.strftime("%a").downcase
-    day_working_hours = self.company_hash.working_hours[timezoned_day]
+    day_working_hours = self.company_hash['working_hours'].try(:[], timezoned_day)
     timezoned_hour_and_minutes = timezoned_now.format("%H%m").to_i
 
     (day_working_hours || []).any? do |working_hours_item|
