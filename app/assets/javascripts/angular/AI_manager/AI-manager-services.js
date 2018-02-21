@@ -8,9 +8,7 @@
                 url: '/ai/dates_suggestions/fetch',
                 method: "POST",
                 data: params,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(
                 function(response) {
                     var result = {};
@@ -34,9 +32,7 @@
                 url: '/ai/dates_suggestions/puts_calendar_in_conscience_cache',
                 method: "POST",
                 data: params,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(
                 function (response) {
                     return {
@@ -52,9 +48,7 @@
                 url: '/ai/dates_suggestions/dates_suggestions_auto_process_update',
                 method: "POST",
                 data: params,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(
                 function (response) {
                     return {
@@ -70,9 +64,7 @@
                 url: '/ai/dates_suggestions/send_learning_data',
                 method: "POST",
                 data: params,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(
                 function(response) {
                     return {
@@ -93,9 +85,7 @@
                 method: "POST",
                 data: params,
                 timeout: 10000,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
@@ -110,9 +100,7 @@
                 method: "POST",
                 data: params,
                 timeout: 10000,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
@@ -127,9 +115,7 @@
                 method: "POST",
                 data: params,
                 timeout: 10000,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
@@ -144,9 +130,7 @@
                 method: "POST",
                 data: params,
                 timeout: 10000,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
@@ -163,9 +147,7 @@
                 method: "POST",
                 data: params,
                 timeout: 10000,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(function(response) {
                 return response.data;
             }, function(httpError) {
@@ -197,9 +179,7 @@
                 method: "POST",
                 timeout: 3000,
                 data: params,
-                config: {
-                    withCredentials: true
-                },
+                withCredentials: true
             }).then(
                 function(response) {
                     var result = {};
