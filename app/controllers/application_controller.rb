@@ -70,6 +70,9 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate
+    if ENV['JD_AUTH_ACTIVATED']
+      return authenticate_ja
+    end
     sound_is_activated = session[:sound_is_activated]
     reset_session
 
