@@ -23,7 +23,8 @@ describe JulieActionsController, :type => :controller do
   describe 'Actions' do
 
     before(:each) do
-      @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+      expect(controller).to receive(:jd_auth_authenticate_server).at_least(:once).and_return(true)
+      expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
       allow_any_instance_of(JuliedeskTrackerInterface).to receive(:build_request)
     end
 

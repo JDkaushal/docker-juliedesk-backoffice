@@ -36,14 +36,16 @@ describe ReviewController, :type => :controller do
   describe 'Permissions' do
 
     it 'should not allow a non admin operator to access it' do
-      @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+      expect(controller).to receive(:jd_auth_authenticate_server).at_least(:once).and_return(true)
+      expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
       get :index
 
       expect(response).to redirect_to('/')
     end
 
     it 'should allow an admin to access it' do
-      @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_admin,@pw)
+      expect(controller).to receive(:jd_auth_authenticate_server).at_least(:once).and_return(true)
+      expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
       get :index
 
       expect(response.body).to eq('OK')

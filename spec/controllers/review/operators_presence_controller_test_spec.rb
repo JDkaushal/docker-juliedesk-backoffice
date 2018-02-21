@@ -23,7 +23,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
   describe 'Actions' do
 
     before(:each) do
-      @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_admin,@pw)
+      expect(controller).to receive(:jd_auth_authenticate_server).at_least(:once).and_return(true)
 
       @op1 = FactoryGirl.create(:operator_actif)
       @op2 = FactoryGirl.create(:operator_actif)
@@ -37,12 +37,14 @@ describe Review::OperatorsPresenceController, :type => :controller do
       render_views
 
       it 'should access the index page if the operator has admin privileges' do
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
         get :index
         expect(response).to render_template(:index)
       end
 
+
       it 'should not access the index page if the operator has not admin privileges' do
-        @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
         get :index
         expect(response).to redirect_to(root_path)
       end
@@ -50,6 +52,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
 
       it 'should populate the correct instance variables' do
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
         get :index, start: Time.now
 
         expect(assigns(:operators).map(&:id)).to eq([@normal.id, @op1.id, @op2.id, @op3.id, @op4.id, @op5.id])
@@ -66,6 +69,8 @@ describe Review::OperatorsPresenceController, :type => :controller do
         @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
         @op4.save
 
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :index, start: DateTime.new(2015, 9, 10)
         expect(response.body).to eq(<<END
@@ -100,6 +105,8 @@ END
         @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
         @op4.save
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :json
 
         body = JSON.parse response.body
@@ -122,6 +129,8 @@ END
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 10, 10, 30, 00))
         @op1.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
         @op2.operator_presences.create(date: DateTime.new(2015, 9, 11, 12, 00, 00))
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
         expect(response.body).to eq(<<END
@@ -148,18 +157,22 @@ END
 
     describe 'Add' do
       it 'should access the index page if the operator has admin privileges' do
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :add, presences: []
         expect(response.body).to eq('{}')
       end
 
       it 'should not access the index page if the operator has not admin privileges' do
-        @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
         post :add
         expect(response).to redirect_to(root_path)
       end
 
       it 'should add a new operator presence' do
         expect(@op1.operator_presences.size).to eq(0)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s]
 
@@ -171,6 +184,8 @@ END
       it 'should replace an existing presence if there is one on the same date' do
         @op1.operator_presences.create(date: DateTime.new(2015, 10, 12))
         expect(@op1.operator_presences.size).to eq(1)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s]
 
@@ -187,6 +202,8 @@ END
         @op1.operator_presences.create(date: DateTime.new(2015, 10, 15))
         expect(@op1.operator_presences.size).to eq(4)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 16).to_s]
 
         @op1.reload
@@ -199,6 +216,7 @@ END
 
       it ' should raise the correct exception if no day is provided as parameter' do
         expect {
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
           post :copy_day
         }.to raise_error(RuntimeError, 'no day given')
       end
@@ -213,6 +231,8 @@ END
 
         expect(@op1.operator_presences.size).to eq(3)
         expect(@op2.operator_presences.size).to eq(3)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :copy_day, day: DateTime.new(2015, 10, 12, 17, 00, 00), days: 3
 
@@ -229,6 +249,7 @@ END
     describe 'Reset Day' do
       it ' should raise the correct exception if no day is provided as parameter' do
         expect {
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
           post :reset_day
         }.to raise_error(RuntimeError, 'no day given')
       end
@@ -247,6 +268,7 @@ END
         expect(@op2.operator_presences.size).to eq(4)
 
         expect{
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
           post :reset_day, day: DateTime.new(2015, 10, 12, 17, 00, 00)
         }.to change{OperatorPresence.count}.by(-6)
 
@@ -265,6 +287,7 @@ END
         expect(@op1.operator_presences.size).to eq(4)
 
         expect{
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
           post :remove, operator_id: @op1.id, presences: [DateTime.new(2015, 10, 12, 16, 00, 00).to_s, DateTime.new(2015, 10, 12, 23, 00, 00).to_s]
         }.to change{OperatorPresence.count}.by(-2)
 
@@ -285,6 +308,8 @@ END
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         expect(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
         post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
@@ -301,6 +326,8 @@ END
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
@@ -315,6 +342,8 @@ END
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
@@ -328,6 +357,8 @@ END
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
         allow(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
 
@@ -344,6 +375,8 @@ END
         expect_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
       end
 
@@ -353,6 +386,8 @@ END
 
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
         expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
       end
@@ -364,12 +399,26 @@ END
         allow_any_instance_of(AiProxy).to receive(:build_request).with(:fetch_planning, { date: start_date.to_s, productivity: "5", filename: filename }).and_return({})
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
         expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\"}")
       end
 
     end
 
+  end
+
+  describe 'Methods' do
+    before(:each) do
+
+      @op1 = FactoryGirl.create(:operator_actif)
+      @op2 = FactoryGirl.create(:operator_actif)
+      @op3 = FactoryGirl.create(:operator_actif)
+      @op4 = FactoryGirl.create(:operator_actif)
+      @op5 = FactoryGirl.create(:operator_actif)
+
+    end
     describe 'generate_operators_presence_data' do
 
       it 'should return the correct data' do
@@ -413,6 +462,7 @@ END
         @op4.privilege = Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2
         @op4.save
 
+
         expect{
           controller.send(:clean_operator_presences_for_week, DateTime.new(2015, 9, 10))
         }.to change{OperatorPresence.count}.by(-4)
@@ -432,6 +482,7 @@ END
 
         expect(AiEmailFlowForecast).to receive(:handle_forecast_data).with(forecast)
         expect(controller).to receive(:handle_new_planning_data).with(start_date.to_s, planning)
+
 
         controller.send(:handle_planning_ai_data, {'start_date' => start_date.to_s, 'forecast' => forecast, 'planning' => planning, 'productivity' => 7})
 

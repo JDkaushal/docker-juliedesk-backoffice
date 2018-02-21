@@ -64,7 +64,6 @@ class ApplicationController < ActionController::Base
 
   def authenticate
     sound_is_activated = session[:sound_is_activated]
-
     return false unless jd_auth_authenticate_server
     operator = Operator.find_by_email_and_enabled(jd_auth_current_user.email, true)
 

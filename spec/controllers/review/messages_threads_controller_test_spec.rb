@@ -23,7 +23,8 @@ describe Review::MessagesThreadsController, :type => :controller do
   describe 'Actions' do
 
     before(:each) do
-      @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_admin,@pw)
+      expect(controller).to receive(:jd_auth_authenticate_server).at_least(:once).and_return(true)
+
     end
 
     describe 'Review' do
@@ -34,6 +35,7 @@ describe Review::MessagesThreadsController, :type => :controller do
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
         get :review, id: mt1.id
         expect(assigns(:messages_thread)).to eq(mt1)
       end
@@ -56,6 +58,8 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :review, id: mt1.id
         expect(assigns(:to_review_count)).to eq(3)
@@ -81,6 +85,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :review, id: mt1.id
         expect(assigns(:to_review_count)).to eq(2)
       end
@@ -95,12 +101,14 @@ describe Review::MessagesThreadsController, :type => :controller do
           expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
           expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
           get :learn, id: mt1.id
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
         it 'should be accessible to the specified operator even if non admin' do
-          @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
@@ -115,7 +123,7 @@ describe Review::MessagesThreadsController, :type => :controller do
         it 'should not be accessible to a normal operator that is not specified by its id' do
           op1 = FactoryGirl.create(:operator_actif)
 
-          @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
@@ -130,6 +138,8 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :learn, id: mt1.id
         expect(assigns(:messages_thread)).to eq(mt1)
@@ -156,6 +166,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :learn, id: mt1.id, operator_id: op1.id
         expect(assigns(:to_learn_count)).to eq(3)
       end
@@ -168,6 +180,8 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :group_review, id: mt1.id
         expect(assigns(:messages_thread)).to eq(mt1)
@@ -194,6 +208,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :group_review, id: mt1.id
         expect(assigns(:to_group_review_count)).to eq(3)
       end
@@ -204,12 +220,14 @@ describe Review::MessagesThreadsController, :type => :controller do
         it 'should be accessible to admin operators' do
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
           post :learnt, id: mt1.id
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
         it 'should be accessible to the specified operator even if non admin' do
-          @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
@@ -219,7 +237,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         # Need to check the only_mine before filter to decide if there must be a redirection when the test fail
         it 'should not be accessible to a normal operator that is not specified by its id' do
-          @request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(@user_non_admin,@pw)
+          expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_non_admin))
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
@@ -247,6 +265,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         op2.operator_actions_groups.create(messages_thread_id: mt3.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         op3.operator_actions_groups.create(messages_thread_id: mt4.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :learnt, id: mt2.id, operator_id: op1.id
         expect(oag1.reload.review_status).to eq(OperatorActionsGroup::REVIEW_STATUS_LEARNT)
       end
@@ -269,6 +289,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         op1.operator_actions_groups.create(messages_thread_id: mt4.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         op2.operator_actions_groups.create(messages_thread_id: mt3.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         op3.operator_actions_groups.create(messages_thread_id: mt4.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :learnt, id: mt2.id, operator_id: op2.id
         expect(oag1.reload.review_status).not_to eq(OperatorActionsGroup::REVIEW_STATUS_LEARNT)
@@ -293,6 +315,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         op2.operator_actions_groups.create(messages_thread_id: mt3.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         op3.operator_actions_groups.create(messages_thread_id: mt4.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :learnt, id: mt2.id, operator_id: op1.id
         expect(response).to redirect_to("/review/messages_threads/#{oag2.messages_thread_id}/learn?operator_id=#{op1.id}")
       end
@@ -313,6 +337,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         op2.operator_actions_groups.create(messages_thread_id: mt3.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         op3.operator_actions_groups.create(messages_thread_id: mt4.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :learnt, id: mt2.id, operator_id: op1.id
         expect(response).to redirect_to(my_stats_review_operators_path)
       end
@@ -321,6 +347,8 @@ describe Review::MessagesThreadsController, :type => :controller do
     describe 'Reviewed' do
       it 'should process the desired messages Thread and populate the correct instance variables' do
         mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :reviewed, id: mt1.id, data: "[{\"x\":1},{\"y\":3}]"
         expect(assigns(:messages_thread)).to eq(mt1)
@@ -344,6 +372,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN)
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :reviewed, id: mt2.id, data: [{operator_actions_group_id: oag1.id, notation: 5, comment: 'Comment'}, {operator_actions_group_id: oag2.id, notation: 4, comment: 'Comment 2'}, {operator_actions_group_id: oag3.id, notation: 3, should_review_in_group: true, comment: 'Comment 3'}].to_json
 
         oag1.reload
@@ -358,6 +388,8 @@ describe Review::MessagesThreadsController, :type => :controller do
       it 'should close the tab after execution' do
         mt2 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :reviewed, id: mt2.id, data: [{test: 'test'}].to_json
         expect(response.body).to eq("<script>window.close();</script>")
       end
@@ -366,6 +398,8 @@ describe Review::MessagesThreadsController, :type => :controller do
     describe 'Group Reviewed' do
       it 'should process the desired messages Thread and populate the correct instance variables' do
         mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :group_reviewed, id: mt1.id
         expect(assigns(:messages_thread)).to eq(mt1)
@@ -383,6 +417,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
         oag4 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN)
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :group_reviewed, id: mt1.id
 
@@ -410,6 +446,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,13))
         oag4 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,10,11))
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         post :group_reviewed, id: mt1.id
 
         expect(response).to redirect_to("/review/messages_threads/#{oag4.messages_thread_id}/group_review")
@@ -427,6 +465,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag1 = op1.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,11))
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,13))
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         post :group_reviewed, id: mt1.id
 
@@ -447,6 +487,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_REVIEW, initiated_at: DateTime.new(2014,9,13))
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :review_next
 
         expect(response).to redirect_to("/review/messages_threads/#{oag1.messages_thread_id}/review")
@@ -463,6 +505,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag1 = op1.operator_actions_groups.create(messages_thread_id: mt1.id, review_status: OperatorActionsGroup::REVIEW_STATUS_REVIEWED, initiated_at: DateTime.new(2014,9,11))
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, review_status: OperatorActionsGroup::REVIEW_STATUS_REVIEWED, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_REVIEWED, initiated_at: DateTime.new(2014,9,13))
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :review_next
 
@@ -483,6 +527,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,13))
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :group_review_next
 
         expect(response).to redirect_to("/review/messages_threads/#{oag1.messages_thread_id}/group_review")
@@ -499,6 +545,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag1 = op1.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,11))
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, group_review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,13))
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :group_review_next
 
@@ -519,6 +567,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag2 = op1.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::REVIEW_STATUS_TO_LEARN, initiated_at: DateTime.new(2014,9,13))
 
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
+
         get :learn_next, operator_id: op1.id
 
         expect(response).to redirect_to("/review/messages_threads/#{oag1.messages_thread_id}/learn?operator_id=#{oag1.operator_id}")
@@ -535,6 +585,8 @@ describe Review::MessagesThreadsController, :type => :controller do
         oag1 = op1.operator_actions_groups.create(messages_thread_id: mt1.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,11))
         oag2 = op2.operator_actions_groups.create(messages_thread_id: mt1.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,12))
         oag3 = op3.operator_actions_groups.create(messages_thread_id: mt2.id, review_status: OperatorActionsGroup::GROUP_REVIEW_STATUS_LEARNT, initiated_at: DateTime.new(2014,9,13))
+
+        expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
         get :learn_next, operator_id: op1.id
 
