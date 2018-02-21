@@ -1,7 +1,7 @@
 class PusherController < ApplicationController
   protect_from_forgery :except => [:auth, :webhooks] # stop rails CSRF protection for this action
 
-  skip_before_action :verify_authenticity_token, only: :webhooks
+  skip_before_action :verify_authenticity_token
   skip_before_action :authenticate, only: :webhooks
   skip_before_action :set_locale, only: :webhooks
 

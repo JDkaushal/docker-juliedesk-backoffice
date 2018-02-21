@@ -1,4 +1,5 @@
 class PerformanceController < ActionController::Base
+  skip_before_filter :verify_authenticity_token
 
   layout false
   MO1_FILE_NAME = "random_data_1mo.txt"

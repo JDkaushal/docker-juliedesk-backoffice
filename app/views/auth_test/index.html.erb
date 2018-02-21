@@ -1,4 +1,27 @@
-<div class="col-md-8 col-md-offset-2">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope, $http) {
+        $scope.authTestGet = function() {
+            $scope.result = null;
+            $http.get("/auth_test/test_get").then(function(res) {
+                $scope.result = res.data;
+            })
+        }
+        $scope.authTestPost = function() {
+            $scope.result = null;
+            $http.post("/auth_test/test_post", {}).then(function(res) {
+                $scope.result = res.data;
+            })
+        }
+    });
+</script>
+
+
+
+<div class="col-md-8 col-md-offset-2" ng-app="myApp" ng-controller="myCtrl">
   <h1>Hello <%= session[:user_name] %>!</h1>
 
 
@@ -9,6 +32,11 @@
     <br/><br/>With privilege:<br/>
     <%= session[:privilege] %>
   </div>
+
+  <button id="test-get" class="btn-primary" ng-click="authTestGet()">Test auth via ajax GET</button>
+  <button id="test-post" class="btn-primary" ng-click="authTestPost()">Test auth via ajax POST</button>
+
+  <div class="alert alert-success" ng-show="result">{{ result }}</div>
 
   <%= link_to "Logout", :logout, class: "btn btn-danger" %>
 </div>

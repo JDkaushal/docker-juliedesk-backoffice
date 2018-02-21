@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   before_filter :authenticate, :set_locale, except: [:logout, :login, :process_login]
   before_action :check_rack_mini_profiler
 
-  skip_before_action :verify_authenticity_token, only: :change_sound
+  skip_before_action :verify_authenticity_token
 
   include FeatureHelper
 

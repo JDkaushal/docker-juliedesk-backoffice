@@ -17,7 +17,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :auth_test, only: [:index]
+  resources :auth_test, only: [:index] do
+    collection do
+      get :test_get
+      post :test_post
+    end
+  end
 
   get 'performance', controller: :performance, action: :show
   get 'performance/download_1mo', controller: :performance, action: :download_1mo
