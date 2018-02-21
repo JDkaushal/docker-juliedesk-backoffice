@@ -36,13 +36,6 @@ class ApplicationController < ActionController::Base
     jd_auth_go_to_login(params[:url].present? ? params[:url] : request.env['HOST'])
   end
 
-  def old_logout
-    email = session[:user_username]
-    operator = Operator.find_by_email(email)
-    MessagesThread.where(locked_by_operator_id: operator.id).update_all(locked_by_operator_id: nil)
-    reset_session
-    redirect_to "https://#{email}@#{request.env['HTTP_HOST']}"
-  end
 
   def logout
     email = session[:user_username]
@@ -70,35 +63,6 @@ class ApplicationController < ActionController::Base
   end
 
   def authenticate
-    if ENV['JD_AUTH_ACTIVATED']
-      return authenticate_ja
-    end
-    sound_is_activated = session[:sound_is_activated]
-    reset_session
-
-    authenticate_or_request_with_http_basic do |username, password|
-      operator = Operator.find_by_email_and_enabled(username, true)
-
-      if operator &&
-          operator.password_correct?(password) &&
-      (!operator.ips_whitelist_enabled || (ENV['IPS_WHITELIST'] || "").split(",").include?(request.remote_ip))
-
-        session[:operator_id] = operator.id
-        session[:user_username] = operator.email
-        session[:user_name] = operator.name
-        session[:privilege] = operator.privilege
-        session[:planning_access] = operator.planning_access
-        session[:can_see_operators_in_review] = operator.can_see_operators_in_review
-
-        session[:sound_is_activated] = sound_is_activated
-        return true
-      end
-
-      false
-    end
-  end
-
-  def authenticate_ja
     sound_is_activated = session[:sound_is_activated]
 
     return false unless jd_auth_authenticate_server
