@@ -138,6 +138,7 @@
                     if(this.attendeeInForm.email == '' || this.attendeeInForm.email == undefined || !$.isEmptyObject(attendeesForm.email.$error))
                     {
                         this.attendeeInForm.isAssistant = false;
+                        this.attendeeInForm.assisted = false;
                         this.displayAssistantEmailError = true;
                     }else
                     {

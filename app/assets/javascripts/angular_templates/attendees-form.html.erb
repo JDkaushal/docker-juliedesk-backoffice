@@ -119,7 +119,7 @@
 
           <div class="row" style="margin-top: 0;">
             <div class="col-xs-2">
-              <%= check_box_tag :assisted, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.assisted', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-click' => 'attendeesFormCtrl.setAssistant()', class: 'form-control assistant-checkbox'%>
+              <%= check_box_tag :assisted, '', true, 'ng-model' =>  'attendeesFormCtrl.attendeeInForm.assisted', 'ng-disabled' => 'attendeesFormCtrl.attendeeInForm.isClient || attendees_manager.readOnly', 'ng-click' => 'attendeesFormCtrl.setAssistant()', 'ng-change' => 'attendeesFormCtrl.displayAssistantEmailError = false', class: 'form-control assistant-checkbox'%>
             </div>
             <div class="col-xs-10 form-checkbox-label">
               <%= label_tag :assisted %>
