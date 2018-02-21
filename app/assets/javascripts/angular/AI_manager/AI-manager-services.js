@@ -4,6 +4,7 @@
 
     app.service('aIDatesSuggestionService', ['$http','$q', function($http, $q) {
         this.fetch = function(params) {
+            console.log("This is fetch");
             return $http({
                 url: '/ai/dates_suggestions/fetch',
                 method: "POST",
