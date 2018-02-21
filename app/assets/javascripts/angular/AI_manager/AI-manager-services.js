@@ -7,7 +7,10 @@
             return $http({
                 url: '/ai/dates_suggestions/fetch',
                 method: "POST",
-                data: params
+                data: params,
+                config: {
+                    withCredentials: true
+                },
             }).then(
                 function(response) {
                     var result = {};
