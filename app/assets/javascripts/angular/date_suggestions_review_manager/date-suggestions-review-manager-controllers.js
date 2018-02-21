@@ -111,6 +111,7 @@
             $scope.startLoading('backoffice');
             return $http.get("/review/date_suggestions_reviews/" + $scope.dateSuggestionsReviewId, {
                 params: {},
+                withCredentials: true,
                 headers: {'Accept': 'application/json'}
             }).then(function (response) {
                 $scope.endLoading('backoffice');
@@ -242,7 +243,7 @@
                 full_auto_errors: $scope.fullAutoErrors,
                 full_auto_custom_error: $scope.fullAutoCustomError,
                 comment: $scope.comment
-            }).then(function(response) {
+            },{withCredentials: true}).then(function(response) {
                 window.close();
                 setTimeout(function() {
                     window.location = window.location.href

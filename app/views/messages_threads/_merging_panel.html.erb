@@ -52,7 +52,9 @@
                             return "server_thread_ids[]=" + serverThread.id;
                         }).join("&");
 
-                        $http.get("/messages_threads/search?" + serverThreadidsUrlPart).success(function(response) {
+                        $http.get("/messages_threads/search?" + serverThreadidsUrlPart, {
+                            withCredentials: true
+                        }).success(function(response) {
                             $scope.messagesThreads = response.data;
                             _.each($scope.messagesThreads, function(messagesThread) {
                                 //console.log("HOHO", eventGetResponse.data);

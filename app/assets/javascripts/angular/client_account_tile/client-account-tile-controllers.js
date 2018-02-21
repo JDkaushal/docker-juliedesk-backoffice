@@ -92,7 +92,7 @@
 
             $http.post("/messages_threads/" + window.threadId + "/associate_to_account", {
                 account_email: $scope.newAccountEmail
-            }).then(function successCallback(response) {
+            }, {withCredentials: true}).then(function successCallback(response) {
                     window.location = window.location;
                 }, function errorCallback(response) {
                     window.location = window.location;

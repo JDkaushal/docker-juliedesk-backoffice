@@ -82,7 +82,9 @@
             if(currentlyHighlightedCandidate && currentlyHighlightedCandidate.email) {
                 $http.post("/messages_threads/" +  window.threadId + "/associate_to_account", JSON.stringify({
                     account_email: currentlyHighlightedCandidate.email
-                })).then(function(response) {
+                }), {
+                    withCredentials: true
+                }).then(function(response) {
                     window.location = window.location;
                 }, function(error) {
                     console.log(error);

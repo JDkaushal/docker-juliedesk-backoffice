@@ -96,7 +96,7 @@
                     ids: _.map(response.data.data.suggested_dates, function(error) {
                         return error.julie_action_id;
                     })
-                }).then(function (backofficeResponse) {
+                },{withCredentials: true}).then(function (backofficeResponse) {
 
                     $scope.errors = response.data.data.suggested_dates;
                     $scope.totalCount = response.data.data.total_count;
@@ -190,7 +190,7 @@
 
         $scope.fetchData = function () {
             $scope.loading['backoffice'] = true;
-            $http.get("/review/julie_actions/" + $scope.julieActionId + "/compare_date_suggestions.json").then(function (response) {
+            $http.get("/review/julie_actions/" + $scope.julieActionId + "/compare_date_suggestions.json", {withCredentials: true}).then(function (response) {
                 delete $scope.loading['backoffice'];
 
                 data = response.data.data;
@@ -317,7 +317,7 @@
             $scope.loadingUpdateComment = true;
             $http.post("/review/julie_actions/" + $scope.julieActionId + "/update_review_comment", {
                 review_comment: $scope.review_comment
-            }).then(function (response) {
+            },{withCredentials: true}).then(function (response) {
                 $scope.loadingUpdateComment = false;
             });
         }

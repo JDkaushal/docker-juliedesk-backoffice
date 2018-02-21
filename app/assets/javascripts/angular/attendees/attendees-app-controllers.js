@@ -1373,7 +1373,9 @@
         };
 
         this.getEmailsSuggestions = function(subString){
-            return $http.get("/client_contacts/emails_suggestions?sub_string=" + subString).then(function(response){
+            return $http.get("/client_contacts/emails_suggestions?sub_string=" + subString, {
+                withCredentials: true
+            }).then(function(response){
                 var suggestions = response.data;
 
                 suggestions = _.filter(suggestions, function(suggestion) { return window.allowedAttendeesEmails.indexOf(suggestion) > -1; });

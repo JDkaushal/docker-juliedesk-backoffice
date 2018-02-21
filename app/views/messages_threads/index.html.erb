@@ -54,7 +54,9 @@
             if (forceRefresh) {
                 url = "<%= index_with_import_messages_threads_path(format: "json") %>";
             }
-            $http.get(url)
+            $http.get(url, {
+                withCredentials: true
+            })
                     .success(function(e) {
                         $scope.loading = false;
 

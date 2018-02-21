@@ -64,7 +64,7 @@
                         end: $scope.end().format()
                     },
                     headers: {'Accept': 'application/json'}
-                }
+                }, {withCredentials: true}
             ).then(function (response) {
                 $scope.totalCount = response.data.data.total_count;
                 $scope.julieActions = response.data.data.julie_actions;

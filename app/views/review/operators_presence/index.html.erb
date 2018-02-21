@@ -106,7 +106,10 @@
                 startDate = $scope.firstFetchedForecastDate.add('d', -30);
             }
 
-            $http.get("/api/v1/emails_forecast?start_date=" + startDate.format('YYYY-MM-DD') + "&duration=" + aiForecastWindow, {headers: {'Authorization': 'EDx19D72bH7e5I64EXk1kwa4jXvynddS'}}).success(function(response) {
+            $http.get("/api/v1/emails_forecast?start_date=" + startDate.format('YYYY-MM-DD') + "&duration=" + aiForecastWindow, {
+                withCredentials: true,
+                headers: {'Authorization': 'EDx19D72bH7e5I64EXk1kwa4jXvynddS'}
+            }).success(function(response) {
                 $scope.aiForecast = $.extend($scope.aiForecast,response);
                 $scope.computeAIForecast();
                 $scope.aiThinking = false;
@@ -191,7 +194,9 @@
 
         $scope.fetch = function() {
             $scope.loading = true;
-            $http.get("operators_presence.json?start=" + $scope.startWeekDate.format()).success(function(response) {
+            $http.get("operators_presence.json?start=" + $scope.startWeekDate.format(), {
+                withCredentials: true,
+            }).success(function(response) {
                 $scope.operators = response.data.operators;
                 $scope.loading = false;
             });
@@ -280,6 +285,8 @@
                         presences: presences,
                         operator_id: operator.id,
                         is_review: reviewMode
+                    }, {
+                        withCredentials: true
                     }).then(function() {
                         $scope.loading = false;
                         $scope.displaySavedLabel();
@@ -312,6 +319,8 @@
                         presences: presences,
                         operator_id: operator.id,
                         is_review: reviewMode
+                    }, {
+                        withCredentials: true
                     }).then(function() {
                         $scope.loading = false;
                         $scope.displaySavedLabel();
@@ -343,6 +352,8 @@
 
             $http.post("/review/operators_presence/reset_day", {
                 day: $scope.startWeekDate.clone().add(weekDay - 1, 'd').format()
+            }, {
+                withCredentials: true
             }).then(function() {
                 $scope.loading = false;
                 $scope.fetch();
@@ -361,6 +372,8 @@
             $http.post("/review/operators_presence/copy_day", {
                 day: $scope.startWeekDate.clone().add(weekDay - 1, 'd').format(),
                 days: days
+            }, {
+                withCredentials: true
             }).then(function() {
                 $scope.loading = false;
                 $scope.fetch();
@@ -488,6 +501,8 @@
                     'planning.operator_hourly_productivity': $scope.operatorEmailByHourRate,
                     'planning.new_clients_count': $scope.newClientsCount
                 }
+            }, {
+                withCredentials: true,
             }).then(function() {
                 $scope.loading = false;
                 $scope.computeAIForecast();

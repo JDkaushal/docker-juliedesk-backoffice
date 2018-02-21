@@ -146,6 +146,7 @@
 
         $scope.fetchMode = function () {
             $http.get("", {
+                withCredentials: true,
                 headers: {'Accept': 'application/json'}
             }).then(function (response) {
 
