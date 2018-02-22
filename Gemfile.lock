@@ -13,6 +13,16 @@ GIT
       rails
       redis
 
+GIT
+  remote: https://github.com/rmehner/webpacker
+  revision: e90ad120654e8dd55350b46461d7a9340ced04ca
+  branch: fix/do-not-break-on-unknown-environments
+  specs:
+    webpacker (3.2.2)
+      activesupport (>= 4.2)
+      rack-proxy (>= 0.6.1)
+      railties (>= 4.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -372,10 +382,6 @@ GEM
       rails (>= 3.0.0)
       rspec
       webmock
-    webpacker (3.2.0)
-      activesupport (>= 4.2)
-      rack-proxy (>= 0.6.1)
-      railties (>= 4.2)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -437,7 +443,7 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   unicorn
   webmock-rspec-helper
-  webpacker (= 3.2.0)
+  webpacker!
   whenever
 
 RUBY VERSION
