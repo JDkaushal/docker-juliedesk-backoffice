@@ -5,7 +5,6 @@ class Operator < ActiveRecord::Base
   has_many :operator_actions_groups
   has_many :operator_presences
 
-
   PRIVILEGE_OPERATOR = nil
   PRIVILEGE_ADMIN = "admin"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_1 = "super_operator_level_1"
@@ -51,10 +50,6 @@ class Operator < ActiveRecord::Base
       happy_customer_count: uniq_clients.size,
       productivity_per_hour_today: '%.1f' % productivity_per_hour_today
     }
-  end
-
-  def requests_to_learn_count
-    operator_actions_groups.to_learn.count
   end
 
   def password=(value)

@@ -1,5 +1,5 @@
 <template>
-    <div class="custom-checkbox" @click="changeValue"  :class="{active: value, 'red-green': colors == 'red-green'}">
+    <div class="custom-checkbox" @click="changeValue"  v-bind:class="{active: value, 'red-green': colors == 'red-green'}">
         <div class="background"></div>
         <div class="tick"></div>
     </div>
