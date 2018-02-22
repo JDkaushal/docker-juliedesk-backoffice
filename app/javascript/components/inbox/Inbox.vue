@@ -35,7 +35,7 @@
 
             <div class="spinner-container">
                 <span class="fas fa-spinner fa-spin"
-                     v-if="true || backofficeInterfaceService.loading"/>
+                     v-if="backofficeInterfaceService.loading"/>
             </div>
 
             <inbox-empty-message v-if="allMessagesThreads.length === 0 && !backofficeInterfaceService.loading"/>

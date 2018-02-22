@@ -15,7 +15,7 @@ namespace :deploy do
       with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
         assets_directory = fetch(:assets_dir, "assets")
-        packs_directory = fetch(:packs_dirs, "packs")
+        packs_directory = fetch(:packs_dir, "packs")
 
         fetch(:infrastructures).each do |key,value|
           # Cleanup
@@ -56,8 +56,8 @@ namespace :deploy do
       run_locally do
         with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
-          assets_directory = fetch(:assets_dirs, "assets")
-          packs_directory = fetch(:packs_dirs, "packs")
+          assets_directory = fetch(:assets_dir, "assets")
+          packs_directory = fetch(:packs_dir, "packs")
 
           fetch(:infrastructures).each do |key,value|
             # Compilation
