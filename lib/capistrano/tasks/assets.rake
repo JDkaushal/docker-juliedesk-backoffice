@@ -15,6 +15,7 @@ namespace :deploy do
       with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
         assets_directory = fetch(:assets_dir, "assets")
+        packs_directory = fetch(:packs_dirs, "packs")
 
         fetch(:infrastructures).each do |key,value|
           # Cleanup
@@ -26,6 +27,7 @@ namespace :deploy do
                if (ENV['ROLES']).nil? || /#{role}/.match(ENV['ROLES'])
                  if role == value[:role]
                     execute "rsync -av --delete ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    execute "rsync -av --delete ./public/"+packs_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+packs_directory.to_s+"/"
                  end
                end
             end
@@ -54,7 +56,8 @@ namespace :deploy do
       run_locally do
         with rails_env: fetch(:rails_env), rails_groups: fetch(:rails_assets_groups) do
 
-          assets_directories = fetch(:assets_dirs, %w"assets packs")
+          assets_directory = fetch(:assets_dirs, "assets")
+          packs_directory = fetch(:packs_dirs, "packs")
 
           fetch(:infrastructures).each do |key,value|
             # Compilation
@@ -65,9 +68,8 @@ namespace :deploy do
                 # Support ROLE Env filtering
                 if (ENV['ROLES']).nil? || /#{value[:role]}/.match(ENV['ROLES'])
                   if role == value[:role]
-                    assets_directories.each do |assets_directory|
-                      execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
-                    end
+                    execute "rsync -av ./public/"+assets_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+assets_directory.to_s+"/"
+                    execute "rsync -av ./public/"+packs_directory.to_s+"/ #{server.user}@#{server.hostname}:#{release_path}/public/"+packs_directory.to_s+"/"
                   end
                 end
               end
