@@ -19,7 +19,7 @@ gem 'pg'
 gem 'sass-rails', '~> 5.0.7'
 gem "compass-rails", "~> 3.0.2"
 
-gem 'webpacker', '~> 3.2.1'
+gem 'webpacker', '3.2.1'
 
 GAT = "https://#{ENV['GITHUB_ACCESS_TOKEN']}:x-oauth-basic@github.com/JulieDesk"
 gem "jd_auth", '~> 1.0.7', git: "#{GAT}/jd_auth", tag: "v1.0.7"
