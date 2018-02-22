@@ -1,6 +1,6 @@
 const { dev_server: devServer } = require('@rails/webpacker').config
 
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production_ey' || process.env.NODE_ENV === 'production_sg'
 const inDevServer = process.argv.find(v => v.includes('webpack-dev-server'))
 const extractCSS = !(inDevServer && (devServer && devServer.hmr)) || isProduction
 
