@@ -1,9 +1,11 @@
 <template>
     <div>
-        <the-header
+        <backoffice-header
                 :paths="paths"
                 current-title="Anonymised threads"
-        />
+                action-button="Next"
+                v-on:clickActionButton="validate"
+        ></backoffice-header>
         <div class="row justify-content-md-center">
             <div class="col-md-8">
                 <br>
@@ -30,8 +32,8 @@
                 </table>
 
                 <div class="text-center">
-                    <button class="btn btn-success" @click="goToThreadsPairs">Thread pairs</button>
-                    <button class="btn btn-primary" @click="goToThreadsImpairs">Thread impairs</button>
+                    <button class="btn btn-success" v-on:click="goToThreadsPairs">Thread pairs</button>
+                    <button class="btn btn-primary" v-on:click="goToThreadsImpairs">Thread impairs</button>
                 </div>
             </div>
         </div>
@@ -39,7 +41,7 @@
 </template>
 
 <script>
-    import TheHeader from '../common/TheHeader.vue'
+    import BackofficeHeader from '../common/BackofficeHeader.vue'
 
     export default {
         data() {
@@ -61,7 +63,7 @@
             }
         },
         components: {
-            TheHeader
+            BackofficeHeader
         }
     }
 </script>

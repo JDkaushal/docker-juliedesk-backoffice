@@ -336,6 +336,21 @@
             $scope.refreshInbox(false);
             $scope.$apply();
         };
+
+        /*window.redrawLocksStatuses = function(lockStatuses) {
+            $scope.messagesThreads = _.each($scope.messagesThreads, function(messagesThread) {
+                messagesThread.locked_by_operator_id = null;
+                _.each(lockStatuses, function(lockStatus) {
+                    if(lockStatus.messages_thread_id == messagesThread.id) {
+                        messagesThread.locked_by_operator_id = 1;
+                        messagesThread.locked_by_operator_name = lockStatus.operator_name;
+                    }
+                });
+            });
+
+            $scope.$apply();
+        };*/
+
         window.archiveMessageThread = function(messageThreadId) {
             $scope.messagesThreads = _.filter($scope.messagesThreads, function(messagesThread) {
                 return messagesThread.id !=  messageThreadId;
@@ -386,13 +401,7 @@
 
       
       <div class="refresh-container">
-        <div class="operator-greetings">
-          Hey <%= session[:user_name]%>, I hope you are having a good day!
-          <br>
-          You have dealt with <span class="metric"><%= @operator_greetings_stats[:requests_handled_today_count]%></span> requests today, making <span class="metric"><%= @operator_greetings_stats[:happy_customer_count]%></span> happy customers.
-
-          Your average productivity per hour today is <span class="metric"><%= @operator_greetings_stats[:productivity_per_hour_today]%></span>
-        </div>
+        <%= render partial: "messages_threads/partials/operator_greetings"%>
 
         <button class="btn btn-default btn-sm refresh-inbox-button" ng-click="refreshInbox(true)" ng-disabled="loading"><%= I18n.t("common.refresh") %></button>
         <%= image_tag "ajax-loader.gif", class: "spinner", "ng-show" => "loading" %>
@@ -406,6 +415,9 @@
           </div>
       </div>
 
+      <% if feature_active? :test_feature, session[:operator_id], session[:privilege] %>
+          <div style="font-size: 30px; color: #f00;">I SEE THIS BECAUSE THE FEATURE test_feature is active for me.</div>
+      <% end %>
 
       <div ng-show="priorizedMessagesThreads.length > 0">
         <div class="category-title"><%= I18n.t("index.priorized") %></div>

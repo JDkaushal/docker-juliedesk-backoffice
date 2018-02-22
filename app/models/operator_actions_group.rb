@@ -5,8 +5,6 @@ class OperatorActionsGroup < ActiveRecord::Base
 
   has_many :operator_actions
 
-
-
   LABEL_ARCHIVE                 = "archive"
   LABEL_SEND_TO_SUPPORT         = "send_to_support"
   REVIEW_STATUS_TO_REVIEW       = nil
@@ -17,8 +15,6 @@ class OperatorActionsGroup < ActiveRecord::Base
   GROUP_REVIEW_STATUS_TO_LEARN  = "to_learn"
   GROUP_REVIEW_STATUS_LEARNT    = "learnt"
   GROUP_REVIEW_STATUS_UNSET     = nil
-
-  scope :to_learn, -> { where(review_status: REVIEW_STATUS_TO_LEARN) }
 
   def self.group_actions params
     # Find all operator actions for this thread and operator
