@@ -304,19 +304,6 @@
                 &.warning {
                     background-color: #F19165;
                 }
-
-
-
-                    .to-be-merged-sprite {
-                        //                        background-image: url(<%= asset_path 'merge_whitex2.png' %>);
-                        background: yellow;
-                        background-repeat: no-repeat;
-                        background-size: 17px 10px;
-                        width: 17px;
-                        height: 10px;
-                        display: inline-block;
-                    }
-
             }
         }
 

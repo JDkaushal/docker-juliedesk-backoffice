@@ -34,9 +34,8 @@
             <inbox-operator-greetings :operator="currentOperator"/>
 
             <div class="spinner-container">
-                <img src="assets/ajax-loader.gif"
-                     class="spinner"
-                     v-if="backofficeInterfaceService.loading"/>
+                <span class="fas fa-spinner fa-spin"
+                     v-if="true || backofficeInterfaceService.loading"/>
             </div>
 
             <inbox-empty-message v-if="allMessagesThreads.length === 0 && !backofficeInterfaceService.loading"/>
@@ -190,12 +189,10 @@
     }
 
     .spinner-container {
-        height: 20px;
-        .spinner {
-            margin: 0 auto;
-            display: block;
-            width: 20px;
-        }
+        height: 24px;
+        text-align: center;
+        font-size: 24px;
+        color: #999;
     }
 
 
