@@ -24,26 +24,54 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def weekly_recap_data
-    [:email, :start_date].each do |required_param|
-      unless params[required_param].present?
-        render json: {
-                   status: "error",
-                   message: "missing required param #{required_param}",
-                   data: {}
-               }
-        return
-      end
-    end
 
-    render json: {
-        status: "success",
-        data: {
-            results: WeeklyRecapHelper.get_weekly_recap_data({
-                                                                 account_email: params[:email],
-                                                                 start_of_week: DateTime.parse(params[:start_date])
-                                                             })
-        }
-    }
+    if params[:mode] == "activity_recap"
+      [:email, :window_start_time, :window_end_time].each do |required_param|
+        unless params[required_param].present?
+          render json: {
+              status: "error",
+              message: "missing required param #{required_param}",
+              data: {}
+          }
+          return
+        end
+      end
+
+      window_start_time = DateTime.parse(params[:window_start_time])
+      window_end_time = DateTime.parse(params[:window_end_time])
+
+      render json: {
+          status: "success",
+          data: {
+              results: WeeklyRecapHelper.get_activity_recap_data({
+                                                                     account_email: params[:email],
+                                                                     window_start_time: window_start_time,
+                                                                     window_end_time: window_end_time
+                                                                 })
+          }
+      }
+    else
+      [:email, :start_date].each do |required_param|
+        unless params[required_param].present?
+          render json: {
+              status: "error",
+              message: "missing required param #{required_param}",
+              data: {}
+          }
+          return
+        end
+      end
+
+      render json: {
+          status: "success",
+          data: {
+              results: WeeklyRecapHelper.get_weekly_recap_data({
+                                                                   account_email: params[:email],
+                                                                   start_of_week: DateTime.parse(params[:start_date])
+                                                               })
+          }
+      }
+    end
   end
 
   def messages_thread_context

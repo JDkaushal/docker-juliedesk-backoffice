@@ -52,12 +52,10 @@ class MessageClassification < ActiveRecord::Base
       FOLLOW_UP_CONTACTS
   ]
 
-
   REVIEW_STATUS_TO_REVIEW  = nil
   REVIEW_STATUS_TO_LEARN   = 'to_learn'
   REVIEW_STATUS_REVIEWED   = 'reviewed'
   REVIEW_STATUS_LEARNT     = 'learnt'
-
 
   THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT   = "scheduling_waiting_for_client"
   THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT  = "scheduling_waiting_for_contact"
@@ -68,6 +66,11 @@ class MessageClassification < ActiveRecord::Base
   THREAD_STATUS_HANDLED_BY_CLIENT               = "handled_by_client"
   THREAD_STATUS_EVENTS_CREATION                 = "events_creation"
   THREAD_STATUS_OTHER                           = "other"
+
+  SCHEDULING_CLASSIFICATIONS = [
+    THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT,
+    THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
+  ]
 
   VIRTUAL_EVENT_TYPES = ['call', 'confcall', 'skype', 'hangout', 'webex']
   PHYSICAL_EVENT_TYPES = ['appointment', 'meeting', 'lunch', 'coffee', 'work_session', 'dinner', 'breakfast', 'drink']

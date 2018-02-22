@@ -2,13 +2,14 @@ require "rails_helper"
 
 describe WeeklyRecapHelper do
 
-  describe "get_weekly_recap_data" do
+  describe "get_activity_recap_data" do
     describe "scheduled" do
       before do
         @scheduled_correct_mt = FactoryGirl.create(:messages_thread, {
                                                                        account_email: "nicolas@juliedesk.com",
                                                                        subject: "Subject correct mt",
                                                                        server_thread_id: 1,
+                                                                       status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -58,6 +59,7 @@ describe WeeklyRecapHelper do
                                                                       account_email: "nicolas@juliedesk.com",
                                                                       subject: "Subject before mt",
                                                                       server_thread_id: 1,
+                                                                      status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-01-10",
@@ -107,6 +109,7 @@ describe WeeklyRecapHelper do
                                                                       account_email: "nicolas2@juliedesk.com",
                                                                       subject: "Subject other account mt",
                                                                       server_thread_id: 1,
+                                                                      status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-01-10",
@@ -156,6 +159,7 @@ describe WeeklyRecapHelper do
                                                                                account_email: "nicolas@juliedesk.com",
                                                                                subject: "Subject already scheduled mt",
                                                                                server_thread_id: 1,
+                                                                               status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                                messages: [
                                                                                    FactoryGirl.create(:message, {
                                                                                                                   received_at: "2016-01-10",
@@ -202,9 +206,13 @@ describe WeeklyRecapHelper do
                                                                            })
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -241,6 +249,7 @@ describe WeeklyRecapHelper do
                                                                        account_email: "nicolas2@juliedesk.com",
                                                                        subject: "Subject correct mt",
                                                                        server_thread_id: 1,
+                                                                       status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -291,6 +300,7 @@ describe WeeklyRecapHelper do
                                                                        account_email: "nicolas2@juliedesk.com",
                                                                        subject: "Subject incorrect mt",
                                                                        server_thread_id: 1,
+                                                                       status: MessageClassification::THREAD_STATUS_SCHEDULED,
                                                                        messages: [
                                                                            FactoryGirl.create(:message, {
                                                                                                           received_at: "2016-01-10",
@@ -339,9 +349,13 @@ describe WeeklyRecapHelper do
 
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -378,6 +392,7 @@ describe WeeklyRecapHelper do
                                                                       account_email: "nicolas@juliedesk.com",
                                                                       subject: "Subject creation mt",
                                                                       server_thread_id: 1,
+                                                                      status: MessageClassification::THREAD_STATUS_EVENTS_CREATION,
                                                                       messages: [
                                                                           FactoryGirl.create(:message, {
                                                                                                          received_at: "2016-02-03",
@@ -407,9 +422,13 @@ describe WeeklyRecapHelper do
 
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -424,7 +443,6 @@ describe WeeklyRecapHelper do
                                            :event =>
                                                {
                                                    :event_id => "event_id_1",
-
                                                    :calendar_id => "calendar_id_1",
                                                    :event_url => "event_url_1",
                                                    :calendar_login_username => "calendar_login_username_1",
@@ -485,9 +503,13 @@ describe WeeklyRecapHelper do
 
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -558,9 +580,13 @@ describe WeeklyRecapHelper do
 
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -668,6 +694,8 @@ describe WeeklyRecapHelper do
             account_email: "nicolas@juliedesk.com",
             subject: "Subject scheduling aborted mt 2",
             server_thread_id: 1,
+            status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED,
+            aborted_at: DateTime.new(2016, 02, 02),
             messages: [
                 FactoryGirl.create(:message, {
                     received_at: "2016-01-17",
@@ -696,12 +724,16 @@ describe WeeklyRecapHelper do
                 })
             ]
         })
-
       end
+
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -768,6 +800,8 @@ describe WeeklyRecapHelper do
                                                                      account_email: "nicolas@juliedesk.com",
                                                                      subject: "Subject aborted mt",
                                                                      server_thread_id: 1,
+                                                                     status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED,
+                                                                     aborted_at: DateTime.new(2016, 02, 02),
                                                                      messages: [
                                                                          FactoryGirl.create(:message, {
                                                                                                         received_at: "2016-02-03",
@@ -807,9 +841,12 @@ describe WeeklyRecapHelper do
 
       end
       it "should behave correctly" do
-        data = WeeklyRecapHelper.get_weekly_recap_data({
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+        data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           start_of_week: DateTime.parse("2016-02-01")
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([

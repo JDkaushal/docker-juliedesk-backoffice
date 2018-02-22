@@ -40,6 +40,9 @@ class MessagesThread < ActiveRecord::Base
   scope :not_syncing, -> { where('NOT (? = ANY(tags))', 'syncing') }
   scope :with_this_client, -> (account_email) { where('? = ANY(clients_in_recipients)', account_email) }
 
+  scope :currently_scheduling, -> { where(status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]) }
+
+
   include ApplicationHelper
   include TemplateGeneratorHelper
 
@@ -53,6 +56,33 @@ class MessagesThread < ActiveRecord::Base
 
   def get_last_message
     messages.sort_by{|m| m.received_at}.last
+  end
+
+  def check_abortion(now = nil)
+    now ||= DateTime.now
+
+    abortion_date = generate_abortion_date
+
+    if abortion_date && now >= abortion_date
+      self.update(status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED, aborted_at: DateTime.now)
+    end
+  end
+
+  def generate_abortion_date
+    base_abortion_date = [self.follow_up_reminder_date, self.last_suggested_date, self.last_archive_date].compact.max
+
+    if base_abortion_date.present?
+      base_abortion_date + 15.days
+    end
+  end
+
+  def last_suggested_date
+    date = self.suggested_date_times.max
+    date.present? ? date.to_datetime : nil
+  end
+
+  def last_archive_date
+    operator_actions.select(:initiated_at).where(nature: 'archive').order(:initiated_at).last.try(:initiated_at)
   end
 
   def send_account_gone_unsubscribe_email

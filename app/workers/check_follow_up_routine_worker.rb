@@ -1,4 +1,4 @@
-class CheckRoutineWorker
+class CheckFollowUpRoutineWorker
 
   @queue = :follow_up
 
@@ -8,7 +8,6 @@ class CheckRoutineWorker
 
   def self.perform
     now = Time.now
-
     # All messages threads having a follow_up_reminder_date set that has been passed are tagged as should_follow_up,
     # so that they will appear on the home page in the follow up inbox
 

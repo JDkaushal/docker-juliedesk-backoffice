@@ -1420,4 +1420,35 @@ describe MessagesThread, :type => :model do
       end
     end
   end
+
+  describe 'Abortion check' do
+    let(:oa_initiated_at) { DateTime.new(2018, 03, 01) }
+    let(:follow_up_reminder_date) { DateTime.new(2018, 01, 01) }
+    let(:last_suggested_date) { DateTime.new(2018, 02, 01) }
+    let!(:operator_action) { FactoryGirl.create(:operator_action, nature: 'archive', initiated_at: oa_initiated_at) }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, follow_up_reminder_date: follow_up_reminder_date, operator_actions: [operator_action]) }
+
+    before(:each) do
+      ja = messages_thread.messages.map(&:message_classifications).flatten.map(&:julie_action).last
+      ja.update(action_nature: JulieAction::JD_ACTION_SUGGEST_DATES, date_times: [last_suggested_date].to_json)
+    end
+
+    describe 'generate_abortion_date' do
+      it 'should generate the correct abortion date' do
+        expect(messages_thread.generate_abortion_date).to eq(oa_initiated_at + 15.days)
+      end
+    end
+
+    describe 'check_abortion' do
+      it 'should not update the thread status' do
+        messages_thread.check_abortion(DateTime.new(2018,01,02))
+        expect(messages_thread.status).to eq(MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT)
+      end
+
+      it 'should update the thread status to aborted' do
+        messages_thread.check_abortion(DateTime.new(2019,01,02))
+        expect(messages_thread.status).to eq(MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED)
+      end
+    end
+  end
 end
