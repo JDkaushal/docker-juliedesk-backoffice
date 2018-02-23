@@ -292,7 +292,12 @@
 
         //Events Listeners----------------------------------------------------------------
         $scope.$on('attendeeAdded', function(event, args) {
-            var existingAttendee = _.find($scope.attendees, function(attendee) { return attendee.email == args.attendee.email });
+            var existingAttendee = undefined;
+
+            if(args.attendee.email) {
+                existingAttendee = _.find($scope.attendees, function(attendee) { return attendee.email == args.attendee.email });
+            }
+
             if(existingAttendee)
                 existingAttendee.isPresent = true;
             else
