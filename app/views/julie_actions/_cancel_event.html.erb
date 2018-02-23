@@ -47,6 +47,16 @@
     };
 
     var cancelEventReplyFunction = function() {
+        // Need to refresh the meeting rooms state if any to unselect previously selected rooms
+        var meetingRoomManager = $('#meeting-rooms-manager').scope();
+        var roomsDetails = angular.copy(meetingRoomManager.getMeetingRoomDetails()) || undefined;
+        var bookedRoomsDetails = angular.copy(meetingRoomManager.getBookedRoomsDetails()) || undefined;
+
+        if (roomsDetails) {
+          _.each(roomsDetails, function(roomDetail) {
+             roomDetail.selected_meeting_room = undefined;
+          });
+        }
 
         $.ajax({
             url: "/julie_actions/<%= @julie_action.id %>/update",
@@ -61,7 +71,9 @@
                 date_times: window.timeSlotsToSuggest,
                 processed_in: Date.now() - window.startedAt,
                 messages_thread_id: "<%= @messages_thread.id %>",
-                client_settings: window.getClientSettings()
+                client_settings: window.getClientSettings(),
+                meeting_room_details: roomsDetails,
+                booked_rooms_details: bookedRoomsDetails
             }
         });
         window.sendReply();

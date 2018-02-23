@@ -64,7 +64,14 @@ class ApplicationController < ActionController::Base
 
   def authenticate
     sound_is_activated = session[:sound_is_activated]
-    return false unless jd_auth_authenticate_server
+
+    if Rails.env.development?
+      @jd_auth_current_user = OpenStruct.new(email: ENV['DEV_OPERATOR_EMAIL'])
+      #jd_auth_current_user = OpenStruct.new(email: ENV['DEV_OPERATOR_EMAIL'])
+    else
+      return false unless jd_auth_authenticate_server
+    end
+
     operator = Operator.find_by_email_and_enabled(jd_auth_current_user.email, true)
 
     if operator
