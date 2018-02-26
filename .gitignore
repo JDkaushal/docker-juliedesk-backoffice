@@ -19,6 +19,8 @@ doc/*.html
 public/assets*
 /public/packs
 /public/packs-test
+/public/packs-ey
+/public/packs-sg
 /node_modules
 yarn-debug.log*
 .yarn-integrity
