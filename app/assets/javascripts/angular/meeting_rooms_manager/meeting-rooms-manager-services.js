@@ -139,10 +139,20 @@
             }
         });
 
+        var IsBestChoiceByFloor = PrioritizationRule({
+            initialize: function() {
+                this.type = 'isBestChoiceByFloor'
+            },
+            computeRule: function(clientDetails, meetingRoom) {
+                return meetingRoom.floor_location_score;
+            }
+        });
+
         var rulesMapping = {
             'is_a_preferred_room_rule': IsAPreferredRoomRule,
             'is_in_main_building_rule': IsInMainBuildingRule,
-            'is_in_main_building_and_floor_rule': IsInMainBuildingAndFloorRule
+            'is_in_main_building_and_floor_rule': IsInMainBuildingAndFloorRule,
+            'is_best_choice_by_floor': IsBestChoiceByFloor
         };
 
         var PrioritizationFlow = function (clientDetails) {

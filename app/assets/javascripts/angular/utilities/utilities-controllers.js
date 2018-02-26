@@ -307,7 +307,7 @@
         };
 
         $scope.fallbackOnLocationsCluster = function() {
-            return $scope.currentAddress;
+            return $scope.clusterizedLocations[0] || $scope.currentAddress;
         };
 
     }]);
