@@ -388,7 +388,7 @@ class MessagesThreadsController < ApplicationController
   def render_messages_threads
     respond_to do |format|
       format.html {
-        if params[:vuejs]
+        if feature_active?(:inbox_vuejs_feb2018, session[:operator_id], session[:privilege])   || params[:vuejs]
           render "index.vue.html.erb", layout: nil
         end
       }
