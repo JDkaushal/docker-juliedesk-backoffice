@@ -1067,7 +1067,11 @@
             //
             //     // Backward compatibility
                 if($.isEmptyObject(threadDataRoomsDetails.room_selection_mode)) {
-                    threadDataRoomsDetails.room_selection_mode = autoRoomModeWithFilters;
+                    if($.isEmptyObject(threadDataRoomsDetails.roomsSelectionMode)) {
+                        threadDataRoomsDetails.room_selection_mode = autoRoomModeWithFilters
+                    } else {
+                        threadDataRoomsDetails.room_selection_mode = threadDataRoomsDetails.roomsSelectionMode;
+                    }
                 }
             //
                 if(threadDataRoomsDetails.room_selection_mode.id.indexOf('auto_room_selection') > -1) {
