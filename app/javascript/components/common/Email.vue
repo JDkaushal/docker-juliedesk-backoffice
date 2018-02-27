@@ -72,6 +72,7 @@
 
             font-size: 14px;
             background: #fff;
+            min-height: 80px;;
 
             .from, .to, .cc {
                 padding: 2px 130px 2px 20px;

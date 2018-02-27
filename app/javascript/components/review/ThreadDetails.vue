@@ -23,13 +23,13 @@
 <script>
     import TheHeader from '../common/TheHeader'
     import Email from '../common/Email.vue'
-    import EmailServerInterfaceService from '../../services/EmailServerInterface.service.js'
+    import ConscienceInterfaceService from '../../services/ConscienceInterface.service.js'
 
     export default {
         props: ['messagesThreadId'],
         data() {
             return {
-                emailServerInterfaceService: new EmailServerInterfaceService(),
+                conscienceInterfaceService: new ConscienceInterfaceService(),
                 paths: [
                     {label: 'Review', path: '/review'},
                     {label: 'Anonymised threads', path: '/review/anonymised_messages_threads'}
@@ -46,8 +46,9 @@
             },
             fetch () {
                 let self = this;
-                this.emailServerInterfaceService.getMessagesThread(this.messagesThreadId).then(function(messagesThread) {
-                    self.messagesThread = messagesThread;
+                this.conscienceInterfaceService.getMessagesThread(this.messagesThreadId).then(function(data) {
+
+                    self.messagesThread = data.anonymised_thread;
                 });
             }
 

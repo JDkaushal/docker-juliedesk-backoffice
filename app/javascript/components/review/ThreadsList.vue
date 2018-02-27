@@ -22,7 +22,7 @@
                     <tr>
                         <td>{{ threads_count }}</td>
                         <td>{{ reviewed_threads_count }} ({{ reviewed_threads_count / threads_count | percentage }})</td>
-                        <td>{{ errored_reviewed_threads_count }} ({{ errored_reviewed_threads_count / threads_count | percentage
+                        <td>{{ incorrect_reviewed_threads_count }} ({{ incorrect_reviewed_threads_count / threads_count | percentage
                             }})
                         </td>
                     </tr>
@@ -30,8 +30,7 @@
                 </table>
 
                 <div class="text-center">
-                    <button class="btn btn-success" @click="goToThreadsPairs">Thread pairs</button>
-                    <button class="btn btn-primary" @click="goToThreadsImpairs">Thread impairs</button>
+                    <button class="btn btn-success" @click="goToNextThread">Review next thread</button>
                 </div>
             </div>
         </div>
@@ -40,6 +39,7 @@
 
 <script>
     import TheHeader from '../common/TheHeader.vue'
+    import ConscienceInterfaceService from '../../services/ConscienceInterface.service.js'
 
     export default {
         data() {
@@ -47,21 +47,33 @@
                 paths: [
                     {label: 'Review', path: '/review'},
                 ],
-                threads_count: 2371,
-                reviewed_threads_count: 237,
-                errored_reviewed_threads_count: 2
+                threads_count: null,
+                reviewed_threads_count: null,
+                incorrect_reviewed_threads_count: null,
+                conscienceInterfaceService: new ConscienceInterfaceService()
             }
         },
         methods: {
-            goToThreadsPairs: function () {
-                window.location = "/review/anonymised_messages_threads/489574"
+            goToNextThread() {
+                this.conscienceInterfaceService.listAnonymisedMessagesThreads().then(data => {
+                    let threadId = data.threads[0].thread_id
+                    window.location = `/review/anonymised_messages_threads/${threadId}`
+                })
             },
-            goToThreadsImpairs: function () {
-                window.location = "/review/anonymised_messages_threads/486444"
+            fetch() {
+                let self = this
+                this.conscienceInterfaceService.getStatsAnonymisedMessagesThreads().then(data => {
+                    self.threads_count = data.stats.threads_count
+                    self.reviewed_threads_count = data.stats.reviewed_threads_count
+                    self.incorrect_reviewed_threads_count = data.stats.incorrect_reviewed_threads_count
+                })
             }
         },
         components: {
             TheHeader
+        },
+        created() {
+            this.fetch();
         }
     }
 </script>
