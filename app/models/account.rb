@@ -66,6 +66,9 @@ class Account
   LANGUAGE_LEVEL_NORMAL = "normal"
   LANGUAGE_LEVEL_FORMAL = "soutenu"
 
+  WORKING_DAY_START = { hour: 8, min: 30, second: 0 }
+  WORKING_DAY_END   = { hour: 18, min: 30, second: 0 }
+
   def self.create_from_email email, params={}
     cache = params[:accounts_cache]# || self.accounts_cache
     users_access_lost_cache = params[:users_access_lost_cache] || self.users_with_lost_access
@@ -272,30 +275,21 @@ class Account
     end
   end
 
+  def can_be_followed_up_now?
+    account_timezone     = self.default_timezone_id || 'UTC'
+    account_current_time = Time.now.in_time_zone(account_timezone)
+
+    # Weekend
+    return false if account_current_time.saturday? || account_current_time.sunday?
+
+    account_working_start_time  = account_current_time.change(WORKING_DAY_START)
+    account_working_end_time    = account_current_time.change(WORKING_DAY_END)
+
+    account_current_time.between?(account_working_start_time, account_working_end_time)
+  end
+
 
   def build_contacts_from_same_company params={}
-
-    # if params[:accounts_cache]
-    #   name_str = 'name'.freeze
-    #
-    #   self.contacts_from_same_company = params[:accounts_cache].values.select{|account|
-    #     self.company_hash &&
-    #         account['company_hash'].try(:[], name_str) == self.company_hash[name_str] &&
-    #         account['email'] != self.email
-    #   }.map{|account|
-    #     julie_alias = account['julie_aliases'] && account['julie_aliases'].first
-    #     json_julie_alias = julie_alias ? {email: julie_alias['email'], displayName: "#{julie_alias['first_name']} #{julie_alias['last_name']}"} : nil
-    #
-    #     {
-    #         name: account['full_name'],
-    #         email: account['email'],
-    #         isClient: 'true'.freeze,
-    #         assisted: "#{json_julie_alias.present?}",
-    #         assistedBy: json_julie_alias
-    #     }
-    #   }
-    # else
-      #We retrieve the other users of the same company from the cache directly
       company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'name'))
 
       if company_members.present?

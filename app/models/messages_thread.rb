@@ -645,7 +645,12 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def can_be_processed_now
-    !self.account || self.account.julie_can_process_now
+    return true if self.account.blank?
+    if self.should_follow_up? && !self.in_inbox
+      self.account.can_be_followed_up_now? && self.account.julie_can_process_now
+    else
+      self.account.julie_can_process_now
+    end
   end
 
   def should_reprocess_linked_attendees(computed_recipients_changed)
