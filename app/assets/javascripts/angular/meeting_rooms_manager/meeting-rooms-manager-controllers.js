@@ -211,7 +211,7 @@
                           return appointment.kind === currentAppointment.kind
                       });
 
-                      var currentAddress = !currentAppointmentIsVirtual && window.getCurrentAddressObject();
+                      var currentAddress = window.getCurrentAddressObject();
                       var currentAddressIsDefaultForAppointment = currentAddress && currentClientAppointment && currentAddress.address == currentClientAppointment.default_address.address;
                       var meetingRoomsUsedForCurrentAppointment = currentClientAppointment && currentClientAppointment.meeting_room_used;
                       var meetingRoomsUsedForCurrentAddress = currentAddress && currentAddress.meeting_room_used && currentAddress.meeting_rooms_enabled;
