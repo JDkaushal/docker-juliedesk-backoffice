@@ -547,7 +547,8 @@
             });
 
             reProcessTitle();
-            $scope.checkAssistantsPresence();
+            // Now considering the assistants even when they are not present
+            //$scope.checkAssistantsPresence();
             $rootScope.$broadcast('attendeesRefreshed', {attendees: $scope.attendees});
             $rootScope.$broadcast('attendeesFetched', {attendees: $scope.attendees});
         };
@@ -850,6 +851,8 @@
 
         // Check if every assistant is present as attendee
         // If not we remove him/her from the assisted client
+
+        // Not used anymore
         $scope.checkAssistantsPresence = function() {
             var presentAttendees = $scope.getAttendeesOnPresence(true);
             var presentAttendeesEmails = _.map(presentAttendees, function(att) { return att.email; });
