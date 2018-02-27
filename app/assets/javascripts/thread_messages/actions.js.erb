@@ -183,16 +183,28 @@ function IcsManager() {
         var vtimezones = comp.getAllSubcomponents("vtimezone");
         _.each(vtimezones, function (vtimezone) {
             if (!(ICAL.TimezoneService.has(
-                            vtimezone.getFirstPropertyValue("tzid")))) {
+                    vtimezone.getFirstPropertyValue("tzid")))) {
                 ICAL.TimezoneService.register(vtimezone);
             }
         });
 
         var vevent = comp.getFirstSubcomponent("vevent");
         var event = new ICAL.Event(vevent);
-        var mStartDate = moment.tz(event.startDate.toString(), event.startDate.timezone || timezone).utc();
 
-        var mEndDate = moment.tz(event.endDate.toString(), event.endDate.timezone || timezone).utc();
+        // Start date
+        if(event.startDate.timezone)
+            var mStartDate  = moment(event.startDate.toJSDate()).utc();
+        else
+            var mStartDate = moment.tz(event.startDate.toString(), event.startDate.timezone || timezone).utc();
+
+
+        // End date
+        if(event.endDate.timezone)
+            var mEndDate = moment.tz(event.endDate.toString(), timezone).utc();
+        else
+            var mEndDate = moment.tz(event.endDate.toString(), event.endDate.timezone || timezone).utc();
+
+
         var mStartDateRaw = mStartDate.clone();
         var mEndDateRaw = mEndDate.clone();
 
