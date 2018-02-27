@@ -100,9 +100,10 @@
 
             klass.prototype.applyRule = function(clientDetails, meetingRoom) {
                 var result = 0;
+                var computingResult = this.computeRule(clientDetails, meetingRoom);
 
-                if(this.computeRule(clientDetails, meetingRoom)) {
-                    result = this.weight;
+                if(computingResult) {
+                    result = (parseFloat(computingResult) || 1) * this.weight;
                 }
 
                 return result;
