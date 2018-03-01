@@ -8,7 +8,8 @@ class TrackingInterfaceService extends InterfaceService {
         });
     }
 
-    track(event, data={}) {
+    track(event, data) {
+        data = data || {}
         return this.post("/track", {
                 name: event,
                 date: (new Date()).toISOString(),
