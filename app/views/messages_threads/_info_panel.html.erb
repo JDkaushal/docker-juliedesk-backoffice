@@ -323,7 +323,8 @@
             calendarLoginUsername: window.eventData.calendar_login_username, //.replace(/\\/g, "\\\\\\\\"),
             locale: window.threadComputedData.locale,
             eventDoesNotExistSelector: $eventDoesNotExist,
-            eventFromInvitation: window.eventData.event_from_invitation,
+            // We stringify event_from_invitation, because we expect it as a string in subsequent code (legacy code) although it is returned as a boolean from the API
+            eventFromInvitation: String(window.eventData.event_from_invitation),
             eventFromInvitationOrganizer: window.eventData.event_from_invitation_organizer,
             uxElement: 'form',
             doneEditingCallback: function() {
