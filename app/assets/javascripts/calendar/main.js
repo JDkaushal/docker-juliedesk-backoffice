@@ -737,7 +737,7 @@ Calendar.prototype.fetchAllAccountsEvents = function(start, end, trackingOptions
     var momentedEnd = moment(end);
     var formattedStart = momentedStart.format();
 
-    var travelTimeCalculator = window.featuresHelper.isFeatureActive('travel_time_v2') ? null : $('#travel_time_calculator').scope();
+    var travelTimeCalculator = null;
     var meetingRoomsManager = $('#meeting-rooms-manager').scope();
     var virtualMeetingHelper = $('#virtual-meetings-helper').scope();
 

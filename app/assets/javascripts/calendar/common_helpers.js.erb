@@ -215,7 +215,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         var listEventsUrl = host + "/api/v1/calendar_proxy/list_events";
         var timeTravelManager = $('#travel_time_calculator').scope();
         var appointment = null;
-        var calculateTravelTime = !!(window.featuresHelper.isFeatureActive("travel_time_v2") && timeTravelManager);
+        var calculateTravelTime = !!(timeTravelManager);
 
         if(calculateTravelTime) {
           appointment = {

@@ -1,7 +1,5 @@
-<% if feature_active? :travel_time, session[:operator_id], session[:privilege] %>
-    <%= javascript_include_tag 'angular_travel_time_manager_app' %>
-    <div id="travel_time_manager">
-      <div id="travel_time_calculator" ng-controller="travelTimeCalculator"></div>
-      <travel-time-tile ng-show="displayTile" ng-cloak></travel-time-tile>
-    </div>
-<% end %>
+<%= javascript_include_tag 'angular_travel_time_manager_app' %>
+<div id="travel_time_manager">
+  <div id="travel_time_calculator" ng-controller="travelTimeCalculator"></div>
+  <travel-time-tile ng-show="displayTile" ng-cloak></travel-time-tile>
+</div>
