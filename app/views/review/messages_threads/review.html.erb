@@ -52,7 +52,7 @@
         calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
         calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, { synchronize: true });
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, { synchronize: true, syncIsOptional: true });
         $(".calendar-container").addClass("visible");
     };
 </script>

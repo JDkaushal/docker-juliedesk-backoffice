@@ -92,7 +92,7 @@
         };
 
 
-        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, { synchronize: true, syncRequired: true });
+        window.currentCalendar = new Calendar($(".calendar-container"), calendarParams, { synchronize: true, syncIsOptional: true });
         $(".calendar-container").addClass("visible");
     };
 
@@ -195,6 +195,11 @@
       <div class="button" data-val="as_at_date">As at date</div>
       <div class="button activated" data-val="as_at_now">As at current time</div>
     </div>
+
+    <div ng-if="account.last_sync_date">
+      <u>Last sync</u>: {{ account.last_sync_date | date:'medium' }}
+    </div>
+    <br>
 
     <div class="section" ng-repeat="address in account.addresses | filter: addressHasMeetingRooms">
       <label>{{ address.label }}</label>

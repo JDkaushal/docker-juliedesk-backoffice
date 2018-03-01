@@ -56,7 +56,8 @@ class Account
                 :user_id,
                 :skype_for_business_meeting_generation_active,
                 :preferred_meeting_rooms,
-                :sfb_instructions
+                :sfb_instructions,
+                :last_sync_date
 
 
   RULE_VALIDATED = "rule_validated"
@@ -114,6 +115,7 @@ class Account
     account.linked_attendees_enabled = data['linked_attendees_enabled']
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
+    account.last_sync_date = data['last_sync_date'].present? ? DateTime.parse(data['last_sync_date']) : nil
     account.ignore_non_all_day_free_events = data['ignore_non_all_day_free_events']
     account.circle_of_trust = data['circle_of_trust']
     account.lunch_time_preference = data['lunch_time_preference']

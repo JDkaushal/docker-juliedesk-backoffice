@@ -1,7 +1,7 @@
 function Calendar($selector, params, options) {
     var opts = options || {};
     this.synchronize = !!opts.synchronize;
-    this.syncRequired = !!opts.syncRequired;
+    this.syncIsOptional = !!opts.syncIsOptional;
 
     // Set initial parameters
     this.$selector = $selector;
@@ -101,11 +101,8 @@ function Calendar($selector, params, options) {
     calendar.$selector.find(".global-loading-message").html("Loading account preferences...");
     this.fetchAccountPreferences(function () {
         if(calendar.synchronize && !calendar.isSynced()) {
+            // Run sync job (async)
             calendar.triggerCalendarsSync();
-            if(calendar.syncRequired) {
-                alert("Calendars synchronization launched, please wait and try again.");
-                return;
-            }
         }
 
         calendar.$selector.find(".global-loading-message").html("Loading account calendars...");
@@ -920,6 +917,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         virtual_resources_to_show: virtualResourcesToShow,
         start: start,
         end: end,
+        skip_synchronization: this.syncIsOptional,
         trackingId: requestTrackingId
     };
     if(calendar.initialData.as_at_date) {
