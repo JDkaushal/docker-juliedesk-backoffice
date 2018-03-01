@@ -315,7 +315,9 @@
                 $scope.currentlyProcessingClient[email] = false;
                 $scope.setClientProcessed(email);
 
-                $scope.processActionsforClient[email].push([clientPrefs, events]);
+            } else {
+                $scope.processActionsforClient[email].push([clientPrefs, events])
+            }
         };
 
         $scope.checkNextProcessingForClient = function(email) {
