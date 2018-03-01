@@ -108,8 +108,6 @@
                 })
             },
             setupRedsock() {
-                console.log("Setup redsock");
-                return;
                 let self = this;
                 this.redsockClient = new RedsockClient({
                     url: process.env.RED_SOCK_URL,
