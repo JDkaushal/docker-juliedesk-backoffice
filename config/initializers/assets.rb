@@ -8,7 +8,6 @@ Rails.application.config.assets.version = '1.0'
 
 Rails.application.config.assets.precompile += [
     "stats.css",
-    "dashboard.css",
     "operators/sources.css",
     "planning.css",
     "bootstrap_v4_only"
@@ -16,7 +15,6 @@ Rails.application.config.assets.precompile += [
 Rails.application.config.assets.precompile += [
     "stats.js",
     "test.js",
-    "dashboard.js",
     "angular_attendees_app.js",
     "angular_dependencies.js",
     "angular_virtual_meetings_helper_app.js",

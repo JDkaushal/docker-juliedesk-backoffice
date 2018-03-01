@@ -107,32 +107,32 @@
                     messageThread.locked_by_operator_name = threadToLock ? threadToLock.operatorName : null;
                 })
             },
-            setupRedsockIfNeeded() {
-                if(!this.redsockClient) {
-                    let self = this;
-                    this.redsockClient = new RedsockClient({
-                        url: process.env.RED_SOCK_URL,
-                        member_id: this.currentOperator.id,
-                        member_name: this.currentOperator.name,
-                        member_email: this.currentOperator.email
-                    });
+            setupRedsock() {
+                console.log("Setup redsock");
+                return;
+                let self = this;
+                this.redsockClient = new RedsockClient({
+                    url: process.env.RED_SOCK_URL,
+                    member_id: this.currentOperator.id,
+                    member_name: this.currentOperator.name,
+                    member_email: this.currentOperator.email
+                });
 
-                    this.redsockClient.subscribeToChannel('lockedThreads');
-                    this.redsockClient.bindMessage('lockedThreads', 'subscription_success', (data) => {
-                        self.lockedThreadsData = data;
-                        self.updateLockStatuses();
-                    });
+                this.redsockClient.subscribeToChannel('lockedThreads');
+                this.redsockClient.bindMessage('lockedThreads', 'subscription_success', (data) => {
+                    self.lockedThreadsData = data;
+                    self.updateLockStatuses();
+                });
 
-                    this.redsockClient.bindMessage('lockedThreads', 'update', (data) => {
-                        self.lockedThreadsData = data;
-                        self.updateLockStatuses();
-                    });
+                this.redsockClient.bindMessage('lockedThreads', 'update', (data) => {
+                    self.lockedThreadsData = data;
+                    self.updateLockStatuses();
+                });
 
-                    this.redsockClient.subscribeToChannel('presence-global');
-                    this.redsockClient.subscribeToChannel('private-global-chat');
-                    this.redsockClient.bindMessage('private-global-chat', 'archive', () => self.refreshInbox());
-                    this.redsockClient.bindMessage('private-global-chat', 'new-email', () => self.refreshInbox());
-                }
+                this.redsockClient.subscribeToChannel('presence-global');
+                this.redsockClient.subscribeToChannel('private-global-chat');
+                this.redsockClient.bindMessage('private-global-chat', 'archive', () => self.refreshInbox());
+                this.redsockClient.bindMessage('private-global-chat', 'new-email', () => self.refreshInbox());
             },
             computeMessageThreadsSortedInboxTags(messagesThreads) {
                 return _.map(messagesThreads, messagesThread => {
@@ -152,12 +152,11 @@
             },
             refreshInbox() {
                 let self = this;
-                this.backofficeInterfaceService.listMessagesThreads().then(function (response) {
+                return this.backofficeInterfaceService.listMessagesThreads().then(function (response) {
                     self.allMessagesThreads = self.computeMessageThreadsSortedInboxTags(response.data);
                     self.currentOperator = response.current_operator;
                     self.lastCallServerDate = response.date;
                     self.lastCallClientDate = parseInt(self.$moment().format("X"), 10);
-                    self.setupRedsockIfNeeded();
                     self.updateLockStatuses();
                 });
             }
@@ -170,7 +169,12 @@
             InboxSubInbox
         },
         created() {
-            this.refreshInbox()
+            let self = this;
+            this.refreshInbox().then(function() {
+                self.$store.commit('setCurrentOperator', self.currentOperator)
+                self.setupRedsock()
+                self.$store.dispatch('track', {event: 'Home_is_open'})
+            });
         }
     }
 </script>

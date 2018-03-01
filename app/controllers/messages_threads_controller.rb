@@ -1,8 +1,8 @@
 class MessagesThreadsController < ApplicationController
 
+  layout 'inbox.vue', only: :index
   include ProfilerHelper
 
-  layout "dashboard", only: [:index, :index_for_ai]
   before_filter :only_admin, only: [:history]
 
   before_action :check_staging_mode
@@ -13,9 +13,9 @@ class MessagesThreadsController < ApplicationController
   end
 
   # Display only thread handled by the ai (handled_by_ai set to true)
-  def index_for_ai
-    render_messages_threads_ai
-  end
+  # def index_for_ai
+  #   render_messages_threads_ai
+  # end
 
   def search
     @messages_thread = MessagesThread.where(server_thread_id: params[:server_thread_ids]).includes(messages: {message_classifications: :julie_action}).sort_by{|mt|
@@ -356,41 +356,39 @@ class MessagesThreadsController < ApplicationController
 
   private
 
-  def render_messages_threads_ai
-    respond_to do |format|
-      format.html {
-      }
-      format.json {
-        @messages_thread = MessagesThread.where("handled_by_ai = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
-          mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
-              mt.messages.map{|m| m.received_at}.max ||
-              DateTime.parse("2500-01-01")
-        }
-
-        @messages_thread.reverse!
-
-        accounts_cache = Account.accounts_cache(mode: "light")
-        @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
-
-        data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
-
-        render json: {
-                   status: "success",
-                   message: "",
-                   data: data
-               }
-      }
-
-
-    end
-  end
+  # def render_messages_threads_ai
+  #   respond_to do |format|
+  #     format.html {
+  #     }
+  #     format.json {
+  #       @messages_thread = MessagesThread.where("handled_by_ai = TRUE").includes(messages: {}, locked_by_operator: {}).sort_by{|mt|
+  #         mt.messages.select{|m| !m.archived}.map{|m| m.received_at}.min ||
+  #             mt.messages.map{|m| m.received_at}.max ||
+  #             DateTime.parse("2500-01-01")
+  #       }
+  #
+  #       @messages_thread.reverse!
+  #
+  #       accounts_cache = Account.accounts_cache(mode: "light")
+  #       @messages_thread.each{|mt| mt.account(accounts_cache: accounts_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)}
+  #
+  #       data = @messages_thread.as_json(include: :messages, methods: [:received_at, :account, :locked_by_operator_name], only: [:id, :locked_by_operator_id, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged])
+  #
+  #       render json: {
+  #                  status: "success",
+  #                  message: "",
+  #                  data: data
+  #              }
+  #     }
+  #
+  #
+  #   end
+  # end
 
   def render_messages_threads
     respond_to do |format|
       format.html {
-        if feature_active?(:inbox_vuejs_feb2018, session[:operator_id], session[:privilege])   || params[:vuejs]
-          render "index.vue.html.erb", layout: nil
-        end
+        render "index.vue.html.erb"
       }
       format.json {
         now = Time.now

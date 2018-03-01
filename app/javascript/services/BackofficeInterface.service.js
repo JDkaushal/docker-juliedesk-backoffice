@@ -13,4 +13,4 @@ class BackofficeInterfaceService extends InterfaceService {
     }
 
 }
-export default BackofficeInterfaceService;
+export default BackofficeInterfaceService

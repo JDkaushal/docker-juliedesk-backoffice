@@ -1,10 +1,13 @@
 import Vue from 'vue/dist/vue.esm'
+
 import VueI18n from 'vue-i18n'
 import Inbox from '../components/inbox/Inbox'
 import VueMoment from 'vue-moment'
 import moment from 'moment'
 import 'moment/locale/fr'
 import 'moment-timezone'
+
+import store from '../store'
 
 
 
@@ -25,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el: "#inbox-app",
         components: {
             Inbox
-        }
+        },
+        store: store
     })
 });

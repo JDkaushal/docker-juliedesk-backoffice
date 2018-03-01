@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Backoffice | Julie Desk</title>
+    <%= favicon_link_tag '/favicon.ico' %>
+    <%= javascript_pack_tag 'vue_inbox_app' %>
+    <%= stylesheet_pack_tag 'vue_inbox_app' %>
+  </head>
+
+  <body>
+    <%= yield %>
+
+    <% if ENV['ZENDESK_WIDGET_ACTIVATED'].present? %>
+      <%= render partial: 'common/zendesk_widget' %>
+    <% end %>
+  </body>
+</html>

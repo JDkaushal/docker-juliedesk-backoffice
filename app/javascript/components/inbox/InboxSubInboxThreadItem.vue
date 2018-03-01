@@ -20,6 +20,7 @@
 <template>
     <div class="messages-thread-container">
         <a :href="'/messages_threads/' + messagesThread.id"
+           @click.prevent="trackBeforeGoingToThread"
            class="messages-thread-item">
             <div class="messages-thread-lock-container"
                  v-if="messagesThread.locked_by_operator_id">
@@ -129,6 +130,20 @@
                 return this.messagesThread.status === 'scheduled' &&
                     this.messagesThread.event_booked_date &&
                     self.$moment(this.messagesThread.event_booked_date).isSame(self.$moment().tz('UTC').format(), 'd')
+            }
+        },
+        methods: {
+            trackBeforeGoingToThread($event) {
+                let self = this
+                let href = $event.currentTarget.href
+                self.$store.dispatch('track', {
+                    event: 'Click_on_thread',
+                    data: {
+                        thread_id: self.messagesThread.id,
+                        client_email: self.messagesThread.account_email,
+                        current_status: self.messagesThread.status
+                    }
+                }).then(() => window.location = href)
             }
         },
         filters: {

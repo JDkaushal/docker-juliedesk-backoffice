@@ -39,8 +39,6 @@ Rails.application.routes.draw do
       get "index_with_import_ai", action: :index_with_import_ai, as: :index_with_import_ai
       get "search"
 
-      get :index_for_ai
-
       # Route used to test memory consumption (is also the root of the app)
       get 'index'
     end

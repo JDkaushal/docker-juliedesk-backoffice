@@ -23,29 +23,48 @@ class InterfaceService {
         this.loading = false;
     }
     get(path, opts={}) {
-        let defaultOptions= {
-            parse: 'json_data'
-        };
-        _.mergeWith(defaultOptions, opts);
+
+        let options = this.optionsWithDefaults(opts)
         let self = this;
         this.loading = true;
 
-        return this.axiosInstance.get(path).then(function(res) {
+        return this.axiosInstance.get(path).then(function(response) {
             self.loading = false;
-            if(defaultOptions.parse === 'json') {
-                return res.data;
-            }
-            else if(defaultOptions.parse === 'json_data') {
-                return res.data.data;
-            }
-            else if(defaultOptions.parse === 'json_results') {
-                return res.data.results;
-            }
-            else {
-                return res;
-            }
-
+            return self.parseResponse(response, options)
         });
+    }
+
+    post(path, data={}, opts={}) {
+        let options = this.optionsWithDefaults(opts)
+        let self = this;
+        this.loading = true;
+
+        return this.axiosInstance.post(path, data).then(function(response) {
+            self.loading = false;
+            return self.parseResponse(response, options)
+        });
+    }
+
+    optionsWithDefaults(opts={}) {
+        let defaultOptions= {
+            parse: 'json_data'
+        };
+        return _.mergeWith(defaultOptions, opts);
+    }
+
+    parseResponse(response, options) {
+        if(options.parse === 'json') {
+            return response.data;
+        }
+        else if(options.parse === 'json_data') {
+            return response.data.data;
+        }
+        else if(options.parse === 'json_results') {
+            return response.data.results;
+        }
+        else {
+            return response;
+        }
     }
 }
 
