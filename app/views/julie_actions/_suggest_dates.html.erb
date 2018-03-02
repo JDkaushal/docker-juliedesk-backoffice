@@ -105,7 +105,7 @@
         var attendeesMng = $('#attendeesCtrl').scope();
 
 
-        if (window.featuresHelper.isFeatureActive("template_generation_v2_for_suggest_dates") && !isPostpone) {
+        if (!isPostpone) {
 
             var clientNames = [window.threadAccount.usage_name];
             _.each(otherClients(), function (attendee) {
