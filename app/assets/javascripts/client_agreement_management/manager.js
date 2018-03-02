@@ -35,10 +35,10 @@ var ClientAgreementLevelManager = (function(params){
             var clientCircleOfTrust = window.threadAccount.circle_of_trust;
             var clientEmails = _.uniq(window.threadAccount.email_aliases.concat(window.threadAccount.email));
             var agreementLevel = UNAUTHORIZED_REQUEST;
-            
-            if(clientIsInSenders(clientEmails, emailSenders) || emailInCircleOfTrust(clientCircleOfTrust, emailSenders)) {
+
+            if(clientIsInSenders(clientEmails, emailSenders) || (clientCircleOfTrust && emailInCircleOfTrust(clientCircleOfTrust, emailSenders))) {
                 agreementLevel = AUTHORIZED_REQUEST;
-            } else if(clientTrustingEveryone(clientCircleOfTrust)) {
+            } else if(clientCircleOfTrust && clientTrustingEveryone(clientCircleOfTrust)) {
                 agreementLevel = TRUSTED_REQUEST;
             }
             
