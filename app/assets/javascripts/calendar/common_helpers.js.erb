@@ -231,7 +231,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
           calendar_ids: request.calendar_ids,
           as_at_date: request.as_at_date,
           compute_meeting_rooms_unavailabilities: request.compute_meeting_rooms_unavailabilities,
-          compute_meeting_rooms_via_free_busy_streams: window.featuresHelper.isFeatureActive('compute_meeting_rooms_via_free_busy_streams'),
+          compute_meeting_rooms_via_free_busy_streams: true,
           // This attribute allows us to complement the default calendars to show of a user with others calendars
           // (Used primarily with the meeting rooms)
           // As opposed to the calendar_ids attribute that will override them
