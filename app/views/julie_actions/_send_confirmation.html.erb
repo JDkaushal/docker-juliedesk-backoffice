@@ -8,7 +8,7 @@
     var emailGenerated = false;
 
     $(function() {
-      useTemplateGenerationService = window.featuresHelper.isFeatureActive("template_generation_v2_for_update_event") && window.classification == 'update_event';
+      useTemplateGenerationService = window.classification == 'update_event';
       currentAppointmentIsVirtual = window.getCurrentAppointment().appointment_kind_hash.is_virtual;
 
         window.templateManager = new TemplateManager({
