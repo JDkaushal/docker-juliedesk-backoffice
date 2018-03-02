@@ -1364,25 +1364,23 @@ EventTile.prototype.initActions = function() {
 
     var copyBtn = eventTile.$selector.find('.copy-event-data-btn');
 
-    if(window.featuresHelper.isFeatureActive('copy_paste_event_data')) {
-      copyBtn.tooltip({});
 
-      new Clipboard(copyBtn[0], {
-        text: function(trigger) {
-          var $trigger = $(trigger);
-          $trigger.addClass('copying');
-          var $imgNode = $trigger.find('img');
-          $imgNode.prop('src', '<%= asset_path 'checkbox.gif' %>');
-          $imgNode.show();
-          setTimeout(function() { $trigger.prop('title', 'Copié'); $trigger.tooltip( "close" ); $trigger.tooltip( "open" ); }, 1000);
-          setTimeout(function() { $imgNode.removeAttr('src') ; $imgNode.hide(); $trigger.removeClass('copying'); $trigger.prop('title', 'Copier les infos'); $trigger.tooltip( "close" ); }, 2000);
+    copyBtn.tooltip({});
 
-          return eventTile.getEventFormattedInfos();
-        }
-      });
-    } else {
-      copyBtn.hide();
-    }
+    new Clipboard(copyBtn[0], {
+      text: function(trigger) {
+        var $trigger = $(trigger);
+        $trigger.addClass('copying');
+        var $imgNode = $trigger.find('img');
+        $imgNode.prop('src', '<%= asset_path 'checkbox.gif' %>');
+        $imgNode.show();
+        setTimeout(function() { $trigger.prop('title', 'Copié'); $trigger.tooltip( "close" ); $trigger.tooltip( "open" ); }, 1000);
+        setTimeout(function() { $imgNode.removeAttr('src') ; $imgNode.hide(); $trigger.removeClass('copying'); $trigger.prop('title', 'Copier les infos'); $trigger.tooltip( "close" ); }, 2000);
+
+        return eventTile.getEventFormattedInfos();
+      }
+    });
+
 
 
     // eventTile.$selector.find('.copy-event-data-btn').click(function() {
