@@ -206,7 +206,7 @@ class MessagesThread < ActiveRecord::Base
       attendees_emails = attendees_emails.select{|att_email| all_clients_emails.include?(att_email)}
     end
 
-    self.thread_blocked = blocking_users(Set.new(attendees_emails), users_with_lost_access).size > 0
+    self.thread_blocked = blocking_users(Set.new(attendees_emails.compact.map(&:downcase)), users_with_lost_access).size > 0
   end
 
   def handle_recipients_lost_access(users_with_lost_access, accounts_cache)
