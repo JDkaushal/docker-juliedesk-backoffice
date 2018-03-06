@@ -85,9 +85,12 @@ class MessagesController < ApplicationController
   end
 
   def let_ai_process
-    message = Message.find(params[:id])
-    result = AutoMessageClassification.build_from_conscience(message.id, { for_real: true })
-    render json: { status: result[:status], data: {} }
+    begin
+      AutomaticProcessing::AutomatedMessageClassification.process_message_id(params[:id])
+      render json: { status: 'success' }
+    rescue Exception => e
+      render json: { status: 'error', message: e.to_s }
+    end
   end
 
   def classify

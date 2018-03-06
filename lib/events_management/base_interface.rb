@@ -21,7 +21,7 @@ module EventsManagement
       ENV['JULIEDESK_APP_HOST']
     end
 
-    def compute_endpoint(key)
+    def compute_endpoint(key, data=nil)
       endpoint_infos = ENDPOINTS[key]
       raise AIEndPointUnknown if endpoint_infos.blank?
 

@@ -8,6 +8,9 @@ class Message < ActiveRecord::Base
   has_many :message_classifications
   has_one :auto_message_classification
   has_many :message_interpretations
+
+  has_one :main_message_interpretation, -> { where(question: MessageInterpretation::QUESTION_MAIN) }, class_name: MessageInterpretation
+  has_one :entities_message_interpretation, -> { where(question:  MessageInterpretation::QUESTION_ENTITIES) }, class_name: MessageInterpretation
   
   attr_accessor :server_message, :ics_attendees
   FETCHED_ATTACHMENT_TYPES = ["application/ics", "text/calendar"]
@@ -38,6 +41,21 @@ class Message < ActiveRecord::Base
     end
 
     @ics_attendees
+  end
+
+  def self.clean_server_message!(server_message)
+    server_message['from'].try(:gsub!, '?', '')
+    server_message['cc'].try(:gsub!, '?', '')
+    server_message['to'].try(:gsub!, '?', '')
+  end
+
+  def populate_single_server_message
+    server_thread = self.messages_thread.server_thread(force_refresh: true, show_split: true)
+    raise 'Impossible to fetch server thread' unless server_thread
+    server_message = server_thread['messages'].find{|server_message| server_message['id'] == self.server_message_id}
+    Message.clean_server_message!(server_message)
+
+    self.server_message = server_message
   end
 
   def fetch_ics
@@ -758,6 +776,8 @@ class Message < ActiveRecord::Base
   end
 
 
+
+
   def self.generate_reply_all_recipients(server_message, julie_aliases_emails = nil)
     julie_aliases = julie_aliases_emails || JulieAlias.all.map(&:email)
     from_addresses = ApplicationHelper.find_addresses((server_message['from'] || '').downcase).addresses.select{|address| address.address && address.address.include?("@")}
@@ -946,10 +966,13 @@ class Message < ActiveRecord::Base
     messages_thread.classification_category_for_classification(classification)
   end
 
-  def interprete
-    if self.message_interpretations.empty?
-      MessageInterpretation.questions.each do |question|
-        self.message_interpretations.build(question: question)
+  def interprete(force_reinterpretation=false)
+    if self.message_interpretations.empty? || force_reinterpretation
+
+      if self.message_interpretations.empty?
+        MessageInterpretation.questions.each do |question|
+          self.message_interpretations.build(question: question)
+        end
       end
 
       self.message_interpretations.each do |message_interpretation|

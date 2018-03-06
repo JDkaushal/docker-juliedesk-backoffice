@@ -39,6 +39,19 @@ class MessageClassification < ActiveRecord::Base
 
   NOTHING_TO_DO            = "nothing_to_do"
 
+  CLASSIFICATIONS_WITH_DATA = [
+      ASK_DATE_SUGGESTIONS,
+      ASK_AVAILABILITIES,
+      GIVE_INFO,
+      ASK_CANCEL_APPOINTMENT,
+      ASK_CANCEL_EVENTS,
+      ASK_POSTPONE_EVENTS,
+      WAIT_FOR_CONTACT,
+      INVITATION_ALREADY_SENT,
+      UPDATE_EVENT,
+      FOLLOW_UP_CONTACTS
+  ]
+
 
   REVIEW_STATUS_TO_REVIEW  = nil
   REVIEW_STATUS_TO_LEARN   = 'to_learn'
@@ -58,6 +71,10 @@ class MessageClassification < ActiveRecord::Base
 
   VIRTUAL_EVENT_TYPES = ['call', 'confcall', 'skype', 'hangout', 'webex']
   PHYSICAL_EVENT_TYPES = ['appointment', 'meeting', 'lunch', 'coffee', 'work_session', 'dinner', 'breakfast', 'drink']
+
+
+
+  scope :with_data, -> { where(classification: CLASSIFICATIONS_WITH_DATA) }
 
   def clean_delete
     if self.julie_action
@@ -349,18 +366,7 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def has_data?
-    [
-      ASK_DATE_SUGGESTIONS,
-      ASK_AVAILABILITIES,
-      GIVE_INFO,
-      ASK_CANCEL_APPOINTMENT,
-      ASK_CANCEL_EVENTS,
-      ASK_POSTPONE_EVENTS,
-      WAIT_FOR_CONTACT,
-      INVITATION_ALREADY_SENT,
-      UPDATE_EVENT,
-      FOLLOW_UP_CONTACTS
-    ].include? classification
+    CLASSIFICATIONS_WITH_DATA.include? classification
   end
 
   def self.compare message_classifications

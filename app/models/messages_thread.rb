@@ -442,7 +442,7 @@ class MessagesThread < ActiveRecord::Base
     end
   end
 
-  def self.contacts params = {}
+  def self.contacts(params = {})
     to_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['to']).addresses}.flatten
     from_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['from']).addresses}.flatten
     cc_addresses = params[:server_messages_to_look].map{|m| ApplicationHelper.find_addresses(m['cc']).addresses}.flatten
@@ -528,11 +528,10 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def last_message_classification_with_data
-    message_classifications = messages.map{|m|
-      m.message_classifications
-    }.flatten.sort_by(&:updated_at).select(&:has_data?).compact
-
-    message_classifications.last
+    MessageClassification.where(message_id: Message.where(messages_thread_id: self.id).select(:id).all.map(&:id))
+        .with_data
+        .order(:updated_at)
+        .last
   end
 
   def computed_data message_classifications=nil
@@ -828,9 +827,7 @@ class MessagesThread < ActiveRecord::Base
     all_messages.select do |server_message|
       server_message['messages_thread_id'] == self.server_thread_id && !server_message['duplicate']
     end.each do |server_message|
-      server_message['from'].try(:gsub!, '?', '')
-      server_message['cc'].try(:gsub!, '?', '')
-      server_message['to'].try(:gsub!, '?', '')
+      Message.clean_server_message!(server_message)
 
 
       message = messages_thread_messages.find{|m| m.server_message_id == server_message['id']}
