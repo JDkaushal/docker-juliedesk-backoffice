@@ -119,8 +119,6 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         host = getStagingEventApiEndpoint();
         var email = getStagingTargetEmail();
         var calendarLoginEmail = getStagingCalendarLoginEmail();
-        console.log('host',host);
-        console.log(request);
 
         if(request.hasOwnProperty('email') && request.action != "show_account" && request.action != "getJulieDeskPreferences"){
             request['email'] = email;
@@ -140,6 +138,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         }
     }
     else{
+
         host = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
     }
 
@@ -721,6 +720,27 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             },
             success: function(e) {
                 callback(e);
+            },
+            error: function(e) {
+                console.log(e);
+                error_callback(e);
+            }
+        });
+    }
+
+    else if(request.action == "list_future_location_indications") {
+        $.ajax({
+            url: host + "/api/v1/calendar_proxy/future_location_indications",
+            type: "GET",
+            contentType: "application/json",
+            beforeSend: function(xhr){
+                xhr.setRequestHeader("Authorization", access_key);
+            },
+            data: {
+                email: request.email
+            },
+            success: function(e) {
+                callback(e.data.location_indications);
             },
             error: function(e) {
                 console.log(e);

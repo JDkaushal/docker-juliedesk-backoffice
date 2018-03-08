@@ -23,6 +23,8 @@ window.activateCalendarWithParams = function (calendarParams) {
     calendarParams.default_calendar_login_username = window.threadComputedData.calendar_login_username;
     calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 
+    calendarParams.main_client_on_trip = window.threadComputedData.client_on_trip;
+
     window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
     $(".calendar-container").addClass("visible");
 };

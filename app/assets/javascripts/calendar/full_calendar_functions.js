@@ -319,6 +319,8 @@ Calendar.prototype.fullCalendarInit = function() {
     var travelTimeOpacity = '0.80';
     var currentAllDayMasks = [];
 
+    var clientOnTripCalendarModule = new ClientOnTripCalendarModule(calendar.initialData.main_client_on_trip);
+
     var columnWidth, columnWidthInt, offsetRowInt;
 
     var suggestionDatesManager = $('#dates-suggestion-manager').scope();
@@ -355,6 +357,8 @@ Calendar.prototype.fullCalendarInit = function() {
         eventAfterRender: function(event, element, view) {
             var $element = $(element);
             var currentElementTop = $element.position().top;
+
+            clientOnTripCalendarModule.fullCalendarEventAfterRender(event, element, view);
 
             if(event.isTravelTime) {
                 var travelTimeDiv = $('<div class="travel-time-wrapper ' + event.travelTimeType + '"></div>');
@@ -516,6 +520,9 @@ Calendar.prototype.fullCalendarInit = function() {
 
             }
 
+
+
+
             if(event.isNotAvailableEvent) {
                 $element.addClass('not-available');
             }
@@ -577,8 +584,9 @@ Calendar.prototype.fullCalendarInit = function() {
                 allDayMaskNode.height(calendarHeight);
                 fcEventContainer.append(allDayMaskNode);
             });
-
             currentAllDayMasks = [];
+
+            clientOnTripCalendarModule.fullCalendarEventAfterAllRender(view);
         },
         viewRender: function(view, element){
             columnWidth = $('.fc-col3.fc-widget-header').css('width');
@@ -586,7 +594,7 @@ Calendar.prototype.fullCalendarInit = function() {
             offsetRowInt = parseInt($('.fc-agenda-axis').css('width'));
             calendar.fullCalendarViewRender(view, element);
 
-            //console.log('dispStart', calendar.dispStart);
+            clientOnTripCalendarModule.fullCalendarViewRender(view, element);
         },
         eventClick: function(event, jsEvent, view) {
             calendar.fullCalendarEventClick(event, jsEvent, view);

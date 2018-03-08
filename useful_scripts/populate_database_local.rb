@@ -2,7 +2,10 @@
 def reset_messages_threads
   MessagesThread.delete_all
   Message.delete_all
+  MessageClassification.delete_all
+  JulieAction.delete_all
 end
+
 def random_string length
   (0...length).map { ('a'..'z').to_a[rand(26)] }.join
 end

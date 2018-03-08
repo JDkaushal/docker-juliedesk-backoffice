@@ -5,11 +5,11 @@
             <label for="clientOnTrip">{{ localizedLabel }}</label>
         </div>
         <div ng-show="activated">
-            <select ng-model="knownZones" class="form-control" ng-hide="true">
-                <option ng-repeat="availableKnownZone in availableKnownZones" value="{{ availableKnownZone.value }}">{{ availableKnownZone.label }}</option>
+            <select ng-model="knownZone" class="form-control">
+                <option ng-repeat="availableKnownZone in availableKnownZones" value="{{ availableKnownZone.label }}">{{ availableKnownZone.title }}</option>
             </select>
             <angucomplete-alt
-                ng-show="knownZones=='other'"
+                ng-show="knownZone=='other'"
                 placeholder="Search a city or a country..."
                 pause="500"
                 selected-object="selectZone"

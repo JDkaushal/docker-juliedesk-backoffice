@@ -62,6 +62,7 @@ function Calendar($selector, params, options) {
 
     this.currentlyFetchedMeetingRooms = [];
 
+
     var calendar = this;
 
     // Event handlers

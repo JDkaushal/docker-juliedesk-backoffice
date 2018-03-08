@@ -55,6 +55,7 @@
 //= require calendar_tile/main
 
 //= require calendar/main
+//= require calendar/client_on_trip_module
 //= require calendar/fullcalendar
 //= require calendar/jquery-ui.custom.min
 //= require calendar/full_calendar_functions

@@ -26,7 +26,7 @@ Rails.application.routes.draw do
 
   resources :event_operator_interactions, only: [:create]
 
-  resources :geo_zones, only: [] do
+  resources :geo_zones, only: [:index] do
     collection do
       get :autocomplete
     end
