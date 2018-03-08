@@ -61,7 +61,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         duration: last_message_classification.try(:duration) || main_interpretation['duration'],
         location: last_message_classification.try(:location) || main_interpretation['location_data'].try(:[], 'text'),
         location_nature: last_message_classification.try(:location_nature) || main_interpretation['location_data'].try(:[], 'location_nature'),
-        is_formal: main_interpretation['formal_language']
+        is_formal: main_interpretation['formal_language'],
+        asap_constraint: last_message_classification.try(:asap_constraint) || main_interpretation['asap']
     }
 
     account = message.messages_thread.account
@@ -126,13 +127,15 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
                                    support: 'mobile',
                                    targetInfos: {}
                                }.to_json,
-                               language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL
+                               language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL,
+                               asap_constraint: interpretation[:asap_constraint]
                            })
   end
 
 
   def archive_thread
     self.thread_status = self.computed_thread_status
+    self.save
     EmailServer.archive_thread(messages_thread_id: self.message.messages_thread.server_thread_id)
 
     self.message.messages_thread.messages.update_all(archived: true)

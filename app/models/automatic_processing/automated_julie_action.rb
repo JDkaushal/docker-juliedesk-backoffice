@@ -51,22 +51,23 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
                                                                      date: self.chosen_date_for_check_availabilities
                                                                  })}"
 
-    elsif self.action_nature ==JD_ACTION_WAIT_FOR_CONTACT
+    elsif self.action_nature == JD_ACTION_WAIT_FOR_CONTACT
       self.text = get_wait_for_contact_template({
                                                     locale: locale
-                                                })
-    elsif self.julie_action.action_nature == JD_ACTION_NOTHING_TO_DO
-
-
-    elsif self.action_nature == JD_ACTION_FORWARD_TO_SUPPORT
-      self.text = get_forward_to_support_template({
-                                                      locale: locale
-                                                  })
-
-    elsif self.action_nature == JD_ACTION_FORWARD_TO_CLIENT
-      self.text = get_forward_to_client_template({
-                                                     locale: locale
-                                                 })
+                                              })
+    else
+      # elsif self.julie_action.action_nature == JD_ACTION_NOTHING_TO_DO
+    #
+    #
+    # elsif self.action_nature == JD_ACTION_FORWARD_TO_SUPPORT
+    #   self.text = get_forward_to_support_template({
+    #                                                   locale: locale
+    #                                               })
+    #
+    # elsif self.action_nature == JD_ACTION_FORWARD_TO_CLIENT
+    #   self.text = get_forward_to_client_template({
+    #                                                  locale: locale
+    #                                              })
     end
   end
 
@@ -159,6 +160,7 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
         raw_constraints_data: JSON.parse(message_classification.constraints_data || "[]"),
         n_suggested_dates: 4,
         attendees: [],
+        asap: message_classification.asap_constraint,
         message_id: nil # Keep this to nil, if set it is used to get previously suggested dates, if not set it causes errors
     })
 
