@@ -4,13 +4,13 @@ function ClientOnTripCalendarModule(mainClientOnTrip) {
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalendarView, fullCalendarElement) {
-    let clientOnTripCalendarModule = this;
+    var clientOnTripCalendarModule = this;
     if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
         return;
     }
 
     clientOnTripCalendarModule.currentClientOnTripMasks = []
-    let currentDateForClientOnTripDate = fullCalendarView.start.clone();
+    var currentDateForClientOnTripDate = fullCalendarView.start.clone();
     while(currentDateForClientOnTripDate < fullCalendarView.end) {
         clientOnTripCalendarModule.currentClientOnTripMasks.push({
             date: currentDateForClientOnTripDate.clone(),
@@ -23,14 +23,14 @@ ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalen
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(fullCalendarView) {
-    let clientOnTripCalendarModule = this;
+    var clientOnTripCalendarModule = this;
 
     if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
         return;
     }
 
-    let fcEventContainer = fullCalendarView.element.find(".fc-event-container").last();
-    let calendarHeight = fcEventContainer.parent().height();
+    var fcEventContainer = fullCalendarView.element.find(".fc-event-container").last();
+    var calendarHeight = fcEventContainer.parent().height();
 
     _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function(clientOnTripMask) {
         if(clientOnTripMask.visible) {
@@ -44,7 +44,7 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(fullCalendarEvent, fullCalendarElement, fullCalendarView) {
-    let clientOnTripCalendarModule = this;
+    var clientOnTripCalendarModule = this;
 
     if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
         return;
