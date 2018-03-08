@@ -93,6 +93,17 @@ class MessagesController < ApplicationController
     end
   end
 
+  def main_interpretation
+    message = Message.find params[:id]
+
+    render json: {
+        status: 'success',
+        data: {
+            interpretation: message.main_message_interpretation.try(:json_response) || {}
+        }
+    }
+  end
+
   def classify
     initiated_time = Time.now
 

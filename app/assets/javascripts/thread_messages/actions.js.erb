@@ -87,6 +87,26 @@ function letAIProcessClickHandler($element, $email) {
     });
   });
 };
+function showConscienceInterpretationClickHandler($element, $email) {
+    console.log($element);
+    if ($element.hasClass('conscience-interpretation-result-container')) {
+        $email.find(".show-conscience-interpretation .conscience-interpretation-result-container").fadeOut("fast");
+    }
+    else {
+        $email.find(".show-conscience-interpretation .button").fadeOut("fast", function() {
+            $email.find(".show-conscience-interpretation .loader").fadeIn("fast", function() {
+                $.get("/messages/" + $email.data('message-id') + "/main_interpretation", function(response) {
+                    $email.find(".show-conscience-interpretation .loader").fadeOut("fast", function() {
+                        $email.find(".show-conscience-interpretation .button").fadeIn("fast", function() {
+                            $email.find(".show-conscience-interpretation .conscience-interpretation-result-container").html(JSON.stringify(response.data.interpretation, null, "\t")).fadeIn("fast");
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+};
 function trackAction($element, $email) {
     var actionNature = $element.data('actionNature');
     var messageContainerNode = $('#messages_container');
@@ -273,6 +293,8 @@ $(function () {
         toggleEmailQuote($email);
       } else if ($target.parents('.conscience-process').length > 0) {
         letAIProcessClickHandler($target, $email);
+      } else if ($target.parents('.show-conscience-interpretation').length > 0) {
+          showConscienceInterpretationClickHandler($target, $email);
       } else if ($target.parents('.actions-menu').length > 0) {
         // We do nothing, so we don't trigger the default action (toggle the message)
       } else {

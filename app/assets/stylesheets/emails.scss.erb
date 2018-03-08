@@ -415,6 +415,41 @@
         margin: 3px 30px 0 0;
       }
     }
+  .show-conscience-interpretation {
+    position: absolute;
+    top: 30px;
+    right: 243px;
+    cursor: pointer;
+
+    .button {
+      border: 1px solid $aiControlHighlightedColor;
+      padding: 9px 15px;
+      height: 40px;
+      color: $aiControlHighlightedColor;
+
+      &:hover {
+        background: $aiControlColorBackground-5pct;
+      }
+    }
+
+    .loader {
+      display: none;
+      margin: 3px 30px 0 0;
+    }
+
+
+    .conscience-interpretation-result-container {
+      top: 0;
+      left: -310px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      background: white;
+      text-align: left;
+      padding: 20px;
+      position: absolute;
+      display: none;
+    }
+  }
 
     .actions-menu-button {
         position: absolute;

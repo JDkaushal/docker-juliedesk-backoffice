@@ -185,11 +185,18 @@
           </div>
 
           <% if local_assigns[:actions_available] %>
-              <% if session[:privilege] == Operator::PRIVILEGE_ADMIN && !message.from_me %>
+              <% if feature_active?("let_ai_process") && !message.from_me %>
                   <div class="conscience-process">
                     <%= image_tag "conscience.gif", class: "loader" %>
                     <div class="button">Let A.I. process (<%= number_to_percentage(message.interpretations[:confidence] * 100, precision: 1) %>)</div>
                   </div>
+              <% end %>
+              <% if feature_active?("show_ai_interpretation") && !message.from_me %>
+                <div class="show-conscience-interpretation">
+                  <%= image_tag "conscience.gif", class: "loader" %>
+                  <div class="button">Interpretation</div>
+                  <div class="conscience-interpretation-result-container"></div>
+                </div>
               <% end %>
               <div class="actions-menu-button"></div>
               <div class="actions-menu-positioner">

@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   resources :messages, only: [:show] do
     member do
       get "classifying/:classification", action: :classifying, as: :classifying
+      get :main_interpretation
       post "classifying/:classification", action: :classifying
 
       post "classify", action: :classify, as: :classify
