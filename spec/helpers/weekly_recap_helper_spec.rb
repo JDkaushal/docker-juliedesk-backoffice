@@ -702,7 +702,7 @@ describe WeeklyRecapHelper do
                     message_classifications: [
                         FactoryGirl.create(:message_classification, {
                             classification: MessageClassification::ASK_DATE_SUGGESTIONS,
-                            created_at: "2016-01-17",
+                            created_at: "2016-02-03",
                             summary: "Skype scheduled on 2016-01-17",
                             thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
                             appointment_nature: "skype",
