@@ -185,13 +185,13 @@
           </div>
 
           <% if local_assigns[:actions_available] %>
-              <% if feature_active?("let_ai_process") && !message.from_me %>
+              <% if feature_active?("let_ai_process", session[:operator_id], session[:privilege]) && !message.from_me %>
                   <div class="conscience-process">
                     <%= image_tag "conscience.gif", class: "loader" %>
                     <div class="button">Let A.I. process (<%= number_to_percentage(message.interpretations[:confidence] * 100, precision: 1) %>)</div>
                   </div>
               <% end %>
-              <% if feature_active?("show_ai_interpretation") && !message.from_me %>
+              <% if feature_active?("show_ai_interpretation", session[:operator_id], session[:privilege]) && !message.from_me %>
                 <div class="show-conscience-interpretation">
                   <%= image_tag "conscience.gif", class: "loader" %>
                   <div class="button">Interpretation</div>
