@@ -319,7 +319,10 @@ Calendar.prototype.fullCalendarInit = function() {
     var travelTimeOpacity = '0.80';
     var currentAllDayMasks = [];
 
-    var clientOnTripCalendarModule = new ClientOnTripCalendarModule(calendar.initialData.main_client_on_trip);
+    var clientOnTripCalendarModule = new ClientOnTripCalendarModule({
+        calendarTimezone: calendar.getCalendarTimezone(),
+        mainClientOnTrip: calendar.initialData.main_client_on_trip
+    });
 
     var columnWidth, columnWidthInt, offsetRowInt;
 

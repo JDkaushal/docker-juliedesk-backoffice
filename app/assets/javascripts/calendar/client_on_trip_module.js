@@ -1,5 +1,6 @@
-function ClientOnTripCalendarModule(mainClientOnTrip) {
-    this.mainClientOnTrip = mainClientOnTrip;
+function ClientOnTripCalendarModule(params) {
+    this.calendarTimezone = params.calendarTimezone;
+    this.mainClientOnTrip = params.mainClientOnTrip;
     this.currentClientOnTripMasks = [];
 }
 
@@ -10,10 +11,12 @@ ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalen
     }
 
     clientOnTripCalendarModule.currentClientOnTripMasks = []
+
     var currentDateForClientOnTripDate = fullCalendarView.start.clone();
+
     while(currentDateForClientOnTripDate < fullCalendarView.end) {
         clientOnTripCalendarModule.currentClientOnTripMasks.push({
-            date: currentDateForClientOnTripDate.clone(),
+            date:  moment.tz(currentDateForClientOnTripDate.format(), clientOnTripCalendarModule.calendarTimezone),
             left: fullCalendarView.colContentLeft(fullCalendarView.dateToCell(currentDateForClientOnTripDate).col),
             width: fullCalendarView.getColWidth(),
             visible: clientOnTripCalendarModule.mainClientOnTrip != null
@@ -49,6 +52,7 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(ful
     if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
         return;
     }
+
 
     if(fullCalendarEvent.id && fullCalendarEvent.allDay && fullCalendarEvent.aiMetadata && fullCalendarEvent.aiMetadata.location_indication != null) {
         _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function (clientOnTripMask) {
