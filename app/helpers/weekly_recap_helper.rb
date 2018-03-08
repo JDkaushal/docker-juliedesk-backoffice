@@ -87,15 +87,15 @@ module WeeklyRecapHelper
     sql = <<-SQL.strip_heredoc
       SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, previous_thread_status, not_from_me_mess_count
       FROM (
-      SELECT mt1.id AS thread_id, mt1.status AS current_thread_status, COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
-      FROM messages_threads mt1
-      INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
-      INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
-      #{status_condition}
-      AND (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%')
-      AND mt1.was_merged = false
-      AND mc1.classification IN (VALUES#{classifs.map{|c| "('#{c}')"}.join(',')})
-      #{attendees_condition}
+        SELECT mt1.id AS thread_id, mt1.status AS current_thread_status, COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
+        FROM messages_threads mt1
+        INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+        INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+        #{status_condition}
+        AND (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%') AND mc1.created_at BETWEEN '#{window_start_time}' AND '#{window_end_time}'
+        AND mt1.was_merged = false
+        AND mc1.classification IN (VALUES#{classifs.map{|c| "('#{c}')"}.join(',')})
+        #{attendees_condition}
       ) e1 LEFT JOIN LATERAL (
         SELECT mc2.thread_status AS previous_thread_status
         FROM message_classifications mc2
