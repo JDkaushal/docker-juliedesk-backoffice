@@ -146,7 +146,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   def generate_summary
     account_appointment['title_in_calendar'][self.locale] + " " + JSON.parse(self.attendees).select{|att| att['isPresent']}.group_by{|att| att['company']}.map{|company, attendees|
-      (company.present? ? "[#{company}]" : "") + "#{attendees.map{|attendee| attendee['fullName']}.join(', ')}"
+      (company.present? ? "[#{company}] " : "") + "#{attendees.map{|attendee| attendee['fullName']}.join(', ')}"
     }.join(" | ")
   end
 
