@@ -77,8 +77,8 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def last_suggested_date
-    date = self.suggested_date_times.max
-    date.present? ? date.to_datetime : nil
+    date = self.suggested_date_times.max{|d| d["date"].to_datetime.to_i}
+    date.present? ? date['date'].to_datetime : nil
   end
 
   def last_archive_date
