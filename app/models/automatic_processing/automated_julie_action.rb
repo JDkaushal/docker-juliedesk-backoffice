@@ -125,7 +125,7 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
       response = EventsManagement::BaseInterface.new.build_request(:create, {
           email: account.email,
           summary: message_classification.summary,
-          description: nil,
+          description: message_classification.notes,
           attendees: JSON.parse(message_classification.attendees).select{|a| (a['isPresent'] == 'true' || a['isPresent'] == true || a['status'] == 'optional' ) && a['email'].present?},
           location: message_classification.location,
           all_day: false,

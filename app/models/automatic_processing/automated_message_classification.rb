@@ -1,5 +1,8 @@
 class AutomaticProcessing::AutomatedMessageClassification < MessageClassification
   include TemplateGeneratorHelper
+  include NotesGenerator
+
+
 
   def self.process_message_id(message_id, options={})
     message = Message.find(message_id)
@@ -65,8 +68,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         asap_constraint: last_message_classification.try(:asap_constraint) || main_interpretation['asap']
     }
 
-    account = message.messages_thread.account
-
     # Build some other needed properties
     client_preferences = {
         timezone: account.default_timezone_id,
@@ -90,8 +91,10 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         location_nature = interpretation[:location_nature]
       end
     end
-    # Otherwise, we fallback to detected location text or default address for appointment type
+    # Otherwise, we fallback to detected location text...
     location ||= interpretation[:location]
+
+    # Otherwise, we fallback to default address for appointment type
     location ||= appointment['default_address'].try(:[], 'address')
 
 
@@ -130,7 +133,15 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
                                language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL,
                                asap_constraint: interpretation[:asap_constraint]
                            })
+
+
+    self.notes = generate_notes
+
+    if self.is_virtual_appointment?
+      self.location = generate_call_instructions
+    end
   end
+
 
 
   def archive_thread
@@ -157,5 +168,20 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     WebSockets::Manager.trigger_archive(self.message.messages_thread.id)
   end
+
+  private
+
+  def account
+    message.messages_thread.account
+  end
+
+  def account_appointment
+    account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
+  end
+
+  def account_address
+    account.addresses.find{|address| address['address'] == self.location}
+  end
+
 
 end
