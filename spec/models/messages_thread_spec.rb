@@ -1424,7 +1424,7 @@ describe MessagesThread, :type => :model do
   describe 'Abortion check' do
     let(:oa_initiated_at) { DateTime.new(2018, 03, 01) }
     let(:follow_up_reminder_date) { DateTime.new(2018, 01, 01) }
-    let(:last_suggested_date) { DateTime.new(2018, 02, 01) }
+    let(:last_suggested_date) { {timezone: "Europe/Paris", date: DateTime.new(2018, 02, 01)} }
     let!(:operator_action) { FactoryGirl.create(:operator_action, nature: 'archive', initiated_at: oa_initiated_at) }
     let(:messages_thread) { FactoryGirl.create(:messages_thread_with_messages, status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, follow_up_reminder_date: follow_up_reminder_date, operator_actions: [operator_action]) }
 
