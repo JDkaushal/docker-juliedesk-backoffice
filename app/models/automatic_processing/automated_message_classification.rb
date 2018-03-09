@@ -52,7 +52,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
           {
               'email' => att[:email],
-              'fullName' => att[:name],
+              'fullName' => [human_civilities_response['first_name'], human_civilities_response['last_name']].select(&:present?).join(" "),
               'firstName' => human_civilities_response['first_name'],
               'lastName' => human_civilities_response['last_name'],
               'gender' => human_civilities_response['gender'],
@@ -115,7 +115,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     self.assign_attributes({
                                appointment_nature: interpretation[:appointment],
-                               summary: message.server_message['subject'], # No support for client and companies subject for now
+                               summary: nil,
                                location: location,
                                location_nature: location_nature,
                                attendees: attendees.to_json,
@@ -140,6 +140,14 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     if self.is_virtual_appointment?
       self.location = generate_call_instructions
     end
+
+    self.summary = generate_summary
+  end
+
+  def generate_summary
+    account_appointment['title_in_calendar'][self.locale] + " " + JSON.parse(self.attendees).select{|att| att['isPresent']}.group_by{|att| att['company']}.map{|company, attendees|
+      (company.present? ? "[#{company}]" : "") + "#{attendees.map{|attendee| attendee['fullName']}.join(', ')}"
+    }.join(" | ")
   end
 
 
