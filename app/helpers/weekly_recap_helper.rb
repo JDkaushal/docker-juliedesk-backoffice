@@ -47,7 +47,7 @@ module WeeklyRecapHelper
       SELECT DISTINCT ON(thread_id) thread_id AS id, last_status, not_from_me_mess_count
       FROM (
         SELECT
-          mt1.id AS thread_id, 
+          mt1.id AS thread_id,
           mc1.created_at,
           mc1.thread_status,
           FIRST_VALUE(mc1.thread_status) OVER (PARTITION BY mt1.id ORDER BY mc1.created_at DESC) as last_status,
@@ -57,6 +57,7 @@ module WeeklyRecapHelper
         INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
         WHERE (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%') AND mc1.created_at <= '#{window_end_time}'
         AND (mt1.aborted_at IS NULL OR mt1.aborted_at > '#{window_end_time}')
+        AND (mt1.event_booked_date IS NULL OR mt1.event_booked_date > '#{window_end_time}')
         AND mt1.was_merged = false
         AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )
       ) e1
