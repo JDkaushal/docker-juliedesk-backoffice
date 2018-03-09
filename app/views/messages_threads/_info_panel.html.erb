@@ -42,6 +42,17 @@
     window.allowedAttendeesEmails = [];
     window.contraintsTiles = [];
 
+    // Notes from last classification
+    var lastNotes     = '<%=h escape_javascript(messages_thread.computed_data[:notes]) %>';
+
+    // decode html entities
+    lastNotes = $('<textarea />').html(lastNotes).text();
+
+    var lastNotesText = '<%=h escape_javascript(messages_thread.computed_data[:text_notes]) %>';
+
+
+    window.notesManager = NotesManager.fromJulieDeskNotes(lastNotes, lastNotesText);
+
     var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
 
     var notesSpacingRe = new RegExp(/(?:__n){3,}/g);
@@ -54,6 +65,7 @@
     };
 
     $(document).ready(function() {
+        //window.updateNotes();
 
       $( document ).tooltip();
 
@@ -207,7 +219,12 @@
 
         $("input[name='locale']").change(function () {
             window.setCurrentLocale($(this).val());
+
+            if(window.notesManager)
+                window.notesManager.changeLang(window.getCurrentLocale());
+
             updateNotesCallingInfos();
+            window.updateNotes();
             reProcessTitle();
             updateAttendeesUsageNames();
             // Appointment type selection is current step, we validate
@@ -237,6 +254,20 @@
         $('body').on('keyup', ".event-tile-container input.location", function(e){
             setAddressDetails('');
             updateCurrentEventNotes();
+        });
+
+
+
+        // Specific notes
+        window.notesManager.setSpecificNotes($("textarea#other_notes").val());
+        $('body').on('keyup', "textarea#other_notes", function() {
+            var $otherNotes = $(this);
+            if(window.notesManager) {
+                window.notesManager.setSpecificNotes($otherNotes.val())
+                window.updateNotes();
+            }
+            else
+                console.warn("Trying to update notes but window.notesManager is not set !");
         });
 
         if($("#current_notes").length > 0) {
@@ -716,9 +747,6 @@
           }
         }
 
-        var notes = $('#notes').val().trim().replace(/\n/g, '__n');
-        $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
-        setNotes();
 
         if($('#event-cancel-button').css('display') == 'block')
           updateCurrentEventNotes();
@@ -758,47 +786,32 @@
             }
         //}
 
+
+        // TODO : check why
         var notes = $('#notes').val().trim().replace(/\n/g, '__n');
         $('#notes').val(notes.replace(notesSpacingRe, "__n__n").replace(/__n/g, "\n"));
         setNotes();
+        //
 
         if($('#event-cancel-button').css('display') == 'block')
             updateCurrentEventNotes();
     }
 
-    /*function updateCurrentEventNotes() {
-        if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
-            //var vmHelper = angular.element($('#event_update_vm_ctrl')).scope();
-
-            var currentEventNotesNode = $('.created-event-panel .notes');
-            var currentEventNotes = currentEventNotesNode.val();
-            var newEventDescription = '';
-            //if(vmHelper){
-                var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
-                var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
-                if(regExResult != null){
-                    newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
-                    currentEventNotesNode.val(newEventDescription);
-                }else{
-                    currentEventNotesNode.val($('.classic-info-panel #notes').val());
-                }
-            //}
-        }
-    }*/
 
     function updateCurrentEventNotes() {
         if(window.threadDataIsEditable && window.currentEventTile && window.currentEventTile.getMode() == 'edit_only') {
-            var currentEventNotesNode = $('.created-event-panel .notes');
-            var currentEventNotes = currentEventNotesNode.val();
-            var ourNotesRegexp = /-(.+)----\n[\s\S]+----\n/gm;
-            if(currentEventNotes.match(ourNotesRegexp)) {
-                newNotes = currentEventNotes.replace(ourNotesRegexp, $('.classic-info-panel #notes').val() + "\n");
-            }
-            else {
-                newNotes = $('.classic-info-panel #notes').val() + currentEventNotes;
-            }
+            var event = window.currentEventTile.event;
 
-            currentEventNotesNode.val(newNotes);
+            $('.created-event-panel .notes').html(event.description);
+            var eventDescriptionHTML = event.description;
+            var eventDescriptionText = $('.created-event-panel .notes')[0].innerText;
+
+            var currentEventNotesManager = NotesManager.fromEventDescription(event.description);
+            window.currentEventNotesManager = currentEventNotesManager;
+            window.currentEventNotesManager.updateNotesFromOtherNotes(window.notesManager);
+
+            window.currentEventTile.editableDescription = window.currentEventNotesManager.getFullNotesOutputHTML();
+            $('.created-event-panel .notes').html(window.currentEventTile.editableDescription);
         }
     }
 
@@ -1438,37 +1451,10 @@
     }
 
     function setAddressDetails(addressDetails) {
-        var addressDetailsReFr = new RegExp("-" + localize("events.notes.address_details_boundary", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
-        var addressDetailsReEn = new RegExp("-" + localize("events.notes.address_details_boundary", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
-        var wrappedAddressDetails = '';
-        var usedRegex = '';
-
-        var notes = $("textarea#notes").val();
-        var tmpNotes = notes.replace(/\n/g,'');
-
-        var regexFrResult = addressDetailsReFr.exec(tmpNotes);
-        var regexEnResult = addressDetailsReEn.exec(tmpNotes);
-
-        if(addressDetails && addressDetails.length > 0) {
-            wrappedAddressDetails += "-" + localize("events.notes.address_details_boundary", {locale: window.currentLocale}) + "-------------------";
-            wrappedAddressDetails += '\n' + addressDetails;
-            wrappedAddressDetails += "\n----------------------------------------";
-
-            if(regexFrResult == null && regexEnResult == null){
-                notes = wrappedAddressDetails + '\n\n' + notes;
-            }else{
-                usedRegex = regexFrResult != null ? addressDetailsReFr : addressDetailsReEn;
-                notes = notes.replace(/\n/g,'__n').replace(usedRegex, wrappedAddressDetails).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
-            }
-        }else{
-            if(regexFrResult != null || regexEnResult != null){
-                usedRegex = regexFrResult != null ? addressDetailsReFr : addressDetailsReEn;
-                notes = notes.replace(/\n/g,'__n').replace(usedRegex, '').replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
-            }
+        if(window.notesManager) {
+            window.notesManager.setAddressDetails(addressDetails);
+            window.updateNotes();
         }
-
-        $("textarea#notes").val(notes.trim());
-
     }
 
     function titlePreferencesSelection(type) {
@@ -1581,6 +1567,14 @@
 
         return attendees;
     };
+
+    window.updateNotes = function() {
+        if(!window.notesManager) return;
+
+        window.notesManager.updateNotes();
+        window.notes = window.notesManager.getFullNotesNode().html();
+        $('#notes').html(window.notesManager.getJulieDeskNotesNode().html());
+    }
 </script>
 
 <%= render partial: "AI/partials/manager" %>
@@ -1813,7 +1807,8 @@
 
       <div class="data-entry linear-form-entry">
         <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
-        <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+
+        <div id="notes" class="notes"><%= messages_thread.computed_data[:notes] %></div>
         <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
         <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_notes"><%= I18n.t("common.validate") %></div>
       </div>

@@ -128,3 +128,5 @@ gem 'paper_trail'
 
 #Error tracking
 gem 'airbrake', '~> 5.0'
+
+gem 'loofah'

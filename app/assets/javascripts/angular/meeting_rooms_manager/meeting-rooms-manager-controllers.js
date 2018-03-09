@@ -23,9 +23,6 @@
 
         $scope.widgets = [];
 
-        var meetingRoomsReFr = new RegExp("-" + localize("events.notes.meeting_rooms.boundary", {locale: 'fr'}) + "-------------------.+?(?:----------------------------------------)");
-        var meetingRoomsReEn = new RegExp("-" + localize("events.notes.meeting_rooms.boundary", {locale: 'en'}) + "-------------------.+?(?:----------------------------------------)");
-
         $scope.$watch('displayForm', function(newVal, oldVal) {
             if(newVal) {
             } else {
@@ -267,36 +264,20 @@
         };
 
         $scope.setMeetingRoomInfosInNotes = function() {
-            var notesNode = $('#notes');
-            var notes = notesNode.val();
             var meetingRoomInfos = '';
-
             var bookedRooms = $scope.getBookedRoomsDetails();
 
             if(bookedRooms && _.keys(bookedRooms).length > 0 && $scope.attendeesManagerCtrl.attendees && $scope.attendeesManagerCtrl.attendees.length > 0) {
-                meetingRoomInfos += "-" + localize("events.notes.meeting_rooms.boundary", {locale: window.currentLocale}) + "-------------------";
                 _.each(bookedRooms, function(roomDetails) {
                     meetingRoomInfos += "\n " + localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, meeting_room_name: roomDetails.summary, meeting_room_location: roomDetails.location});
                 });
-                meetingRoomInfos += "\n----------------------------------------";
             }
 
-            var tmpNotes = notes.replace(/\n/g,'');
-            var regexFrResult = meetingRoomsReFr.exec(tmpNotes);
-            var regexEnResult = meetingRoomsReEn.exec(tmpNotes);
-
-            if(regexFrResult == null && regexEnResult == null){
-                // if(notes.replace(/\n/g,'').length > 0)
-                //     notes += "\n\n";
-                notes = meetingRoomInfos + "\n\n" + notes;
-                //notes += meetingRoomInfos;
-            }else{
-                // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
-                var usedRegex = regexFrResult != null ? meetingRoomsReFr : meetingRoomsReEn;
-                notes = notes.replace(/\n/g,'__n').replace(usedRegex, meetingRoomInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
+            // Notes
+            if(window.notesManager) {
+                window.notesManager.setMeetingRoomsInstructions(meetingRoomInfos);
+                window.updateNotes();
             }
-
-            notesNode.val(notes);
         };
 
         $scope.getUsingMeetingRoom = function() {
@@ -1368,9 +1349,9 @@
                     });
 
                     // Update 25 Janvier 2018
-                    // We do not shuffle the available rooms anymore, because we now use a prioritization system to order them.
-                    // As we now order the rooms from most prioritized to lesser prioritized and we always take the first room available
-                    // that means we will always book the most prioritized room
+                            // We do not shuffle the available rooms anymore, because we now use a prioritization system to order them.
+                            // As we now order the rooms from most prioritized to lesser prioritized and we always take the first room available
+                            // that means we will always book the most prioritized room
 
                     // We place the currently selected Room at the top of the availabilities so it get taken first if we check a new timeslot
                     // var selectedRoomId = ($scope.selectedRoom && $scope.selectedRoom.id) || null;
@@ -1511,31 +1492,11 @@
         };
 
         $scope.setMeetingRoomInfosInNotes = function() {
-            var notesNode = $('#notes');
-            var notes = notesNode.val();
-            var meetingRoomInfos = '';
-
             if($scope.selectedRoom && $scope.selectedRoom.summary && $scope.attendeesManagerCtrl && $scope.attendeesManagerCtrl.attendees && $scope.attendeesManagerCtrl.attendees.length > 0) {
-                meetingRoomInfos += "-" + localize("events.notes.meeting_rooms.boundary", {locale: window.currentLocale}) + "-------------------";
-                meetingRoomInfos += "\n " + localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, company_name: $scope.attendeesManagerCtrl.getThreadOwner().company, meeting_room_name: $scope.selectedRoom.summary});
-                meetingRoomInfos += "\n----------------------------------------";
+                meetingRoomInfos = localize("events.notes.meeting_rooms.sentence", {locale: window.currentLocale, company_name: $scope.attendeesManagerCtrl.getThreadOwner().company, meeting_room_name: $scope.selectedRoom.summary});
+                window.notesManager.setMeetingRoomsInstructions(meetingRoomInfos);
+                window.updateNotes();
             }
-
-            var tmpNotes = notes.replace(/\n/g,'');
-            var regexFrResult = meetingRoomsReFr.exec(tmpNotes);
-            var regexEnResult = meetingRoomsReEn.exec(tmpNotes);
-
-            if(regexFrResult == null && regexEnResult == null){
-                if(notes.replace(/\n/g,'').length > 0)
-                    notes += "\n\n";
-                notes += meetingRoomInfos;
-            }else{
-                // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
-                var usedRegex = regexFrResult != null ? meetingRoomsReFr : meetingRoomsReEn;
-                notes = notes.replace(/\n/g,'__n').replace(usedRegex, meetingRoomInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
-            }
-
-            notesNode.val(notes);
         };
 
         $scope.init();

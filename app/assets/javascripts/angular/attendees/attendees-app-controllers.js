@@ -915,9 +915,7 @@
 
         //Event Notes---------------------------------------------------------------------
         $scope.updateNotes = function(){
-            var notes = $('#notes').val();
 
-            var wrappedContactInfos = '';
             var computedContactInfos = '';
 
             var i = 0;
@@ -938,27 +936,11 @@
                 }
             });
 
-            if(computedContactInfos != ''){
-                wrappedContactInfos += "-" + localize("events.call_instructions.contacts_infos", {locale: window.currentLocale}) + "-------------------";
-                wrappedContactInfos += computedContactInfos;
-                wrappedContactInfos += "\n----------------------------------------";
+
+            if(window.notesManager) {
+                window.notesManager.setContactInfos(computedContactInfos);
+                window.updateNotes();
             }
-
-            var tmpNotes = notes.replace(/\n/g,'');
-            var regexFrResult = contactInfosReFr.exec(tmpNotes);
-            var regexEnResult = contactInfosReEn.exec(tmpNotes);
-
-            if(regexFrResult == null && regexEnResult == null){
-                if(notes.replace(/\n/g,'').length > 0)
-                    notes += "\n\n";
-                notes += wrappedContactInfos;
-            }else{
-                // Maybe use contactInfosReFr and contactInfosReEn in place of regexFrResult and regexEnResult
-                var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
-                notes = notes.replace(/\n/g,'__n').replace(usedRegex, wrappedContactInfos).replace(/(__n){2,}/g, '\n\n').replace(/__n/g, "\n");
-            }
-
-            $('#notes').val(notes);
         };
         //--------------------------------------------------------------------------------
 

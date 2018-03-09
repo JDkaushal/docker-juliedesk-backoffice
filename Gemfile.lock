@@ -412,6 +412,7 @@ DEPENDENCIES
   jquery-ui-rails
   json-schema
   lograge (= 0.4.1)
+  loofah
   mail (= 2.6.3)
   memory_profiler
   mixpanel-ruby

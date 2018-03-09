@@ -595,6 +595,9 @@ class MessagesThread < ActiveRecord::Base
         computed_calendar_login_username = nil
         computed_calendar_login_type = nil
       end
+
+      notes      = last_message_classification.try(:notes)
+
       @computed_data = {
           locale: last_message_classification.try(:locale) || self.account.try(:locale),
           timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
@@ -606,7 +609,8 @@ class MessagesThread < ActiveRecord::Base
           cluster_specified_location: last_message_classification.try(:cluster_specified_location),
           call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
           attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
-          notes: last_message_classification.try(:notes),
+          notes: notes,
+          text_notes: Loofah.document(notes).to_text,
           other_notes: last_message_classification.try(:other_notes),
           client_on_trip: client_on_trip,
 

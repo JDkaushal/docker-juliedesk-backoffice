@@ -301,7 +301,7 @@
             // We only include the email in notes if the current email is not a client only discussion with julie
             if(window.getCurrentAppointment().include_email_in_notes && !window.isResponseToClient) {
               <% server_message = @messages_thread.messages.select{|m| m.id == @julie_action.message_classification.message_id}.first.server_message %>
-              var textData = <%== {text: "#{"- "*30}\n#{server_message['subject']}\n#{server_message['text']}\n#{"- "*30}"}.to_json %>;
+              var textData = <%== {text: CGI.escapeHTML("#{server_message['subject']}\n#{server_message['text']}") }.to_json %>;
                 
               emailInNotes = "\n\n" + textData.text;
             }
@@ -314,50 +314,19 @@
               forceUpdateNotesCallingInfos();
             }
 
-              var description = '';
-
             if(window.getCurrentAppointment().appointment_kind_hash.is_virtual){
               if(window.threadComputedData.call_instructions.event_instructions)
                 location = window.threadComputedData.call_instructions.event_instructions;
-
-              if(window.currentEventTile) {
-                var currentEventNotesNode = $('.created-event-panel .notes');
-                var currentEventNotes = currentEventNotesNode.val();
-                var newEventDescription = '';
-                if(vmHelper && vmHelper.isVirtualAppointment()){
-
-                  /*var otherNotesRegex = new RegExp(/- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(.)* /g);
-                  var regExResult = otherNotesRegex.exec(currentEventNotes.replace(/\n/g,'__n'));
-                  if(regExResult != null){
-                    newEventDescription = $('.classic-info-panel #notes').val() + "\n\n" + regExResult[0].replace(/__n/g,'\n');
-                    description = newEventDescription;
-                  }*/
-
-                  var ourNotesRegexp = /-(.+)----\n[\s\S]+----\n/gm;
-                  if (currentEventNotes.match(ourNotesRegexp)) {
-                      description = currentEventNotes.replace(ourNotesRegexp, $('.classic-info-panel #notes').val() + "\n" + $('#other_notes').val() + "\n");
-                  }
-                  else {
-                      description = $('.classic-info-panel #notes').val() + "\n" + $('#other_notes').val() + "\n\n" + currentEventNotes;
-                  }
-
-                }
-              }
             }
 
-            if(description === '') {
-                //var description = window.threadComputedData.notes + "\n" + window.threadComputedData.other_notes + emailInNotes;
-                // Allow us to pick up the changes made to the notes when on the julieAction Page (when the form is not editable for example)
-                description = $('#notes').val() + "\n" + $('#other_notes').val() + emailInNotes;
-            } else {
-                description = description + emailInNotes;
-            }
+            window.notesManager.setEmailHistory(emailInNotes);
+            window.updateNotes();
 
             requestParams = $.extend(requestParams, {
               action: "create_event",
               email: "<%= @messages_thread.account_email %>",
               summary: window.threadComputedData.summary,
-              description: description,
+              description: window.notesManager.getFullNotesNode().html(),
               attendees: <%== @messages_thread.computed_data[:attendees].select{|a| (a['isPresent'] == 'true' || a['status'] == 'optional' ) && a['email'].present?}.to_json %>,
               location: location,
               all_day: false,

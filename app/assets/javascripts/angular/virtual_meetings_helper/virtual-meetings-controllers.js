@@ -712,26 +712,13 @@
                             }
                         }
 
-                        if(callingInfos != ''){
-                            message += "-" + localize('events.call_instructions.organizer_infos', {locale: window.currentLocale})+ "-----------------";
-                            message += "\n" +threadOwner.displayNormalizedName();
-                            message += callingInfos;
-                            message += "\n----------------------------------------";
+                        if(window.notesManager){
+                            if(callingInfos)
+                                message += threadOwner.displayNormalizedName() + callingInfos;
+
+                            window.notesManager.setOrganizerInfos(message);
+                            window.updateNotes();
                         }
-
-                        var tmpNotes = notes.replace(/\n/g,'');
-                        var regexFrResult = threadOwnerInfosReFr.exec(tmpNotes);
-                        var regexEnResult = threadOwnerInfosReEn.exec(tmpNotes);
-
-                        if(regexFrResult == null && regexEnResult == null){
-                            var space = message == '' ? '' : "\n\n";
-                            notes = message + space + notes;
-                        }else{
-                            var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
-                            notes = notes.replace(/\n/g,'__n').replace(usedRegex, message).replace(/__n/g, "\n");
-                        }
-
-                        $("#notes").val(notes);
                     }
 
                     if(isVirtual){
@@ -817,24 +804,10 @@
 
                     window.threadComputedData.call_instructions.event_instructions = eventInstructions;
 
-                    if(content != ''){
-                        message += "-" + localize('events.call_instructions.title', {locale: window.currentLocale}) + "----------------";
-                        message += "\n" + content;
-                        message += "\n----------------------------------------";
+                    if(window.notesManager){
+                        window.notesManager.setCallInstructions(content);
+                        window.updateNotes();
                     }
-
-                    tmpNotes = notes.replace(/^\s+|\s+$/g, '').replace(/\n/g, '__n');
-                    var regexFrResult = callingInstructionsInfosReFr.exec(tmpNotes);
-                    var regexEnResult = callingInstructionsInfosReEn.exec(tmpNotes);
-
-                    if(regexFrResult == null && regexEnResult == null){
-                        var space = message == '' ? '' : "\n\n";
-                        notes = message + space + notes;
-                    }else{
-                        var usedRegex = regexFrResult != null ? regexFrResult : regexEnResult;
-                        notes = tmpNotes.replace(usedRegex, message).replace(/__n/g, "\n");
-                    }
-                    $("#notes").val(notes);
                 };
 
                 $scope.targetChanged = function($event){

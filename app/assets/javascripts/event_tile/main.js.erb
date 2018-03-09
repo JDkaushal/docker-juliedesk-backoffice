@@ -14,6 +14,7 @@ function EventTile($selector, params) {
     this.createdFromAi = params.createdFromAI;
 
     this.event = params.event;
+    this.editableDescription = this.event.description;
 
     this.selectEventCallback = params.selectEventCallback;
     this.doneEditingCallback = params.doneEditingCallback;
@@ -284,7 +285,14 @@ EventTile.prototype.redraw = function() {
         eventTile.$selector.find(".hide-if-ai-event-interpretation").hide();
     }
 
-    eventTile.$selector.find("textarea.notes").val(eventTile.event.description);
+    //var notesManager = new NotesManager(eventTile.event.description, { 'contentType': NotesManager.TYPE_HTML });
+    var $notes = $('<pre class="notes">'+ eventTile.event.description +'</pre>');
+    //$notes.append(eventTile.event.description);
+    //$notes.append(notesManager.getFullNotesNode());
+
+    eventTile.$selector.find('.notes-container').html($notes)
+
+    eventTile.$selector.find("textarea.notes").hide();
 
     eventTile.$selector.find(".recurrence-container").hide();
 
@@ -551,7 +559,7 @@ EventTile.prototype.getEditedEvent = function() {
     var description = '';
     var location = '';
     if(eventTile.mode != 'free_calendar'){
-        description = eventTile.$selector.find("textarea.notes").val();
+        description = eventTile.editableDescription;
         location = eventTile.$selector.find("input.location").val();
 
         var currentAppointment = window.getCurrentAppointment();
@@ -568,7 +576,8 @@ EventTile.prototype.getEditedEvent = function() {
 
         }
     }else{
-        description = $(eventTile.$selector[0].childNodes[0]).find("textarea.notes").val();
+        //description = $(eventTile.$selector[0].childNodes[0]).find("textarea.notes").val();
+        description = eventTile.editableDescription;
         location = $(eventTile.$selector[0].childNodes[0]).find("input.location").val();
     }
 
@@ -1198,6 +1207,7 @@ EventTile.prototype.initActions = function() {
     });
 
     eventTile.$selector.find("#event-cancel-button").click(function() {
+        eventTile.editableDescription = eventTile.event.description;
         var currentAppointment = window.getCurrentAppointment();
 
         var vmHelperNode = $('#event_update_vm_ctrl');

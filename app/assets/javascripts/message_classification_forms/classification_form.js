@@ -216,7 +216,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         client_on_trip: $("#client-on-trip-data-entry").scope().value,
         location_coordinates: $('#location_coordinates').val(),
         call_instructions: window.getCallInstructions(),
-        notes: $("#notes").val(),
+        notes: window.notesManager.getJulieDeskNotesHTML(),
         other_notes: $("#other_notes").val(),
         private: $("#private:checked").length > 0,
         // We send the old_attendees for optimization purpose when looking if we need to recompute the linked attendees

@@ -215,13 +215,25 @@
             height: 30px
         }
         .notes {
+            background-color: #eeeeee;
+            font-family: 'Open Sans', 'sans-serif';
+            //white-space: pre-wrap;
             font-size: 12px;
             width: 100%;
             resize: none;
             border: 1px solid #ddd;
             outline: none;
-            height: 90px;
+            height: 150px;
             padding: 5px;
+
+          padding: 5px;
+          overflow-y: scroll;
+          max-height: 150px;
+          border: solid 1px #ccc;
+
+          p {
+            margin: 0;
+          }
         }
     }
 
