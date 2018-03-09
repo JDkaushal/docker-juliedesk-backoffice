@@ -5,7 +5,7 @@ module AutomaticProcessing::NotesGenerator
         is_virtual_appointment? ? notes_category(get_translation(:call_instructions), generate_call_instructions) : notes_category(get_translation(:address_complement), generate_address_complement),
         notes_category(get_translation(:organizer_infos), generate_organizer_infos),
         notes_category(get_translation(:contacts_infos), generate_contacts_infos)
-    ].select(&:present?).join("<br/>")
+    ].select(&:present?).join("<br/><br/>")
   end
 
   def generate_call_instructions
@@ -96,7 +96,7 @@ module AutomaticProcessing::NotesGenerator
         (params[:landline_number].present? && params[:display_landline_number]) ? "#{get_translation(:landline)}#{params[:landline_number]}": nil,
         (params[:skype_id].present? && params[:display_skype_id]) ? "#{get_translation(:skype)}#{params[:skype_id]}": nil,
         (params[:confcall_instructions].present? && params[:display_confcall_instructions]) ? "#{get_translation(:confcall_instructions)}#{params[:confcall_instructions]}": nil,
-    ].join("\n")
+    ].join("<br/>")
   end
 
   private
@@ -157,9 +157,7 @@ module AutomaticProcessing::NotesGenerator
   def notes_category(label, content)
     return "" if content.blank?
     <<END
--#{label}#{"-" * (49 - label.length)}
-#{content}
-#{"-" * 50}
+<b>#{label}</b><br/>#{content}
 END
   end
 
