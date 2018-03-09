@@ -56,7 +56,7 @@ module WeeklyRecapHelper
         INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
         INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
         WHERE (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%') AND mc1.created_at <= '#{window_end_time}'
-        AND ( ( mt1.aborted_at >= '#{window_start_time}' AND mt1.status <> '#{MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED}' ) OR mt1.aborted_at <= '#{window_start_time}' OR mt1.aborted_at IS NULL )
+        AND (mt1.aborted_at IS NULL OR mt1.aborted_at > '#{window_end_time}')
         AND mt1.was_merged = false
         AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )
       ) e1

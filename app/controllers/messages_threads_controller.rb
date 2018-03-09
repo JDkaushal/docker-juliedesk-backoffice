@@ -187,6 +187,10 @@ class MessagesThreadsController < ApplicationController
         data.merge!(follow_up_reminder_date: params[:follow_up_reminder_date])
       end
 
+      if data[:status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
+        data[:aborted_at] = DateTime.now
+      end
+
       messages_thread.update(data)
 
       WebSockets::Manager.trigger_archive(messages_thread.id)

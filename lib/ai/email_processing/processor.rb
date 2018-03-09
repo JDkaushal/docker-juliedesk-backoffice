@@ -63,7 +63,18 @@ module Ai
 
           # After the event creation, we update the statuses
           new_classif.update(thread_status: new_classif.computed_thread_status)
-          @message_thread.update(status: @message_thread.reload.suggested_current_status)
+
+          new_status = @message_thread.reload.suggested_current_status
+
+          if new_status == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
+            @message_thread.update(status: new_status, aborted_at: DateTime.now)
+          else
+            @message_thread.update(status: new_status)
+          end
+
+          if thread_status == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
+            self.aborted_at = DateTime.now
+          end
 
           EmailServer.archive_thread(messages_thread_id: @message_thread.server_thread_id)
 

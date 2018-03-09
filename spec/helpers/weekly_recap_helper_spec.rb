@@ -870,6 +870,109 @@ describe WeeklyRecapHelper do
       end
     end
 
+
+    describe 'get_currently_scheduling_threads' do
+      let!(:correct_scheduling_mt) {
+        FactoryGirl.create(:messages_thread, {
+          account_email: "nicolas@juliedesk.com",
+          subject: "Subject scheduling mt",
+          server_thread_id: 1,
+          messages: [
+              FactoryGirl.create(:message, {
+                  received_at: "2016-02-03",
+                  message_classifications: [
+                      FactoryGirl.create(:message_classification, {
+                          classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                          created_at: "2016-02-03",
+                          summary: "Skype scheduled on 2016-02-03",
+                          thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+                          appointment_nature: "skype",
+                          attendees: [
+                              {
+                                  'email' => "nmarlier@gmail.com",
+                                  'isPresent' => 'true',
+                                  'firstName' => "Nico",
+                                  'lastName' => "M",
+                                  'company' => "JD"
+                              }
+                          ].to_json,
+                          julie_action: FactoryGirl.create(:julie_action, {
+                              action_nature: JulieAction::JD_ACTION_CREATE_EVENT,
+                              done: true,
+                              events: [
+                                  {
+                                      event_id: "event_id_1",
+                                      calendar_id: "calendar_id_1",
+                                      event_url: "event_url_1",
+                                      calendar_login_username: "calendar_login_username_1",
+                                  }
+                              ].to_json
+                          })
+                      })
+                  ]
+              })
+          ]
+        })
+      }
+
+      let!(:aborted_thread) {
+        FactoryGirl.create(:messages_thread, {
+            account_email: "nicolas@juliedesk.com",
+            subject: "Subject scheduling mt",
+            server_thread_id: 1,
+            status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED,
+            aborted_at: DateTime.new(2015, 02, 02),
+            messages: [
+                FactoryGirl.create(:message, {
+                    received_at: "2016-02-03",
+                    message_classifications: [
+                        FactoryGirl.create(:message_classification, {
+                            classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                            created_at: "2016-02-03",
+                            summary: "Skype scheduled on 2016-02-03",
+                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+                            appointment_nature: "skype",
+                            attendees: [
+                                {
+                                    'email' => "nmarlier@gmail.com",
+                                    'isPresent' => 'true',
+                                    'firstName' => "Nico",
+                                    'lastName' => "M",
+                                    'company' => "JD"
+                                }
+                            ].to_json,
+                            julie_action: FactoryGirl.create(:julie_action, {
+                                action_nature: JulieAction::JD_ACTION_CREATE_EVENT,
+                                done: true,
+                                events: [
+                                    {
+                                        event_id: "event_id_1",
+                                        calendar_id: "calendar_id_1",
+                                        event_url: "event_url_1",
+                                        calendar_login_username: "calendar_login_username_1",
+                                    }
+                                ].to_json
+                            })
+                        })
+                    ]
+                })
+            ]
+        })
+      }
+      it 'should return the correct result' do
+        window_start_time = DateTime.parse("2016-02-01")
+        window_end_time = window_start_time + 1.week
+
+        scheduling_threads = WeeklyRecapHelper.get_currently_scheduling_threads(window_start_time, window_end_time, {
+            account_email: "nicolas@juliedesk.com"
+        })
+
+        expect(scheduling_threads.map(&:id)).to eq([correct_scheduling_mt.id])
+
+      end
+
+    end
+
   end
 
 

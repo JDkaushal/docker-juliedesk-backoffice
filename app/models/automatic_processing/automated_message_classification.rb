@@ -134,17 +134,26 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
 
   def archive_thread
-    self.thread_status = self.computed_thread_status
+    thread_status = self.computed_thread_status
+
+    self.thread_status = thread_status
+
     self.save
     EmailServer.archive_thread(messages_thread_id: self.message.messages_thread.server_thread_id)
 
     self.message.messages_thread.messages.update_all(archived: true)
 
-    self.message.messages_thread.update({
-                                           should_follow_up: false,
-                                           status: self.thread_status,
-                                           in_inbox: false
-                                       })
+    thread_params = {
+        should_follow_up: false,
+        status: self.thread_status,
+        in_inbox: false
+    }
+
+    if thread_params[:status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
+      thread_params[:aborted_at] = DateTime.now
+    end
+
+    self.message.messages_thread.update(thread_params)
 
     WebSockets::Manager.trigger_archive(self.message.messages_thread.id)
   end
