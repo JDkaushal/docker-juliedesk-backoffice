@@ -273,6 +273,7 @@ describe WeeklyRecapHelper do
                                                                                                                                                             summary: "Skype scheduled on 2016-02-03",
                                                                                                                                                             appointment_nature: "Skype",
                                                                                                                                                             thread_status: MessageClassification::THREAD_STATUS_SCHEDULED,
+                                                                                                                                                            attendees_emails: ['nicolas@juliedesk.com'],
                                                                                                                                                             attendees: [
                                                                                                                                                                 {
                                                                                                                                                                     'email' => "nmarlier@gmail.com",
@@ -702,9 +703,29 @@ describe WeeklyRecapHelper do
                     message_classifications: [
                         FactoryGirl.create(:message_classification, {
                             classification: MessageClassification::ASK_DATE_SUGGESTIONS,
-                            created_at: "2016-02-03",
+                            created_at: "2016-01-03",
                             summary: "Skype scheduled on 2016-01-17",
                             thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+                            appointment_nature: "skype",
+                            attendees: [
+                                {
+                                    'email' => "nmarlier@gmail.com",
+                                    'isPresent' => 'true',
+                                    'firstName' => "Nico",
+                                    'lastName' => "M",
+                                    'company' => "JD"
+                                }
+                            ].to_json,
+                            julie_action: FactoryGirl.create(:julie_action, {
+                                action_nature: JulieAction::JD_ACTION_SUGGEST_DATES,
+                                done: true,
+                            })
+                        }),
+                        FactoryGirl.create(:message_classification, {
+                            classification: MessageClassification::ASK_DATE_SUGGESTIONS,
+                            created_at: "2016-02-03",
+                            summary: "Skype scheduled on 2016-01-17",
+                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED,
                             appointment_nature: "skype",
                             attendees: [
                                 {
@@ -930,7 +951,7 @@ describe WeeklyRecapHelper do
                             classification: MessageClassification::ASK_DATE_SUGGESTIONS,
                             created_at: "2016-02-03",
                             summary: "Skype scheduled on 2016-02-03",
-                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT,
+                            thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED,
                             appointment_nature: "skype",
                             attendees: [
                                 {

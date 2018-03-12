@@ -44,24 +44,50 @@ module WeeklyRecapHelper
     scheduling_classifs = MessageClassification::SCHEDULING_CLASSIFICATIONS
 
     sql = <<-SQL.strip_heredoc
-      SELECT DISTINCT ON(thread_id) thread_id AS id, last_status, not_from_me_mess_count
+      SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, not_from_me_mess_count
       FROM (
-        SELECT
-          mt1.id AS thread_id,
-          mc1.created_at,
-          mc1.thread_status,
-          FIRST_VALUE(mc1.thread_status) OVER (PARTITION BY mt1.id ORDER BY mc1.created_at DESC) as last_status,
-          COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
-        FROM messages_threads mt1
-        INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
-        INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
-        WHERE (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%') AND mc1.created_at <= '#{window_end_time}'
-        AND (mt1.aborted_at IS NULL OR mt1.aborted_at > '#{window_end_time}')
-        AND (mt1.event_booked_date IS NULL OR mt1.event_booked_date > '#{window_end_time}')
-        AND mt1.was_merged = false
-        AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )
-      ) e1
-      WHERE last_status IN (VALUES#{scheduling_classifs.map{|c| "('#{c}')"}.join(',')})
+        -- We make use of an UNION to take advantages of indexes on messages_threads.account_email and message_classification.attendees_emails
+        -- This is because attendees_emails is not necessarily set for certain classification, so we still need to rely on account_email
+        (
+          SELECT
+            mt1.id AS thread_id
+          FROM messages_threads mt1
+          INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+          INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+          WHERE mt1.account_email = '#{params[:account_email]}'
+          AND mc1.created_at <= '#{window_end_time}'
+          AND mt1.was_merged = FALSE
+        )
+          UNION
+        (
+          SELECT
+            mt1.id AS thread_id
+          FROM messages_threads mt1
+          INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+          INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+          WHERE mc1.attendees_emails @> ARRAY['#{params[:account_email]}']::character varying[]
+          AND mc1.created_at <= '#{window_end_time}'
+          AND mt1.was_merged = FALSE
+        )
+      ) e1 LEFT JOIN LATERAL (
+            SELECT
+                  mc2.thread_status as current_thread_status
+            FROM message_classifications mc2
+            INNER JOIN messages m2 ON m2.id = mc2.message_id
+            WHERE m2.messages_thread_id = thread_id
+            AND mc2.created_at <= '#{window_end_time}'
+            ORDER BY mc2.created_at DESC
+            LIMIT 1
+      ) e3 ON TRUE LEFT JOIN LATERAL (
+            SELECT
+                  COUNT(*) as not_from_me_mess_count
+            FROM messages m4
+            WHERE m4.messages_thread_id = thread_id
+            AND m4.received_at <= '#{window_end_time}'
+            AND m4.from_me = FALSE
+            LIMIT 1
+      ) e4 ON TRUE
+      WHERE current_thread_status IN (VALUES#{scheduling_classifs.map{|c| "('#{c}')"}.join(',')})
       AND not_from_me_mess_count > 0;
     SQL
 
@@ -76,37 +102,94 @@ module WeeklyRecapHelper
 
   def self.get_threads_coming_from_scheduling(window_start_time, window_end_time, params)
 
-    classifs = params[:message_classif_thread_status_to_seek].present? ? params[:message_classif_thread_status_to_seek] : MessageClassification::CLASSIFICATIONS_WITH_DATA
-    attendees_condition = params[:dont_check_attendees_present] ? "" : "AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )"
-
-    if params[:sought_status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
-      status_condition = "WHERE mt1.status = '#{params[:sought_status]}' AND mt1.aborted_at >= '#{window_start_time}'"
-    else
-      status_condition = "WHERE mt1.status = '#{params[:sought_status]}'"
-    end
+    # classifs = params[:message_classif_thread_status_to_seek].present? ? params[:message_classif_thread_status_to_seek] : MessageClassification::CLASSIFICATIONS_WITH_DATA
+    # attendees_condition = params[:dont_check_attendees_present] ? "" : "AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )"
+    #
+    # if params[:sought_status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
+    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}' AND mt1.aborted_at >= '#{window_start_time}'"
+    # elsif params[:sought_status] == MessageClassification::THREAD_STATUS_SCHEDULED
+    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}' AND mt1.event_booked_date  >= '#{window_start_time}'"
+    # else
+    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}'"
+    # end
+    #
+    # sql = <<-SQL.strip_heredoc
+    #   SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, previous_thread_status, not_from_me_mess_count
+    #   FROM (
+    #     SELECT
+    #       mt1.id AS thread_id,
+    #       FIRST_VALUE(mc1.thread_status) OVER (PARTITION BY mt1.id ORDER BY mc1.created_at DESC) as current_thread_status,
+    #       COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
+    #     FROM messages_threads mt1
+    #     INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+    #     INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+    #     AND (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%')
+    #     AND mt1.was_merged = false
+    #   ) e1 LEFT JOIN LATERAL (
+    #     SELECT mc2.thread_status AS previous_thread_status
+    #     FROM message_classifications mc2
+    #     INNER JOIN messages m3 ON m3.id = mc2.message_id
+    #     WHERE m3.messages_thread_id = thread_id
+    #     AND mc2.created_at < '#{window_start_time}'
+    #     ORDER BY mc2.created_at DESC
+    #     LIMIT 1
+    #   ) e2 ON true
+    #   WHERE current_thread_status = '#{params[:sought_status]}' AND (current_thread_status <> previous_thread_status OR previous_thread_status IS NULL)
+    #   AND not_from_me_mess_count > 0;
+    # SQL
 
     sql = <<-SQL.strip_heredoc
       SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, previous_thread_status, not_from_me_mess_count
-      FROM (
-        SELECT mt1.id AS thread_id, mt1.status AS current_thread_status, COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
-        FROM messages_threads mt1
-        INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
-        INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
-        #{status_condition}
-        AND (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%') AND mc1.created_at BETWEEN '#{window_start_time}' AND '#{window_end_time}'
-        AND mt1.was_merged = false
-        AND mc1.classification IN (VALUES#{classifs.map{|c| "('#{c}')"}.join(',')})
-        #{attendees_condition}
+      FROM(
+        (
+          SELECT
+            mt1.id AS thread_id
+          FROM messages_threads mt1
+          INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+          INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+          WHERE mt1.account_email = '#{params[:account_email]}'
+          AND mc1.created_at BETWEEN '#{window_start_time}' AND '#{window_end_time}'
+          AND mt1.was_merged = FALSE
+        )
+          UNION
+        (
+          SELECT
+            mt1.id AS thread_id
+          FROM messages_threads mt1
+          INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
+          INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
+          WHERE mc1.attendees_emails @> ARRAY['#{params[:account_email]}']::character varying[]
+          AND mc1.created_at BETWEEN '#{window_start_time}' AND '#{window_end_time}'
+          AND mt1.was_merged = FALSE
+        )
       ) e1 LEFT JOIN LATERAL (
-        SELECT mc2.thread_status AS previous_thread_status
+        SELECT
+          mc2.thread_status as current_thread_status
+        FROM message_classifications mc2
+        INNER JOIN messages m2 ON m2.id = mc2.message_id
+        WHERE m2.messages_thread_id = thread_id
+        AND mc2.created_at <= '#{window_end_time}'
+        ORDER BY mc2.created_at DESC
+        LIMIT 1
+      ) e2 ON TRUE LEFT JOIN LATERAL (
+        SELECT
+          mc2.thread_status as previous_thread_status
         FROM message_classifications mc2
         INNER JOIN messages m3 ON m3.id = mc2.message_id
         WHERE m3.messages_thread_id = thread_id
         AND mc2.created_at < '#{window_start_time}'
         ORDER BY mc2.created_at DESC
         LIMIT 1
-      ) e2 ON true
-      WHERE (current_thread_status <> previous_thread_status OR previous_thread_status IS NULL)
+      ) e3 ON TRUE LEFT JOIN LATERAL (
+        SELECT
+          COUNT(*) as not_from_me_mess_count
+        FROM messages m4
+        WHERE m4.messages_thread_id = thread_id
+        AND m4.received_at <= '#{window_end_time}'
+        AND m4.from_me = FALSE
+      ) e4 ON TRUE
+      WHERE current_thread_status = '#{params[:sought_status]}'
+      AND (current_thread_status <> previous_thread_status OR previous_thread_status IS NULL)
       AND not_from_me_mess_count > 0;
     SQL
 

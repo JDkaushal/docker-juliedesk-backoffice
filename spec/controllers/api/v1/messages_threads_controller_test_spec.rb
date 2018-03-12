@@ -132,7 +132,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                               "passed_conditions"=>nil,
                                                               "client_on_trip"=>nil,
                                                               "booked_rooms_details"=>nil,
-                                                              "cluster_specified_location"=>nil
+                                                              "cluster_specified_location"=>nil,
+                                                              "attendees_emails"=>[]
                                                           }
                                                         }
                                                     }

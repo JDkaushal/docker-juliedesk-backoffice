@@ -24,6 +24,7 @@ class MessageClassification < ActiveRecord::Base
   UPDATE_EVENT             = "update_event"
   FOLLOW_UP_CONTACTS       = "follow_up_contacts"
   FOLLOW_UP_CLIENT         = "follow_up_client"
+  HANDLED_BY_CLIENT        = "handled_by_client"
 
   TO_FOUNDERS              = "to_founders"
   CANCEL_TO_FOUNDERS       = "cancel_to_founders"
@@ -136,7 +137,8 @@ class MessageClassification < ActiveRecord::Base
           language_level: last_classification_with_data.try(:language_level),
           asap_constraint: params[:asap_constraint],
           identifier: params[:message_classification_identifier],
-          cluster_specified_location: params[:cluster_specified_location]
+          cluster_specified_location: params[:cluster_specified_location],
+          attendees_emails: last_classification_with_data.try(:attendees_emails)
       )
     else
       attendees = []
@@ -194,7 +196,8 @@ class MessageClassification < ActiveRecord::Base
           language_level: params[:language_level],
           asap_constraint: params[:asap_constraint],
           identifier: params[:message_classification_identifier],
-          cluster_specified_location: params[:cluster_specified_location]
+          cluster_specified_location: params[:cluster_specified_location],
+          attendees_emails: self.get_attendees_emails(attendees)
       )
     end
 
@@ -231,7 +234,7 @@ class MessageClassification < ActiveRecord::Base
 
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
-    attendees.map do |attendee|
+    result = attendees.map do |attendee|
       attendee_email = attendee['email']
       if attendee_email.present?
         accounts.select do |account|
@@ -245,6 +248,12 @@ class MessageClassification < ActiveRecord::Base
       end
       attendee
     end
+
+    result
+  end
+
+  def self.get_attendees_emails(attendees)
+    attendees.map{|att| att['accountEmail']}
   end
 
   def other_account_emails
