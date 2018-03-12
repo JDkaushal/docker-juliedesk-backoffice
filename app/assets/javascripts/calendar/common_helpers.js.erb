@@ -492,7 +492,8 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
               deleting_occurrence: request.deletingOccurrence,
               call_instructions: window.threadComputedData.call_instructions,
               meeting_room: request.meeting_room,
-              virtual_resource_id: request.virtual_resource_id
+              virtual_resource_id: request.virtual_resource_id,
+              create_skype_for_business_meeting: (request.create_skype_for_business_meeting == true)
             }),
             success: function (e) {
               var restaurantBookingManager = $('#restaurant-booking-manager').scope();

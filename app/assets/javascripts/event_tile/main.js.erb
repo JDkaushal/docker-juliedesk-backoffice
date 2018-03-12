@@ -875,7 +875,8 @@ EventTile.prototype.saveEvent = function(saving_recurring_occurrence) {
         start_timezone: editedEvent.start_timezone,
         end_timezone: editedEvent.end_timezone,
         utc_offset: editedEvent.utc_offset,
-        meeting_room: meetingRoomManager.getEventMeetingRoomDetails()
+        meeting_room: meetingRoomManager.getEventMeetingRoomDetails(),
+        create_skype_for_business_meeting: skypeForBusinessService() && skypeForBusinessService().shouldCreateMeetingIfPossible() && skypeForBusinessService().canCreateMeeting()
     };
 
     if(!saving_recurring_occurrence) {
