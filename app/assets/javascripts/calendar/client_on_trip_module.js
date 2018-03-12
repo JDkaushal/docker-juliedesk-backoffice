@@ -1,12 +1,13 @@
 function ClientOnTripCalendarModule(params) {
     this.calendarTimezone = params.calendarTimezone;
     this.mainClientOnTrip = params.mainClientOnTrip;
+    this.active = params.active;
     this.currentClientOnTripMasks = [];
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalendarView, fullCalendarElement) {
     var clientOnTripCalendarModule = this;
-    if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
+    if(!clientOnTripCalendarModule.active) {
         return;
     }
 
@@ -19,7 +20,8 @@ ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalen
             date:  moment.tz(currentDateForClientOnTripDate.format(), clientOnTripCalendarModule.calendarTimezone),
             left: fullCalendarView.colContentLeft(fullCalendarView.dateToCell(currentDateForClientOnTripDate).col),
             width: fullCalendarView.getColWidth(),
-            visible: clientOnTripCalendarModule.mainClientOnTrip != null
+            visible: clientOnTripCalendarModule.mainClientOnTrip != null,
+            value: null
         })
         currentDateForClientOnTripDate.add('d', 1)
     }
@@ -28,12 +30,19 @@ ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalen
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(fullCalendarView) {
     var clientOnTripCalendarModule = this;
 
-    if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
+    if(!clientOnTripCalendarModule.active) {
         return;
     }
 
     var fcEventContainer = fullCalendarView.element.find(".fc-event-container").last();
     var calendarHeight = fcEventContainer.parent().height();
+
+    var $tr = $("<tr>").addClass("client-on-trip-header");
+    $tr.append($("<th>"));
+
+    var i = 0;
+    fullCalendarView.element.find("thead tr .client-on-trip-label").remove();
+
 
     _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function(clientOnTripMask) {
         if(clientOnTripMask.visible) {
@@ -43,13 +52,26 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(
                 left: clientOnTripMask.left
             }));
         }
+
+        var valueToDisplay = clientOnTripMask.value || "Default";
+        if(!valueToDisplay || valueToDisplay === "") {
+            valueToDisplay = "Default"
+        }
+        
+        var $header = $("<div>").addClass("client-on-trip-label").html($("<span>").addClass("value").html(valueToDisplay).addClass(clientOnTripMask.visible ? "incorrect" : "correct"));
+        fullCalendarView.element.find("thead tr th.fc-col" + i).append($header);
+        i += 1;
     });
+
+
+
+
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(fullCalendarEvent, fullCalendarElement, fullCalendarView) {
     var clientOnTripCalendarModule = this;
 
-    if(!featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")) {
+    if(!clientOnTripCalendarModule.active) {
         return;
     }
 
@@ -61,9 +83,11 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(ful
 
                 if(clientOnTripCalendarModule.mainClientOnTrip && fullCalendarEvent.aiMetadata.location_indication === clientOnTripCalendarModule.mainClientOnTrip.label) {
                     clientOnTripMask.visible = false;
+                    clientOnTripMask.value = fullCalendarEvent.aiMetadata.location_indication;
                 }
                 else {
                     clientOnTripMask.visible = true;
+                    clientOnTripMask.value = fullCalendarEvent.aiMetadata.location_indication;
                 }
             }
         });

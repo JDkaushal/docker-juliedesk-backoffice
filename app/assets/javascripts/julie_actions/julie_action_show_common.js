@@ -24,6 +24,7 @@ window.activateCalendarWithParams = function (calendarParams) {
     calendarParams.default_calendar_login_type = window.threadComputedData.calendar_login_type;
 
     calendarParams.main_client_on_trip = window.threadComputedData.client_on_trip;
+    calendarParams.display_main_client_on_trip = true;
 
     window.currentCalendar = new Calendar($(".calendar-container"), calendarParams);
     $(".calendar-container").addClass("visible");

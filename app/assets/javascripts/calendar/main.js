@@ -1693,40 +1693,6 @@ Calendar.prototype.updateEventCreation = function () {
 };
 
 
-Calendar.prototype.addEventsCountLabels = function () {
-    var calendar = this;
-    calendar.$selector.find(".events-count-label").remove();
-    var startDate = calendar.$selector.find('#calendar').fullCalendar("getView").start;
-    var days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-    var minCount = 1000;
-    for (var i = 0; i < 7; i++) {
-        var day = days[i];
-        var date = startDate.clone().add(i, "days");
-
-        var events = calendar.$selector.find('#calendar').fullCalendar('clientEvents', function (event) {
-            return !event.beingAdded
-                && !calendar.isFakeCalendarId(event.calId)
-                && event.start < date.clone().endOf('day')
-                && event.end > date.clone().startOf('day');
-        });
-
-        var count = events.length;
-        var className = "warning";
-//        if (count < calendar.accountPreferences.max_number_of_appointments) {
-//            className = "ras";
-//        }
-//        else {
-//            if (calendar.$selector.find(".fc-widget-header.fc-" + day).length > 0) {
-//                minCount = Math.min(minCount, count);
-//            }
-//        }
-
-
-        calendar.$selector.find(".fc-widget-header.fc-" + day).append($("<div>").addClass("events-count-label").addClass("count-" + count).addClass(className).html("" + count));
-    }
-    calendar.$selector.find(".events-count-label.count-" + minCount).addClass("best-of-worst");
-};
-
 Calendar.prototype.clearEvents = function() {
     var calendar = this;
 

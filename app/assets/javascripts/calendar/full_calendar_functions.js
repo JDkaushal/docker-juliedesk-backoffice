@@ -107,7 +107,6 @@ Calendar.prototype.fullCalendarEventDragStart = function(event, jsEvent, ui, vie
 };
 Calendar.prototype.fullCalendarEventAfterAllRender = function(view) {
     var calendar = this;
-    calendar.addEventsCountLabels();
 };
 
 Calendar.prototype.fullCalendarViewRender = function(view, element) {
@@ -321,7 +320,8 @@ Calendar.prototype.fullCalendarInit = function() {
 
     var clientOnTripCalendarModule = new ClientOnTripCalendarModule({
         calendarTimezone: calendar.getCalendarTimezone(),
-        mainClientOnTrip: calendar.initialData.main_client_on_trip
+        mainClientOnTrip: calendar.initialData.main_client_on_trip,
+        active: calendar.initialData.display_main_client_on_trip && featuresHelper.isFeatureActive("show_client_on_trip_on_calendar")
     });
 
     var columnWidth, columnWidthInt, offsetRowInt;

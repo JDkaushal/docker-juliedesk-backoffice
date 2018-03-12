@@ -446,6 +446,10 @@
             }
         }
 
+      thead tr {
+        height: 50px;
+      }
+
         .fc-header {
             margin: 0 0 10px 0;
             position: relative;
@@ -469,34 +473,32 @@
             font-weight: 600;
             color: rgba(40, 166, 203, 0.9);
         }
-        .events-count-label {
-            position: absolute;
-            top: 3px;
-            left: 8px;
-            height: 22px;
-            width: 22px;
-            font-size: 12px;
-            text-align: center;
-            border-radius: 12px;
-            line-height: 20px;
-            font-weight: 400;
 
-            border: 1px solid #aaa;
-            background: #fff;
-            color: #aaa;
+        .client-on-trip-label {
+          color: white;
+          font-size: 12px;
+          font-weight: normal;
 
-            &.ras {
-                background: rgba(40, 166, 203, 0.9);
-                border-color: rgba(40, 166, 203, 0.9);
-                color: #fff;
+          .value {
+            border-radius: 20px;
+
+            display: inline-block;
+
+            padding: 3px 10px;
+            line-height: 12px;
+
+            &.correct {
+              background: #55ce87;
             }
 
-            &.best-of-worst {
-                background: #aaa;
-                border-color: #aaa;
-                color: #fff;
+            &.incorrect {
+              background: #f57171;
+
             }
+          }
+
         }
+
         #calendars-list-popup-toggle-button {
             height: 26px;
             width: 26px;
