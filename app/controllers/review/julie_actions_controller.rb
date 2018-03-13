@@ -3,7 +3,7 @@ class Review::JulieActionsController < ReviewController
   def list_comments
 
     ids = params[:ids] || []
-    data = Hash[ids.map {|id| [id, nil]}].merge(Hash[JulieAction.where(id: ids).joins(:date_suggestions_comparison_review).select(:id, date_suggestions_comparison_review: :comment).map do |ja|
+    data = Hash[ids.map {|id| [id, nil]}].merge(Hash[JulieAction.where(id: ids).joins(:date_suggestions_comparison_review).select('julie_actions.id, date_suggestions_comparison_reviews.comment').map do |ja|
       [ja.id, ja.date_suggestions_comparison_review.comment]
     end])
 

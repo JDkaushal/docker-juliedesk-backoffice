@@ -47,8 +47,13 @@
                     var conscienceJulieAction = _.find(conscienceSuggestedDates, function(conscienceSuggestedDatesItem) {
                         return conscienceSuggestedDatesItem.julie_action_id == suggestedDate.julie_action_id
                     });
-                    suggestedDate.auto_process_force_human_reason = conscienceJulieAction.auto_process_force_human_reason;
-                    suggestedDate.auto_process_force_human_reason_details = conscienceJulieAction.auto_process_force_human_reason_details;
+
+                    if(conscienceJulieAction) {
+                        suggestedDate.auto_process_force_human_reason = conscienceJulieAction.auto_process_force_human_reason;
+                        suggestedDate.auto_process_force_human_reason_details = conscienceJulieAction.auto_process_force_human_reason_details;
+                    } else {
+                        console.log("No Julie Action found in AI response with ID => " + suggestedDate.julie_action_id);
+                    }
                 });
                 $scope.conscienceLoading = false;
             });
