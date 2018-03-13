@@ -18,9 +18,15 @@ export default new VueEx.Store({
     },
     actions: {
         track(context, trackingData) {
-            return (new TrackingInterfaceService()).track(trackingData.event, _.merge(trackingData.data || {}, {
-                current_operator_id: (context.getters.currentOperator || {}).id
-            }))
+            if(process.env.BACKOFFICE_ANALYTICS_BASE_PATH) {
+                return (new TrackingInterfaceService()).track(trackingData.event, _.merge(trackingData.data || {}, {
+                    current_operator_id: (context.getters.currentOperator || {}).id
+                }))
+            }
+            else {
+                return Promise.resolve();
+            }
+
         }
     }
 })

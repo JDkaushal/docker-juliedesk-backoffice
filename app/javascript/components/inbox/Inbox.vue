@@ -109,6 +109,9 @@
             },
             setupRedsock() {
                 let self = this;
+                if(!process.env.RED_SOCK_URL) {
+                    return;
+                }
                 this.redsockClient = new RedsockClient({
                     url: process.env.RED_SOCK_URL,
                     member_id: this.currentOperator.id,

@@ -576,7 +576,7 @@ class MessagesThread < ActiveRecord::Base
       last_message_classification = message_classifications.last
       client_on_trip = last_message_classification.try(:client_on_trip)
 
-      if client_on_trip.blank?
+      if last_message_classification.blank?
         client_on_trip = messages.map(&:message_interpretations).flatten.sort_by(&:updated_at).find { |mi| mi.question == 'main' }.try(:client_on_trip)
         client_on_trip = nil unless client_on_trip.is_a?(Hash)
       end

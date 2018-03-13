@@ -75,19 +75,24 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(ful
         return;
     }
 
+    var eventLocationIndication = fullCalendarEvent.aiMetadata.location_indication;
+    if(eventLocationIndication === '') {
+        eventLocationIndication = null;
+    }
 
-    if(fullCalendarEvent.id && fullCalendarEvent.allDay && fullCalendarEvent.aiMetadata && fullCalendarEvent.aiMetadata.location_indication != null) {
+
+    if(fullCalendarEvent.id && fullCalendarEvent.allDay && fullCalendarEvent.aiMetadata && eventLocationIndication != null) {
         _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function (clientOnTripMask) {
             if(clientOnTripMask.date.diff(fullCalendarEvent.start, 'days') >= 0 &&
                 clientOnTripMask.date.diff(fullCalendarEvent.end, 'days') < 0) {
 
-                if(clientOnTripCalendarModule.mainClientOnTrip && fullCalendarEvent.aiMetadata.location_indication === clientOnTripCalendarModule.mainClientOnTrip.label) {
+                if(clientOnTripCalendarModule.mainClientOnTrip && eventLocationIndication === clientOnTripCalendarModule.mainClientOnTrip.label) {
                     clientOnTripMask.visible = false;
-                    clientOnTripMask.value = fullCalendarEvent.aiMetadata.location_indication;
+                    clientOnTripMask.value = eventLocationIndication;
                 }
                 else {
                     clientOnTripMask.visible = true;
-                    clientOnTripMask.value = fullCalendarEvent.aiMetadata.location_indication;
+                    clientOnTripMask.value = eventLocationIndication;
                 }
             }
         });
