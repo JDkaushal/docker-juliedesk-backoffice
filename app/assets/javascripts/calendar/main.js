@@ -843,6 +843,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
     var calendar = this;
     var travelTimeCalculator = $('#travel_time_calculator').scope();
     var meetingRoomsManager =  $('#meeting-rooms-manager').scope();
+    var virtualMeetingsHelper = $('#virtual-meetings-helper').scope();
     var neededMeetingRoomsCount = 0;
     var currentAppointment = window.getCurrentAppointment();
     var unavailableEvents = [];
@@ -869,17 +870,10 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
             grouped_meeting_rooms_to_show = meetingRoomsManager.getMeetingRoomsToDisplayRaw();
         }
 
-        if (currentAppointment && currentAppointment.appointment_kind_hash.is_virtual && window.threadAccount.virtual_appointments_company_support_config &&
-            window.threadComputedData && window.threadComputedData.call_instructions) {
-            var virtualAppoinementCompanySupport = _.find(window.threadAccount.virtual_appointments_company_support_config, function (support) {
-                return support.resource_type == window.threadComputedData.call_instructions.support;
+        if(virtualMeetingsHelper && virtualMeetingsHelper.getCurrentVAConfig() && virtualMeetingsHelper.getCurrentVAConfig().virtual_resources) {
+            virtualResourcesToShow = _.map(virtualMeetingsHelper.getCurrentVAConfig().virtual_resources, function (resource) {
+                return resource.id;
             });
-
-            if (virtualAppoinementCompanySupport && virtualAppoinementCompanySupport.virtual_resources) {
-                virtualResourcesToShow = _.map(virtualAppoinementCompanySupport.virtual_resources, function (resource) {
-                    return resource.id;
-                });
-            }
         }
     }
 

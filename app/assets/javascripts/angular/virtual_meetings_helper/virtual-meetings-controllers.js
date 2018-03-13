@@ -201,7 +201,16 @@
                     var everyConfig = _.compact(window.threadAccount.virtual_appointments_support_config.concat(window.threadAccount.virtual_appointments_company_support_config));
 
                     var config = _.filter(everyConfig, function(vaConfig){
-                        return (vaConfig.label || vaConfig.resource_type).toLowerCase().replace(/ /g, "_") == configLabel;
+                        var testAgainst = "";
+
+                        if(vaConfig.label) {
+                            testAgainst = vaConfig.label;
+                        } else {
+                            testAgainst = 'resource_' + vaConfig.resource_type;
+                        }
+
+
+                        return testAgainst.toLowerCase().replace(/ /g, "_") == configLabel;
                     })[0];
 
                     if(config == undefined || config == null){
@@ -248,14 +257,13 @@
 
                     if($scope.currentConf.target == 'client') {
                         supports.push({name: 'Video Conference', value: 'video_conference'});
-                        
 
                         if(currentAccount && currentAccount.virtual_appointments_company_support_config && currentAccount.virtual_appointments_company_support_config.length > 0) {
                             _.each(currentAccount.virtual_appointments_company_support_config, function(companyConfig) {
                                 var currentText = companyConfig.resource_type;
                                 currentText = currentText.charAt(0).toUpperCase() + currentText.substr(1).toLowerCase();
 
-                                supports.push({name: 'Ressource ' + currentText, value: companyConfig.resource_type});
+                                supports.push({name: 'Ressource ' + currentText, value: 'resource_' + companyConfig.resource_type});
                             });
                         }
                     }
@@ -936,7 +944,7 @@
                         // When there is an event linked to the messages thread, we will check if the schedule we check is not the same event
                         // To avoid saying the virtual resource is not available when it is actually booked for the specified period
                         if(window.currentEventTile) {
-                            var currentEventId = window.currentEventTile.eventId;
+                            var currentEventId = window.currentEventTile.event.provider_id;
                         }
 
                         if (window.classification == 'update_event') {
@@ -958,18 +966,18 @@
 
                         var virtualResourcesAvailable = $scope.getCurrentVAConfig().virtual_resources;
 
+                        if($scope.selectedVirtualResource) {
+                            virtualResourcesAvailable = _.reject(virtualResourcesAvailable, function(va) { return va.id == $scope.selectedVirtualResource.id; });
+                            var selectedVirtualResourceCopy = angular.copy($scope.selectedVirtualResource);
+                            // $scope.selectedVirtualResource is holding id in a string format, the currentVAConfig virtual_resources attribute hold them as integer
+                            //  We work with integers further down so we cast it here
+                            selectedVirtualResourceCopy.id = parseInt(selectedVirtualResourceCopy.id);
+                            virtualResourcesAvailable.unshift(selectedVirtualResourceCopy);
+                        }
+
                         var available = [];
 
                         if(selectedDateStartTime) {
-
-                            // TODO: Optimize this algorythm as now we are ordering the rooms by their capacity so
-                            // we could stop iterate after the first time we find a room available because it will be
-                            // the smallest possible for the current meeting
-                            var currentSelectedVirtualResourceId = undefined;
-
-                            if($scope.selectedVirtualResource) {
-                                currentSelectedVirtualResourceId = String($scope.selectedVirtualResource.id);
-                            }
 
                             _.each(virtualResourcesAvailable, function (vR) {
                                 var virtualResourcesEvents = window.currentCalendar.virtualResourcesEvents[vR.id];
