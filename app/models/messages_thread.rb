@@ -65,6 +65,7 @@ class MessagesThread < ActiveRecord::Base
 
     if abortion_date && now >= abortion_date
       self.update(status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED, aborted_at: abortion_date)
+      self.messages.last.message_classifications.create(thread_status: MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED, created_at: abortion_date)
     end
   end
 

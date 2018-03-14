@@ -55,7 +55,7 @@ module WeeklyRecapHelper
           INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
           INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
           WHERE mt1.account_email = '#{params[:account_email]}'
-          AND mc1.created_at <= '#{window_end_time}'
+          AND mc1.created_at BETWEEN '#{(DateTime.parse(window_end_time) - 1.month).to_s}' AND '#{window_end_time}'
           AND mt1.was_merged = FALSE
         )
           UNION
@@ -66,7 +66,7 @@ module WeeklyRecapHelper
           INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
           INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
           WHERE mc1.attendees_emails @> ARRAY['#{params[:account_email]}']::character varying[]
-          AND mc1.created_at <= '#{window_end_time}'
+          AND mc1.created_at BETWEEN '#{(DateTime.parse(window_end_time) - 1.month).to_s}' AND '#{window_end_time}'
           AND mt1.was_merged = FALSE
         )
       ) e1 LEFT JOIN LATERAL (
@@ -101,42 +101,6 @@ module WeeklyRecapHelper
   end
 
   def self.get_threads_coming_from_scheduling(window_start_time, window_end_time, params)
-
-    # classifs = params[:message_classif_thread_status_to_seek].present? ? params[:message_classif_thread_status_to_seek] : MessageClassification::CLASSIFICATIONS_WITH_DATA
-    # attendees_condition = params[:dont_check_attendees_present] ? "" : "AND ( mc1.attendees <> '[]' OR mc1.thread_status = 'invitation_already_sent' )"
-    #
-    # if params[:sought_status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
-    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}' AND mt1.aborted_at >= '#{window_start_time}'"
-    # elsif params[:sought_status] == MessageClassification::THREAD_STATUS_SCHEDULED
-    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}' AND mt1.event_booked_date  >= '#{window_start_time}'"
-    # else
-    #   status_condition = "WHERE mt1.status = '#{params[:sought_status]}'"
-    # end
-    #
-    # sql = <<-SQL.strip_heredoc
-    #   SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, previous_thread_status, not_from_me_mess_count
-    #   FROM (
-    #     SELECT
-    #       mt1.id AS thread_id,
-    #       FIRST_VALUE(mc1.thread_status) OVER (PARTITION BY mt1.id ORDER BY mc1.created_at DESC) as current_thread_status,
-    #       COUNT(m1.id) FILTER(WHERE m1.from_me = false) OVER (PARTITION BY m1.id) as not_from_me_mess_count
-    #     FROM messages_threads mt1
-    #     INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
-    #     INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
-    #     AND (mt1.account_email = '#{params[:account_email]}' OR mc1.attendees LIKE '%#{params[:account_email]}%')
-    #     AND mt1.was_merged = false
-    #   ) e1 LEFT JOIN LATERAL (
-    #     SELECT mc2.thread_status AS previous_thread_status
-    #     FROM message_classifications mc2
-    #     INNER JOIN messages m3 ON m3.id = mc2.message_id
-    #     WHERE m3.messages_thread_id = thread_id
-    #     AND mc2.created_at < '#{window_start_time}'
-    #     ORDER BY mc2.created_at DESC
-    #     LIMIT 1
-    #   ) e2 ON true
-    #   WHERE current_thread_status = '#{params[:sought_status]}' AND (current_thread_status <> previous_thread_status OR previous_thread_status IS NULL)
-    #   AND not_from_me_mess_count > 0;
-    # SQL
 
     sql = <<-SQL.strip_heredoc
       SELECT DISTINCT ON(thread_id) thread_id AS id, current_thread_status, previous_thread_status, not_from_me_mess_count
@@ -444,9 +408,7 @@ module WeeklyRecapHelper
 
     event_creation_mts = self.get_threads_coming_from_scheduling(params[:window_start_time], params[:window_end_time], {
         account_email: params[:account_email],
-        sought_status: MessageClassification::THREAD_STATUS_EVENTS_CREATION,
-        message_classif_thread_status_to_seek: [MessageClassification::ASK_CREATE_EVENT],
-        dont_check_attendees_present: true
+        sought_status: MessageClassification::THREAD_STATUS_EVENTS_CREATION
     })
 
     events_creation_data = event_creation_mts.map {|mt|
