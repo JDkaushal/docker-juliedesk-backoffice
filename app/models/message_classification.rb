@@ -253,7 +253,7 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def self.get_attendees_emails(attendees)
-    attendees.map{|att| att['accountEmail']}
+    attendees.map{|att| att['accountEmail'] || att['email']}
   end
 
   def other_account_emails
