@@ -55,7 +55,7 @@ module WeeklyRecapHelper
           INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
           INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
           WHERE mt1.account_email = '#{params[:account_email]}'
-          AND mc1.created_at BETWEEN '#{(DateTime.parse(window_end_time) - 1.month).to_s}' AND '#{window_end_time.to_s}'
+          AND mc1.created_at BETWEEN '#{(window_end_time - 1.month).to_s}' AND '#{window_end_time.to_s}'
           AND mt1.was_merged = FALSE
         )
           UNION
@@ -66,7 +66,7 @@ module WeeklyRecapHelper
           INNER JOIN messages m1 ON m1.messages_thread_id = mt1.id
           INNER JOIN message_classifications mc1 ON mc1.message_id = m1.id
           WHERE mc1.attendees_emails @> ARRAY['#{params[:account_email]}']::character varying[]
-          AND mc1.created_at BETWEEN '#{(DateTime.parse(window_end_time) - 1.month).to_s}' AND '#{window_end_time.to_s}'
+          AND mc1.created_at BETWEEN '#{(window_end_time - 1.month).to_s}' AND '#{window_end_time.to_s}'
           AND mt1.was_merged = FALSE
         )
       ) e1 LEFT JOIN LATERAL (

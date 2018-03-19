@@ -211,8 +211,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -355,8 +355,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -428,8 +428,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -509,8 +509,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -586,8 +586,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -753,8 +753,8 @@ describe WeeklyRecapHelper do
 
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -866,8 +866,8 @@ describe WeeklyRecapHelper do
         window_end_time = window_start_time + 1.week
         data = WeeklyRecapHelper.get_activity_recap_data({
                                                            account_email: "nicolas@juliedesk.com",
-                                                           window_start_time: window_start_time.to_s,
-                                                           window_end_time: window_end_time.to_s
+                                                           window_start_time: window_start_time,
+                                                           window_end_time: window_end_time
                                                        })
 
         expect(data).to eq([
@@ -984,7 +984,7 @@ describe WeeklyRecapHelper do
         window_start_time = DateTime.parse("2016-02-01")
         window_end_time = window_start_time + 1.week
 
-        scheduling_threads = WeeklyRecapHelper.get_currently_scheduling_threads(window_start_time.to_s, window_end_time.to_s, {
+        scheduling_threads = WeeklyRecapHelper.get_currently_scheduling_threads(window_start_time, window_end_time, {
             account_email: "nicolas@juliedesk.com"
         })
 
