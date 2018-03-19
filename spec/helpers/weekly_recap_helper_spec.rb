@@ -991,11 +991,6 @@ describe WeeklyRecapHelper do
         expect(scheduling_threads.map(&:id)).to eq([correct_scheduling_mt.id])
 
       end
-
     end
-
   end
-
-
-
 end
