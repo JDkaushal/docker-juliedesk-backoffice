@@ -71,7 +71,7 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(fullCalendarEvent, fullCalendarElement, fullCalendarView) {
     var clientOnTripCalendarModule = this;
 
-    if(!clientOnTripCalendarModule.active) {
+    if(!clientOnTripCalendarModule.active || !fullCalendarEvent.aiMetadata) {
         return;
     }
 

@@ -34,7 +34,7 @@ module TemplateGeneratorHelper
   def request path, body=nil
     uri = URI.parse("#{ENV['TEMPLATE_GENERATOR_BASE_PATH']}")
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
+    http.use_ssl = uri.scheme == 'https'
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Post.new(path)
     request.add_field('Content-Type', 'application/json')
