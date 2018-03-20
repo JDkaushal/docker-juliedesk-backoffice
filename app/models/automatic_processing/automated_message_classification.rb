@@ -2,35 +2,25 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   include TemplateGeneratorHelper
   include NotesGenerator
 
+  attr_reader :data_holder
 
-
-  def self.process_message_id(message_id, options={})
-    message = Message.find(message_id)
-
-    message.interprete(options[:force_reinterpretation].present?)
-
-    raise "No account associated" unless message.messages_thread.account
-    raise "Conscience could not interprete message" unless message.main_message_interpretation
-
-    message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
-        classification: message.main_message_interpretation.json_response['request_classif'],
-        operator: "jul.ia@operator.juliedesk.com"
-    )
-
-    message_classification.message = message
-
-    message_classification.fill_form if message_classification.has_data?
-    message_classification.julie_action = AutomaticProcessing::AutomatedJulieAction.new(
-        action_nature: message_classification.computed_julie_action_nature
-    )
-    message_classification.julie_action.process
-    message_classification.save
-
-    message_classification.julie_action.handle_calendar
-    message_classification.julie_action.deliver_message
-    message_classification.archive_thread
+  def initialize(params = {})
+    @data_holder = params.delete(:data_holder)
+    super(params)
   end
 
+  def self.process_message_id(message, options={})
+
+    message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
+      classification: message.main_message_interpretation.json_response['request_classif'],
+      operator: "jul.ia@operator.juliedesk.com",
+      message: message,
+      data_holder: options[:data_holder]
+    )
+
+    message_classification.fill_form if message_classification.has_data?
+    message_classification.save
+  end
 
   def fill_form
     message = self.message
@@ -38,7 +28,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     main_interpretation = message.main_message_interpretation.json_response
 
     last_message_classification = message.messages_thread.last_message_classification_with_data
-
 
     # Build interpretation hash in backoffice format
     interpretation = {
@@ -131,7 +120,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
                                    targetInfos: {}
                                }.to_json,
                                language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL,
-                               asap_constraint: interpretation[:asap_constraint]
+                               asap_constraint: interpretation[:asap_constraint],
+                               attendees_emails: self.get_attendees_emails(attendees)
                            })
 
 
@@ -159,46 +149,17 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     }.join(" <> ")
   end
 
-
-
-  def archive_thread
-    thread_status = self.computed_thread_status
-
-    self.thread_status = thread_status
-
-    self.save
-    EmailServer.archive_thread(messages_thread_id: self.message.messages_thread.server_thread_id)
-
-    self.message.messages_thread.messages.update_all(archived: true)
-
-    thread_params = {
-        should_follow_up: false,
-        status: self.thread_status,
-        in_inbox: false
-    }
-
-    if thread_params[:status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
-      thread_params[:aborted_at] = DateTime.now
-    end
-
-    self.message.messages_thread.update(thread_params)
-
-    WebSockets::Manager.trigger_archive(self.message.messages_thread.id)
-  end
-
   private
 
   def account
-    message.messages_thread.account
+    @data_holder.get_thread_owner_account
   end
 
   def account_appointment
-    account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
+    @data_holder.get_appointments.find{|appointment| appointment['label'] == self.appointment_nature}
   end
 
   def account_address
-    account.addresses.find{|address| address['address'] == self.location}
+    @data_holder.get_addresses.find{|address| address['address'] == self.location}
   end
-
-
 end

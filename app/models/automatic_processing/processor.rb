@@ -1,0 +1,75 @@
+module AutomaticProcessing
+
+  class Processor
+
+    attr_reader :message, :message_classification, :julie_action, :email_deliverer, :thread_archiver, :data_holder
+
+    def initialize(message_id, options = {})
+      @message = Message.find(message_id)
+      @message.interprete(options[:force_reinterpretation].present?)
+
+      raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(message.messages_thread_id) unless message.messages_thread.account
+      raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(message.id) unless message.main_message_interpretation
+
+      initialize_data_holder
+    end
+
+    def process
+      classify_and_create_julie_action
+      link_associations
+      initialize_process_helpers
+
+      flow = "AutomaticProcessing::Flows::#{@data_holder.get_current_classification.camelize}".constantize
+      flow.new.post_classification_actions.each{ |action| self.send(action) }
+
+      # deliver_message
+      # archive_thread
+    end
+
+    private
+
+    def classify_and_create_julie_action
+      @message_classification = classify_message
+      @data_holder.set_message_classification(@message_classification)
+
+      @julie_action = create_julie_action
+      @data_holder.set_julie_action(@julie_action)
+    end
+
+    def classify_message
+      AutomaticProcessing::AutomatedMessageClassification.process_message_id(@message, {data_holder:  @data_holder})
+    end
+
+    def create_julie_action
+      AutomaticProcessing::AutomatedJulieAction.new(
+        action_nature: @message_classification.computed_julie_action_nature,
+        message_classification: @message_classification,
+        data_holder: @data_holder
+      )
+    end
+
+    def initialize_data_holder
+      @data_holder = AutomaticProcessing::DataHolder.new(@message)
+    end
+
+    def initialize_process_helpers
+      @thread_archiver = AutomaticProcessing::ThreadArchiver.new(@data_holder)
+      @email_deliverer = AutomaticProcessing::EmailDeliverer.new(@data_holder)
+    end
+
+    def link_associations
+      @message.message_classifications << @message_classification
+      @message_classification.julie_action = @julie_action
+    end
+
+    def deliver_message
+      @email_deliverer.deliver
+    end
+
+    def archive_thread
+      @thread_archiver.archive
+    end
+
+  end
+end
+

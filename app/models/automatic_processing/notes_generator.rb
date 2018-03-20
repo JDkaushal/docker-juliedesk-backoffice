@@ -71,7 +71,7 @@ module AutomaticProcessing::NotesGenerator
   end
 
   def generate_contacts_infos
-    JSON.parse(self.attendees).select{|a| a['isPresent'] && !a['isThreadOwner']}.map do |attendee|
+    JSON.parse(self.attendees).select{|a| a['isPresent'] == 'true' && a['isThreadOwner'] != 'true'}.map do |attendee|
       if [attendee['mobile'], attendee['landline'], attendee['skypeId']].select(&:present?).length > 0
         contact_info(
             full_name: attendee['name'],
