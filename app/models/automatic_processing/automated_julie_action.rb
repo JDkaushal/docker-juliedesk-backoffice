@@ -3,14 +3,12 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
   include TemplateGeneratorHelper
   include ApplicationHelper
 
-  attr_accessor :chosen_date_for_check_availabilities, data_holder
+  attr_accessor :chosen_date_for_check_availabilities, :data_holder
 
   def initialize(params = {})
     @data_holder = params.delete(:data_holder)
 
     super(params)
-
-    process
   end
 
   def process

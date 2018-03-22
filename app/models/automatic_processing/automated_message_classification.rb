@@ -4,13 +4,20 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   attr_reader :data_holder
 
+  class NoDataHolderError < StandardError
+  end
+
   def initialize(params = {})
     @data_holder = params.delete(:data_holder)
+
+    if @data_holder.blank?
+      raise AutomaticProcessing::AutomatedMessageClassification::NoDataHolderError.new("Data holder missing")
+    end
+
     super(params)
   end
 
-  def self.process_message_id(message, options={})
-
+  def self.process_message(message, options={})
     message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
       classification: message.main_message_interpretation.json_response['request_classif'],
       operator: "jul.ia@operator.juliedesk.com",
@@ -20,9 +27,12 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     message_classification.fill_form if message_classification.has_data?
     message_classification.save
+
+    message_classification
   end
 
   def fill_form
+    puts "here"
     message = self.message
     message.populate_single_server_message
     main_interpretation = message.main_message_interpretation.json_response
@@ -121,7 +131,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
                                }.to_json,
                                language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL,
                                asap_constraint: interpretation[:asap_constraint],
-                               attendees_emails: self.get_attendees_emails(attendees)
+                               attendees_emails: MessageClassification.get_attendees_emails(attendees)
                            })
 
 

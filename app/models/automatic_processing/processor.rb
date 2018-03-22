@@ -8,6 +8,7 @@ module AutomaticProcessing
       @message = Message.find(message_id)
       @message.interprete(options[:force_reinterpretation].present?)
 
+      puts message.messages_thread.account_email
       raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(message.messages_thread_id) unless message.messages_thread.account
       raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(message.id) unless message.main_message_interpretation
 
@@ -19,25 +20,27 @@ module AutomaticProcessing
       link_associations
       initialize_process_helpers
 
-      flow = "AutomaticProcessing::Flows::#{@data_holder.get_current_classification.camelize}".constantize
-      flow.new.post_classification_actions.each{ |action| self.send(action) }
-
-      # deliver_message
-      # archive_thread
+      trigger_actions_flow
     end
 
     private
+
+    def trigger_actions_flow
+      flow = "AutomaticProcessing::Flows::#{@data_holder.get_current_classification.camelize}".constantize
+      flow.new.post_classification_actions.each{ |action| self.send(action) }
+    end
 
     def classify_and_create_julie_action
       @message_classification = classify_message
       @data_holder.set_message_classification(@message_classification)
 
       @julie_action = create_julie_action
+      @julie_action.process
       @data_holder.set_julie_action(@julie_action)
     end
 
     def classify_message
-      AutomaticProcessing::AutomatedMessageClassification.process_message_id(@message, {data_holder:  @data_holder})
+      AutomaticProcessing::AutomatedMessageClassification.process_message(@message, {data_holder:  @data_holder})
     end
 
     def create_julie_action
@@ -62,7 +65,7 @@ module AutomaticProcessing
       @message_classification.julie_action = @julie_action
     end
 
-    def deliver_message
+    def deliver_email
       @email_deliverer.deliver
     end
 
