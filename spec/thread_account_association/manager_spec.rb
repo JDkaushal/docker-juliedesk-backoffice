@@ -222,6 +222,27 @@ describe ThreadAccountAssociation::Manager do
           end
         end
 
+        context 'last name is in email' do
+          let(:server_thread) do
+            {
+                'messages' => [
+                    {
+                        'text' => 'Hi Julie ! Please create a event i my calendar with somebody else, like for example Mr Wayne',
+                        'from' => "Somebody <somebody@yopmail.com",
+                        'to'   => "Somebody else <somebodyelse@yopmailcom>",
+                        'cc'   => "Julie <julie@ups.com>, Stranger <stranger@yopmailcom>",
+                        'date' => '2017-01-08T13:00:00Z',
+                        'from_me' =>false
+                    }
+                ]
+            }
+          end
+
+          it 'should build the correct secondary list' do
+            expect(messages_thread.accounts_candidates_secondary_list).to eq(['john.wayne@ups.com'])
+          end
+        end
+
         context 'first name is in email' do
           let(:server_thread) do
             {
@@ -238,10 +259,12 @@ describe ThreadAccountAssociation::Manager do
             }
           end
 
-          it 'should build the correct secondary list' do
-            expect(messages_thread.accounts_candidates_secondary_list).to eq(['john.wayne@ups.com'])
+          it 'should not match any client email' do
+            expect(messages_thread.accounts_candidates_secondary_list).to eq([])
           end
         end
+
+
       end
 
       context 'Clients are in the ICS of one of the messages' do

@@ -610,12 +610,12 @@ module ThreadAccountAssociation
     end
 
     def lookup_clients_with_julie_alias(users_associated_with_julie_alias)
-      found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.reject(&:blank?))
+      #found_first_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['firstName'].try(:downcase)}.reject(&:blank?))
       found_last_names = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['lastName'].try(:downcase)}.reject(&:blank?))
       found_emails = look_up_clients_in_emails_bodies(users_associated_with_julie_alias.map{|u| u['email'].try(:downcase)}.reject(&:blank?))
 
       @clients_found_in_bodies = Set.new
-      @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
+      #@clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_first_names.include?(u['firstName'].try(:downcase)) })
       @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_last_names.include?(u['lastName'].try(:downcase)) })
       @clients_found_in_bodies.merge(users_associated_with_julie_alias.select{ |u| found_emails.include?(u['email'].try(:downcase)) })
 
