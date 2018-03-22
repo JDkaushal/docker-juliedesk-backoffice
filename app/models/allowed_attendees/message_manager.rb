@@ -10,13 +10,17 @@ module AllowedAttendees
     end
 
     def extract_allowed_attendees
-      Set.new(extract_from_aggregated_texts + extract_from_recipients + extract_from_ics_if_any).to_a.compact
+      Set.new(extract_from_aggregated_texts + extract_from_html + extract_from_recipients + extract_from_ics_if_any).to_a.compact
     end
 
     private
 
     def get_email_body_as_text
       @server_message['text']
+    end
+
+    def get_email_body_as_html
+      @server_message['parsed_html']
     end
 
     def emails_regexp
@@ -34,6 +38,13 @@ module AllowedAttendees
 
     def extract_from_aggregated_texts
       aggregate_texts.scan(emails_regexp)
+    end
+
+    def extract_from_html
+      html = get_email_body_as_html
+      return [] unless html.present?
+
+      Nokogiri::HTML(html).search('//text()').map(&:text).map { |t| t.scan(AllowedAttendees::RegexpManager.email_regexp) }.flatten
     end
 
     def extract_from_recipients

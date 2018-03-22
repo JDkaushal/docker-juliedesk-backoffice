@@ -3,12 +3,16 @@ require "rails_helper"
 describe AllowedAttendees::MessageManager do
 
   describe 'extract_allowed_attendees' do
+    let(:julie_aliases_emails) { ['juliealias1@email.com', 'juliealias2@email.com'] }
     let(:message) { FactoryGirl.create(:message_complete) }
 
+    let(:text) { 'Corps du message avec fred@email.com et jean@dumat.com' }
+    let(:html) { '<div>Corps du message avec fred@email.com et jean@dumat.com</div>' }
     let(:server_message) {
       {
           'id' => 1,
-          'text' => 'Corps du message avec fred@email.com et jean@dumat.com',
+          'text' => text,
+          'parsed_html' => html,
           'from' => 'Test Guy <fromEmail@email.com>',
           'to' => 'Julie Desk <julie@juliedesk.com>, Mpm Herve <rimot@mlk.com>',
           'cc' => 'Lol l <lol@lol.com>, defz l <kjuh@ssm.com>',
@@ -26,7 +30,7 @@ describe AllowedAttendees::MessageManager do
       }
     }
 
-    let(:julie_aliases_emails) { ['juliealias1@email.com', 'juliealias2@email.com'] }
+    subject { message.compute_allowed_attendees(julie_aliases_emails) }
 
     before(:example) do
       message.message_classifications.first.update(constraints: 'Contraints text freferferferfeferfer ferferferf constraintEmail@email.com et constraint2@email.com')
@@ -36,7 +40,16 @@ describe AllowedAttendees::MessageManager do
     end
 
     it 'should compute the correct allowed attendees for the message' do
-      expect(message.compute_allowed_attendees(julie_aliases_emails)).to eq(["fred@email.com", "jean@dumat.com", "constraintEmail@email.com", "constraint2@email.com", "fromemail@email.com", "julie@juliedesk.com", "rimot@mlk.com", "lol@lol.com", "kjuh@ssm.com", "frederic@juliedesk.com", "frederic.grais@gmail.com"])
+      is_expected.to eq(["fred@email.com", "jean@dumat.com", "constraintEmail@email.com", "constraint2@email.com", "fromemail@email.com", "julie@juliedesk.com", "rimot@mlk.com", "lol@lol.com", "kjuh@ssm.com", "frederic@juliedesk.com", "frederic.grais@gmail.com"])
     end
+
+
+    context 'when emails are in span tags' do
+      let(:text) { 'Bobbybobby@juliedesk.com and Johnnyjohnny@juliedesk.com' }
+      let(:html) { '<span>Bobby</span><span>bobby@juliedesk.com</span> and <span>Johnny</span><span>johnny@juliedesk.com</span>' }
+
+      it { is_expected.to include('bobby@juliedesk.com', 'johnny@juliedesk.com') }
+    end
+
   end
 end
