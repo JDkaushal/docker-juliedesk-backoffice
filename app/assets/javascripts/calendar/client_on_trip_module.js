@@ -83,8 +83,8 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(ful
 
     if(fullCalendarEvent.id && fullCalendarEvent.allDay && fullCalendarEvent.aiMetadata && eventLocationIndication != null) {
         _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function (clientOnTripMask) {
-            if(clientOnTripMask.date.diff(fullCalendarEvent.start, 'days') >= 0 &&
-                clientOnTripMask.date.diff(fullCalendarEvent.end, 'days') < 0) {
+            if(fullCalendarEvent.start.diff(clientOnTripMask.date, 'days') >= 0 &&
+                fullCalendarEvent.end.diff(clientOnTripMask.date, 'days') <= 0) {
 
                 if(clientOnTripCalendarModule.mainClientOnTrip && eventLocationIndication === clientOnTripCalendarModule.mainClientOnTrip.label) {
                     clientOnTripMask.visible = false;
