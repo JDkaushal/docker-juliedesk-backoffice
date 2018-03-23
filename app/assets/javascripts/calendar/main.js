@@ -1265,7 +1265,7 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         sstartTime = startTime;
         sendTime = endTime;
     }
-    else if(ev.all) {
+    else if(ev.all_day) {
         var zoned_start_time = moment(startTime).tz(calendar.getCalendarTimezone());
         var zoned_end_time   = moment(endTime).tz(calendar.getCalendarTimezone());
 
