@@ -1273,13 +1273,15 @@ Calendar.prototype.eventDataFromEvent = function (ev) {
         }
         else {
             zoned_start_time.add(1, 'days');
+            zoned_start_time.hours(0).minutes(0).seconds(0);
         }
 
 
         if(zoned_end_time.hour() >= 8) {
         }
         else {
-            zoned_end_time.subtract(1, 'days');
+            //zoned_end_time.subtract(1, 'days');
+            zoned_end_time.hours(0).minutes(0).seconds(0);
         }
 
         sstartTime = zoned_start_time.format();
