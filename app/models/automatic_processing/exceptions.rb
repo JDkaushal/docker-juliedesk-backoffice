@@ -61,5 +61,16 @@ module AutomaticProcessing
         "Event creation failed for Julie Action #{@julie_action_id}"
       end
     end
+
+    class AiVerifyDatesFailureError < AutomaticProcessingError
+      attr_reader :message_classification_id
+      def initialize(message_classification_id)
+        @message_classification_id = message_classification_id
+      end
+
+      def to_s
+        "The AI verify_dates call failed for the MessageClassification #{@message_classification_id}"
+      end
+    end
   end
 end

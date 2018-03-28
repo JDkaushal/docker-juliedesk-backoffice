@@ -8,7 +8,6 @@ module AutomaticProcessing
       @message = Message.find(message_id)
       @message.interprete(options[:force_reinterpretation].present?)
 
-      puts message.messages_thread.account_email
       raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(message.messages_thread_id) unless message.messages_thread.account
       raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(message.id) unless message.main_message_interpretation
 

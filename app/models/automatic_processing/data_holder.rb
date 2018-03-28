@@ -5,7 +5,7 @@ module AutomaticProcessing
     class DataHolderError < StandardError
     end
 
-    class NoMessageClassifictionYetError < DataHolderError
+    class NoMessageClassificationYetError < DataHolderError
     end
 
     class NoJulieActionYetError < DataHolderError
@@ -27,7 +27,7 @@ module AutomaticProcessing
     end
 
     def get_message_classification
-      raise AutomaticProcessing::DataHolder::NoMessageClassifictionYetError.new unless @message_classification.present?
+      raise AutomaticProcessing::DataHolder::NoMessageClassificationYetError.new unless @message_classification.present?
       @message_classification
     end
 
@@ -44,8 +44,52 @@ module AutomaticProcessing
       @julie_action
     end
 
+    def get_message_server_id
+      @message_server_id ||= get_message.server_message_id
+    end
+
+    def get_message_id
+      @message_id ||= get_message.id
+    end
+
     def get_current_classification
-      get_message_classification.classification
+      @current_classification ||= get_message_classification.classification
+    end
+
+    def get_message_classification_duration
+      @message_classification_duration ||= get_message_classification.duration
+    end
+
+    def get_message_classification_identifier
+      @message_classification_identifier ||= get_message_classification.identifier
+    end
+
+    def get_message_classification_main_interpretation_json
+      @classification_main_interpretation ||= (get_message.main_message_interpretation.try(:json_response) || {})
+    end
+
+    def get_message_classification_raw_constraints
+      @message_classification_raw_constraints ||= get_message_classification.constraints_data
+    end
+
+    def get_message_classification_date_times
+      @message_classification_date_times ||= JSON.parse(get_message_classification.date_times || '[]')
+    end
+
+    def get_message_classification_summary
+      @message_classification_summary ||= get_message_classification.summary
+    end
+
+    def get_message_classification_notes
+      @message_classification_notes ||= get_message_classification.notes
+    end
+
+    def get_message_classification_location
+      @message_classification_location ||= get_message_classification.location
+    end
+
+    def get_thread_computed_data
+      @thread_computed_data ||= get_messages_thread.computed_data
     end
 
     def get_current_locale
@@ -53,7 +97,7 @@ module AutomaticProcessing
     end
 
     def get_messages_thread_subject
-      @messages_thread_subject ||= @messages_thread.subject
+      @messages_thread_subject ||= get_messages_thread.subject
     end
 
     def get_server_message_id
@@ -80,11 +124,15 @@ module AutomaticProcessing
     end
 
     def get_present_attendees
-      @present_attendees ||= JSON.parse(get_message_classification.attendees).select{|a| a['isPresent'] == 'true'}
+      @present_attendees ||= get_attendees.select{|a| a['isPresent']}
     end
 
     def get_message_classification_computed_thread_status
       @message_classification_computed_thread_status ||= get_message_classification.computed_thread_status
+    end
+
+    def get_message_classification_asap_constraint
+      @message_classification_asap_constraint ||= get_message_classification.asap_constraint
     end
 
     def get_julie_action_text
@@ -120,8 +168,20 @@ module AutomaticProcessing
       end
     end
 
+    def get_thread_owner_main_email
+      @thread_owner_main_email ||= get_messages_thread.account_email
+    end
+
     def get_thread_owner_account
       @thread_owner_account ||= get_messages_thread.account
+    end
+
+    def get_thread_owner_account_email
+      @thread_owner_account_email ||= get_thread_owner_account.email
+    end
+
+    def get_thread_owner_default_timezone
+      @thread_owner_default_timezone ||= get_thread_owner_account.default_timezone_id
     end
 
     def get_appointments
@@ -132,18 +192,30 @@ module AutomaticProcessing
       @addresses ||= get_thread_owner_account.addresses
     end
 
-    def get_apppointment
+    def get_all_available_meeting_rooms
+      @all_available_meeting_rooms ||= get_addresses.map{|address| address['available_meeting_rooms']}.flatten
+    end
+
+    def get_address
+      @current_address ||= get_addresses.find{|address| address['address'] == get_message_classification.location}
+    end
+
+    def get_appointment
       @current_appointment ||= get_appointments.find{|appointment| appointment['label'] == get_message_classification.appointment_nature}
     end
 
     def get_client_names
-      @client_names ||= get_attendees.select{|att| att['isPresent'] == 'true' && att['isClient'] == 'true'}.map do |att|
+      @client_names ||= get_attendees.select{|att| att['isPresent'] && att['isClient']}.map do |att|
         att['usageName']
       end
     end
 
-    def get_present_attendees
-      @present_attendees ||= get_attendees.select{|att| att['isPresent'] == 'true' && att['isClient'] != 'true'}.map do |att|
+    def get_attendees_count
+      @attendees_count ||= get_present_attendees.size
+    end
+
+    def get_present_attendees_usage_names
+      @present_attendees_usage_names ||= get_attendees.select{|att| att['isPresent'] && att['isClient']}.map do |att|
         {
           name: att['usageName']
         }
@@ -151,7 +223,7 @@ module AutomaticProcessing
     end
 
     def get_attendees
-      @attendees ||= JSON.parse(get_message_classification.attendees)
+      @attendees ||= JSON.parse(get_message_classification.attendees).map(&:with_indifferent_access)
     end
   end
 end

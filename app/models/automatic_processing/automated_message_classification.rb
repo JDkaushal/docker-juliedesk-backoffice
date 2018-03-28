@@ -32,39 +32,43 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   end
 
   def fill_form
-    puts "here"
     message = self.message
     message.populate_single_server_message
     main_interpretation = message.main_message_interpretation.json_response
 
     last_message_classification = message.messages_thread.last_message_classification_with_data
 
+    clients_emails = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('clients_emails') || '[]')
+
     # Build interpretation hash in backoffice format
     interpretation = {
-        :classification => main_interpretation['request_classif'],
-        :appointment => last_message_classification.try(:appointment_nature) || main_interpretation['appointment_classif'],
-        :locale => main_interpretation['language_detected'],
-        :entities => {},
-        attendees: (last_message_classification.try(:attendees) && JSON.parse(last_message_classification.try(:attendees)).length > 0) ? JSON.parse(last_message_classification.attendees) : MessagesThread.contacts({server_messages_to_look: [message.server_message]}).map do |att|
-          human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
-          company_response = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: att[:email], message: "" })
+      classification: main_interpretation['request_classif'],
+      appointment: last_message_classification.try(:appointment_nature) || main_interpretation['appointment_classif'],
+      locale: main_interpretation['language_detected'],
+      entities: {},
+      attendees: (last_message_classification.try(:attendees) && JSON.parse(last_message_classification.try(:attendees)).length > 0) ? JSON.parse(last_message_classification.attendees) : MessagesThread.contacts({server_messages_to_look: [message.server_message]}).map do |att|
+        att = att.with_indifferent_access
 
-          {
-              'email' => att[:email],
-              'fullName' => [human_civilities_response['first_name'], human_civilities_response['last_name']].select(&:present?).join(" "),
-              'firstName' => human_civilities_response['first_name'],
-              'lastName' => human_civilities_response['last_name'],
-              'gender' => human_civilities_response['gender'],
-              'company' => company_response['company'],
-              'isPresent' => true
-          }
-        end,
-        constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || '[]') + (main_interpretation['constraints_data'] || []),
-        duration: last_message_classification.try(:duration) || main_interpretation['duration'],
-        location: last_message_classification.try(:location) || main_interpretation['location_data'].try(:[], 'text'),
-        location_nature: last_message_classification.try(:location_nature) || main_interpretation['location_data'].try(:[], 'location_nature'),
-        is_formal: main_interpretation['formal_language'],
-        asap_constraint: last_message_classification.try(:asap_constraint) || main_interpretation['asap']
+        human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: att[:name], at: att[:email]})
+        company_response = AI_PROXY_INTERFACE.build_request(:get_company_name, { address: att[:email], message: "" })
+
+        {
+          'email' => att[:email],
+          'fullName' => [human_civilities_response['first_name'], human_civilities_response['last_name']].select(&:present?).join(" "),
+          'firstName' => human_civilities_response['first_name'],
+          'lastName' => human_civilities_response['last_name'],
+          'gender' => human_civilities_response['gender'],
+          'company' => company_response['company'],
+          'isPresent' => true,
+          'isClient' => clients_emails.include?(att[:email])
+        }
+      end,
+      constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || '[]') + (main_interpretation['constraints_data'] || []),
+      duration: last_message_classification.try(:duration) || main_interpretation['duration'],
+      location: last_message_classification.try(:location) || main_interpretation['location_data'].try(:[], 'text'),
+      location_nature: last_message_classification.try(:location_nature) || main_interpretation['location_data'].try(:[], 'location_nature'),
+      is_formal: main_interpretation['formal_language'],
+      asap_constraint: last_message_classification.try(:asap_constraint) || main_interpretation['asap']
     }
 
     # Build some other needed properties
@@ -131,9 +135,10 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
                                }.to_json,
                                language_level: is_formal ? Account::LANGUAGE_LEVEL_NORMAL : Account::LANGUAGE_LEVEL_NORMAL,
                                asap_constraint: interpretation[:asap_constraint],
-                               attendees_emails: MessageClassification.get_attendees_emails(attendees)
+                               attendees_emails: MessageClassification.get_attendees_emails(attendees),
+                               # Used by AI to find the classification later
+                               identifier: "#{@data_holder.get_message_id}-#{DateTime.now.to_i * 1000}"
                            })
-
 
     self.notes = generate_notes
 
