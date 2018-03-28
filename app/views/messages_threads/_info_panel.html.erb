@@ -87,6 +87,10 @@
         });
 
 
+        if($("#appointment_nature").val()) {
+            setAppointmentValues();
+        }
+
         $("#appointment_nature").change(function () {
             var currentAppointment = window.getCurrentAppointment();
             if(window.lastAppointmentType == '')
