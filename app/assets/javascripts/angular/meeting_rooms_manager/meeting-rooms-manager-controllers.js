@@ -216,7 +216,7 @@
                       var meetingRoomsUsedForCurrentAppointment = currentClientAppointment && currentClientAppointment.meeting_room_used;
                       var meetingRoomsUsedForCurrentAddress = currentAddress && currentAddress.meeting_room_used && currentAddress.meeting_rooms_enabled;
 
-                      if( (currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAppointment) || (!currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAddress) ) {
+                      if( (currentAddressIsDefaultForAppointment && meetingRoomsUsedForCurrentAppointment) || meetingRoomsUsedForCurrentAddress ) {
                             var initialConfiguration = {client: client.email, location: currentAddress.address};
 
                             var usedRoom = defaultInitializationsService.getMeetingRoomToUse(currentClientAppointment || {}, currentAddress || {});
