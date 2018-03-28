@@ -225,5 +225,9 @@ module AutomaticProcessing
     def get_attendees
       @attendees ||= JSON.parse(get_message_classification.attendees).map(&:with_indifferent_access)
     end
+
+    def get_julie_action_nature
+      @julie_action ||= get_julie_action.action_nature
+    end
   end
 end

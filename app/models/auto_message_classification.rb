@@ -112,19 +112,18 @@ class AutoMessageClassification < MessageClassification
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
     attendees.map do |attendee|
-      attendee_email = attendee['email']
+      attendee_email = attendee.email
       if attendee_email.present?
         accounts.select do |account|
           all_emails = [account['email']] + account['email_aliases']
           if all_emails.include?(attendee_email)
-            attendee['account_email'] = account['email']
-            attendee['usage_name'] = account['usage_name']
-            attendee['usageName'] = account['usage_name']
-            attendee['firstName'] = account['first_name']
-            attendee['lastName'] = account['last_name']
+            attendee.account_email = account['email']
+            attendee.usage_name    = account['usage_name']
+            attendee.first_name    = account['first_name']
+            attendee.last_name     = account['last_name']
           end
         end
-        attendee['email'] = attendee_email.gsub(" ", "")
+        attendee.email = attendee_email.gsub(" ", "")
       end
       attendee
     end

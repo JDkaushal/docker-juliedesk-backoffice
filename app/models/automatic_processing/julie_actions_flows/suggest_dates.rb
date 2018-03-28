@@ -23,8 +23,8 @@ module AutomaticProcessing
                                                                         en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
                                                                         fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
                                                                     },
-                                                                    should_ask_location: false,
-                                                                    missing_contact_info: nil,
+                                                                    should_ask_location: self.should_ask_location?,
+                                                                    missing_contact_info: missing_contact_info,
                                                                     dates: JSON.parse(@julie_action.date_times).map{|date_time| date_time['date']}
                                                                 })}"
       end

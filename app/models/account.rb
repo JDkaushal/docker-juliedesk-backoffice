@@ -248,6 +248,10 @@ class Account
     self.company_hash.try(:[], 'name')
   end
 
+  def any_phone_number
+    self.landline_number || self.mobile_number
+  end
+
   # Maybe not the correct way
   def compute_threads_count_today(messages_threads_from_today)
     today_threads_count = messages_threads_from_today[self.email]

@@ -73,8 +73,49 @@ class MessageClassification < ActiveRecord::Base
     THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT
   ]
 
-  VIRTUAL_EVENT_TYPES = ['call', 'confcall', 'skype', 'hangout', 'webex']
-  PHYSICAL_EVENT_TYPES = ['appointment', 'meeting', 'lunch', 'coffee', 'work_session', 'dinner', 'breakfast', 'drink']
+  # Virtual
+  APPOINTMENT_TYPE_VIRTUAL  = 'virtual'
+
+  APPOINTMENT_TYPE_CALL     = 'call'
+  APPOINTMENT_TYPE_SKYPE    = 'skype'
+  APPOINTMENT_TYPE_HANGOUT  = 'hangout'
+  APPOINTMENT_TYPE_WEBEX    = 'webex'
+
+  # Physical
+  APPOINTMENT_TYPE_PHYSICAL     = 'physical'
+
+  APPOINTMENT_TYPE_APPOINTMENT  = 'appointment'
+  APPOINTMENT_TYPE_MEETING      = 'meeting'
+  APPOINTMENT_TYPE_LUNCH        = 'lunch'
+  APPOINTMENT_TYPE_COFFEE       = 'coffee'
+  APPOINTMENT_TYPE_WORK_SESSION = 'work_session'
+  APPOINTMENT_TYPE_DINNER       = 'dinner'
+  APPOINTMENT_TYPE_BREAKFAST    = 'breakfast'
+  APPOINTMENT_TYPE_DRINK        = 'dinner'
+
+
+  APPOINTMENT_BEHAVIOUR_PROPOSE             = 'propose'
+  APPOINTMENT_BEHAVIOUR_ASK_LATER           = 'later'
+  APPOINTMENT_BEHAVIOUR_ASK_INTERLOCUTOR    = 'ask_interlocutor'
+
+  # confcall is obsolete ?
+  VIRTUAL_EVENT_TYPES = [
+      APPOINTMENT_TYPE_CALL,
+      APPOINTMENT_TYPE_SKYPE,
+      APPOINTMENT_TYPE_HANGOUT,
+      APPOINTMENT_TYPE_WEBEX
+  ]
+
+  PHYSICAL_EVENT_TYPES = [
+      APPOINTMENT_TYPE_APPOINTMENT,
+      APPOINTMENT_TYPE_MEETING,
+      APPOINTMENT_TYPE_LUNCH,
+      APPOINTMENT_TYPE_COFFEE,
+      APPOINTMENT_TYPE_WORK_SESSION,
+      APPOINTMENT_TYPE_DINNER,
+      APPOINTMENT_TYPE_BREAKFAST,
+      APPOINTMENT_TYPE_DRINK
+  ]
 
 
 
@@ -108,7 +149,11 @@ class MessageClassification < ActiveRecord::Base
           location_nature: last_classification_with_data.try(:location_nature),
           location: last_classification_with_data.try(:location),
           location_coordinates: (params[:location_coordinates] || []),
+
+          # call informations
           call_instructions: last_classification_with_data.try(:call_instructions),
+          ###
+          #
           attendees: last_classification_with_data.try(:attendees),
           notes:last_classification_with_data.try(:notes),
           other_notes: last_classification_with_data.try(:other_notes),
@@ -117,7 +162,11 @@ class MessageClassification < ActiveRecord::Base
           constraints_data: last_classification_with_data.try(:constraints_data),
           client_agreement: last_classification_with_data.try(:client_agreement),
           attendees_are_noticed: last_classification_with_data.try(:attendees_are_noticed),
+
+          # call informations
           number_to_call: last_classification_with_data.try(:number_to_call),
+          ###
+          #
           operator: last_classification_with_data.try(:operator),
           processed_in: last_classification_with_data.try(:processed_in),
           date_times: last_classification_with_data.try(:date_times),

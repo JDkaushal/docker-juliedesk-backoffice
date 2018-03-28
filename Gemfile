@@ -88,6 +88,7 @@ end
 
 group :test do
   gem 'rspec-rails', '~> 3.0'
+  gem 'rspec-collection_matchers'
   gem 'factory_girl'
   gem 'database_cleaner'
   gem "webmock-rspec-helper"

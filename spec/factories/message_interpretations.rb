@@ -18,6 +18,35 @@ FactoryGirl.define do
       end
     end
 
-    factory :main_classification, traits: [:main_classif]
+
+    factory :main_interpretation do
+      question "main"
+      raw_response do
+        {
+          language_detected: "fr",
+          location_confidence: nil,
+          request_confidence: 0.95,
+          request_proba: 0.64,
+          request_model_date: Time.now,
+          asap: false,
+          email_id: 1477509,
+          contacts_infos: [],
+          location_data: nil,
+          formal_language: false,
+          request_classif: "ask_availabilities",
+          appointment_classif: "appointment",
+          constraints_data: nil,
+          appointment_confidence: 0.94,
+          client_on_trip: nil,
+          appointment_model_date: Time.now,
+          algo_duration: 0,
+          duration: nil,
+          dates_to_check_confidence: 0,
+          dates_to_check: [],
+          appointment_proba: 0.67
+        }.to_json
+      end
+
+    end
   end
 end

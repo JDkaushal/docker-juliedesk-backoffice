@@ -12,7 +12,7 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
   end
 
   def process
-    wordings = appointment_wordings
+    return nil if self.message_classification.nil?
 
     if self.action_nature == JD_ACTION_SUGGEST_DATES
       AutomaticProcessing::JulieActionsFlows::SuggestDates.new(self).trigger
@@ -20,6 +20,15 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
       AutomaticProcessing::JulieActionsFlows::CheckAvailabilities.new(self).trigger
     elsif self.action_nature == JD_ACTION_WAIT_FOR_CONTACT
       AutomaticProcessing::JulieActionsFlows::WaitForContact.new(self).trigger
+    elsif self.action_nature == JD_ACTION_WAIT_FOR_CONTACT
+      self.text = get_wait_for_contact_template({
+                                                    locale: locale
+                                              })
+
+    elsif self.action.nature == JD_ACTION_WAIT_FOR_CONTACT
+      # TODO : implement
+    elsif self.action  == JD_ACTION_SEND_CONFIRMATION
+      # TODO : impelement
     else
       # elsif self.julie_action.action_nature == JD_ACTION_NOTHING_TO_DO
     #

@@ -462,4 +462,272 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       expect(last_message_classif.attendees_emails).to eq(["threadOwner@owner.fr", "john.bernard@grabou.fr", "babtou@fragile.fr"])
     end
   end
+
+  context '' do
+    let(:account_params) { { email: 'bob@juliedesk.com' } }
+    let(:account) do
+      account = Account.new
+      account_params.each do |k, v|
+        account.send("#{k}=", v)
+      end
+      account
+    end
+
+    let(:classification_params) { { } }
+    let(:classification) { create(:automated_message_classification, classification_params) }
+
+    # Main interpretation
+    let(:ai_main_interpretation_params) { {} }
+    let(:ai_main_interpretation) do
+      {
+          language_detected: "fr",
+          location_confidence: nil,
+          request_confidence: 0.95,
+          request_proba: 0.64,
+          request_model_date: Time.now,
+          asap: false,
+          email_id: 1477509,
+          contacts_infos: [],
+          location_data: nil,
+          formal_language: false,
+          request_classif: "ask_availabilities",
+          appointment_classif: "appointment",
+          constraints_data: nil,
+          appointment_confidence: 0.94,
+          client_on_trip: nil,
+          appointment_model_date: Time.now,
+          algo_duration: 0,
+          duration: nil,
+          dates_to_check_confidence: 0,
+          dates_to_check: [],
+          appointment_proba: 0.67
+      }.merge(ai_main_interpretation_params)
+    end
+
+    let(:default_main_interpretation_params) { { question: 'main' } }
+    let(:main_interpretation_params) { { } }
+    let(:main_interpretation) do
+      create(:message_interpretation, default_main_interpretation_params.merge(main_interpretation_params).merge(raw_response: ai_main_interpretation.to_json))
+    end
+
+    before(:each) { allow(classification).to receive(:account).and_return(account) }
+
+    describe '#get_attendees_from_interpretation' do
+      let(:last_message_classification) { nil }
+      let(:ai_main_interpretation_params) do
+        {
+            contact_infos: [
+                # Attendee 2
+                {
+                    "owner_email":  'bob@juliedesk.com',
+                    "text":         '0602030405',
+                    "tag":          'PHONE',
+                    "value":        'mobile'
+                },
+
+                {
+                    "owner_email":  'bob@juliedesk.com',
+                    "text":         '0102030505',
+                    "tag":          'PHONE',
+                    "value":        'landline'
+                },
+
+                {
+                    "owner_email":  'bob@juliedesk.com',
+                    "text":         'bob.juliedesk',
+                    "tag":          'SKYPE',
+                    "value":        'bob.juliedesk'
+                }
+            ]
+        }
+      end
+
+      before(:example) do
+        allow(MessagesThread).to receive(:contacts).with(anything).and_return([{ email: 'bob@juliedesk.com', name: 'Bob Doe' } ])
+      end
+
+      subject { classification.send(:get_attendees_from_interpretation, main_interpretation.json_response) }
+
+      context 'when attendees information are present in client contacts' do
+        before(:example) {
+          create(:client_contact, { email:  'bob@juliedesk.com', first_name: 'Bobby', last_name: 'Doe', landline: '0102030405', mobile: '0602030405', skypeId: 'bobby.doe', company: 'Julie Desk' })
+        }
+
+        it { is_expected.to have_exactly(1).items }
+        it { is_expected.to include(an_object_having_attributes(email: 'bob@juliedesk.com')) }
+        it { is_expected.to include(an_object_having_attributes(first_name: 'Bobby')) }
+        it { is_expected.to include(an_object_having_attributes(last_name: 'Doe')) }
+        it { is_expected.to include(an_object_having_attributes(landline: '0102030405')) }
+        it { is_expected.to include(an_object_having_attributes(mobile: '0602030405')) }
+        it { is_expected.to include(an_object_having_attributes(skype_id: 'bobby.doe')) }
+        it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
+        it { is_expected.to include(an_object_having_attributes(is_present: true)) }
+      end
+
+      context 'when attendees are extracted for the first time' do
+        let(:human_civilities) { { 'first_name' => 'Bob', 'last_name' => 'Doe', 'gender' => 'm' } }
+        let(:interpreted_company) { { 'company' => 'Julie Desk' } }
+
+        before(:each)  do
+          # No contact
+          allow(MessagesThread).to receive(:contacts).with(anything).and_return([{ email: 'bob@juliedesk.com', name: 'Bob Doe' } ])
+
+          # AI interpretation
+          expect(AI_PROXY_INTERFACE).to receive(:build_request).with(:parse_human_civilities, { fullname: 'Bob Doe', at: 'bob@juliedesk.com'}).and_return(human_civilities)
+          expect(AI_PROXY_INTERFACE).to receive(:build_request).with(:get_company_name, { address: 'bob@juliedesk.com', message: ''}).and_return(interpreted_company)
+        end
+
+        let(:ai_main_interpretation_params) do
+          {
+              contact_infos: [
+                  { owner_email: 'bob@juliedesk.com', tag: 'PHONE', text: '01999999', value: 'landline' },
+                  { owner_email: 'bob@juliedesk.com', tag: 'PHONE', text: '06999999', value: 'mobile' },
+                  { owner_email: 'bob@juliedesk.com', tag: 'SKYPE', text: 'bob.doe', value: 'boe.doe' }
+              ]}
+        end
+
+        it { is_expected.to include(an_object_having_attributes(email: 'bob@juliedesk.com')) }
+        it { is_expected.to include(an_object_having_attributes(first_name: 'Bob')) }
+        it { is_expected.to include(an_object_having_attributes(last_name: 'Doe')) }
+        it { is_expected.to include(an_object_having_attributes(landline: '01999999')) }
+        it { is_expected.to include(an_object_having_attributes(mobile: '06999999')) }
+        it { is_expected.to include(an_object_having_attributes(skype_id: 'bob.doe')) }
+        it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
+        it { is_expected.to include(an_object_having_attributes(is_present: true)) }
+      end
+
+    end
+
+    describe '#get_attendees' do
+      let(:attendees_json) do
+        "[{\"guid\":\"1\",\"email\":\"bob@juliedesk.com\",\"firstName\":\"Robert\",\"lastName\":\"Doe\",\"name\":\"Bob Doe\",\"usageName\":\"Bob\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Julie Desk\",\"timezone\":\"Europe/Paris\",\"landline\":\"0102030405\",\"mobile\":\"0602030405\",\"skypeId\":\"bob.doe\",\"confCallInstructions\":\"\",\"status\":\"present\",\"isPresent\":\"true\",\"isClient\":\"false\",\"isThreadOwner\":\"false\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\"}]"
+      end
+      let(:classification_params) { { attendees:  attendees_json} }
+
+      subject { classification.get_attendees }
+
+      it { is_expected.to include(an_object_having_attributes(email: 'bob@juliedesk.com')) }
+      it { is_expected.to include(an_object_having_attributes(first_name: 'Robert')) }
+      it { is_expected.to include(an_object_having_attributes(last_name: 'Doe')) }
+      it { is_expected.to include(an_object_having_attributes(gender: 'M')) }
+      it { is_expected.to include(an_object_having_attributes(is_present: true)) }
+      it { is_expected.to include(an_object_having_attributes(status: 'present')) }
+      it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
+      it { is_expected.to include(an_object_having_attributes(landline: '0102030405')) }
+      it { is_expected.to include(an_object_having_attributes(mobile: '0602030405')) }
+      it { is_expected.to include(an_object_having_attributes(skype_id: 'bob.doe')) }
+      it { is_expected.to include(an_object_having_attributes(is_client: false)) }
+    end
+
+
+    describe '#get_present_attendee' do
+      let(:attendees_json) do
+        "[
+            {\"guid\":\"1\",\"email\":\"bob@juliedesk.com\",\"firstName\":\"Robert\",\"lastName\":\"Doe\",\"name\":\"Bob Doe\",\"usageName\":\"Bob\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Julie Desk\",\"timezone\":\"Europe/Paris\",\"landline\":\"0102030405\",\"mobile\":\"0602030405\",\"skypeId\":\"bob.doe\",\"confCallInstructions\":\"\",\"status\":\"present\",\"isPresent\":\"true\",\"isClient\":\"true\",\"isThreadOwner\":\"true\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\"},
+            {\"guid\":\"2\",\"email\":\"john@company.com\",\"firstName\":\"John\",\"lastName\":\"Roberts\",\"name\":\"John Roberts\",\"usageName\":\"Johnny\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Company\",\"timezone\":\"Europe/Paris\",\"landline\":\"01999999\",\"mobile\":\"06999999\",\"skypeId\":\"john.roberts\",\"confCallInstructions\":\"\",\"status\":\"present\",\"isPresent\":\"true\",\"isClient\":\"false\",\"isThreadOwner\":\"false\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\"},
+            {\"guid\":\"3\",\"email\":\"jack@company.com\",\"firstName\":\"Jack\",\"lastName\":\"Jones\",\"name\":\"Jack Jones\",\"usageName\":\"Jack\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Company\",\"timezone\":\"Europe/Paris\",\"landline\":\"01888888\",\"mobile\":\"06888888\",\"skypeId\":\"jack.jones\",\"confCallInstructions\":\"\",\"status\":\"not_present\",\"isPresent\":\"false\",\"isClient\":\"false\",\"isThreadOwner\":\"false\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\"}
+        ]"
+      end
+      let(:classification_params) { { attendees:  attendees_json} }
+
+      subject { classification.get_present_attendees }
+
+      it { is_expected.to have_exactly(2).items }
+      it { is_expected.to include(an_object_having_attributes(email: 'bob@juliedesk.com')) }
+      it { is_expected.to include(an_object_having_attributes(email: 'john@company.com')) }
+      it { is_expected.not_to include(an_object_having_attributes(email: 'jack@company.com')) }
+    end
+
+
+    describe '#get_field' do
+      let(:client_attendee_params) { {} }
+      let(:client_attendee) { { 'email' => 'bob@juliedesk.com', 'isClient' => 'true', 'firstName' => 'Bob', 'lastName' => 'Doe', 'isPresent' => 'true' }.merge(client_attendee_params) }
+
+      let(:attendee_params) { { } }
+      let(:attendee) { { 'email' => 'john@company.com', 'isClient' => 'false', 'firstName' => 'John', 'lastName' => 'Roberts', 'isPresent' => 'true' }.merge(attendee_params) }
+
+      let(:attendees_json) { [client_attendee, attendee].to_json  }
+      let(:classification_params) { { attendees:  attendees_json} }
+
+      subject { classification.get_field(field, from) }
+
+      context 'when we need skype from thread owner (available)' do
+        let(:field) { :skype }
+        let(:from)  { :thread_owner }
+        let(:account_params) { { skype: 'bob.doe' } }
+
+        it { is_expected.to eq('bob.doe') }
+      end
+
+      context 'when we need skype from thread owner (not available)' do
+        let(:field) { :skype }
+        let(:from)  { :thread_owner }
+
+        it { is_expected.to eq(nil) }
+      end
+
+
+      context 'when we need skype from one of the attendees' do
+        let(:field) { :skype }
+        let(:from)  { :attendees }
+        let(:attendee_params) { { 'skypeId' => 'john.roberts' } }
+
+        it { is_expected.to eq('john.roberts') }
+      end
+
+
+      context 'when we need a number from thread owner (landline available)' do
+        let(:field) { :any_number }
+        let(:from)  { :thread_owner }
+        let(:account_params) { { 'landline_number' => '01222222' } }
+
+        it { is_expected.to eq('01222222') }
+      end
+
+      context 'when we need a number from thread owner (mobile available)' do
+        let(:field) { :any_number }
+        let(:from)  { :thread_owner }
+        let(:account_params) { { 'landline_number' => nil, 'mobile_number' => '06222222' } }
+
+        it { is_expected.to eq('06222222') }
+      end
+
+      context 'when we need a number from thread owner (nothing available)' do
+        let(:field) { :any_number }
+        let(:from)  { :thread_owner }
+        let(:account_params) { { 'landline_number' => nil, 'mobile_number' => nil } }
+
+        it { is_expected.to eq(nil) }
+      end
+
+
+      context 'when we need a number from one of the attendees (landline available)' do
+        let(:field) { :any_number }
+        let(:from)  { :attendees }
+        let(:attendee_params) { { 'landline' => '01222222' } }
+
+        it { is_expected.to eq('01222222') }
+      end
+
+      context 'when we need a number from one of the attendees (mobile available)' do
+        let(:field) { :any_number }
+        let(:from)  { :attendees }
+        let(:attendee_params) { { 'mobile' => '06222222' } }
+
+        it { is_expected.to eq('06222222') }
+      end
+
+      context 'when we need a number from one of the attendees (nothing available)' do
+        let(:field) { :any_number }
+        let(:from)  { :attendees }
+
+        it { is_expected.to eq(nil) }
+      end
+
+    end
+
+  end
+
+
+
 end

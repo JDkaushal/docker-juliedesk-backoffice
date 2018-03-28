@@ -9,10 +9,52 @@ module AutomaticProcessing::NotesGenerator
   end
 
   def generate_call_instructions
+    call_instructions = JSON.parse(self.call_instructions || {})
 
-    if JSON.parse(self.call_instructions)['target'] == 'interlocutor'
-      nil
-    elsif JSON.parse(self.call_instructions)['target'] == 'client'
+    if call_instructions['target'] == 'interlocutor'
+      if call_instructions['target_infos'].blank?
+        nil
+      else
+        attendee = get_present_attendee_by_email(call_instructions['target_infos']['email'])
+
+        case call_instructions['support']
+          when 'mobile'
+            if attendee.mobile.present?
+              [
+                  get_translation(:call),
+                  attendee.usage_name,
+                  get_translation(:on_mobile),
+                  attendee.mobile
+              ].join(' ')
+            else
+              nil
+            end
+          when 'landline'
+            if attendee.landline.present?
+              [
+                  get_translation(:call),
+                  attendee.usage_name,
+                  get_translation(:on_mobile),
+                  attendee.landline
+              ].join(' ')
+            else
+              nil
+            end
+          when 'confcall'
+            nil
+          when 'skype'
+            nil
+          when 'skype_for_business'
+            nil
+          when 'video_conference'
+            nil
+          else
+            nil
+        end
+      end
+
+
+    elsif call_instructions['target'] == 'client'
       case account_appointment['support_config_hash']['label']
         when 'Mobile'
           [
@@ -43,7 +85,7 @@ module AutomaticProcessing::NotesGenerator
       end
 
 
-    elsif JSON.parse(self.call_instructions) == 'later'
+    elsif call_instructions == 'later'
       nil
     else
       nil
@@ -71,13 +113,13 @@ module AutomaticProcessing::NotesGenerator
   end
 
   def generate_contacts_infos
-    JSON.parse(self.attendees).select{|a| a['isPresent'] == 'true' && a['isThreadOwner'] != 'true'}.map do |attendee|
-      if [attendee['mobile'], attendee['landline'], attendee['skypeId']].select(&:present?).length > 0
+    self.get_present_attendees.reject(&:is_thread_owner).map do |attendee|
+      if attendee.has_any_phone_number? || attendee.has_skype?
         contact_info(
-            full_name: attendee['name'],
-            mobile_number: attendee['mobile'],
-            landline_number: attendee['landline'],
-            skype_id: attendee['skypeId'],
+            full_name:        attendee.full_name, # TODO check this
+            mobile_number:    attendee.mobile,
+            landline_number:  attendee.landline,
+            skype_id:         attendee.skype_id,
 
             display_mobile_number: true,
             display_landline_number: true,
