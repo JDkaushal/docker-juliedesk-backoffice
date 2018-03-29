@@ -492,6 +492,11 @@ EventTile.prototype.eventDetailsAddAttendeeDiv = function(attendee) {
     var eventTile = this;
     var organizer = eventTile.event.organizer;
 
+    if(attendee.is_resource) {
+        attendee.complementaryIinfos = ' ' + '(resource)';
+        $attendee.addClass("resource");
+    }
+
     var $attendee = $(HandlebarsTemplates['event_tile/attendee'](attendee));
 
     if(attendee.is_organizer)
