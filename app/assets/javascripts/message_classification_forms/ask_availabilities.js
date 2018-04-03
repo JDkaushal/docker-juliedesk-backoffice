@@ -223,7 +223,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
                                 });
 
                                 if(verifiedDates.length > 0) {
-                                    verifiedDatesByAI = {verified_dates: verifiedDates, meetingRoomsToBook: meetingRoomsToBook, timezone: response.timezone};
+                                    verifiedDatesByAI = {verified_dates: verifiedDates, meeting_rooms_to_book: meetingRoomsToBook, timezone: response.timezone};
                                 } else {
                                     verifiedDatesByAI = {no_suitable_dates: true};
                                 }

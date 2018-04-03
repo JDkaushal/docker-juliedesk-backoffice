@@ -91,8 +91,11 @@
 
                 $scope.selectedDateRaw = selectedDate;
 
-                if($scope.verifiedDatesByAi.meetingRoomsToBook)
-                    roomsToBook = $scope.verifiedDatesByAi.meetingRoomsToBook[selectedDate];
+                // Retro-compatibility, the parameter used to be called meetingRoomsToBook, but was changed to meeting_rooms_to_book to fit Ruby conventions
+                $scope.verifiedDatesByAi.meeting_rooms_to_book = $scope.verifiedDatesByAi.meeting_rooms_to_book || $scope.verifiedDatesByAi.meetingRoomsToBook;
+
+                if($scope.verifiedDatesByAi.meeting_rooms_to_book)
+                    roomsToBook = $scope.verifiedDatesByAi.meeting_rooms_to_book[selectedDate];
 
                 if(roomsToBook && roomsToBook.length > 0) {
                     var meetingRoomsManager = $('#meeting-rooms-manager').scope();

@@ -62,6 +62,28 @@ module AutomaticProcessing
       end
     end
 
+    class EventUpdateError < AutomaticProcessingError
+      attr_reader :julie_action_id
+      def initialize(julie_action_id)
+        @julie_action_id = julie_action_id
+      end
+
+      def to_s
+        "Event creation failed for Julie Action #{@julie_action_id}"
+      end
+    end
+
+    class EventFetchEventIdMissingError < AutomaticProcessingError
+      attr_reader :julie_action_id
+      def initialize(julie_action_id)
+        @julie_action_id = julie_action_id
+      end
+
+      def to_s
+        "Event creation failed for Julie Action #{@julie_action_id}"
+      end
+    end
+
     class AiVerifyDatesFailureError < AutomaticProcessingError
       attr_reader :message_classification_id
       def initialize(message_classification_id)

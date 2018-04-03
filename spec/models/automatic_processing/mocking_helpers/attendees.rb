@@ -4,6 +4,7 @@ module MockingHelpers
   class Attendees
     RSpec::Mocks::Syntax.enable_expect(self)
     RSpec::Expectations::Syntax.enable_expect(self)
+    
     def initialize
     end
 

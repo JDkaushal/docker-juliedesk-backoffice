@@ -84,7 +84,7 @@ module AutomaticProcessing
     end
 
     def find_room(room_email)
-      @data_holder.get_all_available_meeting_rooms.find{|r| r["id"] == room_email}
+      @data_holder.get_meeting_room_details(room_email)
     end
   end
 end

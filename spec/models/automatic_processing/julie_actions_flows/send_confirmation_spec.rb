@@ -1,7 +1,8 @@
 require "rails_helper"
-require_relative './mocking_helpers/attendees'
+require_relative '../mocking_helpers/attendees'
 
-describe AutomaticProcessing::AutomatedJulieAction do
+describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
+
   let(:account_email) { 'stagingjuliedesk@gmail.com' }
   let(:parsed_user_cache) {
     {
@@ -274,24 +275,7 @@ describe AutomaticProcessing::AutomatedJulieAction do
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
   let(:data_holder) { AutomaticProcessing::DataHolder.new(processed_message) }
-  let(:message_classification) {
-    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
-      data_holder: data_holder
-    })
-  }
-
-  subject(:julie_action) {
-    AutomaticProcessing::AutomatedJulieAction.new(
-        action_nature: message_classification.computed_julie_action_nature,
-        message_classification: message_classification,
-        data_holder: data_holder
-    )
-  }
-
-  before(:each) do
-    allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
-    allow(processed_message).to receive(:populate_single_server_message)
-
+  let(:attendees_mocker) {
     MockingHelpers::Attendees.new.mock([
                                            {
                                                "guid"=>-1,
@@ -366,317 +350,98 @@ describe AutomaticProcessing::AutomatedJulieAction do
                                                "aIHasBeenConfirmed"=>"true"
                                            }
                                        ])
+  }
+  let(:message_classification) {
+    attendees_mocker
+    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
+        data_holder: data_holder
+    })
+  }
+  let(:julie_action) {
+    AutomaticProcessing::AutomatedJulieAction.new(
+        action_nature: message_classification.computed_julie_action_nature,
+        message_classification: message_classification,
+        data_holder: data_holder
+    )
+  }
+
+  subject(:flow) { AutomaticProcessing::JulieActionsFlows::SendConfirmation.new(julie_action) }
+
+  before(:each) do
+    allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
+    allow(processed_message).to receive(:populate_single_server_message)
+    data_holder.set_message_classification(message_classification)
   end
 
-  describe 'Instantiation' do
-    it 'should populate the data_holder property' do
-      expect(julie_action.data_holder).to eq(data_holder)
+  describe 'trigger' do
+
+    it 'should trigger the right actions' do
+
+      expect(flow).to receive(:get_say_hi_template).with(
+          {
+              :recipient_names=>["Monsieur Thread Owner", "Monsieur John Bernard", "Monsieur Babtou Fragile"],
+              :should_say_hi=>true,
+              :locale=>"en"
+          }
+      ).and_return('mocked_hi_template')
+
+      expect(flow).to receive(:get_send_confirmation_template).with(
+          {:locale=>"en"}
+      ).and_return('mocked_generated_template')
+
+      expect(data_holder).to receive(:get_thread_event_data).and_return({
+                                                                            event_id: 1,
+                                                                            event_url: 'event_url',
+                                                                            calendar_id: 2,
+                                                                            appointment_nature: 'appointment',
+                                                                            calendar_login_username: 'calendar_login_username',
+                                                                            event_from_invitation: false,
+                                                                            event_from_invitation_organizer: nil
+                                                                        })
+
+      expect_any_instance_of(EventsManagement::BaseInterface).to receive(:build_request).with(:fetch, {event_id: 1}).and_return({'status' => 'success', 'data' => {
+          'summary' => 'Summary',
+          'description' => ' Description',
+          'attendees' => [{email: 'attendeeEmail@email.com'}, {email: 'attendeeEmail2@email.com'}],
+          'location' => 'Location',
+          'start' => {'date' => '2018-04-03T16:15:00.000+02:00', 'timezone' => 'Europe/Paris'},
+          'end' => {'date' => '2018-04-03T17:15:00.000+02:00', 'timezone' => 'Europe/Paris'},
+          'calendar_login_username' => 'calendar_login_username'
+      }})
+
+      expect(flow).to receive(:update_event).with(
+        {
+          :email=>"stagingjuliedesk@gmail.com",
+          :summary=>"Summary",
+          :description=>" Description",
+          :attendees=>[
+            {:email=>"attendeeEmail@email.com"},
+            {:email=>"attendeeEmail2@email.com"}
+          ],
+          :location=>"Location",
+          :all_day=>false,
+          :private=>false,
+          :start=>'2018-04-03 16:15:00 +0200',
+          :end=>'2018-04-03 17:15:00 +0200',
+          :start_timezone=>"Europe/Paris",
+          :end_timezone=>"Europe/Paris",
+          :calendar_login_username=>"calendar_login_username",
+          :meeting_room=>{
+            :used=>true,
+            :booked_rooms=>[
+              {:summary=>"Summary room 1", :id=>"room1@email.com", :location=>"Location room 1"},
+              {:summary=>"Summary room 2", :id=>"room2@email.com", :location=>"Location room 2"}
+            ]
+          },
+          :create_skype_for_business_meeting=>false
+        }
+      )
+
+      expect(data_holder).to receive(:get_message_classification_booked_rooms_details).and_return({'0' => {summary: 'Summary room 1', id: 'room1@email.com', location: 'Location room 1'}, '1' => {summary: 'Summary room 2', id: 'room2@email.com', location: 'Location room 2'}})
+
+      flow.trigger
+
+      expect(julie_action.text).to eq("mocked_hi_template\n\nmocked_generated_template")
     end
-  end
-
-  describe 'process' do
-
-    before(:each) do
-      data_holder.set_message_classification(message_classification)
-    end
-
-    context 'JD_ACTION_SUGGEST_DATES' do
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions') }
-
-      it 'should trigger the right actions' do
-        expect(AutomaticProcessing::JulieActionsFlows::SuggestDates).to receive(:new).with(julie_action).and_call_original
-        expect_any_instance_of(AutomaticProcessing::JulieActionsFlows::SuggestDates).to receive(:trigger)
-
-        julie_action.process
-      end
-    end
-
-    context 'JD_ACTION_CHECK_AVAILABILITIES' do
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
-
-      it 'should trigger the right actions' do
-        expect(AutomaticProcessing::JulieActionsFlows::CheckAvailabilities).to receive(:new).with(julie_action).and_call_original
-        expect_any_instance_of(AutomaticProcessing::JulieActionsFlows::CheckAvailabilities).to receive(:trigger)
-
-        julie_action.process
-      end
-    end
-
-    context 'JD_ACTION_WAIT_FOR_CONTACT' do
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'wait_for_contact') }
-
-      it 'should trigger the right actions' do
-        expect(AutomaticProcessing::JulieActionsFlows::WaitForContact).to receive(:new).with(julie_action).and_call_original
-        expect_any_instance_of(AutomaticProcessing::JulieActionsFlows::WaitForContact).to receive(:trigger)
-
-        julie_action.process
-      end
-    end
-
-    context 'JD_ACTION_SEND_CONFIRMATION' do
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'give_info') }
-
-      it 'should trigger the right actions' do
-        expect(AutomaticProcessing::JulieActionsFlows::SendConfirmation).to receive(:new).with(julie_action).and_call_original
-        expect_any_instance_of(AutomaticProcessing::JulieActionsFlows::SendConfirmation).to receive(:trigger)
-
-        julie_action.process
-      end
-    end
-  end
-
-  describe 'ask_ai_verify_dates' do
-
-  end
-
-
-  context '' do
-    let(:account_params) { { } }
-    let(:default_account_params) { { 'email' => 'bob@juliedesk.com', 'landline_number' => '0102030405', 'mobile_number' => '0602030405', 'skype' => 'bob.juliedesk' } }
-    let(:account) do
-      account = Account.new
-      account_params.each {  |k, v| account.send("#{k}=", v) }
-      account
-    end
-
-    let(:client_attendee_params) { { } }
-    let(:client_attendee) do
-      { 'email' => 'bob@juliedesk.com', 'firstName' => 'Bob', 'lastName' => 'Doe', 'skypeId' => 'bob.doe', 'isPresent' => 'true', 'isClient' => 'true', 'isThreadOwner' => 'true'  }.merge(client_attendee_params)
-    end
-
-    let(:attendee_params) { { } }
-    let(:attendee) do
-      { 'email' => 'john@juliedesk.com', 'firstName' => 'John', 'lastName' => 'Doe', 'skypeId' => 'john.doe', 'isPresent' => 'true', 'isClient' => 'false' }.merge(attendee_params)
-    end
-
-    let(:attendees) { [client_attendee, attendee].to_json }
-    let(:classification_params) { { } }
-    let(:classification) { create(:automated_message_classification, { attendees: attendees}.merge(classification_params)) }
-
-    let(:action_nature) { AutomaticProcessing::AutomatedJulieAction::JD_ACTION_SUGGEST_DATES }
-    let(:julie_action_params) { { } }
-    let(:julie_action) { create(:automated_julie_action, { action_nature: action_nature, message_classification: classification }.merge(julie_action_params)) }
-
-    before(:each) { allow(classification).to receive(:account).and_return(account) }
-
-    describe '#should_ask_location?' do
-      subject { julie_action.send(:should_ask_location?) }
-
-      context 'when ask suggestions' do
-        let(:account_params) {  { appointments: [{ 'kind' => 'appointment', 'default_address' => { 'label' => '15b boulevard Saint Denis 75002 Paris' }  }] } }
-        let(:action_nature)  { AutomaticProcessing::AutomatedJulieAction::JD_ACTION_SUGGEST_DATES }
-
-        context 'for appointment with location defined' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: '15b boulevard Saint Denis 75002 Paris' } }
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for appointment with location not defined' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: nil } }
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for appointment without location defined (decide later behaviour)' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: nil } }
-          let(:account_params) {  { appointments: [{ 'kind' => 'appointment', 'default_address' => { 'label' => 'Le client choisira plus tard' }  }] } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-        context 'for skype with ask interlocutor behaviour (skype id is missing)' do
-          let(:account_params) {  { appointments: [{ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) {  { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for skype with ask interlocutor behaviour (skype id is available)' do
-          let(:account_params) {  { appointments: [{ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-          let(:attendee_params) {  { 'skypeId' => 'john.doe' } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for skype with propose behaviour (skype id is available)' do
-          let(:account_params)  { { 'skype' => 'bob.doe',  'appointments' => [{ 'kind' => 'skype', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for skype with decide later behaviour' do
-          let(:account_params)  { { 'skype' => nil,  'appointments' => [{ 'kind' => 'skype', 'behaviour' => 'later'  }] } }
-          let(:attendee_params) { { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-
-        context 'for call with ask interlocutor behaviour (landline and mobile are missing)' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for call with ask interlocutor behaviour (landline is available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => '01333333', 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with ask interlocutor behaviour (mobile is available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => '06333333' } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with propose behaviour (landline and mobile are available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with propose behaviour (mobile is available)' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with decide later behaviour' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'later'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-      end
-
-      context 'when check availabilities' do
-        let(:account_params) {  { appointments: [{ 'kind' => 'appointment', 'default_address' => { 'label' => '15b boulevard Saint Denis 75002 Paris' }  }] } }
-        let(:action_nature)  { AutomaticProcessing::AutomatedJulieAction::JD_ACTION_CHECK_AVAILABILITIES }
-
-        context 'for appointment with location defined' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: '15b boulevard Saint Denis 75002 Paris' } }
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for appointment with location not defined' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: nil } }
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for appointment without location defined (decide later behaviour)' do
-          let(:classification_params) { { appointment_nature: 'appointment', location_nature: nil, location: nil } }
-          let(:account_params) {  { appointments: [{ 'kind' => 'appointment', 'default_address' => { 'label' => 'Le client choisira plus tard' }  }] } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-        context 'for skype with ask interlocutor behaviour (skype id is missing)' do
-          let(:account_params) {  { appointments: [{ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) {  { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for skype with ask interlocutor behaviour (skype id is available)' do
-          let(:account_params) {  { appointments: [{ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-          let(:attendee_params) {  { 'skypeId' => 'john.doe' } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for skype with propose behaviour (skype id is available)' do
-          let(:account_params)  { { 'skype' => 'bob.doe',  'appointments' => [{ 'kind' => 'skype', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for skype with decide later behaviour' do
-          let(:account_params)  { { 'skype' => nil,  'appointments' => [{ 'kind' => 'skype', 'behaviour' => 'later'  }] } }
-          let(:attendee_params) { { 'skypeId' => nil } }
-          let(:classification_params) { { appointment_nature: 'skype', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-
-        context 'for call with ask interlocutor behaviour (landline and mobile are missing)' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'for call with ask interlocutor behaviour (landline is available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => '01333333', 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with ask interlocutor behaviour (mobile is available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => '06333333' } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with propose behaviour (landline and mobile are available)' do
-          let(:account_params)  { { 'landline_number' => '01222222', 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with propose behaviour (mobile is available)' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => '06222222',  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'propose'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'for call with decide later behaviour' do
-          let(:account_params)  { { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [{ 'kind' => 'call', 'behaviour' => 'later'  }] } }
-          let(:attendee_params) { { 'landline' => nil, 'mobile' => nil } }
-          let(:classification_params) { { appointment_nature: 'call', location_nature: nil, location: nil } }
-
-          it { is_expected.to eq(false) }
-        end
-
-
-      end
-    end
-
-
   end
 end

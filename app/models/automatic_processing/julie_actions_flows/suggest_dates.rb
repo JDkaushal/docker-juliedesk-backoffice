@@ -43,12 +43,12 @@ module AutomaticProcessing
         })
 
         if !date_suggestions_response || date_suggestions_response[:error]
-          raise AutomaticProcessing::Exceptions::ConscienceDatesSuggestionError.new(self.message_classification.message.id)
+          raise AutomaticProcessing::Exceptions::ConscienceDatesSuggestionError.new(@julie_action.message_classification.message_id)
         end
 
         date_suggestions = date_suggestions_response['suggested_dates'] || []
         if date_suggestions.length < 2
-          raise AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError.new(self.message_classification.message.id)
+          raise AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError.new(@julie_action.message_classification.message_id)
         end
 
         date_suggestions.map{|date_suggestion|

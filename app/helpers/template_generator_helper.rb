@@ -29,6 +29,10 @@ module TemplateGeneratorHelper
     request("/api/v1/templates/send_invitations", template_data)
   end
 
+  def get_send_confirmation_template template_data
+    request('/api/v1/templates/send_confirmation', template_data)
+  end
+
   private
 
   def request path, body=nil

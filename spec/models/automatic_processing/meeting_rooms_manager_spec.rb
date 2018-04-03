@@ -19,7 +19,7 @@ describe AutomaticProcessing::MeetingRoomsManager do
                                                                         'meeting_room_enabled' => true,
                                                                         'selected_meeting_room' => 'auto_room_selection|attendees_count;can_confcall;can_visio'
                                                                       })
-          expect(data_holder).to receive(:get_address).and_return({
+          expect(data_holder).to receive(:get_address).exactly(2).times.and_return({
                                                                     'address' => address1,
                                                                     'meeting_room_used' => true,
                                                                     'meeting_rooms_enabled' => true,
@@ -63,50 +63,6 @@ describe AutomaticProcessing::MeetingRoomsManager do
                                                                         }
                                                                     ]
                                                                   })
-          expect(data_holder).to receive(:get_address).and_return({
-                                                                      'address' => address1,
-                                                                      'meeting_room_used' => true,
-                                                                      'meeting_rooms_enabled' => true,
-                                                                      'selected_meeting_room' => 'auto_room_selection|attendees_count;can_confcall;can_visio',
-                                                                      'available_meeting_rooms' => [
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>true,
-                                                                              "can_visio"=>true,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room1@email.com",
-                                                                              "summary"=>"FREDDY'S ROOM",
-                                                                              "floor"=>9,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.09999999999999998
-                                                                          },
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>true,
-                                                                              "can_visio"=>true,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room2@email.com",
-                                                                              "summary"=>"SKYWALKER'S",
-                                                                              "floor"=>2,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.8
-                                                                          },
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>nil,
-                                                                              "can_visio"=>nil,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room3@email.com",
-                                                                              "summary"=>"ANAKIN'S",
-                                                                              "floor"=>9,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.09999999999999998
-                                                                          }
-                                                                      ]
-                                                                  })
         end
 
         it 'should generate the correct params' do
@@ -132,51 +88,7 @@ describe AutomaticProcessing::MeetingRoomsManager do
                                                                           'meeting_room_enabled' => true,
                                                                           'selected_meeting_room' => 'auto_room_selection|attendees_count;can_confcall;can_visio'
                                                                       })
-          expect(data_holder).to receive(:get_address).and_return({
-                                                                      'address' => address1,
-                                                                      'meeting_room_used' => true,
-                                                                      'meeting_rooms_enabled' => true,
-                                                                      'selected_meeting_room' => 'auto_room_selection|attendees_count;can_confcall;can_visio',
-                                                                      'available_meeting_rooms' => [
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>true,
-                                                                              "can_visio"=>true,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room1@email.com",
-                                                                              "summary"=>"FREDDY'S ROOM",
-                                                                              "floor"=>9,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.09999999999999998
-                                                                          },
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>true,
-                                                                              "can_visio"=>true,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room2@email.com",
-                                                                              "summary"=>"SKYWALKER'S",
-                                                                              "floor"=>2,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.8
-                                                                          },
-                                                                          {
-                                                                              "calendar_login_username"=>"google_company_meeting_room",
-                                                                              "can_confcall"=>nil,
-                                                                              "can_visio"=>nil,
-                                                                              "capacity"=>nil,
-                                                                              "id"=>"room3@email.com",
-                                                                              "summary"=>"ANAKIN'S",
-                                                                              "floor"=>9,
-                                                                              "in_main_location"=>false,
-                                                                              "on_default_floor"=>false,
-                                                                              "floor_location_score"=>0.09999999999999998
-                                                                          }
-                                                                      ]
-                                                                  })
-          expect(data_holder).to receive(:get_address).and_return({
+          expect(data_holder).to receive(:get_address).exactly(2).times.and_return({
                                                                       'address' => address1,
                                                                       'meeting_room_used' => true,
                                                                       'meeting_rooms_enabled' => true,

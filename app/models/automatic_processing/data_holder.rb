@@ -5,6 +5,9 @@ module AutomaticProcessing
     class DataHolderError < StandardError
     end
 
+    class MessageMissingError < DataHolderError
+    end
+
     class NoMessageClassificationYetError < DataHolderError
     end
 
@@ -14,6 +17,8 @@ module AutomaticProcessing
     attr_reader :messages_thread, :message, :message_classification, :julie_action
 
     def initialize(incoming_message)
+      raise MessageMissingError.new("No message specified") if incoming_message.blank?
+
       @message = incoming_message
       @messages_thread = @message.messages_thread
     end
@@ -64,7 +69,7 @@ module AutomaticProcessing
       @message_classification_identifier ||= get_message_classification.identifier
     end
 
-    def get_message_classification_main_interpretation_json
+    def get_message_classification_main_interpretation
       @classification_main_interpretation ||= (get_message.main_message_interpretation.try(:json_response) || {})
     end
 
@@ -90,6 +95,14 @@ module AutomaticProcessing
 
     def get_thread_computed_data
       @thread_computed_data ||= get_messages_thread.computed_data
+    end
+
+    def get_message_classification_verify_dates_by_ai
+      @message_classification_verify_dates_by_ai ||= get_message_classification.verify_dates_by_ai
+    end
+
+    def get_thread_event_data
+      @thread_event_data ||= get_messages_thread.event_data
     end
 
     def get_current_locale
@@ -201,7 +214,7 @@ module AutomaticProcessing
     end
 
     def get_appointment
-      @current_appointment ||= get_appointments.find{|appointment| appointment['label'] == get_message_classification.appointment_nature}
+      @current_appointment ||= get_appointments.find{|appointment| appointment['kind'] == get_message_classification.appointment_nature}
     end
 
     def get_client_names
@@ -228,6 +241,28 @@ module AutomaticProcessing
 
     def get_julie_action_nature
       @julie_action ||= get_julie_action.action_nature
+    end
+
+    def get_message_classification_booked_rooms_details
+      @message_classification_booked_rooms_details ||= get_message_classification.booked_rooms_details
+    end
+
+    def get_meeting_room_details(room_email)
+      room_details = {}
+
+      get_addresses.find do |addr|
+        room_infos = addr['available_meeting_rooms'].find{|room| room['id'] == room_email}
+
+        if room_infos.present?
+          room_details = room_infos
+          room_details['location'] = addr['address']
+          true
+        else
+          false
+        end
+      end
+
+      room_details
     end
   end
 end

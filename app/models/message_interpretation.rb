@@ -135,6 +135,11 @@ class MessageInterpretation < ActiveRecord::Base
   private
 
 
+  def process_main_entity!
+    self.process_main_entity
+    self.save
+  end
+
   def process_main_entity
 
     response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_main, {id: self.message.server_message_id}).body
@@ -154,13 +159,14 @@ class MessageInterpretation < ActiveRecord::Base
     self.raw_response = response_body_str
     begin
       JSON.parse(self.raw_response)
+      self
       #response.parse
       self.error = false
     rescue
       self.error = true
     end
 
-    self.save
+
   end
 
   def process_entities_entity
