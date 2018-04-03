@@ -274,7 +274,6 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
   let(:messages_thread) { FactoryGirl.create(:messages_thread, account_email: account_email) }
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
-  let(:data_holder) { AutomaticProcessing::DataHolder.new(processed_message) }
   let(:attendees_mocker) {
     MockingHelpers::Attendees.new.mock([
                                            {
@@ -353,15 +352,12 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
   }
   let(:message_classification) {
     attendees_mocker
-    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
-        data_holder: data_holder
-    })
+    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
   }
   let(:julie_action) {
     AutomaticProcessing::AutomatedJulieAction.new(
         action_nature: message_classification.computed_julie_action_nature,
-        message_classification: message_classification,
-        data_holder: data_holder
+        message_classification: message_classification
     )
   }
 
@@ -370,7 +366,6 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
   before(:each) do
     allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
     allow(processed_message).to receive(:populate_single_server_message)
-    data_holder.set_message_classification(message_classification)
   end
 
   describe 'trigger' do
@@ -389,7 +384,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
           {:locale=>"en"}
       ).and_return('mocked_generated_template')
 
-      expect(data_holder).to receive(:get_thread_event_data).and_return({
+      expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_thread_event_data).and_return({
                                                                             event_id: 1,
                                                                             event_url: 'event_url',
                                                                             calendar_id: 2,
@@ -437,7 +432,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
         }
       )
 
-      expect(data_holder).to receive(:get_message_classification_booked_rooms_details).and_return({'0' => {summary: 'Summary room 1', id: 'room1@email.com', location: 'Location room 1'}, '1' => {summary: 'Summary room 2', id: 'room2@email.com', location: 'Location room 2'}})
+      expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_message_classification_booked_rooms_details).and_return({'0' => {summary: 'Summary room 1', id: 'room1@email.com', location: 'Location room 1'}, '1' => {summary: 'Summary room 2', id: 'room2@email.com', location: 'Location room 2'}})
 
       flow.trigger
 

@@ -41,7 +41,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'landline_number' => '01222222',  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'landline', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'landline', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -52,7 +52,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'landline_number' => nil, 'mobile_number' => '06222222',  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'landline', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'landline', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
     context 'when behaviour is propose and support is Landline (no number available)' do
@@ -61,7 +61,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'landline', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'landline', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -72,7 +72,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'mobile_number' => '06222222',  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'mobile', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'mobile', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
     # TODO : strange (support should be landline because we ask for :any_number in julie_action_required_data_for_location flow)
@@ -82,7 +82,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'landline_number' => '01222222', 'mobile_number' => nil,  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'mobile', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'mobile', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
     context 'when behaviour is propose and support is Mobile (no number available)' do
@@ -91,7 +91,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'landline_number' => nil, 'mobile_number' => nil,  'appointments' => [ { 'kind' => 'call', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'mobile', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'mobile', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -103,7 +103,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'skype' => 'bob.doe',  'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Skype' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'skype', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'skype', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -113,7 +113,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'skype' => nil,  'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Skype' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'skype', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'skype', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -125,7 +125,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'skype' => 'bob.doe',  'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Skype For Business' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'skype_for_business', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'skype_for_business', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -135,7 +135,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'skype' => nil,  'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'propose', 'support_config_hash' => { 'label' => 'Skype For Business' } } ] }
       end
 
-      it { is_expected.to include(target: 'client', support: 'skype_for_business', target_infos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
+      it { is_expected.to include(target: 'client', support: 'skype_for_business', targetInfos: { email: 'bob@juliedesk.com', name: 'Bob Doe' })}
     end
 
 
@@ -148,7 +148,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'mobile', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'mobile', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -159,7 +159,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     context 'when behaviour is ask interlocutor and support is Landline (mobile only available)' do
@@ -169,7 +169,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'mobile', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'mobile', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -181,7 +181,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -199,7 +199,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: {})}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: {})}
     end
 
 
@@ -212,7 +212,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'mobile', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'mobile', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     context 'when behaviour is propose and support is Mobile (landline only available)' do
@@ -222,7 +222,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     context 'when behaviour is propose and support is Mobile (no number available)' do
@@ -232,7 +232,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Mobile' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: '', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: '', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -245,7 +245,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'mobile', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'mobile', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     # TODO: strange (support should be skype ? )
@@ -256,7 +256,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     context 'when behaviour is propose and support is Skype (no number available)' do
@@ -266,7 +266,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'skype', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'skype', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -278,7 +278,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype For Business' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'mobile', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'mobile', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     # TODO: strange (suppoort should be skype ?)
@@ -289,7 +289,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype For Business' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'landline', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'landline', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
     context 'when behaviour is propose and support is Skype (no number available)' do
@@ -299,7 +299,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'skype', 'behaviour' => 'ask_interlocutor', 'support_config_hash' => { 'label' => 'Skype For Business' } } ] }
       end
 
-      it { is_expected.to include(target: 'interlocutor', support: 'skype_for_business', target_infos: { email: 'john@somecompany.com', name: 'John Doe' })}
+      it { is_expected.to include(target: 'interlocutor', support: 'skype_for_business', targetInfos: { email: 'john@somecompany.com', name: 'John Doe' })}
     end
 
 
@@ -311,7 +311,7 @@ describe AutomaticProcessing::Flows::CallInstructions, class: 'AutomaticProcessi
         { 'appointments' => [ { 'kind' => 'call', 'behaviour' => 'later', 'support_config_hash' => { 'label' => 'Landline' } } ] }
       end
 
-      it { is_expected.to include(target: 'later', support: '', target_infos: {})}
+      it { is_expected.to include(target: 'later', support: '', targetInfos: {})}
     end
 
 

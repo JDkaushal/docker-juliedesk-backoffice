@@ -1,7 +1,7 @@
 module AutomaticProcessing
-  module Flows
+  module ClassificationsFlows
 
-    class GiveInfo < Base
+    class AskDateSuggestions < Base
 
       def post_classification_actions
         [:deliver_email, :archive_thread]

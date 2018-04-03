@@ -19,8 +19,6 @@ module AutomaticProcessing
       SUPPORT_CONFCALL            = 'confcall'
       SUPPORT_VIDEO_CONFERENCE    = 'video_conference'
 
-
-
       FLOWS = {
           'GET_CALL_INSTRUCTIONS' => {
               before_flow: [
@@ -111,7 +109,6 @@ module AutomaticProcessing
       def set_appointment_support(appointment_config)
         support_config = appointment_config['support_config_hash']
         return nil if support_config.nil?
-
         support_config['label']
       end
 
@@ -192,7 +189,7 @@ module AutomaticProcessing
         {
             target:       target       || '',
             support:      support      || '',
-            target_infos: target_infos || {}
+            targetInfos: target_infos || {}
         }
       end
 

@@ -29,6 +29,7 @@ module FlowDispatcher
   def before_flow(before_hooks)
     before_hooks.each do |validation|
       method    = validation[:method]
+
       params = (validation[:params] || []).map do |param|
         (param.is_a?(Symbol) && param.match(/^@/)) ? instance_variable_get(param) : param
       end

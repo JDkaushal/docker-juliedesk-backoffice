@@ -253,11 +253,15 @@ module AutomaticProcessing
 
       private
 
+      def get_appointment_config(classification, account)
+        account.appointments.find {|appointment_config| appointment_config['kind'] == classification.appointment_nature}
+      end
+
       # Init data
       def set_appointment_config(classification, account)
         return nil if account.nil?
         return nil if classification.nil?
-        account.appointments.find {|appointment_config| appointment_config['kind'] == classification.appointment_nature}
+        get_appointment_config(classification, account)
       end
 
       def set_appointment_kind(appointment_config)

@@ -86,7 +86,6 @@ class Attendee
         end
       end
 
-
       Attendee.new(
           account_email:    attendee_data['account_email'],
           email:            attendee_data['email'],

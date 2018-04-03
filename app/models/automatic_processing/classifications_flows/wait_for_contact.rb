@@ -1,5 +1,5 @@
 module AutomaticProcessing
-  module Flows
+  module ClassificationsFlows
 
     class WaitForContact < Base
 

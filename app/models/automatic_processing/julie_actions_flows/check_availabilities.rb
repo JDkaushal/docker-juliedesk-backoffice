@@ -61,10 +61,10 @@ module AutomaticProcessing
       private
 
       def update_message_classification(params)
-        message_classification_params = {verify_dates_by_ai: {verified_dates: [params[:chosen_date_for_check_availabilities]], meeting_rooms_to_book: {params[:chosen_date_for_check_availabilities] => params[:meeting_rooms_for_check_availabilities] }, timezone: params[:timezone_returned_by_ai]}}
+        message_classification_params = {verified_dates_by_ai: {verified_dates: [params[:chosen_date_for_check_availabilities]], meeting_rooms_to_book: {params[:chosen_date_for_check_availabilities] => params[:meeting_rooms_for_check_availabilities] }, timezone: params[:timezone_returned_by_ai]}}
 
-        if meeting_rooms_for_check_availabilities.present?
-          rooms_details = meeting_rooms_for_check_availabilities.map{|room_email| @data_holder.get_meeting_room_details(room_email)}
+        if params[:meeting_rooms_for_check_availabilities].present?
+          rooms_details = params[:meeting_rooms_for_check_availabilities].map{|room_email| @data_holder.get_meeting_room_details(room_email)}
 
           booked_rooms_details = rooms_details.each_with_index.inject({}) do |h, room_detail_with_index|
             room_detail, index = room_detail_with_index

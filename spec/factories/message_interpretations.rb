@@ -6,6 +6,8 @@ FactoryGirl.define do
     trait :main_classif do
       transient do
         detected_classification 'ask_availabilities'
+        detected_appointment_nature 'appointment'
+        contacts_infos [{"owner"=>"owner@email.com", "text"=>"+49 15780928762", "tag"=>"PHONE", "value"=>""}]
       end
 
       question 'main'
@@ -13,11 +15,14 @@ FactoryGirl.define do
       before(:create) do |message_interpretation, evaluator|
         parsed_raw_response = JSON.parse(message_interpretation.raw_response)
         parsed_raw_response['request_classif'] = evaluator.detected_classification
+        parsed_raw_response['appointment_classif'] = evaluator.detected_appointment_nature
+        parsed_raw_response['contacts_infos'] = evaluator.contacts_infos
 
         message_interpretation.raw_response = parsed_raw_response.to_json
       end
     end
 
+    factory :main_classification, traits: [:main_classif]
 
     factory :main_interpretation do
       question "main"

@@ -274,7 +274,6 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
   let(:messages_thread) { FactoryGirl.create(:messages_thread, account_email: account_email) }
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions') }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
-  let(:data_holder) { AutomaticProcessing::DataHolder.new(processed_message) }
   let(:attendees_mocker) {
     MockingHelpers::Attendees.new.mock([
                                            {
@@ -353,15 +352,12 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
   }
   let(:message_classification) {
     attendees_mocker
-    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
-        data_holder: data_holder
-    })
+    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
   }
   let(:julie_action) {
     AutomaticProcessing::AutomatedJulieAction.new(
         action_nature: message_classification.computed_julie_action_nature,
-        message_classification: message_classification,
-        data_holder: data_holder
+        message_classification: message_classification
     )
   }
 
@@ -370,7 +366,6 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
   before(:each) do
     allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
     allow(processed_message).to receive(:populate_single_server_message)
-    data_holder.set_message_classification(message_classification)
   end
 
   describe 'trigger' do

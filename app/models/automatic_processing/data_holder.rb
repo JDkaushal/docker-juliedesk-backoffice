@@ -218,6 +218,7 @@ module AutomaticProcessing
     end
 
     def get_client_names
+      puts get_attendees.inspect
       @client_names ||= get_attendees.select{|att| att['isPresent'] && att['isClient']}.map do |att|
         att['usageName']
       end

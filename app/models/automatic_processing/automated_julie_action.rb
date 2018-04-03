@@ -3,11 +3,7 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
   include TemplateGeneratorHelper
   include ApplicationHelper
 
-  attr_accessor :data_holder
-
   def initialize(params = {})
-    @data_holder = params.delete(:data_holder)
-
     super(params)
   end
 

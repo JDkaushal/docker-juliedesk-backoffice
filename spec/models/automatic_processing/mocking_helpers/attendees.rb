@@ -22,10 +22,10 @@ module MockingHelpers
     end
 
     def mock_attendee(att)
+      allow_any_instance_of(AttendeeService).to receive(:get_usage_name).with({:locale=>"en", :formal=>false, :first_name=>att['firstName'], :last_name=>att['lastName'], :gender=>att['gender']}).and_return("Monsieur #{att['firstName']} #{att['lastName']}")
+
       expect(AI_PROXY_INTERFACE).to receive(:build_request).with(:parse_human_civilities, {:fullname=>att['name'], :at=>att['email']}).and_return('first_name' => att['firstName'], 'last_name' => att['lastName'], 'gender' => att['gender'])
       expect(AI_PROXY_INTERFACE).to receive(:build_request).with(:get_company_name, {:address=>att['email'], :message=>""}).and_return('company' => att['company'])
-
-      expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:get_usage_name).with({:locale=>"en", :first_name=>att['firstName'], :last_name=>att['lastName'], :gender=>att['gender'], :formal=>false}).and_return("Monsieur #{att['name']}")
     end
 
     def add_clients_to_cache(atts)

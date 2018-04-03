@@ -2,18 +2,12 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   include TemplateGeneratorHelper
   include NotesGenerator
 
-  attr_reader :data_holder
+  #attr_reader :data_holder
 
   class NoDataHolderError < StandardError
   end
 
   def initialize(params = {})
-    @data_holder = params.delete(:data_holder)
-
-    if @data_holder.blank?
-      raise AutomaticProcessing::AutomatedMessageClassification::NoDataHolderError.new("Data holder missing")
-    end
-
     super(params)
   end
 
@@ -21,8 +15,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
       classification: message.main_message_interpretation.json_response['request_classif'],
       operator: "jul.ia@operator.juliedesk.com",
-      message: message,
-      data_holder: options[:data_holder]
+      message: message
     )
 
     message_classification.fill_form if message_classification.has_data?
@@ -40,7 +33,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     existing_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')
     current_attendees   = existing_attendees
-    current_attendees   = get_attendees_from_interpretation(main_interpretation).map(&:to_h) if existing_attendees.blank?
+    current_attendees   = get_attendees_from_interpretation(main_interpretation) if existing_attendees.blank?
 
     # Build interpretation hash in backoffice format
     interpretation = {
@@ -75,10 +68,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     AttendeeService.clean_and_categorize_clients!(attendees)
     AttendeeService.set_usage_names!(attendees, { locale: interpretation[:locale], is_formal: is_formal })
 
-
-    # Call instructions
-    call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS')
-
     self.assign_attributes({
         appointment_nature:  interpretation[:appointment],
         summary:             nil,
@@ -94,11 +83,13 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         language_level:      is_formal ? Account::LANGUAGE_LEVEL_FORMAL : Account::LANGUAGE_LEVEL_NORMAL,
         asap_constraint:     interpretation[:asap_constraint],
         client_on_trip:      interpretation[:client_on_trip],
-        call_instructions:   call_instructions.to_json,
         # Used by AI to find the classification later
-        identifier: "#{@data_holder.get_message_id}-#{DateTime.now.to_i * 1000}"
+        identifier:          "#{self.message_id}-#{DateTime.now.to_i * 1000}",
+        attendees_emails:    attendees.map(&:email)
     })
 
+    # Call instructions
+    self.call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS').to_json
 
     self.notes    = generate_notes
     self.location = generate_call_instructions if self.is_virtual_appointment?
@@ -153,6 +144,10 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     scope = options.fetch(:scope, :classification)
     return nil unless [:thread_owner, :attendees, :anyone].include?(scope)
     self.get_field(field, scope).present?
+  end
+
+  def missing_field?(field, options = {})
+    !has_field?(field, options)
   end
 
   def get_field(field, from)
@@ -213,15 +208,16 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   private
 
   def account
-    @data_holder.get_thread_owner_account
+    self.message.messages_thread.account
   end
 
   def account_appointment
-    @data_holder.get_appointments.find{|appointment| appointment['label'] == self.appointment_nature}
+
+    account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
   end
 
   def account_address
-    @data_holder.get_addresses.find{|address| address['address'] == self.location}
+    account.addresses.find{|address| address['address'] == self.location}
   end
 
 
@@ -249,24 +245,24 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   def get_attendees_from_interpretation(main_interpretation)
     # Attendees information returned by conscience
-    contact_infos = main_interpretation.fetch('contact_infos', [])
+    contact_infos = main_interpretation.fetch('contacts_infos', [])
 
-    recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]})
+    recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
     recipients_emails = recipients.map { |recipient| recipient[:email] }
 
     # Retrieve attendee information from client contacts
     client_contacts = ClientContact.where(email: recipients_emails).order('updated_at desc').all
 
+    clients_emails = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('clients_emails') || '[]')
+
     recipients.map do |recipient|
       # Backoffice data
       client_contact = client_contacts.find { |client_contact| client_contact.email == recipient[:email] }
 
-
       # Conscience data
-      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
-      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
-      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient[:email] && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
-
+      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
+      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
+      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
 
       if client_contact.blank? || (client_contact && (client_contact.first_name.blank? || client_contact.last_name.blank?))
         human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: recipient[:name], at: recipient[:email]})
@@ -290,7 +286,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         mobile:     client_contact.try(:mobile)      || interpreted_mobile,
         skype_id:   client_contact.try(:skypeId)     || interpreted_skype,
         status:     Attendee::STATUS_PRESENT,
-        is_present: true
+        is_present: true,
+        is_thread_owner: recipient['isThreadOwner'] == 'true',
+        is_client: clients_emails.include?(recipient[:email])
       )
     end
   end

@@ -340,10 +340,55 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_availabilities' do
           before(:each) do
-            expect(subject.data_holder).to receive(:get_current_classification).and_return('ask_availabilities')
+            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'ask_availabilities'))
           end
 
-          let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities')}
+          let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
+
+          it 'should trigger the right flow' do
+            expect(subject).to receive(:deliver_email)
+            expect(subject).to receive(:archive_thread)
+
+            subject.process
+          end
+        end
+
+        context 'ask_date_suggestions' do
+          before(:each) do
+            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'ask_date_suggestions'))
+          end
+
+          let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions') }
+
+          it 'should trigger the right flow' do
+            expect(subject).to receive(:deliver_email)
+            expect(subject).to receive(:archive_thread)
+
+            subject.process
+          end
+        end
+
+        context 'give_info' do
+          before(:each) do
+            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'give_info'))
+          end
+
+          let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'give_info') }
+
+          it 'should trigger the right flow' do
+            expect(subject).to receive(:deliver_email)
+            expect(subject).to receive(:archive_thread)
+
+            subject.process
+          end
+        end
+
+        context 'wait_for_contact' do
+          before(:each) do
+            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'wait_for_contact'))
+          end
+
+          let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'wait_for_contact') }
 
           it 'should trigger the right flow' do
             expect(subject).to receive(:deliver_email)

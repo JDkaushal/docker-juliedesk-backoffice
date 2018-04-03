@@ -25,7 +25,7 @@ module AutomaticProcessing
     private
 
     def trigger_actions_flow
-      flow = "AutomaticProcessing::Flows::#{@data_holder.get_current_classification.camelize}".constantize
+      flow = "AutomaticProcessing::ClassificationsFlows::#{@message_classification.classification.camelize}".constantize
       flow.new.post_classification_actions.each{ |action| self.send(action) }
     end
 
@@ -39,14 +39,14 @@ module AutomaticProcessing
     end
 
     def classify_message
-      AutomaticProcessing::AutomatedMessageClassification.process_message(@message, {data_holder:  @data_holder})
+      AutomaticProcessing::AutomatedMessageClassification.process_message(@message)
     end
 
     def create_julie_action
       AutomaticProcessing::AutomatedJulieAction.new(
         action_nature: @message_classification.computed_julie_action_nature,
         message_classification: @message_classification,
-        data_holder: @data_holder
+        #data_holder: @data_holder
       )
     end
 
