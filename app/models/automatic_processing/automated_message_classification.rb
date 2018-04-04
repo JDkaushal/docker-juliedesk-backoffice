@@ -31,9 +31,10 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     main_interpretation         = message.main_message_interpretation.json_response
     last_message_classification = message.messages_thread.last_message_classification_with_data
 
-    existing_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')
-    current_attendees   = existing_attendees
-    current_attendees   = get_attendees_from_interpretation(main_interpretation) if existing_attendees.blank?
+    # Read attendees from last classif and merge with data interpreted by AI
+    current_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')
+    attendees_from_ai  = get_attendees_from_interpretation(main_interpretation)
+    Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
     # Build interpretation hash in backoffice format
     interpretation = {
@@ -53,9 +54,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     # Build some other needed properties
     client_preferences = { timezone: account.default_timezone_id }
-    appointment = account.appointments.find{|appointment| appointment['label'] == interpretation[:appointment]}
 
     # Compute Location
+    appointment     = account.appointments.find{|appointment| appointment['label'] == interpretation[:appointment]}
     location_data   = compute_location_from_interpretation(interpretation, appointment)
 
     # Language Level
@@ -83,6 +84,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         language_level:      is_formal ? Account::LANGUAGE_LEVEL_FORMAL : Account::LANGUAGE_LEVEL_NORMAL,
         asap_constraint:     interpretation[:asap_constraint],
         client_on_trip:      interpretation[:client_on_trip],
+
         # Used by AI to find the classification later
         identifier:          "#{self.message_id}-#{DateTime.now.to_i * 1000}",
         attendees_emails:    attendees.map(&:email)
@@ -93,20 +95,24 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     self.notes    = generate_notes
     self.location = generate_call_instructions if self.is_virtual_appointment?
-    self.summary  = generate_summary
+    self.summary  = generate_summary(account_appointment, get_present_attendees)
   end
 
 
 
-  def generate_summary
-    account_appointment['title_in_calendar'][self.locale] + " " + get_present_attendees.group_by(&:company).map{|company, attendees|
+  def generate_summary(appointment, present_attendees)
+    appointment = appointment.with_indifferent_access
+    raise "Appointment config is missing" if appointment.blank?
+
+    title_in_calendar_data = appointment['title_in_calendar']
+    raise "Title in calendar for appointment is not defined" if title_in_calendar_data.blank?
+
+    title_in_calendar = title_in_calendar_data[self.locale]
+
+    title_in_calendar + " " + present_attendees.group_by(&:company).map{|company, attendees|
       attendees_list = attendees.map(&:full_name).join(', ')
       if company.present?
-        if attendees.length < 4
-          "#{company} [#{attendees_list}]"
-        else
-          company
-        end
+        attendees.length < 3 ? "#{company} [#{attendees_list}]" : company
       else
         attendees_list
       end
@@ -212,7 +218,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   end
 
   def account_appointment
-
     account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
   end
 

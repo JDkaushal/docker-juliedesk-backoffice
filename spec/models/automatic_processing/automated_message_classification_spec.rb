@@ -704,4 +704,135 @@ describe AutomaticProcessing::AutomatedMessageClassification do
 
 
 
+  describe '#generate_summary' do
+    let(:appointment_params) { { } }
+    let(:appointment) { { 'title_in_calendar' => { 'fr' => 'RDV', 'en' => 'MTG' } }.merge(appointment_params) }
+    let(:present_attendees) { [] }
+
+    let(:classification_params) { { } }
+    let(:classification) { create(:automated_message_classification, {locale: 'fr'}.merge(classification_params)) }
+
+    subject { classification.generate_summary(appointment, present_attendees) }
+
+    context 'when 1:1 (same company)' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'john@juliedesk.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Julie Desk')
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk [Bob Doe, John Wayne]') }
+    end
+
+    context 'when 1:1 (different companies)' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'john@pepsi.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Pepsi')
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk [Bob Doe] <> Pepsi [John Wayne]') }
+    end
+
+
+    context 'when 1:1:1 (different companies)' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'john@pepsi.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Pepsi'),
+            Attendee.new(email: 'bill@pepsi.com', first_name: 'Bill', last_name: 'Green', is_present: true, company: 'Coca-Cola'),
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk [Bob Doe] <> Pepsi [John Wayne] <> Coca-Cola [Bill Green]') }
+    end
+
+    context 'when 2:1' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'jean@juliedesk.com', first_name: 'Jean', last_name: 'Bon', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'john@pepsi.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Pepsi')
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk [Bob Doe, Jean Bon] <> Pepsi [John Wayne]') }
+    end
+
+    context 'when 3:1' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'jean@juliedesk.com', first_name: 'Jean', last_name: 'Bon', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'pierre@juliedesk.com', first_name: 'Pierre', last_name: 'Durant', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'john@pepsi.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Pepsi')
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk <> Pepsi [John Wayne]') }
+    end
+
+
+    context 'when 3:3' do
+      let(:present_attendees) do
+        [
+            Attendee.new(email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'jean@juliedesk.com', first_name: 'Jean', last_name: 'Bon', is_present: true, company: 'Julie Desk'),
+            Attendee.new(email: 'pierre@juliedesk.com', first_name: 'Pierre', last_name: 'Durant', is_present: true, company: 'Julie Desk'),
+
+            Attendee.new(email: 'john@pepsi.com', first_name: 'John', last_name: 'Wayne', is_present: true, company: 'Pepsi'),
+            Attendee.new(email: 'bruce@pepsi.com', first_name: 'Bruce', last_name: 'Jones', is_present: true, company: 'Pepsi'),
+            Attendee.new(email: 'jack@pepsi.com', first_name: 'Jack', last_name: 'Law', is_present: true, company: 'Pepsi'),
+        ]
+      end
+
+      it { is_expected.to eq('RDV Julie Desk <> Pepsi') }
+    end
+  end
+
+
+  describe '#generate_call_instructions' do
+    let(:classification_params) { {} }
+    let(:classification) { create(:automated_message_classification, classification_params) }
+
+    context 'when target is client and support landline (present)' do
+
+    end
+
+    context 'when target is client and support landline (not present)' do
+
+    end
+
+    context 'when target is client and support mobile (present)' do
+
+    end
+
+    context 'when target is client and support mobile (not present)' do
+
+    end
+
+
+    context 'when target is interlocutor and support is landline (present)' do
+
+    end
+
+    context 'when target is interlocutor and support is landline (not present)' do
+
+    end
+
+    context 'when target is interlocutor and support is mobile (present)' do
+
+    end
+
+    context 'when target is interlocutor and support is mobile (not present)' do
+
+    end
+
+
+    context 'when target is later' do
+
+    end
+  end
 end

@@ -19,6 +19,32 @@ class Attendee
   validates :gender, inclusion: { in: GENDERS }, presence: false
   validates :status, inclusion: { in: STATUSES }, presence: false
 
+  def attributes
+    {
+        account_email:    @account_email,
+        email:            @email,
+        first_name:       @first_name,
+        last_name:        @last_name,
+        usage_name:       @usage_name,
+        gender:           @gender,
+        landline:         @landline,
+        mobile:           @mobile,
+        skype_id:         @skype_id,
+        company:          @company,
+        is_present:       @is_present,
+        status:           @status,
+        is_client:        @is_client,
+        assisted:         @assisted,
+        is_assistant:     @is_assistant,
+        is_thread_owner:  @is_thread_owner
+    }
+  end
+
+  def assign_attributes(attrs)
+    attrs.each do |k, v|
+      send("#{k}=", v)
+    end
+  end
 
   # Ovverride
   def email=(email)
@@ -69,6 +95,35 @@ class Attendee
         'isThreadOwner' => self.is_thread_owner
     }
   end
+
+
+  def merge_with!(attendee, options = {})
+    overwrite = options.fetch(:overwrite, false)
+    if overwrite
+      self.assign_attributes(attendee.attributes.compact)
+    else
+      assignable_attrs = self.attributes.select { |_, value| value.nil?  }.keys
+      self.assign_attributes(attendee.attributes.slice(*assignable_attrs))
+    end
+
+    self
+  end
+
+
+  def self.merge!(l_attendees, r_attendees, options = {})
+    r_attendees.each do |r_attendee|
+      l_attendee = l_attendees.find { |attendee| attendee.email == r_attendee.email }
+      if l_attendee
+        l_attendee.merge_with!(r_attendee, options)
+      else
+        l_attendees << r_attendee
+      end
+    end
+
+    l_attendees
+  end
+
+
 
   def self.from_json(json_data)
     data = JSON.parse(json_data)

@@ -12,10 +12,10 @@ module AutomaticProcessing::NotesGenerator
     call_instructions = JSON.parse(self.call_instructions || {})
 
     if call_instructions['target'] == 'interlocutor'
-      if call_instructions['target_infos'].blank?
+      if call_instructions['targetInfos'].blank?
         nil
       else
-        attendee = get_present_attendee_by_email(call_instructions['target_infos']['email'])
+        attendee = get_present_attendee_by_email(call_instructions['targetInfos']['email'])
 
         case call_instructions['support']
           when 'mobile'
