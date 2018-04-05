@@ -444,7 +444,8 @@
                         }
 
                         if(virtualMeetingsHelperCtrl.currentVAConfig.resource_type) {
-                            initialConfSupport = virtualMeetingsHelperCtrl.currentVAConfig.resource_type;
+                            // We prefix with 'resource_' to make distinction with some appointments named already as the resource_type
+                            initialConfSupport = 'resource_' + virtualMeetingsHelperCtrl.currentVAConfig.resource_type;
                         }
                     }
 
