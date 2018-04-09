@@ -324,13 +324,13 @@ describe AutomaticProcessing::AutomatedMessageClassification do
   describe 'process_message_id' do
     let(:data_holder) { AutomaticProcessing::DataHolder.new(processed_message) }
     subject(:classif_creation) {
-      AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
+      AutomaticProcessing::AutomatedMessageClassification.process_message_id(processed_message.id, {
         data_holder: data_holder
       })
     }
 
     it 'should create the correct MessageClassification' do
-      allow(processed_message).to receive(:populate_single_server_message)
+      allow_any_instance_of(Message).to receive(:populate_single_server_message)
       new_classif = nil
       allow(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).with('clients_emails').and_return(["threadOwner@owner.fr"].to_json)
       MockingHelpers::Attendees.new.mock([

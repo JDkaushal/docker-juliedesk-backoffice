@@ -352,7 +352,7 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
   }
   let(:message_classification) {
     attendees_mocker
-    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
+    AutomaticProcessing::AutomatedMessageClassification.process_message_id(processed_message.id, {})
   }
   let(:julie_action) {
     AutomaticProcessing::AutomatedJulieAction.new(
@@ -365,7 +365,7 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
 
   before(:each) do
     allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
-    allow(processed_message).to receive(:populate_single_server_message)
+    allow_any_instance_of(Message).to receive(:populate_single_server_message)
   end
 
   describe 'trigger' do
