@@ -33,7 +33,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     # Read attendees from last classif and merge with data interpreted by AI
     current_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')
-    attendees_from_ai  = get_attendees_from_interpretation(main_interpretation)
+    attendees_from_ai  = get_attendees_from_interpretation(message.main_message_interpretation)
     Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
     # Build interpretation hash in backoffice format
@@ -66,8 +66,11 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     # Format Attendees
     attendees = interpretation[:attendees]
+
     AttendeeService.clean_and_categorize_clients!(attendees)
     AttendeeService.set_usage_names!(attendees, { locale: interpretation[:locale], is_formal: is_formal })
+
+    puts interpretation.inspect
 
     self.assign_attributes({
         appointment_nature:  interpretation[:appointment],
@@ -250,7 +253,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   def get_attendees_from_interpretation(main_interpretation)
     # Attendees information returned by conscience
-    contact_infos = main_interpretation.fetch('contacts_infos', [])
+    #
+    thread_owner_account = main_interpretation.message.messages_thread.account
+    contact_infos = main_interpretation.json_response.fetch('contacts_infos', [])
 
     recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
     recipients_emails = recipients.map { |recipient| recipient[:email] }
@@ -293,7 +298,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         status:     Attendee::STATUS_PRESENT,
         is_present: true,
         is_thread_owner: recipient['isThreadOwner'] == 'true',
-        is_client: clients_emails.include?(recipient[:email])
+        is_client: clients_emails.include?(recipient[:email]),
+        timezone:  client_contact.try(:timezone) || thread_owner_account.default_timezone_id
       )
     end
   end

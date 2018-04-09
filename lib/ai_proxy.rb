@@ -105,6 +105,10 @@ class AiProxy
     url = params.delete(:url)
     #body = params[:data].to_json
     body = params[:data]
+    puts '*' * 50
+    puts body.inspect
+    puts '*' * 50
+
     http_client.post(url, json: body, ssl_context: get_ssl_context)
     #http_client.post(url, body)
   end

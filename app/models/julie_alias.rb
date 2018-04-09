@@ -10,6 +10,7 @@ class JulieAlias < ActiveRecord::Base
   end
 
   def generate_footer_and_signature locale
+    puts self.id
     html_signature = self.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
     text_signature = self.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
 

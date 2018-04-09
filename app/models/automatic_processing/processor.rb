@@ -14,12 +14,28 @@ module AutomaticProcessing
       initialize_data_holder
     end
 
-    def process
+    def process!
       classify_and_create_julie_action
       link_associations
       initialize_process_helpers
-
       trigger_actions_flow
+    end
+
+    def process
+      begin
+        process!
+      rescue => e
+        if Rails.env.development?
+          raise(e)
+        else
+          Airbrake.notify(e)
+          self.deliver_error_email(e)
+        end
+      end
+    end
+
+    def deliver_error_email(e)
+      @email_deliverer.deliver({is_error: true, exception: e})
     end
 
     private

@@ -10,6 +10,9 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
   def process
     return nil if self.message_classification.nil?
 
+    puts self.message_classification.attendees.inspect
+
+
     if self.action_nature == JD_ACTION_SUGGEST_DATES
       AutomaticProcessing::JulieActionsFlows::SuggestDates.new(self).trigger
     elsif self.action_nature == JD_ACTION_CHECK_AVAILABILITIES

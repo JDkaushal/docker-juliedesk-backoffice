@@ -1,6 +1,7 @@
 module AutomaticProcessing
 
   class DataHolder
+    include ApplicationHelper
 
     class DataHolderError < StandardError
     end
@@ -77,8 +78,8 @@ module AutomaticProcessing
       @message_classification_raw_constraints ||= get_message_classification.constraints_data
     end
 
-    def get_message_classification_date_times
-      @message_classification_date_times ||= JSON.parse(get_message_classification.date_times || '[]')
+    def get_last_dates_to_verify
+      @last_dates_to_verify ||= (get_messages_thread.get_dates_to_verify.try(:[], :last_proposition) || [])
     end
 
     def get_message_classification_summary
@@ -174,7 +175,7 @@ module AutomaticProcessing
     def get_email_html_body
       if @email_html_body.blank?
         footer_and_signature = get_julie_alias_footer_and_signature
-        text_in_email = "#{@data_holder.get_julie_action_text}#{@data_holder.get_julie_alias_footer_and_signature[:text_footer]}"
+        text_in_email = "#{get_julie_action_text}#{get_julie_alias_footer_and_signature[:text_footer]}"
         @email_html_body = text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe
       else
         @email_html_body

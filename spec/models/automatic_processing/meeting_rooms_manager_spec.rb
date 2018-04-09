@@ -70,9 +70,7 @@ describe AutomaticProcessing::MeetingRoomsManager do
                                                                            :meeting_rooms_to_show=>{
                                                                                "google_company_meeting_room"=>["room1@email.com", "room2@email.com"]
                                                                            },
-                                                                           :grouped_meeting_rooms_to_show=>{
-                                                                               1=>["room1@email.com", "room2@email.com"]
-                                                                           }
+                                                                           :grouped_meeting_rooms_to_show=>[["room1@email.com", "room2@email.com"]]
                                                                        })
 
         end
@@ -139,9 +137,7 @@ describe AutomaticProcessing::MeetingRoomsManager do
                                                                            :meeting_rooms_to_show=>{
                                                                                "google_company_meeting_room"=>["room1@email.com", "room2@email.com"]
                                                                            },
-                                                                           :grouped_meeting_rooms_to_show=>{
-                                                                               1=>["room1@email.com", "room2@email.com"]
-                                                                           }
+                                                                           :grouped_meeting_rooms_to_show=>[["room1@email.com", "room2@email.com"]]
                                                                        })
 
         end
@@ -206,7 +202,7 @@ describe AutomaticProcessing::MeetingRoomsManager do
         end
 
         it 'should generate the correct params' do
-          expect(meeting_rooms_manager.get_meeting_rooms_params).to eq({:meeting_rooms_to_show=>{}, :grouped_meeting_rooms_to_show=>{}})
+          expect(meeting_rooms_manager.get_meeting_rooms_params).to eq({:meeting_rooms_to_show=>{}, :grouped_meeting_rooms_to_show=>[]})
         end
       end
     end

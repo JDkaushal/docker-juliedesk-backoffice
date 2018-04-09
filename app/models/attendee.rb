@@ -13,7 +13,7 @@ class Attendee
   STATUSES = [STATUS_PRESENT, STATUS_OPTIONAL, STATUS_NOT_PRESENT]
 
   attr_accessor :account_email, :email, :first_name, :last_name, :usage_name, :gender, :landline, :mobile, :skype_id,
-                :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner
+                :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner, :timezone
 
 
   validates :gender, inclusion: { in: GENDERS }, presence: false
@@ -22,12 +22,14 @@ class Attendee
   def attributes
     {
         account_email:    @account_email,
+        #accountEmail:     @accountEmail,
         email:            @email,
         first_name:       @first_name,
         last_name:        @last_name,
         usage_name:       @usage_name,
         gender:           @gender,
         landline:         @landline,
+        timezone:         @timezone,
         mobile:           @mobile,
         skype_id:         @skype_id,
         company:          @company,
@@ -77,12 +79,14 @@ class Attendee
   def to_h
     {
         'account_email' => self.account_email,
+        'accountEmail'  => self.account_email,
         'email'         => self.email,
         'fullName'      => self.full_name,
         'firstName'     => self.first_name,
         'lastName'      => self.last_name,
         'usageName'     => self.usage_name,
         'gender'        => self.gender,
+        'timezone'      => self.timezone,
         'company'       => self.company,
         'landline'      => self.landline,
         'mobile'        => self.mobile,
@@ -129,12 +133,12 @@ class Attendee
     data = JSON.parse(json_data)
     data_array = data.is_a?(Array) ? data : [data]
 
-
+    boolean_fields = ['isPresent', 'isClient', 'assisted', 'isAssistant', 'isThreadOwner']
     attendee_list = data_array.map do |attendee_data|
       attendee_data = attendee_data.with_indifferent_access
 
+      puts attendee_data.inspect
       # Normalize boolean fields ("true" => true)
-      boolean_fields = ['isPresent', 'isClient', 'assisted', 'isAssistant', 'isThreadOwner']
       boolean_fields.each do |boolean_field_name|
         if attendee_data[boolean_field_name].is_a?(String)
           attendee_data[boolean_field_name] = attendee_data[boolean_field_name] == 'true' ? true : false
@@ -143,11 +147,13 @@ class Attendee
 
       Attendee.new(
           account_email:    attendee_data['account_email'],
+          #accountEmail:     attendee_data['accountEmail'] || attendee_data['account_email'],
           email:            attendee_data['email'],
           first_name:       attendee_data['firstName'],
           last_name:        attendee_data['lastName'],
           usage_name:       attendee_data['usageName'],
           gender:           attendee_data['gender'],
+          timezone:         attendee_data['timezone'],
           company:          attendee_data['company'],
           landline:         attendee_data['landline'],
           mobile:           attendee_data['mobile'],

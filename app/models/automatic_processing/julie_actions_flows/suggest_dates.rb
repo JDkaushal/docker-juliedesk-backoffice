@@ -8,6 +8,8 @@ module AutomaticProcessing
         @julie_action.date_times = find_dates_to_suggest.to_json
         wordings = @data_holder.get_appointment
 
+        puts @data_holder.get_message_classification.inspect
+
         @julie_action.text = "#{say_hi_text}#{get_suggest_dates_template({
                                                                     client_names: @data_holder.get_client_names,
                                                                     timezones: [@data_holder.get_thread_owner_default_timezone],
@@ -27,15 +29,18 @@ module AutomaticProcessing
                                                                     missing_contact_info: missing_contact_info,
                                                                     dates: JSON.parse(@julie_action.date_times).map{|date_time| date_time['date']}
                                                                 })}"
+
       end
 
       private
 
       def find_dates_to_suggest
+
+        puts @data_holder.get_message_classification_raw_constraints.inspect
         date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
             account_email: @data_holder.get_thread_owner_account_email,
             thread_data: @data_holder.get_thread_computed_data,
-            raw_constraints_data: @data_holder.get_message_classification_raw_constraints,
+            raw_constraints_data:[], #JSON.parse(@data_holder.get_message_classification_raw_constraints)
             n_suggested_dates: 4,
             attendees: @data_holder.get_attendees,
             asap: @data_holder.get_message_classification_asap_constraint,

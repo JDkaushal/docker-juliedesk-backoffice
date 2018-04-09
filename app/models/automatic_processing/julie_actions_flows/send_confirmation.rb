@@ -15,6 +15,7 @@ module AutomaticProcessing
 
         update_event(
           {
+            event_id: event_details.id,
             email: @data_holder.get_thread_owner_account.email,
             summary: event_details.summary,
             description: event_details.description,
@@ -41,7 +42,7 @@ module AutomaticProcessing
           raise AutomaticProcessing::Exceptions::EventFetchEventIdMissingError.new(@julie_action.id)
         end
 
-        response = EventsManagement::BaseInterface.new.build_request(:fetch, {event_id: event_id})
+        response = EventsManagement::BaseInterface.new.build_request(:fetch, {email: @data_holder.get_thread_owner_account_email, calendar_login_username: @data_holder.get_thread_owner_account_email, event_id: event_id})
 
         if response && response['status'] == 'success'
           OpenStruct.new(response['data'])

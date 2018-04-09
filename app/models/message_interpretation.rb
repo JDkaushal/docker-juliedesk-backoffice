@@ -11,7 +11,7 @@ class MessageInterpretation < ActiveRecord::Base
 
   def process
     if self.question == QUESTION_MAIN
-      process_main_entity
+      process_main_entity!
     elsif self.question == QUESTION_ENTITIES
       process_entities_entity
     end
@@ -136,7 +136,7 @@ class MessageInterpretation < ActiveRecord::Base
 
 
   def process_main_entity!
-    self.process_main_entity
+    process_main_entity
     self.save
   end
 

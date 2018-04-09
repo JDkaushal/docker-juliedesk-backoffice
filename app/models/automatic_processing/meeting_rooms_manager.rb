@@ -9,7 +9,7 @@ module AutomaticProcessing
     end
 
     def get_meeting_rooms_params
-      request_details = {meeting_rooms_to_show: {}, grouped_meeting_rooms_to_show: {}}
+      request_details = {meeting_rooms_to_show: {}, grouped_meeting_rooms_to_show: []}
       current_appointment = @data_holder.get_appointment
       current_address = @data_holder.get_address
 
@@ -24,14 +24,13 @@ module AutomaticProcessing
           rooms = filter_available_rooms(room_selected.split('|')[-1])
           grouped_rooms = rooms.group_by{|r| r['calendar_login_username']}
           grouped_rooms.each{ |k, v| request_details[:meeting_rooms_to_show][k] = v.map{ |r| r['id'] } }
-          request_details[:grouped_meeting_rooms_to_show][1] = rooms.map{ |r| r['id'] }
+          request_details[:grouped_meeting_rooms_to_show].push(rooms.map{ |r| r['id'] })
         else
           room = find_room(room_selected)
           request_details[:meeting_rooms_to_show][room['calendar_login_username']] = [room_selected]
-          request_details[:grouped_meeting_rooms_to_show][1] = [room_selected]
+          request_details[:grouped_meeting_rooms_to_show].push([room_selected])
         end
       end
-
 
       request_details
     end

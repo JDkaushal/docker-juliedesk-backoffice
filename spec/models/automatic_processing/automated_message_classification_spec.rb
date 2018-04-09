@@ -423,8 +423,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       expect(last_message_classif.location).to eq("15bis Boulevard Saint-Denis, 75002 Paris, France")
       expect(last_message_classif.location_nature).to be(nil)
 
-      expect(last_message_classif.attendees).to eq("[{\"account_email\":null,\"email\":\"threadowner@owner.fr\",\"fullName\":\"Thread Owner\",\"firstName\":\"Thread\",\"lastName\":\"Owner\",\"usageName\":\"Monsieur Thread Owner\",\"gender\":\"M\",\"company\":\"Owner Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":true,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":true},{\"account_email\":null,\"email\":\"john.bernard@grabou.fr\",\"fullName\":\"John Bernard\",\"firstName\":\"John\",\"lastName\":\"Bernard\",\"usageName\":\"Monsieur John Bernard\",\"gender\":\"M\",\"company\":\"Grabou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false},{\"account_email\":null,\"email\":\"babtou@fragile.fr\",\"fullName\":\"Babtou Fragile\",\"firstName\":\"Babtou\",\"lastName\":\"Fragile\",\"usageName\":\"Monsieur Babtou Fragile\",\"gender\":\"M\",\"company\":\"Babtou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false}]")
-      expect(last_message_classif.notes).to eq("<b>Organizer infos</b><br/>Fred Grais<br/><br/><br/><br/>\n")
+      expect(last_message_classif.attendees).to eq("[{\"account_email\":null,\"accountEmail\":null,\"email\":\"threadowner@owner.fr\",\"fullName\":\"Thread Owner\",\"firstName\":\"Thread\",\"lastName\":\"Owner\",\"usageName\":\"Monsieur Thread Owner\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Owner Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":true,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":true},{\"account_email\":null,\"accountEmail\":null,\"email\":\"john.bernard@grabou.fr\",\"fullName\":\"John Bernard\",\"firstName\":\"John\",\"lastName\":\"Bernard\",\"usageName\":\"Monsieur John Bernard\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Grabou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false},{\"account_email\":null,\"accountEmail\":null,\"email\":\"babtou@fragile.fr\",\"fullName\":\"Babtou Fragile\",\"firstName\":\"Babtou\",\"lastName\":\"Fragile\",\"usageName\":\"Monsieur Babtou Fragile\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Babtou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false}]")
       expect(last_message_classif.date_times).to eq("[\"2018-03-23T16:00:00+01:00\"]")
       expect(last_message_classif.locale).to eq("en")
       expect(last_message_classif.timezone).to eq("Europe/Paris")
@@ -438,7 +437,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
   end
 
   context '' do
-    let(:account_params) { { email: 'bob@juliedesk.com' } }
+    let(:account_params) { { email: 'stagingjuliedesk@gmail.com' } }
     let(:account) do
       account = Account.new
       account_params.each do |k, v|
@@ -447,7 +446,10 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       account
     end
 
-    let(:classification_params) { { } }
+    let(:messages_thread) { FactoryGirl.create(:messages_thread, account_email: account.email)}
+    let(:message) { FactoryGirl.create(:message, messages_thread: messages_thread) }
+
+    let(:classification_params) { { message: message } }
     let(:classification) { create(:automated_message_classification, classification_params) }
 
     # Main interpretation
@@ -478,7 +480,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       }.merge(ai_main_interpretation_params)
     end
 
-    let(:default_main_interpretation_params) { { question: 'main' } }
+    let(:default_main_interpretation_params) { { question: 'main', message: message } }
     let(:main_interpretation_params) { { } }
     let(:main_interpretation) do
       create(:message_interpretation, default_main_interpretation_params.merge(main_interpretation_params).merge(raw_response: ai_main_interpretation.to_json))
@@ -520,7 +522,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         allow(MessagesThread).to receive(:contacts).with(anything).and_return([{ email: 'bob@juliedesk.com', name: 'Bob Doe' } ])
       end
 
-      subject { classification.send(:get_attendees_from_interpretation, main_interpretation.json_response) }
+      subject { classification.send(:get_attendees_from_interpretation, main_interpretation) }
 
       context 'when attendees information are present in client contacts' do
         before(:example) {
@@ -535,6 +537,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         it { is_expected.to include(an_object_having_attributes(mobile: '0602030405')) }
         it { is_expected.to include(an_object_having_attributes(skype_id: 'bobby.doe')) }
         it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
+        it { is_expected.to include(an_object_having_attributes(timezone: 'Europe/Paris')) }
         it { is_expected.to include(an_object_having_attributes(is_present: true)) }
       end
 
@@ -567,6 +570,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         it { is_expected.to include(an_object_having_attributes(mobile: '06999999')) }
         it { is_expected.to include(an_object_having_attributes(skype_id: 'bob.doe')) }
         it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
+        it { is_expected.to include(an_object_having_attributes(timezone: 'Europe/Paris')) }
         it { is_expected.to include(an_object_having_attributes(is_present: true)) }
       end
 
@@ -589,6 +593,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       it { is_expected.to include(an_object_having_attributes(company: 'Julie Desk')) }
       it { is_expected.to include(an_object_having_attributes(landline: '0102030405')) }
       it { is_expected.to include(an_object_having_attributes(mobile: '0602030405')) }
+      it { is_expected.to include(an_object_having_attributes(timezone: 'Europe/Paris')) }
       it { is_expected.to include(an_object_having_attributes(skype_id: 'bob.doe')) }
       it { is_expected.to include(an_object_having_attributes(is_client: false)) }
     end

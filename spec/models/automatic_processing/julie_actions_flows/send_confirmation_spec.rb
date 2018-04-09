@@ -394,7 +394,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
                                                                             event_from_invitation_organizer: nil
                                                                         })
 
-      expect_any_instance_of(EventsManagement::BaseInterface).to receive(:build_request).with(:fetch, {event_id: 1}).and_return({'status' => 'success', 'data' => {
+      expect_any_instance_of(EventsManagement::BaseInterface).to receive(:build_request).with(:fetch, {:email=>"stagingjuliedesk@gmail.com", :calendar_login_username=>"stagingjuliedesk@gmail.com", :event_id=>1}).and_return({'status' => 'success', 'data' => {
           'summary' => 'Summary',
           'description' => ' Description',
           'attendees' => [{email: 'attendeeEmail@email.com'}, {email: 'attendeeEmail2@email.com'}],
@@ -404,33 +404,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
           'calendar_login_username' => 'calendar_login_username'
       }})
 
-      expect(flow).to receive(:update_event).with(
-        {
-          :email=>"stagingjuliedesk@gmail.com",
-          :summary=>"Summary",
-          :description=>" Description",
-          :attendees=>[
-            {:email=>"attendeeEmail@email.com"},
-            {:email=>"attendeeEmail2@email.com"}
-          ],
-          :location=>"Location",
-          :all_day=>false,
-          :private=>false,
-          :start=>'2018-04-03 16:15:00 +0200',
-          :end=>'2018-04-03 17:15:00 +0200',
-          :start_timezone=>"Europe/Paris",
-          :end_timezone=>"Europe/Paris",
-          :calendar_login_username=>"calendar_login_username",
-          :meeting_room=>{
-            :used=>true,
-            :booked_rooms=>[
-              {:summary=>"Summary room 1", :id=>"room1@email.com", :location=>"Location room 1"},
-              {:summary=>"Summary room 2", :id=>"room2@email.com", :location=>"Location room 2"}
-            ]
-          },
-          :create_skype_for_business_meeting=>false
-        }
-      )
+      expect(flow).to receive(:update_event).with({:event_id=>nil, :email=>"stagingjuliedesk@gmail.com", :summary=>"Summary", :description=>" Description", :attendees=>[{:email=>"attendeeEmail@email.com"}, {:email=>"attendeeEmail2@email.com"}], :location=>"Location", :all_day=>false, :private=>false, :start=>"2018-04-03 16:15:00 +0200", :end=>"2018-04-03 17:15:00 +0200", :start_timezone=>"Europe/Paris", :end_timezone=>"Europe/Paris", :calendar_login_username=>"calendar_login_username", :meeting_room=>{:used=>true, :booked_rooms=>[{:summary=>"Summary room 1", :id=>"room1@email.com", :location=>"Location room 1"}, {:summary=>"Summary room 2", :id=>"room2@email.com", :location=>"Location room 2"}]}, :create_skype_for_business_meeting=>false})
 
       expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_message_classification_booked_rooms_details).and_return({'0' => {summary: 'Summary room 1', id: 'room1@email.com', location: 'Location room 1'}, '1' => {summary: 'Summary room 2', id: 'room2@email.com', location: 'Location room 2'}})
 

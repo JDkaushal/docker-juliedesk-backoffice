@@ -83,7 +83,7 @@ module AutomaticProcessing
         if response && response['status'] == 'success'
           @julie_action.update({
                           calendar_id: response['data']['calendar_id'],
-                          calendar_login_username: account.email,
+                          calendar_login_username: @data_holder.get_thread_owner_account_email,
                           event_id: response['data']['id']
                       })
         else
@@ -113,7 +113,7 @@ module AutomaticProcessing
               message_id: @data_holder.get_message_id,
               message_classification_identifier: @data_holder.get_message_classification_identifier,
               client_on_trip: message_main_interpretation['client_on_trip'].try(:[], 'label'),
-              raw_constraints_data: @data_holder.get_message_classification_raw_constraints,
+              raw_constraints_data: [], #JSON.parse(@data_holder.get_message_classification_raw_constraints),
               all_conditions_satisfied: false
           }.merge(
               AutomaticProcessing::MeetingRoomsManager.new(@data_holder).get_meeting_rooms_params
@@ -126,7 +126,8 @@ module AutomaticProcessing
       def handle_verify_dates_response(resp)
         if resp['error'].blank? && resp['status'] != 'fail'
           result = {}
-          validated_date = resp['date_validates'].first
+          puts resp.inspect
+          validated_date = resp['dates_validate'].first
 
 
           result[:date_to_book] = DateTime.parse(validated_date['date'])
@@ -140,7 +141,8 @@ module AutomaticProcessing
       end
 
       def get_dates_to_verify
-        dates = @data_holder.get_message_classification_date_times
+        dates = @data_holder.get_last_dates_to_verify
+        puts dates.inspect
 
         dates.map do |data|
           DateTime.parse(data['date']).in_time_zone(data['timezone']).strftime("%Y-%m-%dT%H:%M:%S")
