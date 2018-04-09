@@ -15,9 +15,9 @@ module AutomaticProcessing
     end
 
     def process!
+      initialize_process_helpers
       classify_and_create_julie_action
       link_associations
-      initialize_process_helpers
       trigger_actions_flow
     end
 

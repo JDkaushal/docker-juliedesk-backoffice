@@ -13,12 +13,12 @@ module AutomaticProcessing
       current_appointment = @data_holder.get_appointment
       current_address = @data_holder.get_address
 
-      current_address_is_default_for_appointment = current_appointment['default_address'].try(:[], 'address') == current_address['address']
+      current_address_is_default_for_appointment = current_appointment['default_address'].try(:[], 'address') == current_address.try(:[], 'address')
       meeting_rooms_used_for_current_appointment = current_appointment['meeting_room_used']
-      meeting_rooms_used_for_current_address = current_address['meeting_room_used'] && current_address['meeting_rooms_enabled']
+      meeting_rooms_used_for_current_address = current_address.try(:[], 'meeting_room_used') && current_address.try(:[], 'meeting_rooms_enabled')
 
       if ((current_address_is_default_for_appointment && meeting_rooms_used_for_current_appointment) || (meeting_rooms_used_for_current_address))
-        room_selected = determine_used_meeting_room(current_appointment['selected_meeting_room'] || '', current_address['selected_meeting_room'] || '')
+        room_selected = determine_used_meeting_room(current_appointment['selected_meeting_room'] || '', current_address.try(:[], 'selected_meeting_room') || '')
 
         if room_selected.include?('auto_room_selection')
           rooms = filter_available_rooms(room_selected.split('|')[-1])

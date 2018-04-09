@@ -119,6 +119,7 @@ module AutomaticProcessing
               AutomaticProcessing::MeetingRoomsManager.new(@data_holder).get_meeting_rooms_params
           )
 
+          puts params.inspect
           handle_verify_dates_response(AI_PROXY_INTERFACE.build_request(:verify_dates_v11, params))
         end
       end
@@ -126,6 +127,7 @@ module AutomaticProcessing
       def handle_verify_dates_response(resp)
         if resp['error'].blank? && resp['status'] != 'fail'
           result = {}
+          puts resp.inspect
           validated_date = resp['dates_validate'].first
 
 
@@ -140,10 +142,10 @@ module AutomaticProcessing
       end
 
       def get_dates_to_verify
-        dates = @data_holder.get_last_dates_to_verify
+        dates = @data_holder.get_message_classification_date_times
 
         dates.map do |data|
-          DateTime.parse(data['date']).in_time_zone(data['timezone']).strftime("%Y-%m-%dT%H:%M:%S")
+          DateTime.parse(data).strftime("%Y-%m-%dT%H:%M:%S")
         end
       end
       
