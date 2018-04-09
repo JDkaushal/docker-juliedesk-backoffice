@@ -145,7 +145,7 @@ module AutomaticProcessing
         dates = @data_holder.get_message_classification_date_times
 
         dates.map do |data|
-          DateTime.parse(data).strftime("%Y-%m-%dT%H:%M:%S")
+          DateTime.parse(data).utc.strftime("%Y-%m-%dT%H:%M:%S")
         end
       end
       
