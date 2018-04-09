@@ -8,6 +8,6 @@ class ConscienceFullWorker
   end
 
   def self.perform (message_id)
-    AutomaticProcessing::AutomatedMessageClassification.process_message_id(message_id)
+    AutomaticProcessing::Processor.new(message_id, force_reinterpretation: true).process
   end
 end
