@@ -219,7 +219,6 @@ module AutomaticProcessing
     end
 
     def get_client_names
-      puts get_attendees.inspect
       @client_names ||= get_attendees.select{|att| att['isPresent'] && att['isClient']}.map do |att|
         att['usageName']
       end
@@ -242,7 +241,7 @@ module AutomaticProcessing
     end
 
     def get_julie_action_nature
-      @julie_action ||= get_julie_action.action_nature
+      @julie_action_nature ||= get_julie_action.action_nature
     end
 
     def get_message_classification_booked_rooms_details

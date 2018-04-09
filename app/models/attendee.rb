@@ -136,8 +136,6 @@ class Attendee
     boolean_fields = ['isPresent', 'isClient', 'assisted', 'isAssistant', 'isThreadOwner']
     attendee_list = data_array.map do |attendee_data|
       attendee_data = attendee_data.with_indifferent_access
-
-      puts attendee_data.inspect
       # Normalize boolean fields ("true" => true)
       boolean_fields.each do |boolean_field_name|
         if attendee_data[boolean_field_name].is_a?(String)

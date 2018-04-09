@@ -114,9 +114,7 @@ module EmailServer
 
     if ENV['STAGING_APP']
       cloned_message = message.clone
-      puts '*' * 50
-      puts message.inspect
-      puts '*' * 50
+
       cloned_message['to'] = opts[:to]
       cloned_message['cc'] = opts[:cc]
       cloned_message['messages_thread_id'] = opts[:server_thread_id]

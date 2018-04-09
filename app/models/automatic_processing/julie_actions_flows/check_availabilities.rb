@@ -126,7 +126,6 @@ module AutomaticProcessing
       def handle_verify_dates_response(resp)
         if resp['error'].blank? && resp['status'] != 'fail'
           result = {}
-          puts resp.inspect
           validated_date = resp['dates_validate'].first
 
 
@@ -142,7 +141,6 @@ module AutomaticProcessing
 
       def get_dates_to_verify
         dates = @data_holder.get_last_dates_to_verify
-        puts dates.inspect
 
         dates.map do |data|
           DateTime.parse(data['date']).in_time_zone(data['timezone']).strftime("%Y-%m-%dT%H:%M:%S")

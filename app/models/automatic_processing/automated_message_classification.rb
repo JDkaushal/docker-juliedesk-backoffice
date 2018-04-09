@@ -70,8 +70,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     AttendeeService.clean_and_categorize_clients!(attendees)
     AttendeeService.set_usage_names!(attendees, { locale: interpretation[:locale], is_formal: is_formal })
 
-    puts interpretation.inspect
-
     self.assign_attributes({
         appointment_nature:  interpretation[:appointment],
         summary:             nil,

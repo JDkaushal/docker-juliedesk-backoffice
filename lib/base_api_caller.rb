@@ -73,20 +73,12 @@ class BaseApiCaller
   end
 
   def execute_get_request(http_client, params)
-    puts '*' * 50
-    puts params[:url].inspect
-    puts '*' * 50
-
     http_client.get(params[:url], ssl_context: @ssl_context)
   end
 
   def execute_post_request(http_client, params)
     url = params.delete(:url)
     body = params[:data]
-
-    puts '*' * 50
-    puts url.inspect
-    puts '*' * 50
 
     http_client.post(url, json: body, ssl_context: @ssl_context)
   end
