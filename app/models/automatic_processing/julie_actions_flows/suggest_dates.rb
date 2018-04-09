@@ -33,10 +33,12 @@ module AutomaticProcessing
       private
 
       def find_dates_to_suggest
+        puts JSON.parse(@data_holder.get_message_classification_raw_constraints).inspect
+
         date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
             account_email: @data_holder.get_thread_owner_account_email,
             thread_data: @data_holder.get_thread_computed_data,
-            raw_constraints_data:[], #JSON.parse(@data_holder.get_message_classification_raw_constraints)
+            raw_constraints_data: JSON.parse(@data_holder.get_message_classification_raw_constraints),
             n_suggested_dates: 4,
             attendees: @data_holder.get_attendees,
             asap: @data_holder.get_message_classification_asap_constraint,

@@ -113,7 +113,7 @@ module AutomaticProcessing
               message_id: @data_holder.get_message_id,
               message_classification_identifier: @data_holder.get_message_classification_identifier,
               client_on_trip: message_main_interpretation['client_on_trip'].try(:[], 'label'),
-              raw_constraints_data: [], #JSON.parse(@data_holder.get_message_classification_raw_constraints),
+              raw_constraints_data: JSON.parse(@data_holder.get_message_classification_raw_constraints),
               all_conditions_satisfied: false
           }.merge(
               AutomaticProcessing::MeetingRoomsManager.new(@data_holder).get_meeting_rooms_params
