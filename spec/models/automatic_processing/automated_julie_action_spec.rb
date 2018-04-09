@@ -274,7 +274,7 @@ describe AutomaticProcessing::AutomatedJulieAction do
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
   let(:message_classification) {
-    AutomaticProcessing::AutomatedMessageClassification.process_message_id(processed_message.id, {})
+    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
   }
 
   subject(:julie_action) {

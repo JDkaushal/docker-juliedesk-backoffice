@@ -324,7 +324,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
   describe 'process_message_id' do
     let(:data_holder) { AutomaticProcessing::DataHolder.new(processed_message) }
     subject(:classif_creation) {
-      AutomaticProcessing::AutomatedMessageClassification.process_message_id(processed_message.id, {
+      AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {
         data_holder: data_holder
       })
     }

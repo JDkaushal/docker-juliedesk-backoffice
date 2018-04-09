@@ -352,7 +352,7 @@ describe AutomaticProcessing::JulieActionsFlows::WaitForContact do
   }
   let(:message_classification) {
     attendees_mocker
-    AutomaticProcessing::AutomatedMessageClassification.process_message_id(processed_message.id, {})
+    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
   }
   let(:julie_action) {
     AutomaticProcessing::AutomatedJulieAction.new(

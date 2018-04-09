@@ -11,8 +11,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     super(params)
   end
 
-  def self.process_message_id(message_id, options={})
-    message = Message.find(message_id)
+  def self.process_message(message, options={})
 
     message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
       classification: message.main_message_interpretation.json_response['request_classif'],
