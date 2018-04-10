@@ -256,6 +256,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     thread_owner_account = main_interpretation.message.messages_thread.account
     contact_infos = main_interpretation.json_response.fetch('contacts_infos', [])
 
+    names_to_identify_with_ai = contact_infos.select { |ci| ci['owner_email'].blank? }.map{ |ci| ci['owner_name'] }.compact
+
     thread_owner_account_all_emails = thread_owner_account.all_emails.map(&:downcase)
 
     recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
@@ -266,14 +268,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     clients_emails = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('clients_emails') || '[]')
 
-    recipients.map do |recipient|
+    computed_recipients = recipients.map do |recipient|
       # Backoffice data
       client_contact = client_contacts.find { |client_contact| client_contact.email == recipient[:email] }
-
-      # Conscience data
-      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
-      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
-      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner'] == recipient[:email] && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
 
       if client_contact.blank? || (client_contact && (client_contact.first_name.blank? || client_contact.last_name.blank?))
         human_civilities_response = AI_PROXY_INTERFACE.build_request(:parse_human_civilities, { fullname: recipient[:name], at: recipient[:email]})
@@ -293,16 +290,42 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         last_name:  client_contact.try(:last_name)   || interpreted_last_name,
         gender:     client_contact.try(:gender)      || interpreted_gender,
         company:    client_contact.try(:company)     || interpreted_company,
-        landline:   client_contact.try(:landline)    || interpreted_landline,
-        mobile:     client_contact.try(:mobile)      || interpreted_mobile,
-        skype_id:   client_contact.try(:skypeId)     || interpreted_skype,
+        landline:   client_contact.try(:landline),
+        mobile:     client_contact.try(:mobile),
+        skype_id:   client_contact.try(:skypeId),
         status:     Attendee::STATUS_PRESENT,
         is_present: true,
         is_thread_owner: thread_owner_account_all_emails.include?(recipient[:email].downcase),
         is_client: clients_emails.include?(recipient[:email]),
-        timezone:  client_contact.try(:timezone) || thread_owner_account.default_timezone_id
+        timezone:  client_contact.try(:timezone)
       )
     end
-  end
 
+    # Try to Get owner email if AI could not find it the first time
+    if names_to_identify_with_ai.present?
+      contact_emails = AI_PROXY_INTERFACE.build_request(:who_are_we, { names: names_to_identify_with_ai, attendees: computed_recipients.map{|recip| {email: recip.email, firstName: recip.first_name, lastName: recip.last_name}}})
+
+      contact_infos.each do |contact_info|
+        email = contact_emails.find{|c_e| c_e['name'] == contact_info['owner_name']}.try(:[], 'email')
+        contact_info['owner_email'] = email
+      end
+    end
+
+    # New pass on attendees to actualize data we could get from AI
+    computed_recipients.each do |recipient|
+
+      # Conscience data
+      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
+      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
+      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
+      interpreted_timezone = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'TIMEZONE' }.try(:fetch, 'value', nil)
+
+      recipient.timezone ||= interpreted_timezone || thread_owner_account.default_timezone_id
+      recipient.landline ||= interpreted_landline
+      recipient.mobile ||= interpreted_mobile
+      recipient.skype_id ||= interpreted_skype
+    end
+
+    computed_recipients
+  end
 end

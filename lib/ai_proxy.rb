@@ -28,6 +28,8 @@ class AiProxy
       verify_dates_versioned: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v%{api_version}/calendar/validate_dates/" }.freeze,
 
       calendar_classification: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/calendar/classification/" }.freeze,
+
+      who_are_we: { type: :post, url: "#{ENV['CONSCIENCE_BASE_PATH']}/api/v1/who_are_we/" }.freeze
   }.freeze
 
   def self.get_endpoint(key, data)

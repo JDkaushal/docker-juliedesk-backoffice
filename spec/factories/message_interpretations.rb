@@ -7,7 +7,7 @@ FactoryGirl.define do
       transient do
         detected_classification 'ask_availabilities'
         detected_appointment_nature 'appointment'
-        contacts_infos [{"owner"=>"owner@email.com", "text"=>"+49 15780928762", "tag"=>"PHONE", "value"=>""}]
+        contacts_infos [{"owner_email"=>"owner@email.com", "text"=>"+49 15780928762", "tag"=>"PHONE", "value"=>""}]
       end
 
       question 'main'

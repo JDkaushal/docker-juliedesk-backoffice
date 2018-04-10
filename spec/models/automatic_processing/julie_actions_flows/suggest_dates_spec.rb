@@ -579,7 +579,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
         ]
       }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: [{"owner"=>"john.bernard@grabou.fr", "text"=>"john.doe", "tag"=>"SKYPE", "value"=>""}]) }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"john.doe", "tag"=>"SKYPE", "value"=>""}]) }
 
       it do
         expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
@@ -649,7 +649,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
             'landline_number' => '01222222'
         }
       }
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner"=>"john.bernard@grabou.fr", "text"=>"01333333", "tag"=>"PHONE", "value"=>"landline"}]) }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"01333333", "tag"=>"PHONE", "value"=>"landline"}]) }
 
       it do
         expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
@@ -670,7 +670,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
         }
       }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}]) }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}]) }
 
       it do
         expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(

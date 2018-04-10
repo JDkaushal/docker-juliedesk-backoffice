@@ -283,7 +283,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
      "asap"=>false, "email_id"=>1474749,
      "contacts_infos"=>[
        {
-          "owner"=>"owner@email.com",
+          "owner_email"=>"owner@email.com",
           "text"=>"+49 15780928762",
           "tag"=>"PHONE",
           "value"=>""
@@ -557,9 +557,9 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         let(:ai_main_interpretation_params) do
           {
               contacts_infos: [
-                  { owner: 'bob@juliedesk.com', tag: 'PHONE', text: '01999999', value: 'landline' },
-                  { owner: 'bob@juliedesk.com', tag: 'PHONE', text: '06999999', value: 'mobile' },
-                  { owner: 'bob@juliedesk.com', tag: 'SKYPE', text: 'bob.doe', value: 'boe.doe' }
+                  { owner_email: 'bob@juliedesk.com', tag: 'PHONE', text: '01999999', value: 'landline' },
+                  { owner_email: 'bob@juliedesk.com', tag: 'PHONE', text: '06999999', value: 'mobile' },
+                  { owner_email: 'bob@juliedesk.com', tag: 'SKYPE', text: 'bob.doe', value: 'boe.doe' }
               ]}
         end
 
