@@ -19,16 +19,15 @@ module AutomaticProcessing
     private
 
     def deliver_error_message(exception)
-      initial_recipients = @data_holder.get_message_initial_recipients
+      messages = @data_holder.get_messages_thread.re_import
 
-      recipients_to = initial_recipients[:to]
-      recipients_cc = initial_recipients[:cc]
+      initial_message = messages.find{|m| m.id == @data_holder.get_message.id}
 
       EmailServer.deliver_message({
                                     subject: @data_holder.get_messages_thread_subject,
                                     from: @data_holder.get_julie_alias_from,
-                                    to: recipients_to.join(", "),
-                                    cc: recipients_cc.join(", "),
+                                    to: initial_message.server_message['from'],
+                                    cc: '',
                                     html: "An error occured",
                                     quote_replied_message: false,
                                     quote_forward_message: false,

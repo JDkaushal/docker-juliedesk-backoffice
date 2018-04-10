@@ -158,7 +158,7 @@ module AutomaticProcessing
     end
 
     def get_thread_julie_alias
-      @thread_julie_alias ||= @messages_thread.julie_alias
+      @thread_julie_alias ||= get_messages_thread.julie_alias
     end
 
     def get_julie_alias_footer_and_signature

@@ -37,6 +37,7 @@ module FlowDispatcher
       exception = validation[:raise]
 
       result = send(method, *params)
+
       unless exception.nil?
         raise exception.new unless result
       end
@@ -69,7 +70,6 @@ module FlowDispatcher
         params = (c[:params] || []).map do |param|
           (param.is_a?(Symbol) && param.match(/^@/)) ? instance_variable_get(param) : param
         end
-
 
         condition_result = send(method, *params)
         raise c[:raise].new if c.has_key?(:raise) && !condition_result

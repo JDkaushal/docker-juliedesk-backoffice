@@ -256,6 +256,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     thread_owner_account = main_interpretation.message.messages_thread.account
     contact_infos = main_interpretation.json_response.fetch('contacts_infos', [])
 
+    thread_owner_account_all_emails = thread_owner_account.all_emails.map(&:downcase)
+
     recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
     recipients_emails = recipients.map { |recipient| recipient[:email] }
 
@@ -296,7 +298,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         skype_id:   client_contact.try(:skypeId)     || interpreted_skype,
         status:     Attendee::STATUS_PRESENT,
         is_present: true,
-        is_thread_owner: recipient['isThreadOwner'] == 'true',
+        is_thread_owner: thread_owner_account_all_emails.include?(recipient[:email].downcase),
         is_client: clients_emails.include?(recipient[:email]),
         timezone:  client_contact.try(:timezone) || thread_owner_account.default_timezone_id
       )

@@ -43,7 +43,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         "last_name"=>"Grais",
         "full_name"=>"Fred Grais",
         "default_timezone_id"=>"Europe/Paris",
-        "email_aliases"=>["frederic@juliedesk.com"],
+        "email_aliases"=>["frederic@juliedesk.com", "threadowner@owner.fr"],
         "office_365_refresh_token_expired"=>false,
         "is_pro"=>false,
         "created_at"=>"2018-02-12 13:05:08 UTC",

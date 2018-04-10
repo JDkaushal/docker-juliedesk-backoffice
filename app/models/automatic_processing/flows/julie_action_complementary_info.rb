@@ -162,7 +162,7 @@ module AutomaticProcessing
 
         case field
           when ADDITIONAL_INFO_LANDLINE_OR_MOBILE
-            attendees.any?(:has_any_phone_number)
+            attendees.any?(&:has_any_phone_number?)
           when ADDITIONAL_INFO_MOBILE
             attendees.any? { |attendee| attendee.mobile.present? }
           when ADDITIONAL_INFO_SKYPE
