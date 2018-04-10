@@ -320,7 +320,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
       interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
       interpreted_timezone = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'TIMEZONE' }.try(:fetch, 'value', nil)
 
-      recipient.timezone ||= interpreted_timezone || thread_owner_account.default_timezone_id
+      # We favor timezone returned by AI, then fallback on what we already have or the thread owner default timezone 
+      recipient.timezone = interpreted_timezone || recipient.timezone || thread_owner_account.default_timezone_id
       recipient.landline ||= interpreted_landline
       recipient.mobile ||= interpreted_mobile
       recipient.skype_id ||= interpreted_skype
