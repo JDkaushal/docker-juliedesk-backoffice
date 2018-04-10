@@ -82,6 +82,10 @@ module AutomaticProcessing
       @message_classification_date_times ||= JSON.parse(get_message_classification.date_times || '[]')
     end
 
+    def get_message_classification_location
+      @message_classification_location ||= get_message_classification.location
+    end
+
     def get_last_dates_to_verify
       @last_dates_to_verify ||= (get_messages_thread.get_dates_to_verify.try(:[], :last_proposition) || [])
     end
