@@ -23,7 +23,7 @@ module AutomaticProcessing
                                                                        client_names: @data_holder.get_client_names,
                                                                        timezones: [timezone_returned_by_ai],
                                                                        locale: @data_holder.get_current_locale,
-                                                                       is_virtual: false,
+                                                                       is_virtual: @data_holder.is_appointment_virtual?,
                                                                        attendees: @data_holder.get_present_attendees,
                                                                        appointment_in_email: {
                                                                            en: wordings['title_in_email']['en'],

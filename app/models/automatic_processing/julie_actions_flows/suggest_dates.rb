@@ -13,7 +13,7 @@ module AutomaticProcessing
                                                                     timezones: [@data_holder.get_thread_owner_default_timezone],
                                                                     default_timezone: @data_holder.get_thread_owner_default_timezone,
                                                                     locale: @data_holder.get_current_locale,
-                                                                    is_virtual: false,
+                                                                    is_virtual: @data_holder.is_appointment_virtual?,
                                                                     attendees: @data_holder.get_present_attendees,
                                                                     appointment_in_email: {
                                                                         en: wordings['title_in_email']['en'],

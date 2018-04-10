@@ -372,9 +372,11 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
 
     it 'should trigger the right actions' do
 
+      expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_message_initial_recipients).and_return({to: ["john.bernard@grabou.fr"]})
+
       expect(flow).to receive(:get_say_hi_template).with(
           {
-              :recipient_names=>["Monsieur Thread Owner", "Monsieur John Bernard", "Monsieur Babtou Fragile"],
+              :recipient_names=>["Monsieur John Bernard"],
               :should_say_hi=>true,
               :locale=>"en"
           }

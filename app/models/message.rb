@@ -369,7 +369,7 @@ class Message < ActiveRecord::Base
         attendee_emails +
         contact_emails +
         [client_email]).uniq
-    possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
+    possible_emails += (self.messages_thread.julie_aliases || []).map(&:email)
     possible_emails.reject! { |c| c.blank? }
 
     if params[:only_reply_all]

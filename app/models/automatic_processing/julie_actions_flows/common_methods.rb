@@ -5,8 +5,10 @@ module AutomaticProcessing
       include TemplateGeneratorHelper
 
       def say_hi_text
+        initial_recipients_to = @data_holder.get_message_initial_recipients[:to]
+
         text = get_say_hi_template({
-                                       recipient_names: @data_holder.get_present_attendees.map{|att| att[:assisted_by_name] || att[:usageName]},
+                                       recipient_names: @data_holder.search_attendees_in_present(initial_recipients_to).map{|att| att[:assisted_by_name] || att[:usageName]},
                                        should_say_hi: true,
                                        locale: @data_holder.get_current_locale
                                    })

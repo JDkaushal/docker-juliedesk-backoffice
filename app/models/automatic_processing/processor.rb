@@ -61,8 +61,7 @@ module AutomaticProcessing
     def create_julie_action
       AutomaticProcessing::AutomatedJulieAction.new(
         action_nature: @message_classification.computed_julie_action_nature,
-        message_classification: @message_classification,
-        #data_holder: @data_holder
+        message_classification: @message_classification
       )
     end
 

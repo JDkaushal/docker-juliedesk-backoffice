@@ -141,6 +141,10 @@ module AutomaticProcessing
       @messages_thread_contacts ||= MessagesThread.contacts({server_messages_to_look: [@message.server_message]}).map { |c| c[:email].try(:downcase) }
     end
 
+    def search_attendees_in_present(emails)
+      get_present_attendees.select{|a| emails.include?(a[:email].downcase)}
+    end
+
     def get_present_attendees
       @present_attendees ||= get_attendees.select{|a| a['isPresent']}
     end
@@ -238,6 +242,10 @@ module AutomaticProcessing
           name: att['usageName']
         }
       end
+    end
+
+    def is_appointment_virtual?
+      get_appointment['appointment_kind_hash']['is_virtual']
     end
 
     def get_attendees
