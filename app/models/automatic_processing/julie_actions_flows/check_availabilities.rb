@@ -135,7 +135,7 @@ module AutomaticProcessing
           validated_date = resp['dates_validate'].first
 
           if validated_date.blank?
-            raise AiVerifyDatesNoDatesVerifiedError.nnew(@data_holder.get_message_classification)
+            raise AiVerifyDatesNoDatesVerifiedError.new(@data_holder.get_message_classification)
           end
 
           result[:date_to_book] = DateTime.parse(validated_date['date'])
