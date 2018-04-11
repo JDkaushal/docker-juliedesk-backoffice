@@ -19,6 +19,8 @@ module AutomaticProcessing
           timezone_returned_by_ai: timezone_returned_by_ai
         })
 
+        location = @data_holder.get_message_classification_location
+
         @julie_action.text = "#{say_hi_text}#{get_invitations_sent_template({
                                                                        client_names: @data_holder.get_client_names,
                                                                        timezones: [timezone_returned_by_ai],
@@ -33,7 +35,8 @@ module AutomaticProcessing
                                                                            en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
                                                                            fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
                                                                        },
-                                                                       location: @data_holder.get_message_classification_location,
+                                                                       location: location,
+                                                                       location_is_settled: location.present?,
                                                                        should_ask_location: self.should_ask_location?,
                                                                        missing_contact_info: missing_contact_info,
                                                                        date: chosen_date_for_check_availabilities.to_s
@@ -131,6 +134,9 @@ module AutomaticProcessing
           puts resp.inspect
           validated_date = resp['dates_validate'].first
 
+          if validated_date.blank?
+            raise AiVerifyDatesNoDatesVerifiedError.nnew(@data_holder.get_message_classification)
+          end
 
           result[:date_to_book] = DateTime.parse(validated_date['date'])
           result[:timezone] = resp['timezone']

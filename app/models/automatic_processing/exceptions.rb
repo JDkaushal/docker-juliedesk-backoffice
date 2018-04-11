@@ -94,5 +94,16 @@ module AutomaticProcessing
         "The AI verify_dates call failed for the MessageClassification #{@message_classification_id}"
       end
     end
+
+    class AiVerifyDatesNoDatesVerifiedError < AutomaticProcessingError
+      attr_reader :message_classification_id
+      def initialize(message_classification_id)
+        @message_classification_id = message_classification_id
+      end
+
+      def to_s
+        "The AI verify_dates call returned no verified dates for the MessageClassification #{@message_classification_id}"
+      end
+    end
   end
 end
