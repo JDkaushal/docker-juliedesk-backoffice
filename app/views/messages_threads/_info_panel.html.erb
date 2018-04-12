@@ -1277,7 +1277,12 @@
               skypeLocationSettled = true;
           }
 
-          return !!window.threadComputedData.call_instructions.details || window.getCurrentAppointment().kind == 'hangout' || skypeLocationSettled || (virtualMeetingHelper && !!virtualMeetingHelper.currentConf.details);
+          return (
+              !!window.threadComputedData.call_instructions.details ||
+              window.getCurrentAppointment().kind == 'hangout'      ||
+              skypeLocationSettled                                  ||
+              (virtualMeetingHelper && !!virtualMeetingHelper.currentConf.details)
+          );
       }
 
       return locationFieldIsSet();

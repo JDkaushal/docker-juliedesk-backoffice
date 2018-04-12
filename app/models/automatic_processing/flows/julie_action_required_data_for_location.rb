@@ -91,7 +91,7 @@ module AutomaticProcessing
                   # Virtual Appointment
                   {
                       conditions: [
-                          { method: :appointment_kind_is?,  params: [ :@appointment_kind, APPOINTMENT_VIRTUAL ] },
+                          { method: :appointment_kind_is?,  params: [ :@appointment_kind,      APPOINTMENT_VIRTUAL ] },
                           { method: :behaviour_is?,         params: [ :@appointment_behaviour, BEHAVIOUR_ASK_LATER ] }
                       ],
 
@@ -102,8 +102,8 @@ module AutomaticProcessing
 
                   {
                       conditions: [
-                          { method: :appointment_kind_is?,  params: [ :@appointment_kind, APPOINTMENT_VIRTUAL ] },
-                          { method: :behaviour_is?,         params: [ :@appointment_behaviour, [BEHAVIOUR_PROPOSE] ] }
+                          { method: :appointment_kind_is?,  params: [ :@appointment_kind,      APPOINTMENT_VIRTUAL ] },
+                          { method: :behaviour_is?,         params: [ :@appointment_behaviour, BEHAVIOUR_PROPOSE ] }
                       ],
 
                       actions: [
@@ -113,8 +113,8 @@ module AutomaticProcessing
 
                   {
                       conditions: [
-                          { method: :appointment_kind_is?,  params: [ :@appointment_kind, APPOINTMENT_VIRTUAL ] },
-                          { method: :behaviour_is?,         params: [ :@appointment_behaviour, [BEHAVIOUR_ASK_INTERLOCUTOR] ] }
+                          { method: :appointment_kind_is?,  params: [ :@appointment_kind,      APPOINTMENT_VIRTUAL ] },
+                          { method: :behaviour_is?,         params: [ :@appointment_behaviour, BEHAVIOUR_ASK_INTERLOCUTOR ] }
                       ],
 
                       actions: [

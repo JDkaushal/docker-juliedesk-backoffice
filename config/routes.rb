@@ -232,6 +232,10 @@ Rails.application.routes.draw do
         post :remove_syncing_tag, on: :collection
         post :add_syncing_tag, on: :collection
       end
+
+      resources :messages do
+        get :simulate_classify, on: :member
+      end
     end
   end
 

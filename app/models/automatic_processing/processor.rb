@@ -5,19 +5,39 @@ module AutomaticProcessing
     attr_reader :message, :message_classification, :julie_action, :email_deliverer, :thread_archiver, :data_holder
 
     def initialize(message_id, options = {})
+      @options = options
       @message = Message.find(message_id)
-      @message.interprete(options[:force_reinterpretation].present?)
 
-      raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(message.messages_thread_id) unless message.messages_thread.account
-      raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(message.id) unless message.main_message_interpretation
+      # This is a hack to avoid auto save on model.association = [] (should be done differently)
+      dup_message = options.fetch(:dup_message, false)
+      @message = @message.dup if dup_message
+      ###
 
+      raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(@message.messages_thread_id) unless @message.messages_thread.account
+    end
+
+    def generate_classification
+      # Build interpretations
+      @message.interprete(force_reinterpretation: true)
       initialize_data_holder
+      initialize_process_helpers
+      message_classification = classify_message
+      message_classification
     end
 
     def process!
+      # Generate message interpretations
+      interprete!
+
+      # Then compute required data
+      initialize_data_holder
       initialize_process_helpers
+
+      # classify
       classify_and_create_julie_action
       link_associations
+
+      # Execute actions
       trigger_actions_flow
     end
 
@@ -50,6 +70,9 @@ module AutomaticProcessing
     end
 
     def re_trigger_flow
+      interprete!
+      initialize_data_holder
+
       # Initialize email_deliver and thread_archiver
       initialize_process_helpers
 
@@ -82,18 +105,29 @@ module AutomaticProcessing
 
     private
 
+    def interprete!
+      force = @options.fetch(:force_reinterpretation, false)
+      @message.interprete!(force_reinterpretation: force)
+      raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(@message.id) unless @message.main_message_interpretation
+    end
+
     def trigger_actions_flow
       flow = "AutomaticProcessing::ClassificationsFlows::#{@data_holder.get_current_classification.camelize}".constantize
       flow.new.post_classification_actions.each{ |action| self.send(action) }
     end
 
     def classify_and_create_julie_action
-      @message_classification = classify_message
+      @message_classification = classify_message!
       @data_holder.set_message_classification(@message_classification)
 
       @julie_action = create_julie_action
       @julie_action.process
       @data_holder.set_julie_action(@julie_action)
+    end
+
+
+    def classify_message!
+      AutomaticProcessing::AutomatedMessageClassification.process_message!(@message)
     end
 
     def classify_message

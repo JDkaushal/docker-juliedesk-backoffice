@@ -1,6 +1,45 @@
 require "rails_helper"
 
 describe AutomaticProcessing::Processor do
+  shared_context 'conscience returns main interpretation' do
+    let(:ai_main_interpretation) { {} }
+    before(:example) { expect_any_instance_of(MessageInterpretation).to receive(:get_main_entity).and_return(ai_main_interpretation.to_json) }
+  end
+
+  shared_context 'conscience returns entities' do
+    let(:ai_entities_interpretation) { {}.to_json }
+    before(:example) { expect_any_instance_of(MessageInterpretation).to receive(:get_entities_entity).and_return(ai_main_interpretation) }
+  end
+
+  shared_context 'conscience fails to interprete' do
+    before(:example) do
+      expect_any_instance_of(MessageInterpretation).to receive(:get_main_entity).and_return(nil)
+      expect_any_instance_of(MessageInterpretation).to receive(:get_entities_entity).and_return(nil)
+    end
+  end
+
+  shared_context 'conscience detects civilities' do |email, result|
+    before(:example) do
+      allow(AI_PROXY_INTERFACE).to receive(:build_request).with(:parse_human_civilities, hash_including(at: email)).and_return(result)
+    end
+  end
+
+  shared_context 'conscience detects company name' do |email, result|
+    before(:example) do
+      allow(AI_PROXY_INTERFACE).to receive(:build_request).with(:get_company_name, hash_including(address: email)).and_return(result)
+    end
+  end
+
+
+  let(:account_params) { { } }
+  let(:default_account_params) { { 'email' => 'bob@juliedesk.com' } }
+  let(:account) do
+    account = Account.new
+    default_account_params.merge(account_params).each do |k, v|
+      account.send("#{k}=", v)
+    end
+    account
+  end
 
   let(:account_email) { 'stagingjuliedesk@gmail.com' }
   let(:parsed_user_cache) {
@@ -276,15 +315,17 @@ describe AutomaticProcessing::Processor do
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification) }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
 
-  before(:each) do
-    allow_any_instance_of(Message).to receive(:populate_single_server_message)
-    allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
-  end
+
 
   context 'No account is associated with the messages thread' do
+    before(:each) do
+      allow_any_instance_of(Message).to receive(:populate_single_server_message)
+      allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
+    end
+
     it 'should raise an appropriate error' do
       messages_thread.update(account_email: '')
-      allow_any_instance_of(Message).to receive(:interprete)
+      allow_any_instance_of(Message).to receive(:interprete!)
 
       expect{
         AutomaticProcessing::Processor.new(processed_message.id)
@@ -292,34 +333,22 @@ describe AutomaticProcessing::Processor do
     end
   end
 
-  context 'No Interpretation from AI' do
-    let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread) }
-
-    it 'should raise an appropriate error' do
-      allow_any_instance_of(Message).to receive(:interprete)
-
-      expect{
-        AutomaticProcessing::Processor.new(processed_message.id)
-      }.to raise_error(AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError)
-    end
-  end
-
   context 'Everything is fine' do
-    subject(:processor) { AutomaticProcessing::Processor.new(processed_message.id) }
-
     before(:each) do
-      expect_any_instance_of(Message).to receive(:interprete)
+      allow_any_instance_of(Message).to receive(:populate_single_server_message)
+      allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
     end
 
+    subject(:processor) { AutomaticProcessing::Processor.new(processed_message.id) }
     describe 'Instantiation' do
 
       it 'should populate the message instance variable and create a data holder object' do
         expect(processor.message).to eq(processed_message)
-        expect(processor.data_holder).to be_present
       end
     end
 
     describe 'Flows' do
+      before(:each) { expect_any_instance_of(Message).to receive(:interprete!) }
 
       context 'general' do
         it 'should execute the right actions' do
@@ -459,5 +488,132 @@ describe AutomaticProcessing::Processor do
         processor.re_trigger_flow
       end
     end
+  end
+
+
+  describe '#generate_classification' do
+    shared_examples  'not persistable interpretation' do
+      it { expect { subject }.to change(MessageInterpretation, :count).by(0) }
+    end
+
+    shared_examples 'not persistable classification' do
+      it { expect { subject }.to change(MessageClassification, :count).by(0) }
+    end
+
+    let(:server_message) do
+      { 'id' => 2, 'from' => 'Robert Doe <bob@juliedesk.com>', 'to' => 'John Jones <john@juliedesk.com>', 'cc' => 'julie@juliedesk.com', 'text' => 'Julie, peux-tu organiser un déjeuner lundi ?' }
+    end
+    let(:server_thread) { { 'id' => 1, 'messages' => [server_message] } }
+
+    let(:account_params) { { 'appointments' => [] } }
+    let(:messages_thread) { create(:messages_thread, server_thread_id: server_thread['id'], account_email: account.email) }
+    let(:message_params)  { { } }
+    let(:message)         { create(:message, { server_message_id: server_message['id'], messages_thread: messages_thread }.merge(message_params)) }
+
+    let(:processor)       { AutomaticProcessing::Processor.new(message.id, dup_message: true) }
+
+    before(:each) do
+      allow_any_instance_of(MessagesThread).to receive(:server_thread).and_return(server_thread)
+      allow_any_instance_of(MessagesThread).to receive(:re_import).and_return(messages_thread.messages)
+
+      allow_any_instance_of(MessagesThread).to receive(:account).and_return(account)
+      allow(Message).to receive(:find).and_return(message)
+    end
+
+    subject { processor.generate_classification }
+
+    context 'when no interpretation was present' do
+      let(:account_params) do
+        {
+            'appointments' => [
+                {
+                    'label' => 'lunch',
+                    'kind' => 'lunch',
+                    'default_address' => { 'label' => '4 rue de l\'Exposition 75007 Paris' },
+                    'support_config_hash' => {},
+                    'title_in_calendar' => { 'fr' => 'Dej', 'en' => 'Lunch'}
+                }
+            ],
+            'addresses' => []
+        }
+      end
+
+      include_context 'conscience returns main interpretation' do
+        let(:ai_main_interpretation) do
+          { language_detected: 'fr', request_classif: 'ask_date_suggestions', appointment_classif: 'lunch', location_data: {text: '1 Boulevard de Strasbourg, 75010 Paris', location_nature: 'restaurant'} }
+        end
+        let(:ai_entities_interpretation) { { annotated: '<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html><body></body></html>' } }
+      end
+
+      include_context 'conscience detects company name', 'john@juliedesk.com', {'company' => 'Julie Desk'}
+      include_context 'conscience detects company name', 'bob@juliedesk.com',  {'company' => 'Julie Desk'}
+      include_context 'conscience detects civilities',   'john@juliedesk.com', {'first_name' => 'John', 'last_name' => 'Jones', 'gender' => 'M'}
+      include_context 'conscience detects civilities',   'bob@juliedesk.com',  {'first_name' => 'Bob', 'last_name' => 'Doe', 'gender' => 'M'}
+
+      before(:example) {
+        allow(AttendeeService).to receive(:clean_and_categorize_clients!)
+        allow(AttendeeService).to receive(:set_usage_names!)
+      }
+
+      it_behaves_like 'not persistable interpretation'
+      it_behaves_like 'not persistable classification'
+      it { is_expected.to have_attributes({new_record?: true }) }
+      it { is_expected.to have_attributes({appointment_nature: 'lunch'}) }
+      it { is_expected.to have_attributes({location: '1 Boulevard de Strasbourg, 75010 Paris'}) }
+      it { is_expected.to have_attributes({location_nature: 'restaurant'}) }
+      it { is_expected.to have_attributes({summary: 'Dej Julie Desk [John Jones, Bob Doe]'}) }
+    end
+
+
+    context 'when interpretations already exist' do
+      let(:account_params) do
+        {
+            'appointments' => [
+                {
+                    'label' => 'lunch',
+                    'kind' => 'lunch',
+                    'default_address' => { 'label' => '4 rue de l\'Exposition 75007 Paris' },
+                    'support_config_hash' => {},
+                    'title_in_calendar' => { 'fr' => 'Dej', 'en' => 'Lunch'}
+                }
+            ],
+            'addresses' => []
+        }
+      end
+
+      let!(:main_message_interpretation) do
+        create(:message_interpretation,
+               question: MessageInterpretation::QUESTION_MAIN,
+               message: message,
+               raw_response: { language_detected: 'en', request_classif: 'ask_date_suggestions', appointment_classif: 'lunch', location_data: {text: '4 rue de l\'exposition', location_nature: 'restaurant'} })
+      end
+
+      include_context 'conscience returns main interpretation' do
+        let(:ai_main_interpretation) do
+          { language_detected: 'fr', request_classif: 'ask_date_suggestions', appointment_classif: 'lunch', location_data: {text: '1 Boulevard de Strasbourg, 75010 Paris', location_nature: 'restaurant'} }
+        end
+        let(:ai_entities_interpretation) { { annotated: '<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html><body></body></html>' } }
+      end
+
+      include_context 'conscience detects company name', 'john@juliedesk.com', {'company' => 'Julie Desk'}
+      include_context 'conscience detects company name', 'bob@juliedesk.com',  {'company' => 'Julie Desk'}
+      include_context 'conscience detects civilities',   'john@juliedesk.com', {'first_name' => 'John', 'last_name' => 'Jones', 'gender' => 'M'}
+      include_context 'conscience detects civilities',   'bob@juliedesk.com',  {'first_name' => 'Bob', 'last_name' => 'Doe', 'gender' => 'M'}
+
+      before(:example) {
+        allow(AttendeeService).to receive(:clean_and_categorize_clients!)
+        allow(AttendeeService).to receive(:set_usage_names!)
+      }
+
+      it_behaves_like 'not persistable interpretation'
+      it_behaves_like 'not persistable classification'
+      it { is_expected.to have_attributes({new_record?: true }) }
+      it { is_expected.to have_attributes({appointment_nature: 'lunch'}) }
+      it { is_expected.to have_attributes({location: '1 Boulevard de Strasbourg, 75010 Paris'}) }
+      it { is_expected.to have_attributes({location_nature: 'restaurant'}) }
+      it { is_expected.to have_attributes({summary: 'Dej Julie Desk [John Jones, Bob Doe]'}) }
+    end
+
+
   end
 end

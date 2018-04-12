@@ -11,10 +11,15 @@ class MessageInterpretation < ActiveRecord::Base
 
   def process
     if self.question == QUESTION_MAIN
-      process_main_entity!
+      process_main_entity
     elsif self.question == QUESTION_ENTITIES
       process_entities_entity
     end
+  end
+
+  def process!
+    message_interpretation = process
+    message_interpretation.save
   end
 
   def client_on_trip
@@ -140,9 +145,25 @@ class MessageInterpretation < ActiveRecord::Base
     self.save
   end
 
-  def process_main_entity
-
+  def get_main_entity
     response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_main, {id: self.message.server_message_id}).body
+    response_body_str = ''
+
+    continue = true
+    while continue
+      current_chunk = response_body.readpartial
+      if current_chunk.present?
+        response_body_str += current_chunk
+      else
+        continue = false
+      end
+    end
+
+    response_body_str
+  end
+
+  def get_entities_entity(params)
+    response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_entities, params).body
 
     response_body_str = ''
 
@@ -156,17 +177,23 @@ class MessageInterpretation < ActiveRecord::Base
       end
     end
 
-    self.raw_response = response_body_str
+    response_body_str
+  end
+
+  def process_main_entity
+    self.raw_response = get_main_entity
     begin
       JSON.parse(self.raw_response)
       self
-      #response.parse
       self.error = false
     rescue
       self.error = true
     end
+  end
 
-
+  def process_entities_entity!
+    process_entities_entity
+    self.save
   end
 
   def process_entities_entity
@@ -174,11 +201,9 @@ class MessageInterpretation < ActiveRecord::Base
     thread = mess.messages_thread
 
     messages = thread.re_import
-
     server_message = messages.find{|m| m.id == mess.id}.try(:server_message)
 
     if server_message.present?
-
       body = {
           'id' => mess.server_message_id,
           'parsed_html' => server_message['parsed_html'],
@@ -188,30 +213,15 @@ class MessageInterpretation < ActiveRecord::Base
           'messages_count' => messages.size
       }
 
-      response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_entities, body).body
-
-      response_body_str = ''
-
-      continue = true
-      while continue
-        current_chunk = response_body.readpartial
-        if current_chunk.present?
-          response_body_str += current_chunk
-        else
-          continue = false
-        end
-      end
-
-      self.raw_response = response_body_str
+      self.raw_response = get_entities_entity(body)
       begin
         JSON.parse(self.raw_response)
-        #response.parse
         self.error = false
       rescue
         self.error = true
       end
 
-      self.save
+      self
     end
   end
 end

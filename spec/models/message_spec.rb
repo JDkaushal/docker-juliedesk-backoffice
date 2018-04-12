@@ -322,7 +322,7 @@ describe Message do
     }
 
     before(:example) do
-      expect(message).to receive(:interprete)
+      expect(message).to receive(:interprete!)
       message.message_interpretations.create(question: MessageInterpretation::QUESTION_MAIN, raw_response: "{\"body\": \"Merci !\\n\", \"email_id\": 278000, \"request_classif\": \"classif\", \"request_threshold\": 0.46, \"appointment_classif\": \"appointment\", \"dates_to_check\": {}, \"language_detected\": \"fr\", \"request_proba\": null, \"appointment_threshold\": 0.78, \"algo_duration\": [6, 3, 0, 3], \"appointment_proba\": 0.94}")
       expect(messages_thread).to receive(:julie_alias).and_return(julie_alias)
     end

@@ -2,10 +2,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
   include TemplateGeneratorHelper
   include NotesGenerator
 
-  #attr_reader :data_holder
-
-  class NoDataHolderError < StandardError
-  end
 
   def initialize(params = {})
     super(params)
@@ -15,17 +11,23 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     AutomaticProcessing::AutomatedMessageClassification.new(message_classification.attributes.reject{ |k,_| ['id', 'created_at', 'updated_at'].include?(k) })
   end
 
-  def self.process_message(message, options={})
+  def self.process_message(message)
+    main_interpretation = message.main_message_interpretation
+    main_interpretation = message.message_interpretations.find { |interpretation| interpretation.question == MessageInterpretation::QUESTION_MAIN } if main_interpretation.blank?
 
     message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
-      classification: message.main_message_interpretation.json_response['request_classif'],
+      classification: main_interpretation.json_response['request_classif'],
       operator: "jul.ia@operator.juliedesk.com",
       message: message
     )
 
     message_classification.fill_form if message_classification.has_data?
-    message_classification.save
+    message_classification
+  end
 
+  def self.process_message!(message)
+    message_classification = self.process_message(message)
+    message_classification.save
     message_classification
   end
 
@@ -33,12 +35,15 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     message = self.message
     message.populate_single_server_message
 
-    main_interpretation         = message.main_message_interpretation.json_response
+    main_message_interpretation = message.main_message_interpretation
+    main_message_interpretation = message.message_interpretations.find { |interpretation| interpretation.question == MessageInterpretation::QUESTION_MAIN } if main_message_interpretation.blank?
+
+    main_interpretation         = main_message_interpretation.json_response
     last_message_classification = message.messages_thread.last_message_classification_with_data
 
     # Read attendees from last classif and merge with data interpreted by AI
     current_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')
-    attendees_from_ai  = get_attendees_from_interpretation(message.main_message_interpretation)
+    attendees_from_ai  = get_attendees_from_interpretation(main_message_interpretation)
     Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
     # Build interpretation hash in backoffice format
@@ -61,7 +66,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     client_preferences = { timezone: account.default_timezone_id }
 
     # Compute Location
-    appointment     = account.appointments.find{|appointment| appointment['label'] == interpretation[:appointment]}
+    appointment     = account.appointments.find{|appointment| appointment['kind'] == interpretation[:appointment] || appointment['label'] == interpretation[:appointment] }
     location_data   = compute_location_from_interpretation(interpretation, appointment)
 
     # Language Level
@@ -77,11 +82,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     self.assign_attributes({
         appointment_nature:  interpretation[:appointment],
-        summary:             nil,
         location:            location_data[:location],
         location_nature:     location_data[:location_nature],
         attendees:           attendees.map(&:to_h).to_json,
-        notes:               nil,
         date_times:          (main_interpretation['dates_to_check'] || []).to_json,
         locale:              interpretation[:locale],
         timezone:            client_preferences[:timezone],
@@ -211,11 +214,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     # We have a location nature...
     if interpretation[:location_nature]
       address = account.addresses.select{|addr| addr['kind'] == interpretation[:location_nature]}.sort_by{|addr| addr['is_main_address'] ? 0 : 1}.first
-      # ...and a corresponding address
-      if address
-        location = address['address']
-        location_nature = interpretation[:location_nature]
-      end
+      location_nature = interpretation[:location_nature]
+      location = address['address'] if address
     end
     # Otherwise, we fallback to detected location text...
     location ||= interpretation[:location]
@@ -237,6 +237,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     thread_owner_account_all_emails = thread_owner_account.all_emails.map(&:downcase)
 
+
     recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
     recipients_emails = recipients.map { |recipient| recipient[:email] }
 
@@ -245,7 +246,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     clients_emails = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('clients_emails') || '[]')
 
-    computed_recipients = recipients.map do |recipient|
+    extracted_attendees = recipients.map do |recipient|
       # Backoffice data
       client_contact = client_contacts.find { |client_contact| client_contact.email == recipient[:email] }
 
@@ -289,21 +290,21 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     end
 
     # New pass on attendees to actualize data we could get from AI
-    computed_recipients.each do |recipient|
+    extracted_attendees.each do |attendee|
 
       # Conscience data
-      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
-      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
-      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
-      interpreted_timezone = contact_infos.find { |contact_info| contact_info['owner_email'] == recipient.email && contact_info['tag'] == 'TIMEZONE' }.try(:fetch, 'value', nil)
+      interpreted_landline = contact_infos.find { |contact_info| contact_info['owner_email'] == attendee.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'landline' }.try(:fetch, 'text', nil)
+      interpreted_mobile   = contact_infos.find { |contact_info| contact_info['owner_email'] == attendee.email && contact_info['tag'] == 'PHONE' && contact_info['value'] == 'mobile' }.try(:fetch, 'text', nil)
+      interpreted_skype    = contact_infos.find { |contact_info| contact_info['owner_email'] == attendee.email && contact_info['tag'] == 'SKYPE' }.try(:fetch, 'text', nil)
+      interpreted_timezone = contact_infos.find { |contact_info| contact_info['owner_email'] == attendee.email && contact_info['tag'] == 'TIMEZONE' }.try(:fetch, 'value', nil)
 
       # We favor timezone returned by AI, then fallback on what we already have or the thread owner default timezone
-      recipient.timezone = interpreted_timezone || recipient.timezone || thread_owner_account.default_timezone_id
-      recipient.landline ||= interpreted_landline
-      recipient.mobile ||= interpreted_mobile
-      recipient.skype_id ||= interpreted_skype
+      attendee.timezone   = interpreted_timezone || attendee.timezone || thread_owner_account.default_timezone_id
+      attendee.landline ||= interpreted_landline
+      attendee.mobile   ||= interpreted_mobile
+      attendee.skype_id ||= interpreted_skype
     end
 
-    computed_recipients
+    extracted_attendees
   end
 end

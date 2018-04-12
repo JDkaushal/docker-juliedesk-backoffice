@@ -321,7 +321,7 @@ class Account
 
   def all_emails
     if email.present?
-      [email] + email_aliases
+      ([email] + (email_aliases || [])).map(&:downcase)
     else
       []
     end

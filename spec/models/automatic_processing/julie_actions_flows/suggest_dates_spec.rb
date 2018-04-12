@@ -353,7 +353,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
   }
   let(:message_classification) {
     attendees_mocker
-    AutomaticProcessing::AutomatedMessageClassification.process_message(processed_message, {})
+    AutomaticProcessing::AutomatedMessageClassification.process_message!(processed_message)
   }
   let(:julie_action) {
     AutomaticProcessing::AutomatedJulieAction.new(
