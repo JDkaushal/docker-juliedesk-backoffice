@@ -6,6 +6,9 @@ describe AutomaticProcessing::MeetingRoomsManager do
   let(:address2) { '1 rue du village, 20000 Le Village' }
   subject(:meeting_rooms_manager) { AutomaticProcessing::MeetingRoomsManager.new(data_holder) }
 
+  before(:each) do
+    allow_any_instance_of(Message).to receive(:populate_single_server_message)
+  end
   describe 'get_meeting_rooms_params' do
 
     context 'should book some meeting rooms' do

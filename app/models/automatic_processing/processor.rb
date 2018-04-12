@@ -25,7 +25,7 @@ module AutomaticProcessing
       begin
         process!
       rescue => e
-        if Rails.env.development?
+        if Rails.env.development? || Rails.env.test?
           raise(e)
         else
           Airbrake.notify(e)
@@ -38,10 +38,41 @@ module AutomaticProcessing
       @email_deliverer.deliver({is_error: true, exception: e})
     end
 
+    def re_trigger_flow
+      # Initialize email_deliver and thread_archiver
+      initialize_process_helpers
+
+      classif = @message.message_classifications.last
+      julie_action = classif.julie_action
+
+      if classif.blank?
+        raise AutomaticProcessing::Exceptions::NoClassificationAvailableError.new(@message.id)
+      end
+
+      # Cast MessageClassification to AutomaticProcessing::AutomatedMessageClassification
+      classif = AutomaticProcessing::AutomatedMessageClassification.from_message_classification(classif)
+      classif.julie_action = julie_action
+
+      @data_holder.set_message_classification(classif)
+
+      if classif.julie_action.blank?
+        raise AutomaticProcessing::Exceptions::NoJulieActionAvailableError.new(@message.id)
+      end
+
+      # Cast JulieAction to AutomaticProcessing::AutomatedJulieAction
+      automated_julie_action = AutomaticProcessing::AutomatedJulieAction.from_julie_action(classif.julie_action)
+      automated_julie_action.message_classification = classif
+      automated_julie_action.process(suggest_again: true)
+
+      @data_holder.set_julie_action(automated_julie_action)
+
+      trigger_actions_flow
+    end
+
     private
 
     def trigger_actions_flow
-      flow = "AutomaticProcessing::ClassificationsFlows::#{@message_classification.classification.camelize}".constantize
+      flow = "AutomaticProcessing::ClassificationsFlows::#{@data_holder.get_current_classification.camelize}".constantize
       flow.new.post_classification_actions.each{ |action| self.send(action) }
     end
 

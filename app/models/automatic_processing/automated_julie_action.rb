@@ -7,11 +7,15 @@ class AutomaticProcessing::AutomatedJulieAction < JulieAction
     super(params)
   end
 
-  def process
-    return nil if self.message_classification.nil?
+  def self.from_julie_action(julie_action)
+    AutomaticProcessing::AutomatedJulieAction.new(julie_action.attributes.reject{ |k,_| ['id', 'created_at', 'updated_at'].include?(k) })
+  end
+
+  def process(options = {})
+    raise AutomaticProcessing::Exceptions::NoMessageClassificationProvidedError if self.message_classification.nil?
 
     if self.action_nature == JD_ACTION_SUGGEST_DATES
-      AutomaticProcessing::JulieActionsFlows::SuggestDates.new(self).trigger
+      AutomaticProcessing::JulieActionsFlows::SuggestDates.new(self).trigger(options[:suggest_again])
     elsif self.action_nature == JD_ACTION_CHECK_AVAILABILITIES
       AutomaticProcessing::JulieActionsFlows::CheckAvailabilities.new(self).trigger
     elsif self.action_nature == JD_ACTION_WAIT_FOR_CONTACT

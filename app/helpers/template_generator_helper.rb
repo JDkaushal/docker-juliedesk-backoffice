@@ -33,6 +33,10 @@ module TemplateGeneratorHelper
     request('/api/v1/templates/send_confirmation', template_data)
   end
 
+  def get_client_unvailable_template template_data
+    request('/api/v1/templates/client_unavailable', template_data)
+  end
+
   private
 
   def request path, body=nil

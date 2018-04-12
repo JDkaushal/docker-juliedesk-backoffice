@@ -22,6 +22,23 @@ module AutomaticProcessing
       end
     end
 
+    class NoClassificationAvailableError < AutomaticMessageProcessingError
+      def to_s
+        "Attempting to retrigger a flow for message id #{@message_id} but No Message Classification was found"
+      end
+    end
+
+    class NoJulieActionAvailableError < AutomaticProcessingError
+      attr_reader :message_classification_id
+      def initialize(message_classification_id)
+        @message_classification_id = message_classification_id
+      end
+
+      def to_s
+        "Attempting to retrigger a flow for message classification id #{@message_classification_id} but No Julie Action was found"
+      end
+    end
+
     class ConcienceInterpretationFailedError < AutomaticMessageProcessingError
       def to_s
         "Conscience interpretation failed for Message #{@message_id}"
@@ -48,6 +65,12 @@ module AutomaticProcessing
     class ConscienceDatesSuggestionNotEnoughSuggestionsError < AutomaticMessageProcessingError
       def to_s
         "Conscience Dates suggestion did not returned enough suggestions for Message #{@message_id}"
+      end
+    end
+
+    class NoMessageClassificationProvidedError < AutomaticMessageProcessingError
+      def to_s
+        "No Message Classification provided"
       end
     end
 

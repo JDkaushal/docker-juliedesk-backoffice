@@ -277,6 +277,7 @@ describe AutomaticProcessing::Processor do
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
 
   before(:each) do
+    allow_any_instance_of(Message).to receive(:populate_single_server_message)
     allow(Account).to receive(:accounts_cache_for_email).with(account_email).and_return(parsed_user_cache)
   end
 
@@ -340,7 +341,7 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_availabilities' do
           before(:each) do
-            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'ask_availabilities'))
+            expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
@@ -355,7 +356,7 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_date_suggestions' do
           before(:each) do
-            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'ask_date_suggestions'))
+            expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions') }
@@ -370,7 +371,7 @@ describe AutomaticProcessing::Processor do
 
         context 'give_info' do
           before(:each) do
-            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'give_info'))
+            expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'give_info') }
@@ -385,7 +386,7 @@ describe AutomaticProcessing::Processor do
 
         context 'wait_for_contact' do
           before(:each) do
-            subject.instance_variable_set(:@message_classification, AutomaticProcessing::AutomatedMessageClassification.new(classification: 'wait_for_contact'))
+            expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'wait_for_contact') }
@@ -397,6 +398,29 @@ describe AutomaticProcessing::Processor do
             subject.process
           end
         end
+      end
+    end
+
+    describe 're_trigger_flow' do
+
+      let(:message_classification) {
+        FactoryGirl.create(:message_classification, classification: MessageClassification::ASK_DATE_SUGGESTIONS, message: processed_message)
+      }
+      let(:julie_action) {
+        FactoryGirl.create(:julie_action, message_classification: message_classification)
+      }
+
+      subject(:processor) { AutomaticProcessing::Processor.new(processed_message.id) }
+
+      before(:each) do
+        processed_message.message_classifications << message_classification
+        message_classification.julie_action = julie_action
+      end
+
+      it 'should trigger the correct actions' do
+        expect(processor).to receive(:deliver_email)
+        expect(processor).to receive(:archive_thread)
+        processor.re_trigger_flow
       end
     end
   end

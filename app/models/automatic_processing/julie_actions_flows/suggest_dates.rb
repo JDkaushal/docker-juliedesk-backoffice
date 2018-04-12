@@ -4,11 +4,17 @@ module AutomaticProcessing
     class SuggestDates < Base
       include CommonMethods
 
-      def trigger
+      def trigger(suggest_again = false)
         @julie_action.date_times = find_dates_to_suggest.to_json
         wordings = @data_holder.get_appointment
 
-        @julie_action.text = "#{say_hi_text}#{get_suggest_dates_template({
+        preambule = if suggest_again
+                      "#{say_hi_text}#{get_client_unvailable_template({client_names: @data_holder.get_client_names})}"
+                    else
+                      say_hi_text
+                    end
+
+        @julie_action.text = "#{preambule}#{get_suggest_dates_template({
                                                                     client_names: @data_holder.get_client_names,
                                                                     timezones: [@data_holder.get_thread_owner_default_timezone],
                                                                     default_timezone: @data_holder.get_thread_owner_default_timezone,
@@ -33,8 +39,6 @@ module AutomaticProcessing
       private
 
       def find_dates_to_suggest
-        puts JSON.parse(@data_holder.get_message_classification_raw_constraints).inspect
-
         date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
             account_email: @data_holder.get_thread_owner_account_email,
             thread_data: @data_holder.get_thread_computed_data,

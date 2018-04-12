@@ -11,6 +11,10 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     super(params)
   end
 
+  def self.from_message_classification(message_classification)
+    AutomaticProcessing::AutomatedMessageClassification.new(message_classification.attributes.reject{ |k,_| ['id', 'created_at', 'updated_at'].include?(k) })
+  end
+
   def self.process_message(message, options={})
 
     message_classification = AutomaticProcessing::AutomatedMessageClassification.new(
@@ -120,33 +124,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
       end
     }.join(" <> ")
   end
-
-
-  def archive_thread
-    thread_status = self.computed_thread_status
-
-    self.thread_status = thread_status
-
-    self.save
-    EmailServer.archive_thread(messages_thread_id: self.message.messages_thread.server_thread_id)
-
-    self.message.messages_thread.messages.update_all(archived: true)
-
-    thread_params = {
-        should_follow_up: false,
-        status: self.thread_status,
-        in_inbox: false
-    }
-
-    if thread_params[:status] == MessageClassification::THREAD_STATUS_SCHEDULING_ABORTED
-      thread_params[:aborted_at] = DateTime.now
-    end
-
-    self.message.messages_thread.update(thread_params)
-
-    WebSockets::Manager.trigger_archive(self.message.messages_thread.id)
-  end
-
 
   def has_field?(field, options = {})
     scope = options.fetch(:scope, :classification)

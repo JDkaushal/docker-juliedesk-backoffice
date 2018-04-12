@@ -21,6 +21,7 @@ module AutomaticProcessing
       raise MessageMissingError.new("No message specified") if incoming_message.blank?
 
       @message = incoming_message
+      @message.populate_single_server_message
       @messages_thread = @message.messages_thread
     end
 
@@ -33,7 +34,7 @@ module AutomaticProcessing
     end
 
     def get_message_classification
-      raise AutomaticProcessing::DataHolder::NoMessageClassificationYetError.new unless @message_classification.present?
+      raise AutomaticProcessing::DataHolder::NoMessageClassificationYetError unless @message_classification.present?
       @message_classification
     end
 
@@ -216,6 +217,10 @@ module AutomaticProcessing
 
     def get_addresses
       @addresses ||= get_thread_owner_account.addresses
+    end
+
+    def get_last_suggest_dates_classification
+      @last_suggest_dates_classification ||= get_messages_thread.messages.map(&:message_classifications).flatten.select{|mc| mc.classification == MessageClassification::ASK_DATE_SUGGESTIONS}.sort_by(&:created_at).first
     end
 
     def get_all_available_meeting_rooms
