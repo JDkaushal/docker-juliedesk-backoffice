@@ -11,7 +11,7 @@ ClientOnTripCalendarModule.prototype.fullCalendarViewRender = function(fullCalen
         return;
     }
 
-    clientOnTripCalendarModule.currentClientOnTripMasks = []
+    clientOnTripCalendarModule.currentClientOnTripMasks = [];
 
     var currentDateForClientOnTripDate = fullCalendarView.start.clone();
 
@@ -84,7 +84,7 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(ful
     if(fullCalendarEvent.id && fullCalendarEvent.allDay && fullCalendarEvent.aiMetadata && eventLocationIndication != null) {
         _.each(clientOnTripCalendarModule.currentClientOnTripMasks, function (clientOnTripMask) {
             if(fullCalendarEvent.start.diff(clientOnTripMask.date, 'days') >= 0 &&
-                fullCalendarEvent.end.diff(clientOnTripMask.date, 'days') <= 0) {
+                fullCalendarEvent.end.diff(clientOnTripMask.date, 'days') <= 1) {
 
                 if(clientOnTripCalendarModule.mainClientOnTrip && eventLocationIndication === clientOnTripCalendarModule.mainClientOnTrip.label) {
                     clientOnTripMask.visible = false;
