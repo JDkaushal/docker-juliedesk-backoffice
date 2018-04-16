@@ -238,7 +238,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     thread_owner_account_all_emails = thread_owner_account.all_emails.map(&:downcase)
 
 
-    recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access)
+    recipients =  MessagesThread.contacts({server_messages_to_look: [self.message.try(:server_message)]}).map(&:with_indifferent_access).reject { |recipient| recipient[:email].include?("julie@") }
     recipients_emails = recipients.map { |recipient| recipient[:email] }
 
     # Retrieve attendee information from client contacts
