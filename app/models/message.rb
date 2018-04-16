@@ -996,6 +996,64 @@ class Message < ActiveRecord::Base
   end
 
 
+  # Deprecated
+  def interpretations
+    main_answer = self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_MAIN}.first.try(:json_response) || {}
+    entities_answer = self.message_interpretations.select{|mi| mi.question == MessageInterpretation::QUESTION_ENTITIES}.first.try(:json_response) || {}
+
+    #entities_details = (entities_answer['annotated'] || "").scan(/<ENTITY(.*?)>(.*?)<\/ENTITY>/)
+    entities_details = (entities_answer['annotated'] || "").to_enum(:scan, /<ENTITY(.*?)>(.*?)<\/ENTITY>/).map { Regexp.last_match }
+    entities_found = {}
+    if entities_details.present?
+
+      entities_details.each do |entity|
+        position_in_text = entity.offset(0)
+        # First we extract the attributes from the ENTITY tag into a hash
+        # <ENTITY type='PHONE' owner='slegrand@kalidea.com'>+33 (0)6 85 31 11 11</ENTITY>
+        # => {"type"=>"'PHONE'", "owner"=>"'slegrand@kalidea.com'"}
+        attributes = Hash[*(entity[1].strip.split(' ').map{|att| att.split('=')}.flatten)]
+        # Here we get the value of the ENTITY (what is contained by the tag)
+        # <ENTITY type='PHONE' owner='slegrand@kalidea.com'>+33 (0)6 85 31 11 11</ENTITY>
+        # => +33 (0)6 85 31 11 11
+        entity_text = entity[2].strip
+        # We remove the type of the entity from the attributes and store it for later use, we also remove the single quotes
+        # around it for better usage
+        type = attributes.delete('type')
+
+        if type.present?
+
+          type = type.downcase.gsub("'", "")
+          # Here we get all the attributes hash without the type and we merge the entity_text and value (if possible) in it
+          attributes_without_type = attributes.merge('entity_text' => entity_text, 'position-in-text' => "'#{position_in_text.to_json}'")
+          attributes_without_type.merge!('value' => "'#{entity_text}'") unless attributes_without_type.keys.include?('value')
+          # Now if the hash contain the entity key like 'PHONE'
+          # We push the new entity hash details to the array
+          # If not we create the array with the first value
+          if entities_found.keys.include?(type)
+            entities_found[type] << attributes_without_type
+          else
+            entities_found[type] = [attributes_without_type]
+          end
+        end
+      end
+    end
+
+    confidence = begin
+      main_answer['request_confidence'] * main_answer['appointment_confidence']
+    rescue
+      0
+    end
+
+    {
+        classification: main_answer['request_classif'],
+        appointment: main_answer['appointment_classif'],
+        locale: main_answer['language_detected'],
+        entities: entities_found,
+        confidence: confidence
+    }
+  end
+
+
   def get_email_body
     ai_entities = self.message_interpretations.find{|m_i| m_i.question == 'entities' && !m_i.error}
     body = self.server_message['parsed_html']
