@@ -1,6 +1,10 @@
 module AutomaticProcessing
 
   module Exceptions
+    AI_PROCESSING_ERROR = :ai_processing_error
+    GENERIC_ERROR       = :generic_error
+
+
     class AutomaticProcessingError < StandardError
     end
 

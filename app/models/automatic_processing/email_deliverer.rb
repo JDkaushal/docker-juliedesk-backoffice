@@ -1,7 +1,7 @@
 module AutomaticProcessing
 
   class EmailDeliverer
-
+    include TemplateGeneratorHelper
     attr_reader :data_holder
 
     def initialize(data_holder)
@@ -10,7 +10,12 @@ module AutomaticProcessing
 
     def deliver(params = {})
       if params[:is_error]
-        deliver_error_message(params[:exception])
+        if params[:ai_processing_error]
+          deliver_error_message(params[:exception], AutomaticProcessing::Exceptions::AI_PROCESSING_ERROR)
+        else
+          deliver_error_message(params[:exception], AutomaticProcessing::Exceptions::GENERIC_ERROR)
+        end
+
       else
         deliver_message
       end
@@ -18,7 +23,7 @@ module AutomaticProcessing
 
     private
 
-    def deliver_error_message(exception)
+    def deliver_error_message(exception, error_type)
       messages = @data_holder.get_messages_thread.re_import
 
       initial_message = messages.find{|m| m.id == @data_holder.get_message.id}
@@ -28,11 +33,19 @@ module AutomaticProcessing
                                     from: @data_holder.get_julie_alias_from,
                                     to: initial_message.server_message['from'],
                                     cc: '',
-                                    html: "An error occured",
+                                    html: get_error_body(error_type),
                                     quote_replied_message: false,
                                     quote_forward_message: false,
                                     reply_to_message_id: @data_holder.get_server_message_id
                                   })
+    end
+
+    def get_error_body(error_type)
+      if error_type == AutomaticProcessing::Exceptions::AI_PROCESSING_ERROR
+        get_ai_processing_error_template({})
+      else
+        get_generic_error_template({})
+      end
     end
 
     def deliver_message

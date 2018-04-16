@@ -24,18 +24,29 @@ module AutomaticProcessing
     def process
       begin
         process!
+      rescue AutomaticProcessing::Exceptions::AutomaticProcessingError => e
+        if Rails.env.development? || Rails.env.test?
+          raise(e)
+        else
+          Airbrake.notify(e)
+          self.deliver_ai_processing_error_email(e)
+        end
       rescue => e
         if Rails.env.development? || Rails.env.test?
           raise(e)
         else
           Airbrake.notify(e)
-          self.deliver_error_email(e)
+          self.deliver_generic_error_email(e)
         end
       end
     end
 
-    def deliver_error_email(e)
+    def deliver_generic_error_email(e)
       @email_deliverer.deliver({is_error: true, exception: e})
+    end
+
+    def deliver_ai_processing_error_email(e)
+      @email_deliverer.deliver({is_error: true, ai_processing_error: true, exception: e})
     end
 
     def re_trigger_flow

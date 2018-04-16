@@ -401,6 +401,42 @@ describe AutomaticProcessing::Processor do
       end
     end
 
+    describe 'error_management' do
+      before(:each) do
+        # Need to do this, otherwise, we would raise the error in the rescue of the processor
+        Rails.env = 'test_bypass'
+      end
+
+      after(:each) do
+        # Set back the right env after the test
+        Rails.env = 'test'
+      end
+
+      context 'A generic error is raised during the processing' do
+        before(:each) do
+          allow(subject).to receive(:process!).and_raise(AutomaticProcessing::Exceptions::AutomaticProcessingError)
+        end
+
+        it 'should trigger the correct action' do
+          expect(subject).to receive(:deliver_ai_processing_error_email)
+          subject.process
+        end
+
+      end
+
+      context 'An AI processing error is raised during the processing' do
+        before(:each) do
+          allow(subject).to receive(:process!).and_raise(RuntimeError)
+        end
+
+        it 'should trigger the correct action' do
+          expect(subject).to receive(:deliver_generic_error_email)
+          subject.process
+        end
+
+      end
+    end
+
     describe 're_trigger_flow' do
 
       let(:message_classification) {

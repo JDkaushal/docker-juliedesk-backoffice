@@ -37,6 +37,14 @@ module TemplateGeneratorHelper
     request('/api/v1/templates/client_unavailable', template_data)
   end
 
+  def get_generic_error_template template_data
+    request('/api/v1/templates/something_happened_error', template_data)
+  end
+
+  def get_ai_processing_error_template template_data
+    request('/api/v1/templates/ai_cannot_process_request', template_data)
+  end
+
   private
 
   def request path, body=nil

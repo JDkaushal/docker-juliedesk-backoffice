@@ -63,9 +63,6 @@ ClientOnTripCalendarModule.prototype.fullCalendarEventAfterAllRender = function(
         i += 1;
     });
 
-
-
-
 }
 
 ClientOnTripCalendarModule.prototype.fullCalendarEventAfterRender = function(fullCalendarEvent, fullCalendarElement, fullCalendarView) {
