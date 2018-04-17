@@ -22,6 +22,8 @@ namespace :development_data do
                           signature_en: ''
                       })
 
+    Operator.create(email: ENV['DEV_OPERATOR_EMAIL'], privilege: 'admin', ips_whitelist_enabled: false)
+
     Message.import_emails
   end
 
