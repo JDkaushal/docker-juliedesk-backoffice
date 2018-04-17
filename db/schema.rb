@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180417140244) do
+ActiveRecord::Schema.define(version: 20180417154244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -252,6 +252,7 @@ ActiveRecord::Schema.define(version: 20180417140244) do
   add_index "julie_actions", ["created_at"], name: "index_julie_actions_on_created_at", using: :btree
   add_index "julie_actions", ["event_id"], name: "index_julie_actions_on_event_id", using: :btree
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
+  add_index "julie_actions", ["server_message_id"], name: "index_julie_actions_on_server_message_id", using: :btree
 
   create_table "julie_aliases", force: :cascade do |t|
     t.string   "email"
