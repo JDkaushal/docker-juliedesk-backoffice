@@ -38,7 +38,7 @@
             restaurantBookingManager.sendAdminEmail({
               type: 'booking',
               user_email: window.threadAccount.email,
-              booking_date: selectedEvent.start,
+              booking_date: selectedEvent.start.format(),
               location: selectedEvent.location,
               thread_id: window.processingMessageThreadId
             });
