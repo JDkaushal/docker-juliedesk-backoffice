@@ -38,7 +38,7 @@ module AllowedAttendees
 
       if account.present?
         owner_emails.push(account.email)
-        owner_emails += account.email_aliases
+        owner_emails += (account.email_aliases || [])
       end
 
       owner_emails.flatten
