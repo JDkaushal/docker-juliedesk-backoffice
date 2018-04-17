@@ -281,7 +281,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
     # Try to Get owner email if AI could not find it the first time
     if names_to_identify_with_ai.present?
-      contact_emails = AI_PROXY_INTERFACE.build_request(:who_are_we, { names: names_to_identify_with_ai, attendees: computed_recipients.map{|recip| {email: recip.email, firstName: recip.first_name, lastName: recip.last_name}}})['data']
+      contact_emails = AI_PROXY_INTERFACE.build_request(:who_are_we, { names: names_to_identify_with_ai, attendees: extracted_attendees.map{|recip| {email: recip.email, firstName: recip.first_name, lastName: recip.last_name}}})['data']
 
       contact_infos.each do |contact_info|
         email = contact_emails.find{|c_e| c_e['name'] == contact_info['owner_name']}.try(:[], 'email')
