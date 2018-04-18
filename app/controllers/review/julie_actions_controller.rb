@@ -71,4 +71,10 @@ class Review::JulieActionsController < ReviewController
         data: {}
     }
   end
+
+  def from_server_message_id
+    @julie_action = JulieAction.find_by_server_message_id params[:server_message_id]
+  end
+
+
 end

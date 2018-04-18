@@ -252,8 +252,16 @@
           </div>
         </div>
 
+
+
         <% # WARNING: This is trusted as HTML Safe, there is a possible security breach here. %>
-        <div class="body"><%== Message.format_email_body(message) %></div>
+        <div class="body">
+          <% if local_assigns[:reviewing_status] == "review" && message.from_me %>
+            <%= link_to "See operator / generated mail", {controller: :julie_actions, action: :from_server_message_id, server_message_id: message.server_message_id}, target: "_blank", class: "btn btn-primary" %>
+            <br>
+            <br>
+          <% end %>
+          <%== Message.format_email_body(message) %></div>
 
 
         <div class="attachments-container">

@@ -139,6 +139,7 @@ Rails.application.routes.draw do
       collection do
         get "list_errors", action: :list_errors
         post "list_comments", actions: :list_comments
+        get "from_server_message_id/:server_message_id", action: :from_server_message_id
       end
 
       member do
