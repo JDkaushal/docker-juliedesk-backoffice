@@ -39,7 +39,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     main_message_interpretation = message.message_interpretations.find { |interpretation| interpretation.question == MessageInterpretation::QUESTION_MAIN } if main_message_interpretation.blank?
 
     main_interpretation         = main_message_interpretation.json_response
-    last_message_classification = message.messages_thread.last_message_classification_with_data
+    #last_message_classification = message.messages_thread.last_message_classification_with_data
+    last_message_classification = self.previous_classification
 
     # Read attendees from last classif and merge with data interpreted by AI
     current_attendees  = Attendee.from_json(last_message_classification.try(:attendees) || '[]')

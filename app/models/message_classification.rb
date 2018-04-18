@@ -511,6 +511,24 @@ class MessageClassification < ActiveRecord::Base
   def thread_status_suggestion current_thread_status
 
   end
+  
+
+  def previous_classification
+    current_message = self.message
+    return nil if current_message.blank?
+
+    messages_thread = current_message.messages_thread
+    return nil if messages_thread.blank?
+
+    previous_messages = messages_thread
+                            .messages
+                            .includes(:message_classifications)
+                            .joins(:message_classifications)
+                            .where('messages.id < ?', current_message.id).merge(MessageClassification.with_data)
+                            .order('messages.id desc')
+
+    previous_messages.flat_map(&:message_classifications).sort_by(&:id).last
+  end
 
   private
 
