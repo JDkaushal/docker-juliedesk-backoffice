@@ -45,14 +45,14 @@
         <span class="account-warning calendar-access-lost" ng-show="account.calendar_access_lost"><span class="icon"></span><span class="text">Access to calendar lost</span></span>
       </div>
 
-      <div class="account-activated-features-container">
-        <span class="account-feature activated-since" ng-show="account.creation_distance_days < 31">{{ account.creation_distance_days }} jours</span>
-        <span class="account-feature language_level" ng-class="{'normal': account.language_level == 'normal', 'soutenu': account.language_level == 'soutenu'}"><span class="language_level_sprite"></span>langage {{account.language_level}}</span>
-        <br>
-        <span class="account-feature follow-up {{ account.auto_follow_up_enabled ? 'activated' : '' }}"><span class="icon"></span>Auto follow-up</span>
-        <span class="account-feature restaurant-booking {{ account.restaurant_booking_enabled ? 'activated' : '' }}"><span class="icon"></span>Restaurant booking</span>
-        <span class="account-feature meeting-room {{ account.has_meeting_rooms ? 'activated' : '' }}"><span class="icon"></span>Meeting Room</span>
-      </div>
+      <!--<div class="account-activated-features-container">-->
+        <!--<span class="account-feature activated-since" ng-show="account.creation_distance_days < 31">{{ account.creation_distance_days }} jours</span>-->
+        <!--<span class="account-feature language_level" ng-class="{'normal': account.language_level == 'normal', 'soutenu': account.language_level == 'soutenu'}"><span class="language_level_sprite"></span>langage {{account.language_level}}</span>-->
+        <!--<br>-->
+        <!--<span class="account-feature follow-up {{ account.auto_follow_up_enabled ? 'activated' : '' }}"><span class="icon"></span>Auto follow-up</span>-->
+        <!--<span class="account-feature restaurant-booking {{ account.restaurant_booking_enabled ? 'activated' : '' }}"><span class="icon"></span>Restaurant booking</span>-->
+        <!--<span class="account-feature meeting-room {{ account.has_meeting_rooms ? 'activated' : '' }}"><span class="icon"></span>Meeting Room</span>-->
+      <!--</div>-->
 
       <div class="account-client-info-container" ng-class="account.infoExtended ? 'extended' : ''">
         <div class="account-client-info-header" ng-click="account.infoExtended = !account.infoExtended">
@@ -73,6 +73,14 @@
           <div class="client-info-container" ng-show="account.means_of_transport">
             <div class="client-info-title">Means of transport</div>
             <div class="client-info-details">{{ account.means_of_transport }}</div>
+          </div>
+
+          <div class="client-info-container">
+            <div class="client-info-title">Features</div>
+            <div>Language {{ account.language_level == 'soutenu' ? 'Soutenu' : 'Courant' }}</div>
+            <div ng-show="account.auto_follow_up_enabled">Autofollowup</div>
+            <div ng-show="account.has_meeting_rooms">Meeting rooms</div>
+            <div ng-show="account.restaurant_booking_enabled">Restaurant Booking</div>
           </div>
 
           <div class="client-info-container">

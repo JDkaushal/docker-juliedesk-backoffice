@@ -294,10 +294,6 @@
 
       <div class="messages-thread-subject">
         <%= @messages_thread.subject %>
-        <% server_thread_labels = @messages_thread.server_thread['labels'] || [] %>
-        <% server_thread_labels.each do |label| %>
-            <span class="messages-thread-label"><%= label %></span>
-        <% end %>
       </div>
 
 
