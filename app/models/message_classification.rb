@@ -520,14 +520,7 @@ class MessageClassification < ActiveRecord::Base
     messages_thread = current_message.messages_thread
     return nil if messages_thread.blank?
 
-    previous_messages = messages_thread
-                            .messages
-                            .includes(:message_classifications)
-                            .joins(:message_classifications)
-                            .where('messages.id < ?', current_message.id).merge(MessageClassification.with_data)
-                            .order('messages.id desc')
-
-    previous_messages.flat_map(&:message_classifications).sort_by(&:id).last
+    MessageClassification.with_data.where('message_id IN(?) AND created_at < ?', messages_thread.message_ids, current_message.received_at).order('id desc').first
   end
 
   private
