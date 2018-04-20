@@ -1691,8 +1691,8 @@
         <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
         <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
 
-        <div class="data-entry-name"><%= I18n.t("info_box.computed_appointment_type") %></div>
-        <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control" %>
+        <div class="data-entry-name hidden"><%= I18n.t("info_box.computed_appointment_type") %></div>
+        <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control hidden" %>
 
         <div class="lunch-time-preference">
           <div class="lunch-time-wrapper">
