@@ -79,11 +79,11 @@ module AutomaticProcessing
                   {
                       conditions: [
                           { method: :additional_information_is?,  params: [ :@additional_information,                 ADDITIONAL_INFO_MOBILE ] },
-                          { method: :any_attendee_has?,           params: [ :@present_attendees_from_other_companies, ADDITIONAL_INFO_MOBILE ] },
+                          { method: :no_attendee_has?,           params: [ :@present_attendees_from_other_companies, ADDITIONAL_INFO_MOBILE ] },
                       ],
 
                       actions: [
-                          { method: :return_value, params: [ nil ], exit_flow: true }
+                          { method: :return_value, params: [ { field: 'mobile', ask: :attendees } ], exit_flow: true }
                       ]
                   },
 
