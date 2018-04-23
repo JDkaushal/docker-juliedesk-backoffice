@@ -42,7 +42,7 @@ module AutomaticProcessing
         AutomaticProcessing::Flows::JulieActionComplementaryInfo.new(
             classification: @data_holder.get_message_classification,
             account:        @data_holder.get_thread_owner_account
-        ).process_flow(@data_holder.get_julie_action_nature).try(:field)
+        ).process_flow(@data_holder.get_julie_action_nature).try(:[], :field)
       end
     end
   end
