@@ -21,8 +21,7 @@ window.classificationForms.followUpOnWeeklyRecapForm.prototype.showSelectThreads
     for(var i in data) {
         var dataEntry = data[i];
         var $entry = $("<div>").addClass("messages-thread-entry").data("messages-thread-id", dataEntry.messagesThreadId).data("label", dataEntry.label);
-        // Cleaning form unnecessary infos
-        //$entry.append($("<div>").addClass("messages-thread-label").append($("<input type='checkbox'/>")).append(dataEntry.label));
+        $entry.append($("<div>").addClass("messages-thread-label").append($("<input type='checkbox'/>")).append(dataEntry.label));
         $entry.append($("<textarea name='message'>").val("A relancer"));
 
         $selectThreadsPanel.append($entry);
