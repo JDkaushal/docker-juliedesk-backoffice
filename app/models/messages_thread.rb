@@ -33,8 +33,8 @@ class MessagesThread < ActiveRecord::Base
                 :track_inbox
 
   scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ? AND sent_to_admin = ?", true, true, false, false, false, false) }
-
   scope :in_inbox_only, -> { where("in_inbox = ? AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, false, false, false) }
+  scope :not_in_admin, -> { where(sent_to_admin: false) }
 
   scope :syncing, -> { where('? = ANY(tags)', 'syncing') }
   scope :not_syncing, -> { where('NOT (? = ANY(tags))', 'syncing') }
@@ -1461,6 +1461,19 @@ class MessagesThread < ActiveRecord::Base
   def calendars_synced?
     return true if self.clients_in_recipients.blank?
     self.clients_in_recipients.all? { |email| Account.is_synced?(email) }
+  end
+
+  def syncing_since
+    return nil unless self.has_tag?(SYNCING_TAG)
+
+    sync_started_at = nil
+    self.versions.order('created_at desc').each do |thread_version|
+      thread = thread_version.item
+      break unless thread.has_tag?(SYNCING_TAG)
+      sync_started_at = thread_version.created_at if thread && thread.has_tag?(SYNCING_TAG)
+    end
+
+    sync_started_at
   end
 
   private

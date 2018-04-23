@@ -98,3 +98,10 @@ fr:
           Si vous avez connaissance d'une modification de paramètre de partage de votre calendrier, merci d'en avertir mon équipe à l'adresse hello@juliedesk.com.
 
           Merci de votre compréhension.
+    technical_issue: |
+          Bonjour $%{client_name},
+
+          Je suis au regret de vous informer que le traitement de cet email est bloquée en raison d'un problème technique.
+          Mon équipe est sur le coup.
+
+          Je ne manquerai pas de reprendre le traitement dès résolution du problème.

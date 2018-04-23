@@ -1,6 +1,8 @@
 require "rails_helper"
 
 describe MessagesThread, :type => :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   before do
     @messages_thread = FactoryGirl.create(:messages_thread)
 
@@ -1228,6 +1230,42 @@ describe MessagesThread, :type => :model do
       it { is_expected.to eq(true) }
     end
 
+  end
+
+
+  describe '#syncing_since' do
+    let(:messages_thread_params) { {} }
+    let(:messages_thread) { create(:messages_thread, messages_thread_params) }
+
+    subject { messages_thread.syncing_since }
+
+    context 'when thread has no syncing tag' do
+      let(:messages_thread_params) { { tags: [] } }
+      it { is_expected.to eq(nil) }
+    end
+
+    context 'when thread has never been synced yet' do
+      before(:example) { messages_thread.add_tag(MessagesThread::SYNCING_TAG) }
+      it { is_expected.to be_within(1).of(Time.now) }
+    end
+
+    context 'when thread had syncing tag but not anymore' do
+      before(:example) do
+        messages_thread.add_tag(MessagesThread::SYNCING_TAG)
+        messages_thread.remove_tag(MessagesThread::SYNCING_TAG)
+      end
+      it { is_expected.to eq(nil) }
+    end
+
+
+    context 'when thread had syncing tag 15 minutes ago' do
+      before(:example) do
+        travel_to 15.minutes.ago { messages_thread.add_tag(MessagesThread::SYNCING_TAG) }
+        travel_back
+        messages_thread.remove_tag(MessagesThread::SYNCING_TAG)
+      end
+      it { is_expected.to eq(nil) }
+    end
   end
 
 

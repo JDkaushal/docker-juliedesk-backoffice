@@ -96,3 +96,10 @@ en:
           If you are aware of a change in your calendar sharing parameters, please inform my team at hello@juliedesk.com.
 
           Thank you for your understanding.
+    technical_issue: |
+      Hi %{client_name},
+
+      I'm sorry to inform you this email is being blocked for technical reasons.
+      My team is on it.
+
+      I will deal with this as soon as the issue is resolved.
