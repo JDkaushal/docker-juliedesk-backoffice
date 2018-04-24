@@ -3,6 +3,8 @@ module TicketService
     attr_accessor :config
   end
 
+  class DuplicateTicket < StandardError ; end
+
 
   def self.configure
     self.config ||= JiraConfiguration.new
@@ -17,6 +19,13 @@ module TicketService
         labels: labels
     }
     Jira.new(jira_options).create_ticket(Jira::TASK_ISSUE, data)
+
+  rescue Jira::DuplicateTicket => e
+    raise DuplicateTicket.new(e)
+  end
+
+  def self.ticket_exist?(summary)
+    Jira.new(jira_options).duplicate?(summary: summary)
   end
 
   def self.jira_options

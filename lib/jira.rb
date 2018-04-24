@@ -4,7 +4,9 @@ class Jira
   TASK_ISSUE          = ENV['JIRA_TASK_ISSUE_ID']
   DEFAULT_ASSIGNEE    = ENV['JIRA_DEFAULT_ASSIGNEE']
   API_ISSUE_PATH      = 'issue'
+  SEARCH_PATH        = 'search'
 
+  class DuplicateTicket < StandardError ; end
 
   def initialize(params)
     @api_url      = params.fetch(:api_url)
@@ -15,9 +17,22 @@ class Jira
   end
 
   def create_ticket(issue_type, data)
+    raise DuplicateTicket.new("This is ticket already exist") if self.duplicate?(data)
     send_request(API_ISSUE_PATH, ticket_data(issue_type, data))
   end
 
+  def duplicate?(data)
+    summary = data.fetch(:summary)
+    search_data = {
+        "jql": "summary ~ \"#{summary}\" AND created > -1d",
+        "startAt": 0,
+        "maxResults": 1,
+        "fields": ["summary"],
+        "fieldsByKeys": false
+    }
+    response = send_request(SEARCH_PATH, search_data)
+    response.body["total"] > 0
+  end
 
   private
 
@@ -58,7 +73,7 @@ class Jira
       http.request(request)
     end
 
-    { code: response.code, body: response.body }
+    OpenStruct.new({ code: response.code, body: JSON.parse(response.body) })
   end
 
 end

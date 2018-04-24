@@ -62,13 +62,15 @@ class ProcessableThreadsService
     #)
 
     # Notify dev about this issue
+
+    summary = "Calendars not synchronized for thread##{@messages_thread.id}"
+    return false if TicketService.ticket_exist?(summary)
+
     TicketWorker.enqueue(
-        summary:     "Thread calendars are not synchronized",
+        summary:     summary,
         description: "The present thread is still not synchronized (more than #{LAST_THREAD_SYNC_THRESHOLD_IN_MINUTES} min) : #{messages_thread_link}",
         tags: ["tek_thread_stuck_in_sync"]
     )
-
-    @messages_thread.send_to_admin
     true
   end
 
