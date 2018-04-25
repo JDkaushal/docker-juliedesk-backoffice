@@ -111,7 +111,7 @@ module AutomaticProcessing
 
                   # Fallback
                   {
-                      actions: [ { method: :return_value, params: [[]], exit_flow: true } ]
+                      actions: [ { method: :return_value, params: [nil], exit_flow: true } ]
                   }
               ]
           },
