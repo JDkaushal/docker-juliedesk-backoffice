@@ -1487,6 +1487,7 @@ class MessagesThread < ActiveRecord::Base
   def manage_tag(method, tag)
     raise "#{method} is not supported" unless [:push, :delete].include?(method)
     self.tags_will_change!
+    self.tags ||= []
     self.tags.send(method, tag)
     self.save
   end
