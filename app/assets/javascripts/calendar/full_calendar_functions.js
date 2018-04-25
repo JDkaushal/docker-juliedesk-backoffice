@@ -248,7 +248,6 @@ Calendar.prototype.fullCalendarEventClick = function(event, jsEvent, view) {
 
 Calendar.prototype.setBusyStatusOnEvent = function(event, $element, $imgSpanNode, $allDayMaskNode) {
     var calendar = this;
-    var timezone = calendar.getCalendarTimezone();
     var newBusy = !event.busy;
     var oldBusy = event.busy;
 
@@ -259,18 +258,8 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, $element, $imgSpanNode
         event_id: event.id,
         event_url: event.url,
         calendar_id: event.calId,
-        summary: event.title,
-        description: event.description,
-        attendees: event.attendees,
-        location: event.location,
-        all_day: event.allDay,
-        private: event.private,
-        start: event.start.format(),
-        end: event.end.format(),
-        start_timezone: timezone,
-        end_timezone: timezone,
-        utc_offset: event.start.zone() / 60.0,
-        busy: newBusy
+        busy: newBusy,
+        only_given_params: true
     }, function(response) {
         if(response.status == "success") {
             event.busy = newBusy;

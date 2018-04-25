@@ -455,14 +455,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
         }
 
         var updateEvent = function() {
-          $.ajax({
-            url: host + "/api/v1/calendar_proxy/event_update",
-            type: "POST",
-            contentType: "application/json",
-            beforeSend: function (xhr) {
-              xhr.setRequestHeader("Authorization", access_key);
-            },
-            data: JSON.stringify({
+          var updateEventJsonParams = {
               email: request.email,
               calendar_login_username: request.calendar_login_username,
               event_id: request.event_id,
@@ -494,7 +487,18 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
               meeting_room: request.meeting_room,
               virtual_resource_id: request.virtual_resource_id,
               create_skype_for_business_meeting: (request.create_skype_for_business_meeting == true)
-            }),
+          }
+          if(request.only_given_params) {
+              updateEventJsonParams.only_given_params = true;
+          }
+          $.ajax({
+            url: host + "/api/v1/calendar_proxy/event_update",
+            type: "POST",
+            contentType: "application/json",
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader("Authorization", access_key);
+            },
+            data: JSON.stringify(updateEventJsonParams),
             success: function (e) {
               var restaurantBookingManager = $('#restaurant-booking-manager').scope();
 
