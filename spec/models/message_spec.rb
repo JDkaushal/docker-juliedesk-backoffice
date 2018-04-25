@@ -383,5 +383,21 @@ describe Message do
       end
     end
 
+
+  end
+
+  describe 'compute_allowed_attendees' do
+    context 'somehting looking like an email and very long' do
+      it "should not bug" do
+        m = Message.new
+        m.instance_variable_set(:@server_message, {
+            'text' => "Hello john@doe.com, on va au #{"ab" * 200}@doe.com"
+        })
+        m.compute_allowed_attendees([])
+        m.save
+
+        expect(m.allowed_attendees).to eq(["john@doe.com"])
+      end
+    end
   end
 end

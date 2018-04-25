@@ -10,7 +10,9 @@ module AllowedAttendees
     end
 
     def extract_allowed_attendees
-      Set.new(extract_from_aggregated_texts + extract_from_html + extract_from_recipients + extract_from_ics_if_any).to_a.compact
+      Set.new(extract_from_aggregated_texts + extract_from_html + extract_from_recipients + extract_from_ics_if_any).to_a.compact.select{|attendee|
+        attendee.length < 255 # Added by Nico on April 25 2018, Important to prevent activerecord errors when saving
+      }
     end
 
     private

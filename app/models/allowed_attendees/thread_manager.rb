@@ -8,7 +8,9 @@ module AllowedAttendees
     end
 
     def compute_allowed_attendees
-      Set.new(extract_from_thread_owner + extract_from_accounts_candidates + extract_from_messages + extract_from_current_attendees).to_a.compact
+      Set.new(extract_from_thread_owner + extract_from_accounts_candidates + extract_from_messages + extract_from_current_attendees).to_a.compact.select{|attendee|
+        attendee.length < 255 # Added by Nico on April 25 2018, Important to prevent activerecord errors when saving
+      }
     end
 
     private
