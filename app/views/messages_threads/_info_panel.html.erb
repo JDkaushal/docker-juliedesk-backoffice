@@ -1229,11 +1229,12 @@
                 $(".number-to-call-part-container").show();
             }
             else {
-                $(".location-part-container").closest(".linear-form-entry").addClass("dont-show");
+                $(".location-part-container").addClass("dont-show");
             }
         }
         else {
             $(".location-part-container").show();
+            $(".number-to-call-part-container").addClass("dont-show");
         }
     }
 

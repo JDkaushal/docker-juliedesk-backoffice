@@ -121,6 +121,7 @@ class MessagesThread < ActiveRecord::Base
                  should_follow_up: false,
                  in_inbox: false
                })
+    self.remove_tag(SYNCING_TAG)
 
     if ENV['PUSHER_APP_ID']
       Pusher.trigger('private-global-chat', 'archive', {

@@ -192,6 +192,7 @@ class MessagesThreadsController < ApplicationController
       end
 
       messages_thread.update(data)
+      messages_thread.remove_tag(MessagesThread::SYNCING_TAG)
 
       WebSockets::Manager.trigger_archive(messages_thread.id)
 
