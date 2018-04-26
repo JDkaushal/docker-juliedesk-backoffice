@@ -856,9 +856,11 @@ class MessagesThread < ActiveRecord::Base
     all_messages = self.server_thread(force_refresh: true, show_split: true).try(:[], 'messages') || []
     messages_thread_messages = self.messages
 
-    all_messages.select do |server_message|
+    all_real_messages = all_messages.select do |server_message|
       server_message['messages_thread_id'] == self.server_thread_id && !server_message['duplicate']
-    end.each do |server_message|
+    end
+
+    all_real_messages.each do |server_message|
       Message.clean_server_message!(server_message)
 
 
@@ -881,6 +883,13 @@ class MessagesThread < ActiveRecord::Base
     if self.request_date != computed_request_date
       self.request_date = computed_request_date
     end
+
+    self.server_version = self.server_thread['version']
+    self.subject = self.server_thread['subject']
+    self.snippet = self.server_thread['snippet']
+    self.messages_count = all_real_messages.length
+
+
 
     computed_last_message_imported_at = self.compute_last_message_imported_at
     if self.last_message_imported_at != computed_last_message_imported_at

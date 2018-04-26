@@ -25,8 +25,14 @@ module AllowedAttendees
       @server_message['parsed_html']
     end
 
-    def emails_regexp
-      @emails_regex ||= AllowedAttendees::RegexpManager.email_regexp
+    def scan_emails(string)
+      string
+          .gsub(/à|â/, 'a')
+          .gsub(/é|è|ê/, 'e')
+          .gsub(/î/, 'i')
+          .gsub(/ô/, 'o')
+          .gsub(/û|ù/, 'u')
+          .scan(AllowedAttendees::RegexpManager.email_regexp)
     end
 
     # We will run the Regexp only once on an aggregate of all the texts we need (email body, constraints ...)
@@ -39,14 +45,14 @@ module AllowedAttendees
     end
 
     def extract_from_aggregated_texts
-      aggregate_texts.scan(emails_regexp)
+      scan_emails(aggregate_texts)
     end
 
     def extract_from_html
       html = get_email_body_as_html
       return [] unless html.present?
 
-      Nokogiri::HTML(html).search('//text()').map(&:text).map { |t| t.scan(AllowedAttendees::RegexpManager.email_regexp) }.flatten
+      Nokogiri::HTML(html).search('//text()').map(&:text).map { |text| scan_emails(text) }.flatten
     end
 
     def extract_from_recipients

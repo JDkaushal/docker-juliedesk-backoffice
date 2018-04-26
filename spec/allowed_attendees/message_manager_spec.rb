@@ -7,7 +7,7 @@ describe AllowedAttendees::MessageManager do
     let(:message) { FactoryGirl.create(:message_complete) }
 
     let(:text) { 'Corps du message avec fred@email.com et jean@dumat.com' }
-    let(:html) { '<div>Corps du message avec fred@email.com et jean@dumat.com</div>' }
+    let(:html) { '<div>Corps du message avec fred@email.com et jean@dumat.com ainsi que gérard@gmail.com</div>' }
     let(:server_message) {
       {
           'id' => 1,
@@ -40,7 +40,7 @@ describe AllowedAttendees::MessageManager do
     end
 
     it 'should compute the correct allowed attendees for the message' do
-      is_expected.to eq(["fred@email.com", "jean@dumat.com", "constraintEmail@email.com", "constraint2@email.com", "fromemail@email.com", "julie@juliedesk.com", "rimot@mlk.com", "lol@lol.com", "kjuh@ssm.com", "frederic@juliedesk.com", "frederic.grais@gmail.com"])
+      is_expected.to eq(["fred@email.com", "jean@dumat.com", "constraintEmail@email.com", "constraint2@email.com", "gerard@gmail.com", "fromemail@email.com", "julie@juliedesk.com", "rimot@mlk.com", "lol@lol.com", "kjuh@ssm.com", "frederic@juliedesk.com", "frederic.grais@gmail.com"])
     end
 
 
