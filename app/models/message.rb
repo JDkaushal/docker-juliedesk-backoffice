@@ -619,7 +619,7 @@ class Message < ActiveRecord::Base
         server_thread['messages'].each do |server_message|
           # Allow to store memoized data on messages that will be accessible later from messages_thread.messages (like fetched ics data)
           current_messages = messages_thread.messages
-          message = current_messages.find{|m| m.server_message_id == server_messacomge['id']}
+          message = current_messages.find{|m| m.server_message_id == server_message['id']}
 
           message_recipients = Message.generate_reply_all_recipients(server_message, julie_aliases_emails)
 
