@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180427140234) do
+ActiveRecord::Schema.define(version: 20180427141431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -173,16 +173,6 @@ ActiveRecord::Schema.define(version: 20180427140234) do
   end
 
   add_index "event_title_reviews", ["messages_thread_id"], name: "index_event_title_reviews_on_messages_thread_id", using: :btree
-
-  create_table "events", force: :cascade do |t|
-    t.string   "email"
-    t.string   "calendar_nature"
-    t.text     "event_id"
-    t.text     "calendar_id"
-    t.string   "classification"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "features", force: :cascade do |t|
     t.string   "name"
