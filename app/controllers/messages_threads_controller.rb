@@ -340,7 +340,12 @@ class MessagesThreadsController < ApplicationController
 
   def remove_data
     messages_thread = MessagesThread.find params[:id]
-    messages_thread.re_import
+
+    # Server thread might not exist (after merging)
+    begin
+      messages_thread.re_import
+    rescue MessagesThread::NoServerThreadFound
+    end
 
     if messages_thread.messages.empty?
       messages_thread.operator_actions_groups.destroy_all

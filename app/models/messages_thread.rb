@@ -4,6 +4,8 @@ class MessagesThread < ActiveRecord::Base
   class SplitError < Exception
   end
 
+  class NoServerThreadFound < StandardError ; end
+
   EVENT_SCHEDULED = "event_scheduled"
   SCHEDULING_EVENT = "scheduling_events"
   EVENTS_CREATED = "events_created"
@@ -854,6 +856,12 @@ class MessagesThread < ActiveRecord::Base
   def re_import
     existing_messages = []
     all_messages = self.server_thread(force_refresh: true, show_split: true).try(:[], 'messages') || []
+
+    # Server thread should exist when reimporting
+    if self.server_thread.nil?
+      raise NoServerThreadFound.new("No server thread found for backoffice thread id #{self.id}")
+    end
+
     messages_thread_messages = self.messages
 
     all_real_messages = all_messages.select do |server_message|
