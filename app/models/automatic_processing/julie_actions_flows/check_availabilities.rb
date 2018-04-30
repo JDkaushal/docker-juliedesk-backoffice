@@ -35,10 +35,10 @@ module AutomaticProcessing
 
         location = @data_holder.get_message_classification_location
 
-        formatted_attendees = @data_holder.get_message_classification.get_present_attendees.map do |attendee|
+        formatted_attendees = @data_holder.get_message_classification.get_present_attendees.reject(&:is_client).map do |attendee|
           {
-              name: attendee.usage_name.present? ? attendee.usage_name : nil,
-              assisted_by_name: attendee.is_client ? 'Julie' : nil,
+              name: attendee.usage_name,
+              assisted_by_name: nil,
               email: attendee.email
           }
         end
