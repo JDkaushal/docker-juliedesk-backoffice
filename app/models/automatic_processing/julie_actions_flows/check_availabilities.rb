@@ -35,12 +35,20 @@ module AutomaticProcessing
 
         location = @data_holder.get_message_classification_location
 
+        formatted_attendees = @data_holder.get_message_classification.get_present_attendees.map do |attendee|
+          {
+              name: attendee.usage_name.present? ? attendee.usage_name : nil,
+              assisted_by_name: attendee.is_client ? 'Julie' : nil,
+              email: attendee.email
+          }
+        end
+
         @julie_action.text = "#{say_hi_text}#{get_invitations_sent_template({
                                                                                 client_names: @data_holder.get_client_names,
                                                                                 timezones: [timezone_returned_by_ai],
                                                                                 locale: @data_holder.get_current_locale,
                                                                                 is_virtual: @data_holder.is_appointment_virtual?,
-                                                                                attendees: @data_holder.get_present_attendees,
+                                                                                attendees: formatted_attendees,
                                                                                 appointment_in_email: {
                                                                                     en: wordings['title_in_email']['en'],
                                                                                     fr: wordings['title_in_email']['fr']
