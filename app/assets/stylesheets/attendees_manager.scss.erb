@@ -10,13 +10,15 @@ $errorColor: #EA5959;
 $validColor: #62AF0A;
 $invalidButtonColor: #cacece;
 
+$companyNameColor: #4A4A4A;
+
 $presentAttendeeColor: #2EC094;
 $optionalAttendeeColor: #F5A623;
 $notPresentAttendeeColor: #453c3c;
 
 .attendees-manager{
 
-    margin-top: 30px;
+    //margin-top: 30px;
 
 
     .need-ai-confirmation {
@@ -108,7 +110,7 @@ $notPresentAttendeeColor: #453c3c;
             color: white;
             border: none;
             height: 35px;
-            width: 210px;
+            width: 100%;
         }
     }
 
@@ -124,19 +126,19 @@ $notPresentAttendeeColor: #453c3c;
         margin-right: 0;
     }
     .header{
-        font-size: 14px !important;
-        margin: 10px 0 10px !important;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: $darkBlue;
+        /*font-size: 14px !important;*/
+        /*margin: 10px 0 10px !important;*/
+        /*font-weight: bold;*/
+        /*text-transform: uppercase;*/
+        /*color: $darkBlue;*/
     }
 
 
     .attendee-company-title{
-        font-size: 14px !important;
-        margin: 25px 0 5px !important;
+        font-size: 16px !important;
+        margin: 25px 0 0px !important;
         text-transform: uppercase;
-        color: $darkBlue;
+        color: $companyNameColor;
         float:left;
     }
 
@@ -162,19 +164,20 @@ $notPresentAttendeeColor: #453c3c;
     }
 
     attendee-general-details {
-        display: block;
-        float: left;
-        width: 100%;
-        position: relative;
+      display: block;
+      float: left;
+      width: 100%;
+      position: relative;
+      margin-top: 15px;
 
-        .attendee-checkbox{
-            padding-left: 5px;
-            margin-top: 1px;
-        }
+      .attendee-checkbox{
+        padding-left: 5px;
+        margin-top: 1px;
+      }
 
-        .client-picto-contact{
-            padding-left: 0px;
-        }
+      .client-picto-contact{
+        padding-left: 0px;
+      }
     }
 
     .client-picto-contact{
@@ -244,7 +247,6 @@ $notPresentAttendeeColor: #453c3c;
 
     .search-list-wrapper {
         position: relative;
-        padding-bottom: 15px;
         max-height: 365px;
 
         .search-list {

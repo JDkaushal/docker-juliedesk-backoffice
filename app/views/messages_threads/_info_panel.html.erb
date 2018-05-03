@@ -98,6 +98,12 @@
             window.titlePreferenceOverridden = true;
         });
 
+        $('#validate_constraints_button').click(function(e) {
+            $(this).hide();
+            revealFormSecondPart();
+            window.messagesDispatcher.dispatch("info-panel-next-item-event");
+        });
+
 
         $("#appointment_nature").change(function () {
             var currentAppointment = window.getCurrentAppointment();
@@ -108,7 +114,9 @@
 
             // Appointment type selection is current step, we validate
             if($(".linear-form-entry:visible:eq(-1)").hasClass("appointment-type-selects")) {
-                askNextLinearFormEntry();
+                //revealForm();
+                //askNextLinearFormEntry();
+                revealFormFirstPart();
             }
 
             redrawDifferentTimezoneWarner();
@@ -177,6 +185,8 @@
           askNextLinearFormEntry();
         });
 
+
+
         $(".client-current-time").html(moment.tz(window.threadAccount.default_timezone_id).format("DD/MM YYYY, HH:mm:ss"));
 
         redrawLinearForm();
@@ -200,7 +210,7 @@
             $('.data input[type=radio]').prop('disabled', true);
             $notes = $('.data textarea.constraints');
             if($notes.val() == '')
-              $notes.parent().hide();
+              $notes.closest('.section').hide();
             else if($notes[0]){
               $notes.height($notes[0].scrollHeight);
             }
@@ -1146,6 +1156,22 @@
         }
     }
 
+    function revealForm() {
+        $(".linear-form-entry:hidden:not(.dont-show)").show();
+        $(".linear-form-entry:visible .validate-linear-form-entry-button").hide();
+        window.messagesDispatcher.dispatch("info-panel-next-item-event");
+        $(".save-info-container").show();
+    }
+
+    function revealFormFirstPart() {
+        $('.form-first-part-entries').show();
+    }
+
+    function revealFormSecondPart() {
+        $('.form-second-part-entries').show();
+        $(".save-info-container").show();
+    }
+
     function askNextLinearFormEntry() {
         $(".linear-form-entry:visible .validate-linear-form-entry-button").hide();
         if($(".linear-form-entry:hidden:not(.dont-show)").length ==0) {
@@ -1159,13 +1185,11 @@
           if(currentHiddenDiv.hasClass('disabled') || currentHiddenDiv.hasClass('linear-skip') || currentHiddenDiv.hasClass('set-by-ai')) {
               askNextLinearFormEntry();
           }
-
         }
         $(".messages-thread-info-panel").scrollTop($(".messages-thread-info-panel")[0].scrollHeight);
         if(window.messagesDispatcher) {
             window.messagesDispatcher.dispatch("info-panel-next-item-event");
         }
-
     }
 
     function initAddresses() {
@@ -1647,78 +1671,85 @@
         <%= render partial: "messages_threads/partials/client_agreement_level_tiles" %>
     <% end %>
 
-    <div class="data">
-      <div class="data-entry linear-form-entry locale-selection">
-        <div class="data-entry">
-          <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
-          <%= text_area_tag :constraints, messages_thread.computed_data[:constraints],
-                            class: "data-entry form-control constraints" %>
-        </div>
+    <div class="data scheduling-form">
+      <div class="data-entry">
+        <div class="section free-notes-section">
+          <div class="header">
+            <span class="sprite"></span>
+            <div class="title">
+              Free Notes
+            </div>
+          </div>
 
-        <div class="data-entry-name"><%= I18n.t("info_box.locale") %></div>
-        <div class="semi-data-entry">
-          <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.french") %>
-        </div>
-        <div class="semi-data-entry">
-          <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.english") %>
-        </div>
-        <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm validate-locale" data-tracking-event="Click_on_validate_language"><%= I18n.t("common.validate") %></div>
-      </div>
-
-      <div class="data-entry linear-form-entry language-level-selection <%=  messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL ? 'disabled' : '' %>">
-        <div class="data-entry-name"><%= I18n.t("info_box.language_level.title") %></div>
-        <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_NORMAL, (messages_thread.computed_data[:language_level] != Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %> <%= I18n.t("info_box.language_level.normal") %>
-        </div>
-        <div class="semi-data-entry">
-          <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_FORMAL, (messages_thread.computed_data[:language_level] == Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %> <%= I18n.t("info_box.language_level.soutenu") %>
-        </div>
-
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_select_language"><%= I18n.t("common.validate") %></div>
-      </div>
-
-      <div class="data-entry linear-form-entry appointment-type-selects" data-entry-name="appointmentType">
-        <% messages_thread_account_appointments = @messages_thread.account.try(:appointments) || [] %>
-        <% selectOption = Struct.new(:id, :name)%>
-        <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.group_by{|app| app['appointment_kind_hash']['family_kind']}.map{|family_kind, aks| selectOption.new(family_kind, aks.length > 1 ? family_kind : aks.first['designation']) }.sort_by{|option| option.name} %>
-        <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['designation']) } %>
-        <div class="data-entry-name"><%= I18n.t("info_box.appointment_type") %></div>
-        <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
-
-        <div class="data-entry-name hidden"><%= I18n.t("info_box.computed_appointment_type") %></div>
-        <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control hidden" %>
-
-        <div class="lunch-time-preference">
-          <div class="lunch-time-wrapper">
-            <div class="lunch-time-text">
-              Client preferred lunch time
-              <div id="lunch_time_preference_value"></div>
+          <div class="body">
+            <div class="data-entry">
+              <div class="data-entry-name"><%= I18n.t("info_box.ticket_notes") %></div>
+              <%= text_area_tag :constraints, messages_thread.computed_data[:constraints],
+                                class: "data-entry form-control constraints" %>
             </div>
           </div>
         </div>
       </div>
 
+      <div class="data-entry linear-form-entry appointment-type-selects section appointment-type-section" data-entry-name="appointmentType">
+        <% messages_thread_account_appointments = @messages_thread.account.try(:appointments) || [] %>
+        <% selectOption = Struct.new(:id, :name)%>
+        <% messages_thread_account_appointments_family_kinds = messages_thread_account_appointments.group_by{|app| app['appointment_kind_hash']['family_kind']}.map{|family_kind, aks| selectOption.new(family_kind, aks.length > 1 ? family_kind : aks.first['designation']) }.sort_by{|option| option.name} %>
+        <% messages_thread_account_appointments_labels = messages_thread_account_appointments.map{|app| selectOption.new(app['label'], app['designation']) } %>
 
+        <div class="header">
+          <span class="sprite"></span>
+          <div class="data-entry-name title">
+            <%= I18n.t("info_box.appointment_type") %>
+          </div>
+        </div>
 
-      <div class="data-entry linear-form-entry" data-entry-name="duration">
-        <div class="data-entry-name"><%= I18n.t("info_box.duration") %></div>
-        <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_duration"><%= I18n.t("common.validate") %></div>
+        <div class="body">
+          <%= select_tag :appointment_family_nature, options_from_collection_for_select(messages_thread_account_appointments_family_kinds, "id", "name"), class: "data-entry form-control" %>
+
+          <div class="data-entry-name hidden"><%= I18n.t("info_box.computed_appointment_type") %></div>
+          <%= select_tag :appointment_nature, options_from_collection_for_select(messages_thread_account_appointments_labels, "id", "name"), class: "data-entry form-control hidden" %>
+
+          <div class="lunch-time-preference">
+            <div class="lunch-time-wrapper">
+              <div class="lunch-time-text">
+                Client preferred lunch time
+                <div id="lunch_time_preference_value"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="data-entry linear-form-entry" data-entry-name="timezone">
-        <div class="linear-form-entry-subcontainer">
-          <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
-          <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
-          <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_appointment_type"><%= I18n.t("common.validate") %></div>
+      <div class="data-entry linear-form-entry form-first-part-entries section duration-section" data-entry-name="duration">
+        <div class="header">
+          <span class="sprite"></span>
+          <div class="data-entry-name title">
+            Duration
+          </div>
+        </div>
 
-          <div class="different-timezone-warner">
-            <div class="warning">
-              <%= I18n.t("info_box.warning_different_timezones") %>
-            </div>
-            <div class="forbidden">
-                <%= I18n.t("info_box.forbidden_different_timezones") %>
+        <div class="body">
+          <div class="sub-section">
+            <%= I18n.t("info_box.duration") %>
+            <%= text_field_tag :duration, messages_thread.computed_data[:duration], class: "data-entry form-control" %>
+          </div>
+
+          <div class="sub-section">
+            <div class="data-entry linear-form-entry form-first-part-entries" data-entry-name="timezone">
+              <div class="linear-form-entry-subcontainer">
+                <div class="data-entry-name"><%= messages_thread.computed_data[:is_virtual_appointment] ? I18n.t("info_box.timezone_for_virtual") : I18n.t("info_box.timezone_for_physical") %></div>
+                <%= text_field_tag :timezone, messages_thread.computed_data[:timezone], class: "data-entry form-control" %>
+
+                <div class="different-timezone-warner">
+                  <div class="warning">
+                    <%= I18n.t("info_box.warning_different_timezones") %>
+                  </div>
+                  <div class="forbidden">
+                    <%= I18n.t("info_box.forbidden_different_timezones") %>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1726,91 +1757,132 @@
 
       <%= render partial: "messages_threads/partials/attendees", locals: {messages_thread: messages_thread} %>
 
-      <div id="info-panel-app-container-1" ng-controller="blankInfoPanelController">
-        <info-panel-client-on-trip-field label="client_on_trip"
-                                         value="threadComputedData.client_on_trip"
-                                         account-email="threadAccount.email"
-                                         should-show="!currentAppointmentIsVirtual()"></info-panel-client-on-trip-field>
-
-      </div>
-
-      <div class="data-entry linear-form-entry" data-entry-name="location">
+      <div class="data-entry linear-form-entry form-first-part-entries" data-entry-name="location">
         <div class="ai-suggested-location-container"></div>
 
-        <div class="location-part-container">
-          <div class="data-entry-name"><%= I18n.t("info_box.location") %></div>
-          <%= select_tag :location_nature, "", class: "data-entry form-control" %>
-          <%= text_field_tag :cluster_specified_location, "", class: "data-entry form-control", placeholder: 'Sélection auto du lieu', disabled: true %>
-          <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
-          <%= hidden_field_tag :location_coordinates %>
+        <div class="location-part-container section location-section">
+          <div class="header">
+            <span class="sprite"></span>
+            <div class="data-entry-name title">
+              <%= I18n.t("info_box.location") %>
+            </div>
+          </div>
 
-          <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
+          <div class="body">
+
+            <%= select_tag :location_nature, "", class: "data-entry form-control" %>
+            <%= text_field_tag :cluster_specified_location, "", class: "data-entry form-control", placeholder: 'Sélection auto du lieu', disabled: true %>
+            <%= text_field_tag :location, messages_thread.computed_data[:location], class: "data-entry form-control" %>
+            <%= hidden_field_tag :location_coordinates %>
+
+            <%= render partial: "messages_threads/partials/restaurant_booking_manager", locals: {messages_thread: messages_thread} %>
+          </div>
+
         </div>
 
-        <div class="number-to-call-part-container">
+        <div class="number-to-call-part-container section call-instructions-section">
           <%= render partial: "messages_threads/partials/virtual_meetings_helper", locals: {messages_thread: messages_thread} %>
         </div>
+
         <%= render partial: "messages_threads/partials/meeting_rooms_manager", locals: {messages_thread: messages_thread} %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" id="location_instructions_tracking_btn" data-tracking-event="Click_on_validate_location"><%= I18n.t("common.validate") %></div>
+
       </div>
 
-      <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.time_constraints") %></div>
+      <div class="data-entry linear-form-entry form-first-part-entries section constraints-section">
+        <div class="header">
+          <span class="sprite"></span>
+          <div class="data-entry-name title">
+            <%= I18n.t("info_box.time_constraints") %>
+          </div>
+        </div>
 
-
-        <div class="constraint-tiles-container">
+        <div class="body">
+          <div class="constraint-tiles-container">
 
             <label class="asap-checkbox-container input-like">
-            <%= check_box_tag :asap_constraint, nil, messages_thread.computed_data[:asap_constraint], {class: 'info-panel-checkbox'} %><div class="checkbox-container-background"></div> ASAP (As Soon As Possible)
-          </label>
-        </div>
-        <div class="add-constraint-button btn btn-primary btn-sm btn-block">Add constraint</div>
+              <%= check_box_tag :asap_constraint, nil, messages_thread.computed_data[:asap_constraint], {class: 'info-panel-checkbox'} %>
+              <div class="checkbox-container-background"></div>
+              <span class="text">Organiser ASAP</span>
+            </label>
 
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
+            <div id="info-panel-app-container-1" ng-controller="blankInfoPanelController">
+              <info-panel-client-on-trip-field label="client_on_trip"
+                                               value="threadComputedData.client_on_trip"
+                                               account-email="threadAccount.email"
+                                               should-show="!currentAppointmentIsVirtual()"></info-panel-client-on-trip-field>
+
+            </div>
+          </div>
+          <div class="add-constraint-button btn btn-primary btn-sm btn-block">Add constraint</div>
+
+          <div class="btn btn-success btn-large" id="validate_constraints_button" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
+
+        </div>
       </div>
 
-      <div class="data-entry linear-form-entry subject-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
-        <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
-        <div class="title-preferences-checkboxes">
+      <div class="data-entry linear-form-entry form-second-part-entries subject-form-entry section parameters-section">
+        <div class="header">
+          <span class="sprite"></span>
+          <div class="title">Paramètres</div>
+        </div>
+
+        <div class="body">
+
+          <div class="radio-container">
+            <div class="radio-row">
+              <div class="semi-data-entry">
+                <%= I18n.t("info_box.french") %> <%= radio_button_tag :locale, "fr", (messages_thread.computed_data[:locale] != "en"), {class: 'locale-radio'} %>
+              </div>
+              <div class="semi-data-entry">
+                <%= radio_button_tag :locale, "en", (messages_thread.computed_data[:locale] == "en"), {class: 'locale-radio'} %> <%= I18n.t("info_box.english") %>
+              </div>
+            </div>
+
+            <div class="locale-discrepancy-message"><span id="locale_discrepancy_sprite"></span><span id="locale_discrepancy_text"></span></div>
+
+            <div class="data-entry linear-form-entry form-second-part-entries radio-row language-level-selection <%=  messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL ? 'disabled' : '' %>">
+
+              <div class="semi-data-entry">
+                <%= I18n.t("info_box.language_level.normal") %> <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_NORMAL, (messages_thread.computed_data[:language_level] != Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %>
+              </div>
+              <div class="semi-data-entry">
+                <%= radio_button_tag :language_level, Account::LANGUAGE_LEVEL_FORMAL, (messages_thread.computed_data[:language_level] == Account::LANGUAGE_LEVEL_FORMAL), {class: 'locale-radio', disabled: messages_thread.account.language_level == Account::LANGUAGE_LEVEL_FORMAL && messages_thread.computed_data[:language_level] == 'soutenu'} %> <%= I18n.t("info_box.language_level.soutenu") %>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="data-entry-name"><%= I18n.t("info_box.summary") %></div>
+          <%= text_field_tag :summary, messages_thread.computed_data[:summary], class: "data-entry form-control" %>
+          <div class="title-preferences-checkboxes">
           <span>
             <%= check_box_tag 'title_preferences[companies_and_names]', 'companies_and_names', messages_thread.computed_data[:title_preference] == 'companies_and_names', {class: 'title-preferences-checkbox'} %>
             Names
           </span>
 
-          <span>
-            <%= check_box_tag 'title_preferences[email_subject]', 'email_subject', messages_thread.computed_data[:title_preference] == 'email_subject', {class: 'title-preferences-checkbox'} %>
-            Subject
-          </span>
+            <span>
+              <%= check_box_tag 'title_preferences[email_subject]', 'email_subject', messages_thread.computed_data[:title_preference] == 'email_subject', {class: 'title-preferences-checkbox'} %>
+                Subject
+            </span>
 
-          <span>
+            <span>
             <%= check_box_tag 'title_preferences[custom]', 'custom', messages_thread.computed_data[:title_preference] == 'custom', {class: 'title-preferences-checkbox'} %>
-            Custom
+              Custom
           </span>
+          </div>
+
+          <div class="data-entry linear-form-entry form-second-part-entries private-event-container">
+            <div class="data-entry-value">
+              <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
+              <%= I18n.t("info_box.private_event") %>
+            </div>
+          </div>
+
+          <div class="data-entry linear-form-entry form-second-part-entries">
+            <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+            <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
+          </div>
         </div>
-
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_title"><%= I18n.t("common.validate") %></div>
-      </div>
-
-
-
-
-
-      <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.private_event") %></div>
-        <div class="data-entry-value">
-          <%= check_box_tag :private, "", messages_thread.computed_data[:private] %>
-          <%= I18n.t("info_box.private_event") %>
-        </div>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_private"><%= I18n.t("common.validate") %></div>
-      </div>
-
-      <div class="data-entry linear-form-entry">
-        <div class="data-entry-name"><%= I18n.t("info_box.notes") %></div>
-
-        <div id="notes" class="notes"><%= messages_thread.computed_data[:notes] %></div>
-        <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
-        <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_notes"><%= I18n.t("common.validate") %></div>
       </div>
 
       <div class="save-info-container">

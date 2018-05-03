@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="30px" viewBox="0 0 29 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 53</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-35.7%" y="-20.3%" width="171.4%" height="152.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <ellipse id="path-2" cx="6.9047619" cy="6.21274447" rx="2.76190476" ry="2.76121977"></ellipse>
+        <filter x="-18.1%" y="-18.1%" width="136.2%" height="136.2%" filterUnits="objectBoundingBox" id="filter-3">
+            <feGaussianBlur stdDeviation="0.5" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="1" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy" transform="translate(-1337.000000, -559.000000)">
+            <g id="Group-26" transform="translate(1337.000000, 337.000000)">
+                <g id="Group-53" transform="translate(0.000000, 222.591954)">
+                    <g id="Group-12" fill="#FFDE48">
+                        <g id="Group-13">
+                            <g id="Group-4">
+                                <ellipse id="Oval" cx="14.5" cy="14.4964038" rx="14.5" ry="14.4964038"></ellipse>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Group-52" transform="translate(7.595238, 4.832135)">
+                        <g id="Group-51" filter="url(#filter-1)">
+                            <g id="Group-50" fill="#FFFFFF">
+                                <path d="M7.48551322,18.7277602 C8.34967775,17.3109177 9.31759504,15.6847718 10.3892651,13.8493225 C12.3671155,10.461858 13.8095238,8.39214913 13.8095238,6.55789694 C13.8095238,2.93616659 10.7181566,0 6.9047619,0 C3.0913672,0 1.60582276e-16,2.93607047 0,6.55789694 C0,8.37048867 1.75276813,11.1270841 3.43875021,14.0462963 C4.37061997,15.6597924 5.32403803,17.2249371 6.2990044,18.7417303 L6.29895458,18.7417623 C6.50801135,19.067 6.94114263,19.1611833 7.26638039,18.9521266 C7.35545277,18.8948725 7.43037701,18.8181588 7.48551322,18.7277602 Z" id="Oval-11"></path>
+                            </g>
+                            <g id="Oval-12">
+                                <use fill="#FFDE48" fill-rule="evenodd" xlink:href="#path-2"></use>
+                                <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

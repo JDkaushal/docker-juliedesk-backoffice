@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 91</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-14.3%" y="-6.2%" width="128.6%" height="125.0%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <text id="text-2" font-family="OpenSans-Bold, Open Sans" font-size="12.6" font-weight="bold" fill="#FFFFFF">
+            <tspan x="7.7" y="13">i</tspan>
+        </text>
+        <filter x="-50.0%" y="-5.9%" width="200.0%" height="123.5%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy" transform="translate(-1342.000000, -519.000000)">
+            <g id="Group-30" transform="translate(1340.000000, 31.000000)">
+                <g id="Group-26">
+                    <g id="Group-91" transform="translate(2.000000, 488.000000)">
+                        <g id="Group-53" fill="#FFDE48">
+                            <g id="Group-12">
+                                <g id="Group-13">
+                                    <g id="Group-4">
+                                        <circle id="Oval" cx="14.7" cy="14.7" r="14.7"></circle>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                        <g id="Group-11" filter="url(#filter-1)" transform="translate(11.200000, 8.100000)" fill="#FFFFFF" fill-rule="nonzero">
+                            <g id="noun_1135525_cc" transform="translate(7.000000, 8.200000) scale(1, -1) translate(-7.000000, -8.200000) translate(0.000000, 0.700000)">
+                                <path d="M13.591506,12.4973822 L13.468,12.6241886 L10.5463521,9.6244678 L10.6698581,9.49766142 C11.0847321,9.07170107 11.757508,9.07170107 12.172382,9.49766142 L13.591506,10.9547076 C14.00638,11.3809407 14.00638,12.0714219 13.591506,12.4973822 Z M4.82656233,3.49821984 C5.24143633,3.07225949 5.24143633,2.3815056 4.82656233,1.95554525 L3.40743826,0.498499055 C2.99256426,0.0725387027 2.31978843,0.0725387027 1.90491443,0.498499055 L1.7814084,0.625305434 L4.7030563,3.62502622 L4.82656233,3.49821984 Z M9.4061126,10.795177 C9.1986756,11.0081572 8.86242049,11.0081572 8.65498349,10.795177 L3.56281681,5.56693638 C3.35537981,5.3539562 3.35537981,5.00871561 3.56281681,4.79573544 L4.32749175,4.01062669 L1.40610945,1.01117861 C-0.247808863,2.71556542 -0.246480841,5.47367233 1.41142154,7.17587753 L7.0881834,13.004335 C8.74582018,14.7062675 11.4324082,14.7079037 13.0924354,13.0097891 L10.1707875,10.0100683 L9.4061126,10.795177 Z" id="Shape"></path>
+                            </g>
+                        </g>
+                        <g id="i" fill="#FFFFFF" fill-opacity="1">
+                            <use filter="url(#filter-3)" xlink:href="#text-2"></use>
+                            <use xlink:href="#text-2"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

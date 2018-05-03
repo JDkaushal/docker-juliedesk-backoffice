@@ -1,47 +1,61 @@
 <%= javascript_include_tag 'angular_attendees_app' %>
 <script>window.currentToCC = <%== @messages_thread.present? ? @messages_thread.get_all_messages_recipients.map{|email| email.downcase}.to_json : [].to_json %>;</script>
 
-<div id="attendees_manager_app" class="data-entry linear-form-entry attendees-manager">
-  <div class="data-entry-name header"><%= I18n.t("info_box.attendees") %></div>
-  <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
-    <label><%=I18n.t("common.add_registered_attendee")%></label>
-    <input class="registered-attendees-search-input form-control" ng-keydown="keydownAttendeesSearchAction($event)" ng-model="attendeeSearchFilter" placeholder="Recherche... (Prénom, Nom, email)"/>
-    <div class="add-attendee-btn-container" ng-hide="attendees_manager.readOnly">
-      <%= button_tag('ng-click' => 'attendees_manager.displayAttendeeNewForm()') do %>
-          <%= content_tag(:i, '',class: 'fa fa-plus') %>
-          <%= content_tag(:span, I18n.t("common.add_attendee")) %>
-      <% end %>
+<div id="attendees_manager_app" class="data-entry linear-form-entry attendees-manager section attendees-section">
+  <div class="header">
+    <span class="sprite"></span>
+    <div class="data-entry-name title">
+      <%= I18n.t("info_box.attendees") %>
     </div>
-    <div>
-      <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
-    </div>
-    <div class="contact-group" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
-      <div class="attendee-company-title">
-        {{ key }}
+  </div>
+
+  <div class="body">
+
+    <div id="attendeesCtrl" ng-controller="AttendeesCtrl as attendees_manager">
+      <div>
+        <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
       </div>
-      <div ng-repeat="attendee in value">
-        <div class="contact" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}">
-          <attendee-general-details/>
-        </div>
-      </div>
-    </div>
-    <div class="search-list-wrapper">
-      <div style="position: absolute;" class="contact-group search-list" ng-show="displaySearchList" ng-repeat="(key, value) in getRegisteredAvailableAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+      <div class="contact-group" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
         <div class="attendee-company-title">
           {{ key }}
         </div>
-        <div ng-repeat="attendee in value track by $index">
-          <div class="contact search-list-item" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}" ng-class="{'highlighted-in-search': attendee.highligthedInSearch }">
-            <attendee-general-details-light attendee="attendee" reset-search="resetAttendeesSearch()"/>
+        <div ng-repeat="attendee in value">
+          <div class="" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}">
+            <attendee-general-details/>
           </div>
         </div>
+        <div class="clearfix"></div>
       </div>
+
+      <div class="sub-section">
+
+        <input class="registered-attendees-search-input form-control" ng-keydown="keydownAttendeesSearchAction($event)" ng-model="attendeeSearchFilter" placeholder="Recherche... (Prénom, Nom, email)"/>
+        <div class="add-attendee-btn-container" ng-hide="attendees_manager.readOnly">
+          <%= button_tag('ng-click' => 'attendees_manager.displayAttendeeNewForm()') do %>
+            <%= content_tag(:i, '',class: 'fa fa-plus') %>
+            <%= content_tag(:span, I18n.t("common.add_attendee")) %>
+          <% end %>
+        </div>
+
+        <div class="search-list-wrapper">
+          <div style="position: absolute;" class="contact-group search-list" ng-show="displaySearchList" ng-repeat="(key, value) in getRegisteredAvailableAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+            <div class="attendee-company-title">
+              {{ key }}
+            </div>
+            <div ng-repeat="attendee in value track by $index">
+              <div class="contact search-list-item" data-name="{{attendee.firstName}} {{attendee.lastName}}" data-inTitle="{{!attendee.isAssistant}}" ng-class="{'highlighted-in-search': attendee.highligthedInSearch }">
+                <attendee-general-details-light attendee="attendee" reset-search="resetAttendeesSearch()"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <attendees-form/>
     </div>
+    <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_attendees"><%= I18n.t("common.validate") %></div>
 
-    <attendees-form/>
   </div>
-
-
-  <div class="validate-linear-form-entry-button btn btn-success btn-sm" data-tracking-event="Click_on_validate_attendees"><%= I18n.t("common.validate") %></div>
 </div>
 <div class="clearfix"></div>

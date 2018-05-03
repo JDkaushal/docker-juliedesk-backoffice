@@ -1,21 +1,30 @@
 <div ng-show="displayForm">
-    <div class="header" ng-if="showHeader">Instructions d'appel</div>
-    <div class="content">
-      <%= label_tag 'Appeler' %>
-      <%= select_tag :call_target, options_for_select([]),{'ng-options' => 'callTarget.value as callTarget.name for callTarget in callTargets', 'ng-change' => 'computeCallDetails(true); targetChanged()', 'ng-model' => 'currentConf.target', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
-
-      <div ng-show="currentConf.target == 'interlocutor'">
-        <%= select_tag :call_target_infos, options_for_select([]),{'ng-options' => '{email: callTargetsInfo.email, name: callTargetsInfo.name, guid: callTargetsInfo.guid} as callTargetsInfo.displayName for callTargetsInfo in callTargetsInfos track by callTargetsInfo.guid', 'ng-change' => 'targetInfosChanged()', 'ng-model' => 'currentConf.targetInfos', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
-      </div>
-
-      <div ng-hide="currentConf.target == 'later' || currentConf.target == 'custom'">
-        <%= label_tag 'Support' %>
-        <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-change' => 'supportChangedCallback()', 'ng-model' => 'currentConf.support', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
-      </div>
-
-      <div ng-hide="currentConf.target == 'later' || (currentConf.target == 'interlocutor' && !currentConf.targetInfos.guid)">
-        <%= label_tag 'Détails' %>
-        <%= text_field_tag :call_details, "", {'ng-model' => 'currentConf.details', 'ng-change' => 'detailsOverrided()', 'ng-disabled' => 'detailsDisabled()', class: 'form-control'} %>
+    <div class="header" ng-if="showHeader">
+      <span class="sprite"></span>
+      <div class="title">
+        Instructions d'appel
       </div>
     </div>
+
+    <div class="body">
+      <div class="content">
+        <%= label_tag 'Appeler' %>
+        <%= select_tag :call_target, options_for_select([]),{'ng-options' => 'callTarget.value as callTarget.name for callTarget in callTargets', 'ng-change' => 'computeCallDetails(true); targetChanged()', 'ng-model' => 'currentConf.target', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
+
+        <div ng-show="currentConf.target == 'interlocutor'">
+          <%= select_tag :call_target_infos, options_for_select([]),{'ng-options' => '{email: callTargetsInfo.email, name: callTargetsInfo.name, guid: callTargetsInfo.guid} as callTargetsInfo.displayName for callTargetsInfo in callTargetsInfos track by callTargetsInfo.guid', 'ng-change' => 'targetInfosChanged()', 'ng-model' => 'currentConf.targetInfos', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
+        </div>
+
+        <div ng-hide="currentConf.target == 'later' || currentConf.target == 'custom'">
+          <%= label_tag 'Support' %>
+          <%= select_tag :call_support, options_for_select([]),{'ng-options' => 'callSupport.value as callSupport.name for callSupport in callSupports', 'ng-change' => 'supportChangedCallback()', 'ng-model' => 'currentConf.support', 'ng-disabled' => '!formEditMode', class: 'form-control'} %>
+        </div>
+
+        <div ng-hide="currentConf.target == 'later' || (currentConf.target == 'interlocutor' && !currentConf.targetInfos.guid)">
+          <%= label_tag 'Détails' %>
+          <%= text_field_tag :call_details, "", {'ng-model' => 'currentConf.details', 'ng-change' => 'detailsOverrided()', 'ng-disabled' => 'detailsDisabled()', class: 'form-control'} %>
+        </div>
+      </div>
+    </div>
+
 </div>

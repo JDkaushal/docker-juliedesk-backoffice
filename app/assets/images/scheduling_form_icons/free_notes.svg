@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="29px" viewBox="0 0 29 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-40.0%" y="-5.6%" width="180.0%" height="122.2%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.580644248 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy" transform="translate(-517.000000, -225.000000)">
+            <g id="Group-2" transform="translate(517.000000, 225.000000)">
+                <g id="Group-7" fill="#F5BB17">
+                    <g id="Group-6">
+                        <circle id="Oval" cx="14.5" cy="14.5" r="14.5"></circle>
+                    </g>
+                </g>
+                <g id="Group-18" filter="url(#filter-1)" transform="translate(12.428571, 4.833333)" fill="#FFFFFF">
+                    <circle id="Oval-1" cx="2.41666667" cy="15.5357143" r="1.72619048"></circle>
+                    <path d="M1.73094112,0 L3.10440402,-2.22044605e-16 C3.684303,-3.28570321e-16 4.15440402,0.470101013 4.15440402,1.05 C4.15440402,1.06834217 4.1539234,1.0866812 4.15296265,1.10499819 L3.64743269,10.7430934 C3.61817754,11.3008525 3.15739984,11.7380952 2.59887406,11.7380952 L2.15347592,11.7380952 C1.59146165,11.7380952 1.1290986,11.2955581 1.1044835,10.7340831 L0.681948692,1.09598791 C0.656550273,0.516645385 1.10561069,0.0264059915 1.68495321,0.00100757269 C1.70027332,0.000335938153 1.7156063,4.46906171e-16 1.73094112,4.4408921e-16 Z" id="Rectangle-34"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

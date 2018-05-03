@@ -367,7 +367,7 @@ fr:
     timezone_for_physical: "Fuseau horaire du rendez-vous"
     ticket_notes: "Notes libres"
     time_constraints: "Contraintes temporelles"
-    appointment_type: "Type de rendez-vous"
+    appointment_type: "Rendez-vous"
     computed_appointment_type: "Type de rendez-vous processé"
     summary: "Titre"
     duration: "Durée"

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="29px" viewBox="0 0 29 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 55</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-11.1%" y="-5.6%" width="122.2%" height="122.2%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy" transform="translate(-937.000000, -224.000000)">
+            <g id="Group-55" transform="translate(937.000000, 224.000000)">
+                <g id="Group-5" fill="#20A464">
+                    <circle id="Oval" cx="14.5" cy="14.5" r="14.5"></circle>
+                </g>
+                <g id="noun_504649_cc" filter="url(#filter-1)" transform="translate(5.523810, 4.833333)" fill="#FFFFFF" fill-rule="nonzero">
+                    <path d="M8.97619048,17.952381 C13.9380291,17.952381 17.952381,13.9821429 17.952381,9.07482993 C17.952381,4.5127551 14.4616402,0.739795918 9.97354497,0.246598639 L7.97883598,0.246598639 C3.49074074,0.739795918 0,4.48809524 0,9.07482993 C0,13.9821429 4.01435185,17.952381 8.97619048,17.952381 Z M8.97619048,1.18367347 C13.3645503,1.18367347 16.9550265,4.73469388 16.9550265,9.07482993 C16.9550265,13.414966 13.3645503,16.9659864 8.97619048,16.9659864 C4.58783069,16.9659864 0.997354497,13.414966 0.997354497,9.07482993 C0.997354497,4.73469388 4.58783069,1.18367347 8.97619048,1.18367347 Z" id="Shape"></path>
+                    <path d="M15.1904762,9.20634921 C15.1904762,5.63711844 12.4179487,2.76190476 8.97619048,2.76190476 L8.97619048,9.20634921 L14.3539377,12.4285714 C14.8797619,11.4866911 15.1904762,10.3713065 15.1904762,9.20634921 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

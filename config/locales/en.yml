@@ -199,7 +199,7 @@ en:
     timezone_for_physical: "Appointment timezone"
     ticket_notes: "Free notes"
     time_constraints: "Time constraints"
-    appointment_type: "Appointment type"
+    appointment_type: "Appointment"
     computed_appointment_type: "Computed appointment type"
     summary: "Summary"
     duration: "Duration"

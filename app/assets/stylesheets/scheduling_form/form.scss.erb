@@ -1,0 +1,211 @@
+@import "./colors";
+@import '../common';
+
+@mixin section-header-sprite-conf($spriteUrl) {
+  background-image: url($spriteUrl);
+  background-repeat: no-repeat;
+  background-size: 30px 30px;
+  width: 30px;
+  display: inline-block;
+  height: 30px;
+}
+
+.scheduling-form {
+
+  // Suppressing default style
+  .data-entry-name {
+    margin-top: 0px !important;
+    font-size: inherit !important;
+  }
+
+  .section {
+    border: solid 1px $borderGrey;
+    margin-top: 15px;
+
+    .header {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+
+      .title {
+        margin-left: 10px;
+        font-weight: bold;
+      }
+    }
+
+    .body {
+      padding: 10px;
+      padding-bottom: 20px;
+
+      .sub-section {
+        margin-top: 10px;
+
+        &:first-child {
+          margin-top: 0px;
+        }
+      }
+    }
+  }
+
+  .appointment-type-section {
+     .header {
+       background-color: $appointmentTypeHeaderColor;
+
+       .sprite {
+         @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/appointment_type.svg' %>");
+       }
+     }
+
+    .body {
+      background-color: $appointmentTypeBodyColor;
+    }
+  }
+
+  .free-notes-section {
+    .header {
+      background-color: $freeNotesHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/free_notes.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $freeNotesBodyColor;
+    }
+  }
+
+  .duration-section {
+    .header {
+      background-color: $durationHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/duration.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $durationBodyColor;
+    }
+  }
+
+  .call-instructions-section {
+    .header {
+      background-color: $callInstructionsLocationHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/call_instructions.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $callInstructionsLocationBodyColor;
+    }
+  }
+
+  .location-section {
+    .header {
+      background-color: $callInstructionsLocationHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/location.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $callInstructionsLocationBodyColor;
+    }
+  }
+
+  .attendees-section {
+    .header {
+      background-color: $attendeesHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/attendees.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $attendeesBodyColor;
+    }
+  }
+
+  .constraints-section {
+    .header {
+      background-color: $constraintsHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/constraints.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $constraintsBodyColor;
+
+      .add-constraint-button {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .parameters-section {
+    .header {
+      background-color: $parametersHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/parameters.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $parametersBodyColor;
+
+      .radio-container {
+
+        .radio-row {
+          margin-bottom: 10px;
+
+          &:first-child {
+            margin-bottom: 5px;
+          }
+        }
+
+        text-align: center;
+        .semi-data-entry {
+          width: 80px;
+          text-align: left;
+
+          &:first-child {
+            text-align: right;
+            margin-right: 30px;
+          }
+        }
+      }
+
+      .private-event-container {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .resources-section {
+    .header {
+      background-color: $resourcesHeaderColor;
+
+      .sprite {
+        @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/resources.svg' %>");
+      }
+    }
+
+    .body {
+      background-color: $resourcesBodyColor;
+    }
+  }
+
+  #info-panel-app-container-1 {
+    .custom-data-entry {
+      padding: 0;
+    }
+  }
+}
