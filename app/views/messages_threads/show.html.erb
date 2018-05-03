@@ -58,7 +58,7 @@
                                 type: "POST",
                                 url: "/messages_threads/" + window.processingMessageThreadId + "/remove_data",
                                 data: {
-                                  merged_in_thread_id: serverThreadId
+                                  merged_in_thread_id: messagesThreadId
                                 },
                                 success: function() {
                                     // Send an alert to operator dealing with target thread
