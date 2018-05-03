@@ -207,7 +207,7 @@ class NotesManager {
     loadJulieDeskParts() {
         for (let partName of NotesManager.JULIEDESK_NOTES_PARTS) {
             this.contentType == NotesManager.TYPE_HTML ?
-                this.loadPart(partName) : this.loadPartAsText(partName);
+                this.loadPart(partName, { mode: 'html' }) : this.loadPartAsText(partName);
         }
     }
 
