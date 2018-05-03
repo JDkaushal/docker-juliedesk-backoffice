@@ -336,7 +336,8 @@ class NotesManager {
     // =================================================================================================================
     updateNotes() {
         this.$html = $(NotesManager.DEFAULT_HTML);
-        this.updateJulieDeskNotes();
+        if(this.areJulieDeskNotesEmpty() === false)
+            this.updateJulieDeskNotes();
         this.updateEmailHistory();
         this.updateCustomerNotes();
         this.clean();
@@ -545,6 +546,14 @@ class NotesManager {
 
     setCustomerNotes(text) {
         return this.setPart(NotesManager.CUSTOMER_NOTES_PART, text);
+    }
+
+    areJulieDeskNotesEmpty() {
+        for(const partName of NotesManager.JULIEDESK_NOTES_PARTS) {
+            if(this.getPart(partName))
+                return false;
+        }
+        return true;
     }
 
 }

@@ -33,6 +33,7 @@ function EventTile($selector, params) {
 
     //this.firstTimeCopiedInfos = true;
     this.uxElement = params.uxElement;
+    this.notesManager = params.notesManager;
 
     var eventTile = this;
 
@@ -285,14 +286,26 @@ EventTile.prototype.redraw = function() {
         eventTile.$selector.find(".hide-if-ai-event-interpretation").hide();
     }
 
-    //var notesManager = new NotesManager(eventTile.event.description, { 'contentType': NotesManager.TYPE_HTML });
-    var $notes = $('<pre class="notes">'+ eventTile.event.description +'</pre>');
-    //$notes.append(eventTile.event.description);
-    //$notes.append(notesManager.getFullNotesNode());
+    var $notes = $('<pre class="notes">'+ (eventTile.event.description || "" )  +'</pre>');
+    eventTile.$selector.find('.notes-container').html($notes);
 
-    eventTile.$selector.find('.notes-container').html($notes)
+    if(eventTile.getMode() == 'free_calendar' && !eventTile.eventId) {
+        $customNotesEditor = $('<textarea style="width: 100%" class="customNotes"> </textarea>');
+        $customNotesEditor.keyup(function() {
+            var content = $(this).val();
 
-    eventTile.$selector.find("textarea.notes").hide();
+            if(eventTile.notesManager) {
+                eventTile.notesManager.setSpecificNotes(content);
+                eventTile.notesManager.updateNotes();
+                eventTile.editableDescription = eventTile.notesManager.getFullNotesOutputHTML();
+                $notes.html(eventTile.editableDescription);
+            }
+            else
+                console.warn("no notes manager for", eventTile);
+
+        });
+        eventTile.$selector.find('.notes-container').append($customNotesEditor);
+    }
 
     eventTile.$selector.find(".recurrence-container").hide();
 
@@ -685,6 +698,7 @@ EventTile.prototype.fetchEvent = function(callback) {
         else {
             eventTile.hideSpinner();
             eventTile.event = eventTile.eventDataFromEvent(response.data);
+            eventTile.editableDescription = eventTile.event.description;
             if(eventTile.afterEventFetchedCallback) eventTile.afterEventFetchedCallback();
             if(callback) callback(response.data);
         }

@@ -179,6 +179,7 @@
         }
 
         var eventTile = new EventTile($selector, {
+            notesManager: params.eventId ?  null: new NotesManager(""),
             mode: "free_calendar",
             event: event,
             eventId: params.eventId,
@@ -364,31 +365,6 @@
     };
 
     $(document).ready(function() {
-
         $container = $("#thread-header-other-entries-container");
-
-// Deactivated because window.currentHtmlMessage has 'token unexpected error'
-//        $.ajax({
-//            url: "/api/v1/messages_threads/parse_ticket",
-//            method: 'post',
-//            data: {
-//                html_message: window.currentHtmlMessage
-//            },
-//            beforeSend: function (xhr) {
-//                xhr.setRequestHeader("Authorization", "<%= ENV['API_KEY'] %>");
-//            },
-//            success: function (response) {
-//                if(response['Status'] == "Success") {
-//                    $('#ticket_module').show();
-//                    window.currentTicketInfos = response['Result'];
-//                }
-//                console.log(response);
-//            },
-//            error: function(response){
-//                console.log(response);
-//            }
-//        })
-
-
     });
 </script>
