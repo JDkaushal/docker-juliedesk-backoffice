@@ -36,7 +36,7 @@ RSpec.configure do |config|
 
   config.after(:each, use_archive_db: true) do
     current_conf = ActiveRecord::Base.connection_config
-    ActiveRecord::Base.establish_connection ENV['BACKOFFICE_ARCHIVE_DATABASE_URL']
+    ActiveRecord::Base.establish_connection Rails.configuration.database_configuration["archive_test"]
     DatabaseCleaner.clean
     ActiveRecord::Base.establish_connection current_conf
     DatabaseCleaner.clean

@@ -41,7 +41,7 @@ describe Archiver do
       current_conf = ActiveRecord::Base.connection_config
       begin
 
-        ActiveRecord::Base.establish_connection("archive_test")
+        ActiveRecord::Base.establish_connection(Rails.configuration.database_configuration["archive_test"])
         expect(MessagesThread.count).to eq(1)
         expect(MessagesThread.first.id).to eq(@mt1.id)
         expect(Message.count).to eq(2)

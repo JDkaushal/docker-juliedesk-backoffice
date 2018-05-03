@@ -1,4 +1,13 @@
 module Archiver
+
+  def self.archive_old_threads
+    messages_thread_ids = messages_thread_ids_to_archive
+    messages_thread_ids.each do |messages_thread_id|
+      ArchiveWorker.enqueue messages_thread_id
+    end
+    messages_thread_ids.length
+  end
+
   def self.messages_thread_ids_to_archive
     ActiveRecord::Base.connection.execute(<<-SQL.strip_heredoc
 SELECT DISTINCT(messages_threads.id)
