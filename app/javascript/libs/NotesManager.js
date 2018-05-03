@@ -142,10 +142,10 @@ class NotesManager {
     }
 
     static fromEventDescription(content) {
-        let noteManager = new NotesManager("", { contentType: NotesManager.TYPE_HTML });
+        content = content || "";
         let customerContent = content.replace(/\[DESCRIPTION\](.*)\[\/DESCRIPTION\]/, '').replace(/-(.+)----\n[\s\S]+----\n/gm, '');
+        let noteManager = new NotesManager(content, { contentType: NotesManager.TYPE_HTML });
         noteManager.setCustomerNotes(customerContent);
-
         return noteManager;
     }
 
@@ -314,7 +314,7 @@ class NotesManager {
 
     setPart(partName, text) {
         if(text)
-        // Replace starting and ending line breaks
+            // Replace starting and ending line breaks
             return this.parts[partName] = text.replace(/^\n+/, '').replace(/\n+$/, '');
         else {
             return this.removePart(partName);

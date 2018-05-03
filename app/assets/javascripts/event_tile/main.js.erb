@@ -289,19 +289,24 @@ EventTile.prototype.redraw = function() {
     var $notes = $('<pre class="notes">'+ (eventTile.event.description || "" )  +'</pre>');
     eventTile.$selector.find('.notes-container').html($notes);
 
-    if(eventTile.getMode() == 'free_calendar' && !eventTile.eventId) {
-        $customNotesEditor = $('<textarea style="width: 100%" class="customNotes"> </textarea>');
+
+    if(eventTile.getMode() == 'free_calendar') {
+        var julieDeskNotesManager = NotesManager.fromJulieDeskNotes($notes.html(), $notes[0].innerText);
+        var eventNotesManager     = NotesManager.fromEventDescription(eventTile.editableDescription);
+        eventNotesManager.updateNotesFromOtherNotes(julieDeskNotesManager);
+        eventTile.notesManager = eventNotesManager;
+
+        var specificNotesElement = eventNotesManager.getElementByClassName('jd-specific-notes').find('.content')[0];
+        var specificNotes = specificNotesElement ? specificNotesElement.innerText : ""
+
+        $customNotesEditor = $('<textarea style="width: 100%" class="customNotes">' + specificNotes + '</textarea>');
         $customNotesEditor.keyup(function() {
             var content = $(this).val();
 
-            if(eventTile.notesManager) {
-                eventTile.notesManager.setSpecificNotes(content);
-                eventTile.notesManager.updateNotes();
-                eventTile.editableDescription = eventTile.notesManager.getFullNotesOutputHTML();
-                $notes.html(eventTile.editableDescription);
-            }
-            else
-                console.warn("no notes manager for", eventTile);
+            eventNotesManager.setSpecificNotes(content);
+            eventNotesManager.updateNotes();
+            eventTile.editableDescription = eventNotesManager.getFullNotesOutputHTML();
+            $notes.html(eventTile.editableDescription);
 
         });
         eventTile.$selector.find('.notes-container').append($customNotesEditor);
