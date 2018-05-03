@@ -54,31 +54,36 @@
                         if(_.size(window.messagesIdsHash) == messageIdsToSplit.length) {
                             setToBeMergedOnMessagesThread(messagesThreadId, false);
 
-                            $.post("/messages_threads/" + window.processingMessageThreadId + "/remove_data").success(function() {
+                            $.ajax({
+                                type: "POST",
+                                url: "/messages_threads/" + window.processingMessageThreadId + "/remove_data",
+                                data: {
+                                  merged_in_thread_id: serverThreadId
+                                },
+                                success: function() {
+                                    // Send an alert to operator dealing with target thread
+                                    var mergeMessageData = {
+                                        message: "Thread" + messagesThreadId + " merged.",
+                                        sender: myName
+                                    };
 
-                              // Send an alert to operator dealing with target thread
-                              var mergeMessageData = {
-                                message: "Thread" + messagesThreadId + " merged.",
-                                sender: myName
-                              };
+                                    if(typeof(pusher) != 'undefined') {
+                                        var channel = pusher.subscribe('private-thread-' + messagesThreadId);
+                                        channel.bind('pusher:subscription_succeeded', function() {
+                                            channel.trigger('client-merged', mergeMessageData);
+                                            channel.unsubscribe();
+                                        });
 
-                              if(typeof(pusher) != 'undefined') {
-                                var channel = pusher.subscribe('private-thread-' + messagesThreadId);
-                                channel.bind('pusher:subscription_succeeded', function() {
-                                  channel.trigger('client-merged', mergeMessageData);
-                                  channel.unsubscribe();
-                                });
+                                    }
+                                    else if(typeof(redsock) != 'undefined') {
+                                        var threadChannel = 'thread-' + messagesThreadId;
+                                        redsock.sendMessage(threadChannel, 'merged', mergeMessageData);
+                                    }
 
-                              }
-                              else if(typeof(redsock) != 'undefined') {
-                                var threadChannel = 'thread-' + messagesThreadId;
-                                redsock.sendMessage(threadChannel, 'merged', mergeMessageData);
-                              }
-
-                              window.location = "/messages_threads/" + messagesThreadId;
-                            });
+                                    window.location = "/messages_threads/" + messagesThreadId;
+                                }
+                            })
                         }
-
                         else {
                             window.location = window.location.href;
                         }

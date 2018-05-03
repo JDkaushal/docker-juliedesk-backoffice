@@ -361,6 +361,12 @@ class MessagesThreadsController < ApplicationController
       WebSockets::Manager.trigger_archive(messages_thread.id)
     end
 
+    # We need to recompute the allowed attendees after merging the messages in the messages_thread
+    merged_in_thread = MessagesThread.find(params[:merged_in_thread_id])
+    if merged_in_thread.present?
+      merged_in_thread.recompute_allowed_attendees_full
+    end
+
     render json: { status: "success", data: {} }
   end
 
