@@ -7,6 +7,6 @@ class ArchiveWorker
   end
 
   def self.perform messages_thread_id
-    Archive.archive_messages_thread(messages_thread_id)
+    Archiver.archive_messages_thread(messages_thread_id)
   end
 end
