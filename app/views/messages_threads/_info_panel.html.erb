@@ -1174,8 +1174,8 @@
         })[0];
 
         var $locationsSelect = $("select#location_nature");
-
         $locationsSelect.html("");
+        $locationsSelect.append($("<option>").val("Custom").html("Custom"));
         var currentLabel = '';
         _.each(window.threadAccount.addresses, function(addressObject) {
             if(addressObject.is_main_address) {
@@ -1191,7 +1191,7 @@
 
             $locationsSelect.append($("<option>").val(addressObject.label).html(currentLabel));
         });
-        $locationsSelect.append($("<option>").val("Custom").html("Custom"));
+
         $locationsSelect.val("Custom");
         if (appointment && appointment.default_address) {
             $locationsSelect.val(appointment.default_address.label);
