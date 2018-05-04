@@ -592,7 +592,7 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             beforeSend: function (xhr) {
               xhr.setRequestHeader("Authorization", access_key);
             },
-            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start, last_calendar_check: window.lastCalendarCheck}),
+            data: JSON.stringify({client_emails: clientAttendees, event_start_date: request.start || request.last_change_start_date, last_calendar_check: window.lastCalendarCheck}),
             success: function (e) {
               var modificationsHappened = e.data;
               if(modificationsHappened)

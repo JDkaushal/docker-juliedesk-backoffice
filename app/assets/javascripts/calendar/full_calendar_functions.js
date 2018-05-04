@@ -259,6 +259,7 @@ Calendar.prototype.setBusyStatusOnEvent = function(event, $element, $imgSpanNode
         event_url: event.url,
         calendar_id: event.calId,
         busy: newBusy,
+        last_change_start_date: event.start.format(),
         only_given_params: true
     }, function(response) {
         if(response.status == "success") {
