@@ -1458,12 +1458,18 @@ class MessagesThread < ActiveRecord::Base
   def self.remove_syncing_tag(account_email)
     raise "account email should be present" if account_email.blank?
     messages_thread_ids = MessagesThread.in_inbox.syncing.with_this_client(account_email).select(&:calendars_synced?).map(&:id)
-    MessagesThread.where(id: messages_thread_ids).update_all("tags = array_remove(tags, '#{SYNCING_TAG}')")
+
+    # Not optimized but needed in order to create a new version
+    MessagesThread.where(id: messages_thread_ids).each { |mt| mt.remove_tag(SYNCING_TAG) }
+    #MessagesThread.where(id: messages_thread_ids).update_all("tags = array_remove(tags, '#{SYNCING_TAG}')")
   end
 
   def self.add_syncing_tag(account_email)
     raise "account email should be present" if account_email.blank?
-    MessagesThread.in_inbox.not_syncing.with_this_client(account_email).update_all("tags = array_append(tags, '#{SYNCING_TAG}')")
+
+    # Not optimized but needed in order to create a new version
+    MessagesThread.in_inbox.not_syncing.with_this_client(account_email).each { |mt| mt.add_tag(SYNCING_TAG) }
+    #MessagesThread.in_inbox.not_syncing.with_this_client(account_email).update_all("tags = array_append(tags, '#{SYNCING_TAG}')")
   end
 
   def remove_tag(tag)
@@ -1488,11 +1494,13 @@ class MessagesThread < ActiveRecord::Base
   def syncing_since
     return nil unless self.has_tag?(SYNCING_TAG)
 
-    sync_started_at = nil
-    self.versions.order('created_at desc').each do |thread_version|
-      thread = thread_version.item
-      break unless thread.has_tag?(SYNCING_TAG)
-      sync_started_at = thread_version.created_at if thread && thread.has_tag?(SYNCING_TAG)
+    sync_started_at = self.created_at
+    self.versions.sort { |a, b| b.created_at <=> a.created_at }.each do |thread_version|
+      thread = thread_version.reify
+      if thread.nil? || !thread.has_tag?(SYNCING_TAG)
+        sync_started_at = thread_version.created_at
+        break
+      end
     end
 
     sync_started_at
@@ -1507,7 +1515,6 @@ class MessagesThread < ActiveRecord::Base
 
   def manage_tag(method, tag)
     raise "#{method} is not supported" unless [:push, :delete].include?(method)
-    self.tags_will_change!
     self.tags ||= []
     self.tags.send(method, tag)
     self.save

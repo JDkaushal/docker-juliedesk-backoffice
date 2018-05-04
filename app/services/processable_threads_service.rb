@@ -13,7 +13,15 @@ class ProcessableThreadsService
   end
 
   def self.run_verification!
+    accounts_cache          = Account.accounts_cache(mode: "light")
+    users_access_lost_cache = MessagesThread.users_with_threads_blocked
+    all_clients_emails      = accounts_cache.map{ |acc| acc[1]['email_aliases'] + [ acc[1]['email']] }.flatten
+
+
     MessagesThread.in_inbox_only.not_in_admin.syncing.map do |messages_thread|
+      # Exclude threads with lost access
+      next if messages_thread.check_if_blocked(users_access_lost_cache, all_clients_emails)
+
       processor = self.new(messages_thread)
       result = processor.processable_thread?
       if result.processable === false
