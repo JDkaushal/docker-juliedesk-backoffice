@@ -114,14 +114,14 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     data = valid_remove_syncing_tag_params(params)
     updated_threads = MessagesThread.remove_syncing_tag(data[:account_email])
     WebSockets::Manager.trigger_new_email([]) if updated_threads.size > 0
-    render json: { nb_updated_threads: nb_updated_threads }, status: :ok
+    render json: { nb_updated_threads: updated_threads.size }, status: :ok
   end
 
   def add_syncing_tag
     data = valid_add_syncing_tag_params(params)
     updated_threads = MessagesThread.add_syncing_tag(data[:account_email])
     WebSockets::Manager.trigger_new_email([]) if updated_threads.size > 0
-    render json: { nb_updated_threads: nb_updated_threads }, status: :ok
+    render json: { nb_updated_threads: updated_threads.size}, status: :ok
   end
 
 end
