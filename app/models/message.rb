@@ -743,7 +743,6 @@ class Message < ActiveRecord::Base
             else
               thread_account_association_manager.compute_accounts_candidates_v2(messages_thread.computed_recipients)
             end
-
           end
 
           if messages_thread.several_accounts_detected({accounts_cache: accounts_cache})
@@ -764,7 +763,6 @@ class Message < ActiveRecord::Base
         if messages_thread.clients_in_recipients.any? { |client_email| Account.not_synced?(client_email) }
           messages_thread.add_tag(MessagesThread::SYNCING_TAG)
         end
-
 
         ## --
         # Need the accounts candidates to have been computed before doing it

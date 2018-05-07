@@ -27,10 +27,6 @@
   var currentFollowUpReminderDate = "<%= local_assigns[:messages_thread].follow_up_reminder_date %>".replace(' UTC', '+0000');
   var today = moment().utc().format();
   var reminderEdited = false;
-
-  $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
-  setReminderTextAndStyle();
-
   var newFollowUpReminderDate = currentFollowUpReminderDate;
 
   function reminderHasBeenEdited() {
@@ -98,7 +94,23 @@
       $('.follow-up-reminder .wrapper').removeClass('selected');
   };
 
+  function onNewThreadStatusChange(newVal) {
+      var currentSelection = newVal;
+
+      if(['other', 'does_not_concern_client', 'handled_in_other_threads', 'scheduling_aborted', 'handled_by_client', 'scheduled'].indexOf(currentSelection) > -1) {
+          calculateNewReminder('0');
+          $('.follow-up-reminder .value').text('none');
+      } else if(['scheduling_waiting_for_client', 'scheduling_waiting_for_contact'].indexOf(currentSelection) > -1) {
+          if(newFollowUpReminderDate == '') {
+              calculateNewReminder('3;d');
+              $('.follow-up-reminder .value').text('3 days');
+          }
+      }
+  }
+
   $(document).ready(function(){
+
+      setReminderTextAndStyle();
 
       if(window.threadComputedData && window.threadComputedData.auto_follow_up_enabled) {
 
@@ -107,17 +119,7 @@
           });
 
           $('.new-thread-status-select').change(function(e) {
-              var currentSelection = $(this).val();
-
-              if(['other', 'does_not_concern_client', 'handled_in_other_threads', 'scheduling_aborted', 'handled_by_client', 'scheduled'].indexOf(currentSelection) > -1) {
-                  calculateNewReminder('0');
-                  $('.follow-up-reminder .value').text('none');
-              } else if(['scheduling_waiting_for_client', 'scheduling_waiting_for_contact'].indexOf(currentSelection) > -1) {
-                  if(newFollowUpReminderDate == '') {
-                      calculateNewReminder('3;d');
-                      $('.follow-up-reminder .value').text('3 days');
-                  }
-              }
+              onNewThreadStatusChange($(this).val());
           });
 
           $('#follow_up_reminder_datepicker').datepicker({
@@ -146,6 +148,13 @@
                   hideReminderUI();
               }
           });
+      }
+
+      $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
+
+      // When no follow up reminder date is present we will preselect the adequat one
+      if(currentFollowUpReminderDate == '') {
+          onNewThreadStatusChange($('.new-thread-status-select').val());
       }
   });
 

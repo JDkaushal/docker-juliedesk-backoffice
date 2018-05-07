@@ -253,16 +253,19 @@ class JulieActionsController < ApplicationController
       # We don't update the reminder date if the event has already been scheduled
       if params[:client_settings] && params[:client_settings][:auto_follow_up] == 'true' && messages_thread.status != MessageClassification::THREAD_STATUS_SCHEDULED
         new_reminder = julie_action.get_messages_thread_reminder_date
+        data.merge!(follow_up_reminder_date: new_reminder)
 
-        if messages_thread.follow_up_reminder_date.present?
-          # We only replace the reminder date if the new one is sooner than the old one or if it is nil
-          if messages_thread.follow_up_reminder_date.nil? || new_reminder.nil? || new_reminder < messages_thread.follow_up_reminder_date
-            data.merge!(follow_up_reminder_date: new_reminder)
-          end
-        else
-          # When no reminder date has been set on the thread, we will anyway replace it with the new_reminder, even if he is nil again
-          data.merge!(follow_up_reminder_date: new_reminder)
-        end
+        # State of the art was updated (07/05/2018)
+        #
+        # if messages_thread.follow_up_reminder_date.present?
+        #   # We only replace the reminder date if the new one is sooner than the old one or if it is nil
+        #   if messages_thread.follow_up_reminder_date.nil? || new_reminder.nil? || new_reminder < messages_thread.follow_up_reminder_date
+        #     data.merge!(follow_up_reminder_date: new_reminder)
+        #   end
+        # else
+        #   # When no reminder date has been set on the thread, we will anyway replace it with the new_reminder, even if he is nil again
+        #   data.merge!(follow_up_reminder_date: new_reminder)
+        # end
       end
 
       messages_thread.update(data)
