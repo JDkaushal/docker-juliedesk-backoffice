@@ -40,3 +40,7 @@ end
 every 5.minutes, :roles => [:tasker] do
   rake 'monitoring:monitor_inbox_threads'
 end
+
+every 1.day, :at => '3am', :roles => [:tasker] do
+  rake 'archive:archive_old_threads'
+end
