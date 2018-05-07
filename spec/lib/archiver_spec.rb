@@ -54,4 +54,50 @@ describe Archiver do
 
     end
   end
+
+  describe "All relations are taken into account" do
+    it "should cover all associations" do
+
+      associations_classes = []
+      new_associations_classes = [MessagesThread]
+      while new_associations_classes.length > 0
+        associations_classes += new_associations_classes
+        new_associations_classes = new_associations_classes.map do |klass|
+          klass.reflect_on_all_associations.map(&:class_name)
+        end.flatten.uniq.map{|class_name|
+          begin
+            class_name.constantize
+          rescue NameError
+            nil
+          end
+        }.compact - associations_classes
+      end
+
+      classes_to_move = [
+          MessagesThread,
+          Message,
+          JulieAction,
+          MessageClassification,
+          AutoMessageClassification,
+          AutoMessageClassificationReview,
+          MessageInterpretation,
+          OperatorActionsGroup,
+          OperatorAction,
+          DateSuggestionsComparisonReview,
+          DateSuggestionsReview
+      ]
+      classes_to_drop = [
+          PaperTrail::Version
+      ]
+      classes_ignored = [
+          ClientRequest,
+          EventTitleReview,
+          Operator,
+          OperatorPresence
+      ]
+
+      expect(associations_classes.map(&:to_s).sort).to eq((classes_to_move + classes_to_drop + classes_ignored).map(&:to_s).sort)
+
+    end
+  end
 end
