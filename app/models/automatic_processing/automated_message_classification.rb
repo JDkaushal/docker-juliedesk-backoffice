@@ -39,7 +39,6 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     main_message_interpretation = message.message_interpretations.find { |interpretation| interpretation.question == MessageInterpretation::QUESTION_MAIN } if main_message_interpretation.blank?
 
     main_interpretation         = main_message_interpretation.json_response
-    #last_message_classification = message.messages_thread.last_message_classification_with_data
     last_message_classification = self.previous_classification
 
     # Read attendees from last classif and merge with data interpreted by AI
@@ -101,10 +100,15 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     })
 
     # Call instructions
-    self.call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS').to_json
+    computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS')
+    self.call_instructions = computed_call_instructions.to_json
+    if self.is_virtual_appointment?
+      computed_call_instructions.merge!(event_instructions: TemplateGeneration::CallInstructions.generate(self))
+    end
+    self.call_instructions = computed_call_instructions.to_json
+
 
     self.notes    = generate_notes
-    self.location = generate_call_instructions if self.is_virtual_appointment?
     self.summary  = generate_summary(account_appointment, get_present_attendees)
   end
 
@@ -131,28 +135,45 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   def has_field?(field, options = {})
     scope = options.fetch(:scope, :classification)
-    return nil unless [:thread_owner, :attendees, :anyone].include?(scope)
-    self.get_field(field, scope).present?
+    self.get_field(scope, field).present?
   end
 
   def missing_field?(field, options = {})
     !has_field?(field, options)
   end
 
-  def get_field(field, from)
-    return nil if account.nil?
-    return nil unless [:thread_owner, :attendees, :anyone].include?(from)
+  def get_field_from_attendees(attendees, field)
+    case field
+      when :skype
+        attendees.find(&:has_skype?).try(:skype_id)
+      when :any_number
+        attendees.find(&:has_any_phone_number?).try(:any_phone_number)
+      else
+        nil
+    end
+  end
 
-    present_attendees = self.get_present_attendees.reject(&:is_thread_owner)
+  def get_field_from_classification(field)
+    case field
+      when :location
+        self.location
+      else
+        nil
+    end
+  end
 
-    if field == :location
-      self.location
-    elsif field == :skype
-      from == :thread_owner ? account.skype : present_attendees.find(&:has_skype?).try(:skype_id)
-    elsif field == :any_number
-      from == :thread_owner ? account.any_phone_number : present_attendees.find(&:has_any_phone_number?).try(:any_phone_number)
-    else
-      nil
+  def get_field(scope, field)
+    case scope
+      when :thread_owner
+        get_field_from_attendees([self.get_thread_owner_attendee], field)
+      when :attendees
+        get_field_from_attendees(self.get_present_attendees.reject(&:is_thread_owner), field)
+      when :anyone
+        get_field_from_attendees(self.get_present_attendees, field)
+      when :classification
+        get_field_from_classification(field)
+      else
+        nil
     end
   end
 

@@ -24,12 +24,15 @@ class AttendeeService
   end
 
   def clean_and_categorize!(account)
-    @attendee.email       &&= @attendee.email.gsub(" ", "")
-    @attendee.account_email = account['email']
-    @attendee.usage_name    = account['usage_name']
-    @attendee.first_name    = account['first_name']
-    @attendee.last_name     = account['last_name']
-    @attendee
+    @attendee.email               &&= @attendee.email.gsub(" ", "")
+    @attendee.account_email         = account['email']
+    @attendee.usage_name            = account['usage_name']
+    @attendee.first_name            = account['first_name']
+    @attendee.last_name             = account['last_name']
+    @attendee.landline              = account['landline_number']
+    @attendee.mobile                = account['mobile_number']
+    @attendee.skype_id              = account['skype']
+    @attendee.confcall_instructions = account['confcall_instructions']
   end
 
   def set_usage_name!(locale, is_formal)

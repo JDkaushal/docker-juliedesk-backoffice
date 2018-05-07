@@ -32,6 +32,7 @@ module AutomaticProcessing
         return false if required_data.blank?
 
         missing_data = required_data.select do |required_field|
+          required_field[:required_from] = :classification if [:any_source].include?(required_field[:required_from])
           @data_holder.get_message_classification.missing_field?(required_field[:field], { scope: required_field[:required_from] })
         end
 

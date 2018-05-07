@@ -7,10 +7,11 @@ module AutomaticProcessing
       BEHAVIOUR_PROPOSE           = AutomaticProcessing::AutomatedMessageClassification::APPOINTMENT_BEHAVIOUR_PROPOSE
       BEHAVIOUR_ASK_INTERLOCUTOR  = AutomaticProcessing::AutomatedMessageClassification::APPOINTMENT_BEHAVIOUR_ASK_INTERLOCUTOR
       BEHAVIOUR_ASK_LATER         = AutomaticProcessing::AutomatedMessageClassification::APPOINTMENT_BEHAVIOUR_ASK_LATER
+      BEHAVIOUR_NONE              = ""
 
-      TARGET_CLIENT       = 'client'
-      TARGET_INTERLOCUTOR = 'interlocutor'
-      TARGET_LATER        = 'later'
+      TARGET_CLIENT               = 'client'
+      TARGET_INTERLOCUTOR         = 'interlocutor'
+      TARGET_LATER                = 'later'
 
       SUPPORT_MOBILE              = 'mobile'
       SUPPORT_LANDLINE            = 'landline'
@@ -35,9 +36,10 @@ module AutomaticProcessing
                         { method: :behaviour_is?, params: [:@behaviour, BEHAVIOUR_PROPOSE] }
                     ],
                     actions: [
-                        { method: :set_target,            params: [TARGET_CLIENT],                         store_as: :@target },
-                        { method: :compute_target_infos,  params: [:@thread_owner],                        store_as: :@target_infos },
-                        { method: :compute_support,       params: [:@appointment_support, :@thread_owner], store_as: :@support }
+                        { method: :set_target,            params: [TARGET_CLIENT],                          store_as: :@target },
+                        { method: :compute_target_infos,  params: [:@thread_owner],                         store_as: :@target_infos },
+                        { method: :compute_support,       params: [:@appointment_support, :@thread_owner],  store_as: :@support },
+                        { method: :compute_details,       params: [:@thread_owner, :@support],              store_as: :@details }
                     ]
                 },
 
@@ -47,10 +49,11 @@ module AutomaticProcessing
                         { method: :has_one?,       params: [:@present_attendees] },
                     ],
                     actions: [
-                        { method: :set_target,            params: [TARGET_INTERLOCUTOR],                       store_as: :@target },
-                        { method: :get_first,             params: [:@present_attendees],                       store_as: :@unique_attendee },
-                        { method: :compute_target_infos,  params: [:@unique_attendee],                         store_as: :@target_infos },
-                        { method: :compute_support,       params: [:@appointment_support, :@unique_attendee],   store_as: :@support }
+                        { method: :set_target,            params: [TARGET_INTERLOCUTOR],                        store_as: :@target },
+                        { method: :get_first,             params: [:@present_attendees],                        store_as: :@unique_attendee },
+                        { method: :compute_target_infos,  params: [:@unique_attendee],                          store_as: :@target_infos },
+                        { method: :compute_support,       params: [:@appointment_support, :@unique_attendee],   store_as: :@support },
+                        { method: :compute_details,       params: [:@unique_attendee, :@support],               store_as: :@details }
                     ]
                 },
 
@@ -60,8 +63,9 @@ module AutomaticProcessing
                         { method: :has_many?,      params: [:@present_attendees] },
                     ],
                     actions: [
-                        { method: :set_target,      params: [TARGET_INTERLOCUTOR],   store_as: :@target },
-                        { method: :compute_support, params: [:@appointment_support], store_as: :@support }
+                        { method: :set_target,      params: [TARGET_INTERLOCUTOR],    store_as: :@target },
+                        { method: :compute_support, params: [:@appointment_support],  store_as: :@support },
+                        { method: :set_details,     params: [''],                     store_as: :@details }
                     ]
                 },
 
@@ -72,15 +76,27 @@ module AutomaticProcessing
                     ],
                     actions: [
                         { method: :set_target,      params: [TARGET_LATER],         store_as: :@target },
-                        { method: :set_support,     params: [''],                   store_as: :@support }
+                        { method: :set_support,     params: [''],                   store_as: :@support },
+                        { method: :set_details,     params: [''],                   store_as: :@details }
                     ]
                 },
 
 
+                {
+                    conditions: [
+                        { method: :behaviour_is?, params: [:@behaviour, BEHAVIOUR_NONE] }
+                    ],
+                    actions: [
+                        { method: :set_target,      params: [TARGET_LATER],         store_as: :@target },
+                        { method: :set_support,     params: [''],                   store_as: :@support },
+                        { method: :set_details,     params: [''],                   store_as: :@details }
+                    ]
+                },
+
                 # Return value
                 {
                     actions: [
-                        { method: :return_call_instructions, params: [:@target, :@support, :@target_infos], exit_flow: true  }
+                        { method: :return_call_instructions, params: [:@target, :@support, :@target_infos, :@details], exit_flow: true  }
                     ]
                 }
               ]
@@ -103,7 +119,7 @@ module AutomaticProcessing
       end
 
       def set_behaviour(appointment_config)
-        appointment_config['behaviour']
+        appointment_config['behaviour'].to_s
       end
 
       def set_appointment_support(appointment_config)
@@ -154,6 +170,10 @@ module AutomaticProcessing
         value
       end
 
+      def set_details(value)
+        value
+      end
+
       def compute_support(appointment_support, attendee = nil)
         if attendee && !attendee.is_thread_owner
           support = SUPPORT_MOBILE      if attendee.mobile.present?
@@ -182,14 +202,40 @@ module AutomaticProcessing
       end
 
       def compute_target_infos(attendee)
-        { email: attendee.email, name: attendee.full_name || attendee.email }
+        {
+            email: attendee.email,
+            name: attendee.full_name.present? ? attendee.full_name  : attendee.email
+        }
       end
 
-      def return_call_instructions(target, support, target_infos)
+      def compute_details(attendee, support)
+        return '' if attendee.nil?
+
+        case support
+          when SUPPORT_MOBILE
+            attendee.mobile
+          when SUPPORT_LANDLINE
+            attendee.landline
+          when SUPPORT_SKYPE
+            attendee.skype_id
+          when SUPPORT_SKYPE_FOR_BUSINESS
+            # TODO: insert skype for business link
+            attendee.skype_id
+          when SUPPORT_CONFCALL
+            attendee.confcall_instructions
+          when SUPPORT_VIDEO_CONFERENCE
+            ''
+          else
+            ''
+        end
+      end
+
+      def return_call_instructions(target, support, target_infos, details)
         {
-            target:       target       || '',
-            support:      support      || '',
-            targetInfos: target_infos || {}
+            target:       target.to_s,
+            support:      support.to_s,
+            targetInfos:  target_infos || {},
+            details:      details.to_s
         }
       end
 

@@ -275,82 +275,96 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
   let(:messages_thread) { FactoryGirl.create(:messages_thread, account_email: account_email) }
   let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions') }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
-  let(:attendees_mocker) {
-    MockingHelpers::Attendees.new.mock([
-                                           {
-                                               "guid"=>-1,
-                                               "email"=>"threadOwner@owner.fr",
-                                               "firstName"=>"Thread",
-                                               "lastName"=>"Owner",
-                                               "name"=>"Thread Owner",
-                                               "usageName"=>"Thread",
-                                               "gender"=>"M",
-                                               "isAssistant"=>"false",
-                                               "assisted"=>"false",
-                                               "assistedBy"=>"",
-                                               "company"=>"Owner Corp",
-                                               "timezone"=>"Europe/Paris",
-                                               "landline"=>"",
-                                               "mobile"=>"+33102030405",
-                                               "skypeId"=>"",
-                                               "confCallInstructions"=>"",
-                                               "status"=>"present",
-                                               "isPresent"=>"true",
-                                               "isClient"=>"true",
-                                               "isThreadOwner"=>"true",
-                                               "needAIConfirmation"=>"false",
-                                               "aIHasBeenConfirmed"=>"true"
-                                           },
-                                           {
-                                               "guid"=>"152418",
-                                               "email"=>"john.bernard@grabou.fr",
-                                               "firstName"=>"John",
-                                               "lastName"=>"Bernard",
-                                               "name"=>"John Bernard",
-                                               "usageName"=>"John",
-                                               "gender"=>"M",
-                                               "isAssistant"=>"false",
-                                               "assisted"=>"false",
-                                               "assistedBy"=>"",
-                                               "company"=>"Grabou Corp",
-                                               "timezone"=>"Europe/Paris",
-                                               "landline"=>"",
-                                               "mobile"=>"+33102030405",
-                                               "skypeId"=>"",
-                                               "confCallInstructions"=>"",
-                                               "status"=>"present",
-                                               "isPresent"=>"true",
-                                               "isClient"=>"false",
-                                               "isThreadOwner"=>"false",
-                                               "needAIConfirmation"=>"false",
-                                               "aIHasBeenConfirmed"=>"true"
-                                           },
-                                           {
-                                               "guid"=>"152418",
-                                               "email"=>"babtou@fragile.fr",
-                                               "firstName"=>"Babtou",
-                                               "lastName"=>"Fragile",
-                                               "name"=>"Babtou Fragile",
-                                               "usageName"=>"Babtou",
-                                               "gender"=>"M",
-                                               "isAssistant"=>"false",
-                                               "assisted"=>"false",
-                                               "assistedBy"=>"",
-                                               "company"=>"Babtou Corp",
-                                               "timezone"=>"Europe/Paris",
-                                               "landline"=>"",
-                                               "mobile"=>"+33102030405",
-                                               "skypeId"=>"",
-                                               "confCallInstructions"=>"",
-                                               "status"=>"present",
-                                               "isPresent"=>"true",
-                                               "isClient"=>"false",
-                                               "isThreadOwner"=>"false",
-                                               "needAIConfirmation"=>"false",
-                                               "aIHasBeenConfirmed"=>"true"
-                                           }
-                                       ])
-  }
+
+  # Thread owner attendee
+  let(:owner_attendee_params) { { } }
+  let(:owner_attendee) do
+    {
+        "guid"                  =>  -1,
+        "email"                 =>  "threadOwner@owner.fr",
+        "firstName"             =>  "Thread",
+        "lastName"              =>  "Owner",
+        "name"                  =>  "Thread Owner",
+        "usageName"             =>  "Thread",
+        "gender"                =>  "M",
+        "isAssistant"           =>  "false",
+        "assisted"              =>  "false",
+        "assistedBy"            =>  "",
+        "company"               =>  "Owner Corp",
+        "timezone"              =>  "Europe/Paris",
+        "landline"              =>  "",
+        "mobile"                =>  "+33102030405",
+        "skypeId"               =>  "",
+        "confCallInstructions"  =>  "",
+        "status"                =>  "present",
+        "isPresent"             =>  "true",
+        "isClient"              =>  "true",
+        "isThreadOwner"         =>  "true",
+        "needAIConfirmation"    =>  "false",
+        "aIHasBeenConfirmed"    =>  "true"
+    }.merge(owner_attendee_params)
+  end
+
+  let(:attendee_params) { {} }
+  let(:attendee) do
+    {
+        "guid"                  => "152418",
+        "email"                 => "john.bernard@grabou.fr",
+        "firstName"             => "John",
+        "lastName"              => "Bernard",
+        "name"                  => "John Bernard",
+        "usageName"             => "John",
+        "gender"                => "M",
+        "isAssistant"           => "false",
+        "assisted"              => "false",
+        "assistedBy"            => "",
+        "company"               => "Grabou Corp",
+        "timezone"              => "Europe/Paris",
+        "landline"              => "",
+        "mobile"                => "+33102030405",
+        "skypeId"               => "",
+        "confCallInstructions"  => "",
+        "status"                => "present",
+        "isPresent"             => "true",
+        "isClient"              => "false",
+        "isThreadOwner"         => "false",
+        "needAIConfirmation"    => "false",
+        "aIHasBeenConfirmed"    => "true"
+    }.merge(attendee_params)
+  end
+
+  let(:other_attendee_params) { {} }
+  let(:other_attendee) do
+    {
+        "guid"                  => "152418",
+        "email"                 => "babtou@fragile.fr",
+        "firstName"             => "Babtou",
+        "lastName"              => "Fragile",
+        "name"                  => "Babtou Fragile",
+        "usageName"             => "Babtou",
+        "gender"                => "M",
+        "isAssistant"           => "false",
+        "assisted"              => "false",
+        "assistedBy"            => "",
+        "company"               => "Babtou Corp",
+        "timezone"              => "Europe/Paris",
+        "landline"              => "",
+        "mobile"                => "+33102030405",
+        "skypeId"               => "",
+        "confCallInstructions"  => "",
+        "status"                => "present",
+        "isPresent"             => "true",
+        "isClient"              => "false",
+        "isThreadOwner"         => "false",
+        "needAIConfirmation"    => "false",
+        "aIHasBeenConfirmed"    => "true"
+    }.merge(other_attendee_params)
+  end
+
+
+  let(:attendees) { [owner_attendee, attendee, other_attendee] }
+
+  let(:attendees_mocker) { MockingHelpers::Attendees.new.mock(attendees) }
   let(:message_classification) {
     attendees_mocker
     AutomaticProcessing::AutomatedMessageClassification.process_message!(processed_message)
@@ -370,379 +384,148 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
   end
 
   describe 'should_ask_location?' do
+
+    shared_context 'no location detected' do
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return({location_nature: nil, location: nil})
+      end
+    end
+
+    shared_context 'detected location is' do |location_nature, location|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
+            { location_nature: location_nature, location: location}
+        )
+      end
+    end
+
+    shared_context 'virtual appointment config is' do |appointment_kind, behaviour|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => appointment_kind, 'behaviour' => behaviour })
+      end
+    end
+
+    shared_context 'physical appointment config is' do |appointment_kind, default_address|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return(
+            { 'kind' => appointment_kind, 'default_address' => default_address }
+        )
+      end
+    end
+
     subject { flow.send(:should_ask_location?) }
 
     context 'for appointment with location defined' do
+      include_context 'detected location is', nil, '15b boulevard Saint Denis 75002 Paris'
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: '15b boulevard Saint Denis 75002 Paris'}
-        )
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for appointment with location not defined' do
+      include_context 'no location detected'
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for appointment without location defined (decide later behaviour)' do
+      include_context 'no location detected'
+      include_context 'physical appointment config is', 'appointment', { 'label' => 'Le client choisira plus tard' }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'appointment', 'default_address' => { 'label' => 'Le client choisira plus tard' }  })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
 
     context 'for skype with ask interlocutor behaviour (skype id is missing)' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
-
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'ask_interlocutor'
+      let(:owner_attendee_params) { { 'skypeId' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for skype with ask interlocutor behaviour (skype id is available)' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'ask_interlocutor'
+      let(:contacts_infos) { [{ 'owner_email' => 'john.bernard@grabou.fr', 'text' => 'john.doe', 'tag' => 'SKYPE', 'value' => 'john.doe'}] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: contacts_infos) }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"john.doe", "tag"=>"SKYPE", "value"=>""}]) }
-
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for skype with propose behaviour (skype id is available)' do
-      let(:account_additionnal_params) { {'skype' => 'jon.doe'} }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'propose'
+      let(:owner_attendee_params) { {'skypeId' => 'thread.owner'} }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'propose' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for skype with decide later behaviour' do
-      let(:account_additionnal_params) { {'skype' => nil} }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'later'
+      let(:owner_attendee_params) { {'skypeId' => 'thread.owner'} }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'skype', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'later' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with ask interlocutor behaviour (landline and mobile are missing)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => nil,
-            'landline_number' => nil
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:attendee_params) { { 'mobile' => nil, 'landline' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for call with ask interlocutor behaviour (landline is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"01333333", "tag"=>"PHONE", "value"=>"landline"}]) }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:contacts_infos) { [{'owner_email' => 'john.bernard@grabou.fr', 'text'=> '01333333', 'tag' => 'PHONE', 'value' => 'landline' }] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: contacts_infos) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with ask interlocutor behaviour (mobile is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:contacts_infos) { [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: contacts_infos) }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}]) }
-
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with propose behaviour (landline and mobile are available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
-
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'propose'
+      let(:owner_attendee_params) { {'mobile' => '06222222', 'landline' => '01222222' } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'propose' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with propose behaviour (mobile is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => nil
-        }
-      }
-
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'propose'
+      let(:owner_attendee_params) { {'mobile' => '06222222', 'landline' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'propose' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with decide later behaviour' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => nil,
-            'landline_number' => nil
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'later'
+      let(:owner_attendee_params) { {'mobile' => nil, 'landline' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_date_suggestions', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'later' })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
   end
 
@@ -755,7 +538,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
       expect(flow).to receive(:get_say_hi_template).with({:recipient_names=>["Monsieur John Bernard"], :should_say_hi=>true, :locale=>"en"}).and_return('mocked_hi_template')
 
       expect(flow).to receive(:get_suggest_dates_template).with(
-          {:client_names=>["Monsieur Thread Owner"], :timezones=>["Europe/Paris"], :default_timezone=>"Europe/Paris", :locale=>"en", :is_virtual=>false, :attendees=>[{"account_email"=>nil, "accountEmail"=>nil, "email"=>"threadowner@owner.fr", "fullName"=>"Thread Owner", "firstName"=>"Thread", "lastName"=>"Owner", "usageName"=>"Monsieur Thread Owner", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Owner Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>true, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>true}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"john.bernard@grabou.fr", "fullName"=>"John Bernard", "firstName"=>"John", "lastName"=>"Bernard", "usageName"=>"Monsieur John Bernard", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Grabou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"babtou@fragile.fr", "fullName"=>"Babtou Fragile", "firstName"=>"Babtou", "lastName"=>"Fragile", "usageName"=>"Monsieur Babtou Fragile", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Babtou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}], :appointment_in_email=>{:en=>"a meeting", :fr=>"un rendez-vous"}, :location_in_email=>{:en=>"", :fr=>""}, :should_ask_location=>false, :missing_contact_info=>"mobile", :dates=>["2018-01-01T12:00:00+0000", "2018-01-02T12:00:00+0000", "2018-01-03T12:00:00+0000", "2018-01-04T12:00:00+0000"]}
+          {:client_names=>["Monsieur Thread Owner"], :timezones=>["Europe/Paris"], :default_timezone=>"Europe/Paris", :locale=>"en", :is_virtual=>false, :attendees=>[{"account_email"=>"threadOwner@owner.fr", "accountEmail"=>"threadOwner@owner.fr", "email"=>"threadowner@owner.fr", "fullName"=>"Thread Owner", "firstName"=>"Thread", "lastName"=>"Owner", "usageName"=>"Monsieur Thread Owner", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Owner Corp", "landline"=>"", "mobile"=>"+33102030405", "skypeId"=>"", "confCallInstructions" => "", "isPresent"=>true, "status"=>"present", "isClient"=>true, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>true}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"john.bernard@grabou.fr", "fullName"=>"John Bernard", "firstName"=>"John", "lastName"=>"Bernard", "usageName"=>"Monsieur John Bernard", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Grabou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "confCallInstructions" => nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"babtou@fragile.fr", "fullName"=>"Babtou Fragile", "firstName"=>"Babtou", "lastName"=>"Fragile", "usageName"=>"Monsieur Babtou Fragile", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Babtou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "confCallInstructions" => nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}], :appointment_in_email=>{:en=>"a meeting", :fr=>"un rendez-vous"}, :location_in_email=>{:en=>"", :fr=>""}, :should_ask_location=>false, :missing_contact_info=>nil, :dates=>["2018-01-01T12:00:00+0000", "2018-01-02T12:00:00+0000", "2018-01-03T12:00:00+0000", "2018-01-04T12:00:00+0000"]}
       ).and_return('mocked_generated_template')
 
       expect(flow).to receive(:find_dates_to_suggest).and_return([

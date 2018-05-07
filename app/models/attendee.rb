@@ -13,7 +13,7 @@ class Attendee
   STATUSES = [STATUS_PRESENT, STATUS_OPTIONAL, STATUS_NOT_PRESENT]
 
   attr_accessor :account_email, :email, :first_name, :last_name, :usage_name, :gender, :landline, :mobile, :skype_id,
-                :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner, :timezone
+                :confcall_instructions, :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner, :timezone
 
 
   validates :gender, inclusion: { in: GENDERS }, presence: false
@@ -21,24 +21,24 @@ class Attendee
 
   def attributes
     {
-        account_email:    @account_email,
-        #accountEmail:     @accountEmail,
-        email:            @email,
-        first_name:       @first_name,
-        last_name:        @last_name,
-        usage_name:       @usage_name,
-        gender:           @gender,
-        landline:         @landline,
-        timezone:         @timezone,
-        mobile:           @mobile,
-        skype_id:         @skype_id,
-        company:          @company,
-        is_present:       @is_present,
-        status:           @status,
-        is_client:        @is_client,
-        assisted:         @assisted,
-        is_assistant:     @is_assistant,
-        is_thread_owner:  @is_thread_owner
+        account_email:          @account_email,
+        email:                  @email,
+        first_name:             @first_name,
+        last_name:              @last_name,
+        usage_name:             @usage_name,
+        gender:                 @gender,
+        landline:               @landline,
+        timezone:               @timezone,
+        mobile:                 @mobile,
+        skype_id:               @skype_id,
+        confcall_instructions:  @confcall_instructions,
+        company:                @company,
+        is_present:             @is_present,
+        status:                 @status,
+        is_client:              @is_client,
+        assisted:               @assisted,
+        is_assistant:           @is_assistant,
+        is_thread_owner:        @is_thread_owner
     }
   end
 
@@ -50,7 +50,7 @@ class Attendee
 
   # Ovverride
   def email=(email)
-    @email = email.downcase
+    @email = email.try(:downcase)
     @email
   end
 
@@ -78,25 +78,26 @@ class Attendee
 
   def to_h
     {
-        'account_email' => self.account_email,
-        'accountEmail'  => self.account_email,
-        'email'         => self.email,
-        'fullName'      => self.full_name,
-        'firstName'     => self.first_name,
-        'lastName'      => self.last_name,
-        'usageName'     => self.usage_name,
-        'gender'        => self.gender,
-        'timezone'      => self.timezone,
-        'company'       => self.company,
-        'landline'      => self.landline,
-        'mobile'        => self.mobile,
-        'skypeId'       => self.skype_id,
-        'isPresent'     => self.is_present,
-        'status'        => self.status,
-        'isClient'      => self.is_client,
-        'assisted'      => self.assisted,
-        'isAssistant'   => self.is_assistant,
-        'isThreadOwner' => self.is_thread_owner
+        'account_email'         => self.account_email,
+        'accountEmail'          => self.account_email,
+        'email'                 => self.email,
+        'fullName'              => self.full_name,
+        'firstName'             => self.first_name,
+        'lastName'              => self.last_name,
+        'usageName'             => self.usage_name,
+        'gender'                => self.gender,
+        'timezone'              => self.timezone,
+        'company'               => self.company,
+        'landline'              => self.landline,
+        'mobile'                => self.mobile,
+        'skypeId'               => self.skype_id,
+        'confCallInstructions'  => self.confcall_instructions,
+        'isPresent'             => self.is_present,
+        'status'                => self.status,
+        'isClient'              => self.is_client,
+        'assisted'              => self.assisted,
+        'isAssistant'           => self.is_assistant,
+        'isThreadOwner'         => self.is_thread_owner
     }
   end
 
@@ -144,24 +145,24 @@ class Attendee
       end
 
       Attendee.new(
-          account_email:    attendee_data['account_email'],
-          #accountEmail:     attendee_data['accountEmail'] || attendee_data['account_email'],
-          email:            attendee_data['email'],
-          first_name:       attendee_data['firstName'],
-          last_name:        attendee_data['lastName'],
-          usage_name:       attendee_data['usageName'],
-          gender:           attendee_data['gender'],
-          timezone:         attendee_data['timezone'],
-          company:          attendee_data['company'],
-          landline:         attendee_data['landline'],
-          mobile:           attendee_data['mobile'],
-          skype_id:         attendee_data['skypeId'],
-          is_present:       attendee_data['isPresent'],
-          status:           attendee_data['status'],
-          is_client:        attendee_data['isClient'],
-          assisted:         attendee_data['assisted'],
-          is_assistant:     attendee_data['isAssistant'],
-          is_thread_owner:  attendee_data['isThreadOwner']
+          account_email:          attendee_data['account_email'],
+          email:                  attendee_data['email'],
+          first_name:             attendee_data['firstName'],
+          last_name:              attendee_data['lastName'],
+          usage_name:             attendee_data['usageName'],
+          gender:                 attendee_data['gender'],
+          timezone:               attendee_data['timezone'],
+          company:                attendee_data['company'],
+          landline:               attendee_data['landline'],
+          mobile:                 attendee_data['mobile'],
+          skype_id:               attendee_data['skypeId'],
+          confcall_instructions:  attendee_data['confCallInstructions'],
+          is_present:             attendee_data['isPresent'],
+          status:                 attendee_data['status'],
+          is_client:              attendee_data['isClient'],
+          assisted:               attendee_data['assisted'],
+          is_assistant:           attendee_data['isAssistant'],
+          is_thread_owner:        attendee_data['isThreadOwner']
       )
     end
 

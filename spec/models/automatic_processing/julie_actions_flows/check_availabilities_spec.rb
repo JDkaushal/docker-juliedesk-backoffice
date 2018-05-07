@@ -274,85 +274,97 @@ describe AutomaticProcessing::JulieActionsFlows::CheckAvailabilities do
         "addresses"=>[{"kind"=>"restaurant", "label"=>"A choisir par l'interlocuteur", "address"=>"", "address_complement"=>"", "type"=>nil, "meeting_rooms_enabled"=>false, "available_meeting_rooms"=>[], "is_main_address"=>false, "latitude"=>nil, "longitude"=>nil, "meeting_room_used"=>false, "selected_meeting_room"=>"", "address_kind"=>{"label"=>"restaurant", "id"=>1, "is_defined"=>true, "created_at"=>"2015-04-16T16:20:15.279Z", "updated_at"=>"2015-04-16T16:20:15.279Z"}}, {"kind"=>"restaurant", "label"=>"Le client choisira plus tard", "address"=>"", "address_complement"=>"", "type"=>nil, "meeting_rooms_enabled"=>false, "available_meeting_rooms"=>[], "is_main_address"=>false, "latitude"=>nil, "longitude"=>nil, "meeting_room_used"=>false, "selected_meeting_room"=>"", "address_kind"=>{"label"=>"restaurant", "id"=>1, "is_defined"=>true, "created_at"=>"2015-04-16T16:20:15.279Z", "updated_at"=>"2015-04-16T16:20:15.279Z"}}, {"kind"=>"client_will_define", "label"=>"Le client choisira plus tard", "address"=>"", "address_complement"=>"", "type"=>nil, "meeting_rooms_enabled"=>false, "available_meeting_rooms"=>[], "is_main_address"=>false, "latitude"=>nil, "longitude"=>nil, "meeting_room_used"=>false, "selected_meeting_room"=>"", "address_kind"=>{"label"=>"client_will_define", "id"=>8, "is_defined"=>false, "created_at"=>"2015-04-16T16:20:15.317Z", "updated_at"=>"2015-04-16T16:20:44.849Z"}}, {"kind"=>"ask_interlocuter", "label"=>"A choisir par l'interlocuteur", "address"=>"", "address_complement"=>"", "type"=>nil, "meeting_rooms_enabled"=>false, "available_meeting_rooms"=>[], "is_main_address"=>false, "latitude"=>nil, "longitude"=>nil, "meeting_room_used"=>false, "selected_meeting_room"=>"auto_room_selection|attendees_count", "address_kind"=>{"label"=>"ask_interlocuter", "id"=>9, "is_defined"=>false, "created_at"=>"2015-04-16T16:20:15.323Z", "updated_at"=>"2015-04-16T16:20:44.856Z"}}, {"label"=>"hythtyh", "is_main_address"=>false, "address"=>"", "address_complement"=>"", "kind"=>"locations_cluster", "meeting_rooms_enabled"=>false, "available_meeting_rooms"=>[], "meeting_room_used"=>false, "selected_meeting_room"=>"", "address_kind"=>{"label"=>"locations_cluster", "id"=>13, "is_defined"=>true, "created_at"=>"2018-01-22T15:48:17.542Z", "updated_at"=>"2018-01-22T15:48:17.542Z"}, "latitude"=>nil, "longitude"=>nil, "child_team_addresses_ids"=>[], "team_address_id"=>4, "floor"=>nil}, {"label"=>"Bureau", "is_main_address"=>true, "address"=>"15bis Boulevard Saint-Denis, 75002 Paris, France", "address_complement"=>"", "kind"=>"office", "meeting_rooms_enabled"=>true, "available_meeting_rooms"=>[{"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>true, "can_visio"=>nil, "capacity"=>nil, "id"=>"email101@email.com", "summary"=>"Test101", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email100@email.com", "summary"=>"Test100", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email102@email.com", "summary"=>"Test102", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email103@email.com", "summary"=>"Test103", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email104@email.com", "summary"=>"Test104", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email105@email.com", "summary"=>"Test105", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email106@email.com", "summary"=>"Test106", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email0@email.com", "summary"=>"Test0", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email1@email.com", "summary"=>"Test1", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}, {"calendar_login_username"=>"ews_company_meeting_room", "can_confcall"=>nil, "can_visio"=>nil, "capacity"=>nil, "id"=>"email10@email.com", "summary"=>"Test10", "floor"=>nil, "in_main_location"=>true, "on_default_floor"=>true, "floor_location_score"=>1.0}], "meeting_room_used"=>true, "selected_meeting_room"=>"auto_room_selection|attendees_count", "address_kind"=>{"label"=>"office", "id"=>4, "is_defined"=>true, "created_at"=>"2015-04-16T16:20:15.296Z", "updated_at"=>"2015-04-16T16:20:15.296Z"}, "latitude"=>48.8693132, "longitude"=>2.3532911, "child_team_addresses_ids"=>[], "team_address_id"=>1, "floor"=>nil}], "virtual_appointments_support_config"=>[{"label"=>"Confcall", "mobile_in_note"=>true, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>true, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Demander à l'interlocuteur", "mobile_in_note"=>true, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>false, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Landline", "mobile_in_note"=>false, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>false, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Mobile", "mobile_in_note"=>true, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>false, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Skype", "mobile_in_note"=>false, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>true, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Skype for Business", "mobile_in_note"=>false, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>false, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Vide", "mobile_in_note"=>true, "landline_in_note"=>true, "confcall_in_note"=>true, "skype_in_note"=>true, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}, {"label"=>"Video Conference", "mobile_in_note"=>true, "landline_in_note"=>true, "confcall_in_note"=>false, "skype_in_note"=>true, "rescue_with_mobile"=>false, "rescue_with_landline"=>false, "rescue_with_confcall"=>false, "rescue_with_skype"=>false, "video_conference_in_note"=>false, "rescue_with_video_conference"=>false}], "virtual_appointments_company_support_config"=>[], "max_number_of_appointments"=>100, "mobile_number"=>"", "landline_number"=>"", "confcall_instructions"=>"", "sfb_instructions"=>"$SKYPE_FOR_BUSINESS_MEETING_LINK_TO_BE_GENERATED$", "video_conference_instructions"=>"", "skype"=>"", "means_of_transport"=>"", "raw_preferences"=>"", "current_notes"=>"", "awaiting_current_notes"=>"", "locale"=>"en", "complaints_count"=>0, "title_preferences"=>{"general"=>"companies_and_names", "internal_meetings"=>"email_subject"}, "travel_time_transport_mode"=>"max", "language_level"=>"normal", "auto_follow_up_enabled"=>false, "restaurant_booking_enabled"=>false, "linked_attendees_enabled"=>false, "ignore_non_all_day_free_events"=>false, "julie_aliases"=>["julie@jdesk.onmicrosoft.com"], "using_calendar_server"=>true, "circle_of_trust"=>{"trusting_everyone"=>false, "trusted_domains"=>[], "trusted_emails"=>[]}, "lunch_time_preference"=>1230, "gender"=>"M", "auto_date_suggestions"=>false, "skype_for_business_meeting_generation_active"=>false, "preferred_meeting_rooms"=>[]}.merge(account_additionnal_params)
   }
   let(:messages_thread) { FactoryGirl.create(:messages_thread, account_email: account_email) }
-  let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
+  let(:main_message_interpretations_params) { { } }
+  let(:main_message_interpretation) { FactoryGirl.create(:main_classification, { detected_classification: 'ask_availabilities' }.merge(main_message_interpretations_params)) }
   let(:processed_message) { FactoryGirl.create(:message, messages_thread: messages_thread, main_message_interpretation: main_message_interpretation) }
 
-  let(:attendees) {
-    [
-        {
-            "guid"=>-1,
-            "email"=>"threadOwner@owner.fr",
-            "firstName"=>"Thread",
-            "lastName"=>"Owner",
-            "name"=>"Thread Owner",
-            "usageName"=>"Thread",
-            "gender"=>"M",
-            "isAssistant"=>"false",
-            "assisted"=>"false",
-            "assistedBy"=>"",
-            "company"=>"Owner Corp",
-            "timezone"=>"Europe/Paris",
-            "landline"=>"",
-            "mobile"=>"+33102030405",
-            "skypeId"=>"",
-            "confCallInstructions"=>"",
-            "status"=>"present",
-            "isPresent"=>"true",
-            "isClient"=>"true",
-            "isThreadOwner"=>"true",
-            "needAIConfirmation"=>"false",
-            "aIHasBeenConfirmed"=>"true"
-        },
-        {
-            "guid"=>"152418",
-            "email"=>"john.bernard@grabou.fr",
-            "firstName"=>"John",
-            "lastName"=>"Bernard",
-            "name"=>"John Bernard",
-            "usageName"=>"John",
-            "gender"=>"M",
-            "isAssistant"=>"false",
-            "assisted"=>"false",
-            "assistedBy"=>"",
-            "company"=>"Grabou Corp",
-            "timezone"=>"Europe/Paris",
-            "landline"=>"",
-            "mobile"=>"+33102030405",
-            "skypeId"=>"",
-            "confCallInstructions"=>"",
-            "status"=>"present",
-            "isPresent"=>"true",
-            "isClient"=>"false",
-            "isThreadOwner"=>"false",
-            "needAIConfirmation"=>"false",
-            "aIHasBeenConfirmed"=>"true"
-        },
-        {
-            "guid"=>"152418",
-            "email"=>"babtou@fragile.fr",
-            "firstName"=>"Babtou",
-            "lastName"=>"Fragile",
-            "name"=>"Babtou Fragile",
-            "usageName"=>"Babtou",
-            "gender"=>"M",
-            "isAssistant"=>"false",
-            "assisted"=>"false",
-            "assistedBy"=>"",
-            "company"=>"Babtou Corp",
-            "timezone"=>"Europe/Paris",
-            "landline"=>"",
-            "mobile"=>"+33102030405",
-            "skypeId"=>"",
-            "confCallInstructions"=>"",
-            "status"=>"present",
-            "isPresent"=>"true",
-            "isClient"=>"false",
-            "isThreadOwner"=>"false",
-            "needAIConfirmation"=>"false",
-            "aIHasBeenConfirmed"=>"true"
-        }
-    ]
-  }
+  # Thread owner attendee
+  let(:owner_attendee_params) { { } }
+  let(:owner_attendee) do
+    {
+        "guid"                  =>  -1,
+        "email"                 =>  "threadOwner@owner.fr",
+        "firstName"             =>  "Thread",
+        "lastName"              =>  "Owner",
+        "name"                  =>  "Thread Owner",
+        "usageName"             =>  "Thread",
+        "gender"                =>  "M",
+        "isAssistant"           =>  "false",
+        "assisted"              =>  "false",
+        "assistedBy"            =>  "",
+        "company"               =>  "Owner Corp",
+        "timezone"              =>  "Europe/Paris",
+        "landline"              =>  "",
+        "mobile"                =>  "+33102030405",
+        "skypeId"               =>  "",
+        "confCallInstructions"  =>  "",
+        "status"                =>  "present",
+        "isPresent"             =>  "true",
+        "isClient"              =>  "true",
+        "isThreadOwner"         =>  "true",
+        "needAIConfirmation"    =>  "false",
+        "aIHasBeenConfirmed"    =>  "true"
+    }.merge(owner_attendee_params)
+  end
+
+  let(:attendee_params) { {} }
+  let(:attendee) do
+    {
+        "guid"                  => "152418",
+        "email"                 => "john.bernard@grabou.fr",
+        "firstName"             => "John",
+        "lastName"              => "Bernard",
+        "name"                  => "John Bernard",
+        "usageName"             => "John",
+        "gender"                => "M",
+        "isAssistant"           => "false",
+        "assisted"              => "false",
+        "assistedBy"            => "",
+        "company"               => "Grabou Corp",
+        "timezone"              => "Europe/Paris",
+        "landline"              => "",
+        "mobile"                => "+33102030405",
+        "skypeId"               => "",
+        "confCallInstructions"  => "",
+        "status"                => "present",
+        "isPresent"             => "true",
+        "isClient"              => "false",
+        "isThreadOwner"         => "false",
+        "needAIConfirmation"    => "false",
+        "aIHasBeenConfirmed"    => "true"
+    }.merge(attendee_params)
+  end
+
+  let(:other_attendee_params) { {} }
+  let(:other_attendee) do
+    {
+        "guid"                  => "152418",
+        "email"                 => "babtou@fragile.fr",
+        "firstName"             => "Babtou",
+        "lastName"              => "Fragile",
+        "name"                  => "Babtou Fragile",
+        "usageName"             => "Babtou",
+        "gender"                => "M",
+        "isAssistant"           => "false",
+        "assisted"              => "false",
+        "assistedBy"            => "",
+        "company"               => "Babtou Corp",
+        "timezone"              => "Europe/Paris",
+        "landline"              => "",
+        "mobile"                => "+33102030405",
+        "skypeId"               => "",
+        "confCallInstructions"  => "",
+        "status"                => "present",
+        "isPresent"             => "true",
+        "isClient"              => "false",
+        "isThreadOwner"         => "false",
+        "needAIConfirmation"    => "false",
+        "aIHasBeenConfirmed"    => "true"
+    }.merge(other_attendee_params)
+  end
+
+
+  let(:attendees) { [owner_attendee, attendee, other_attendee] }
   let(:attendees_mocker) {
     MockingHelpers::Attendees.new.mock(attendees)
   }
@@ -375,526 +387,146 @@ describe AutomaticProcessing::JulieActionsFlows::CheckAvailabilities do
   end
 
   describe 'should_ask_location?' do
+    shared_context 'no location detected' do
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return({location_nature: nil, location: nil})
+      end
+    end
+
+    shared_context 'detected location is' do |location_nature, location|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
+            { location_nature: location_nature, location: location}
+        )
+      end
+    end
+
+    shared_context 'virtual appointment config is' do |appointment_kind, behaviour|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => appointment_kind, 'behaviour' => behaviour })
+      end
+    end
+
+    shared_context 'physical appointment config is' do |appointment_kind, default_address|
+      before(:example) do
+        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return(
+            { 'kind' => appointment_kind, 'default_address' => default_address }
+        )
+      end
+    end
+
     subject { flow.send(:should_ask_location?) }
 
     context 'for appointment with location defined' do
+      include_context 'detected location is', nil, '15b boulevard Saint Denis 75002 Paris'
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: '15b boulevard Saint Denis 75002 Paris'}
-        )
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for appointment with location not defined' do
+      include_context 'no location detected'
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for appointment without location defined (decide later behaviour)' do
+      include_context 'no location detected'
+      include_context 'physical appointment config is', 'appointment', { 'label' => 'Le client choisira plus tard' }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'appointment') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'appointment', 'default_address' => { 'label' => 'Le client choisira plus tard' }  })
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
 
     context 'for skype with ask interlocutor behaviour (skype id is missing)' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>"",
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
-
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'ask_interlocutor'
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'skype') }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor' })
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for skype with ask interlocutor behaviour (skype id is available)' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'john.doe',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>"john.doe",
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'skype', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"john.doe", "tag"=>"SKYPE", "value"=>""}]) }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'ask_interlocutor'
+      let(:contacts_infos) { [{ 'owner_email' => 'john.bernard@grabou.fr', 'text' => 'john.doe', 'tag' => 'SKYPE', 'value' => ''}] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'skype', contacts_infos: contacts_infos) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'ask_interlocutor'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for skype with propose behaviour (skype id is available)' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
-      let(:account_additionnal_params) { {'skype' => 'jon.doe'} }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'propose'
+      let(:owner_attendee_params) { { "skypeId" => 'thread.owner' } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'skype', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'propose'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for skype with decide later behaviour' do
-      let(:attendees) {
-        [
-            {
-                "guid"=>-1,
-                "email"=>"threadOwner@owner.fr",
-                "firstName"=>"Thread",
-                "lastName"=>"Owner",
-                "name"=>"Thread Owner",
-                "usageName"=>"Thread",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Owner Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>'Owner Skype',
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"true",
-                "isThreadOwner"=>"true",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"john.bernard@grabou.fr",
-                "firstName"=>"John",
-                "lastName"=>"Bernard",
-                "name"=>"John Bernard",
-                "usageName"=>"John",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Grabou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            },
-            {
-                "guid"=>"152418",
-                "email"=>"babtou@fragile.fr",
-                "firstName"=>"Babtou",
-                "lastName"=>"Fragile",
-                "name"=>"Babtou Fragile",
-                "usageName"=>"Babtou",
-                "gender"=>"M",
-                "isAssistant"=>"false",
-                "assisted"=>"false",
-                "assistedBy"=>"",
-                "company"=>"Babtou Corp",
-                "timezone"=>"Europe/Paris",
-                "landline"=>"",
-                "mobile"=>"+33102030405",
-                "skypeId"=>nil,
-                "confCallInstructions"=>"",
-                "status"=>"present",
-                "isPresent"=>"true",
-                "isClient"=>"false",
-                "isThreadOwner"=>"false",
-                "needAIConfirmation"=>"false",
-                "aIHasBeenConfirmed"=>"true"
-            }
-        ]
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'skype', 'later'
+      let(:owner_attendee_params) { { "skypeId" => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'skype', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'skype', 'behaviour' => 'later'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with ask interlocutor behaviour (landline and mobile are missing)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => nil,
-            'landline_number' => nil
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:owner_attendee_params) { { 'mobile' => nil, 'landline' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'})
-
-        is_expected.to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'for call with ask interlocutor behaviour (landline is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:contacts_infos) { [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"01333333", "tag"=>"PHONE", "value"=>"landline"}] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: contacts_infos) }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"01333333", "tag"=>"PHONE", "value"=>"landline"}]) }
-
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with ask interlocutor behaviour (mobile is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'ask_interlocutor'
+      let(:contacts_infos) { [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}] }
+      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: contacts_infos) }
 
-      let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: [{"owner_email"=>"john.bernard@grabou.fr", "text"=>"06333333", "tag"=>"PHONE", "value"=>"mobile"}]) }
-
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'ask_interlocutor'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with propose behaviour (landline and mobile are available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => '01222222'
-        }
-      }
-
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'propose'
+      let(:owner_attendee_params) { { 'mobile' => '06222222', 'landline' => '01222222' } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'propose'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with propose behaviour (mobile is available)' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => '06222222',
-            'landline_number' => nil
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'propose'
+      let(:owner_attendee_params) { { 'mobile' => '06222222', 'landline' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'propose'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'for call with decide later behaviour' do
-      let(:account_additionnal_params) {
-        {
-            'mobile_number' => nil,
-            'landline_number' => nil
-        }
-      }
+      include_context 'no location detected'
+      include_context 'virtual appointment config is', 'call', 'later'
+      let(:owner_attendee_params) { { 'mobile_number' => nil, 'landline_number' => nil } }
       let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities', detected_appointment_nature: 'call', contacts_infos: []) }
 
-      it do
-        expect_any_instance_of(AutomaticProcessing::AutomatedMessageClassification).to receive(:compute_location_from_interpretation).and_return(
-            {location_nature: nil, location: nil}
-        )
-        expect_any_instance_of(AutomaticProcessing::Flows::JulieActionRequiredDataForLocation).to receive(:get_appointment_config).and_return({ 'kind' => 'call', 'behaviour' => 'later'})
-
-        is_expected.to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
   end
 
@@ -919,10 +551,10 @@ describe AutomaticProcessing::JulieActionsFlows::CheckAvailabilities do
       ).and_return('mocked_hi_template')
 
       expect(flow).to receive(:get_invitations_sent_template).with(
-          {:client_names=>["Monsieur Thread Owner"], :timezones=>["Europe/Paris"], :locale=>"en", :is_virtual=>false, :attendees=>[{:name=>"Monsieur John Bernard", :assisted_by_name=>nil, :email=>"john.bernard@grabou.fr"}, {:name=>"Monsieur Babtou Fragile", :assisted_by_name=>nil, :email=>"babtou@fragile.fr"}], :appointment_in_email=>{:en=>"a meeting", :fr=>"un rendez-vous"}, :location_in_email=>{:en=>"", :fr=>""}, :location=>"15bis Boulevard Saint-Denis, 75002 Paris, France", :location_is_settled=>true, :should_ask_location=>false, :missing_contact_info=> "mobile", :date=>"2018-03-13T14:30:00+00:00"}
+          {:client_names=>["Monsieur Thread Owner"], :timezones=>["Europe/Paris"], :locale=>"en", :is_virtual=>false, :attendees=>[{:name=>"Monsieur John Bernard", :assisted_by_name=>nil, :email=>"john.bernard@grabou.fr"}, {:name=>"Monsieur Babtou Fragile", :assisted_by_name=>nil, :email=>"babtou@fragile.fr"}], :appointment_in_email=>{:en=>"a meeting", :fr=>"un rendez-vous"}, :location_in_email=>{:en=>"", :fr=>""}, :location=>"15bis Boulevard Saint-Denis, 75002 Paris, France", :location_is_settled=>true, :should_ask_location=>false, :missing_contact_info=> nil, :date=>"2018-03-13T14:30:00+00:00"}
       ).and_return('mocked_generated_template')
 
-      expect(flow).to receive(:create_event).with({:email=>"stagingjuliedesk@gmail.com", :summary=>"Mtg Owner Corp [Thread Owner] <> Grabou Corp [John Bernard] <> Babtou Corp [Babtou Fragile]", :description=>"<b>Organizer infos</b><br/>Fred Grais<br/><br/><br/><br/>\n", :attendees=>[{"account_email"=>nil, "accountEmail"=>nil, "email"=>"threadowner@owner.fr", "fullName"=>"Thread Owner", "firstName"=>"Thread", "lastName"=>"Owner", "usageName"=>"Monsieur Thread Owner", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Owner Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>true, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>true}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"john.bernard@grabou.fr", "fullName"=>"John Bernard", "firstName"=>"John", "lastName"=>"Bernard", "usageName"=>"Monsieur John Bernard", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Grabou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"babtou@fragile.fr", "fullName"=>"Babtou Fragile", "firstName"=>"Babtou", "lastName"=>"Fragile", "usageName"=>"Monsieur Babtou Fragile", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Babtou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}], :location=>"15bis Boulevard Saint-Denis, 75002 Paris, France", :all_day=>false, :private=>false, :start=>"2018-03-13T14:30:00+00:00", :end=>"2018-03-13T15:30:00+00:00", :start_timezone=>"Europe/Paris", :end_timezone=>"Europe/Paris", :calendar_login_username=>"stagingjuliedesk@gmail.com", :meeting_room=>{:used=>true, :booked_rooms=>["room1@email.com", "room2@email.com"]}, :create_skype_for_business_meeting=>false})
+      expect(flow).to receive(:create_event).with({:email=>"stagingjuliedesk@gmail.com", :summary=>"Mtg Owner Corp [Thread Owner] <> Grabou Corp [John Bernard] <> Babtou Corp [Babtou Fragile]", :description=>"<b>Organizer infos</b><br/>Fred Grais<br/><br/><br/><br/>\n", :attendees=>[{"account_email"=>"threadOwner@owner.fr", "accountEmail"=>"threadOwner@owner.fr", "email"=>"threadowner@owner.fr", "fullName"=>"Thread Owner", "firstName"=>"Thread", "lastName"=>"Owner", "usageName"=>"Monsieur Thread Owner", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Owner Corp", "landline"=>"", "mobile"=>"+33102030405", "skypeId"=>"", "confCallInstructions" => "", "isPresent"=>true, "status"=>"present", "isClient"=>true, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>true}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"john.bernard@grabou.fr", "fullName"=>"John Bernard", "firstName"=>"John", "lastName"=>"Bernard", "usageName"=>"Monsieur John Bernard", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Grabou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "confCallInstructions" => nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}, {"account_email"=>nil, "accountEmail"=>nil, "email"=>"babtou@fragile.fr", "fullName"=>"Babtou Fragile", "firstName"=>"Babtou", "lastName"=>"Fragile", "usageName"=>"Monsieur Babtou Fragile", "gender"=>"M", "timezone"=>"Europe/Paris", "company"=>"Babtou Corp", "landline"=>nil, "mobile"=>nil, "skypeId"=>nil, "confCallInstructions" => nil, "isPresent"=>true, "status"=>"present", "isClient"=>false, "assisted"=>nil, "isAssistant"=>nil, "isThreadOwner"=>false}], :location=>"15bis Boulevard Saint-Denis, 75002 Paris, France", :all_day=>false, :private=>false, :start=>"2018-03-13T14:30:00+00:00", :end=>"2018-03-13T15:30:00+00:00", :start_timezone=>"Europe/Paris", :end_timezone=>"Europe/Paris", :calendar_login_username=>"stagingjuliedesk@gmail.com", :meeting_room=>{:used=>true, :booked_rooms=>["room1@email.com", "room2@email.com"]}, :create_skype_for_business_meeting=>false})
 
       flow.trigger
 

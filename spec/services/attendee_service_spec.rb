@@ -8,8 +8,6 @@ describe AttendeeService do
     let(:attendees)       { [Attendee.new(email: 'bobby@juliedesk.com', first_name: 'Bobby', last_name: 'Doe', gender: 'm')] }
 
 
-    #subject! {  }
-
     context 'when formal' do
       let(:is_formal) { true }
       before(:example) do
@@ -46,22 +44,41 @@ describe AttendeeService do
     end
 
     context 'when attendee is a client' do
-        let(:accounts) { [ { 'email' => 'bob@juliedesk.com', 'usage_name' => 'Bob', 'first_name' => 'Robert', 'last_name' => 'Doe', 'email_aliases' => [] } ] }
+        let(:accounts) do
+          [ {
+                'email' => 'bob@juliedesk.com', 'usage_name' => 'Bob', 'first_name' => 'Robert', 'last_name' => 'Doe',
+                'email_aliases' => [], 'landline_number' => '0102030405', 'mobile_number' => '0602030405', 'confcall_instructions' => 'Appeler au +33101020304'
+            }
+          ]
+        end
         before(:example) { expect(Account).to receive(:get_active_account_emails).with(detailed: true).and_return(accounts) }
 
         it 'sets account attributes on attendee' do
           AttendeeService.clean_and_categorize_clients!(attendees)
-          expect(attendees).to include(an_object_having_attributes(account_email: 'bob@juliedesk.com', email: 'bob@juliedesk.com', first_name: 'Robert', last_name: 'Doe', usage_name: 'Bob'))
+          expect(attendees).to include(an_object_having_attributes(
+            account_email: 'bob@juliedesk.com', email: 'bob@juliedesk.com', first_name: 'Robert', last_name: 'Doe', usage_name: 'Bob',
+            landline: '0102030405', mobile: '0602030405', confcall_instructions: 'Appeler au +33101020304'
+          ))
         end
     end
 
     context 'when attendee email is a client alias' do
-      let(:accounts) { [ { 'email' => 'bob@gmail.com', 'usage_name' => 'Bob', 'first_name' => 'Robert', 'last_name' => 'Doe', 'email_aliases' => ['bob@juliedesk.com'] } ] }
+      let(:accounts) do
+        [ {
+              'email' => 'bob@gmail.com', 'usage_name' => 'Bob', 'first_name' => 'Robert', 'last_name' => 'Doe', 'email_aliases' => ['bob@juliedesk.com'],
+              'landline_number' => '0102030405', 'mobile_number' => '0602030405', 'confcall_instructions' => 'Appeler au +33101020304'
+          }
+        ]
+
+      end
       before(:example) { expect(Account).to receive(:get_active_account_emails).with(detailed: true).and_return(accounts) }
 
       it 'sets account attributes on attendee' do
         AttendeeService.clean_and_categorize_clients!(attendees)
-        expect(attendees).to include(an_object_having_attributes(account_email: 'bob@gmail.com', email: 'bob@juliedesk.com', first_name: 'Robert', last_name: 'Doe', usage_name: 'Bob'))
+        expect(attendees).to include(an_object_having_attributes(
+          account_email: 'bob@gmail.com', email: 'bob@juliedesk.com', first_name: 'Robert', last_name: 'Doe', usage_name: 'Bob',
+          landline: '0102030405', mobile: '0602030405', confcall_instructions: 'Appeler au +33101020304'
+        ))
       end
     end
 

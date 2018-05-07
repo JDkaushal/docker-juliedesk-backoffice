@@ -421,13 +421,13 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       expect(last_message_classif.location).to eq("15bis Boulevard Saint-Denis, 75002 Paris, France")
       expect(last_message_classif.location_nature).to be(nil)
 
-      expect(last_message_classif.attendees).to eq("[{\"account_email\":null,\"accountEmail\":null,\"email\":\"threadowner@owner.fr\",\"fullName\":\"Thread Owner\",\"firstName\":\"Thread\",\"lastName\":\"Owner\",\"usageName\":\"Monsieur Thread Owner\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Owner Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":true,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":true},{\"account_email\":null,\"accountEmail\":null,\"email\":\"john.bernard@grabou.fr\",\"fullName\":\"John Bernard\",\"firstName\":\"John\",\"lastName\":\"Bernard\",\"usageName\":\"Monsieur John Bernard\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Grabou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false},{\"account_email\":null,\"accountEmail\":null,\"email\":\"babtou@fragile.fr\",\"fullName\":\"Babtou Fragile\",\"firstName\":\"Babtou\",\"lastName\":\"Fragile\",\"usageName\":\"Monsieur Babtou Fragile\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Babtou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false}]")
+      expect(last_message_classif.attendees).to eq("[{\"account_email\":\"threadOwner@owner.fr\",\"accountEmail\":\"threadOwner@owner.fr\",\"email\":\"threadowner@owner.fr\",\"fullName\":\"Thread Owner\",\"firstName\":\"Thread\",\"lastName\":\"Owner\",\"usageName\":\"Monsieur Thread Owner\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Owner Corp\",\"landline\":\"\",\"mobile\":\"+33102030405\",\"skypeId\":\"\",\"confCallInstructions\":\"\",\"isPresent\":true,\"status\":\"present\",\"isClient\":true,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":true},{\"account_email\":null,\"accountEmail\":null,\"email\":\"john.bernard@grabou.fr\",\"fullName\":\"John Bernard\",\"firstName\":\"John\",\"lastName\":\"Bernard\",\"usageName\":\"Monsieur John Bernard\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Grabou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"confCallInstructions\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false},{\"account_email\":null,\"accountEmail\":null,\"email\":\"babtou@fragile.fr\",\"fullName\":\"Babtou Fragile\",\"firstName\":\"Babtou\",\"lastName\":\"Fragile\",\"usageName\":\"Monsieur Babtou Fragile\",\"gender\":\"M\",\"timezone\":\"Europe/Paris\",\"company\":\"Babtou Corp\",\"landline\":null,\"mobile\":null,\"skypeId\":null,\"confCallInstructions\":null,\"isPresent\":true,\"status\":\"present\",\"isClient\":false,\"assisted\":null,\"isAssistant\":null,\"isThreadOwner\":false}]")
       expect(last_message_classif.date_times).to eq("[\"2018-03-23T16:00:00+01:00\"]")
       expect(last_message_classif.locale).to eq("en")
       expect(last_message_classif.timezone).to eq("Europe/Paris")
       expect(last_message_classif.constraints_data).to eq("[{\"constraint_when_nature\":\"custom\",\"dates\":[\"2018-03-23\"],\"text\":\"\",\"start_time\":\"\",\"end_time\":\"\",\"constraint_nature\":\"can\",\"timezone\":\"Europe/Berlin\",\"attendee_email\":\"owner@email.com\"}]")
       expect(last_message_classif.duration).to eq(60)
-      expect(last_message_classif.call_instructions).to eq("{\"target\":\"later\",\"support\":\"\",\"targetInfos\":{}}")
+      expect(last_message_classif.call_instructions).to eq("{\"target\":\"later\",\"support\":\"\",\"targetInfos\":{},\"details\":\"\"}")
       expect(last_message_classif.language_level).to eq("normal")
       expect(last_message_classif.asap_constraint).to be(false)
       expect(last_message_classif.attendees_emails).to eq(["threadowner@owner.fr", "john.bernard@grabou.fr", "babtou@fragile.fr"])
@@ -544,7 +544,6 @@ describe AutomaticProcessing::AutomatedMessageClassification do
         let(:interpreted_company) { { 'company' => 'Julie Desk' } }
 
         before(:each)  do
-          # No contact
           allow(MessagesThread).to receive(:contacts).with(anything).and_return([{ email: 'bob@juliedesk.com', name: 'Bob Doe' } ])
 
           # AI interpretation
@@ -618,20 +617,21 @@ describe AutomaticProcessing::AutomatedMessageClassification do
 
     describe '#get_field' do
       let(:client_attendee_params) { {} }
-      let(:client_attendee) { { 'email' => 'bob@juliedesk.com', 'isClient' => 'true', 'firstName' => 'Bob', 'lastName' => 'Doe', 'isPresent' => 'true' }.merge(client_attendee_params) }
-
+      let(:client_attendee) do
+        { 'email' => 'bob@juliedesk.com', 'isClient' => 'true', 'firstName' => 'Bob', 'lastName' => 'Doe', 'isPresent' => 'true', 'isThreadOwner' => 'true' }.merge(client_attendee_params)
+      end
       let(:attendee_params) { { } }
       let(:attendee) { { 'email' => 'john@company.com', 'isClient' => 'false', 'firstName' => 'John', 'lastName' => 'Roberts', 'isPresent' => 'true' }.merge(attendee_params) }
 
       let(:attendees_json) { [client_attendee, attendee].to_json  }
       let(:classification_params) { { attendees:  attendees_json} }
 
-      subject { classification.get_field(field, from) }
+      subject { classification.get_field(from, field) }
 
       context 'when we need skype from thread owner (available)' do
         let(:field) { :skype }
         let(:from)  { :thread_owner }
-        let(:account_params) { { skype: 'bob.doe' } }
+        let(:client_attendee_params) { { 'skypeId' => 'bob.doe' } }
 
         it { is_expected.to eq('bob.doe') }
       end
@@ -656,7 +656,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       context 'when we need a number from thread owner (landline available)' do
         let(:field) { :any_number }
         let(:from)  { :thread_owner }
-        let(:account_params) { { 'landline_number' => '01222222' } }
+        let(:client_attendee_params) { { 'landline' => '01222222', 'mobile' => nil } }
 
         it { is_expected.to eq('01222222') }
       end
@@ -664,7 +664,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       context 'when we need a number from thread owner (mobile available)' do
         let(:field) { :any_number }
         let(:from)  { :thread_owner }
-        let(:account_params) { { 'landline_number' => nil, 'mobile_number' => '06222222' } }
+        let(:client_attendee_params) { { 'landline' => nil, 'mobile' => '06222222' } }
 
         it { is_expected.to eq('06222222') }
       end
@@ -672,7 +672,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       context 'when we need a number from thread owner (nothing available)' do
         let(:field) { :any_number }
         let(:from)  { :thread_owner }
-        let(:account_params) { { 'landline_number' => nil, 'mobile_number' => nil } }
+        let(:client_attendee_params) { { 'landline' => nil, 'mobile' => nil } }
 
         it { is_expected.to eq(nil) }
       end
@@ -681,7 +681,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       context 'when we need a number from one of the attendees (landline available)' do
         let(:field) { :any_number }
         let(:from)  { :attendees }
-        let(:attendee_params) { { 'landline' => '01222222' } }
+        let(:attendee_params) { { 'landline' => '01222222', 'mobile' => nil } }
 
         it { is_expected.to eq('01222222') }
       end
@@ -689,7 +689,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       context 'when we need a number from one of the attendees (mobile available)' do
         let(:field) { :any_number }
         let(:from)  { :attendees }
-        let(:attendee_params) { { 'mobile' => '06222222' } }
+        let(:attendee_params) { { 'mobile' => '06222222', 'landline' => nil } }
 
         it { is_expected.to eq('06222222') }
       end

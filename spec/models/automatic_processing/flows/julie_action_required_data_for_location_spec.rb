@@ -30,7 +30,7 @@ describe AutomaticProcessing::Flows::JulieActionRequiredDataForLocation, class: 
         let(:message_classification_params) { { appointment_nature: 'appointment' } }
 
 
-        it { is_expected.to match_array([{field: :location, required_from: :anyone}]) }
+        it { is_expected.to match_array([{field: :location, required_from: :any_source}]) }
       end
 
       context 'for an appointment and default address is ask interlocutor ' do
@@ -40,7 +40,7 @@ describe AutomaticProcessing::Flows::JulieActionRequiredDataForLocation, class: 
         let(:message_classification_params) { { appointment_nature: 'appointment' } }
 
 
-        it { is_expected.to match_array([{field: :location, required_from: :anyone}]) }
+        it { is_expected.to match_array([{field: :location, required_from: :any_source}]) }
       end
 
 
@@ -51,7 +51,7 @@ describe AutomaticProcessing::Flows::JulieActionRequiredDataForLocation, class: 
         let(:message_classification_params) { { appointment_nature: 'appointment' } }
 
 
-        it { is_expected.to match_array([{field: :location, required_from: :anyone}]) }
+        it { is_expected.to match_array([{field: :location, required_from: :any_source}]) }
       end
 
 
@@ -139,7 +139,7 @@ describe AutomaticProcessing::Flows::JulieActionRequiredDataForLocation, class: 
         let(:message_classification_params) { { appointment_nature: 'appointment' } }
 
 
-        it { is_expected.to match_array([{field: :location, required_from: :anyone}]) }
+        it { is_expected.to match_array([{field: :location, required_from: :any_source}]) }
       end
 
 

@@ -30,7 +30,7 @@ describe Attendee do
       Attendee.new({
           email: 'bob@juliedesk.com', first_name: 'Bob', last_name: 'Doe', usage_name: 'Bobby', gender: 'M', landline: '0102030405',
           mobile: '0602030405', skype_id: 'bob.doe', company: 'Julie Desk', is_present: true, status: 'present', is_client: false, assisted: false,
-          is_assistant: false, is_thread_owner: false
+          is_assistant: false, is_thread_owner: false, confcall_instructions: 'Appeler au +33102030405'
       }.merge(new_attendee_params))
     end
 
@@ -52,6 +52,7 @@ describe Attendee do
       it { is_expected.to have_attributes(assisted: false) }
       it { is_expected.to have_attributes(is_assistant: false) }
       it { is_expected.to have_attributes(is_thread_owner: false) }
+      it { is_expected.to have_attributes(confcall_instructions: 'Appeler au +33102030405') }
     end
 
     context 'when original attendee already has a specific attributes' do
@@ -94,7 +95,7 @@ describe Attendee do
   end
 
   describe '.from_json' do
-    let(:json_data) { "[{\"guid\":\"153463\",\"email\":\"bob@juliedesk.com\",\"firstName\":\"Robert\",\"lastName\":\"Doe\",\"name\":\"Bob Doe\",\"usageName\":\"Bobby\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Julie Desk\",\"timezone\":\"Europe/Paris\",\"landline\":\"0102030405\",\"mobile\":\"0602030405\",\"skypeId\":\"bob.doe\",\"confCallInstructions\":\"\",\"status\":\"present\",\"isPresent\":\"true\",\"isClient\":\"false\",\"isThreadOwner\":\"false\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\"}]" }
+    let(:json_data) { "[{\"guid\":\"153463\",\"email\":\"bob@juliedesk.com\",\"firstName\":\"Robert\",\"lastName\":\"Doe\",\"name\":\"Bob Doe\",\"usageName\":\"Bobby\",\"gender\":\"M\",\"isAssistant\":\"false\",\"assisted\":\"false\",\"assistedBy\":\"\",\"company\":\"Julie Desk\",\"timezone\":\"Europe/Paris\",\"landline\":\"0102030405\",\"mobile\":\"0602030405\",\"skypeId\":\"bob.doe\",\"confCallInstructions\":\"\",\"status\":\"present\",\"isPresent\":\"true\",\"isClient\":\"false\",\"isThreadOwner\":\"false\",\"needAIConfirmation\":\"false\",\"aIHasBeenConfirmed\":\"true\",\"confCallInstructions\":\"Appeler au +33102030405\"}]" }
     subject { Attendee.from_json(json_data) }
 
     context 'when json is an array' do
@@ -113,6 +114,7 @@ describe Attendee do
       it { is_expected.to include(an_object_having_attributes(is_client: false)) }
       it { is_expected.to include(an_object_having_attributes(assisted: false)) }
       it { is_expected.to include(an_object_having_attributes(is_assistant: false)) }
+      it { is_expected.to include(an_object_having_attributes(confcall_instructions: 'Appeler au +33102030405')) }
     end
 
   end

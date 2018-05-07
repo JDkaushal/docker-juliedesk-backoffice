@@ -47,7 +47,7 @@ module AutomaticProcessing
                       ],
 
                       actions: [
-                          { method: :return_value, params: [ [ { field: :location, required_from: :anyone }] ], exit_flow: true }
+                          { method: :return_value, params: [ [ { field: :location, required_from: :any_source }] ], exit_flow: true }
                       ]
                   },
 
@@ -158,7 +158,7 @@ module AutomaticProcessing
                       ],
 
                       actions: [
-                          { method: :return_value, params: [ [ { field: :location, required_from: :anyone }] ], exit_flow: true }
+                          { method: :return_value, params: [ [ { field: :location, required_from: :any_source }] ], exit_flow: true }
                       ]
                   },
 
