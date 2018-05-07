@@ -588,6 +588,7 @@ class Message < ActiveRecord::Base
 
       should_update_thread = true
       new_thread = false
+      send_auto_reply_mailing_list_message_id = nil
 
       if server_thread['subject'].include? "MB5jB- Julie alias test".freeze || server_message['from'].include?('julie.aliastest@gmail.com')
         should_update_thread = false
@@ -611,8 +612,6 @@ class Message < ActiveRecord::Base
           messages_thread.track_thread_in_inbox(:main)
           new_thread = true
         end
-
-
 
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
 
@@ -655,7 +654,8 @@ class Message < ActiveRecord::Base
                 messages_thread.update(handled_by_automation: true)
                 if messages_thread.account
                   unless m.server_message['was_split']
-                    m.async_auto_reply_mailing_list
+                    send_auto_reply_mailing_list_message_id = m.id
+                    #m.async_auto_reply_mailing_list
                   end
                 else
                   account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
@@ -667,7 +667,8 @@ class Message < ActiveRecord::Base
                                                       })
 
                     unless m.server_message['was_split']
-                      m.async_auto_reply_mailing_list
+                      send_auto_reply_mailing_list_message_id = m.id
+                      #m.async_auto_reply_mailing_list
                     end
                   end
                 end
@@ -748,6 +749,11 @@ class Message < ActiveRecord::Base
           if messages_thread.several_accounts_detected({accounts_cache: accounts_cache})
             messages_thread.tag_as_multi_clients
           end
+        end
+
+        # We send the mailing list automatic email only if the messages thread has no account associated
+        if send_auto_reply_mailing_list_message_id.present? && messages_thread.account.blank?
+          messages_thread.messages.find{ |m| m.id == send_auto_reply_mailing_list_message_id }.async_auto_reply_mailing_list
         end
 
         if messages_thread.should_reprocess_linked_attendees(computed_recipients_changed)
