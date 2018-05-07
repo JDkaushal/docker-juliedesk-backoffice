@@ -209,8 +209,8 @@
                             testAgainst = 'resource_' + vaConfig.resource_type;
                         }
 
-
-                        return testAgainst.toLowerCase().replace(/ /g, "_") == configLabel;
+                        // replace spaces with underscores even in configLabel to ensure the equality test will pass
+                        return testAgainst.toLowerCase().replace(/ /g, "_") == configLabel.replace(/ /g, "_");
                     })[0];
 
                     if(config == undefined || config == null){
