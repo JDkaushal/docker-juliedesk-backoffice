@@ -912,6 +912,7 @@ Calendar.prototype.fetchEvents = function (start, end, accountPreferencesHash, c
         virtual_resources_to_show: virtualResourcesToShow,
         start: start,
         end: end,
+        timezone: calendar.getCalendarTimezone(),
         skip_synchronization: this.syncIsOptional,
         trackingId: requestTrackingId
     };
