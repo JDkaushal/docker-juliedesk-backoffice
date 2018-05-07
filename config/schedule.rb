@@ -37,6 +37,6 @@ every 1.day, :roles => [:tasker] do
   rake 'messages_threads:threads_aborted_check_routine'
 end
 
-#every 5.minutes, :roles => [:tasker] do
-  #rake 'monitoring:monitor_inbox_threads'
-#end
+every 5.minutes, :roles => [:tasker] do
+  rake 'monitoring:monitor_inbox_threads'
+end
