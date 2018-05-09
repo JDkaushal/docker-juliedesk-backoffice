@@ -28,6 +28,7 @@
   var today = moment().utc().format();
   var reminderEdited = false;
   var newFollowUpReminderDate = currentFollowUpReminderDate;
+  var autoFollowUpEnabled = window.threadAccount && window.threadAccount.auto_follow_up_enabled;
 
   function reminderHasBeenEdited() {
     return reminderEdited;
@@ -153,7 +154,7 @@
       $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
 
       // When no follow up reminder date is present we will preselect the adequat one
-      if(currentFollowUpReminderDate == '') {
+      if(currentFollowUpReminderDate == '' && autoFollowUpEnabled) {
           onNewThreadStatusChange($('.new-thread-status-select').val());
       }
   });
