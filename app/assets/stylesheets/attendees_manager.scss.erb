@@ -119,6 +119,20 @@ $notPresentAttendeeColor: #453c3c;
             max-height: 350px;
             overflow-y: auto;
         }
+
+      .attendee-company-title{
+        font-size: 16px !important;
+        margin: 25px 0 0px !important;
+        text-transform: uppercase;
+        color: $companyNameColor;
+        float:left;
+      }
+
+      &:first-child {
+        .attendee-company-title{
+          margin: 0 !important;
+        }
+      }
     }
 
     .row{
@@ -131,15 +145,6 @@ $notPresentAttendeeColor: #453c3c;
         /*font-weight: bold;*/
         /*text-transform: uppercase;*/
         /*color: $darkBlue;*/
-    }
-
-
-    .attendee-company-title{
-        font-size: 16px !important;
-        margin: 25px 0 0px !important;
-        text-transform: uppercase;
-        color: $companyNameColor;
-        float:left;
     }
 
     .search-list {

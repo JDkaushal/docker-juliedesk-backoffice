@@ -1165,6 +1165,7 @@
 
     function revealFormFirstPart() {
         $('.form-first-part-entries').show();
+        $('#validate_constraints_button').show();
     }
 
     function revealFormSecondPart() {
@@ -1815,10 +1816,10 @@
           </div>
           <div class="add-constraint-button btn btn-primary btn-sm btn-block">Add constraint</div>
 
-          <div class="btn btn-success btn-large" id="validate_constraints_button" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
-
         </div>
       </div>
+
+      <div class="btn btn-success btn-large" id="validate_constraints_button" data-tracking-event="Click_on_validate_constraints"><%= I18n.t("common.validate") %></div>
 
       <div class="data-entry linear-form-entry form-second-part-entries subject-form-entry section parameters-section">
         <div class="header">
