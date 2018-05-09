@@ -14,24 +14,38 @@ module AutomaticProcessing
           return
         end
 
-        send_date_validation_and_create_event(ai_verify_dates_data)
+        generate_template_and_create_event(ai_verify_dates_data)
       end
 
       private
 
-      def send_date_validation_and_create_event(ai_verify_dates_data)
+      def generate_template_and_create_event(ai_verify_dates_data)
         # Store in DB on message classification 'verified_dates_by_ai'
         chosen_date_for_check_availabilities = ai_verify_dates_data[:date_to_book]
         timezone_returned_by_ai = ai_verify_dates_data[:timezone]
         meeting_rooms_for_check_availabilities = ai_verify_dates_data[:meeting_rooms_to_book]
 
-        wordings = @data_holder.get_appointment
-
         update_message_classification({
-                                          chosen_date_for_check_availabilities: chosen_date_for_check_availabilities,
-                                          meeting_rooms_for_check_availabilities: meeting_rooms_for_check_availabilities,
-                                          timezone_returned_by_ai: timezone_returned_by_ai
+                                        chosen_date_for_check_availabilities: chosen_date_for_check_availabilities,
+                                        timezone_returned_by_ai: timezone_returned_by_ai,
+                                        meeting_rooms_for_check_availabilities: meeting_rooms_for_check_availabilities
                                       })
+
+        generate_template({
+                            chosen_date_for_check_availabilities: chosen_date_for_check_availabilities,
+                            timezone_returned_by_ai: timezone_returned_by_ai
+                          })
+
+        execute_create_event({
+                               chosen_date_for_check_availabilities: chosen_date_for_check_availabilities,
+                               meeting_rooms_for_check_availabilities: meeting_rooms_for_check_availabilities,
+                               timezone_returned_by_ai: timezone_returned_by_ai
+                             })
+
+      end
+
+      def generate_template(params)
+        wordings = @data_holder.get_appointment
 
         location = @data_holder.get_message_classification_location
 
@@ -44,44 +58,50 @@ module AutomaticProcessing
         end
 
         @julie_action.text = "#{say_hi_text}#{get_invitations_sent_template({
-                                                                                client_names: @data_holder.get_client_names,
-                                                                                timezones: [timezone_returned_by_ai],
-                                                                                locale: @data_holder.get_current_locale,
-                                                                                is_virtual: @data_holder.is_appointment_virtual?,
-                                                                                attendees: formatted_attendees,
-                                                                                appointment_in_email: {
-                                                                                    en: wordings['title_in_email']['en'],
-                                                                                    fr: wordings['title_in_email']['fr']
-                                                                                },
-                                                                                location_in_email: {
-                                                                                    en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
-                                                                                    fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
-                                                                                },
-                                                                                location: location,
-                                                                                location_is_settled: location.present?,
-                                                                                should_ask_location: self.should_ask_location?,
-                                                                                missing_contact_info: missing_contact_info,
-                                                                                date: chosen_date_for_check_availabilities.to_s
+                                                                              client_names: @data_holder.get_client_names,
+                                                                              timezones: [params[:timezone_returned_by_ai]],
+                                                                              locale: @data_holder.get_current_locale,
+                                                                              is_virtual: @data_holder.is_appointment_virtual?,
+                                                                              attendees: formatted_attendees,
+                                                                              appointment_in_email: {
+                                                                                  en: wordings['title_in_email']['en'],
+                                                                                  fr: wordings['title_in_email']['fr']
+                                                                              },
+                                                                              location_in_email: {
+                                                                                  en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+                                                                                  fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+                                                                              },
+                                                                              location: location,
+                                                                              location_is_settled: location.present?,
+                                                                              should_ask_location: self.should_ask_location?,
+                                                                              missing_contact_info: missing_contact_info,
+                                                                              date: params[:chosen_date_for_check_availabilities].to_s
                                                                             })}"
+      end
 
-        create_event(
-            {
-                email: @data_holder.get_thread_owner_account.email,
-                summary: @data_holder.get_message_classification_summary,
-                description: @data_holder.get_message_classification_notes,
-                attendees: @data_holder.get_present_attendees,
-                location: @data_holder.get_message_classification_location,
-                all_day: false,
-                private: false,
-                start: chosen_date_for_check_availabilities.to_s,
-                end: "#{chosen_date_for_check_availabilities + @data_holder.get_message_classification_duration.minutes}",
-                start_timezone: timezone_returned_by_ai,
-                end_timezone: timezone_returned_by_ai,
-                calendar_login_username: @data_holder.get_thread_owner_account_email, #Warning, here it could be different for clients with calendar rules
-                meeting_room: meeting_rooms_for_check_availabilities.present? ? {used: true, booked_rooms: meeting_rooms_for_check_availabilities} : nil,
-                create_skype_for_business_meeting: false # BNo support for sfb for now
-            }
-        )
+      def execute_create_event(params)
+        puts params.inspect
+
+        create_params = {
+          email: @data_holder.get_thread_owner_account.email,
+          summary: @data_holder.get_message_classification_summary,
+          description: @data_holder.get_message_classification_notes,
+          attendees: @data_holder.get_present_attendees,
+          location: @data_holder.get_message_classification_location,
+          all_day: false,
+          private: false,
+          start: params[:chosen_date_for_check_availabilities].to_s,
+          end: "#{params[:chosen_date_for_check_availabilities] + @data_holder.get_message_classification_duration.minutes}",
+          start_timezone: params[:timezone_returned_by_ai],
+          end_timezone: params[:timezone_returned_by_ai],
+          calendar_login_username: @data_holder.get_thread_owner_account_email, #Warning, here it could be different for clients with calendar rules
+          meeting_room: params[:meeting_rooms_for_check_availabilities].present? ? {used: true, booked_rooms: params[:meeting_rooms_for_check_availabilities]} : nil,
+          create_skype_for_business_meeting: false # BNo support for sfb for now
+        }
+
+        create_event(create_params)
+
+        @julie_action.ai_event_data = create_params
       end
 
       def resuggest_dates
@@ -160,7 +180,6 @@ module AutomaticProcessing
       def handle_verify_dates_response(resp)
         if resp['error'].blank? && resp['status'] != 'fail'
           result = {}
-          puts resp.inspect
           validated_date = resp['dates_validate'].first
 
           if validated_date.blank?

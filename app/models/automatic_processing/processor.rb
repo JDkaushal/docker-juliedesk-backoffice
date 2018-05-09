@@ -25,7 +25,7 @@ module AutomaticProcessing
       message_classification
     end
 
-    def process!
+    def process!(options={})
       # Generate message interpretations
       interprete!
 
@@ -35,15 +35,24 @@ module AutomaticProcessing
 
       # classify
       classify_and_create_julie_action
-      link_associations
 
-      # Execute actions
-      trigger_actions_flow
+      if options[:dont_trigger_action_flows]
+        # Normally the save action is done after the julie action flow has been processed in trigger_julie_action_flow
+        @julie_action.save
+      else
+        # Trigger flow
+        trigger_julie_action_flow
+
+        link_associations
+
+        # Execute actions
+        trigger_actions_flow
+      end
     end
 
-    def process
+    def process(options={})
       begin
-        process!
+        process!(options)
       rescue AutomaticProcessing::Exceptions::AutomaticProcessingError => e
         if Rails.env.development? || Rails.env.test?
           raise(e)
@@ -85,7 +94,7 @@ module AutomaticProcessing
 
       # Cast MessageClassification to AutomaticProcessing::AutomatedMessageClassification
       classif = AutomaticProcessing::AutomatedMessageClassification.from_message_classification(classif)
-      classif.julie_action = julie_action
+      classif.julie_action = AutomaticProcessing::AutomatedJulieAction.from_julie_action(julie_action)
 
       @data_holder.set_message_classification(classif)
 
@@ -121,10 +130,12 @@ module AutomaticProcessing
       @data_holder.set_message_classification(@message_classification)
 
       @julie_action = create_julie_action
-      @julie_action.process
       @data_holder.set_julie_action(@julie_action)
     end
 
+    def trigger_julie_action_flow
+      @julie_action.process
+    end
 
     def classify_message!
       AutomaticProcessing::AutomatedMessageClassification.process_message!(@message)

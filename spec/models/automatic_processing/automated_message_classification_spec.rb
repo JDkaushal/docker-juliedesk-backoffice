@@ -408,9 +408,9 @@ describe AutomaticProcessing::AutomatedMessageClassification do
 
       expect {
         new_classif = classif_creation
-      }.to change { MessageClassification.count }.by(1)
+      }.to change { AutomaticProcessing::AutomatedMessageClassification.count }.by(1)
 
-      last_message_classif = MessageClassification.last
+      last_message_classif = AutomaticProcessing::AutomatedMessageClassification.last
 
       expect(last_message_classif.classification).to eq('ask_availabilities')
       expect(last_message_classif.operator).to eq('jul.ia@operator.juliedesk.com')

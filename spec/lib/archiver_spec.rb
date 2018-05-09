@@ -74,26 +74,30 @@ describe Archiver do
       end
 
       classes_to_move = [
-          MessagesThread,
-          Message,
-          JulieAction,
-          MessageClassification,
-          AutoMessageClassification,
-          AutoMessageClassificationReview,
-          MessageInterpretation,
-          OperatorActionsGroup,
-          OperatorAction,
-          DateSuggestionsComparisonReview,
-          DateSuggestionsReview
+        MessagesThread,
+        Message,
+        JulieAction,
+        MessageClassification,
+        AutoMessageClassification,
+        AutoMessageClassificationReview,
+        MessageInterpretation,
+        OperatorActionsGroup,
+        OperatorAction,
+        DateSuggestionsComparisonReview,
+        DateSuggestionsReview,
+        AutomaticProcessing::AutomatedMessageClassification,
+        AutomaticProcessing::AutomatedJulieAction
       ]
+
       classes_to_drop = [
-          PaperTrail::Version
+        PaperTrail::Version
       ]
+
       classes_ignored = [
-          ClientRequest,
-          EventTitleReview,
-          Operator,
-          OperatorPresence
+        ClientRequest,
+        EventTitleReview,
+        Operator,
+        OperatorPresence
       ]
 
       expect(associations_classes.map(&:to_s).sort).to eq((classes_to_move + classes_to_drop + classes_ignored).map(&:to_s).sort)

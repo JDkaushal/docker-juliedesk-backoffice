@@ -356,6 +356,7 @@ describe AutomaticProcessing::Processor do
           expect(subject).to receive(:link_associations)
           expect(subject).to receive(:initialize_process_helpers)
           expect(subject).to receive(:trigger_actions_flow)
+          expect(subject).to receive(:trigger_julie_action_flow)
 
           subject.process
         end
@@ -366,6 +367,7 @@ describe AutomaticProcessing::Processor do
           allow(subject).to receive(:classify_and_create_julie_action)
           allow(subject).to receive(:link_associations)
           allow(subject).to receive(:initialize_process_helpers)
+          allow(subject).to receive(:trigger_julie_action_flow)
         end
 
         context 'ask_availabilities' do

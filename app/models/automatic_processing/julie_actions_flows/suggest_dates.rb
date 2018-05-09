@@ -5,7 +5,14 @@ module AutomaticProcessing
       include CommonMethods
 
       def trigger(suggest_again = false)
+        generate_template(suggest_again)
+      end
+
+      private
+
+      def generate_template(suggest_again)
         @julie_action.date_times = find_dates_to_suggest.to_json
+
         wordings = @data_holder.get_appointment
 
         preambule = if suggest_again
@@ -15,28 +22,25 @@ module AutomaticProcessing
                     end
 
         @julie_action.text = "#{preambule}#{get_suggest_dates_template({
-                                                                    client_names: @data_holder.get_client_names,
-                                                                    timezones: [@data_holder.get_thread_owner_default_timezone],
-                                                                    default_timezone: @data_holder.get_thread_owner_default_timezone,
-                                                                    locale: @data_holder.get_current_locale,
-                                                                    is_virtual: @data_holder.is_appointment_virtual?,
-                                                                    attendees: @data_holder.get_present_attendees,
-                                                                    appointment_in_email: {
-                                                                        en: wordings['title_in_email']['en'],
-                                                                        fr: wordings['title_in_email']['fr']
-                                                                    },
-                                                                    location_in_email: {
-                                                                        en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
-                                                                        fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
-                                                                    },
-                                                                    should_ask_location: self.should_ask_location?,
-                                                                    missing_contact_info: missing_contact_info,
-                                                                    dates: JSON.parse(@julie_action.date_times).map{|date_time| date_time['date']}
-                                                                })}"
-
+                                                                           client_names: @data_holder.get_client_names,
+                                                                           timezones: [@data_holder.get_thread_owner_default_timezone],
+                                                                           default_timezone: @data_holder.get_thread_owner_default_timezone,
+                                                                           locale: @data_holder.get_current_locale,
+                                                                           is_virtual: @data_holder.is_appointment_virtual?,
+                                                                           attendees: @data_holder.get_present_attendees,
+                                                                           appointment_in_email: {
+                                                                               en: wordings['title_in_email']['en'],
+                                                                               fr: wordings['title_in_email']['fr']
+                                                                           },
+                                                                           location_in_email: {
+                                                                               en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+                                                                               fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+                                                                           },
+                                                                           should_ask_location: self.should_ask_location?,
+                                                                           missing_contact_info: missing_contact_info,
+                                                                           dates: JSON.parse(@julie_action.date_times).map{|date_time| date_time['date']}
+                                                                       })}"
       end
-
-      private
 
       def find_dates_to_suggest
         date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {

@@ -1,8 +1,11 @@
 class AutomaticProcessing::AutomatedMessageClassification < MessageClassification
+  self.table_name = "automated_message_classifications"
+
+  has_one :julie_action, class_name: "AutomaticProcessing::AutomatedJulieAction", foreign_key: :message_classification_id
+
   include TemplateGeneratorHelper
   include NotesGenerator
-
-
+  
   def initialize(params = {})
     super(params)
   end

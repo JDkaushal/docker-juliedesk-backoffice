@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180427141431) do
+ActiveRecord::Schema.define(version: 20180509144702) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,94 @@ ActiveRecord::Schema.define(version: 20180427141431) do
     t.boolean  "asap_constraint",                        default: false
     t.json     "client_on_trip"
   end
+
+  create_table "automated_julie_actions", force: :cascade do |t|
+    t.integer  "message_classification_id"
+    t.string   "action_nature",                     limit: 255
+    t.text     "date_times",                                    default: "[]"
+    t.text     "text"
+    t.boolean  "done",                                          default: false
+    t.boolean  "pending",                                       default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "processed_in"
+    t.text     "calendar_id"
+    t.text     "event_id"
+    t.text     "events",                                        default: "[]"
+    t.boolean  "deleted_event",                                 default: false
+    t.string   "event_url",                         limit: 255
+    t.string   "calendar_login_username",           limit: 255
+    t.integer  "server_message_id"
+    t.text     "generated_text"
+    t.boolean  "event_from_invitation",                         default: false
+    t.string   "event_from_invitation_organizer",   limit: 255
+    t.boolean  "date_suggestions_full_ai",                      default: false
+    t.json     "ai_filters_results",                            default: {}
+    t.json     "ai_call_status"
+    t.json     "date_times_from_ai"
+    t.boolean  "date_suggestions_full_ai_capacity",             default: false
+    t.json     "ai_event_data",                                 default: {}
+  end
+
+  add_index "automated_julie_actions", ["created_at"], name: "automated_julie_actions_created_at_idx", using: :btree
+  add_index "automated_julie_actions", ["event_id"], name: "automated_julie_actions_event_id_idx", using: :btree
+  add_index "automated_julie_actions", ["message_classification_id"], name: "automated_julie_actions_message_classification_id_idx", using: :btree
+  add_index "automated_julie_actions", ["server_message_id"], name: "automated_julie_actions_server_message_id_idx", using: :btree
+
+  create_table "automated_message_classifications", force: :cascade do |t|
+    t.string   "classification",             limit: 255
+    t.integer  "message_id"
+    t.string   "operator",                   limit: 255
+    t.boolean  "validated",                              default: false
+    t.string   "appointment_nature",         limit: 255
+    t.text     "summary"
+    t.integer  "duration"
+    t.text     "location"
+    t.text     "attendees",                              default: "[]"
+    t.text     "notes"
+    t.text     "constraints"
+    t.text     "date_times",                             default: "[]"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "locale",                     limit: 255
+    t.string   "timezone",                   limit: 255
+    t.integer  "processed_in"
+    t.string   "location_nature",            limit: 255
+    t.boolean  "private",                                default: false
+    t.text     "other_notes"
+    t.text     "constraints_data",                       default: "[]"
+    t.boolean  "client_agreement",                       default: false
+    t.boolean  "attendees_are_noticed",                  default: false
+    t.text     "number_to_call"
+    t.string   "review_status",              limit: 255
+    t.text     "call_instructions",                      default: "[]"
+    t.string   "thread_status",              limit: 255
+    t.text     "follow_up_data"
+    t.string   "title_preference",           limit: 255
+    t.json     "location_coordinates",                   default: []
+    t.boolean  "using_meeting_room",                     default: false
+    t.json     "meeting_room_details"
+    t.boolean  "using_restaurant_booking",               default: false
+    t.json     "restaurant_booking_details"
+    t.boolean  "location_changed"
+    t.json     "virtual_resource_used"
+    t.json     "before_update_data"
+    t.json     "verified_dates_by_ai"
+    t.text     "annotated_reply"
+    t.string   "language_level",             limit: 255
+    t.boolean  "asap_constraint",                        default: false
+    t.string   "identifier",                 limit: 255
+    t.json     "passed_conditions"
+    t.json     "client_on_trip"
+    t.json     "booked_rooms_details"
+    t.string   "cluster_specified_location", limit: 255
+    t.string   "attendees_emails",                       default: [],    array: true
+  end
+
+  add_index "automated_message_classifications", ["attendees_emails"], name: "automated_message_classifications_attendees_emails_idx", using: :gin
+  add_index "automated_message_classifications", ["created_at"], name: "automated_message_classifications_created_at_idx", using: :btree
+  add_index "automated_message_classifications", ["identifier"], name: "automated_message_classifications_identifier_idx", using: :btree
+  add_index "automated_message_classifications", ["message_id"], name: "automated_message_classifications_message_id_idx", using: :btree
 
   create_table "client_contacts", force: :cascade do |t|
     t.string   "client_email",           limit: 255,                 null: false

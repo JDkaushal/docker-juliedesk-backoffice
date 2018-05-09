@@ -63,10 +63,13 @@ SQL
   end
 
   def self.get_objects_to_move(messages_thread_id)
-    messages_thread = MessagesThread.includes(messages: {message_classifications: {julie_action: [:date_suggestions_comparison_review, :date_suggestions_review]}, auto_message_classification: :auto_message_classification_reviews, message_interpretations: {}}, operator_actions_groups: :operator_actions).find(messages_thread_id)
+    messages_thread = MessagesThread.includes(messages: {message_classifications: {julie_action: [:date_suggestions_comparison_review, :date_suggestions_review]}, auto_message_classification: :auto_message_classification_reviews, message_interpretations: {}, automated_message_classifications: :julie_action}, operator_actions_groups: :operator_actions).find(messages_thread_id)
     messages = messages_thread.messages
     message_classifications = messages.map(&:message_classifications).flatten.compact
     julie_actions = message_classifications.map(&:julie_action).flatten.compact
+
+    automated_message_classifications = messages.map(&:automated_message_classifications).flatten.compact
+    automated_julie_actions = automated_message_classifications.map(&:julie_action).flatten.compact
 
     date_suggestions_comparison_reviews = julie_actions.map(&:date_suggestions_comparison_review).flatten.compact
     date_suggestions_reviews = julie_actions.map(&:date_suggestions_review).flatten.compact
@@ -89,7 +92,9 @@ SQL
             auto_message_classifications +
             auto_message_classification_reviews +
             operator_actions_groups +
-            operator_actions
+            operator_actions +
+            automated_message_classifications +
+            automated_julie_actions
   end
 
 end
