@@ -228,11 +228,18 @@
             // To trigger the related events
             appointmentSelectNode.trigger('change');
 
+            $('#submit-detected-date-button').click(function(e) {
+                $scope.triggerAppointmentNatureSelectChangeEvent();
+            });
+
+            $scope.triggerAppointmentNatureSelectChangeEvent();
+        };
+
+        $scope.triggerAppointmentNatureSelectChangeEvent = function() {
             // setTimeout to wait for page to load and data to be available
             setTimeout(function() {
                 appointmentNatureNode.trigger('change');
-            }, 500);
-
+            }, 0);
         };
 
         $scope.trackAppointmentTypeAIFeedback = function() {
