@@ -1880,7 +1880,7 @@
           </div>
 
           <div class="data-entry linear-form-entry form-second-part-entries">
-            <%= text_area_tag :notes, messages_thread.computed_data[:notes], class: "data-entry form-control" %>
+            <div id="notes" class="notes"><%= messages_thread.computed_data[:notes] %></div>
             <%= text_area_tag :other_notes, messages_thread.computed_data[:other_notes], class: "data-entry form-control" %>
           </div>
         </div>
