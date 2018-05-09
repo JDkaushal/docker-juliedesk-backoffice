@@ -15,7 +15,7 @@
       <div>
         <%= image_tag "ajax-loader.gif", class: "spinner", "ng-hide" => "attendees_manager.loaded" %>
       </div>
-      <div class="contact-group" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
+      <div class="contact-group" ng-class="$index == 0 ? 'first' : ''" ng-repeat="(key, value) in getDisplayedAttendees() | groupBy: 'validatedCompany' | toArray:true | organizeContactArray">
         <div class="attendee-company-title">
           {{ key }}
         </div>
