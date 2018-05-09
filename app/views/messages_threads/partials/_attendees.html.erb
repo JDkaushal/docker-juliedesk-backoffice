@@ -1,7 +1,7 @@
 <%= javascript_include_tag 'angular_attendees_app' %>
 <script>window.currentToCC = <%== @messages_thread.present? ? @messages_thread.get_all_messages_recipients.map{|email| email.downcase}.to_json : [].to_json %>;</script>
 
-<div id="attendees_manager_app" class="data-entry linear-form-entry attendees-manager section attendees-section">
+<div id="attendees_manager_app" class="data-entry linear-form-entry form-first-part-entries attendees-manager section attendees-section">
   <div class="header">
     <span class="sprite"></span>
     <div class="data-entry-name title">
