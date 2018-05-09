@@ -174,7 +174,13 @@ class NotesManager {
         this.$html = $(NotesManager.DEFAULT_HTML);
 
         if(this.contentType == NotesManager.TYPE_HTML) {
-            this.$html = $(content);
+            try {
+                this.$html = $(content);
+            }
+            catch(err) {
+                this.$html = $("");
+                console.warn("Not able to parse html notes", content.slice(0, 100))
+            }
         }
 
         this.loadJulieDeskParts();
