@@ -1,4 +1,4 @@
-<div ng-init="modified=false" id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry' ng-class="{'linear-skip': !shouldShow, 'ai': value.from_ai && !modified }">
+<div ng-init="modified=false" id="client-on-trip-data-entry" class='data-entry custom-data-entry linear-form-entry form-first-part-entries' ng-class="{'linear-skip': !shouldShow, 'ai': value.from_ai && !modified }">
     <div ng-show="!!shouldShow">
         <div class='checkbox-and-span'>
             <input id="clientOnTrip" class="custom" ng-change="modified=true" ng-class="{'ai': value.from_ai && !modified}" type='checkbox' ng-model='activated'/>
