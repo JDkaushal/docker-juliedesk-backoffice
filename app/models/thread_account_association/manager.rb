@@ -584,7 +584,7 @@ module ThreadAccountAssociation
 
     def using_julie_alias
       used_julie = get_used_julie
-      @currently_using_julie_alias ||= used_julie && used_julie.email != ENV['COMMON_JULIE_ALIAS_EMAIL']
+      @currently_using_julie_alias ||= used_julie && used_julie.email != 'julie@juliedesk.com'
     end
 
     def find_clients_with_main_julie
