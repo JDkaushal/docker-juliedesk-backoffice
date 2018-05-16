@@ -1,7 +1,7 @@
 ## EVENT TRIGGER used to replicate DDL statement made to 'message_classifications' and 'julie_actions' respectively to 'automated_message_classifications' and 'automated_julie_actions'
 
 ## Need to be executed by hand with a superuser
-# 
+#
 # # execute %q{
 #   CREATE OR REPLACE FUNCTION replicate_ddl() RETURNS event_trigger AS $$
 #   DECLARE

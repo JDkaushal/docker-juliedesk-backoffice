@@ -54,7 +54,7 @@ module AutomaticProcessing
       begin
         process!(options)
       rescue AutomaticProcessing::Exceptions::AutomaticProcessingError => e
-        if Rails.env.development? || Rails.env.test?
+        if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
           raise(e)
         else
           Airbrake.notify(e)
