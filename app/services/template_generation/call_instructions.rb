@@ -18,7 +18,7 @@ module TemplateGeneration
       @present_attendees  = call_instructions_data.fetch(:attendees, [])
       @support            = call_instructions_data.fetch(:support, '')
       @target             = call_instructions_data.fetch(:target, '')
-      @target_infos       = call_instructions_data.fetch(:target_infos, {})
+      @target_infos       = call_instructions_data.fetch(:targetInfos, {})
       @details            = call_instructions_data.fetch(:details, '')
     end
 
