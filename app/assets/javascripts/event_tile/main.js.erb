@@ -717,8 +717,15 @@ EventTile.prototype.fetchEvent = function(callback) {
           $eventDoesNotExist.append($("<a href='/messages_threads/" + window.threadId + "/remove_event_link?event_id=" + eventTile.eventId + "'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
           eventTile.eventDoesNotExistSelector = $eventDoesNotExist;
           eventTile.showEventDoesNotExist();
-        }
-        else
+        } else if (response.responseJSON && response.responseJSON.error_code == "UNREACHABLE_CALENDAR_LOGIN") {
+          alert(response.responseJSON.message);
+          var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
+          $eventDoesNotExist.append($("<div>").html(localize('info_panel.calendar_login_unreachable')));
+          console.log('eventTIle', eventTile);
+          $eventDoesNotExist.append($("<a href='/messages_threads/" + window.threadId + "/remove_event_link?event_id=" + eventTile.eventId + "'>").addClass("btn btn-success btn-block").html(localize("info_panel.remove_link")));
+          eventTile.eventDoesNotExistSelector = $eventDoesNotExist;
+          eventTile.showEventDoesNotExist();
+        } else
           alert("Error fetching event");
         console.log(response);
     });

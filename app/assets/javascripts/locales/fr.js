@@ -408,6 +408,7 @@ window.wordings['fr'] = {
     },
     info_panel: {
         event_does_not_exist_anymore: "Cet évènement n'existe plus.",
+        calendar_login_unreachable: "Compte calendrier inaccessible, si existant, veuillez rattacher l'événement manuellement",
         invitation_does_not_exist_anymore: "Le client a refusé l'invitation",
         remove_link: "Supprimer l'association",
         client_on_trip: {
