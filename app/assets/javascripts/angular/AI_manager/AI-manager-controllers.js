@@ -232,6 +232,10 @@
                 $scope.triggerAppointmentNatureSelectChangeEvent();
             });
 
+            $('.attendees-are-noticed-panel .btn').click(function(e) {
+                $scope.triggerAppointmentNatureSelectChangeEvent();
+            });
+
             $scope.triggerAppointmentNatureSelectChangeEvent();
         };
 
