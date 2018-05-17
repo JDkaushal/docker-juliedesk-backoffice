@@ -345,6 +345,7 @@ class MessagesThread < ActiveRecord::Base
     }
     attrs_to_update.merge!(has_been_sent_to_admin: true) if has_been_sent_to_admin == false
     self.update_attributes(attrs_to_update)
+    self.remove_tag(SYNCING_TAG)
 
     if ENV['DONT_WARN_AND_FOUNDER_EMAILS'].nil?
       EmailServer.add_and_remove_labels({
