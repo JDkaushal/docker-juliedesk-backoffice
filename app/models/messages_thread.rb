@@ -862,9 +862,9 @@ class MessagesThread < ActiveRecord::Base
     all_messages = self.server_thread(force_refresh: true, show_split: true).try(:[], 'messages') || []
 
     # Server thread should exist when reimporting
-    if self.server_thread.nil?
-      raise NoServerThreadFound.new("No server thread found for backoffice thread id #{self.id}")
-    end
+    #if self.server_thread.nil?
+    #  raise NoServerThreadFound.new("No server thread found for backoffice thread id #{self.id}")
+    #end
 
     messages_thread_messages = self.messages
 
@@ -896,9 +896,12 @@ class MessagesThread < ActiveRecord::Base
       self.request_date = computed_request_date
     end
 
-    self.server_version = self.server_thread['version']
-    self.subject = self.server_thread['subject']
-    self.snippet = self.server_thread['snippet']
+    unless self.server_thread.nil?
+      self.server_version = self.server_thread['version']
+      self.subject = self.server_thread['subject']
+      self.snippet = self.server_thread['snippet']
+    end
+
     self.messages_count = all_real_messages.length
 
 
