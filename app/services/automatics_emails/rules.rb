@@ -30,11 +30,7 @@ module AutomaticsEmails
 
     RULES[TYPE_TECHNICAL_ISSUE] = [
         {
-            filter: AutomaticsEmails::Filters::Client.new(TYPE_TECHNICAL_ISSUE, 4.hours),
-            conditions: [AutomaticsEmails::Conditions::CountLimit.new(5)]
-        },
-        {
-            filter: AutomaticsEmails::Filters::Thread.new(TYPE_TECHNICAL_ISSUE, 4.hours),
+            filter: AutomaticsEmails::Filters::Thread.new(TYPE_TECHNICAL_ISSUE, 3.days),
             conditions: [AutomaticsEmails::Conditions::CountLimit.new(1)]
         }
     ]

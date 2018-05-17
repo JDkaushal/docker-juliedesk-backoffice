@@ -62,12 +62,12 @@ class ProcessableThreadsService
 
     # TODO : activate when ready to
     # Notify client about this issue
-    #AutoEmailWorker.enqueue(
-    #    last_message.id,
-    #    AutomaticsEmails::Rules::TYPE_TECHNICAL_ISSUE,
-    #    { key: 'technical_issue', client_name: @messages_thread.account.try(:usage_name) },
-    #    @messages_thread.account_email
-    #)
+    AutoEmailWorker.enqueue(
+       last_message.id,
+       AutomaticsEmails::Rules::TYPE_TECHNICAL_ISSUE,
+       { key: 'technical_issue', client_name: @messages_thread.account.try(:usage_name) },
+       @messages_thread.account_email
+    )
 
     # Notify dev about this issue
 
