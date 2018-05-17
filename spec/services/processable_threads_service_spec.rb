@@ -27,7 +27,6 @@ describe ProcessableThreadsService do
 
     shared_examples 'email notification sent' do
       it {
-        pending 'email notification is sent'
         expect(AutoEmailWorker).to receive(:enqueue)
         subject
       }
