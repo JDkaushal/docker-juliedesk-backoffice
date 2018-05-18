@@ -718,7 +718,6 @@ EventTile.prototype.fetchEvent = function(callback) {
           eventTile.eventDoesNotExistSelector = $eventDoesNotExist;
           eventTile.showEventDoesNotExist();
         } else if (response.responseJSON && response.responseJSON.error_code == "UNREACHABLE_CALENDAR_LOGIN") {
-          alert(response.responseJSON.message);
           var $eventDoesNotExist = $("<div>").addClass("event-does-not-exist");
           $eventDoesNotExist.append($("<div>").html(localize('info_panel.calendar_login_unreachable')));
           console.log('eventTIle', eventTile);
