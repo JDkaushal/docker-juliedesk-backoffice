@@ -149,14 +149,16 @@ class NotesManager {
         return noteManager;
     }
 
-    static fromJulieDeskNotes(content, textContent) {
+    static fromJulieDeskNotes(content, textContent, options = {}) {
         let $html =  $(NotesManager.DEFAULT_HTML);
         $html.html(content);
 
         if($html.find('.' + NotesManager.JULIEDESK_NOTES_CLASS_NAME).size() == 0) {
             return new NotesManager(textContent, { contentType: NotesManager.TYPE_TEXT })
         }
-        return new NotesManager(content, { contentType: NotesManager.TYPE_HTML });
+
+        options.contentType = NotesManager.TYPE_HTML;
+        return new NotesManager(content, options);
     }
 
 

@@ -51,7 +51,7 @@
     var lastNotesText = '<%=h escape_javascript(messages_thread.computed_data[:text_notes]) %>';
 
 
-    window.notesManager = NotesManager.fromJulieDeskNotes(lastNotes, lastNotesText);
+    window.notesManager = NotesManager.fromJulieDeskNotes(lastNotes, lastNotesText, { lang: window.getCurrentLocale() });
 
     var showCallInstructionsFormFor = ['call', 'confcall', 'visio'];
 
