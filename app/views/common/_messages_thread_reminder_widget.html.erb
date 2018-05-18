@@ -34,16 +34,20 @@
     return reminderEdited;
   };
 
-  function setReminderTextAndStyle() {
-      var text = 'none';
+  function setDefaultReminderTextAndStyle(feature_activated) {
+      var text = feature_activated ? 'Not set' : 'Not available';
       var currentClass = '';
       if(currentFollowUpReminderDate != '') {
         text = moment(currentFollowUpReminderDate).toNow(true);
-          currentClass = 'on';
+        currentClass = 'on';
       }
 
       $('.follow-up-reminder').addClass(currentClass);
       $('.follow-up-reminder .value').text(text);
+
+      if(!feature_activated) {
+        $('.follow-up-reminder .date-sprite').hide();
+      }
   };
 
   function getCurrentFollowUpRemainderDate() {
@@ -54,19 +58,19 @@
       var reminderOn;
       reminderEdited = true;
 
-        if(durationToAdd == "0") {
-            reminderOn = false;
-            newFollowUpReminderDate = '';
-        }else {
-            var durationToAdd = durationToAdd.split(';');
-            newFollowUpReminderDate = moment(today).add(durationToAdd[0], durationToAdd[1]).format();
-            reminderOn = true;
-        }
+      if(durationToAdd == "0") {
+        reminderOn = false;
+        newFollowUpReminderDate = '';
+      }else {
+        var durationToAdd = durationToAdd.split(';');
+        newFollowUpReminderDate = moment(today).add(durationToAdd[0], durationToAdd[1]).format();
+        reminderOn = true;
+      }
 
       if(reminderOn) {
-          $('.follow-up-reminder').addClass('on');
+        $('.follow-up-reminder').addClass('on');
       } else {
-          $('.follow-up-reminder').removeClass('on');
+        $('.follow-up-reminder').removeClass('on');
       }
 
       $('#follow_up_reminder_date').val(newFollowUpReminderDate);
@@ -111,9 +115,10 @@
 
   $(document).ready(function(){
 
-      setReminderTextAndStyle();
+
 
       if(window.threadComputedData && window.threadComputedData.auto_follow_up_enabled) {
+          setDefaultReminderTextAndStyle(true);
 
           $('.follow-up-reminder .wrapper').click(function(e) {
             toggleReminderUI();
@@ -149,6 +154,8 @@
                   hideReminderUI();
               }
           });
+      } else {
+          setDefaultReminderTextAndStyle(false);
       }
 
       $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
