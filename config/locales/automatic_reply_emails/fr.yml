@@ -99,7 +99,7 @@ fr:
 
           Merci de votre compréhension.
     technical_issue: |
-          Bonjour $%{client_name},
+          Bonjour %{client_name},
 
           Je suis au regret de vous informer que le traitement de cet email est bloquée en raison d'un problème technique.
           Mon équipe est sur le coup.
