@@ -373,7 +373,13 @@ class Account
   end
 
   def self.accounts_cache_for_email email
-    JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(email) || "{}")
+    client_cache = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(email) || "{}")
+    if client_cache.blank?
+      client_email = REDIS_FOR_ACCOUNTS_CACHE.get("email_alias_#{email}")
+      client_cache = JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get(client_email) || "{}") if client_email.present?
+    end
+
+    client_cache
   end
 
   def self.is_synced?(account_email)
