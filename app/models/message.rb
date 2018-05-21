@@ -77,7 +77,7 @@ class Message < ActiveRecord::Base
   end
 
   def self.delegate_to_julia_async(message_id)
-    ConscienceFullWorker.enqueue message_id
+    ConscienceFullWorker.enqueue message_id, {}
     #Ai::EmailProcessing::Processor.delay.perform_later(message_id)
   end
 
