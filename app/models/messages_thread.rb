@@ -40,7 +40,7 @@ class MessagesThread < ActiveRecord::Base
 
   scope :syncing, -> { where('? = ANY(tags)', 'syncing') }
   scope :not_syncing, -> { where('NOT (? = ANY(tags))', 'syncing') }
-  scope :with_this_client, -> (account_email) { where('? = ANY(clients_in_recipients)', account_email) }
+  scope :with_this_client, -> (account_email) { where('? = ANY(clients_in_recipients) OR account_email = ?', account_email, account_email) }
 
   scope :currently_scheduling, -> { where(status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]) }
   scope :candidate_for_abortion, -> { where(status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT, MessageClassification::THREAD_STATUS_HANDLED_BY_CLIENT]) }
