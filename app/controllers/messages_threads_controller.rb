@@ -417,7 +417,7 @@ class MessagesThreadsController < ApplicationController
 
         @messages_thread.each do |mt|
           mt.check_if_blocked(users_access_lost_cache, all_clients_emails)
-          mt.check_if_julie_alias_malfunctionning
+          #mt.check_if_julie_alias_malfunctionning
           mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
           if mt.account.present?
             mt.check_if_owner_inactive
