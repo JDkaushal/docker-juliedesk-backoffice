@@ -68,8 +68,10 @@ class MessagesThread < ActiveRecord::Base
   def check_if_julie_alias_malfunctionning(malfunctionning_julie_aliases_cache =  nil)
     malfunctionning_julie_aliases_cache ||= REDIS_FOR_ACCOUNTS_CACHE.smembers('malfunctionning_julie_aliases')
 
-    # Check if all julie_aliases_in_recipients are malfunctionning
-    self.julie_aliases_malfunctionning = (self.julie_aliases_in_recipients & malfunctionning_julie_aliases_cache).size == self.julie_aliases_in_recipients.size
+    if self.julie_aliases_in_recipients.present?
+      # Check if all julie_aliases_in_recipients are malfunctionning
+      self.julie_aliases_malfunctionning = (self.julie_aliases_in_recipients & malfunctionning_julie_aliases_cache).size == self.julie_aliases_in_recipients.size
+    end
   end
 
   def check_abortion(now = nil)
