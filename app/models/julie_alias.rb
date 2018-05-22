@@ -24,4 +24,9 @@ class JulieAlias < ActiveRecord::Base
          html_signature: html_signature
     }
   end
+
+  def is_malfunctionning?
+    cache = REDIS_FOR_ACCOUNTS_CACHE.smembers('malfunctionning_julie_aliases')
+    cache.include?(self.email)
+  end
 end

@@ -17,8 +17,9 @@ const TOKEN_EXPIRED_TAG = 'office_365_refresh_token_expired';
 const CALENDAR_ACCESS_EXPIRED_TAG = 'thread_blocked';
 const CONFIGURATION_NEEDED_TAG = 'configuration_needed';
 const SYNCING_TAG = 'syncing';
+const MALFUNCTIONNING_JULIE_ALIAS_TAG = 'julie_aliases_malfunctionning';
 
-const THREAD_TAGS = [ADMIN_TAG, SYNCING_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG, CALENDAR_ACCESS_EXPIRED_TAG];
+const THREAD_TAGS = [ADMIN_TAG, SYNCING_TAG, MULTI_CLIENT_TAG, TO_MERGE_TAG, SUPPORT_TAG, CALENDAR_ACCESS_EXPIRED_TAG, MALFUNCTIONNING_JULIE_ALIAS_TAG];
 const ACCOUNT_TAGS = [ADMIN_ONLY_TAG, VIP_TAG, TOKEN_EXPIRED_TAG, CONFIGURATION_NEEDED_TAG];
 
 const TAGS_DEFINITIONS = {};
@@ -38,43 +39,48 @@ TAGS_DEFINITIONS[SYNCING_TAG] = {
     description: 'Syncing...',
     cssClass: 'danger'
 };
-TAGS_DEFINITIONS[CONFIGURATION_NEEDED_TAG]= {
+TAGS_DEFINITIONS[MALFUNCTIONNING_JULIE_ALIAS_TAG] = {
     priority: 4,
+    description: 'Julie Alias',
+    cssClass: 'danger'
+};
+TAGS_DEFINITIONS[CONFIGURATION_NEEDED_TAG]= {
+    priority: 5,
     description: 'Configuration Needed',
     cssClass: 'warning'
 };
 TAGS_DEFINITIONS[ADMIN_ONLY_TAG] = {
-    priority: 5,
+    priority: 6,
     description: 'Admin only',
     cssClass: 'standard'
 };
 TAGS_DEFINITIONS[TOKEN_EXPIRED_TAG] = {
-    priority: 6,
+    priority: 7,
     description: 'Token Expired',
     cssClass: 'standard'
 };
 TAGS_DEFINITIONS[TO_MERGE_TAG] = {
-    priority: 7,
+    priority: 8,
     description: 'To merge',
     cssClass: 'warning'
 };
 TAGS_DEFINITIONS[MULTI_CLIENT_TAG] = {
-    priority: 8,
+    priority: 9,
     description: 'Multi clients',
     cssClass: 'standard'
 };
 TAGS_DEFINITIONS[VIP_TAG] = {
-    priority: 9,
+    priority: 10,
     description: 'VIP',
     cssClass: 'standard'
 };
 TAGS_DEFINITIONS[SUPPORT_TAG]  = {
-    priority: 10,
+    priority: 11,
     description: 'Support',
     cssClass: 'standard'
 };
 TAGS_DEFINITIONS[UNKNOWN_CLIENT_TAG]  = {
-    priority: 11,
+    priority: 12,
     description: 'Unknown client',
     cssClass: 'standard'
 };

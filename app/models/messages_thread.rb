@@ -32,7 +32,8 @@ class MessagesThread < ActiveRecord::Base
                 :clients,
                 :has_inactive_owner,
                 # Instance variable used to store whether we should track when this thread enter the inbox
-                :track_inbox
+                :track_inbox,
+                :julie_aliases_malfunctionning
 
   scope :in_inbox, -> { where("(in_inbox = ? OR should_follow_up = ?) AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ? AND sent_to_admin = ?", true, true, false, false, false, false) }
   scope :in_inbox_only, -> { where("in_inbox = ? AND handled_by_ai = ? AND handled_by_automation = ? AND was_merged = ?", true, false, false, false) }
@@ -58,6 +59,10 @@ class MessagesThread < ActiveRecord::Base
 
   def get_last_message
     messages.sort_by{|m| m.received_at}.last
+  end
+
+  def check_if_julie_alias_malfunctionning
+    self.julie_aliases_malfunctionning = self.julie_aliases.all?(&:is_malfunctionning?)
   end
 
   def check_abortion(now = nil)
@@ -147,7 +152,8 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.to_be_merged || messages_thread.thread_blocked ||
         messages_thread.owner_needs_configuration ||
         messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
-        !messages_thread.can_be_processed_now
+        !messages_thread.can_be_processed_now ||
+        messages_thread.julie_aliases_malfunctionning
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)

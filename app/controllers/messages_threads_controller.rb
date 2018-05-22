@@ -417,6 +417,7 @@ class MessagesThreadsController < ApplicationController
 
         @messages_thread.each do |mt|
           mt.check_if_blocked(users_access_lost_cache, all_clients_emails)
+          mt.check_if_julie_alias_malfunctionning
           mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
           if mt.account.present?
             mt.check_if_owner_inactive
@@ -425,7 +426,7 @@ class MessagesThreadsController < ApplicationController
 
         MessagesThread.filter_on_privileges(session[:privilege], @messages_thread)
 
-        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked, :can_be_processed_now],
+        data = @messages_thread.as_json(methods: [:account, :locked_by_operator_name, :thread_blocked, :can_be_processed_now, :julie_aliases_malfunctionning],
                                         only: [:id, :request_date, :messages_count, :locked_by_operator_id, :in_inbox, :should_follow_up, :subject, :snippet, :sent_to_admin, :delegated_to_support, :server_thread_id, :last_operator_id, :status, :event_booked_date, :account_email, :to_be_merged, :is_multi_clients, :tags])
         operators_data = @operators_on_planning.as_json
 

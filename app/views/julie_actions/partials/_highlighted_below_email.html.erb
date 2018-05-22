@@ -8,7 +8,8 @@
         <select id="julie-alias-select">
           <% main_client_julie_aliases = (@messages_thread.account && @messages_thread.account.julie_aliases)  || [] %>
           <% @messages_thread.julie_aliases.each do |julie_alias| %>
-              <option <%=  main_client_julie_aliases.include?(julie_alias.email) ? 'selected' : '' %>><%= julie_alias.email %></option>
+              <% malfunctionning_ja = julie_alias.is_malfunctionning? %>
+              <option <%=  main_client_julie_aliases.include?(julie_alias.email) ? 'selected' : '' %> <%= malfunctionning_ja ? 'disabled' : '' %>><%= julie_alias.email %> <%= malfunctionning_ja ? '(ne fonctionne pas)' : '' %></option>
           <% end %>
         </select>
         <% if @julie_action.action_nature == JulieAction::JD_ACTION_FREE_ACTION %>
