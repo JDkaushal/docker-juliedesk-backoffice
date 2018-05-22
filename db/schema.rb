@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180509144702) do
+ActiveRecord::Schema.define(version: 20180522133354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -457,6 +457,7 @@ ActiveRecord::Schema.define(version: 20180509144702) do
     t.string   "tags",                                             default: [],    array: true
     t.datetime "last_message_imported_at"
     t.datetime "aborted_at"
+    t.string   "julie_aliases_in_recipients",                      default: [],    array: true
   end
 
   add_index "messages_threads", ["account_email"], name: "index_messages_threads_on_account_email", using: :btree

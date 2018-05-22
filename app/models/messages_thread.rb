@@ -61,8 +61,15 @@ class MessagesThread < ActiveRecord::Base
     messages.sort_by{|m| m.received_at}.last
   end
 
-  def check_if_julie_alias_malfunctionning
-    self.julie_aliases_malfunctionning = self.julie_aliases.all?(&:is_malfunctionning?)
+  def set_julie_aliases_in_recipients
+    self.julie_aliases_in_recipients = self.julie_aliases.map(&:email)
+  end
+
+  def check_if_julie_alias_malfunctionning(malfunctionning_julie_aliases_cache =  nil)
+    malfunctionning_julie_aliases_cache ||= REDIS_FOR_ACCOUNTS_CACHE.smembers('malfunctionning_julie_aliases')
+
+    # Check if all julie_aliases_in_recipients are malfunctionning
+    self.julie_aliases_malfunctionning = (self.julie_aliases_in_recipients & malfunctionning_julie_aliases_cache).size == self.julie_aliases_in_recipients.size
   end
 
   def check_abortion(now = nil)
@@ -210,6 +217,10 @@ class MessagesThread < ActiveRecord::Base
     recipients_emails = []
     messages.each{|m| recipients_emails.push(m.get_reply_all_recipients_emails)}
     recipients_emails.flatten.uniq
+  end
+
+  def set_server_thread(server_thread)
+    @server_thread = server_thread
   end
 
   def server_thread params={}

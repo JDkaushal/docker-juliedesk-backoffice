@@ -411,13 +411,14 @@ class MessagesThreadsController < ApplicationController
 
         accounts_cache = Account.accounts_cache(mode: "light")
         users_access_lost_cache = MessagesThread.users_with_threads_blocked
+        malfunctionning_julie_aliases_cache = REDIS_FOR_ACCOUNTS_CACHE.smembers('malfunctionning_julie_aliases')
 
         # Allow to easily check if an email is attached to a client (main email or email alias)
         all_clients_emails = accounts_cache.map{|acc| acc[1]['email_aliases'] + [ acc[1]['email']]}.flatten
 
         @messages_thread.each do |mt|
           mt.check_if_blocked(users_access_lost_cache, all_clients_emails)
-          #mt.check_if_julie_alias_malfunctionning
+          mt.check_if_julie_alias_malfunctionning(malfunctionning_julie_aliases_cache)
           mt.account(accounts_cache: accounts_cache, users_access_lost_cache: users_access_lost_cache, messages_threads_from_today: @messages_threads_from_today, skip_contacts_from_company: true)
           if mt.account.present?
             mt.check_if_owner_inactive

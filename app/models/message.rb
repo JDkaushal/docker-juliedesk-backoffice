@@ -616,6 +616,9 @@ class Message < ActiveRecord::Base
           new_thread = true
         end
 
+        messages_thread.set_server_thread(server_thread)
+        messages_thread.set_julie_aliases_in_recipients
+
         messages_thread.update_attributes({subject: server_thread['subject'], snippet: server_thread['snippet'], messages_count: server_thread['messages'].length})
 
         server_thread['messages'].each do |server_message|

@@ -64,7 +64,9 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "merging_account_candidates"=>[],
                                                       "tags"=>[],
                                                       "last_message_imported_at"=>nil,
-                                                      "aborted_at"=>nil
+                                                      "aborted_at"=>nil,
+                                                      "julie_aliases_in_recipients"=>[]
+
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
                                                     {
