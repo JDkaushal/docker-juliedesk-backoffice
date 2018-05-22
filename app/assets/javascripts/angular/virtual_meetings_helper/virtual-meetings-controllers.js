@@ -723,8 +723,12 @@
 
                     if(isVirtual){
                         $scope.setCallingInstructionsInNotes();
-
                     }
+                    else if(window.notesManager){
+                        window.notesManager.setCallInstructions('');
+                        window.updateNotes();
+                    }
+
                 };
 
                 $scope.setCallingInstructionsInNotes = function(){
