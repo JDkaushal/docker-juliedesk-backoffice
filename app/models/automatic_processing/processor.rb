@@ -61,7 +61,7 @@ module AutomaticProcessing
           self.deliver_ai_processing_error_email(e)
         end
       rescue => e
-        if Rails.env.development? || Rails.env.test?
+        if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
           raise(e)
         else
           Airbrake.notify(e)
