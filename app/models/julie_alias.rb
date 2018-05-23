@@ -1,5 +1,8 @@
 class JulieAlias < ActiveRecord::Base
 
+  class JulieAliasNotFoundError < StandardError
+  end
+
   def generate_from
     "#{self.name} <#{self.email}>"
   end

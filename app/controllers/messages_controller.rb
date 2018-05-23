@@ -185,7 +185,11 @@ class MessagesController < ApplicationController
   def reply
     @message = Message.find params[:id]
 
-    @julie_alias = JulieAlias.find_by_email(params[:from]) || JulieAlias.find_by_email(ENV['DEFAULT_JULIE_ALIAS_EMAIL'])
+    @julie_alias = JulieAlias.find_by_email(params[:from]) #|| JulieAlias.find_by_email(ENV['DEFAULT_JULIE_ALIAS_EMAIL'])
+
+    if @julie_alias.blank?
+      raise JulieAlias::JulieAliasNotFoundError.new("Julie alias with email #{params[:from]} was not found")
+    end
 
     quote_replied_message = false
     quote_forward_message = false
