@@ -32,6 +32,7 @@ module AllowedAttendees
           .gsub(/î/, 'i')
           .gsub(/ô/, 'o')
           .gsub(/û|ù/, 'u')
+          .gsub(/ç/, 'c')
           .scan(AllowedAttendees::RegexpManager.email_regexp)
     end
 
