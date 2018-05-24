@@ -1480,7 +1480,7 @@ class MessagesThread < ActiveRecord::Base
 
   def self.remove_syncing_tag(account_email)
     raise "account email should be present" if account_email.blank?
-    messages_thread_ids = MessagesThread.in_inbox.syncing.with_this_client(account_email).select(&:calendars_synced?).map(&:id)
+    messages_thread_ids = MessagesThread.includes(messages: :message_classifications).in_inbox.syncing.with_this_client(account_email).select(&:calendars_synced?).map(&:id)
 
     # Not optimized but needed in order to create a new version
     MessagesThread.where(id: messages_thread_ids).each { |mt| mt.remove_tag(SYNCING_TAG) }
@@ -1510,8 +1510,19 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def calendars_synced?
-    return true if self.clients_in_recipients.blank?
-    self.clients_in_recipients.all? { |email| Account.is_synced?(email) }
+    last_classification = self.last_message_classification_with_data
+    if last_classification.present?
+      present_attendees = JSON.parse(last_classification.attendees || '{}').select { |attendee| attendee['status'] == 'present' && attendee['isClient'] == 'true' }
+      attendees_emails_to_check = present_attendees.map { |attendee| attendee['accountEmail'] }
+
+      # Fallback
+      attendees_emails_to_check = self.clients_in_recipients if attendees_emails_to_check.blank?
+    else
+      attendees_emails_to_check = self.clients_in_recipients
+    end
+
+    return true if attendees_emails_to_check.blank?
+    attendees_emails_to_check.all? { |email| Account.is_synced?(email) }
   end
 
   def syncing_since
