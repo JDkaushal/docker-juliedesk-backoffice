@@ -387,8 +387,8 @@ class Account
     account_cache = self.accounts_cache_for_email(account_email)
     return false if account_cache.blank?
 
-    # We consider synced a calendar which is not on calendar server
-    return true unless account_cache["using_calendar_server"]
+    # We consider not synced a calendar which is not on calendar server
+    return false unless account_cache["using_calendar_server"]
 
     last_sync_date = DateTime.parse(account_cache["last_sync_date"]) rescue nil
     return false if last_sync_date.nil?

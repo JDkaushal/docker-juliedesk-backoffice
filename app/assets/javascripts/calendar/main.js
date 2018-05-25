@@ -139,8 +139,11 @@ Calendar.prototype.isSynced = function() {
       var usingCalendarServer = calendar.accountPreferences[calendarLoginUsername].using_calendar_server;
       var lastSyncDateStr = calendar.accountPreferences[calendarLoginUsername].last_sync_date;
 
-      if(!usingCalendarServer)
-          continue;
+      if(!usingCalendarServer) {
+          synced = false;
+          break;
+      }
+
 
       if(!lastSyncDateStr) {
           synced = false;
@@ -149,7 +152,7 @@ Calendar.prototype.isSynced = function() {
 
       lastSyncDate = moment(lastSyncDateStr);
       if(lastSyncDate < moment().subtract(4, 'minutes')) {
-          synced = false
+          synced = false;
           break;
       }
   }
