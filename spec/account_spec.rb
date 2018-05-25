@@ -390,7 +390,7 @@ describe Account do
 
     context 'when client is not on calendar server' do
       let(:account_cache) { {last_sync_date: nil, using_calendar_server: false} }
-      it { is_expected.to eq(true) }
+      it { is_expected.to eq(false) }
     end
 
   end
