@@ -20,6 +20,17 @@ module ApplicationHelper
     end
   end
 
+  def self.sanitize_email(email_address)
+    email_address.gsub!(/à|â/, 'a')
+    email_address.gsub!(/é|è|ê/, 'e')
+    email_address.gsub!(/î/, 'i')
+    email_address.gsub!(/ô/, 'o')
+    email_address.gsub!(/û|ù/, 'u')
+    email_address.gsub!(/ç/, 'c')
+
+    email_address
+  end
+
   def self.find_addresses str
     result = []
     email_regex = /(?:[a-z0-9!#$%&*+=?^_`{|}~\-ëéè]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~\-ëéè]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i
@@ -35,7 +46,7 @@ module ApplicationHelper
       before_email.gsub!(clean_name_regex, '')
       before_email.strip!
 
-      result << { email: email_address.downcase, name: before_email }
+      result << { email: sanitize_email(email_address).downcase, name: before_email }
       temp_str = after_email
     end
 

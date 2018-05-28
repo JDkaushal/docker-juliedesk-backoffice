@@ -211,10 +211,10 @@ GEM
     loofah (2.2.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.6.3)
-      mime-types (>= 1.16, < 3)
+    mail (2.7.0)
+      mini_mime (>= 0.1.1)
     memory_profiler (0.9.6)
-    mime-types (2.99.3)
+    mini_mime (1.0.0)
     mini_portile2 (2.0.0)
     minitest (5.11.3)
     mixpanel-ruby (2.2.0)
@@ -413,7 +413,7 @@ DEPENDENCIES
   json-schema
   lograge (= 0.4.1)
   loofah
-  mail (= 2.6.3)
+  mail (= 2.7.0)
   memory_profiler
   mixpanel-ruby
   nokogiri

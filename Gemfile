@@ -35,7 +35,8 @@ gem "pusher"
 #gem "websocket-client-simple"
 gem "faye"
 
-gem "mail", '2.6.3'
+#gem "mail", '2.6.3'
+gem "mail", '2.7.0'
 
 gem 'resque', "~> 1.26.0"
 

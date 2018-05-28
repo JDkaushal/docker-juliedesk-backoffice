@@ -93,6 +93,11 @@ describe ApplicationHelper do
       let(:content) { "bob.ma-boite@yopmail.com <bob.ma-boite@yopmail.com>" }
       it { is_expected.to match_array(["bob.ma-boite@yopmail.com"]) }
     end
+
+    context "when email contains a é" do
+      let(:content) { "bob.clémence@gmail.com" }
+      it { is_expected.to match_array(["bob.clemence@gmail.com"]) }
+    end
   end
 
 end
