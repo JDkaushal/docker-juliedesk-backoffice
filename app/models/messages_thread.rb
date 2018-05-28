@@ -1513,7 +1513,7 @@ class MessagesThread < ActiveRecord::Base
     last_classification = self.last_message_classification_with_data
     if last_classification.present?
       present_attendees = JSON.parse(last_classification.attendees || '{}').select { |attendee| attendee['status'] == 'present' && attendee['isClient'] == 'true' }
-      attendees_emails_to_check = present_attendees.map { |attendee| attendee['accountEmail'] }
+      attendees_emails_to_check = present_attendees.map { |attendee| attendee['accountEmail'] || attendee['account_email'] }
 
       # Fallback
       attendees_emails_to_check = self.clients_in_recipients if attendees_emails_to_check.blank?
