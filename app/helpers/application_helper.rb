@@ -46,6 +46,11 @@ module ApplicationHelper
       before_email.gsub!(clean_name_regex, '')
       before_email.strip!
 
+      # In the case of an invalid byte sequence in UTF-8 in the name, we will try to reencode the string from "us-ascii" to UTF-8 and replace any missing conversion by a "?"
+      unless before_email.valid_encoding?
+        before_email = before_email.force_encoding('ascii').encode!('utf-8', invalid: :replace, undef: :replace, replace: '?')
+      end
+
       result << { email: sanitize_email(email_address).downcase, name: before_email }
       temp_str = after_email
     end
