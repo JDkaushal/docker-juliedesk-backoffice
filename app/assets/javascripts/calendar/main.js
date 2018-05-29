@@ -1458,7 +1458,7 @@ Calendar.prototype.addAllCals = function (calEvents) {
         if(meetingRoomsIds.indexOf(eventData.calId) > -1) {
             localMeetingRoomsEvents[eventData.calId].push(eventData);
             calendar.meetingRoomsEvents[eventData.calId].push(eventData);
-        } else if(eventData.isVirtualResource && virtualResourcesIds.indexOf(eventData.virtualResourceId) > -1) {
+        } else if(eventData.isVirtualResource && virtualResourcesIds && virtualResourcesIds.indexOf(eventData.virtualResourceId) > -1) {
             localVirtualResourcesEvents[eventData.virtualResourceId].push(eventData);
             calendar.virtualResourcesEvents[eventData.virtualResourceId].push(eventData);
         } else {
