@@ -28,7 +28,8 @@
   var today = moment().utc().format();
   var reminderEdited = false;
   var newFollowUpReminderDate = currentFollowUpReminderDate;
-  var autoFollowUpEnabled = window.threadAccount && window.threadAccount.auto_follow_up_enabled;
+  var threadComputedData = <%== @messages_thread.computed_data.to_json %>;
+  var autoFollowUpEnabled = threadComputedData && threadComputedData.auto_follow_up_enabled;
 
   function reminderHasBeenEdited() {
     return reminderEdited;
@@ -117,7 +118,7 @@
 
 
 
-      if(window.threadComputedData && window.threadComputedData.auto_follow_up_enabled) {
+      if(autoFollowUpEnabled) {
           setDefaultReminderTextAndStyle(true);
 
           $('.follow-up-reminder .wrapper').click(function(e) {
@@ -154,16 +155,16 @@
                   hideReminderUI();
               }
           });
+
+          // When no follow up reminder date is present we will preselect the adequat one
+          if(currentFollowUpReminderDate == '') {
+              onNewThreadStatusChange($('.new-thread-status-select').val());
+          }
       } else {
           setDefaultReminderTextAndStyle(false);
       }
 
       $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
-
-      // When no follow up reminder date is present we will preselect the adequat one
-      if(currentFollowUpReminderDate == '' && autoFollowUpEnabled) {
-          onNewThreadStatusChange($('.new-thread-status-select').val());
-      }
   });
 
 

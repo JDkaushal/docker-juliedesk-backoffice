@@ -616,7 +616,7 @@ class MessagesThread < ActiveRecord::Base
         computed_calendar_login_type = nil
       end
 
-      notes      = last_message_classification.try(:notes)
+      notes = last_message_classification.try(:notes)
 
       @computed_data = {
           locale: last_message_classification.try(:locale) || self.account.try(:locale),
