@@ -124,4 +124,56 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     render json: { nb_updated_threads: updated_threads.size}, status: :ok
   end
 
+  def compute_date_suggestions
+    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+    unless messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
+      render json: { error_code: 'FEATURE_NOT_ENABLED', message: '' }, status: :forbidden
+      return
+    end
+
+    unless messages_thread.account && messages_thread.account.call_to_action_in_email_enabled
+      render json: { error_code: 'THREAD_NOT_SCHEDULING', message: '' }, status: :forbidden
+      return
+    end
+
+    last_classification = messages_thread.last_message_classification_with_data
+    json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
+        message_id: last_classification.message_id,
+        account_email: messages_thread.account_email,
+        n_suggested_dates: 4,
+        attendees: last_classification.get_present_attendees.map(&:to_h),
+        thread_data: {
+            appointment_nature: last_classification.appointment_nature,
+            location: last_classification.location,
+            duration: last_classification.duration,
+            timezone: last_classification.timezone
+        }
+    })
+
+    render json: { suggested_dates: json['suggested_dates'] }, status: :ok
+
+  rescue ActiveRecord::RecordNotFound
+    render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
+  def validate_date_suggestion
+    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action}).find(params[:id])
+    date_to_check  = DateTime.parse(params[:suggested_date])
+    validated_by   = params[:validated_by]
+
+    confirmed = MeetingService.new(messages_thread).confirm_suggested_date(date_to_check, validated_by)
+    render json: { status: confirmed ? 'validated' : 'not_available' }, status: :ok
+
+  rescue MeetingService::MeetingNotScheduling => e
+    render json: { error_code: 'THREAD_NOT_SCHEDULING', message: e.message }, status: :forbidden
+  rescue MeetingService::FeatureNotEnabled => e
+    render json: { error_code: 'FEATURE_NOT_ENABLED', message: e.message }, status: :forbidden
+  rescue MeetingService::NotAMeetingAttendee => e
+    render json: { error_code: 'VALIDATOR_NOT_ATTENDEE', message: e.message }, status: :forbidden
+  rescue MeetingService::SuggestedDateNotFound => e
+    render json: { error_code: 'DATE_NOT_ALLOWED', message: e.message }, status: :forbidden
+  rescue ActiveRecord::RecordNotFound
+    render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
 end

@@ -80,6 +80,7 @@ group :development do
   gem 'capistrano', '3.6.0'
   gem 'capistrano-rails'
   gem 'capistrano-rvm'
+  gem 'byebug'
 end
 
 group :test, :development do

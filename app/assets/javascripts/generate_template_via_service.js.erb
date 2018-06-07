@@ -5,6 +5,11 @@ var TemplateServiceManager = (function() {
     var that = this;
 
     const REQUIRED_PARAMS = {
+      suggest_date: [
+          'client_names', 'duration', 'appointment_in_email', 'location_in_email', 'is_virtual',
+          "date", 'timezones', 'default_timezone', 'is_virtual',
+          'validate_suggestion_link', 'show_other_suggestions_link'
+      ],
       suggest_dates: [
         'client_names', 'timezones', 'default_timezone', 'locale', 'is_virtual', 'attendees', 'appointment_in_email',
         'location_in_email', 'should_ask_location', 'missing_contact_info', 'dates', 'appointment_type',
@@ -95,24 +100,43 @@ window.generateEmailTemplateViaService = function (params, callback) {
 
   var dataForService = {};
 
-  if (params.template == "suggest_dates") {
+  if (params.template == "suggest_date") {
     dataForService = {
       client_names: params.client_names,
+      duration: params.duration,
       timezones: params.timezones,
       default_timezone: params.default_timezone,
       locale: params.locale,
       is_virtual: params.is_virtual,
-      attendees: params.attendees,
       appointment_in_email: params.appointment_in_email,
       appointment_type: params.appointment_type,
       designation_in_email: params.designation_in_email,
       location_in_email: params.location_in_email,
-      should_ask_location: params.should_ask_location,
-      missing_contact_info: params.missing_contact_info,
-      julie_aliases: params.julie_aliases,
-
-      dates: params.dates
+      date: params.date,
+      validate_suggestion_link: params.validate_suggestion_link,
+      show_other_suggestions_link: params.show_other_suggestions_link
     };
+  }
+  else if (params.template == "suggest_dates") {
+      dataForService = {
+          client_names: params.client_names,
+          timezones: params.timezones,
+          default_timezone: params.default_timezone,
+          locale: params.locale,
+          is_virtual: params.is_virtual,
+          attendees: params.attendees,
+          appointment_in_email: params.appointment_in_email,
+          location_in_email: params.location_in_email,
+          should_ask_location: params.should_ask_location,
+          missing_contact_info: params.missing_contact_info,
+
+          date: params.date,
+          location_kind: params.location_kind,
+          restaurant_booking_activated: params.restaurant_booking_activated,
+          main_client_company: params.main_client_company,
+          meeting_room_booked: params.meeting_room_booked,
+          meeting_room_name: params.meeting_room_name
+      }
   }
   else if (params.template == "send_invitations") {
     dataForService = {

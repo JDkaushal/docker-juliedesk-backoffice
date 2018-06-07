@@ -16,7 +16,7 @@ module AutomaticProcessing
           JulieAction::JD_ACTION_SUGGEST_DATES => {
               before_flow: [
                   { method: :set_appointment_config,                      params: [:@initial_classification, :@initial_account], store_as: :@appointment_config },
-                  { method: :set_present_attendees_from_other_companies,  params: [:@initial_classification],                    store_as: :@present_attendees_from_other_companies },
+                  { method: :set_present_attendees_from_other_companies,  params: [:@initial_classification, :@initial_account], store_as: :@present_attendees_from_other_companies },
                   { method: :set_additional_information,                  params: [:@appointment_config],                        store_as: :@additional_information }
               ],
 
@@ -70,7 +70,7 @@ module AutomaticProcessing
           JulieAction::JD_ACTION_CHECK_AVAILABILITIES => {
               before_flow: [
                   { method: :set_appointment_config,                      params: [:@initial_classification, :@initial_account], store_as: :@appointment_config },
-                  { method: :set_present_attendees_from_other_companies,  params: [:@initial_classification],                    store_as: :@present_attendees_from_other_companies },
+                  { method: :set_present_attendees_from_other_companies,  params: [:@initial_classification, :@initial_account], store_as: :@present_attendees_from_other_companies },
                   { method: :set_additional_information,                  params: [:@appointment_config],                        store_as: :@additional_information }
               ],
 
@@ -146,8 +146,8 @@ module AutomaticProcessing
         appointment_config['required_additional_informations']
       end
 
-      def set_present_attendees_from_other_companies(classification)
-        main_account_company = classification.send(:account).try(:company)
+      def set_present_attendees_from_other_companies(classification, account)
+        main_account_company = account.try(:company)
         classification.get_present_attendees.reject { |attendee| attendee.company == main_account_company }
       end
 

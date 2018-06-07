@@ -874,6 +874,13 @@
 
         $scope.init();
 
+        $scope.areSuggestionsModifiedByOperator = function() {
+            var validatedAiSuggestions = this.getValidatedAiSuggestions().map(function(date) { return date.value.format() });
+            var slotsToSuggest = this.getTimeSlotsToSuggest().map(function(date) { return moment(date).format() });
+            var diff = _.difference(slotsToSuggest, validatedAiSuggestions);
+            return diff.length > 0;
+        };
+
 
         angular.element(document).ready(function() {
             //$scope.listenToAttendeesAppEvents();

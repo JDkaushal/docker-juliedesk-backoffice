@@ -1,4 +1,6 @@
 class MessageClassification < ActiveRecord::Base
+  include Attendable
+
 
   belongs_to :message
   has_many :operator_actions, as: :target
@@ -521,6 +523,51 @@ class MessageClassification < ActiveRecord::Base
     return nil if messages_thread.blank?
 
     MessageClassification.with_data.where('message_id IN(?) AND created_at < ?', messages_thread.message_ids, current_message.received_at).order('id desc').first
+  end
+
+
+  def has_field?(field, options = {})
+    scope = options.fetch(:scope, :classification)
+    self.get_field(scope, field).present?
+  end
+
+  def missing_field?(field, options = {})
+    !has_field?(field, options)
+  end
+
+  def get_field_from_attendees(attendees, field)
+    case field
+      when :skype
+        attendees.find(&:has_skype?).try(:skype_id)
+      when :any_number
+        attendees.find(&:has_any_phone_number?).try(:any_phone_number)
+      else
+        nil
+    end
+  end
+
+  def get_field_from_classification(field)
+    case field
+      when :location
+        self.location
+      else
+        nil
+    end
+  end
+
+  def get_field(scope, field)
+    case scope
+      when :thread_owner
+        get_field_from_attendees([self.get_thread_owner_attendee], field)
+      when :attendees
+        get_field_from_attendees(self.get_present_attendees.reject(&:is_thread_owner), field)
+      when :anyone
+        get_field_from_attendees(self.get_present_attendees, field)
+      when :classification
+        get_field_from_classification(field)
+      else
+        nil
+    end
   end
 
   private

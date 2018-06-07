@@ -57,7 +57,8 @@ class Account
                 :skype_for_business_meeting_generation_active,
                 :preferred_meeting_rooms,
                 :sfb_instructions,
-                :last_sync_date
+                :last_sync_date,
+                :call_to_action_in_email_enabled
 
 
   RULE_VALIDATED = "rule_validated"
@@ -113,6 +114,7 @@ class Account
     account.auto_follow_up_enabled = data['auto_follow_up_enabled']
     account.restaurant_booking_enabled = data['restaurant_booking_enabled']
     account.linked_attendees_enabled = data['linked_attendees_enabled']
+    account.call_to_action_in_email_enabled = data['call_to_action_in_email_enabled']
     account.julie_aliases = data['julie_aliases']
     account.using_calendar_server = data['using_calendar_server']
     account.last_sync_date = data['last_sync_date'].present? ? DateTime.parse(data['last_sync_date']) : nil

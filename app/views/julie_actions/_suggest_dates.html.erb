@@ -146,28 +146,62 @@
                 }
             }
 
-            var serviceParams = {
-                template: "suggest_dates",
-                client_names: clientNames,
-                dates: window.timeSlotsToSuggest,
-                timezones: getDatesSuggestionManager().getUsedTimezones(),
-                default_timezone: window.threadAccount.default_timezone_id,
-                locale: threadComputedData.locale,
-                is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
-                attendees: attendeesForService,
-                appointment_type: window.getCurrentAppointment().kind,
-                appointment_in_email: {
-                    en: window.getCurrentAppointment().title_in_email.en,
-                    fr: window.getCurrentAppointment().title_in_email.fr
-                },
-                designation_in_email: window.getCurrentAppointment().designation_in_email,
+            var serviceParams = null;
+            var dateToSuggest = window.timeSlotsToSuggest[0];
+            var display_new_template =
+                window.featuresHelper.isFeatureActive('display_call_to_action_in_templates') &&
+                window.threadAccount.call_to_action_in_email_enabled &&
+                window.threadAccount.call_to_action_in_email_enabled && attendees().length == 1 &&
+                !window.getDatesSuggestionManager().areSuggestionsModifiedByOperator();
 
-                location_in_email: locationInEmail,
-                should_ask_location: window.shouldAskLocation(),
-                missing_contact_info: attendeesMng.missingContactInfo(),
-                linked_attendees: attendeesMng.getLinkedAttendees(),
-                julie_aliases: window.getRecipientsJulieAliases()
-            };
+            $('#reply-text').attr('readonly', display_new_template);
+            if(display_new_template) {
+                serviceParams = {
+                    template: "suggest_date",
+                    client_names: clientNames,
+                    date: window.timeSlotsToSuggest[0],
+                    duration: window.getCurrentAppointment().duration,
+                    timezones: getDatesSuggestionManager().getUsedTimezones(),
+                    default_timezone: window.threadAccount.default_timezone_id,
+                    locale: threadComputedData.locale,
+                    is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+                    attendees: attendeesForService,
+                    appointment_type: window.getCurrentAppointment().kind,
+                    appointment_in_email: {
+                        en: window.getCurrentAppointment().title_in_email.en,
+                        fr: window.getCurrentAppointment().title_in_email.fr
+                    },
+                    designation_in_email: window.getCurrentAppointment().designation_in_email,
+                    location_in_email: locationInEmail,
+                    validate_suggestion_link: '<%= ENV["SLASH_VALIDATE_SUGGESTION_LINK"] %>?slot=' + encodeURIComponent(dateToSuggest) + '&validated_by='+ encodeURIComponent(attendees()[0].email) + '&thread_id=' + window.threadId,
+                    show_other_suggestions_link: '<%= ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"] %>/?thread_id=' + window.threadId
+                };
+            }
+            else {
+
+                serviceParams = {
+                    template: "suggest_dates",
+                    client_names: clientNames,
+                    dates: window.timeSlotsToSuggest,
+                    timezones: getDatesSuggestionManager().getUsedTimezones(),
+                    default_timezone: window.threadAccount.default_timezone_id,
+                    locale: threadComputedData.locale,
+                    is_virtual: window.getCurrentAppointment().appointment_kind_hash.is_virtual,
+                    attendees: attendeesForService,
+                    appointment_type: window.getCurrentAppointment().kind,
+                    appointment_in_email: {
+                        en: window.getCurrentAppointment().title_in_email.en,
+                        fr: window.getCurrentAppointment().title_in_email.fr
+                    },
+                    designation_in_email: window.getCurrentAppointment().designation_in_email,
+
+                    location_in_email: locationInEmail,
+                    should_ask_location: window.shouldAskLocation(),
+                    missing_contact_info: attendeesMng.missingContactInfo(),
+                    linked_attendees: attendeesMng.getLinkedAttendees(),
+                    julie_aliases: window.getRecipientsJulieAliases()
+                };
+            }
 
             TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function (generatedTemplate) {
                 if (typeof(generatedTemplate) == "object") {
