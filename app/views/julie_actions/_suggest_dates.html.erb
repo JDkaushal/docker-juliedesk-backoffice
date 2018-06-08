@@ -152,7 +152,7 @@
                 window.featuresHelper.isFeatureActive('display_call_to_action_in_templates') &&
                 window.threadAccount.call_to_action_in_email_enabled &&
                 window.threadAccount.call_to_action_in_email_enabled && attendees().length == 1 &&
-                !window.getDatesSuggestionManager().areSuggestionsModifiedByOperator();
+                window.getDatesSuggestionManager().trustMode == 'trusted';
 
             $('#reply-text').attr('readonly', display_new_template);
             if(display_new_template) {

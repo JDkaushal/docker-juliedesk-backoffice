@@ -127,16 +127,18 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   def compute_date_suggestions
     messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
     unless messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
-      render json: { error_code: 'FEATURE_NOT_ENABLED', message: '' }, status: :forbidden
-      return
-    end
-
-    unless messages_thread.account && messages_thread.account.call_to_action_in_email_enabled
       render json: { error_code: 'THREAD_NOT_SCHEDULING', message: '' }, status: :forbidden
       return
     end
 
+    unless messages_thread.account && messages_thread.account.call_to_action_in_email_enabled
+      render json: { error_code: 'FEATURE_NOT_ENABLED', message: '' }, status: :forbidden
+      return
+    end
+
     last_classification = messages_thread.last_message_classification_with_data
+    julie_action = last_classification.julie_action
+
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
         message_id: last_classification.message_id,
         account_email: messages_thread.account_email,
@@ -150,7 +152,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         }
     })
 
-    render json: { suggested_dates: json['suggested_dates'] }, status: :ok
+    suggested_dates = json['suggested_dates']
+    if suggested_dates.present? && julie_action.present? && julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+      julie_action.date_times = suggested_dates.map { |date| { timezone: json['timezone'], date: date } }.to_json
+      julie_action.save
+    end
+
+    render json: { suggested_dates: suggested_dates }, status: :ok
 
   rescue ActiveRecord::RecordNotFound
     render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
