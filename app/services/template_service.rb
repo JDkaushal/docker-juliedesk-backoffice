@@ -10,7 +10,7 @@ class TemplateService
   end
 
   def generate_send_invitations(recipients_names, params = {})
-    location = params.fetch(:location, ""),
+    location = params.fetch(:location, "")
     say_hi_text = self.generate_say_hi(recipients_names, params.slice(:locale))
     generated_text = say_hi_text
 

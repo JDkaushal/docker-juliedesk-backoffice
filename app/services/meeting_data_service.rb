@@ -63,7 +63,7 @@ class MeetingDataService
         summary: message_classification.summary,
         description: message_classification.notes,
         attendees: message_classification.get_present_attendees.map(&:to_h),
-        location: message_classification.classification,
+        location: message_classification.location,
         all_day: false,
         private: false,
         start: start_date.strftime("%FT%T%:z"),
