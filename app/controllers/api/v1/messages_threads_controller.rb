@@ -141,6 +141,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
 
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
         message_id: last_classification.message_id,
+        julie_action_id: julie_action.try(:id),
         account_email: messages_thread.account_email,
         n_suggested_dates: 4,
         attendees: last_classification.get_present_attendees.map(&:to_h),
@@ -149,7 +150,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
             location: last_classification.location,
             duration: last_classification.duration,
             timezone: last_classification.timezone
-        }
+        },
+        raw_constraints_data: JSON.parse(last_classification.constraints_data || '[]')
     })
 
     suggested_dates = json['suggested_dates']
