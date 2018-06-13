@@ -151,18 +151,21 @@
         };
 
         $scope.addAIConstraintTiles = function() {
-            setTimeout(function() {
-                var mainInterpretation = messageInterpretationsService.getMainInterpretation();
-                if(mainInterpretation && mainInterpretation.constraints_data) {
-                    constraints_data = mainInterpretation.constraints_data;
-                    for(k in constraints_data) {
-                        if(constraints_data[k]) {
-                            newConstraintTile(constraints_data[k], false, true);
+            // Do not do it in the case of an appointment cancellation
+            if(window.classification !== "ask_cancel_appointment") {
+                setTimeout(function() {
+                    var mainInterpretation = messageInterpretationsService.getMainInterpretation();
+                    if(mainInterpretation && mainInterpretation.constraints_data) {
+                        constraints_data = mainInterpretation.constraints_data;
+                        for(k in constraints_data) {
+                            if(constraints_data[k]) {
+                                newConstraintTile(constraints_data[k], false, true);
+                            }
                         }
-                    }
 
-                }
-            }, 500);
+                    }
+                }, 500);
+            }
         };
 
 
