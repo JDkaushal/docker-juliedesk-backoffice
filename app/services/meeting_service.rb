@@ -1,16 +1,42 @@
 class MeetingService
 
-  class MeetingNotScheduling < StandardError ; end
-  class NotAMeetingAttendee < StandardError ; end
-  class SuggestedDateNotFound < StandardError ; end
-  class AiComputingError < StandardError ; end
-  class DateNotAvailable < StandardError ; end
-  class NoThreadAccount < StandardError ; end
-  class FeatureNotEnabled < StandardError ; end
+  class MeetingError < StandardError ; end
+  class MeetingNotScheduling < MeetingError ; end
+  class NotAMeetingAttendee < MeetingError ; end
+  class SuggestedDateNotFound < MeetingError ; end
+  class AiComputingError < MeetingError ; end
+  class DateNotAvailable < MeetingError ; end
+  class NoThreadAccount < MeetingError ; end
+  class FeatureNotEnabled < MeetingError ; end
+  class UserNotFound < MeetingError ; end
 
   def initialize(messages_thread)
     @messages_thread = messages_thread
     @meeting_data_service = MeetingDataService.new(@messages_thread)
+  end
+
+  def get_limited_details
+    data = @messages_thread.computed_data
+    attendees = data[:attendees]
+
+    {
+      appointmentNature: data[:appointment_nature],
+      duration: data[:duration],
+      location: data[:location],
+      attendeesNames: attendees.map{|attendee| attendee['name']}
+    }
+  end
+
+  def get_user_details(user_email)
+    user_details = @meeting_data_service.extract_user_details(user_email)
+
+    if user_details.blank?
+      raise UserNotFound
+    end
+
+    {
+      timezone: user_details['timezone']
+    }
   end
 
   def confirm_suggested_date(suggested_date, validator)
@@ -23,7 +49,7 @@ class MeetingService
 
     raise NotAMeetingAttendee.new("#{validator} is not a thread attendee") unless attendees_emails.include?(validator)
     thread_suggested_dates = @messages_thread.last_suggested_date_times.map { |date_data| DateTime.parse(date_data['date']) }
-    raise SuggestedDateNotFound.new("#{suggested_date} was not found in suggested dates") unless thread_suggested_dates.find { |date| date == suggested_date }
+    #raise SuggestedDateNotFound.new("#{suggested_date} was not found in suggested dates") unless thread_suggested_dates.find { |date| date == suggested_date }
 
     # Verify availability
     available_slot = self.verify_date_suggestion(suggested_date)

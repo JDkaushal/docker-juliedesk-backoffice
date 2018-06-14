@@ -167,7 +167,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def validate_date_suggestion
-    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action}).find(params[:id])
+    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
     date_to_check  = DateTime.parse(params[:suggested_date])
     validated_by   = params[:validated_by]
 
@@ -182,6 +182,28 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     render json: { error_code: 'VALIDATOR_NOT_ATTENDEE', message: e.message }, status: :forbidden
   rescue MeetingService::SuggestedDateNotFound => e
     render json: { error_code: 'DATE_NOT_ALLOWED', message: e.message }, status: :forbidden
+  rescue ActiveRecord::RecordNotFound
+    render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
+  def get_details
+    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+
+    render json: { thread_details: MeetingService.new(messages_thread).get_limited_details }
+
+  rescue ActiveRecord::RecordNotFound
+    render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
+  def get_user_details
+    data = valid_get_user_details_params(params)
+
+    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(data[:id])
+
+    render json: { user_details: MeetingService.new(messages_thread).get_user_details(data[:user_email]) }
+
+  rescue MeetingService::UserNotFound => e
+    render json: { error_code: 'USER_NOT_FOUND', message: "No user with email #{params[:user_email]} was participating in this thread"}, status: :unprocessable_entity
   rescue ActiveRecord::RecordNotFound
     render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
   end

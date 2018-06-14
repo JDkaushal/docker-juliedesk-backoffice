@@ -5,6 +5,11 @@ class MeetingDataService
     @messages_thread.re_import
   end
 
+  def extract_user_details(user_email)
+    data = @messages_thread.computed_data_only_attendees
+    user = data[:attendees].find{ |att| att["email"] == user_email }
+  end
+
   def should_ask_location?(julie_action)
     message_classification = julie_action.message_classification
 
@@ -23,7 +28,6 @@ class MeetingDataService
 
     missing_data.any?
   end
-
 
   def missing_contact_info(julie_action)
     AutomaticProcessing::Flows::JulieActionComplementaryInfo.new(
@@ -50,7 +54,6 @@ class MeetingDataService
     message_classification = julie_action.message_classification
     recipients.map { |email| message_classification.get_present_attendee_by_email(email) }.compact.map { |attendee| attendee.usage_name || attendee.full_name }
   end
-
 
   def generate_event_data(julie_action)
     message_classification = julie_action.message_classification

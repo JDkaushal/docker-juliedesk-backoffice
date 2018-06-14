@@ -235,6 +235,8 @@ Rails.application.routes.draw do
         post  :add_syncing_tag,       on: :collection
 
         # Slash
+        get   :get_details,               on: :member
+        get   :get_user_details,          on: :member
         put   :compute_date_suggestions,  on: :member
         put   :validate_date_suggestion,  on: :member
       end
