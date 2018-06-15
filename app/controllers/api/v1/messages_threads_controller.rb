@@ -158,7 +158,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     suggested_dates  = json['suggested_dates'].each_with_index.map { |date, priority| { priority: priority + 1, date: date  } }
     index = suggested_dates.size
     additional_dates = JSON.parse(json['additional_dates'] || '{}')
-    suggested_dates += additional_dates.inject([]) { |dates, (priority, date)| dates << { priority: index + priority.to_i, date: date } ; dates }
+    suggested_dates += additional_dates.inject([]) { |dates, (priority, date_h)| dates << { priority: index + priority.to_i, date: date_h['start'] } ; dates }
 
     if suggested_dates.present? && julie_action.present? && julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
       julie_action.date_times = suggested_dates.map { |date| { timezone: json['timezone'], date: date[:date] } }.to_json
