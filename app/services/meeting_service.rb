@@ -23,7 +23,8 @@ class MeetingService
       appointmentNature: data[:appointment_nature],
       duration: data[:duration],
       location: data[:location],
-      attendeesNames: attendees.map{|attendee| attendee['name']}
+      attendeesNames: attendees.map{|attendee| attendee['name']},
+      organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' }
     }
   end
 

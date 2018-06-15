@@ -144,6 +144,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         julie_action_id: julie_action.try(:id),
         account_email: messages_thread.account_email,
         n_suggested_dates: 4,
+        n_additional_dates: 20,
         attendees: last_classification.get_present_attendees.map(&:to_h),
         thread_data: {
             appointment_nature: last_classification.appointment_nature,
@@ -154,9 +155,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         raw_constraints_data: JSON.parse(last_classification.constraints_data || '[]')
     })
 
-    suggested_dates = json['suggested_dates']
+    suggested_dates  = json['suggested_dates'].each_with_index.map { |date, priority| { priority: priority + 1, date: date  } }
+    index = suggested_dates.size
+    additional_dates = JSON.parse(json['additional_dates'] || '{}')
+    suggested_dates += additional_dates.inject([]) { |dates, (priority, date)| dates << { priority: index + priority.to_i, date: date } ; dates }
+
     if suggested_dates.present? && julie_action.present? && julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
-      julie_action.date_times = suggested_dates.map { |date| { timezone: json['timezone'], date: date } }.to_json
+      julie_action.date_times = suggested_dates.map { |date| { timezone: json['timezone'], date: date[:date] } }.to_json
       julie_action.save
     end
 
