@@ -104,6 +104,6 @@ en:
 
       I will deal with this as soon as the issue is resolved.
     no_available_slots: |
-       Hi %{client_name},,
+       Hi %{client_name},
 
        I cannot find available slots based on the constraints. Please tell me what should I do.
