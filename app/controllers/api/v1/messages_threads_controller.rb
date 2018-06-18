@@ -166,12 +166,12 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     end
 
     if suggested_dates.empty?
-      #AutoEmailWorker.enqueue(
-      #    last_classification.message_id,
-      #    AutomaticsEmails::Rules::TYPE_NO_AVAILABLE_SLOTS,
-      #    { key: 'no_available_slots', client_name: messages_thread.account.try(:usage_name)},
-      #    messages_thread.account_email
-      #)
+      AutoEmailWorker.enqueue(
+          last_classification.message_id,
+          AutomaticsEmails::Rules::TYPE_NO_AVAILABLE_SLOTS,
+          { key: 'no_available_slots', client_name: messages_thread.account.try(:usage_name)},
+          messages_thread.account_email
+      )
     end
 
     render json: { suggested_dates: suggested_dates }, status: :ok
