@@ -57,7 +57,7 @@ class MeetingDataService
 
   def generate_event_data(julie_action)
     message_classification = julie_action.message_classification
-    start_date = DateTime.parse(message_classification.verified_dates_by_ai['verified_dates'].first)
+    start_date = DateTime.parse(message_classification.verified_dates_by_ai['verified_dates'].first) rescue Time.now
     end_date = start_date + message_classification.duration.minutes
     timezone = message_classification.verified_dates_by_ai['timezone']
 
@@ -66,7 +66,7 @@ class MeetingDataService
         summary: message_classification.summary,
         description: message_classification.notes,
         attendees: message_classification.get_present_attendees.map(&:to_h),
-        location: message_classification.location,
+        location: self.generate_location(julie_action),
         all_day: false,
         private: false,
         start: start_date.strftime("%FT%T%:z"),
@@ -76,5 +76,31 @@ class MeetingDataService
         calendar_login_username: @messages_thread.account.email #Warning, here it could be different for clients with calendar rules
     }
   end
+
+
+  def generate_location(julie_action)
+    message_classification = julie_action.message_classification
+
+    if message_classification.is_virtual_appointment?
+      call_instructions = JSON.parse(message_classification.call_instructions || {})
+      support = call_instructions['support']
+      if call_instructions['target'] == 'client'
+        account_appointment = message_classification.send(:account_appointment)
+        if account_appointment && account_appointment['support_config_hash']
+          unformated_support = account_appointment['support_config_hash']['label']
+          support = Account::SUPPORT_MAPPING[unformated_support]
+        end
+      end
+
+      TemplateService.new.generate_call_instructions(message_classification.get_present_attendees, {
+          target: call_instructions['target'],
+          support: support,
+          target_infos: call_instructions['targetInfos']
+      })
+    else
+      message_classification.location
+    end
+  end
+
 
 end

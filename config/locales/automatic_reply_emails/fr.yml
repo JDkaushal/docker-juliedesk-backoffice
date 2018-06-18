@@ -105,3 +105,7 @@ fr:
           Mon équipe est sur le coup.
 
           Je ne manquerai pas de reprendre le traitement dès résolution du problème.
+    no_available_slots: |
+          Bonjour %{client_name},
+
+          Je ne trouve plus de créneaux disponibles sous la contrainte énoncée. Merci de m’indiquer ce que je dois faire.

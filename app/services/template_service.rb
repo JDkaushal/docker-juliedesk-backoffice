@@ -41,4 +41,44 @@ class TemplateService
     html + footer_and_signature[:html_signature].html_safe
   end
 
+
+  # TODO: should be a call to template generator
+  def generate_call_instructions(present_attendees, params = {})
+    thread_owner  = present_attendees.find(&:is_thread_owner)
+    locale        = params.fetch(:locale, 'fr')
+    support       = params.fetch(:support, '')
+    target        = params.fetch(:target, '')
+    target_infos  = params.fetch(:target_infos, '')
+
+    return nil if target == 'later'
+
+    if target == 'interlocutor'
+      return nil if target_infos.blank?
+      attendee = present_attendees.find { |attendee| attendee.email == target_infos['email'] }
+
+      case support
+        when 'mobile'
+          I18n.t('call_instructions.single_attendee', { caller_name: thread_owner.name || thread_owner.full_name, target_name: (attendee.name || attendee.name), details: attendee.mobile, locale: locale })
+        when 'landline'
+          I18n.t(locale 'call_instructions.single_attendee', { caller_name: thread_owner.name, target_name: attendee.name, details: attendee.landline })
+        else
+          nil
+      end
+
+    elsif target == 'client'
+
+      case support
+        when 'mobile'
+          I18n.t('call_instructions.single_attendee', { caller_name: attendee.name, target_name: thread_owner.name, details: thread_owner.mobile, locale: locale })
+        when 'landline'
+          I18n.t('call_instructions.single_attendee', { caller_name: attendee.name, target_name: thread_owner.name, details: thread_owner.landline, locale: locale })
+        when 'confcall'
+          thread_owner.confcall_instructions
+        when 'video_conference'
+          thread_owner.confcall_instructions
+      end
+
+    end
+  end
+
 end

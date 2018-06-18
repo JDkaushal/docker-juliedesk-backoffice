@@ -71,6 +71,15 @@ class Account
   WORKING_DAY_START = { hour: 8, min: 30, second: 0 }
   WORKING_DAY_END   = { hour: 18, min: 30, second: 0 }
 
+  SUPPORT_MAPPING = {
+      'Mobile'              => 'mobile',
+      'Landline'            => 'landline',
+      'Confcall'            => 'Confcall',
+      'Skype'               => 'skype',
+      'Skype For Business'  => 'skype_for_business',
+      'Vide'                => ''
+  }
+
   def self.create_from_email email, params={}
     cache = params[:accounts_cache]# || self.accounts_cache
     users_access_lost_cache = params[:users_access_lost_cache] || self.users_with_lost_access

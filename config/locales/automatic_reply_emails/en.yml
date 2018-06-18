@@ -103,3 +103,7 @@ en:
       My team is on it.
 
       I will deal with this as soon as the issue is resolved.
+    no_available_slots: |
+       Hi %{client_name},,
+
+       I cannot find available slots based on the constraints. Please tell what should I do.

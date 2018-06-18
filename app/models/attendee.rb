@@ -58,6 +58,10 @@ class Attendee
     [self.first_name, self.last_name].select(&:present?).join(' ')
   end
 
+  def name
+    self.usage_name || self.full_name
+  end
+
 
   def has_any_phone_number?
     self.landline.present? || self.mobile.present?

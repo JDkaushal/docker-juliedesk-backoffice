@@ -264,3 +264,7 @@ en:
     events_creation: "Events creation"
     other: "Non-related to scheduling"
 
+  call_instructions:
+      single_attendee: "%{caller_name} to call %{target_name} at %{details}"
+      multiple_attendees: "Call %{target_name} at %{details}"
+

@@ -429,3 +429,7 @@ fr:
     handled_by_client: "Handled by Client"
     events_creation: "Events creation"
     other: "Non-related to scheduling"
+
+  call_instructions:
+    single_attendee: "%{caller_name} appelle %{target_name} au %{details}"
+    multiple_attendees: "Appeler %{target_name} au %{details}"

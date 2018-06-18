@@ -577,4 +577,16 @@ class MessageClassification < ActiveRecord::Base
       self.client_on_trip.delete('from_ai')
     end
   end
+
+  def account
+    self.message.messages_thread.account
+  end
+
+  def account_appointment
+    account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
+  end
+
+  def account_address
+    account.addresses.find{|address| address['address'] == self.location}
+  end
 end

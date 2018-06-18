@@ -138,17 +138,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
   private
 
-  def account
-    self.message.messages_thread.account
-  end
 
-  def account_appointment
-    account.appointments.find{|appointment| appointment['label'] == self.appointment_nature}
-  end
-
-  def account_address
-    account.addresses.find{|address| address['address'] == self.location}
-  end
 
 
   def compute_location_from_interpretation(interpretation, appointment_config)
