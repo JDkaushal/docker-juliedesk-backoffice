@@ -83,20 +83,22 @@ class MeetingDataService
 
     if message_classification.is_virtual_appointment?
       call_instructions = JSON.parse(message_classification.call_instructions || {})
-      support = call_instructions['support']
-      if call_instructions['target'] == 'client'
-        account_appointment = message_classification.send(:account_appointment)
-        if account_appointment && account_appointment['support_config_hash']
-          unformated_support = account_appointment['support_config_hash']['label']
-          support = Account::SUPPORT_MAPPING[unformated_support]
-        end
-      end
+      return call_instructions['event_instructions']
 
-      TemplateService.new.generate_call_instructions(message_classification.get_present_attendees, {
-          target: call_instructions['target'],
-          support: support,
-          target_infos: call_instructions['targetInfos']
-      })
+      #support = call_instructions['support']
+      #if call_instructions['target'] == 'client'
+      #  account_appointment = message_classification.send(:account_appointment)
+      #  if account_appointment && account_appointment['support_config_hash']
+      #    unformated_support = account_appointment['support_config_hash']['label']
+      #    support = Account::SUPPORT_MAPPING[unformated_support]
+      #  end
+      #end
+
+      #TemplateService.new.generate_call_instructions(message_classification.get_present_attendees, {
+      #    target: call_instructions['target'],
+      #    support: support,
+      #    target_infos: call_instructions['targetInfos']
+      #})
     else
       message_classification.location
     end
