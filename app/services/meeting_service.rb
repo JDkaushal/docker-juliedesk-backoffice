@@ -24,7 +24,8 @@ class MeetingService
       duration: data[:duration],
       location: data[:location],
       attendeesNames: attendees.map{|attendee| attendee['name']},
-      organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' }
+      organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' },
+      locale: data[:locale]
     }
   end
 
