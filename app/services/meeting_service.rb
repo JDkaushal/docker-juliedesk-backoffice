@@ -26,7 +26,8 @@ class MeetingService
       location: data[:location],
       attendeesNames: attendees.map{|attendee| attendee['name']},
       organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' },
-      locale: data[:locale]
+      locale: data[:locale],
+      isVirtual: data[:is_virtual_appointment]
     }
   end
 
