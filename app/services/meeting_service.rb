@@ -68,7 +68,11 @@ class MeetingService
 
       # Generate julie ation
       generated_julie_action = create_julie_action!(generated_classification)
+
+      # Generate template
+      generated_julie_action.template_kind = 'slash'
       generated_julie_action.text = generate_template(generated_julie_action)
+      generated_julie_action.save
 
       # Create event
       event_data = create_event(generated_julie_action)

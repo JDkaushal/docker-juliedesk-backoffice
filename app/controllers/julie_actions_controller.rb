@@ -230,7 +230,8 @@ class JulieActionsController < ApplicationController
         event_from_invitation: params[:event_from_invitation],
         event_from_invitation_organizer: params[:event_from_invitation_organizer],
         date_suggestions_full_ai: params[:date_suggestions_full_ai] == 'true',
-        ai_call_status: current_julie_action_ai_call_status
+        ai_call_status: current_julie_action_ai_call_status,
+        template_kind: params[:template_kind]
      })
 
     if julie_action.date_suggestions_full_ai

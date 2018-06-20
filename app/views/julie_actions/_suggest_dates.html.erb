@@ -148,14 +148,14 @@
 
             var serviceParams = null;
             var dateToSuggest = window.timeSlotsToSuggest[0];
-            var display_new_template =
+            window.display_new_template =
                 window.featuresHelper.isFeatureActive('display_call_to_action_in_templates') &&
                 window.threadAccount.call_to_action_in_email_enabled &&
                 window.threadAccount.call_to_action_in_email_enabled && attendees().filter(function(attendee) { return attendee.linkedAttendee == false }).length == 1 &&
                 window.getDatesSuggestionManager().trustMode == 'trusted';
 
             $('#reply-text').attr('readonly', display_new_template);
-            if(display_new_template) {
+            if(window.display_new_template) {
                 serviceParams = {
                     template: "suggest_date",
                     client_names: clientNames,
@@ -304,6 +304,7 @@
             messages_thread_id: window.processingMessageThreadId,
             client_settings: window.getClientSettings(),
             annotated_reply: window.annotatedReply,
+            template_kind: window.display_new_template ? 'slash' : 'julie'
 
         };
         if(window.fullAiFromBackend) {

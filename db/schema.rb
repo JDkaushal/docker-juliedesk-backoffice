@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180619131624) do
+ActiveRecord::Schema.define(version: 20180620151334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -107,6 +107,7 @@ ActiveRecord::Schema.define(version: 20180619131624) do
     t.json     "date_times_from_ai"
     t.boolean  "date_suggestions_full_ai_capacity",             default: false
     t.json     "ai_event_data",                                 default: {}
+    t.string   "template_kind"
   end
 
   add_index "automated_julie_actions", ["created_at"], name: "automated_julie_actions_created_at_idx", using: :btree
@@ -310,12 +311,14 @@ ActiveRecord::Schema.define(version: 20180619131624) do
     t.json     "ai_call_status"
     t.json     "date_times_from_ai"
     t.boolean  "date_suggestions_full_ai_capacity",             default: false
+    t.string   "template_kind"
   end
 
   add_index "julie_actions", ["created_at"], name: "index_julie_actions_on_created_at", using: :btree
   add_index "julie_actions", ["event_id"], name: "index_julie_actions_on_event_id", using: :btree
   add_index "julie_actions", ["message_classification_id"], name: "index_julie_actions_on_message_classification_id", using: :btree
   add_index "julie_actions", ["server_message_id"], name: "index_julie_actions_on_server_message_id", using: :btree
+  add_index "julie_actions", ["template_kind"], name: "index_julie_actions_on_template_kind", using: :btree
 
   create_table "julie_aliases", force: :cascade do |t|
     t.string   "email",        limit: 255
