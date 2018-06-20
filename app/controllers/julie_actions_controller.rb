@@ -176,10 +176,14 @@ class JulieActionsController < ApplicationController
     if params[:date_times] && params[:date_times].is_a?(Array)
       message_classification_timezone = julie_action.message_classification.timezone
 
+      puts '*' * 50
+      puts params[:date_times].inspect
+      puts '*' * 50
+
       date_times = params[:date_times].map{|dt|
         {
             timezone: message_classification_params_to_update[:timezone] || message_classification_timezone,
-            date: DateTime.parse(dt).utc.to_s
+            date: DateTime.parse(dt).utc.strftime('%Y-%m-%dT%H:%M:%S%:z')
         }
       }
     end
@@ -214,6 +218,10 @@ class JulieActionsController < ApplicationController
       current_julie_action_ai_call_status = current_julie_action_ai_call_status.dup
       current_julie_action_ai_call_status.merge!(params[:ai_call_status])
     end
+
+    puts '*' * 50
+    puts date_times.inspect
+    puts '*' * 50
 
     julie_action.update_attributes({
         text: params[:text],

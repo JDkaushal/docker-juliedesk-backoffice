@@ -65,7 +65,11 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                       "tags"=>[],
                                                       "last_message_imported_at"=>nil,
                                                       "aborted_at"=>nil,
-                                                      "julie_aliases_in_recipients"=>[]
+                                                      "julie_aliases_in_recipients"=>[],
+                                                      "encryption_salt"=> @mt1.encryption_salt,
+                                                      "encryption_key_id"=> nil,
+                                                      "encryption_iv"=>nil,
+                                                      "authentication_token"=> @mt1.authentication_token
 
                                                   },
                                                   "messages" => @mt1.messages.map { |m|
