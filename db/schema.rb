@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180522133354) do
+ActiveRecord::Schema.define(version: 20180619131624) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -405,7 +405,7 @@ ActiveRecord::Schema.define(version: 20180522133354) do
     t.boolean  "from_me",                          default: false
     t.integer  "server_message_id"
     t.datetime "request_at"
-    t.string   "allowed_attendees",                default: [],    array: true
+    t.string   "allowed_attendees",    limit: 255, default: [],    array: true
     t.string   "auto_email_kind",      limit: 255
   end
 
@@ -443,21 +443,25 @@ ActiveRecord::Schema.define(version: 20180522133354) do
     t.integer  "messages_count",                                   default: 0
     t.boolean  "handled_by_automation",                            default: false
     t.boolean  "is_multi_clients",                                 default: false
-    t.string   "computed_recipients",                              default: [],    array: true
-    t.string   "accounts_candidates",                              default: [],    array: true
+    t.string   "computed_recipients",                  limit: 255, default: [],    array: true
+    t.string   "accounts_candidates",                  limit: 255, default: [],    array: true
     t.boolean  "account_request_auto_email_sent",                  default: false
     t.boolean  "account_association_merging_possible",             default: false
     t.json     "linked_attendees",                                 default: {}
-    t.string   "clients_in_recipients",                            default: [],    array: true
+    t.string   "clients_in_recipients",                limit: 255, default: [],    array: true
     t.boolean  "has_been_sent_to_admin",                           default: false
-    t.string   "allowed_attendees",                                default: [],    array: true
-    t.string   "accounts_candidates_primary_list",                 default: [],    array: true
-    t.string   "accounts_candidates_secondary_list",               default: [],    array: true
-    t.string   "merging_account_candidates",                       default: [],    array: true
-    t.string   "tags",                                             default: [],    array: true
+    t.string   "allowed_attendees",                    limit: 255, default: [],    array: true
+    t.string   "accounts_candidates_primary_list",     limit: 255, default: [],    array: true
+    t.string   "accounts_candidates_secondary_list",   limit: 255, default: [],    array: true
+    t.string   "merging_account_candidates",           limit: 255, default: [],    array: true
+    t.string   "tags",                                 limit: 255, default: [],    array: true
     t.datetime "last_message_imported_at"
     t.datetime "aborted_at"
     t.string   "julie_aliases_in_recipients",                      default: [],    array: true
+    t.string   "encryption_salt"
+    t.string   "encryption_key_id"
+    t.string   "encryption_iv"
+    t.string   "authentication_token"
   end
 
   add_index "messages_threads", ["account_email"], name: "index_messages_threads_on_account_email", using: :btree

@@ -9,6 +9,26 @@ class TemplateService
     text.present? ? "#{text}\n\n" : nil
   end
 
+  def generate_suggest_dates_for_slash(recipients_names, params = {})
+    say_hi_text = self.generate_say_hi(recipients_names, params.slice(:locale))
+    generated_text = say_hi_text
+
+    generated_text += get_suggest_date_template({
+                                                        client_names:                 params.fetch(:client_names),
+                                                        timezones:                    params.fetch(:timezones, []),
+                                                        default_timezone:             params.fetch(:default_timezone),
+                                                        duration:                     params.fetch(:duration),
+                                                        locale:                       params.fetch(:locale, 'fr'),
+                                                        is_virtual:                   params.fetch(:is_virtual, false),
+                                                        appointment_in_email:         params.fetch(:appointment_in_email),
+                                                        location_in_email:            params.fetch(:location_in_email),
+                                                        missing_contact_info:         params.fetch(:missing_contact_info, false),
+                                                        date:                         params.fetch(:date),
+                                                        validate_suggestion_link:     params.fetch(:validate_suggestion_link),
+                                                        show_other_suggestions_link:  params.fetch(:show_other_suggestions_link)
+                                                    })
+  end
+
   def generate_send_invitations(recipients_names, params = {})
     location = params.fetch(:location, "")
     say_hi_text = self.generate_say_hi(recipients_names, params.slice(:locale))

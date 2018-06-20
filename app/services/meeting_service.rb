@@ -20,6 +20,7 @@ class MeetingService
     attendees = data[:attendees]
 
     {
+      id: @messages_thread.id,
       appointmentNature: data[:appointment_nature],
       duration: data[:duration],
       location: data[:location],

@@ -13,6 +13,10 @@ module TemplateGeneratorHelper
     request("/api/v1/templates/forward_to_client", template_data)
   end
 
+  def get_suggest_date_template template_data
+    request("/api/v1/templates/suggest_date", template_data)
+  end
+
   def get_suggest_dates_template template_data
     request("/api/v1/templates/suggest_dates", template_data)
   end

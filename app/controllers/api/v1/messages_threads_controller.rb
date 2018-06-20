@@ -1,6 +1,27 @@
 class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   include Api::V1::Concerns::MessagesThreadsMethods
 
+  before_action :get_messages_thread, only: [:compute_date_suggestions, :validate_date_suggestion, :get_details, :get_user_details]
+
+  def generate_dates_suggestion_template_with_links
+    messages_thread = MessagesThread.find(params[:thread_id])
+
+    encrypted_thread_id = MessagesThread.encrypt_data(params[:thread_id])
+    encrypted_validated_by = MessagesThread.encrypt_data(params[:validated_by])
+
+    params[:validate_suggestion_link] = "#{ENV['SLASH_VALIDATE_SUGGESTION_LINK']}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(params[:slot])}&token=#{messages_thread.authentication_token}"
+    params[:show_other_suggestions_link] = "#{ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{messages_thread.authentication_token}"
+
+    template_text = TemplateService.new.generate_suggest_dates_for_slash(params[:client_names], params)
+    render json: {
+        data: {
+            annotated_text: template_text,
+            text: template_text
+        },
+        status: :success
+    }
+  end
+
   def sent_messages_stats
     sent_messages_stats_data = DashboardDataGenerator.generate_sent_messages_stat_data({
                                                                                            start_date: params[:start_date],
@@ -125,24 +146,24 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def compute_date_suggestions
-    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
-    unless messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
+    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+    unless @messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
       render json: { error_code: 'THREAD_NOT_SCHEDULING', message: '' }, status: :forbidden
       return
     end
 
-    unless messages_thread.account && messages_thread.account.call_to_action_in_email_enabled
+    unless @messages_thread.account && @messages_thread.account.call_to_action_in_email_enabled
       render json: { error_code: 'FEATURE_NOT_ENABLED', message: '' }, status: :forbidden
       return
     end
 
-    last_classification = messages_thread.last_message_classification_with_data
+    last_classification = @messages_thread.last_message_classification_with_data
     julie_action = last_classification.julie_action
 
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
         message_id: last_classification.message_id,
         julie_action_id: julie_action.try(:id),
-        account_email: messages_thread.account_email,
+        account_email: @messages_thread.account_email,
         n_suggested_dates: 4,
         n_additional_dates: 20,
         attendees: last_classification.get_present_attendees.map(&:to_h),
@@ -169,8 +190,8 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       AutoEmailWorker.enqueue(
           last_classification.message_id,
           AutomaticsEmails::Rules::TYPE_NO_AVAILABLE_SLOTS,
-          { key: 'no_available_slots', client_name: messages_thread.account.try(:usage_name)},
-          messages_thread.account_email
+          { key: 'no_available_slots', client_name: @messages_thread.account.try(:usage_name)},
+          @messages_thread.account_email
       )
     end
 
@@ -181,11 +202,11 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def validate_date_suggestion
-    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
     date_to_check  = DateTime.parse(params[:suggested_date])
     validated_by   = params[:validated_by]
 
-    confirmed = MeetingService.new(messages_thread).confirm_suggested_date(date_to_check, validated_by)
+    confirmed = MeetingService.new(@messages_thread).confirm_suggested_date(date_to_check, validated_by)
     render json: { status: confirmed ? 'validated' : 'not_available' }, status: :ok
 
   rescue MeetingService::MeetingNotScheduling => e
@@ -201,9 +222,9 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def get_details
-    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
 
-    render json: { thread_details: MeetingService.new(messages_thread).get_limited_details }
+    render json: { thread_details: MeetingService.new(@messages_thread).get_limited_details }
 
   rescue ActiveRecord::RecordNotFound
     render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
@@ -212,14 +233,26 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   def get_user_details
     data = valid_get_user_details_params(params)
 
-    messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(data[:id])
+    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(data[:id])
 
-    render json: { user_details: MeetingService.new(messages_thread).get_user_details(data[:user_email]) }
+    render json: { user_details: MeetingService.new(@messages_thread).get_user_details(data[:user_email]) }
 
   rescue MeetingService::UserNotFound => e
     render json: { error_code: 'USER_NOT_FOUND', message: "No user with email #{params[:user_email]} was participating in this thread"}, status: :unprocessable_entity
   rescue ActiveRecord::RecordNotFound
     render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
+  private
+
+  def get_messages_thread
+    @messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
+    authentication_token = params[:authentication_token]
+
+    if authentication_token.blank? || authentication_token.present? && !@messages_thread.validate_authentication_token(authentication_token)
+      render json: { error_code: 'AUTHENTICATION_FAILED', message: '' }, status: :forbidden
+      return
+    end
   end
 
 end

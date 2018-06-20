@@ -20,6 +20,8 @@ class MessagesThread < ActiveRecord::Base
   has_many :event_title_reviews
   has_one :client_request
 
+  before_create :set_encryption_salt, :set_encryption_key, :generate_authentication_token
+
   after_update :owner_changed?
 
 
@@ -1540,6 +1542,20 @@ class MessagesThread < ActiveRecord::Base
     sync_started_at
   end
 
+  def self.encrypt_data(data)
+    crypt = ActiveSupport::MessageEncryptor.new(compute_encryption_key)
+    crypt.encrypt_and_sign(data.to_s)
+  end
+
+  def self.decrypt_data(data)
+    crypt = ActiveSupport::MessageEncryptor.new(compute_encryption_key)
+    crypt.decrypt_and_verify(data.to_s)
+  end
+
+  def validate_authentication_token(token)
+    self.authentication_token == token
+  end
+
   private
 
   def verify_tag(tag)
@@ -1558,5 +1574,29 @@ class MessagesThread < ActiveRecord::Base
     if self.account_email_changed?
       @account_fetched = false
     end
+  end
+
+  def set_encryption_salt
+    self.encryption_salt = Base64.encode64(SecureRandom.random_bytes(4))
+  end
+
+  def set_encryption_key
+    self.encryption_key_id = determine_encryption_key_id
+  end
+
+  def determine_encryption_key_id
+    nil
+  end
+
+  def self.get_encryption_key
+    Base64.decode64(ENV['SLASH_ENCRYPTION_KEY'])
+  end
+
+  def self.compute_encryption_key
+    get_encryption_key
+  end
+
+  def generate_authentication_token
+    self.authentication_token = SecureRandom.hex(12)
   end
 end

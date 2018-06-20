@@ -218,6 +218,7 @@ Rails.application.routes.draw do
       get "messages_thread_context", controller: :messages_threads, action: :messages_thread_context
       get "emails_forecast", controller: :ai_forecast, action: :emails
 
+      post "generate_dates_suggestion_template_with_links", controller: :messages_threads, action: :generate_dates_suggestion_template_with_links
       post "julie_aliases/synchronize", controller: :julie_aliases, action: :synchronize
       post "/accounts/change_account_main_email", controller: :accounts, action: :change_account_main_email
       post "/client_requests/compute_count", controller: :client_requests, action: :compute_count

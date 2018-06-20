@@ -7,8 +7,7 @@ var TemplateServiceManager = (function() {
     const REQUIRED_PARAMS = {
       suggest_date: [
           'client_names', 'duration', 'appointment_in_email', 'location_in_email', 'is_virtual',
-          "date", 'timezones', 'default_timezone', 'is_virtual',
-          'validate_suggestion_link', 'show_other_suggestions_link'
+          "date", 'timezones', 'default_timezone', 'is_virtual', 'thread_id', 'validated_by', 'slot'
       ],
       suggest_dates: [
         'client_names', 'timezones', 'default_timezone', 'locale', 'is_virtual', 'attendees', 'appointment_in_email',
@@ -84,23 +83,43 @@ window.generateEmailTemplateViaServicev2 = function (params) {
   var templateName = params.template;
   delete params['template'];
 
-  return Promise.resolve($.ajax({
-    type: "POST",
-    url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + templateName,
-    dataType: 'json',
-    contentType: 'application/json',
-    data: JSON.stringify(params)
-  })).then(function(response) {
-    return response.data;
-  });
+  if(templateName == 'suggest_date') {
+      return Promise.resolve($.ajax({
+          type: "POST",
+          url: "/api/v1/generate_dates_suggestion_template_with_links",
+          beforeSend: function (xhr) {
+              xhr.setRequestHeader ("Authorization", "<%= ENV['API_KEY'] %>");
+          },
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(params)
+      })).then(function(response) {
+          return response.data;
+      });
+  } else {
+      return Promise.resolve($.ajax({
+          type: "POST",
+          url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + templateName,
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(params)
+      })).then(function(response) {
+          return response.data;
+      });
+  }
+
+
+
 };
 
 
 window.generateEmailTemplateViaService = function (params, callback) {
 
   var dataForService = {};
+  var proxyWithBackoffice = false;
 
   if (params.template == "suggest_date") {
+      proxyWithBackoffice = true;
     dataForService = {
       client_names: params.client_names,
       duration: params.duration,
@@ -166,15 +185,29 @@ window.generateEmailTemplateViaService = function (params, callback) {
     return null;
   }
 
+  if(proxyWithBackoffice) {
+      $.ajax({
+          type: "POST",
+          url: "/api/v1/generate_dates_suggestion_template_with_links",
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(dataForService),
+          success: function (response) {
+              callback(response.data);
+          }
+      });
+  } else {
+      $.ajax({
+          type: "POST",
+          url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + params.template,
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(dataForService),
+          success: function (response) {
+              callback(response.data);
+          }
+      });
+  }
 
-  $.ajax({
-    type: "POST",
-    url: "<%= ENV['TEMPLATE_GENERATOR_BASE_PATH'] %>/api/v1/templates/" + params.template,
-    dataType: 'json',
-    contentType: 'application/json',
-    data: JSON.stringify(dataForService),
-    success: function (response) {
-      callback(response.data);
-    }
-  });
+
 };
