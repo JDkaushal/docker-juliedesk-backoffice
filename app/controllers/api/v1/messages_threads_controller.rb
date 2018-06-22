@@ -165,7 +165,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
         julie_action_id: julie_action.try(:id),
         account_email: @messages_thread.account_email,
         n_suggested_dates: 4,
-        n_additional_dates: 20,
+        n_additional_dates: 40,
         attendees: last_classification.get_present_attendees.map(&:to_h),
         thread_data: {
             appointment_nature: last_classification.appointment_nature,
