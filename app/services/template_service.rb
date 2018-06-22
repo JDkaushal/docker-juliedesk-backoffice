@@ -9,11 +9,8 @@ class TemplateService
     text.present? ? "#{text}\n\n" : nil
   end
 
-  def generate_suggest_dates_for_slash(recipients_names, params = {})
-    say_hi_text = self.generate_say_hi(recipients_names, params.slice(:locale))
-    generated_text = say_hi_text
-
-    generated_text += get_suggest_date_template({
+  def generate_suggest_dates_for_slash(params = {})
+    get_suggest_date_template({
                                                         client_names:                 params.fetch(:client_names),
                                                         timezones:                    params.fetch(:timezones, []),
                                                         default_timezone:             params.fetch(:default_timezone),

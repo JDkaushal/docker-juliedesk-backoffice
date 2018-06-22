@@ -12,7 +12,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     params[:validate_suggestion_link] = "#{ENV['SLASH_VALIDATE_SUGGESTION_LINK']}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(params[:slot])}&token=#{messages_thread.authentication_token}"
     params[:show_other_suggestions_link] = "#{ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{messages_thread.authentication_token}"
 
-    template_text = TemplateService.new.generate_suggest_dates_for_slash(params[:client_names], params)
+    template_text = TemplateService.new.generate_suggest_dates_for_slash(params)
     render json: {
         data: {
             annotated_text: template_text,
