@@ -60,6 +60,7 @@ class MeetingDataService
     start_date = DateTime.parse(message_classification.verified_dates_by_ai['verified_dates'].first) rescue Time.now
     end_date = start_date + message_classification.duration.minutes
     timezone = message_classification.verified_dates_by_ai['timezone']
+    calendar_logins = @messages_thread.account.calendar_logins || []
 
     {
         email: @messages_thread.account.email,
@@ -73,7 +74,7 @@ class MeetingDataService
         end: end_date.strftime("%FT%T%:z"),
         start_timezone: timezone,
         end_timezone: timezone,
-        calendar_login_username: @messages_thread.account.email #Warning, here it could be different for clients with calendar rules
+        calendar_login_username: calendar_logins.first["username"]
     }
   end
 
