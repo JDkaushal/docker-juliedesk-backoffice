@@ -137,10 +137,17 @@ window.processSignature = function (signature) {
     return signature;
 };
 
-window.setReplyMessage = function (message, recipients, otherRecipients) {
+window.setReplyMessage = function (message, recipients, otherRecipients, options) {
+    var options = options || {};
+    var contentType = options.contentType || 'text';
     window.setReplyRecipients(recipients, otherRecipients);
-    window.currentFullMessage = message;
-    window.assignCurrentReplyMessage();
+
+    if(contentType == 'html')
+      window.currentFullHtmlMessage = message;
+    else
+      window.currentFullMessage = message;
+
+    window.assignCurrentReplyMessage({ contentType: contentType });
 };
 
 window.computeSalutation = function () {
@@ -270,7 +277,10 @@ window.computeSignature = function () {
     return window.processSignature(signature);
 };
 
-window.assignCurrentReplyMessage = function () {
+window.assignCurrentReplyMessage = function (options) {
+    var opts = options || {};
+    var contentType = opts.contentType || 'text';
+
     setCurrentLocale(window.threadComputedData.locale);
 
     var salutation = window.computeSalutation();
@@ -281,7 +291,19 @@ window.assignCurrentReplyMessage = function () {
 
     $("textarea#reply-text").val(window.currentFullMessageWithFooter);
     $("textarea#reply-text").elastic();
-    $("div#reply-text-signature").html(signature);
+
+    if(contentType == 'html') {
+      var htmlFooter      = footer.replace(/\n/g, '<br/>');
+      var htmlSalutation  = salutation.replace(/\n/g, '<br/>');
+      $("div#reply-html").html(window.currentFullHtmlMessage).prepend('<p>' + htmlSalutation + '</p>').append('<p>' + htmlFooter + '</p>').show();
+      $('textarea#reply-text').val( $('div#reply-html')[0].innerText).hide();
+    }
+    else {
+      $("#reply-html").empty().hide();
+      $("textarea#reply-text").show();
+    }
+
+  $("div#reply-text-signature").html(signature);
 
     setCurrentLocale(getDefaultLocale());
 };
@@ -299,6 +321,7 @@ window.sendReply = function (replyParams) {
         method: "post",
         data: {
             text: $("textarea#reply-text").val(),
+            html: $("div#reply-html").is(':visible') ? $("div#reply-html").html() : null,
             html_signature: $("#reply-text-signature").html(),
             from: $("select#julie-alias-select").val(),
             to: window.currentRecipients().to,

@@ -204,7 +204,7 @@ class MessagesController < ApplicationController
         to: (params[:to] || []).join(", "),
         cc: (params[:cc] || []).join(", "),
         text: "#{params[:text]}#{strip_tags(params[:html_signature])}",
-        html: "#{text_to_html(params[:text])} #{params[:html_signature]}",
+        html: params[:html].present? ? params[:html] : "#{(text_to_html(params[:text]))} #{params[:html_signature]}",
         quote_replied_message: quote_replied_message,
         quote_forward_message: quote_forward_message,
         reply_to_message_id:  @message.server_message_id

@@ -154,7 +154,6 @@
                 window.threadAccount.call_to_action_in_email_enabled && attendees().filter(function(attendee) { return attendee.linkedAttendee == false }).length == 1 &&
                 window.getDatesSuggestionManager().trustMode == 'trusted';
 
-            $('#reply-text').attr('readonly', display_new_template);
             if(window.display_new_template) {
                 serviceParams = {
                     template: "suggest_date",
@@ -208,8 +207,11 @@
 
             TemplateServiceManager.getInstance().generateTemplate(serviceParams).then(function (generatedTemplate) {
                 if (typeof(generatedTemplate) == "object") {
-                    window.setReplyMessage(generatedTemplate["text"], "all", window.otherEmails);
-                    window.annotatedReply = generatedTemplate["annotated_text"];
+                  // If Slash template, reply message type is HTML
+                  var contentType = window.display_new_template ? 'html': 'text';
+                  var content = generatedTemplate[contentType];
+                  window.setReplyMessage(content, "all", window.otherEmails, { contentType: contentType });
+                  window.annotatedReply = generatedTemplate["annotated_text"];
                 }
                 else {
                     window.setReplyMessage(generatedTemplate, "all", window.otherEmails);

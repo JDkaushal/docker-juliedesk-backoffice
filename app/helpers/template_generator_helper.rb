@@ -14,7 +14,7 @@ module TemplateGeneratorHelper
   end
 
   def get_suggest_date_template template_data
-    request("/api/v1/templates/suggest_date", template_data)
+    request("/api/v1/templates/suggest_date", template_data, { format: 'html' })
   end
 
   def get_suggest_dates_template template_data
@@ -51,7 +51,8 @@ module TemplateGeneratorHelper
 
   private
 
-  def request path, body=nil
+  def request(path, body=nil, options = {})
+    format = options.fetch(:format, 'text')
     uri = URI.parse("#{ENV['TEMPLATE_GENERATOR_BASE_PATH']}")
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = uri.scheme == 'https'
@@ -62,6 +63,6 @@ module TemplateGeneratorHelper
       request.body = body.to_json
     end
     response = http.request(request)
-    JSON.parse(response.body)['data']['text']
+    JSON.parse(response.body)['data'][format]
   end
 end

@@ -12,12 +12,9 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     params[:validate_suggestion_link] = "#{ENV['SLASH_VALIDATE_SUGGESTION_LINK']}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(params[:slot])}&token=#{messages_thread.authentication_token}"
     params[:show_other_suggestions_link] = "#{ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{messages_thread.authentication_token}"
 
-    template_text = TemplateService.new.generate_suggest_dates_for_slash(params)
+    template_html = TemplateService.new.generate_suggest_dates_for_slash(params)
     render json: {
-        data: {
-            annotated_text: template_text,
-            text: template_text
-        },
+        data: { annotated_text: template_html, html: template_html },
         status: :success
     }
   end
@@ -146,7 +143,6 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def compute_date_suggestions
-    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
     unless @messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
       render json: { error_code: 'THREAD_NOT_SCHEDULING', message: '' }, status: :forbidden
       return
@@ -222,8 +218,6 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def get_details
-    #messages_thread = MessagesThread.includes(messages: { message_classifications: :julie_action }).find(params[:id])
-
     render json: { thread_details: MeetingService.new(@messages_thread).get_limited_details }
 
   rescue ActiveRecord::RecordNotFound
