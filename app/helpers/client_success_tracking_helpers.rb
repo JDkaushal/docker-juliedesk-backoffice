@@ -36,7 +36,9 @@ class ClientSuccessTrackingHelpers
         julie_alias: !(MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email).include? ENV['COMMON_JULIE_ALIAS_EMAIL']),
         'Number of Participants' => attendees_count,
         'Number of External Participants' => external_attendees_count,
-        'Number of Internal Participants' => internal_attendees_count
+        'Number of Internal Participants' => internal_attendees_count,
+        'email_recipients' => thread_recipients.to_a.join(','),
+        'email_title' => messages_thread.subject
     })
   end
 
