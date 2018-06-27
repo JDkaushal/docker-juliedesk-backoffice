@@ -37,8 +37,8 @@ class ClientSuccessTrackingHelpers
         'Number of Participants' => attendees_count,
         'Number of External Participants' => external_attendees_count,
         'Number of Internal Participants' => internal_attendees_count,
-        'email_recipients' => thread_recipients.to_a.join(','),
-        'email_title' => messages_thread.subject
+        'thread_recipients' => thread_recipients.to_a.join(','),
+        'thread_title' => messages_thread.subject
     })
   end
 
