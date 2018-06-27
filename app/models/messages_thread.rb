@@ -173,7 +173,8 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.thread_blocked ||
         messages_thread.owner_needs_configuration ||
         messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
-        !messages_thread.can_be_processed_now
+        !messages_thread.can_be_processed_now ||
+        messages_thread.julie_aliases_malfunctionning
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
