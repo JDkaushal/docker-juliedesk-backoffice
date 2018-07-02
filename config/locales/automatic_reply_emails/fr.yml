@@ -108,4 +108,4 @@ fr:
     no_available_slots: |
           Bonjour %{client_name},
 
-          Je ne trouve plus de créneaux disponibles sous la contrainte énoncée. Merci de m’indiquer ce que je dois faire.
+          Je ne trouve pas de créneaux disponibles dans votre calendrier. Merci de m’indiquer ce que je dois faire.

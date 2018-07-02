@@ -78,7 +78,6 @@ class Message < ActiveRecord::Base
 
   def self.delegate_to_julia_async(message_id)
     ConscienceFullWorker.enqueue message_id, {}
-    #Ai::EmailProcessing::Processor.delay.perform_later(message_id)
   end
 
   def get_reply_all_recipients_emails
@@ -591,7 +590,6 @@ class Message < ActiveRecord::Base
       should_update_thread = true
       new_thread = false
       send_auto_reply_mailing_list_message_id = nil
-      compute_ai_parallel_run_on_message_ids = []
 
       if server_thread['subject'].include? "MB5jB- Julie alias test".freeze || server_message['from'].include?('julie.aliastest@gmail.com')
         should_update_thread = false
@@ -655,7 +653,6 @@ class Message < ActiveRecord::Base
 
             unless m.from_me
               should_call_conscience = true
-              compute_ai_parallel_run_on_message_ids.push(m.id)
 
               if server_thread['labels'].include?("MAILING_LIST")
                 messages_thread.update(handled_by_automation: true)
@@ -705,9 +702,6 @@ class Message < ActiveRecord::Base
               messages_thread.update(handled_by_ai: true)
               Message.delegate_to_julia_async(m.id)
               should_call_conscience = false
-
-              # We will not run a parallel run if the message was already handled by the AI
-              compute_ai_parallel_run_on_message_ids.reject!{|m_id| m_id == m.id}
             end
 
             if should_call_conscience
@@ -763,11 +757,6 @@ class Message < ActiveRecord::Base
         # We send the mailing list automatic email only if the messages thread has no account associated
         if send_auto_reply_mailing_list_message_id.present? && messages_thread.account.blank?
           messages_thread.messages.find{ |m| m.id == send_auto_reply_mailing_list_message_id }.async_auto_reply_mailing_list
-        end
-
-        if compute_ai_parallel_run_on_message_ids.present? && messages_thread.account.present?
-          # Parallel run, we do not trigger any actions but save in DB the AutomaticProcessing::AutomatedMessageClassification and AutomaticProcessing::AutomatedJulieAction for analyze purposes
-          compute_ai_parallel_run_on_message_ids.each{|m_id| ConscienceFullWorker.enqueue(m_id, {dont_trigger_action_flows: true})}
         end
 
         if messages_thread.should_reprocess_linked_attendees(computed_recipients_changed)
