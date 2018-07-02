@@ -15,31 +15,42 @@ module AutomaticProcessing
 
         wordings = @data_holder.get_appointment
 
-        preambule = if suggest_again
-                      "#{say_hi_text}#{get_client_unvailable_template({client_names: @data_holder.get_client_names})}"
-                    else
-                      say_hi_text
-                    end
+        messages_thread         = @data_holder.get_messages_thread
+        message_classification  = @data_holder.get_message_classification
 
-        @julie_action.text = "#{preambule}#{get_suggest_dates_template({
-                                                                           client_names: @data_holder.get_client_names,
-                                                                           timezones: [@data_holder.get_thread_owner_default_timezone],
-                                                                           default_timezone: @data_holder.get_thread_owner_default_timezone,
-                                                                           locale: @data_holder.get_current_locale,
-                                                                           is_virtual: @data_holder.is_appointment_virtual?,
-                                                                           attendees: @data_holder.get_present_attendees,
-                                                                           appointment_in_email: {
-                                                                               en: wordings['title_in_email']['en'],
-                                                                               fr: wordings['title_in_email']['fr']
-                                                                           },
-                                                                           location_in_email: {
-                                                                               en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
-                                                                               fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
-                                                                           },
-                                                                           should_ask_location: self.should_ask_location?,
-                                                                           missing_contact_info: missing_contact_info,
-                                                                           dates: JSON.parse(@julie_action.date_times).map{|date_time| date_time['date']}
-                                                                       })}"
+        # Link Generation params
+        date_slot                             = JSON.parse(@julie_action.date_times).map {|date_time| date_time['date'] }.first
+        encrypted_thread_id                   = MessagesThread.encrypt_data(messages_thread.id)
+        encrypted_validated_by                = MessagesThread.encrypt_data(message_classification.get_non_client_attendees.find(&:is_present).try(:email))
+
+
+        # Generate links
+        validate_suggestion_link    = TemplateService.new.generate_validate_time_slot_link(messages_thread.authentication_token, encrypted_thread_id, encrypted_validated_by, date_slot)
+        show_other_suggestions_link = TemplateService.new.generate_show_time_slots_link(messages_thread.authentication_token, encrypted_thread_id, encrypted_validated_by)
+        
+        generated_text = say_hi_text
+        generated_text += get_suggest_date_template({
+          client_names: @data_holder.get_client_names,
+          timezones: [@data_holder.get_thread_owner_default_timezone],
+          default_timezone: @data_holder.get_thread_owner_default_timezone,
+          duration: @data_holder.get_message_classification_duration,
+          locale: @data_holder.get_current_locale,
+          is_virtual: @data_holder.is_appointment_virtual?,
+          appointment_in_email: {
+             en: wordings['title_in_email']['en'],
+             fr: wordings['title_in_email']['fr']
+          },
+          location_in_email: {
+             en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+             fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+          },
+          missing_contact_info: missing_contact_info,
+          date: date_slot,
+          validate_suggestion_link:     validate_suggestion_link,
+          show_other_suggestions_link:  show_other_suggestions_link
+        })
+
+        @julie_action.text = generated_text
       end
 
       def find_dates_to_suggest

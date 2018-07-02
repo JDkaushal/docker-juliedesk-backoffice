@@ -98,4 +98,15 @@ class TemplateService
     end
   end
 
+
+  def generate_validate_time_slot_link(token, encrypted_thread_id, encrypted_validated_by, time_slot_string)
+    slash_validate_suggestion_base_url  = ENV['SLASH_STAGING_VALIDATE_SUGGESTION_LINK']
+    "#{slash_validate_suggestion_base_url}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(time_slot_string)}&token=#{token}"
+  end
+
+  def generate_show_time_slots_link(token, encrypted_thread_id, encrypted_validated_by)
+    slash_show_other_suggestions_base_url = ENV['SLASH_STAGING_SHOW_OTHER_SUGGESTIONS_LINK']
+    "#{slash_show_other_suggestions_base_url}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{token}"
+  end
+
 end

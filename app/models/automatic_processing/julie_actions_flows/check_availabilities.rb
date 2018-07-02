@@ -101,7 +101,7 @@ module AutomaticProcessing
 
         create_event(create_params)
 
-        @julie_action.ai_event_data = create_params
+        #@julie_action.ai_event_data = create_params
       end
 
       def resuggest_dates
