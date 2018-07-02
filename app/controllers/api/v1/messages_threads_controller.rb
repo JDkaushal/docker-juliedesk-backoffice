@@ -1,5 +1,6 @@
 class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   include Api::V1::Concerns::MessagesThreadsMethods
+  include FeatureHelper
 
   before_action :get_messages_thread, only: [:compute_date_suggestions, :validate_date_suggestion, :get_details, :get_user_details]
 
@@ -9,8 +10,16 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     encrypted_thread_id = MessagesThread.encrypt_data(params[:thread_id])
     encrypted_validated_by = MessagesThread.encrypt_data(params[:validated_by])
 
-    params[:validate_suggestion_link] = "#{ENV['SLASH_VALIDATE_SUGGESTION_LINK']}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(params[:slot])}&token=#{messages_thread.authentication_token}"
-    params[:show_other_suggestions_link] = "#{ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{messages_thread.authentication_token}"
+    slash_validate_suggestion_link = ENV['SLASH_VALIDATE_SUGGESTION_LINK']
+    slash_show_other_suggestions_link = ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]
+
+    if feature_active?('slash_staging')
+      slash_validate_suggestion_link = ENV['SLASH_STAGING_VALIDATE_SUGGESTION_LINK']
+      slash_show_other_suggestions_link = ENV["SLASH_STAGING_SHOW_OTHER_SUGGESTIONS_LINK"]
+    end
+
+    params[:validate_suggestion_link] = "#{slash_validate_suggestion_link}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&slot=#{CGI.escape(params[:slot])}&token=#{messages_thread.authentication_token}"
+    params[:show_other_suggestions_link] = "#{slash_show_other_suggestions_link}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{messages_thread.authentication_token}"
 
     template_html = TemplateService.new.generate_suggest_dates_for_slash(params)
     render json: {
