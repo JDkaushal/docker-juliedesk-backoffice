@@ -9,9 +9,10 @@ class MessageInterpretation < ActiveRecord::Base
     [QUESTION_MAIN, QUESTION_ENTITIES].freeze
   end
 
-  def process
+  def process(options = {})
     if self.question == QUESTION_MAIN
-      process_main_entity
+      main_entity_options = options.slice(:full_ai_mode)
+      process_main_entity(main_entity_options)
     elsif self.question == QUESTION_ENTITIES
       process_entities_entity
     end
@@ -145,8 +146,12 @@ class MessageInterpretation < ActiveRecord::Base
     self.save
   end
 
-  def get_main_entity
-    response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_main, {id: self.message.server_message_id}).body
+  def get_main_entity(options = {})
+    full_ai_mode = options.fetch(:full_ai_mode, false)
+    params = { id: self.message.server_message_id }
+    params.merge!(full_ai_mode: true) if full_ai_mode == true
+
+    response_body = DelegatedAiProxyInterface.new(AiProxy.new(format_response: false)).build_request(:process_entity_main, params).body
     response_body_str = ''
 
     continue = true
@@ -180,8 +185,8 @@ class MessageInterpretation < ActiveRecord::Base
     response_body_str
   end
 
-  def process_main_entity
-    self.raw_response = get_main_entity
+  def process_main_entity(options = {})
+    self.raw_response = get_main_entity(options)
     begin
       JSON.parse(self.raw_response)
       self

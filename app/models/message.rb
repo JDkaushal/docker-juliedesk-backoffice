@@ -993,13 +993,14 @@ class Message < ActiveRecord::Base
 
   def interprete(options = {})
     force_reinterpretation = options.fetch(:force_reinterpretation, false)
+    full_ai_mode           = options.fetch(:full_ai_mode, false)
     return self.message_interpretations unless message_interpretations.empty? || force_reinterpretation
 
     message_interpretations_to_process = MessageInterpretation.questions.map do |question|
       self.message_interpretations.build(question: question)
     end
 
-    message_interpretations_to_process.each(&:process)
+    message_interpretations_to_process.each { |interpretation| interpretation.process(full_ai_mode: full_ai_mode) }
     message_interpretations_to_process
   end
 

@@ -18,7 +18,7 @@ module AutomaticProcessing
 
     def generate_classification
       # Build interpretations
-      @message.interprete(force_reinterpretation: true)
+      @message.interprete(force_reinterpretation: true, full_ai_mode: true)
       initialize_data_holder
       initialize_process_helpers
       message_classification = classify_message
