@@ -1,5 +1,4 @@
 class AutomaticProcessing::AutomatedJulieAction < JulieAction
-  self.table_name = "automated_julie_actions"
 
   belongs_to :message_classification, class_name: "AutomaticProcessing::AutomatedMessageClassification"
 
