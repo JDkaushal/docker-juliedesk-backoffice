@@ -92,9 +92,7 @@ SQL
             auto_message_classifications +
             auto_message_classification_reviews +
             operator_actions_groups +
-            operator_actions +
-            automated_message_classifications +
-            automated_julie_actions
+            operator_actions
   end
 
 end
