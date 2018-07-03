@@ -172,7 +172,8 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
                                                             "ai_call_status"=>nil,
                                                             "date_times_from_ai"=>nil,
                                                             "date_suggestions_full_ai_capacity"=>false,
-                                                            "template_kind" => nil
+                                                            "template_kind" => nil,
+                                                            "html" => nil
                                                         }
                                                     }
                                                   }

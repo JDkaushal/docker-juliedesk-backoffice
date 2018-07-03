@@ -560,7 +560,7 @@ describe AutomaticProcessing::JulieActionsFlows::SuggestDates do
 
       flow.trigger
 
-      expect(julie_action.text).to eq("mocked_hi_template\n\nmocked_generated_template")
+      expect(julie_action.html).to eq("mocked_hi_template<br/><br/>mocked_generated_template")
     end
   end
 

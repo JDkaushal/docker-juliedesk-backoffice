@@ -166,6 +166,10 @@ module AutomaticProcessing
       @julie_action_text ||= get_julie_action.text
     end
 
+    def get_julie_action_html
+      @julie_action_html ||= get_julie_action.html
+    end
+
     def get_thread_julie_alias
       @thread_julie_alias ||= get_messages_thread.julie_alias
     end
@@ -186,12 +190,29 @@ module AutomaticProcessing
     end
 
     def get_email_html_body
-      if @email_html_body.blank?
-        footer_and_signature = get_julie_alias_footer_and_signature
-        text_in_email = "#{get_julie_action_text}#{get_julie_alias_footer_and_signature[:text_footer]}"
-        @email_html_body = text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe
+      return @email_html_body unless @email_html_body.blank?
+
+      html_content = get_julie_action_html
+      footer_and_signature = get_julie_alias_footer_and_signature
+
+      if html_content.present?
+          html_doc      = Nokogiri::HTML(html_content)
+
+          # Footer
+          text_footer_html    = text_to_html(footer_and_signature[:text_footer])
+          text_footer         = Nokogiri::HTML::DocumentFragment.parse(text_footer_html)
+
+          # Signature
+          signature     = Nokogiri::HTML::DocumentFragment.parse(footer_and_signature[:html_signature])
+
+          html_doc.css('body').first.add_child(text_footer)
+          html_doc.css('body').first.add_child(signature)
+          html_doc.css('body').inner_html
       else
-        @email_html_body
+        text_content          = get_julie_action_text
+        footer_and_signature  = get_julie_alias_footer_and_signature
+        text_in_email         = "#{text_content}#{footer_and_signature[:text_footer]}"
+        @email_html_body      = text_to_html(text_in_email) + footer_and_signature[:html_signature].html_safe
       end
     end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180620151334) do
+ActiveRecord::Schema.define(version: 20180703080331) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20180620151334) do
     t.boolean  "date_suggestions_full_ai_capacity",             default: false
     t.json     "ai_event_data",                                 default: {}
     t.string   "template_kind"
+    t.text     "html"
   end
 
   add_index "automated_julie_actions", ["created_at"], name: "automated_julie_actions_created_at_idx", using: :btree
@@ -312,6 +313,7 @@ ActiveRecord::Schema.define(version: 20180620151334) do
     t.json     "date_times_from_ai"
     t.boolean  "date_suggestions_full_ai_capacity",             default: false
     t.string   "template_kind"
+    t.text     "html"
   end
 
   add_index "julie_actions", ["created_at"], name: "index_julie_actions_on_created_at", using: :btree

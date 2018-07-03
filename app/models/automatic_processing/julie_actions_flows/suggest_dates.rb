@@ -28,7 +28,7 @@ module AutomaticProcessing
         validate_suggestion_link    = TemplateService.new.generate_validate_time_slot_link(messages_thread.authentication_token, encrypted_thread_id, encrypted_validated_by, date_slot)
         show_other_suggestions_link = TemplateService.new.generate_show_time_slots_link(messages_thread.authentication_token, encrypted_thread_id, encrypted_validated_by)
         
-        generated_text = say_hi_text
+        generated_text = say_hi_text.gsub(/\n/, '<br/>')
         generated_text += get_suggest_date_template({
           client_names: @data_holder.get_client_names,
           timezones: [@data_holder.get_thread_owner_default_timezone],
@@ -50,7 +50,7 @@ module AutomaticProcessing
           show_other_suggestions_link:  show_other_suggestions_link
         })
 
-        @julie_action.text = generated_text
+        @julie_action.html = generated_text
       end
 
       def find_dates_to_suggest
