@@ -29,7 +29,7 @@ class ClientSuccessTrackingHelpers
 
     # Compute external attendees count
     external_attendees_count = attendees_count - internal_attendees_count
-
+    
     julie_aliases_in_recipients = MessagesThread.julie_aliases_from_server_thread(server_thread, {julie_aliases: julie_aliases}).map(&:email)
 
     # Track

@@ -13,7 +13,7 @@ class Attendee
   STATUSES = [STATUS_PRESENT, STATUS_OPTIONAL, STATUS_NOT_PRESENT]
 
   attr_accessor :account_email, :email, :first_name, :last_name, :usage_name, :gender, :landline, :mobile, :skype_id,
-                :confcall_instructions, :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner, :timezone
+                :confcall_instructions, :company, :is_present, :status, :is_client, :assisted, :is_assistant, :is_thread_owner, :timezone, :missing_info
 
 
   validates :gender, inclusion: { in: GENDERS }, presence: false
@@ -77,6 +77,28 @@ class Attendee
 
   def present?
     self.status == STATUS_PRESENT || self.is_present
+  end
+
+  def set_missing_infos(missing_infos)
+    self.missing_info = missing_infos
+  end
+
+  def to_h_for_slash
+    {
+        'firstName'             => self.first_name,
+        'lastName'              => self.last_name,
+        'email'                 => self.email,
+        'mobile'                => self.mobile,
+        'landline'              => self.landline,
+        'skype'                 => self.skype_id,
+        'isPresent'             => self.is_present,
+        'isClient'              => self.is_client,
+        'assisted'              => self.assisted,
+        'isAssistant'           => self.is_assistant,
+        'isOrganizer'           => self.is_thread_owner,
+        'isRemote'              => false,
+        'missingInfos'          => self.missing_info
+    }
   end
 
 

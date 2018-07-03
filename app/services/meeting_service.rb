@@ -17,17 +17,30 @@ class MeetingService
 
   def get_limited_details
     data = @messages_thread.computed_data
-    attendees = data[:attendees]
+    last_message_classification_with_data = @messages_thread.last_message_classification_with_data
+    missing_info = @meeting_data_service.missing_contact_info(last_message_classification_with_data.julie_action)
+
+    attendees = last_message_classification_with_data.get_attendees
+
+    if missing_info.present?
+      attendees.each do |attendee|
+        unless attendee.is_client
+          attendee.set_missing_infos([{field: missing_info, type: :string, required: true}])
+        end
+      end
+    end
 
     {
       id: @messages_thread.id,
       appointmentNature: data[:appointment_nature],
       duration: data[:duration],
       location: data[:location],
-      attendeesNames: attendees.map{|attendee| attendee['name'] || attendee['fullName'] || attendee['email']},
-      organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' },
+      attendeesNames: attendees.map{ |attendee| attendee.full_name || attendee.email },
+      attendees: attendees.map(&:to_h_for_slash),
+      organizer: attendees.find { |attendee| attendee.is_thread_owner },
       locale: data[:locale],
-      isVirtual: data[:is_virtual_appointment]
+      isVirtual: data[:is_virtual_appointment],
+      missingInfos: [{field: :location, type: :string, required: true}]
     }
   end
 
@@ -39,6 +52,7 @@ class MeetingService
     end
 
     {
+      email: user_details['email'],
       timezone: user_details['timezone']
     }
   end
