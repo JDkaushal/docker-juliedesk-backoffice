@@ -24,7 +24,7 @@ class MeetingService
       appointmentNature: data[:appointment_nature],
       duration: data[:duration],
       location: data[:location],
-      attendeesNames: attendees.map{|attendee| attendee['name']},
+      attendeesNames: attendees.map{|attendee| attendee['name'] || attendee['fullName'] || attendee['email']},
       organizer: attendees.find { |attendee| attendee['isThreadOwner'] == 'true' },
       locale: data[:locale],
       isVirtual: data[:is_virtual_appointment]
