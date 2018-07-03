@@ -30,7 +30,7 @@ module AutomaticProcessing
       interprete!
 
       # Are we confident enough to continue full auto process ?
-      fallback_to_manuel_processing! unless confident?
+      return fallback_to_manuel_processing! unless confident?
 
       # Then compute required data
       initialize_data_holder
@@ -40,7 +40,7 @@ module AutomaticProcessing
       classify_and_create_julie_action
 
       # Are we in a '1 client vs 1 attendee' flow ?
-      fallback_to_manuel_processing! unless one_one_flow?
+      return fallback_to_manuel_processing! unless one_one_flow?
 
       if options[:dont_trigger_action_flows]
         # Normally the save action is done after the julie action flow has been processed in trigger_julie_action_flow
