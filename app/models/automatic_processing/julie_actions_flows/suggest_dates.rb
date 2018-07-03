@@ -55,13 +55,18 @@ module AutomaticProcessing
 
       def find_dates_to_suggest
         date_suggestions_response = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, {
+            message_id: @data_holder.get_message_classification.message_id,
+            julie_action_id: @julie_action.id,
             account_email: @data_holder.get_thread_owner_account_email,
-            thread_data: @data_holder.get_thread_computed_data,
-            raw_constraints_data: JSON.parse(@data_holder.get_message_classification_raw_constraints),
-            n_suggested_dates: 4,
-            attendees: @data_holder.get_attendees,
-            asap: @data_holder.get_message_classification_asap_constraint,
-            message_id: nil # Keep this to nil, if set it is used to get previously suggested dates, if not set it causes errors
+            n_suggested_dates: 1,
+            attendees: @data_holder.get_message_classification.get_present_attendees.map(&:to_h),
+            thread_data: {
+                appointment_nature: @data_holder.get_message_classification.try(:appointment_nature),
+                location: @data_holder.get_message_classification_location,
+                duration: @data_holder.get_message_classification_duration,
+                timezone: @data_holder.get_message_classification_timezone
+            },
+            raw_constraints_data: JSON.parse(@data_holder.get_message_classification.constraints_data || '[]')
         })
 
         if !date_suggestions_response || date_suggestions_response[:error]
@@ -69,7 +74,7 @@ module AutomaticProcessing
         end
 
         date_suggestions = date_suggestions_response['suggested_dates'] || []
-        if date_suggestions.length < 2
+        if date_suggestions.length < 1
           raise AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError.new(@julie_action.message_classification.message_id)
         end
 

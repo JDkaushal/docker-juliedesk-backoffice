@@ -87,6 +87,10 @@ module AutomaticProcessing
       @message_classification_location ||= get_message_classification.location
     end
 
+    def get_message_classification_timezone
+      @message_classification_timezone ||= get_message_classification.timezone
+    end
+
     def get_last_dates_to_verify
       @last_dates_to_verify ||= (get_messages_thread.get_dates_to_verify.try(:[], :last_proposition) || [])
     end
