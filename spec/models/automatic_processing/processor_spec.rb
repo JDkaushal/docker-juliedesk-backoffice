@@ -352,7 +352,9 @@ describe AutomaticProcessing::Processor do
 
       context 'general' do
         it 'should execute the right actions' do
+          expect(subject).to receive(:confident?).and_return(true)
           expect(subject).to receive(:classify_and_create_julie_action)
+          expect(subject).to receive(:one_one_flow?).and_return(true)
           expect(subject).to receive(:link_associations)
           expect(subject).to receive(:initialize_process_helpers)
           expect(subject).to receive(:trigger_actions_flow)
@@ -372,6 +374,8 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_availabilities' do
           before(:each) do
+            expect(subject).to receive(:confident?).and_return(true)
+            expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
@@ -387,6 +391,8 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_date_suggestions' do
           before(:each) do
+            expect(subject).to receive(:confident?).and_return(true)
+            expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
@@ -402,6 +408,8 @@ describe AutomaticProcessing::Processor do
 
         context 'give_info' do
           before(:each) do
+            expect(subject).to receive(:confident?).and_return(true)
+            expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 
@@ -417,6 +425,8 @@ describe AutomaticProcessing::Processor do
 
         context 'wait_for_contact' do
           before(:each) do
+            expect(subject).to receive(:confident?).and_return(true)
+            expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
           end
 

@@ -29,12 +29,18 @@ module AutomaticProcessing
       # Generate message interpretations
       interprete!
 
+      # Are we confident enough to continue full auto process ?
+      fallback_to_manuel_processing! unless confident?
+
       # Then compute required data
       initialize_data_holder
       initialize_process_helpers
 
       # classify
       classify_and_create_julie_action
+
+      # Are we in a '1 client vs 1 attendee' flow ?
+      fallback_to_manuel_processing! unless one_one_flow?
 
       if options[:dont_trigger_action_flows]
         # Normally the save action is done after the julie action flow has been processed in trigger_julie_action_flow
@@ -112,6 +118,20 @@ module AutomaticProcessing
       trigger_actions_flow
     end
 
+    def one_one_flow?
+      nb_client_attendees     = @message_classification.get_present_attendees.select(&:is_client).count
+      nb_non_client_attendees = @message_classification.get_present_attendees.reject(&:is_client).count
+      nb_client_attendees == 1 && nb_non_client_attendees == 1
+    end
+
+    def confident?(options = {})
+      min_confidence_score = options.fetch(:min_confidence_score, 1)
+      main_interpretation_data = @message.main_message_interpretation.try(:json_response)
+      return false if main_interpretation_data.empty?
+
+      main_interpretation_data['full_ai_confidence'].to_i >= min_confidence_score
+    end
+
     private
 
     def interprete!
@@ -172,6 +192,11 @@ module AutomaticProcessing
 
     def archive_thread
       @thread_archiver.archive
+    end
+
+    def fallback_to_manuel_processing!
+      @message.messages_thread.update(handled_by_ai: false)
+      nil
     end
 
   end
