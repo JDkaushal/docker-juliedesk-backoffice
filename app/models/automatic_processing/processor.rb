@@ -64,14 +64,14 @@ module AutomaticProcessing
           raise(e)
         else
           Airbrake.notify(e)
-          self.deliver_ai_processing_error_email(e)
+          #self.deliver_ai_processing_error_email(e)
         end
       rescue => e
         if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
           raise(e)
         else
           Airbrake.notify(e)
-          self.deliver_generic_error_email(e)
+          #self.deliver_generic_error_email(e)
         end
       end
     end
@@ -136,7 +136,7 @@ module AutomaticProcessing
 
     def interprete!
       force = @options.fetch(:force_reinterpretation, false)
-      @message.interprete!(force_reinterpretation: force)
+      @message.interprete!(force_reinterpretation: force, full_ai_mode: true)
       raise AutomaticProcessing::Exceptions::ConcienceInterpretationFailedError.new(@message.id) unless @message.main_message_interpretation
     end
 

@@ -459,7 +459,7 @@ describe AutomaticProcessing::Processor do
         end
 
         it 'should trigger the correct action' do
-          expect(subject).to receive(:deliver_ai_processing_error_email)
+          expect(subject).not_to receive(:deliver_ai_processing_error_email)
           subject.process
         end
 
@@ -471,7 +471,7 @@ describe AutomaticProcessing::Processor do
         end
 
         it 'should trigger the correct action' do
-          expect(subject).to receive(:deliver_generic_error_email)
+          expect(subject).not_to receive(:deliver_generic_error_email)
           subject.process
         end
 
