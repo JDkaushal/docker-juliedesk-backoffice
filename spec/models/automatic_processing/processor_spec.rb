@@ -352,6 +352,7 @@ describe AutomaticProcessing::Processor do
 
       context 'general' do
         it 'should execute the right actions' do
+          expect(subject).to receive(:authorized_flow?).and_return(true)
           expect(subject).to receive(:confident?).and_return(true)
           expect(subject).to receive(:classify_and_create_julie_action)
           expect(subject).to receive(:one_one_flow?).and_return(true)
@@ -382,6 +383,7 @@ describe AutomaticProcessing::Processor do
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'ask_availabilities') }
 
           it 'should trigger the right flow' do
+            pending 'flow disabled'
             expect(subject).to receive(:deliver_email)
             expect(subject).to receive(:archive_thread)
 
@@ -416,6 +418,7 @@ describe AutomaticProcessing::Processor do
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'give_info') }
 
           it 'should trigger the right flow' do
+            pending 'flow disabled'
             expect(subject).to receive(:deliver_email)
             expect(subject).to receive(:archive_thread)
 
@@ -433,6 +436,7 @@ describe AutomaticProcessing::Processor do
           let(:main_message_interpretation) { FactoryGirl.create(:main_classification, detected_classification: 'wait_for_contact') }
 
           it 'should trigger the right flow' do
+            pending 'flow disabled'
             expect(subject).to receive(:deliver_email)
             expect(subject).to receive(:archive_thread)
 

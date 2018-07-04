@@ -29,6 +29,9 @@ module AutomaticProcessing
       # Generate message interpretations
       interprete!
 
+      # Allow only ask_date_sugggestions
+      return fallback_to_manuel_processing! unless authorized_flow?
+
       # Are we confident enough to continue full auto process ?
       return fallback_to_manuel_processing! unless confident?
 
@@ -130,6 +133,13 @@ module AutomaticProcessing
       return false if main_interpretation_data.empty?
 
       main_interpretation_data['full_ai_confidence'].to_i >= min_confidence_score
+    end
+
+    def authorized_flow?
+      main_interpretation_data = @message.main_message_interpretation.try(:json_response)
+      return false if main_interpretation_data.empty?
+
+      main_interpretation_data['request_classif'] == MessageClassification::ASK_DATE_SUGGESTIONS
     end
 
     private
