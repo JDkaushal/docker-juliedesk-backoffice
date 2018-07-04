@@ -41,9 +41,17 @@
         <span class="account-current-time-label">Current time:</span>
         <span class="account-current-time">{{ account.currentTime}}</span>
       </div>
+
+      <div class="command-line-feature-active-container" ng-show="account.command_line_enabled">
+        <span class="account-problem-warning-sprite"></span>
+        <span><b>Testeur</b></span>
+      </div>
+
       <div class="account-warnings-container" ng-show="account.calendar_access_lost">
         <span class="account-warning calendar-access-lost" ng-show="account.calendar_access_lost"><span class="icon"></span><span class="text">Access to calendar lost</span></span>
       </div>
+
+
 
       <!--<div class="account-activated-features-container">-->
         <!--<span class="account-feature activated-since" ng-show="account.creation_distance_days < 31">{{ account.creation_distance_days }} jours</span>-->
