@@ -549,8 +549,8 @@ EventTile.prototype.getEditedEvent = function() {
     var allDay = eventTile.$selector.find("input.event-date-all-day:checked").length > 0;
     var mStart, mEnd;
     if(allDay) {
-        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), "UTC");
-        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), "UTC");
+        mStart = moment.tz(eventTile.$selector.find("input.start-date").val(), eventTile.getTimezoneIdForStartDate());
+        mEnd = moment.tz(eventTile.$selector.find("input.end-date").val(), eventTile.getTimezoneIdForStartDate());
         mEnd.add(1, 'd');
     }
     else {
