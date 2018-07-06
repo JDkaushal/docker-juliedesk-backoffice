@@ -282,7 +282,7 @@ class MeetingService
     fields_mapping    = { skype: :skype_id, landline: :landline, mobile: :mobile }
     authorized_fields = fields_mapping.keys
 
-    attendee_data = attendee_data.with_indefferent_access
+    attendee_data = attendee_data.with_indifferent_access
     attributes_to_update = attendee_data.slice(*authorized_fields).inject({}) do |memo, (field, value)|
       memo[fields_mapping[field.to_sym]] = value
       memo
