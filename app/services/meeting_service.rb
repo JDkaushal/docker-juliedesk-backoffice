@@ -19,8 +19,17 @@ class MeetingService
     data = @messages_thread.computed_data
     last_message_classification_with_data = @messages_thread.last_message_classification_with_data
     missing_info = @meeting_data_service.missing_contact_info(last_message_classification_with_data.julie_action)
+    scheduling_resquest_missing_infos = []
 
     attendees = last_message_classification_with_data.get_attendees
+
+    if @meeting_data_service.should_ask_location?(last_message_classification_with_data.julie_action)
+      if data[:is_virtual_appointment]
+        missing_info = 'mobile'
+      else
+        scheduling_resquest_missing_infos = [{field: :location, type: :string, required: true}]
+      end
+    end
 
     if missing_info.present?
       attendees.each do |attendee|
@@ -40,7 +49,7 @@ class MeetingService
       organizer: attendees.find { |attendee| attendee.is_thread_owner },
       locale: data[:locale],
       isVirtual: data[:is_virtual_appointment],
-      missingInfos: [{field: :location, type: :string, required: true}]
+      missingInfos: scheduling_resquest_missing_infos
     }
   end
 
