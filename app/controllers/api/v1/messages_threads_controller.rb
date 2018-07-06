@@ -2,7 +2,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   include Api::V1::Concerns::MessagesThreadsMethods
   include FeatureHelper
 
-  before_action :get_messages_thread, only: [:compute_date_suggestions, :validate_date_suggestion, :get_details, :get_user_details]
+  before_action :get_messages_thread, only: [
+      :compute_date_suggestions,
+      :validate_date_suggestion,
+      :get_details,
+      :get_user_details,
+      :update_missing_info
+  ]
 
   def generate_dates_suggestion_template_with_links
     messages_thread = MessagesThread.find(params[:thread_id])
@@ -244,6 +250,23 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     render json: { error_code: 'USER_NOT_FOUND', message: "No user with email #{params[:user_email]} was participating in this thread"}, status: :unprocessable_entity
   rescue ActiveRecord::RecordNotFound
     render json: { error_code: 'THREAD_NOT_FOUND', message: "thread##{params[:id]} not found" }, status: :not_found
+  end
+
+  def update_missing_info
+    MeetingService.new(@messages_thread).update_infos({
+      from:               params[:from],
+      attendee:           params[:attendee],
+      scheduling_request: params[:scheduling_request]
+    })
+
+    render json: { status: "success" }, status: :ok
+
+  rescue MeetingService::NotAMeetingAttendee => e
+    render json: { error_code: 'NOT_ATTENDEE', message: e.message }, status: :forbidden
+  rescue MeetingService::MeetingNotScheduling => e
+    render json: { error_code: 'THREAD_NOT_SCHEDULING', message: e.message }, status: :forbidden
+  rescue MeetingService::FeatureNotEnabled => e
+    render json: { error_code: 'FEATURE_NOT_ENABLED', message: e.message }, status: :forbidden
   end
 
   private

@@ -240,6 +240,7 @@ Rails.application.routes.draw do
         get   :get_user_details,          on: :member
         put   :compute_date_suggestions,  on: :member
         put   :validate_date_suggestion,  on: :member
+        put   :update_missing_info,       on: :member
       end
 
       resources :messages do

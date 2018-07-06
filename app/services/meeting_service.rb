@@ -125,6 +125,26 @@ class MeetingService
     validated_dates.present? ? { timezone: validation_response['timezone'], date: DateTime.parse(validated_dates.first['date']) } : nil
   end
 
+
+  def update_infos(data)
+    raise NoThreadAccount.new("no account for thread #{@messages_thread.id}") unless @messages_thread.account.present?
+    raise FeatureNotEnabled.new("this feature is not enabled") unless @messages_thread.account.call_to_action_in_email_enabled
+    if [MessagesThread::EVENTS_CREATED, MessagesThread::EVENT_SCHEDULED].include?(@messages_thread.scheduling_status)
+      raise MeetingNotScheduling.new("Thread #{@messages_thread.id} is not scheduling")
+    end
+
+    data          = data.with_indifferent_access
+    from          = data.fetch(:from)
+    thread_data   = data[:scheduling_request]
+    attendee_data = data[:attendee]
+
+    attendee = last_message_classification.get_present_attendees.find { |attendee| attendee.email = from }
+    raise NotAMeetingAttendee.new(from) if attendee.nil?
+
+    update_attendee_data(attendee.email, attendee_data)
+    update_thread_data(thread_data)
+  end
+
   private
 
   def last_message_classification
@@ -243,6 +263,33 @@ class MeetingService
       quote_forward_message: false,
       reply_to_message_id: message_classification.message.try(:server_message_id)
     })
+  end
+
+  def update_attendee_data(attendee_email, attendee_data)
+    classification    = last_message_classification
+    present_attendees = classification.get_present_attendees
+    attendee          = present_attendees.find { |attendee| attendee.email == attendee_email }
+
+    fields_mapping    = { skype: :skype_id, landline: :landline, mobile: :mobile }
+    authorized_fields = fields_mapping.keys
+
+    attendee_data = attendee_data.with_indefferent_access
+    attributes_to_update = attendee_data.slice(*authorized_fields).inject({}) do |memo, (field, value)|
+      memo[fields_mapping[field.to_sym]] = value
+      memo
+    end
+    attendee.assign_attributes(attributes_to_update)
+
+    classification.attendees = present_attendees.map(&:to_h).to_json
+    classification.save
+  end
+
+  def update_thread_data(thread_data)
+    return false unless thread_data[:location].present?
+
+    classification = last_message_classification
+    classification.location = thread_data[:location]
+    classification.save
   end
 
 end
