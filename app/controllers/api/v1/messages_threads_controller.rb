@@ -253,10 +253,13 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
   end
 
   def update_missing_info
+    infos = params[:infos]
+    from  = params[:from]
+
     MeetingService.new(@messages_thread).update_infos({
-      from:               params[:from],
-      attendee:           params[:attendee],
-      scheduling_request: params[:scheduling_request]
+      from:               from,
+      attendee:           infos[:attendee],
+      scheduling_request: infos[:scheduling_request]
     })
 
     render json: { status: "success" }, status: :ok

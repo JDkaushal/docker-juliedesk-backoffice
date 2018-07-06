@@ -48,6 +48,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     attendees_from_ai  = get_attendees_from_interpretation(main_message_interpretation)
     Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
+    location_from_ai = main_interpretation['location_data'].try(:[], 'address') || main_interpretation['location_data'].try(:[], 'text')
+
     # Build interpretation hash in backoffice format
     interpretation = {
         :classification       => main_interpretation['request_classif'],
@@ -57,7 +59,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         :attendees            => current_attendees,
         :constraints_data     => JSON.parse(last_message_classification.try(:constraints_data) || '[]') + (main_interpretation['constraints_data'] || []),
         :duration             => last_message_classification.try(:duration) || main_interpretation['duration'],
-        :location             => last_message_classification.try(:location) || main_interpretation['location_data'].try(:[], 'text'),
+        :location             => last_message_classification.try(:location) || location_from_ai,
         :location_nature      => last_message_classification.try(:location_nature) || main_interpretation['location_data'].try(:[], 'location_nature'),
         :is_formal            => main_interpretation['formal_language'],
         :asap_constraint      => last_message_classification.try(:asap_constraint) || main_interpretation['asap'],
