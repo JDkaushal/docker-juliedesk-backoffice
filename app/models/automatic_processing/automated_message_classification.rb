@@ -48,7 +48,8 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     attendees_from_ai  = get_attendees_from_interpretation(main_message_interpretation)
     Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
-    location_from_ai = main_interpretation['location_data'].try(:[], 'address') || main_interpretation['location_data'].try(:[], 'text')
+    location_from_ai = main_interpretation['location_data'].try(:[], 'address')
+    location_from_ai = main_interpretation['location_data'].try(:[], 'text') unless location_from_ai.present?
 
     # Build interpretation hash in backoffice format
     interpretation = {
