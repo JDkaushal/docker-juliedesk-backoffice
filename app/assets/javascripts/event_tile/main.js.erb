@@ -291,7 +291,7 @@ EventTile.prototype.redraw = function() {
 
 
     if(eventTile.getMode() == 'free_calendar') {
-        var julieDeskNotesManager = NotesManager.fromJulieDeskNotes($notes.html(), $notes[0].innerText);
+        var julieDeskNotesManager = NotesManager.fromJulieDeskNotes($notes.html(), $notes[0].innerText, { lang: window.getCurrentLocale() });
         var eventNotesManager     = NotesManager.fromEventDescription(eventTile.editableDescription);
         eventNotesManager.updateNotesFromOtherNotes(julieDeskNotesManager);
         eventTile.notesManager = eventNotesManager;
