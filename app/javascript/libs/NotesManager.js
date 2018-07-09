@@ -154,7 +154,7 @@ class NotesManager {
         $html.html(content);
 
         if($html.find('.' + NotesManager.JULIEDESK_NOTES_CLASS_NAME).size() == 0) {
-            return new NotesManager(textContent, { contentType: NotesManager.TYPE_TEXT })
+            return new NotesManager(textContent, Object.assign({ contentType: NotesManager.TYPE_TEXT }, options));
         }
 
         options.contentType = NotesManager.TYPE_HTML;
