@@ -817,6 +817,7 @@
             var eventDescriptionText = $('.created-event-panel .notes')[0].innerText;
 
             var currentEventNotesManager = NotesManager.fromEventDescription(event.description);
+            currentEventNotesManager.changeLang(window.getCurrentLocale());
             window.currentEventNotesManager = currentEventNotesManager;
             window.currentEventNotesManager.updateNotesFromOtherNotes(window.notesManager);
 
