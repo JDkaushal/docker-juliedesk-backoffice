@@ -69,6 +69,11 @@
         </div>
         <div class="account-client-info-details-container">
           <div class="client-info-container">
+            <div class="client-info-title">Julie Aliases</div>
+            <div class="client-info-details">{{ (account.julie_aliases || []).join(' ')}}</div>
+          </div>
+
+          <div class="client-info-container">
             <div class="client-info-title">In-between meeting delays</div>
             <div class="client-info-details">{{ account.delay_between_appointments }} min</div>
           </div>
