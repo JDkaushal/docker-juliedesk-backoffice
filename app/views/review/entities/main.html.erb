@@ -1,0 +1,363 @@
+
+<script>
+    var app = angular.module("entitiesApp", []);
+
+    app.directive("resultsNavigator", function () {
+        return {
+            restrict: 'E',
+            link: function (scope, element, attrs, ctrl) {
+
+            },
+            scope: {
+                offset: "=",
+                totalCount: "=",
+                itemsPerPage: "="
+            },
+            controller: ['$scope', function ($scope) {
+                $scope.firstItem = function () {
+                    return Math.max($scope.offset + 1);
+
+                };
+                $scope.lastItem = function () {
+                    return Math.min($scope.offset + $scope.itemsPerPage, $scope.totalCount);
+                };
+                $scope.previousPage = function () {
+                    $scope.offset -= $scope.itemsPerPage;
+                };
+                $scope.nextPage = function () {
+                    $scope.offset += $scope.itemsPerPage;
+                };
+
+                $scope.isFirstPage = function () {
+                    return $scope.offset == 0;
+                };
+                $scope.isLastPage = function () {
+                    return $scope.offset + $scope.itemsPerPage >= $scope.totalCount;
+                };
+
+            }],
+            template: function (element, attr) {
+                var htmlTemplate =
+                    '<div ng-show="totalCount > 0">' +
+                    '<span class="btn" disabled>{{ firstItem() }} - {{ lastItem() }} / {{ totalCount }}</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isFirstPage()" ng-click="previousPage()"><</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isLastPage()" ng-click="nextPage()">></span>' +
+                    '</div>' +
+                    '<div ng-show="totalCount == 0" class="btn" disabled>' +
+                    '' +
+                    '</div>';
+                return htmlTemplate
+            }
+        }
+    });
+
+    app.service('messageInterpretationService', ['$http','$q', function($http, $q) {
+        this.get = function(path) {
+          return this.request(path, 'get');
+        };
+        this.post = function(path, data) {
+            return this.request(path, 'post', data);
+        };
+        this.request = function(path, method, data) {
+           var basePath = '<%= ENV['EMAIL_INTERPRETATION_BASE_PATH'] %>';
+           var authorization = '<%= ENV['EMAIL_INTERPRETATION_API_KEY'] %>';
+
+           if(method === 'post') {
+               return $http.post(basePath + path, data, {
+                       headers: {
+                           'Accept': 'application/json',
+                           'Authorization': authorization
+                       }
+                   })
+           }
+           else if(method === 'get') {
+               return $http.get(basePath + path, {
+                   headers: {
+                       'Accept': 'application/json',
+                       'Authorization': authorization
+                   }
+               })
+           }
+           else {
+               throw 'Unsupported request method';
+           }
+       };
+    }]);
+
+    app.controller("entitiesController", ['$scope', '$http', '$timeout', 'messageInterpretationService', function ($scope, $http, $timeout, messageInterpretationService) {
+
+        $scope.loading = false;
+
+        $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
+        $scope.offset = 0;
+        $scope.itemsPerPage = 20;
+        $scope.searchQuery = "";
+        $scope.allStatusesActive = {
+            'unchecked': true,
+            'valid': true,
+            'invalid': true,
+            'unknown': true
+        };
+        $scope.fetchMode = function () {
+            $http.get("", {
+                withCredentials: true,
+                headers: {'Accept': 'application/json'}
+            }).then(function (response) {
+
+                $scope.mode = response.data.mode;
+                if ($scope.mode == 'admin') {
+                    $scope.statuses = $scope.allStatusesActive
+                }
+                else {
+                    $scope.statuses = {
+                        'unchecked': true,
+                    };
+                }
+                $scope.fetch();
+            })
+        };
+        $scope.fetch = function () {
+            $scope.loading = true;
+            var url = "/api/v1/reviews";
+            url += "?offset=" + $scope.offset + "&limit=" + $scope.itemsPerPage;
+            var status = [];
+            _.each($scope.statuses, function (v, k) {
+                if (v) {
+                    status.push(k);
+                }
+            });
+            if (status.length > 0) {
+                url += "&entity_status=" + status.join(",");
+            }
+            if ($scope.searchQuery.length > 0) {
+                url += "&query=" + $scope.searchQuery;
+            }
+            messageInterpretationService.get(url).then(function (response) {
+                $scope.reviews = response.data.data;
+                if($scope.mode === 'review') {
+                    _.each($scope.reviews, function(review) {
+                        if(review.status === 'unchecked') {
+                            review.status = 'valid';
+                        }
+                    });
+                }
+                $scope.totalCount = response.data.total_count;
+
+                $scope.loading = false;
+            })
+        };
+
+        $scope.entityIsChecked = function (entity) {
+            return entity.status !== "unchecked"
+        };
+
+        $scope.validateEntity = function (review, entity) {
+            entity.validated = (review.message.includes(entity.corrected_entity) ||  entity.corrected_entity == '' || entity.corrected_entity == null)
+            return entity.validated
+        };
+
+        $scope.printEntity = function (entity) {
+            return entity.entity ? entity.entity : '_'
+        };
+
+        $scope.validateBatch = function () {
+              var data = _.map($scope.reviews, function (review) {
+
+                validatedEntities = _.filter(review.entities, function(entity) {
+                  return $scope.entityIsChecked(entity) && entity.validated
+                })
+
+                  tmp = _.map(validatedEntities, function (entity) {
+
+                    return {
+                      id: review.id,
+                      entity_id: entity.entity_id,
+                      value: entity
+                    }
+                  });
+                  return tmp
+              });
+
+              data = _.flatten(data)
+
+              $scope.loading = true;
+              messageInterpretationService.post("/api/v1/reviews/validate", data).then(function () {
+                  $scope.fetch();
+              });
+        };
+
+        $scope.setStatus = function (entity, status) {
+            entity.status = status;
+            if (status === "invalid") {
+                $timeout(function () {
+                    var element = $("#correction-" + entity.entity_id)[0];
+                    element.focus();
+                });
+            }
+            else {
+                entity.corrected_entity = null;
+            }
+
+
+        };
+
+        $scope.$watch("statuses", function (newValue, oldValue) {
+            if(oldValue !== undefined) {
+                $scope.fetch();
+            }
+
+        }, true);
+
+        $scope.$watch("offset", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                $scope.fetch();
+            }
+
+        });
+
+
+        $scope.$watch("searchQuery", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                clearTimeout($scope.timeoutCode);
+                $scope.timeoutCode = setTimeout(function () {
+                    $scope.fetch();
+                }, 500);
+            }
+        });
+
+
+        $scope.fetchMode();
+
+    }]);
+</script>
+
+<style>
+  .check-btn {
+    opacity: 0.4;
+    font-size: 21px;
+    margin: 1px 0;
+    cursor: pointer;
+  }
+
+  .check-btn.checked {
+    opacity: 1.0;
+  }
+
+  .check-btn.success {
+    color: #5cb85c;
+  }
+
+  .check-btn.error {
+    color: #d9534f;
+  }
+
+  .check-btn.warning {
+    color: #d321f0;
+  }
+
+  input[type=text] {
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    padding: 0 5px;
+    margin: 1px 0;
+  }
+
+  input[type=text].error {
+    border: solid 1px red;
+  }
+
+  td {
+    position: relative;
+  }
+
+  td.bigWarning::before {
+    content: "";
+    background: #d9534f;
+    position: absolute;
+    left: -30px;
+    top: 10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+  }
+
+  .text {
+    margin: 3.5px 0;
+  }
+
+</style>
+
+<div ng-app="entitiesApp"
+     ng-controller="entitiesController"
+     class="col-md-offset-2 col-md-8">
+  <h1>Entities <span ng-show="loading"> [ Loading... ]</span></h1>
+
+  <h4 ng-show="mode == 'review'">Messages to check: {{ totalCount }}</h4>
+
+  <div ng-show="mode == 'admin'"
+       class="alert alert-info row">
+    <div class="col-md-4">
+      <h4>Status:</h4>
+      <div ng-repeat="statusItem in availableStatuses"><input type="checkbox" ng-model="statuses[statusItem]"> {{
+        statusItem }}
+      </div>
+    </div>
+    <div class="col-md-4">
+
+      <input ng-model="searchQuery" placeholder="Search for messages...">
+    </div>
+    <div class="col-md-4">
+      <results-navigator offset="offset" total-count="totalCount" items-per-page="itemsPerPage"></results-navigator>
+    </div>
+
+  </div>
+
+
+
+<table class="table table-striped">
+    <tr>
+      <th>Message</th>
+      <th>Type</th>
+      <th>Entity</th>
+      <th>Status</th>
+      <th>Corrected entity</th>
+    </tr>
+    <tr ng-repeat="review in reviews">
+        
+          <td class="col-md-4">{{ review.message }}</td>
+          <td class="col-md-2">
+              <div class="text" ng-repeat="entity in review.entities" >{{ entity.type }}</div>
+          </td>
+          <td class="col-md-3">
+              <div class="text" ng-repeat="entity in review.entities">{{ printEntity(entity) }}</div>
+          </td>
+          <td class="col-md-1" style="min-width: 120px">
+            <div ng-repeat="entity in review.entities">
+              <span class="fa fa-check check-btn success"
+                    ng-class="{checked: entity.status == 'valid'}"
+                    ng-click="setStatus(entity, 'valid')"></span>
+              <span class="fa fa-times check-btn error"
+                    ng-class="{checked: entity.status == 'invalid'}"
+                    ng-click="setStatus(entity, 'invalid')"></span>
+              <span class="fa fa-question check-btn warning"
+                    ng-class="{checked: entity.status == 'unknown'}"
+                    ng-click="setStatus(entity, 'unknown')"></span>
+            </div>
+          </td>
+          <td class="col-md-3">
+            <div ng-repeat="entity in review.entities">
+              <input type="text"
+                     ng-class="{error: ! validateEntity(review, entity)}"
+                     id="correction-{{ entity.entity_id }}"
+                     placeholder="{{ entity.status !== 'invalid' ? '' : 'Enter a valid entity...' }}"
+                     ng-model="entity.corrected_entity"
+                     ng-disabled="entity.status != 'invalid'"/>
+            </div>
+          </td>
+    </tr>
+</table>
+
+  <div class="btn btn-success" ng-click="validateBatch()">Validate</div>
+
+</div>
