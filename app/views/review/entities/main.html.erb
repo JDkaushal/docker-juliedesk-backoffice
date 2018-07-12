@@ -59,8 +59,8 @@
             return this.request(path, 'post', data);
         };
         this.request = function(path, method, data) {
-           var basePath = '<%= ENV['EMAIL_INTERPRETATION_BASE_PATH'] %>';
-           var authorization = '<%= ENV['EMAIL_INTERPRETATION_API_KEY'] %>';
+           var basePath = '<%= ENV['CONSCIENCE_BASE_PATH'] %>';
+           var authorization = '<%= ENV['CONSCIENCE_API_KEY'] %>';
 
            if(method === 'post') {
                return $http.post(basePath + path, data, {
