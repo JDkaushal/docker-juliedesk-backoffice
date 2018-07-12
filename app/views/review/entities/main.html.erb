@@ -152,7 +152,20 @@
         };
 
         $scope.validateEntity = function (review, entity) {
-            entity.validated = (review.message.includes(entity.corrected_entity) ||  entity.corrected_entity == '' || entity.corrected_entity == null)
+            if(entity.corrected_entity == '' || entity.corrected_entity == null) {
+              validated = true
+            }
+            else if (entity.corrected_entity.includes("& ")) {
+              validated = true
+              chunks = entity.corrected_entity.split("& ")
+              _.each(chunks, function(chunk){
+                validated = validated && review.message.includes(chunk)
+              })
+            }
+            else {
+              validated = review.message.includes(entity.corrected_entity)
+            }
+            entity.validated = validated
             return entity.validated
         };
 
