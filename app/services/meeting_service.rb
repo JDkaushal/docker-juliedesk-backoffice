@@ -25,7 +25,11 @@ class MeetingService
 
     if @meeting_data_service.should_ask_location?(last_message_classification_with_data.julie_action)
       if data[:is_virtual_appointment]
-        missing_info = 'mobile'
+        if data[:appointment_nature] == 'skype'
+          missing_info = 'skype'
+        else
+          missing_info = 'mobile'
+        end
       else
         scheduling_resquest_missing_infos = [{field: :location, type: :string, required: true}]
       end
