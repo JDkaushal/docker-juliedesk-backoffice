@@ -156,6 +156,7 @@ class MeetingService
 
     update_attendee_data(attendee.email, attendee_data)
     update_thread_data(thread_data)
+    generate_classification_data(last_message_classification)
   end
 
   private
@@ -176,8 +177,8 @@ class MeetingService
             :appointment_nature, :location, :location_nature, :attendees, :locale, :timezone, :constraints_data,
             :duration, :language_level, :asap_constraint, :client_on_trip, :attendees_emails, :call_instructions, :notes, :summary)
     )
-
     message_classification.save
+    generate_classification_data(message_classification)
     message_classification
   end
 
@@ -294,7 +295,18 @@ class MeetingService
     attendee.assign_attributes(attributes_to_update)
 
     classification.attendees = present_attendees.map(&:to_h).to_json
+    classification.save
+  end
 
+  def update_thread_data(thread_data)
+    return false unless thread_data[:location].present?
+
+    classification = last_message_classification
+    classification.location = thread_data[:location]
+    classification.save
+  end
+
+  def generate_classification_data(classification)
     computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: classification).process_flow('GET_CALL_INSTRUCTIONS')
     if classification.is_virtual_appointment?
       computed_call_instructions.merge!(event_instructions: TemplateGeneration::CallInstructions.generate(classification))
@@ -306,14 +318,6 @@ class MeetingService
         classification.locale
     )
     classification.notes     = NotesGenerator.new(classification).generate_notes
-    classification.save
-  end
-
-  def update_thread_data(thread_data)
-    return false unless thread_data[:location].present?
-
-    classification = last_message_classification
-    classification.location = thread_data[:location]
     classification.save
   end
 
