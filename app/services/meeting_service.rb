@@ -294,6 +294,7 @@ class MeetingService
     attendee.assign_attributes(attributes_to_update)
 
     classification.attendees = present_attendees.map(&:to_h).to_json
+    classification.notes     = NotesGenerator.new(classification).generate_notes
     classification.save
   end
 
