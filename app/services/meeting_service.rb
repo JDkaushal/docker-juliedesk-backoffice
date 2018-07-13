@@ -294,9 +294,15 @@ class MeetingService
     attendee.assign_attributes(attributes_to_update)
 
     classification.attendees = present_attendees.map(&:to_h).to_json
-    classification.notes     = NotesGenerator.new(classification).generate_notes
+
     computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: classification).process_flow('GET_CALL_INSTRUCTIONS')
     classification.call_instructions = computed_call_instructions.to_json
+    classification.summary  = TemplateService.new.generate_summary(
+        classification.send(:account_appointment),
+        classification.get_present_attendees,
+        classification.locale
+    )
+    classification.notes     = NotesGenerator.new(classification).generate_notes
     classification.save
   end
 

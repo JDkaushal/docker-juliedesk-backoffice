@@ -235,7 +235,8 @@ module AutomaticProcessing
             target:       target.to_s,
             support:      support.to_s,
             targetInfos:  target_infos || {},
-            details:      details.to_s
+            details:      details.to_s,
+            guid: 0,
         }
       end
 

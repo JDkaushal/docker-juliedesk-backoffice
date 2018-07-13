@@ -427,7 +427,7 @@ describe AutomaticProcessing::AutomatedMessageClassification do
       expect(last_message_classif.timezone).to eq("Europe/Paris")
       expect(last_message_classif.constraints_data).to eq("[{\"constraint_when_nature\":\"custom\",\"dates\":[\"2018-03-23\"],\"text\":\"\",\"start_time\":\"\",\"end_time\":\"\",\"constraint_nature\":\"can\",\"timezone\":\"Europe/Berlin\",\"attendee_email\":\"owner@email.com\"}]")
       expect(last_message_classif.duration).to eq(60)
-      expect(last_message_classif.call_instructions).to eq("{\"target\":\"later\",\"support\":\"\",\"targetInfos\":{},\"details\":\"\"}")
+      expect(last_message_classif.call_instructions).to eq("{\"target\":\"later\",\"support\":\"\",\"targetInfos\":{},\"details\":\"\",\"guid\":0}")
       expect(last_message_classif.language_level).to eq("normal")
       expect(last_message_classif.asap_constraint).to be(false)
       expect(last_message_classif.attendees_emails).to eq(["threadowner@owner.fr", "john.bernard@grabou.fr", "babtou@fragile.fr"])

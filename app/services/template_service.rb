@@ -109,4 +109,24 @@ class TemplateService
     "#{slash_show_other_suggestions_base_url}?thread_id=#{encrypted_thread_id}&validated_by=#{encrypted_validated_by}&token=#{token}"
   end
 
+
+  def generate_summary(appointment, present_attendees, locale)
+    appointment = appointment.with_indifferent_access
+    raise "Appointment config is missing" if appointment.blank?
+
+    title_in_calendar_data = appointment['title_in_calendar']
+    raise "Title in calendar for appointment is not defined" if title_in_calendar_data.blank?
+
+    title_in_calendar = title_in_calendar_data[locale]
+
+    title_in_calendar + " " + present_attendees.group_by(&:company).map{|company, attendees|
+      attendees_list = attendees.map(&:full_name).join(', ')
+      if company.present?
+        attendees.length < 3 ? "#{company} [#{attendees_list}]" : company
+      else
+        attendees_list
+      end
+    }.join(" <> ")
+  end
+
 end
