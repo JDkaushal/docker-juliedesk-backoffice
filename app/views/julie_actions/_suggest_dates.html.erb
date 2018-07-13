@@ -148,11 +148,12 @@
 
             var serviceParams = null;
             var dateToSuggest = window.timeSlotsToSuggest[0];
+
             window.display_new_template =
                 window.featuresHelper.isFeatureActive('display_call_to_action_in_templates') &&
                 window.threadAccount.call_to_action_in_email_enabled &&
                 window.threadAccount.call_to_action_in_email_enabled && attendees().filter(function(attendee) { return attendee.linkedAttendee == false }).length == 1 &&
-                window.getDatesSuggestionManager().trustMode == 'trusted';
+                window.getDatesSuggestionManager().trustMode == 'trusted' && !window.threadComputedData.using_meeting_room && !window.threadComputedData.using_restaurant_booking;
 
             if(window.display_new_template) {
                 serviceParams = {
