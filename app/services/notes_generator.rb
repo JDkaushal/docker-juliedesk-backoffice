@@ -21,7 +21,7 @@ class NotesGenerator
       if call_instructions['targetInfos'].blank?
         nil
       else
-        attendee = get_present_attendee_by_email(call_instructions['targetInfos']['email'])
+        attendee = @message_classification.get_present_attendee_by_email(call_instructions['targetInfos']['email'])
 
         case call_instructions['support']
           when 'mobile'
