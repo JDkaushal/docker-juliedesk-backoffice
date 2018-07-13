@@ -72,7 +72,8 @@ class Attendee
   end
 
   def any_phone_number
-    self.landline || self.mobile
+    return self.landline if self.landline.present?
+    self.mobile
   end
 
   def present?
