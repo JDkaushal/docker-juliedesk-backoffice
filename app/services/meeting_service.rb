@@ -295,6 +295,8 @@ class MeetingService
 
     classification.attendees = present_attendees.map(&:to_h).to_json
     classification.notes     = NotesGenerator.new(classification).generate_notes
+    computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: classification).process_flow('GET_CALL_INSTRUCTIONS')
+    classification.call_instructions = computed_call_instructions.to_json
     classification.save
   end
 
