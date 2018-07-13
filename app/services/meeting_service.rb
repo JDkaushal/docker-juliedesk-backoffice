@@ -296,6 +296,9 @@ class MeetingService
     classification.attendees = present_attendees.map(&:to_h).to_json
 
     computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: classification).process_flow('GET_CALL_INSTRUCTIONS')
+    if classification.is_virtual_appointment?
+      computed_call_instructions.merge!(event_instructions: TemplateGeneration::CallInstructions.generate(classification))
+    end
     classification.call_instructions = computed_call_instructions.to_json
     classification.summary  = TemplateService.new.generate_summary(
         classification.send(:account_appointment),
