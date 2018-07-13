@@ -19,7 +19,7 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
     slash_validate_suggestion_link = ENV['SLASH_VALIDATE_SUGGESTION_LINK']
     slash_show_other_suggestions_link = ENV["SLASH_SHOW_OTHER_SUGGESTIONS_LINK"]
 
-    if feature_active?('slash_staging')
+    if feature_active?('slash_staging', session[:operator_id], session[:privilege])
       slash_validate_suggestion_link = ENV['SLASH_STAGING_VALIDATE_SUGGESTION_LINK']
       slash_show_other_suggestions_link = ENV["SLASH_STAGING_SHOW_OTHER_SUGGESTIONS_LINK"]
     end
