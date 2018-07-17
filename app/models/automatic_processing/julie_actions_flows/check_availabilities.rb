@@ -83,6 +83,7 @@ module AutomaticProcessing
         puts params.inspect
 
         create_params = {
+          messages_thread_id: @data_holder.get_messages_thread.try(:id),
           email: @data_holder.get_thread_owner_account.email,
           summary: @data_holder.get_message_classification_summary,
           description: @data_holder.get_message_classification_notes,
