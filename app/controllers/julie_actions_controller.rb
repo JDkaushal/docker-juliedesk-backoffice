@@ -313,6 +313,15 @@ class JulieActionsController < ApplicationController
       julie_action.message_classification.update(message_classification_params_to_update)
     end
 
+    if params[:template_kind] == 'slash'
+      ClientSuccessTrackingHelpers.async_track('Slash - Suggestions Email Sent', messages_thread.account_email, {
+          bo_thread_id: messages_thread.id,
+          julie_aliases: messages_thread.julie_aliases_in_recipients,
+          event_nature: julie_action.message_classification.try(:appointment_nature),
+          full_auto: false
+      })
+    end
+
     render json: {
         status: "success",
         message: "",

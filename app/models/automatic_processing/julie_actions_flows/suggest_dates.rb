@@ -51,6 +51,13 @@ module AutomaticProcessing
         })
 
         @julie_action.html = generated_text
+
+        ClientSuccessTrackingHelpers.async_track('Slash - Suggestions Email Sent', messages_thread.account_email, {
+            bo_thread_id: messages_thread.id,
+            julie_aliases: messages_thread.julie_aliases_in_recipients,
+            event_nature: @julie_action.message_classification.try(:appointment_nature),
+            full_auto: true
+        })
       end
 
       def find_dates_to_suggest
