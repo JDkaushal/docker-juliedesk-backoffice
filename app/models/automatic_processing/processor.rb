@@ -74,6 +74,8 @@ module AutomaticProcessing
           Airbrake.notify(e)
           #self.deliver_ai_processing_error_email(e)
         end
+
+        fallback_to_manuel_processing!
       rescue => e
         if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
           raise(e)
@@ -81,6 +83,8 @@ module AutomaticProcessing
           Airbrake.notify(e)
           #self.deliver_generic_error_email(e)
         end
+
+        fallback_to_manuel_processing!
       end
     end
 
