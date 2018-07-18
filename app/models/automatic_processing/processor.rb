@@ -65,7 +65,9 @@ module AutomaticProcessing
 
         # Tracking
         messages_thread = @message.messages_thread
-        ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+        if messages_thread.messages.flat_map(&:message_classifications).count == 1
+          ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+        end
 
       rescue AutomaticProcessing::Exceptions::AutomaticProcessingError => e
         if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
