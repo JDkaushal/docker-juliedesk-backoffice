@@ -103,7 +103,9 @@ class MeetingService
 
       # Create event
       event_data = create_event(generated_julie_action)
-      generated_julie_action.update(event_data.merge(calendar_login_username: @messages_thread.account.email))
+      calendar_login = (@messages_thread.account.try(:calendar_logins) || []).first
+      event_data.merge!({calendar_login_username: calendar_login.fetch('username', nil)})
+      generated_julie_action.update(event_data)
 
       # Deliver email
       email_server_response = deliver_message!(generated_julie_action)
