@@ -20,11 +20,13 @@ class Jira
     raise DuplicateTicket.new("This is ticket already exist") if self.duplicate?(data)
     send_request(API_ISSUE_PATH, ticket_data(issue_type, data))
   end
-
+  
   def duplicate?(data)
     summary = data.fetch(:summary)
+    jql =  "summary ~ \"#{summary}\" AND status != \"Done\""
+
     search_data = {
-        "jql": "summary ~ \"#{summary}\" AND created > -1d",
+        "jql": jql,
         "startAt": 0,
         "maxResults": 1,
         "fields": ["summary"],
