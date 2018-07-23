@@ -63,6 +63,8 @@ class MeetingDataService
     calendar_logins = @messages_thread.account.calendar_logins || []
 
     {
+        messages_thread_id: @messages_thread.id,
+        full_auto: true,
         email: @messages_thread.account.email,
         summary: message_classification.summary,
         description: message_classification.notes,
