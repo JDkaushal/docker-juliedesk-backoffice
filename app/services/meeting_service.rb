@@ -46,7 +46,7 @@ class MeetingService
     organizer = attendees.find { |attendee| attendee.is_thread_owner }
     if organizer.present?
       organizer = organizer.to_h.slice('email', 'firstName', 'lastName', 'usageName', 'company')
-      organizer.merge!(user_id: @messages_thread.account.user_id)
+      organizer.merge!(id: @messages_thread.account.user_id)
     end
 
     {
