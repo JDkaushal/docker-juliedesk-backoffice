@@ -43,6 +43,12 @@ class MeetingService
       end
     end
 
+    organizer = attendees.find { |attendee| attendee.is_thread_owner }
+    if organizer.present?
+      organizer = organizer.to_h.slice('email', 'firstName', 'lastName', 'usageName', 'company')
+      organizer.merge!(user_id: @messages_thread.account.user_id)
+    end
+
     {
       id: @messages_thread.id,
       appointmentNature: data[:appointment_nature],
@@ -50,7 +56,7 @@ class MeetingService
       location: data[:location],
       attendeesNames: attendees.map{ |attendee| attendee.full_name || attendee.email },
       attendees: attendees.map(&:to_h_for_slash),
-      organizer: attendees.find { |attendee| attendee.is_thread_owner },
+      organizer: organizer,
       locale: data[:locale],
       isVirtual: data[:is_virtual_appointment],
       missingInfos: scheduling_resquest_missing_infos
