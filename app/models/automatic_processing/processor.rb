@@ -151,7 +151,7 @@ module AutomaticProcessing
       messages_thread = @message.messages_thread
       return false if messages_thread.nil?
 
-      messages_thread.messages.flat_map(&:message_classifications).map(&:julie_action).any? do |julie_action|
+      messages_thread.messages.flat_map(&:message_classifications).map(&:julie_action).compact.any? do |julie_action|
         julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
       end
     end
