@@ -352,10 +352,12 @@ describe AutomaticProcessing::Processor do
 
       context 'general' do
         it 'should execute the right actions' do
-          expect(subject).to receive(:authorized_flow?).and_return(true)
-          expect(subject).to receive(:confident?).and_return(true)
-          expect(subject).to receive(:classify_and_create_julie_action)
+          allow(subject).to receive(:confident?).and_return(true)
+          allow(subject).to receive(:command_line_detected?).and_return(true)
+          expect(subject).to receive(:message_from_owner?).and_return(true)
+          expect(subject).to receive(:trigger_classify)
           expect(subject).to receive(:one_one_flow?).and_return(true)
+          expect(subject).to receive(:trigger_julie_action_creation)
           expect(subject).to receive(:link_associations)
           expect(subject).to receive(:initialize_process_helpers)
           expect(subject).to receive(:trigger_actions_flow)
@@ -367,7 +369,8 @@ describe AutomaticProcessing::Processor do
 
       context 'Specific flows' do
         before(:each) do
-          allow(subject).to receive(:classify_and_create_julie_action)
+          expect(subject).to receive(:trigger_classify)
+          expect(subject).to receive(:trigger_julie_action_creation)
           allow(subject).to receive(:link_associations)
           allow(subject).to receive(:initialize_process_helpers)
           allow(subject).to receive(:trigger_julie_action_flow)
@@ -375,6 +378,8 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_availabilities' do
           before(:each) do
+            allow(subject).to receive(:scheduling_started?).and_return(false)
+            expect(subject).to receive(:message_from_owner?).and_return(true)
             expect(subject).to receive(:confident?).and_return(true)
             expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
@@ -393,6 +398,10 @@ describe AutomaticProcessing::Processor do
 
         context 'ask_date_suggestions' do
           before(:each) do
+            allow(subject).to receive(:command_line_detected?).and_return(true)
+            allow(subject).to receive(:scheduling_started?).and_return(false)
+            expect(subject).to receive(:message_from_owner?).and_return(true)
+            allow(subject).to receive(:confident?).and_return(true)
             expect(subject).to receive(:confident?).and_return(true)
             expect(subject).to receive(:one_one_flow?).and_return(true)
             expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_current_classification).and_return('ask_availabilities')
@@ -457,25 +466,25 @@ describe AutomaticProcessing::Processor do
         Rails.env = 'test'
       end
 
-      context 'A generic error is raised during the processing' do
+      context 'when request is unprocessable' do
         before(:each) do
-          allow(subject).to receive(:process!).and_raise(AutomaticProcessing::Exceptions::AutomaticProcessingError)
+          allow(subject).to receive(:process!).and_raise(AutomaticProcessing::Exceptions::UnprocessableRequest, processed_message.id)
         end
 
         it 'should trigger the correct action' do
-          expect(subject).not_to receive(:deliver_ai_processing_error_email)
+          expect(subject).to receive(:deliver_error_email)
           subject.process
         end
 
       end
 
-      context 'An AI processing error is raised during the processing' do
+      context 'when command line is not understood' do
         before(:each) do
-          allow(subject).to receive(:process!).and_raise(RuntimeError)
+          allow(subject).to receive(:process!).and_raise(AutomaticProcessing::Exceptions::CommandLineNotUnderstood, ['location'])
         end
 
         it 'should trigger the correct action' do
-          expect(subject).not_to receive(:deliver_generic_error_email)
+          expect(subject).to receive(:deliver_error_email)
           subject.process
         end
 

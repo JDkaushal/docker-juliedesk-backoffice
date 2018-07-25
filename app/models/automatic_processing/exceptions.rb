@@ -1,8 +1,11 @@
 module AutomaticProcessing
 
   module Exceptions
-    AI_PROCESSING_ERROR = :ai_processing_error
-    GENERIC_ERROR       = :generic_error
+    AI_PROCESSING_ERROR             = :ai_processing_error
+    GENERIC_ERROR                   = :generic_error
+    UNPROCESSABLE_AI_REQUEST_ERROR  = :unprocessable_ai_request_error
+    NO_AVAILABLE_SLOT_ERROR         = :no_available_slot_error
+    COMMAND_LINE_ERROR              = :command_line_error
 
 
     class AutomaticProcessingError < StandardError
@@ -130,6 +133,23 @@ module AutomaticProcessing
 
       def to_s
         "The AI verify_dates call returned no verified dates for the MessageClassification #{@message_classification_id}"
+      end
+    end
+
+    class CommandLineNotUnderstood < AutomaticMessageProcessingError
+      attr_reader :reasons
+      def initialize(reasons)
+        @reasons = reasons
+      end
+
+      def to_s
+        "Command Line not understood"
+      end
+    end
+
+    class UnprocessableRequest < AutomaticMessageProcessingError
+      def to_s
+        "Unprocessable Request"
       end
     end
   end

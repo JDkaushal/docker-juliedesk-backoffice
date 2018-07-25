@@ -9,42 +9,43 @@ module AutomaticProcessing
     end
 
     def deliver(params = {})
-      if params[:is_error]
-        if params[:ai_processing_error]
-          deliver_error_message(params[:exception], AutomaticProcessing::Exceptions::AI_PROCESSING_ERROR)
-        else
-          deliver_error_message(params[:exception], AutomaticProcessing::Exceptions::GENERIC_ERROR)
-        end
+      return deliver_error_message(params[:exception]) if params[:is_error]
 
-      else
-        deliver_message
-      end
+      deliver_message
     end
 
     private
 
-    def deliver_error_message(exception, error_type)
+    def deliver_error_message(exception)
       messages = @data_holder.get_messages_thread.re_import
 
       initial_message = messages.find{|m| m.id == @data_holder.get_message.id}
+      message_content = get_error_body(exception)
+
+      return nil if message_content.nil?
 
       EmailServer.deliver_message({
                                     subject: @data_holder.get_messages_thread_subject,
                                     from: @data_holder.get_julie_alias_from,
                                     to: initial_message.server_message['from'],
                                     cc: '',
-                                    html: get_error_body(error_type),
+                                    html: message_content,
                                     quote_replied_message: false,
                                     quote_forward_message: false,
                                     reply_to_message_id: @data_holder.get_server_message_id
                                   })
     end
 
-    def get_error_body(error_type)
-      if error_type == AutomaticProcessing::Exceptions::AI_PROCESSING_ERROR
-        get_ai_processing_error_template({})
-      else
-        get_generic_error_template({})
+    def get_error_body(exception)
+      case exception.class
+        when AutomaticProcessing::Exceptions::CommandLineNotUnderstood
+          get_command_line_not_understood_template({ reasons: exception.reasons, contact_email: "hello@juliedesk.com" })
+        when AutomaticProcessing::Exceptions::UnprocessableRequest
+          get_ai_unprocessable_request_error_template({ contact_email: "hello@juliedesk.com" })
+        when AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError
+          get_no_available_slot_template({form_link_en: ENV['SLASH_SATISFACTION_FORM_EN_URL'], form_link_fr: ENV['SLASH_SATISFACTION_FORM_FR_URL']})
+        else
+          nil
       end
     end
 

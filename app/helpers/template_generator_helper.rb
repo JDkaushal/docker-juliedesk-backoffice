@@ -49,6 +49,18 @@ module TemplateGeneratorHelper
     request('/api/v1/templates/ai_cannot_process_request', template_data)
   end
 
+  def get_ai_unprocessable_request_error_template(template_data)
+    request('/api/v1/templates/ai_unprocessable_request', template_data, { format: 'html' })
+  end
+
+  def get_command_line_not_understood_template template_data
+    request('/api/v1/templates/command_line_not_understood', template_data, { format: 'html' })
+  end
+
+  def get_no_available_slot_template template_data
+    request('/api/v1/templates/no_available_slot', template_data, { format: 'html' })
+  end
+
   private
 
   def request(path, body=nil, options = {})

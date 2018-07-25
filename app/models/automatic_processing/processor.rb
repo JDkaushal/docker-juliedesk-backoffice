@@ -29,21 +29,32 @@ module AutomaticProcessing
       # Generate message interpretations
       interprete!
 
-      # Allow only ask_date_sugggestions
-      return fallback_to_manuel_processing! unless authorized_flow?
-
-      # Are we confident enough to continue full auto process ?
-      return fallback_to_manuel_processing! unless confident?
-
       # Then compute required data
       initialize_data_holder
       initialize_process_helpers
 
       # classify
-      classify_and_create_julie_action
+      trigger_classify
 
-      # Are we in a '1 client vs 1 attendee' flow ?
-      return fallback_to_manuel_processing! unless one_one_flow?
+      if scheduling_started? || !message_from_owner?
+        return fallback_to_manuel_processing!
+      else
+        # Command line is present ?
+        raise AutomaticProcessing::Exceptions::UnprocessableRequest.new(@message.id) unless command_line_detected?
+
+        # Are we in a '1 client vs 1 attendee' flow ?
+        raise AutomaticProcessing::Exceptions::UnprocessableRequest.new(@message.id) unless one_one_flow?
+
+        # Are we confident enough to continue full auto process ?
+        confidence_fields = ['location', 'duration', 'appointment']
+        not_confident_fields = confidence_fields.reject { |confidence_field| confident?("#{confidence_field}_confidence") }
+        raise AutomaticProcessing::Exceptions::CommandLineNotUnderstood.new(not_confident_fields) if not_confident_fields.any?
+      end
+
+
+      # Create julie action
+      trigger_julie_action_creation
+
 
       if options[:dont_trigger_action_flows]
         # Normally the save action is done after the julie action flow has been processed in trigger_julie_action_flow
@@ -60,7 +71,6 @@ module AutomaticProcessing
     end
 
     def process(options={})
-      begin
         process!(options)
 
         # Tracking
@@ -69,34 +79,16 @@ module AutomaticProcessing
           ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
         end
 
-      rescue AutomaticProcessing::Exceptions::AutomaticProcessingError => e
-        if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
-          raise(e)
-        else
-          Airbrake.notify(e)
-          #self.deliver_ai_processing_error_email(e)
-        end
-
-        fallback_to_manuel_processing!
-      rescue => e
-        if Rails.env.development? || Rails.env.test? || options[:dont_trigger_action_flows]
-          raise(e)
-        else
-          Airbrake.notify(e)
-          #self.deliver_generic_error_email(e)
-        end
-
-        fallback_to_manuel_processing!
-      end
+    rescue  AutomaticProcessing::Exceptions::CommandLineNotUnderstood,
+            AutomaticProcessing::Exceptions::UnprocessableRequest,
+            AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError => e
+        self.deliver_error_email(e)
     end
 
-    def deliver_generic_error_email(e)
+    def deliver_error_email(e)
       @email_deliverer.deliver({is_error: true, exception: e})
     end
 
-    def deliver_ai_processing_error_email(e)
-      @email_deliverer.deliver({is_error: true, ai_processing_error: true, exception: e})
-    end
 
     def re_trigger_flow
       interprete!
@@ -138,19 +130,38 @@ module AutomaticProcessing
       nb_client_attendees == 1 && nb_non_client_attendees == 1
     end
 
-    def confident?(options = {})
+    def confident?(confidence_field, options = {})
       min_confidence_score = options.fetch(:min_confidence_score, 1)
       main_interpretation_data = @message.main_message_interpretation.try(:json_response)
       return false if main_interpretation_data.empty?
 
-      main_interpretation_data['full_ai_confidence'].to_i >= min_confidence_score
+      return true if main_interpretation_data[confidence_field].nil?
+      main_interpretation_data[confidence_field].to_i >= min_confidence_score
     end
 
-    def authorized_flow?
+
+    def command_line_detected?
       main_interpretation_data = @message.main_message_interpretation.try(:json_response)
       return false if main_interpretation_data.empty?
 
-      main_interpretation_data['request_classif'] == MessageClassification::ASK_DATE_SUGGESTIONS
+      main_interpretation_data['has_command_line']
+    end
+
+    def scheduling_started?
+      messages_thread = @message.messages_thread
+      return false if messages_thread.nil?
+
+      messages_thread.messages.flat_map(&:message_classifications).map(&:julie_action).any? do |julie_action|
+        julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
+      end
+    end
+
+    def message_from_owner?
+      messages_thread = @message.messages_thread
+      return false if messages_thread.nil?
+
+      from_email = @message.get_email_from
+      messages_thread.account.all_emails.include?(from_email)
     end
 
     private
@@ -170,6 +181,16 @@ module AutomaticProcessing
       @message_classification = classify_message!
       @data_holder.set_message_classification(@message_classification)
 
+      @julie_action = create_julie_action
+      @data_holder.set_julie_action(@julie_action)
+    end
+
+    def trigger_classify
+      @message_classification = classify_message!
+      @data_holder.set_message_classification(@message_classification)
+    end
+
+    def trigger_julie_action_creation
       @julie_action = create_julie_action
       @data_holder.set_julie_action(@julie_action)
     end
