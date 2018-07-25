@@ -136,7 +136,7 @@ module AutomaticProcessing
       return false if main_interpretation_data.empty?
 
       return true if main_interpretation_data[confidence_field].nil?
-      main_interpretation_data[confidence_field].to_i >= min_confidence_score
+      main_interpretation_data[confidence_field].to_f >= min_confidence_score
     end
 
 
