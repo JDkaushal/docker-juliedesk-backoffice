@@ -131,7 +131,7 @@ module AutomaticProcessing
     end
 
     def confident?(confidence_field, options = {})
-      min_confidence_score = options.fetch(:min_confidence_score, 1)
+      min_confidence_score = options.fetch(:min_confidence_score, 0.9)
       main_interpretation_data = @message.main_message_interpretation.try(:json_response)
       return false if main_interpretation_data.empty?
 

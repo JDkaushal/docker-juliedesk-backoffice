@@ -37,12 +37,14 @@ module AutomaticProcessing
     end
 
     def get_error_body(exception)
+      locale = @data_holder.get_current_locale || @data_holder.get_thread_owner_account.try(:locale)
+
       if exception.is_a?(AutomaticProcessing::Exceptions::CommandLineNotUnderstood)
-        get_command_line_not_understood_template({ reasons: exception.reasons, contact_email: "hello@juliedesk.com" })
+        get_command_line_not_understood_template({ locale: locale, reasons: exception.reasons, contact_email: "hello@juliedesk.com" })
       elsif exception.is_a?(AutomaticProcessing::Exceptions::UnprocessableRequest)
-        get_ai_unprocessable_request_error_template({ contact_email: "hello@juliedesk.com" })
+        get_ai_unprocessable_request_error_template({ locale: locale, contact_email: "hello@juliedesk.com" })
       elsif exception.is_a?(AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError)
-        get_no_available_slot_template({form_link_en: ENV['SLASH_SATISFACTION_FORM_EN_URL'], form_link_fr: ENV['SLASH_SATISFACTION_FORM_FR_URL']})
+        get_no_available_slot_template({locale: locale, form_link_en: ENV['SLASH_SATISFACTION_FORM_EN_URL'], form_link_fr: ENV['SLASH_SATISFACTION_FORM_FR_URL']})
       else
         nil
       end
