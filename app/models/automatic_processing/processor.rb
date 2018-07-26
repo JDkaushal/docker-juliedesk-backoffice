@@ -71,18 +71,17 @@ module AutomaticProcessing
     end
 
     def process(options={})
-        process!(options)
-
-        # Tracking
-        messages_thread = @message.messages_thread
-        if messages_thread.messages.flat_map(&:message_classifications).count == 1
-          ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
-        end
-
+      process!(options)
     rescue  AutomaticProcessing::Exceptions::CommandLineNotUnderstood,
             AutomaticProcessing::Exceptions::UnprocessableRequest,
             AutomaticProcessing::Exceptions::ConscienceDatesSuggestionNotEnoughSuggestionsError => e
         self.deliver_error_email(e)
+    ensure
+      # Tracking
+      messages_thread = @message.messages_thread
+      if messages_thread.messages.flat_map(&:message_classifications).count == 1
+        ClientSuccessTrackingHelpers.async_track_new_request_sent(messages_thread.id)
+      end
     end
 
     def deliver_error_email(e)
