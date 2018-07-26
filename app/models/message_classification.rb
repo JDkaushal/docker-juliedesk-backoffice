@@ -522,7 +522,7 @@ class MessageClassification < ActiveRecord::Base
     messages_thread = current_message.messages_thread
     return nil if messages_thread.blank?
 
-    MessageClassification.with_data.where('message_id IN(?) AND created_at < ?', messages_thread.message_ids, current_message.received_at).order('id desc').first
+    MessageClassification.where('message_id IN(?) AND created_at < ?', messages_thread.message_ids, current_message.received_at).order('id desc').first
   end
 
 

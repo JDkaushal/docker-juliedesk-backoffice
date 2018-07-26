@@ -81,15 +81,6 @@ describe MessageClassification, :type => :model do
       it { is_expected.to eq(existing_classification) }
     end
 
-    context 'when previous message has a classification without data' do
-      let!(:first_message)           { create(:message, messages_thread: messages_thread, received_at: Time.now) }
-      let!(:existing_classification) { create(:message_classification, classification: MessageClassification::NOTHING_TO_DO, message: first_message) }
-
-      let!(:current_message) { create(:message, messages_thread: messages_thread, received_at: Time.now) }
-      let(:current_message_classification_params) { { message: current_message }}
-
-      it { is_expected.to eq(nil) }
-    end
 
     context 'when previous message has multiple classifications' do
       let!(:first_message)           { create(:message, messages_thread: messages_thread, received_at: Time.now) }
@@ -102,16 +93,6 @@ describe MessageClassification, :type => :model do
       it { is_expected.to eq(latest_classification) }
     end
 
-    context 'when previous message has multiple classifications but only one with data' do
-      let!(:first_message)           { create(:message, messages_thread: messages_thread, received_at: Time.now) }
-      let!(:existing_classification) { create(:message_classification, classification: MessageClassification::ASK_DATE_SUGGESTIONS, message: first_message) }
-      let!(:latest_classification)   { create(:message_classification, classification: MessageClassification::NOTHING_TO_DO, message: first_message) }
-
-      let!(:current_message)  { create(:message, messages_thread: messages_thread, received_at: Time.now) }
-      let(:current_message_classification_params) { { message: current_message }}
-
-      it { is_expected.to eq(existing_classification) }
-    end
 
     context 'when both messages have classifications' do
       let!(:first_message)           { create(:message, messages_thread: messages_thread, received_at: Time.now) }
