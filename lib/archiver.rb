@@ -8,6 +8,35 @@ module Archiver
     messages_thread_ids.length
   end
 
+
+  def remove_anonymised_threads_from_archive_database
+    ActiveRecord::Base.establish_connection(Rails.configuration.database_configuration["archive_anonymised_#{Rails.env}"])
+    anonymised_thread_ids = ActiveRecord::Base.connection.execute("SELECT threads.id FROM threads").to_a.map{|thread| thread['id'].to_i}
+
+    ActiveRecord::Base.establish_connection(Rails.configuration.database_configuration["archive_#{Rails.env}"])
+    messages_thread_ids_anonymised = MessagesThread.where(id: anonymised_thread_ids).map(&:id)
+
+    messages_thread_ids_with_no_messages = MessagesThread.includes(:messages).where(messages: {id: nil}).map(&:id)
+
+    messages_thread_ids_with_no_message_classsifications = MessagesThread.includes(messages: {message_classifications: {}}).where(message_classifications: {id: nil}).map(&:id)
+
+    messages_thread_ids_to_delete = messages_thread_ids_anonymised +
+        messages_thread_ids_with_no_messages +
+        messages_thread_ids_with_no_message_classsifications
+
+
+    puts "#{messages_thread_ids_to_delete.length} threads to delete."
+    messages_thread_ids_to_delete.each_with_index do |messages_thread_id_to_delete, index|
+      puts "#{index}/#{messages_thread_ids_to_delete.length}"
+      objects_to_delete = Archiver.get_objects_to_move(messages_thread_id_to_delete)
+      ActiveRecord::Base.transaction do
+        objects_to_delete.each do |object_to_delete|
+          object_to_delete.delete
+        end
+      end
+    end
+  end
+
   def self.messages_thread_ids_to_archive
     ActiveRecord::Base.connection.execute(<<-SQL.strip_heredoc
 SELECT DISTINCT(messages_threads.id)
