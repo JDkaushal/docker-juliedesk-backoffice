@@ -23,7 +23,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
       message: message
     )
 
-    message_classification.fill_form if message_classification.has_data?
+    message_classification.fill_form
     message_classification
   end
 
@@ -82,6 +82,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     # Format Attendees
     attendees = interpretation[:attendees]
 
+    # Duration
+    default_duration = appointment.present? ? appointment['duration'] : nil
+
     AttendeeService.clean_and_categorize_clients!(attendees)
     AttendeeService.set_usage_names!(attendees, { locale: interpretation[:locale], is_formal: is_formal })
 
@@ -94,7 +97,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         locale:              interpretation[:locale],
         timezone:            client_preferences[:timezone],
         constraints_data:    interpretation[:constraints_data].to_json,
-        duration:            interpretation[:duration] || appointment['duration'],
+        duration:            interpretation[:duration] || default_duration,
         language_level:      is_formal ? Account::LANGUAGE_LEVEL_FORMAL : Account::LANGUAGE_LEVEL_NORMAL,
         asap_constraint:     interpretation[:asap_constraint],
         client_on_trip:      interpretation[:client_on_trip],
@@ -104,17 +107,20 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
         attendees_emails:    attendees.map(&:email)
     })
 
-    # Call instructions
-    computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS')
-    self.call_instructions = computed_call_instructions.to_json
-    if self.is_virtual_appointment?
-      computed_call_instructions.merge!(event_instructions: TemplateGeneration::CallInstructions.generate(self))
+
+    if appointment.present?
+      # Call instructions
+      computed_call_instructions = AutomaticProcessing::Flows::CallInstructions.new(classification: self).process_flow('GET_CALL_INSTRUCTIONS')
+      self.call_instructions = computed_call_instructions.to_json
+      if self.is_virtual_appointment?
+        computed_call_instructions.merge!(event_instructions: TemplateGeneration::CallInstructions.generate(self))
+      end
+      self.call_instructions = computed_call_instructions.to_json
+
+
+      self.notes    = generate_notes
+      self.summary  = generate_summary(account_appointment, get_present_attendees)
     end
-    self.call_instructions = computed_call_instructions.to_json
-
-
-    self.notes    = generate_notes
-    self.summary  = generate_summary(account_appointment, get_present_attendees)
   end
 
 
@@ -156,7 +162,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     location ||= interpretation[:location]
 
     # Otherwise, we fallback to default address for appointment type
-    location ||= appointment_config['default_address'].try(:[], 'address')
+    if appointment_config && appointment_config['default_address']
+      location ||= appointment_config['default_address']['address']
+    end
 
     { location: location, location_nature: location_nature}
   end
