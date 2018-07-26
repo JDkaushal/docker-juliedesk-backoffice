@@ -316,12 +316,14 @@ class Message < ActiveRecord::Base
       text_signature = julie_alias.footer_fr.gsub(/%REMOVE_IF_PRO%/, "")
     end
 
+    bcc = (email_type == AutomaticsEmails::Rules::TYPE_NO_AVAILABLE_SLOTS) ? []: ["product@juliedesk.com"]
+
     email_params = {
         subject: "Re: #{"#{current_messages_thread.subject}".gsub(/^Re: /, "").gsub(/^Fw: /, "")}",
         from: julie_alias.generate_from,
         to: [to].join(','),
         cc: [].join(','),
-        bcc: ["product@juliedesk.com"].join(','),
+        bcc: bcc.join(','),
         text: "#{text}#{text_signature}#{strip_tags(html_signature)}",
         html: "#{text_to_html_with_tags("#{text}#{text_signature}")}#{html_signature}",
         quote_replied_message: true,
