@@ -126,6 +126,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
 
 
   def generate_summary(appointment, present_attendees)
+    title_preferences = self.send(:account).try(:title_preferences)
+    return self.message.try(:messages_thread).try(:subject) if title_preferences && title_preferences["general"] == 'email_subject'
+
     appointment = appointment.with_indifferent_access
     raise "Appointment config is missing" if appointment.blank?
 

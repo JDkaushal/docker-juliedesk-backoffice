@@ -579,7 +579,7 @@ class MessageClassification < ActiveRecord::Base
   end
 
   def account
-    self.message.messages_thread.account
+    self.message.try(:messages_thread).try(:account)
   end
 
   def account_appointment
