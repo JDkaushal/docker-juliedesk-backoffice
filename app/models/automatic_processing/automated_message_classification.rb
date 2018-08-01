@@ -49,7 +49,7 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     Attendee.merge!(current_attendees, attendees_from_ai, { overwrite: false })
 
     location_from_ai = main_interpretation['location_data'].try(:[], 'address')
-    location_from_ai = main_interpretation['location_data'].try(:[], 'text') unless location_from_ai.present?
+    #location_from_ai = main_interpretation['location_data'].try(:[], 'text') unless location_from_ai.present?
 
     # Build interpretation hash in backoffice format
     interpretation = {
@@ -165,9 +165,9 @@ class AutomaticProcessing::AutomatedMessageClassification < MessageClassificatio
     location ||= interpretation[:location]
 
     # Otherwise, we fallback to default address for appointment type
-    if appointment_config && appointment_config['default_address']
-      location ||= appointment_config['default_address']['address']
-    end
+    #if appointment_config && appointment_config['default_address']
+    #  location ||= appointment_config['default_address']['address']
+    #end
 
     { location: location, location_nature: location_nature}
   end

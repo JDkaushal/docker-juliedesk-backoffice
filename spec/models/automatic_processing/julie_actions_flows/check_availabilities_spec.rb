@@ -540,6 +540,7 @@ describe AutomaticProcessing::JulieActionsFlows::CheckAvailabilities do
     end
 
     it 'should trigger the correct actions' do
+      pending 'this flow is not triggered anymore'
 
       expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_message_initial_recipients).and_return({to: ["john.bernard@grabou.fr"]})
       expect(flow).to receive(:get_say_hi_template).with(

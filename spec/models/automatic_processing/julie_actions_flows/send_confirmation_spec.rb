@@ -371,6 +371,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
   describe 'trigger' do
 
     it 'should trigger the right actions' do
+      pending "this flow is not triggerd anymore"
 
       expect_any_instance_of(AutomaticProcessing::DataHolder).to receive(:get_message_initial_recipients).and_return({to: ["john.bernard@grabou.fr"]})
 
@@ -400,7 +401,7 @@ describe AutomaticProcessing::JulieActionsFlows::SendConfirmation do
           'summary' => 'Summary',
           'description' => ' Description',
           'attendees' => [{email: 'attendeeEmail@email.com'}, {email: 'attendeeEmail2@email.com'}],
-          'location' => 'Location',
+          'location' => nil,
           'start' => {'date' => '2018-04-03T16:15:00.000+02:00', 'timezone' => 'Europe/Paris'},
           'end' => {'date' => '2018-04-03T17:15:00.000+02:00', 'timezone' => 'Europe/Paris'},
           'calendar_login_username' => 'calendar_login_username'

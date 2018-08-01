@@ -16,14 +16,14 @@ module AutomaticProcessing
       raise AutomaticProcessing::Exceptions::NoAccountAssociatedError.new(@message.messages_thread_id) unless @message.messages_thread.account
     end
 
-    def generate_classification
-      # Build interpretations
-      @message.interprete(force_reinterpretation: true, full_ai_mode: true)
-      initialize_data_holder
-      initialize_process_helpers
-      message_classification = classify_message
-      message_classification
-    end
+    #def generate_classification
+    #  # Build interpretations
+    #  @message.interprete(force_reinterpretation: true, full_ai_mode: true)
+    #  initialize_data_holder
+    #  initialize_process_helpers
+    #  message_classification = classify_message
+    #  message_classification
+    #end
 
     def process!(options={})
       # Generate message interpretations
