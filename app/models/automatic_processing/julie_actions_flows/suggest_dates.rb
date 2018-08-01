@@ -41,8 +41,8 @@ module AutomaticProcessing
              fr: wordings['title_in_email']['fr']
           },
           location_in_email: {
-             en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
-             fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
+             #en: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'en'),
+             #fr: wordings['default_address'].try(:[], 'address_in_template').try(:[], 'fr')
           },
           missing_contact_info: missing_contact_info,
           date: date_slot,
