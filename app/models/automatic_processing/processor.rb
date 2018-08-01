@@ -36,7 +36,7 @@ module AutomaticProcessing
       # classify
       trigger_classify
 
-      if scheduling_started? || !message_from_owner? || !confident?("constraints_confidence")
+      if no_authentication_token? || scheduling_started? || !message_from_owner? || !confident?("constraints_confidence")
         return fallback_to_manuel_processing!
       else
         # Command line is present ?
@@ -153,6 +153,13 @@ module AutomaticProcessing
       messages_thread.messages.flat_map(&:message_classifications).map(&:julie_action).compact.any? do |julie_action|
         julie_action.action_nature == JulieAction::JD_ACTION_SUGGEST_DATES
       end
+    end
+
+    def no_authentication_token?
+      messages_thread = @message.messages_thread
+      return true if messages_thread.nil?
+
+      messages_thread.authentication_token.blank?
     end
 
     def message_from_owner?

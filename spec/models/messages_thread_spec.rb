@@ -204,7 +204,8 @@ describe MessagesThread, :type => :model do
                                                         :asap_constraint => false,
                                                         :auto_follow_up_enabled=>false,
                                                         :allowed_attendees=>[],
-                                                        :date_suggestions_full_ai => false
+                                                        :date_suggestions_full_ai => false,
+                                                        :authentication_token_is_present => true
                                                     })
       end
     end
@@ -257,6 +258,7 @@ describe MessagesThread, :type => :model do
                                                         :auto_follow_up_enabled=>false,
                                                         :allowed_attendees=>[],
                                                         :date_suggestions_full_ai => false,
+                                                        :authentication_token_is_present => true
                                                     })
       end
     end
@@ -312,6 +314,7 @@ describe MessagesThread, :type => :model do
                                                         :auto_follow_up_enabled=>false,
                                                         :allowed_attendees=>[],
                                                         :date_suggestions_full_ai => false,
+                                                        :authentication_token_is_present => true
                                                     })
       end
     end
@@ -368,6 +371,7 @@ describe MessagesThread, :type => :model do
                                                         :auto_follow_up_enabled=>false,
                                                         :allowed_attendees=>[],
                                                         :date_suggestions_full_ai => false,
+                                                        :authentication_token_is_present => true
                                                     })
       end
     end
@@ -425,6 +429,7 @@ describe MessagesThread, :type => :model do
                                                         :auto_follow_up_enabled=>false,
                                                         :allowed_attendees=>[],
                                                         :date_suggestions_full_ai => false,
+                                                        :authentication_token_is_present => true
                                                     })
       end
     end

@@ -150,6 +150,7 @@
             var dateToSuggest = window.timeSlotsToSuggest[0];
 
             window.display_new_template =
+                window.threadComputedData.authentication_token_is_present &&
                 window.featuresHelper.isFeatureActive('display_call_to_action_in_templates') &&
                 window.threadAccount.call_to_action_in_email_enabled &&
                 window.threadAccount.call_to_action_in_email_enabled && attendees().filter(function(attendee) { return attendee.linkedAttendee == false }).length == 1 &&
