@@ -323,7 +323,9 @@ class MeetingService
     classification.summary  = TemplateService.new.generate_summary(
         classification.send(:account_appointment),
         classification.get_present_attendees,
-        classification.locale
+        classification.locale,
+        classification.send(:account),
+        @messages_thread.subject
     )
     classification.notes     = NotesGenerator.new(classification).generate_notes
     classification.save

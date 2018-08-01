@@ -110,7 +110,10 @@ class TemplateService
   end
 
 
-  def generate_summary(appointment, present_attendees, locale)
+  def generate_summary(appointment, present_attendees, locale, account, thread_subject)
+    title_preferences = account.try(:title_preferences)
+    return thread_subject if title_preferences && title_preferences["general"] == 'email_subject'
+
     appointment = appointment.with_indifferent_access
     raise "Appointment config is missing" if appointment.blank?
 
