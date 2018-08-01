@@ -36,7 +36,7 @@ module AutomaticProcessing
       # classify
       trigger_classify
 
-      if scheduling_started? || !message_from_owner?
+      if scheduling_started? || !message_from_owner? || !confident?("constraints_confidence")
         return fallback_to_manuel_processing!
       else
         # Command line is present ?
