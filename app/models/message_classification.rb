@@ -50,7 +50,6 @@ class MessageClassification < ActiveRecord::Base
       ASK_CANCEL_EVENTS,
       ASK_POSTPONE_EVENTS,
       WAIT_FOR_CONTACT,
-      INVITATION_ALREADY_SENT,
       UPDATE_EVENT,
       FOLLOW_UP_CONTACTS
   ]
