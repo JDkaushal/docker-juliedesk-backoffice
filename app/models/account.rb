@@ -407,9 +407,8 @@ class Account
     client_cache
   end
 
-  def self.is_synced?(account_email)
+  def self.is_synced?(account_cache)
     sync_limit_date = (ENV['LIMIT_DURATION_FOR_SYNCING_TAG'] || 4).to_i.minutes.ago
-    account_cache = self.accounts_cache_for_email(account_email)
     return false if account_cache.blank?
 
     # We consider not synced a calendar which is not on calendar server

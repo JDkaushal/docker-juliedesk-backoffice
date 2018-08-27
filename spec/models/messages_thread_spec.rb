@@ -1235,8 +1235,15 @@ describe MessagesThread, :type => :model do
 
     context 'when one of the client is not synced' do
       before(:example) do
-        allow(Account).to receive(:is_synced?).with("bob@juliedesk.com").and_return(false)
-        allow(Account).to receive(:is_synced?).with("john@juliedesk.com").and_return(true)
+        account1 = {'test' => 1}
+        account2 = {'test' => 2}
+
+        allow(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).and_call_original
+        allow(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).with("bob@juliedesk.com").and_return(account1.to_json)
+        allow(REDIS_FOR_ACCOUNTS_CACHE).to receive(:get).with("john@juliedesk.com").and_return(account2.to_json)
+
+        allow(Account).to receive(:is_synced?).with(account1).and_return(false)
+        allow(Account).to receive(:is_synced?).with(account2).and_return(true)
       end
 
       it { is_expected.to eq(false) }

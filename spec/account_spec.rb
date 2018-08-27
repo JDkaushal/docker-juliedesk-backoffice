@@ -366,7 +366,7 @@ describe Account do
       REDIS_FOR_ACCOUNTS_CACHE.set(account_email, account_cache.to_json)
     }
 
-    subject { Account.is_synced?(email_to_check) }
+    subject { Account.is_synced?(Account.accounts_cache_for_email(email_to_check)) }
 
     context 'when no cache' do
       let(:account_email) { "john@juliuedesk.com" }
