@@ -143,6 +143,8 @@
                 }
                 $scope.totalCount = response.data.total_count;
 
+                $scope.accuracy = response.data.accuracy;
+
                 $scope.loading = false;
             })
         };
@@ -307,6 +309,7 @@
   <h1>Entities <span ng-show="loading"> [ Loading... ]</span></h1>
 
   <h4 ng-show="mode == 'review'">Messages to check: {{ totalCount }}</h4>
+  <h4 ng-show="mode != 'review'">Accuracy: {{ accuracy }} % </h4>
 
   <div ng-show="mode == 'admin'"
        class="alert alert-info row">
