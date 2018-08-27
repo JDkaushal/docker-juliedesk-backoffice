@@ -1513,20 +1513,28 @@ class MessagesThread < ActiveRecord::Base
     !!self.tags && self.tags.include?(tag)
   end
 
+  # Allow to lazyly check if the clients are still clients
+  def get_clients_emails
+    Account.extract_clients_emails(self.clients_in_recipients)
+  end
+
   def calendars_synced?
     last_classification = self.last_message_classification_with_data
+
+    attendees_emails_to_check = nil
+
     if last_classification.present?
       present_attendees = JSON.parse(last_classification.attendees || '{}').select { |attendee| attendee['status'] == 'present' && attendee['isClient'] == 'true' }
       attendees_emails_to_check = present_attendees.map { |attendee| attendee['accountEmail'] || attendee['account_email'] }
-
-      # Fallback
-      attendees_emails_to_check = self.clients_in_recipients if attendees_emails_to_check.blank?
-    else
-      attendees_emails_to_check = self.clients_in_recipients
     end
 
-    return true if attendees_emails_to_check.blank?
-    attendees_emails_to_check.all? { |email| Account.is_synced?(email) }
+    attendees_emails_to_check ||= self.get_clients_emails
+
+    if attendees_emails_to_check.blank?
+      true
+    else
+      attendees_emails_to_check.all? { |email| Account.is_synced?(email) }
+    end
   end
 
   def syncing_since

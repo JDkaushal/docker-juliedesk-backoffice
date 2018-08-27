@@ -278,6 +278,18 @@ class Account
     }.first.try(:[], 'number_to_call')
   end
 
+  def self.extract_clients_emails(potential_clients)
+    potential_clients.uniq!
+    potential_clients.compact!
+    potential_clients.map!(&:downcase)
+
+    self.all_clients_emails & potential_clients
+  end
+
+  def self.all_clients_emails
+    JSON.parse(REDIS_FOR_ACCOUNTS_CACHE.get('clients_emails'))
+  end
+
   def julie_can_process_now
     return true unless self.company_hash
     timezoned_now = DateTime.now.in_time_zone(self.company_hash['timezone'])

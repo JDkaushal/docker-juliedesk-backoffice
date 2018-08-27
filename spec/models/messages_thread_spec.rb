@@ -1218,6 +1218,13 @@ describe MessagesThread, :type => :model do
 
   describe '#calendars_synced?' do
     let(:clients_in_recipients) { ["bob@juliedesk.com", "john@juliedesk.com"] }
+
+    let!(:all_clients_emails_cache) {
+      cache = clients_in_recipients
+
+      REDIS_FOR_ACCOUNTS_CACHE.set('clients_emails', cache.to_json)
+    }
+
     let(:messages_thread) { create(:messages_thread, clients_in_recipients: clients_in_recipients) }
     subject { messages_thread.calendars_synced? }
 

@@ -46,6 +46,12 @@ describe ThreadAccountAssociation::Manager do
       REDIS_FOR_ACCOUNTS_CACHE.set('Pepsi', cache.to_json)
     }
 
+    let!(:all_clients_emails_cache) {
+      cache = accounts_cache.map{|acc, acc_details| [acc_details['email']] + acc_details['email_aliases']}.flatten
+      
+      REDIS_FOR_ACCOUNTS_CACHE.set('clients_emails', cache.to_json)
+    }
+
     let(:messages_thread_attributes) { { } }
     let(:messages_thread) { create(:messages_thread_with_messages, {messages_count: 1}.merge!(messages_thread_attributes)) }
     let(:server_thread) do
@@ -178,14 +184,14 @@ describe ThreadAccountAssociation::Manager do
       context 'Clients are in recipients' do
         let(:server_message_attributes) { { 'from' => "Bruce lee <bruce.lee@ups.com>", 'to' => "Machin Bidule <machin.bidule@nocompany.com>, Bud Spencer <bud.spencer@pepsi.com>, Man First <man.first@nocompany.com>, Steven Seagul <steven.seagul@pepsi.com>, Clach Third <clach.third@nocompany.com>, John Wayne <john.WAYNE@ups.com>, Julie Desk <julie@ups.com>", 'cc' => "Manno Second <manno.second@nocompany.com>, Klark Kent <klark.kent@nocompany.com>" } }
         it 'should compute the right primary list and order it properly' do
-          expect(messages_thread.accounts_candidates_primary_list).to eq(["bruce.lee@ups.com", "john.wayne@ups.com", "bud.spencer@pepsi.com", "man.first@nocompany.com", "steven.seagul@pepsi.com", "clach.third@nocompany.com", "machin.bidule@nocompany.com", "klark.kent@nocompany.com"])
+          expect(messages_thread.accounts_candidates_primary_list).to match_array(["bruce.lee@ups.com", "john.wayne@ups.com", "bud.spencer@pepsi.com", "man.first@nocompany.com", "steven.seagul@pepsi.com", "clach.third@nocompany.com", "machin.bidule@nocompany.com", "klark.kent@nocompany.com"])
         end
       end
 
       context 'client alias in recipients' do
         let(:server_message_attributes) { { 'from' => "Bruce lee <bruce.lee@ups.com>", 'to' => "Machin Bidule <machin.bidule@nocompany.com>, Bud Spencer <bud.spencer@pepsi.com>, Man First <man.first@nocompany.com>, Steven Seagul <steven.seagul@pepsi.com>, Clach Third <clach.third@nocompany.com>, John Wayne <john.wayne@yopmail.com>, Julie Desk <julie@ups.com>", 'cc' => "Manno Second <manno.second@nocompany.com>, Klark Kent <klark.kent@nocompany.com>" } }
         it 'should compute the right primary list and order it properly' do
-          expect(messages_thread.accounts_candidates_primary_list).to eq(["bruce.lee@ups.com", "john.wayne@ups.com", "bud.spencer@pepsi.com", "man.first@nocompany.com", "steven.seagul@pepsi.com", "clach.third@nocompany.com", "machin.bidule@nocompany.com", "klark.kent@nocompany.com"])
+          expect(messages_thread.accounts_candidates_primary_list).to match_array(["bruce.lee@ups.com", "john.wayne@ups.com", "bud.spencer@pepsi.com", "man.first@nocompany.com", "steven.seagul@pepsi.com", "clach.third@nocompany.com", "machin.bidule@nocompany.com", "klark.kent@nocompany.com"])
         end
       end
     end
