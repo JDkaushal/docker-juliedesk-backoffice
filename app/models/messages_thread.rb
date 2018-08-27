@@ -1534,7 +1534,7 @@ class MessagesThread < ActiveRecord::Base
       true
     else
       # Remove people that are no more clients
-      accounts = attendees_emails_to_check.map{|email| Account.accounts_cache_for_email(email)}.reject{|x| x.blank?}
+      accounts = attendees_emails_to_check.map{|email| Account.accounts_cache_for_email(email)}.reject{|x| x.blank? || x['state'] == 'ghost'}
       accounts.all? { |account| Account.is_synced?(account) }
     end
   end
