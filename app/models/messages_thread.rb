@@ -1396,7 +1396,7 @@ class MessagesThread < ActiveRecord::Base
   # In order to do that we don't compact the resulting array
   def attendees_emails
     return nil if self.attendees.nil?
-    self.attendees.map { |attendee| attendee["account_email"] || attendee["email"] }
+    self.attendees.map { |attendee|  attendee["isClient"] == "true" ? attendee["account_email"] : attendee["email"] }
   end
 
   def client_attendees_emails
