@@ -575,7 +575,7 @@
             var currentGender = ['M', 'F'].indexOf(informations.gender) == -1 ? "Unknown" : informations.gender;
 
             var a = new Attendee({
-                accountEmail: attendee.account_email,
+                accountEmail: isClient ? attendee.account_email : null,
                 guid: informations.id || $scope.guid(),
                 email: email,
                 email_aliases: informations.email_aliases || [],
