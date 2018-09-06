@@ -332,7 +332,22 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def compute_linked_attendees(accounts_cache, forced_emails_to_check = nil)
-    self.update(linked_attendees: LinkedAttendees::Manager.new(self, accounts_cache).fetch(forced_emails_to_check))
+    new_linked_attendees = LinkedAttendees::Manager.new(self, accounts_cache).fetch(forced_emails_to_check)
+    linked_attendees_to_update = self.linked_attendees
+
+    if new_linked_attendees.present?
+      already_known_linked_attendees = linked_attendees_to_update.keys
+
+      new_linked_attendees.each do |k, v|
+        if already_known_linked_attendees.include?(k)
+          linked_attendees_to_update[k] = (linked_attendees_to_update[k] + v).uniq
+        else
+          linked_attendees_to_update[k] = v
+        end
+      end
+    end
+
+    self.update(linked_attendees: linked_attendees_to_update)
   end
 
   def account params={}
