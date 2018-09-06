@@ -116,7 +116,7 @@
 
   $(document).ready(function(){
 
-
+      $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
 
       if(autoFollowUpEnabled) {
           setDefaultReminderTextAndStyle(true);
@@ -163,8 +163,6 @@
       } else {
           setDefaultReminderTextAndStyle(false);
       }
-
-      $('#follow_up_reminder_date').val(currentFollowUpReminderDate);
   });
 
 
