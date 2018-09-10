@@ -51,9 +51,6 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
-    airbrake (5.6.0)
-      airbrake-ruby (~> 1.6)
-    airbrake-ruby (1.6.0)
     airbrussh (1.1.1)
       sshkit (>= 1.6.1, != 1.7.0)
     angular-rails-templates (1.0.2)
@@ -142,6 +139,8 @@ GEM
     execjs (2.6.0)
     factory_girl (4.7.0)
       activesupport (>= 3.0.0)
+    faraday (0.15.2)
+      multipart-post (>= 1.2, < 3)
     fast_stack (0.1.0)
       rake
       rake-compiler
@@ -220,6 +219,7 @@ GEM
     mixpanel-ruby (2.2.0)
     mono_logger (1.1.0)
     multi_json (1.13.1)
+    multipart-post (2.0.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (3.2.0)
@@ -290,6 +290,9 @@ GEM
       redis-namespace (~> 1.3)
       sinatra (>= 0.9.2)
       vegas (~> 0.1.2)
+    resque-sentry (1.2.0)
+      resque (>= 1.18.0)
+      sentry-raven (>= 0.4.6)
     resque-timeout (1.0.0)
       resque (~> 1.0)
     resque-workers-lock (2.0.1)
@@ -325,6 +328,8 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
+    sentry-raven (2.7.4)
+      faraday (>= 0.7.6, < 1.0)
     simple_segment (0.1.1)
     simplecov (0.11.2)
       docile (~> 1.1.0)
@@ -388,7 +393,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  airbrake (~> 5.0)
   angular-rails-templates (~> 1.0.2)
   angularjs-rails
   aws-sdk (~> 2)
@@ -429,11 +433,13 @@ DEPENDENCIES
   rails-settings-cached
   redis
   resque (~> 1.26.0)
+  resque-sentry (~> 1.2.0)
   resque-timeout
   resque-workers-lock
   rspec-collection_matchers
   rspec-rails (~> 3.0)
   sass-rails (~> 5.0.7)
+  sentry-raven (~> 2.7.4)
   simple_segment
   simplecov
   smart_listing

@@ -129,6 +129,7 @@ gem 'paper_trail'
 
 
 #Error tracking
-gem 'airbrake', '~> 5.0'
+gem 'sentry-raven', '~> 2.7.4'
+gem 'resque-sentry', '~> 1.2.0'
 
 gem 'loofah'

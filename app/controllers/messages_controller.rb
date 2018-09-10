@@ -217,7 +217,7 @@ class MessagesController < ApplicationController
     begin
       @new_server_message_id = EmailServer.deliver_message(email_params)['id']
     rescue Exception => e
-      Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
+      Raven.capture_exception(e) unless ENV['SENTRY_DSN'].nil?
       render json: {
                  status: "error",
                  message: e.message,

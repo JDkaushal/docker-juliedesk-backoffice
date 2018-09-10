@@ -64,7 +64,7 @@ class Message < ActiveRecord::Base
     begin
       EmailServerInterface.new.build_request(:fetch_ics, {message_id: self.server_message['id'], attachment_id: self.server_message['attachments_data'][0]['attachment_id']})['data']
     rescue => e
-      Airbrake.notify(e) unless ENV['AIRBRAKE_HOST'].nil?
+      Raven.capture_exception(e) unless ENV['SENTRY_DSN'].nil?
     end
   end
 
@@ -572,7 +572,7 @@ class Message < ActiveRecord::Base
       if server_thread['messages'].blank?
         error_message = "No messsages for Messages Thread #{server_thread['id']} (email-server id)"
         Rails.logger.error(error_message)
-        Airbrake.notify(Exceptions::MessagesThread::NoMessageError.new(server_thread['id']))
+        Raven.capture_exception(Exceptions::MessagesThread::NoMessageError.new(server_thread['id']))
         next
       else
         # When in staging env, we will check wether a thread is archived by queying the staging table responsible for holding this data

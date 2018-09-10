@@ -12,7 +12,7 @@ class Ai::DatesSuggestionsController < ApplicationController
     json = AI_PROXY_INTERFACE.build_request(:fetch_dates_suggestions, params)
 
     if json[:error]
-      Airbrake.notify(StandardError.new("Error while fetching date suggestions for message id #{params[:message_id]}"))
+      Raven.capture_exception(StandardError.new("Error while fetching date suggestions for message id #{params[:message_id]}"))
     end
 
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'date_suggestions#fetch:done', julie_action_id: params[:julie_action_id]}, distinct_id: params[:julie_action_id]})

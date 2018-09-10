@@ -17,4 +17,9 @@ class HealthcheckController < ApiController
      
     render :nothing => true, :status => status_code
   end
+
+
+  def raise
+    Kernel.raise 'Error raised intentionnaly'
+  end
 end

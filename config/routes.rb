@@ -307,5 +307,6 @@ Rails.application.routes.draw do
   
     # Load balancers healthcheck
   get "/healthcheck/check", controller: :healthcheck, action: :check
+  get "/healthcheck/raise", controller: :healthcheck, action: :raise
 
 end
