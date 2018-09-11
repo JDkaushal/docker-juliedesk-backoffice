@@ -1,6 +1,6 @@
 
 <script>
-    var app = angular.module("entitiesApp", []);
+    var app = angular.module("classificationsApp", []);
 
     app.directive("resultsNavigator", function () {
         return {
@@ -84,7 +84,7 @@
        };
     }]);
 
-    app.controller("entitiesController", ['$scope', '$window', '$http', '$timeout', 'messageInterpretationService', function ($scope, $window, $http, $timeout, messageInterpretationService) {
+    app.controller("classificationsController", ['$scope', '$window', '$http', '$timeout', 'messageInterpretationService', function ($scope, $window, $http, $timeout, messageInterpretationService) {
 
         $scope.loading = false;
 
@@ -92,6 +92,21 @@
         $scope.offset = 0;
         $scope.itemsPerPage = 20;
         $scope.searchQuery = "";
+        $scope.allClassifications = [{"id": "organize", "name": "Organize", "type": "request"}, 
+                              {"id": "create_event", "name": "Create Event", "type": "request"},
+                              {"id": "postpone", "name": "Postpone", "type": "request"},
+                              {"id": "cancel", "name": "Cancel", "type": "request"},
+                              {"id": "appointment", "name": "Appointment", "type": "appointment"},
+                              {"id": "call", "name": "Call", "type": "appointment"},
+                              {"id": "lunch", "name": "Lunch", "type": "appointment"},
+                              {"id": "coffee", "name": "Coffee", "type": "appointment"},
+                              {"id": "breakfast", "name": "Breakfast", "type": "appointment"},
+                              {"id": "dinner", "name": "Dinner", "type": "appointment"},
+                              {"id": "drink", "name": "Drink", "type": "appointment"},
+                              {"id": "skype", "name": "Skype", "type": "appointment"},
+                              {"id": "visio", "name": "Visio", "type": "appointment"},
+                              {"id": "webex", "name": "Webex", "type": "appointment"},
+                              {"id": "hangout", "name": "Hangout", "type": "appointment"},]
         $scope.allStatusesActive = {
             'unchecked': true,
             'valid': true,
@@ -118,7 +133,7 @@
         };
         $scope.fetch = function () {
             $scope.loading = true;
-            var url = "/api/v1/reviews";
+            var url = "/api/v1/classifications";
             url += "?offset=" + $scope.offset + "&limit=" + $scope.itemsPerPage;
             var status = [];
             _.each($scope.statuses, function (v, k) {
@@ -127,7 +142,7 @@
                 }
             });
             if (status.length > 0) {
-                url += "&entity_status=" + status.join(",");
+                url += "&classification_status=" + status.join(",");
             }
             if ($scope.searchQuery.length > 0) {
                 url += "&query=" + $scope.searchQuery;
@@ -143,52 +158,37 @@
                 }
                 $scope.totalCount = response.data.total_count;
 
-                $scope.precision = response.data.score.precision;
-                $scope.recall = response.data.score.recall;
+                $scope.accuracy = response.data.score;
 
                 $scope.loading = false;
             })
         };
 
-        $scope.entityIsChecked = function (entity) {
-            return entity.status !== "unchecked"
+        $scope.classificationIsChecked = function (classification) {
+            return classification.status !== "unchecked"
         };
 
-        $scope.validateEntity = function (review, entity) {
-            if(entity.corrected_entity == '' || entity.corrected_entity == null) {
-              validated = true
-            }
-            else if (entity.corrected_entity.includes("& ")) {
-              validated = true
-              chunks = entity.corrected_entity.split("& ")
-              _.each(chunks, function(chunk){
-                validated = validated && review.message.includes(chunk)
-              })
-            }
-            else {
-              validated = review.message.includes(entity.corrected_entity)
-            }
-            entity.validated = validated
-            return entity.validated
+        $scope.formatClassification = function (classification) {
+            return _.find($scope.allClassifications, { id: classification.classification }).name
         };
 
-        $scope.printEntity = function (entity) {
-            return entity.entity ? entity.entity : '_'
+        $scope.filterClassification = function(classification) {
+            return _.filter($scope.allClassifications, { type: classification.type })
         };
 
         $scope.validateBatch = function () {
               var data = _.map($scope.reviews, function (review) {
 
-                validatedEntities = _.filter(review.entities, function(entity) {
-                  return $scope.entityIsChecked(entity) && entity.validated
+                validatedClassifications = _.filter(review.classifications, function(classification) {
+                  return $scope.classificationIsChecked(classification) 
                 })
 
-                  tmp = _.map(validatedEntities, function (entity) {
+                  tmp = _.map(validatedClassifications, function (classification) {
 
                     return {
                       id: review.id,
-                      entity_id: entity.entity_id,
-                      value: entity
+                      classification_id: classification.classification_id,
+                      value: classification
                     }
                   });
                   return tmp
@@ -197,23 +197,24 @@
               data = _.flatten(data)
 
               $scope.loading = true;
-              messageInterpretationService.post("/api/v1/reviews/validate", data).then(function () {
+              messageInterpretationService.post("/api/v1/classifications/validate", data).then(function () {
                   $scope.fetch();
               });
 
               $window.scrollTo(0, 0);
+
         };
 
-        $scope.setStatus = function (entity, status) {
-            entity.status = status;
+        $scope.setStatus = function (classification, status) {
+            classification.status = status;
             if (status === "invalid") {
                 $timeout(function () {
-                    var element = $("#correction-" + entity.entity_id)[0];
+                    var element = $("#correction-" + classification.classification_id)[0];
                     element.focus();
                 });
             }
             else {
-                entity.corrected_entity = null;
+                classification.corrected_classification = null;
             }
 
 
@@ -304,15 +305,20 @@
     margin: 3.5px 0;
   }
 
+  .capitalize {
+    margin: 3.5px 0;
+    text-transform: capitalize;
+}
+
 </style>
 
-<div ng-app="entitiesApp"
-     ng-controller="entitiesController"
+<div ng-app="classificationsApp"
+     ng-controller="classificationsController"
      class="col-md-offset-2 col-md-8">
-  <h1>Entities <span ng-show="loading"> [ Loading... ]</span></h1>
+  <h1>Classifications <span ng-show="loading"> [ Loading... ]</span></h1>
 
   <h4 ng-show="mode == 'review'">Messages to check: {{ totalCount }}</h4>
-  <h4 ng-show="mode != 'review'"> Precision : {{ precision }} % | Recall : {{ recall }} % </h4>
+  <h4 ng-show="mode != 'review'"> Accuracy : {{ accuracy }} % </h4>
 
   <div ng-show="mode == 'admin'"
        class="alert alert-info row">
@@ -338,40 +344,40 @@
     <tr>
       <th>Message</th>
       <th>Type</th>
-      <th>Entity</th>
+      <th>Classification</th>
       <th>Status</th>
-      <th>Corrected entity</th>
+      <th>Corrected classification</th>
     </tr>
     <tr ng-repeat="review in reviews">
         
           <td class="col-md-4">{{ review.message }}</td>
           <td class="col-md-2">
-              <div class="text" ng-repeat="entity in review.entities" >{{ entity.type }}</div>
+              <div class="capitalize" ng-repeat="classification in review.classifications" >{{ classification.type }}</div>
           </td>
           <td class="col-md-3">
-              <div class="text" ng-repeat="entity in review.entities">{{ printEntity(entity) }}</div>
+              <div class="text" ng-repeat="classification in review.classifications">{{ formatClassification(classification) }}</div>
           </td>
           <td class="col-md-1" style="min-width: 120px">
-            <div ng-repeat="entity in review.entities">
+            <div ng-repeat="classification in review.classifications">
               <span class="fa fa-check check-btn success"
-                    ng-class="{checked: entity.status == 'valid'}"
-                    ng-click="setStatus(entity, 'valid')"></span>
+                    ng-class="{checked: classification.status == 'valid'}"
+                    ng-click="setStatus(classification, 'valid')"></span>
               <span class="fa fa-times check-btn error"
-                    ng-class="{checked: entity.status == 'invalid'}"
-                    ng-click="setStatus(entity, 'invalid')"></span>
+                    ng-class="{checked: classification.status == 'invalid'}"
+                    ng-click="setStatus(classification, 'invalid')"></span>
               <span class="fa fa-question check-btn warning"
-                    ng-class="{checked: entity.status == 'unknown'}"
-                    ng-click="setStatus(entity, 'unknown')"></span>
+                    ng-class="{checked: classification.status == 'unknown'}"
+                    ng-click="setStatus(classification, 'unknown')"></span>
             </div>
           </td>
           <td class="col-md-3">
-            <div ng-repeat="entity in review.entities">
-              <input type="text"
-                     ng-class="{error: ! validateEntity(review, entity)}"
-                     id="correction-{{ entity.entity_id }}"
-                     placeholder="{{ entity.status !== 'invalid' ? '' : 'Enter a valid entity...' }}"
-                     ng-model="entity.corrected_entity"
-                     ng-disabled="entity.status != 'invalid'"/>
+            <div ng-repeat="classification in review.classifications">
+              <select name="selectClassification"
+                      ng-options="c.id as c.name for c in filterClassification(classification)"
+                      id="correction-{{ classification.classification_id }}"
+                      placeholder="{{ classification.status !== 'invalid' ? '' : 'Enter a valid classification...' }}"
+                      ng-model="classification.corrected_classification"
+                      ng-disabled="classification.status != 'invalid'"/>
             </div>
           </td>
     </tr>
