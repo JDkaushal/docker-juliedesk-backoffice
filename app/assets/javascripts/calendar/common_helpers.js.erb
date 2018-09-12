@@ -581,10 +581,10 @@ window.CommonHelpers.externalRequest = function (request, callback, error_callba
             }
           });
         };
-
+        
         var clientAttendees = window.currentAttendees
             .filter(function(attendee) { return attendee["isClient"] == "true" && attendee["isPresent"] == "true" })
-            .map(function(attendee) { return attendee.account_email });
+            .map(function(attendee) { return (attendee.account_email || attendee.accountEmail) });
 
         if(clientAttendees.length > 0) {
           $.ajax({
