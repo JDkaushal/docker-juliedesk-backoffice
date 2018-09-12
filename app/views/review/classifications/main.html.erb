@@ -212,7 +212,6 @@
             if (status === "invalid") {
                 $timeout(function () {
                     var element = $("#correction-" + classification.classification_id)[0];
-                    element.focus();
                 });
             }
             else {
@@ -377,7 +376,6 @@
               <select name="selectClassification"
                       ng-options="c.id as c.name for c in filterClassification(classification)"
                       id="correction-{{ classification.classification_id }}"
-                      placeholder="{{ classification.status !== 'invalid' ? '' : 'Enter a valid classification...' }}"
                       ng-model="classification.corrected_classification"
                       ng-disabled="classification.status != 'invalid'"/>
             </div>
