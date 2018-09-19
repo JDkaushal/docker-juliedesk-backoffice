@@ -188,6 +188,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :constraints, only: [] do
+      collection do
+        get "", action: :main
+        get "review", action: :review
+      end
+    end
+
 
     resources :messages_threads, only: [] do
       member do

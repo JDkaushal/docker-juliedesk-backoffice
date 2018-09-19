@@ -1,0 +1,362 @@
+<script>
+    var app = angular.module("constraintsApp", []);
+    app.directive("resultsNavigator", function () {
+        return {
+            restrict: 'E',
+            link: function (scope, element, attrs, ctrl) {
+            },
+            scope: {
+                offset: "=",
+                totalCount: "=",
+                itemsPerPage: "="
+            },
+            controller: ['$scope', function ($scope) {
+                $scope.firstItem = function () {
+                    return Math.max($scope.offset + 1);
+                };
+                $scope.lastItem = function () {
+                    return Math.min($scope.offset + $scope.itemsPerPage, $scope.totalCount);
+                };
+                $scope.previousPage = function () {
+                    $scope.offset -= $scope.itemsPerPage;
+                };
+                $scope.nextPage = function () {
+                    $scope.offset += $scope.itemsPerPage;
+                };
+                $scope.isFirstPage = function () {
+                    return $scope.offset == 0;
+                };
+                $scope.isLastPage = function () {
+                    return $scope.offset + $scope.itemsPerPage >= $scope.totalCount;
+                };
+            }],
+            template: function (element, attr) {
+                var htmlTemplate =
+                    '<div ng-show="totalCount > 0">' +
+                    '<span class="btn" disabled>{{ firstItem() }} - {{ lastItem() }} / {{ totalCount }}</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isFirstPage()" ng-click="previousPage()"><</span> ' +
+                    '<span class="btn btn-default btn-sm" ng-disabled="isLastPage()" ng-click="nextPage()">></span>' +
+                    '</div>' +
+                    '<div ng-show="totalCount == 0" class="btn" disabled>' +
+                    '' +
+                    '</div>';
+                return htmlTemplate
+            }
+        }
+    });
+    app.service('messageInterpretationService', ['$http','$q', function($http, $q) {
+        this.get = function(path) {
+          return this.request(path, 'get');
+        };
+        this.post = function(path, data) {
+            return this.request(path, 'post', data);
+        };
+        this.request = function(path, method, data) {
+           var basePath = '<%= ENV['CONSCIENCE_BASE_PATH'] %>';
+           var authorization = '<%= ENV['CONSCIENCE_API_KEY'] %>';
+           if(method === 'post') {
+               return $http.post(basePath + path, data, {
+                       headers: {
+                           'Accept': 'application/json',
+                           'Authorization': authorization
+                       }
+                   })
+           }
+           else if(method === 'get') {
+               return $http.get(basePath + path, {
+                   headers: {
+                       'Accept': 'application/json',
+                       'Authorization': authorization
+                   }
+               })
+           }
+           else {
+               throw 'Unsupported request method';
+           }
+       };
+    }]);
+    app.controller("constraintsController", ['$scope', '$filter', '$window', '$http', '$timeout', 'messageInterpretationService', function ($scope, $filter, $window, $http, $timeout, messageInterpretationService) {
+        $scope.loading = false;
+        $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
+        $scope.offset = 0;
+        $scope.itemsPerPage = 20;
+        $scope.searchQuery = "";
+        $scope.allStatusesActive = {
+            'unchecked': true,
+            'valid': true,
+            'invalid': true,
+            'unknown': true
+        };
+
+        $scope.fetchMode = function () {
+            $http.get("", {
+                withCredentials: true,
+                headers: {'Accept': 'application/json'}
+            }).then(function (response) {
+                $scope.mode = response.data.mode;
+                if ($scope.mode == 'admin') {
+                    $scope.statuses = $scope.allStatusesActive
+                }
+                else {
+                    $scope.statuses = {
+                        'unchecked': true,
+                    };
+                }
+                $scope.fetch();
+            })
+        };
+        $scope.fetch = function () {
+            $scope.loading = true;
+            var url = "/api/v1/constraints";
+            url += "?offset=" + $scope.offset + "&limit=" + $scope.itemsPerPage;
+            var status = [];
+            _.each($scope.statuses, function (v, k) {
+                if (v) {
+                    status.push(k);
+                }
+            });
+            if (status.length > 0) {
+                url += "&constraint_status=" + status.join(",");
+            }
+            if ($scope.searchQuery.length > 0) {
+                url += "&query=" + $scope.searchQuery;
+            }
+            messageInterpretationService.get(url).then(function (response) {
+                $scope.reviews = response.data.data;
+                if($scope.mode === 'review') {
+                    _.each($scope.reviews, function(review) {
+                        if(review.status === 'unchecked') {
+                            review.status = 'valid';
+                        }
+                    });
+                }
+                $scope.totalCount = response.data.total_count;
+                $scope.accuracy = response.data.score;
+                $scope.loading = false;
+            })
+        };
+        $scope.constraintIsChecked = function (constraint) {
+            return constraint.status !== "unchecked"
+        };
+
+        $scope.formatDate = function(date){
+            return moment(date).format('ddd d MMM YYYY')
+        };
+
+        moment.locale('fr')
+        $scope.formatConstraint = function (constraint) {
+            sentence = ''
+            nature = constraint.time_constraint.constraint_nature
+            when_nature = constraint.time_constraint.constraint_when_nature
+            start_time = constraint.time_constraint.start_time
+            end_time = constraint.time_constraint.end_time
+            dates = []
+            _.each(constraint.time_constraint.dates, function(date) {
+              date = new Date(date)
+              date = moment(date).format('ddd d MMM YYYY')
+              dates.push(date)
+            });
+
+            if (nature == 'can') {
+              sentence += ' peut'
+            }
+            else {
+              sentence += ' ne peut pas'
+            }
+
+            if (when_nature == 'from_date') {
+              sentence += ' à partir du ' + dates
+            }
+            else if (when_nature == 'range') {
+              sentence += ' du ' + dates[0] + ' au ' + dates[1]
+            }
+            else if (when_nature == 'custom') {
+              sentence += ' le ' + dates
+            }
+            else if (when_nature == 'at') {
+              sentence += ' le ' + dates
+            }
+
+            if (start_time != "" & end_time == "23:59") {
+              sentence += ' à partir de ' + start_time
+            }
+            else if (start_time == "00:00" & end_time != "") {
+              sentence += ' jusqu\'à ' + end_time
+            }
+            else if (start_time != "" & start_time != "00:00" & end_time != "") {
+              sentence += ' de ' + start_time + ' à ' + end_time
+            }
+
+            return sentence
+        };
+
+        $scope.validateBatch = function () {
+              var data = _.map($scope.reviews, function (review) {
+                validatedConstraints = _.filter(review.time_constraints, function(constraint) {
+                  return $scope.constraintIsChecked(constraint) 
+                })
+                  tmp = _.map(validatedConstraints, function (constraint) {
+                    return {
+                      id: review.id,
+                      time_constraint_id: constraint.time_constraint_id,
+                      value: constraint
+                    }
+                  });
+                  return tmp
+              });
+              data = _.flatten(data)
+              $scope.loading = true;
+              messageInterpretationService.post("/api/v1/constraints/validate", data).then(function () {
+                  $scope.fetch();
+              });
+              $window.scrollTo(0, 0);
+        };
+        $scope.setStatus = function (constraint, status) {
+            constraint.status = status;
+            if (status === "invalid") {
+                $timeout(function () {
+                    var element = $("#correction-" + constraint.constraint_id)[0];
+                });
+            }
+            else {
+                constraint.corrected_constraint = null;
+            }
+        };
+        $scope.$watch("statuses", function (newValue, oldValue) {
+            if(oldValue !== undefined) {
+                $scope.fetch();
+            }
+        }, true);
+        $scope.$watch("offset", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                $scope.fetch();
+            }
+        });
+        $scope.$watch("searchQuery", function (newValue, oldValue) {
+            if(newValue !== oldValue) {
+                clearTimeout($scope.timeoutCode);
+                $scope.timeoutCode = setTimeout(function () {
+                    $scope.fetch();
+                }, 500);
+            }
+        });
+        $scope.fetchMode();
+    }]);
+</script>
+
+<style>
+  .check-btn {
+    opacity: 0.4;
+    font-size: 21px;
+    margin: 1px 0;
+    cursor: pointer;
+  }
+  .check-btn.checked {
+    opacity: 1.0;
+  }
+  .check-btn.success {
+    color: #5cb85c;
+  }
+  .check-btn.error {
+    color: #d9534f;
+  }
+  .check-btn.warning {
+    color: #d321f0;
+  }
+  input[type=text] {
+    border: 1px solid #ccc;
+    outline: none;
+    width: 100%;
+    padding: 0 5px;
+    margin: 1px 0;
+  }
+  input[type=text].error {
+    border: solid 1px red;
+  }
+  td {
+    position: relative;
+  }
+  td.bigWarning::before {
+    content: "";
+    background: #d9534f;
+    position: absolute;
+    left: -30px;
+    top: 10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 10px;
+  }
+  .text {
+    margin: 3.5px 0;
+  }
+  .capitalize {
+    margin: 3.5px 0;
+    text-transform: capitalize;
+}
+</style>
+
+<div ng-app="constraintsApp"
+     ng-controller="constraintsController"
+     class="col-md-offset-2 col-md-8">
+  <h1>Constraints <span ng-show="loading"> [ Loading... ]</span></h1>
+
+  <h4 ng-show="mode == 'review'">Messages to check: {{ totalCount }}</h4>
+  <h4 ng-show="mode != 'review'"> Accuracy : {{ accuracy }} % </h4>
+
+  <div ng-show="mode == 'admin'"
+       class="alert alert-info row">
+    <div class="col-md-4">
+      <h4>Status:</h4>
+      <div ng-repeat="statusItem in availableStatuses"><input type="checkbox" ng-model="statuses[statusItem]"> {{
+        statusItem }}
+      </div>
+    </div>
+    <div class="col-md-4">
+
+      <input ng-model="searchQuery" placeholder="Search for messages...">
+    </div>
+    <div class="col-md-4">
+      <results-navigator offset="offset" total-count="totalCount" items-per-page="itemsPerPage"></results-navigator>
+    </div>
+
+  </div>
+
+
+
+<table class="table table-striped">
+    <tr>
+      <th>Message</th>
+      <th>Reference Date</th>
+      <th>Text</th>
+      <th>Constraint</th>
+      <th>Status</th>
+    </tr>
+    <tr ng-repeat="review in reviews">
+        
+          <td class="col-md-4">{{ review.message }}</td>
+          <td class="col-md-2">{{ formatDate(review.reference_date) }}</td>
+          <td class="col-md-2">
+              <div class="text" ng-repeat="constraint in review.time_constraints" >{{ constraint.time_constraint.text }}</div>
+          </td>
+          <td class="col-md-3">
+              <div class="text" ng-repeat="constraint in review.time_constraints">{{ formatConstraint(constraint) }}</div>
+          </td>
+          <td class="col-md-1" style="min-width: 120px">
+            <div ng-repeat="constraint in review.time_constraints">
+              <span class="fa fa-check check-btn success"
+                    ng-class="{checked: constraint.status == 'valid'}"
+                    ng-click="setStatus(constraint, 'valid')"></span>
+              <span class="fa fa-times check-btn error"
+                    ng-class="{checked: constraint.status == 'invalid'}"
+                    ng-click="setStatus(constraint, 'invalid')"></span>
+              <span class="fa fa-question check-btn warning"
+                    ng-class="{checked: constraint.status == 'unknown'}"
+                    ng-click="setStatus(constraint, 'unknown')"></span>
+            </div>
+          </td>
+    </tr>
+</table>
+
+  <div class="btn btn-success" ng-click="validateBatch()">Validate</div>
+
+</div>
