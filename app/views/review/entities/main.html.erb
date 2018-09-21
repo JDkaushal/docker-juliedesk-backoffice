@@ -89,7 +89,7 @@
         $scope.loading = false;
 
         $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
-        $scope.availableTypes = ['duration', 'location', 'timezone', 'time_constraints'];
+        $scope.availableTypes = ['duration', 'location', 'timezone', 'time constraints'];
         $scope.offset = 0;
         $scope.itemsPerPage = 20;
         $scope.searchQuery = "";
@@ -103,7 +103,7 @@
             'duration': true,
             'location': true,
             'timezone': true,
-            'time_constraints': true
+            'time constraints': true
         };
         $scope.fetchMode = function () {
             $http.get("", {
