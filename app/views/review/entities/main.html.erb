@@ -89,6 +89,7 @@
         $scope.loading = false;
 
         $scope.availableStatuses = ['unchecked', 'valid', 'invalid', 'unknown'];
+        $scope.availableTypes = ['duration', 'location', 'timezone', 'time_constraints'];
         $scope.offset = 0;
         $scope.itemsPerPage = 20;
         $scope.searchQuery = "";
@@ -97,6 +98,12 @@
             'valid': true,
             'invalid': true,
             'unknown': true
+        };
+        $scope.allTypesActive = {
+            'duration': true,
+            'location': true,
+            'timezone': true,
+            'time_constraints': true
         };
         $scope.fetchMode = function () {
             $http.get("", {
@@ -107,11 +114,13 @@
                 $scope.mode = response.data.mode;
                 if ($scope.mode == 'admin') {
                     $scope.statuses = $scope.allStatusesActive
+                    $scope.types = $scope.allTypesActive
                 }
                 else {
                     $scope.statuses = {
                         'unchecked': true,
                     };
+                    $scope.types = $scope.allTypesActive
                 }
                 $scope.fetch();
             })
@@ -126,8 +135,17 @@
                     status.push(k);
                 }
             });
+            var types = [];
+            _.each($scope.types, function (v, k) {
+                if (v) {
+                    types.push(k);
+                }
+            });
             if (status.length > 0) {
                 url += "&entity_status=" + status.join(",");
+            }
+            if (types.length > 0) {
+                url += "&entity_types=" + types.join(",");
             }
             if ($scope.searchQuery.length > 0) {
                 url += "&query=" + $scope.searchQuery;
@@ -226,6 +244,13 @@
 
         }, true);
 
+        $scope.$watch("types", function (newValue, oldValue) {
+            if(oldValue !== undefined) {
+                $scope.fetch();
+            }
+
+        }, true);
+
         $scope.$watch("offset", function (newValue, oldValue) {
             if(newValue !== oldValue) {
                 $scope.fetch();
@@ -316,10 +341,16 @@
 
   <div ng-show="mode == 'admin'"
        class="alert alert-info row">
-    <div class="col-md-4">
+    <div class="col-md-2">
       <h4>Status:</h4>
       <div ng-repeat="statusItem in availableStatuses"><input type="checkbox" ng-model="statuses[statusItem]"> {{
         statusItem }}
+      </div>
+    </div>
+    <div class="col-md-2">
+      <h4>Types:</h4>
+      <div ng-repeat="typeItem in availableTypes"><input type="checkbox" ng-model="types[typeItem]"> {{
+        typeItem }}
       </div>
     </div>
     <div class="col-md-4">
@@ -331,7 +362,6 @@
     </div>
 
   </div>
-
 
 
 <table class="table table-striped">
