@@ -180,10 +180,10 @@
             if (when_nature == 'at') {
               sentence += ' à ' + start_time
             }
-            else if (start_time != "" & end_time == "23:59") {
+            else if (start_time != "" & (end_time == "23:59" | end_time == "")) {
               sentence += ' à partir de ' + start_time
             }
-            else if (start_time == "00:00" & end_time != "") {
+            else if ((start_time == "00:00" | start_time == "") & end_time != "") {
               sentence += ' jusqu\'à ' + end_time
             }
             else if (start_time != "" & start_time != "00:00" & end_time != "") {
