@@ -1323,7 +1323,7 @@
             var threadOwner = $scope.getThreadOwner();
             if(!!threadOwner.company) {
                 return _($scope.attendees).filter(function(a) {
-                    return a.isPresent && a.company !== threadOwner.company;
+                    return a.isPresent && (a.company || '').toLowerCase() !== (threadOwner.company || '').toLowerCase();
                 });
             } else {
                 return $scope.attendees;
