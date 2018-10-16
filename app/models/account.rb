@@ -321,7 +321,7 @@ class Account
 
 
   def build_contacts_from_same_company params={}
-      company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'name'))
+      company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'identifier'))
 
       if company_members.present?
         company_members = JSON.parse(company_members)
