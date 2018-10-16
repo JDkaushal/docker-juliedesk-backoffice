@@ -321,18 +321,24 @@ class Account
 
 
   def build_contacts_from_same_company params={}
-      company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'identifier'))
+      if ENV['SPECIFIC_TENANT'] == 'sg'
+        # for SG every users are in the same company, so it is pointless and cause bugs to get every users as potential contact
+        self.contacts_from_same_company = []
+      else
+        company_members = REDIS_FOR_ACCOUNTS_CACHE.get(self.company_hash.try(:[], 'identifier'))
 
-      if company_members.present?
-        company_members = JSON.parse(company_members)
-        company_members.reject!{ |u| u['email'] == self.email }
-        company_members.each  do |contact|
-          contact[:email] = contact['email']
-          contact[:account_email] = contact[:email]
+        if company_members.present?
+          company_members = JSON.parse(company_members)
+          company_members.reject!{ |u| u['email'] == self.email }
+          company_members.each  do |contact|
+            contact[:email] = contact['email']
+            contact[:account_email] = contact[:email]
+          end
         end
+
+        self.contacts_from_same_company = company_members || []
       end
 
-      self.contacts_from_same_company = company_members || []
     #end
   end
 
