@@ -1425,7 +1425,7 @@ class MessagesThread < ActiveRecord::Base
 
   def do_not_ask_suggestions_emails_to_check
     emails_to_check = self.client_attendees_emails
-    if self.account.linked_attendees_enabled
+    if self.has_clients_with_linked_attendees_enabled
       emails_to_check += self.linked_attendees_emails
     end
 

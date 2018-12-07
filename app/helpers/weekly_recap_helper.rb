@@ -448,27 +448,27 @@ module WeeklyRecapHelper
       # If the thread last message is less than 14 days olds we considere it is still scheduling
       # If not we consider it has been aborted
       {
-          account_email: params[:account_email],
-          status: "scheduling",
-          subject: computed_data_light[:summary],
-          thread_subject: mt.subject,
-          other: {
-              id: mt.id,
-              server_thread_id: mt.server_thread_id,
-              waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
-              valid_suggestions_count: computed_data_light[:date_times].select { |dt|
-                begin
-                  DateTime.parse(dt['date']) > DateTime.now
-                rescue
-                  false
-                end
-              }.length,
-              suggestions_count: computed_data_light[:date_times].length,
-              appointment_nature: computed_data_light[:appointment_nature],
-              attendees: attendees,
-              last_message_received_at: last_message_received_at.to_s,
-              follow_up_reminder_date: mt.follow_up_reminder_date ? mt.follow_up_reminder_date.to_s : nil
-          }
+        account_email: params[:account_email],
+        status: "scheduling",
+        subject: computed_data_light[:summary],
+        thread_subject: mt.subject,
+        other: {
+          id: mt.id,
+          server_thread_id: mt.server_thread_id,
+          waiting_for: mt.current_status == MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT ? "client" : "contact",
+          valid_suggestions_count: computed_data_light[:date_times].select { |dt|
+            begin
+              DateTime.parse(dt['date']) > DateTime.now
+            rescue
+              false
+            end
+          }.length,
+          suggestions_count: computed_data_light[:date_times].length,
+          appointment_nature: computed_data_light[:appointment_nature],
+          attendees: attendees,
+          last_message_received_at: last_message_received_at.to_s,
+          follow_up_reminder_date: mt.follow_up_reminder_date ? mt.follow_up_reminder_date.to_s : nil
+        }
       }
     end
 
