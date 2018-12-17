@@ -10,7 +10,7 @@ rescue Errno::ENOENT
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.8'
+gem 'rails', '4.2.11'
 ruby '2.4.4'
 
 # Use postgresql as the database for Active Record
@@ -48,7 +48,7 @@ gem 'whenever', :require => false
 gem 'handlebars_assets'
 
 gem "rack-timeout"
-gem 'rack-cors', :require => 'rack/cors'
+gem 'rack-cors', '~> 0.4.0', :require => 'rack/cors'
 
 gem "redis"
 
