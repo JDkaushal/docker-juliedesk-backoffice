@@ -78,7 +78,6 @@ class MeetingService
 
   def confirm_suggested_date(suggested_date, validator)
     raise NoThreadAccount.new("no account for thread #{@messages_thread.id}") unless @messages_thread.account.present?
-    raise FeatureNotEnabled.new("this feature is not enabled") unless @messages_thread.account.call_to_action_in_email_enabled
 
     raise MeetingNotScheduling.new("Thread #{@messages_thread.id} is not scheduling") unless @messages_thread.scheduling_status == MessagesThread::SCHEDULING_EVENT
     attendees = JSON.parse(last_message_classification.attendees || '[]')

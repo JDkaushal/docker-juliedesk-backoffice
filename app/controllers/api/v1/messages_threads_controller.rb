@@ -163,11 +163,6 @@ class Api::V1::MessagesThreadsController < Api::ApiV1Controller
       return
     end
 
-    unless @messages_thread.account && @messages_thread.account.call_to_action_in_email_enabled
-      render json: { error_code: 'FEATURE_NOT_ENABLED', message: '' }, status: :forbidden
-      return
-    end
-
     last_classification = @messages_thread.last_message_classification_with_data
     julie_action = last_classification.julie_action
 
