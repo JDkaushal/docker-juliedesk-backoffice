@@ -148,7 +148,6 @@ class MeetingService
 
   def update_infos(data)
     raise NoThreadAccount.new("no account for thread #{@messages_thread.id}") unless @messages_thread.account.present?
-    raise FeatureNotEnabled.new("this feature is not enabled") unless @messages_thread.account.call_to_action_in_email_enabled
     if [MessagesThread::EVENTS_CREATED, MessagesThread::EVENT_SCHEDULED].include?(@messages_thread.scheduling_status)
       raise MeetingNotScheduling.new("Thread #{@messages_thread.id} is not scheduling")
     end
