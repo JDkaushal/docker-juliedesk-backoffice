@@ -689,22 +689,22 @@ class Message < ActiveRecord::Base
               updated_messages_thread_ids << messages_thread.id
             end
 
-            if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
-              #m.server_message = server_message
-              unless messages_thread.account
-                account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
-                if account_email
-                  account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
-                  messages_thread.update_attributes({
-                                                        account_email: account_email,
-                                                        account_name: account.try(:usage_name)
-                                                    })
-                end
-              end
-              messages_thread.update(handled_by_ai: true)
-              Message.delegate_to_julia_async(m.id)
-              should_call_conscience = false
-            end
+            # if server_message['to'].include?('jul.ia@juliedesk.com') || (server_message['cc'].present? && server_message['cc'].include?('jul.ia@juliedesk.com'))
+            #   #m.server_message = server_message
+            #   unless messages_thread.account
+            #     account_email = MessagesThread.find_account_email(server_thread, {accounts_cache: accounts_cache})
+            #     if account_email
+            #       account = Account.create_from_email(account_email, {accounts_cache: accounts_cache})
+            #       messages_thread.update_attributes({
+            #                                             account_email: account_email,
+            #                                             account_name: account.try(:usage_name)
+            #                                         })
+            #     end
+            #   end
+            #   messages_thread.update(handled_by_ai: true)
+            #   Message.delegate_to_julia_async(m.id)
+            #   should_call_conscience = false
+            # end
 
             if should_call_conscience
               ConscienceWorker.enqueue m.id
