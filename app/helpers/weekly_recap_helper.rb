@@ -91,7 +91,7 @@ module WeeklyRecapHelper
       AND not_from_me_mess_count > 0;
     SQL
 
-    mts_ids = MessagesThread.find_by_sql(sql)
+    mts_ids = MessagesThread.find_by_sql(sql).map { |mt| mt.id }
     mts = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(mts_ids)
 
     mts.select { |mt|
@@ -159,7 +159,7 @@ module WeeklyRecapHelper
 
     # Retrieve the thread ids then query the database to get all the necessary informations
     # Did not found an easy way to get all the thread attriutes in the ROOT select of the query (would need to specify all the attributes by hand)
-    mts_ids = MessagesThread.find_by_sql(sql)
+    mts_ids = MessagesThread.find_by_sql(sql).map { |mt| mt.id }
     mts = MessagesThread.includes(messages: {message_classifications: :julie_action}).find(mts_ids)
 
     mts.select { |mt|
@@ -365,7 +365,7 @@ module WeeklyRecapHelper
       }
     } + still_scheduling + aborted_scheduling
   end
-  
+
   def self.get_activity_recap_data params
 
     scheduled_mts = self.get_threads_coming_from_scheduling(params[:window_start_time], params[:window_end_time], {
