@@ -1,7 +1,7 @@
 class Review::MessagesThreadsController < ReviewController
 
-  skip_before_filter :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
-  before_filter :only_mine, only: [:learn, :learnt, :learn_next]
+  skip_before_action :only_super_operator_level_2_or_admin, only: [:learn, :learnt, :learn_next]
+  before_action :only_mine, only: [:learn, :learnt, :learn_next]
 
   def review
     begin

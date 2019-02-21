@@ -43,15 +43,15 @@ describe ApplicationController, :type => :controller do
 
     describe 'Change sound' do
       it 'should manage whether the sound is activated or not in the application' do
-        post :change_sound, activated: "false"
+        post :change_sound, params: { activated: "false" }
         expect(session[:sound_is_activated]).to be(false)
 
-        post :change_sound, activated: "true"
+        post :change_sound, params: { activated: "true" }
         expect(session[:sound_is_activated]).to be(true)
       end
 
       it 'should return the correct JSON' do
-        post :change_sound, activated: "false"
+        post :change_sound, params: { activated: "false" }
 
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
       end
@@ -62,7 +62,7 @@ describe ApplicationController, :type => :controller do
         before_action :set_locale
 
         def index
-          render nothing: true
+          head :ok
         end
       end
 
@@ -73,13 +73,13 @@ describe ApplicationController, :type => :controller do
       end
 
       it 'should set the locale to en' do
-        get :index, locale: 'en'
+        get :index, params: { locale: 'en' }
 
         expect(I18n.locale).to eq(:en)
       end
 
       it 'should fallback to fr when a not permitted locale is used' do
-        get :index, locale: 'de'
+        get :index, params: { locale: 'de' }
 
         expect(I18n.locale).to eq(:fr)
       end

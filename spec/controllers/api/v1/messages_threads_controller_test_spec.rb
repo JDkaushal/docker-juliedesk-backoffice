@@ -17,7 +17,7 @@ describe Api::V1::MessagesThreadsController, :type => :controller do
 
     it 'should return the correct context for the messages_thread' do
       #pending 'Waiting for reactivation'
-      get :messages_thread_context, id: 666
+      get :messages_thread_context, params: { id: 666 }
 
       expect(JSON.parse(response.body)).to eq({
                                                   "thread" => {

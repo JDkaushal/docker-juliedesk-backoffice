@@ -53,7 +53,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
       it 'should populate the correct instance variables' do
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
-        get :index, start: Time.now
+        get :index, params: { start: Time.now }
 
         expect(assigns(:operators).map(&:id)).to eq([@normal.id, @op1.id, @op2.id, @op3.id, @op4.id, @op5.id])
       end
@@ -72,7 +72,7 @@ describe Review::OperatorsPresenceController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :index, start: DateTime.new(2015, 9, 10)
+        get :index, params: { start: DateTime.new(2015, 9, 10) }
         expect(response.body).to eq(<<END
 Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Count
 #{@normal.name};;;;;;;;0.0
@@ -107,7 +107,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :index, start: DateTime.new(2015, 9, 10).to_s, format: :json
+        get :index, params: { start: DateTime.new(2015, 9, 10).to_s, format: :json }
 
         body = JSON.parse response.body
         expect(body['status']).to eq("success")
@@ -132,7 +132,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :index, start: DateTime.new(2015, 9, 10).to_s, format: :csv
+        get :index, params: { start: DateTime.new(2015, 9, 10).to_s, format: :csv }
         expect(response.body).to eq(<<END
 Semaine 36;Thursday;Friday;Saturday;Sunday;Monday;Tuesday;Wednesday;Count
 #{@normal.name};;;;;;;;0.0
@@ -159,7 +159,7 @@ END
       it 'should access the index page if the operator has admin privileges' do
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :add, presences: []
+        post :add, params: { presences: [] }
         expect(response.body).to eq('{}')
       end
 
@@ -174,7 +174,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s]
+        post :add, params: { operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s] }
 
         @op1.reload
         expect(@op1.operator_presences.size).to eq(4)
@@ -187,7 +187,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s]
+        post :add, params: { operator_id: @op1, presences: [DateTime.new(2015, 10, 10).to_s, DateTime.new(2015, 10, 12).to_s, DateTime.new(2015, 10, 13).to_s, DateTime.new(2015, 10, 14).to_s] }
 
         @op1.reload
         expect(@op1.operator_presences.size).to eq(4)
@@ -204,7 +204,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :add, operator_id: @op1, presences: [DateTime.new(2015, 10, 16).to_s]
+        post :add, params: { operator_id: @op1, presences: [DateTime.new(2015, 10, 16).to_s] }
 
         @op1.reload
         expect(@op1.operator_presences.size).to eq(5)
@@ -234,7 +234,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :copy_day, day: DateTime.new(2015, 10, 12, 17, 00, 00), days: 3
+        post :copy_day, params: { day: DateTime.new(2015, 10, 12, 17, 00, 00), days: 3 }
 
         expect(@op1.operator_presences.size).to eq(6)
         expect(@op2.operator_presences.size).to eq(6)
@@ -269,7 +269,7 @@ END
 
         expect{
           expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
-          post :reset_day, day: DateTime.new(2015, 10, 12, 17, 00, 00)
+          post :reset_day, params: { day: DateTime.new(2015, 10, 12, 17, 00, 00) }
         }.to change{OperatorPresence.count}.by(-6)
 
         expect(@op1.operator_presences.size).to eq(1)
@@ -288,7 +288,7 @@ END
 
         expect{
           expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
-          post :remove, operator_id: @op1.id, presences: [DateTime.new(2015, 10, 12, 16, 00, 00).to_s, DateTime.new(2015, 10, 12, 23, 00, 00).to_s]
+          post :remove, params: { operator_id: @op1.id, presences: [DateTime.new(2015, 10, 12, 16, 00, 00).to_s, DateTime.new(2015, 10, 12, 23, 00, 00).to_s] }
         }.to change{OperatorPresence.count}.by(-2)
 
         @op1.reload
@@ -304,7 +304,7 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: "", productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
@@ -312,7 +312,7 @@ END
 
         expect(Uploaders::AmazonAws).to receive(:store_file).with("planning_constraints_01-01-2016T12:00:00.csv", "test")
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
+        post :upload_planning_constraints, params: {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should send the correct request to the AI' do
@@ -320,7 +320,7 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        expect_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: "", productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
@@ -328,7 +328,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
+        post :upload_planning_constraints, params: {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should call the correct method to handle the planning data' do
@@ -336,7 +336,7 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: "", productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         expect(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
@@ -344,7 +344,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
+        post :upload_planning_constraints, params: {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
       end
 
       it 'should render the correct json' do
@@ -352,7 +352,7 @@ END
 
         allow(Time).to receive(:now).and_return(Time.new(2016,01,01,12,00,00))
 
-        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: nil, productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
+        allow_any_instance_of(AiProxy).to receive(:build_request).with(:initiate_planning, { n_new_clients: "", productivity: "5", filename: "planning_constraints_01-01-2016T12:00:00.csv", date: start_date.to_s }).and_return({})
 
         allow(controller).to receive(:handle_planning_ai_data).with({"start_date"=>"2016-01-01 15:00:00 UTC"})
 
@@ -360,7 +360,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :upload_planning_constraints, {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
+        post :upload_planning_constraints, params: {file: "test", productivity: 5, start_date: start_date, n_new_clients: nil}
 
         expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\",\"filename\":\"planning_constraints_01-01-2016T12:00:00.csv\"}")
       end
@@ -377,7 +377,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+        post :get_planning_from_ai, params: {filename: filename, productivity: 5, start_date: start_date}
       end
 
       it 'should send the correct request to the AI' do
@@ -389,7 +389,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+        post :get_planning_from_ai, params: {filename: filename, productivity: 5, start_date: start_date}
       end
 
       it 'should render the correct json' do
@@ -401,7 +401,7 @@ END
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :get_planning_from_ai, {filename: filename, productivity: 5, start_date: start_date}
+        post :get_planning_from_ai, params: {filename: filename, productivity: 5, start_date: start_date}
         expect(response.body).to eq("{\"start_date\":\"2016-01-01 15:00:00 UTC\"}")
       end
 

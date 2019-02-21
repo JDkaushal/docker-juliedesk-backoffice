@@ -76,7 +76,7 @@ describe Review::OperatorsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :show, id: @op1.id
+        get :show, params: { id: @op1.id }
 
         expect(assigns(:operator)).to eq(@op1)
       end
@@ -84,7 +84,7 @@ describe Review::OperatorsController, :type => :controller do
       it 'should set the current operator variable to nil if all operators are requested' do
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :show, id: 'all'
+        get :show, params: { id: 'all' }
         expect(assigns(:operator)).to be(nil)
       end
     end

@@ -34,7 +34,7 @@ describe MessagesThreadsController, :type => :controller do
       it 'should set the thread to_be_merged boolean to true' do
         @messages_thread.update(to_be_merged: false)
 
-        post :set_to_be_merged, id: @messages_thread.id, to_merge: true
+        post :set_to_be_merged, params: { id: @messages_thread.id, to_merge: true }
 
         @messages_thread.reload
 
@@ -45,7 +45,7 @@ describe MessagesThreadsController, :type => :controller do
       it 'should set the thread to_be_merged boolean to false' do
         @messages_thread.update(to_be_merged: true)
 
-        post :set_to_be_merged, id: @messages_thread.id, to_merge: false
+        post :set_to_be_merged, params: { id: @messages_thread.id, to_merge: false }
 
         @messages_thread.reload
 

@@ -3,11 +3,11 @@ require_relative "../rails_helper"
 describe ReviewController, :type => :controller do
 
   controller do
-    before_filter :only_admin
+    before_action :only_admin
     layout "review"
 
     def index
-      render text: 'OK'
+      render plain: 'OK'
     end
 
     def new
@@ -52,9 +52,4 @@ describe ReviewController, :type => :controller do
     end
   end
 
-  describe 'Layout' do
-    it 'should render the correct layout' do
-      expect(controller.send(:_layout)).to eq('review')
-    end
-  end
 end

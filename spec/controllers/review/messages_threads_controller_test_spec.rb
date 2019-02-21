@@ -36,7 +36,7 @@ describe Review::MessagesThreadsController, :type => :controller do
         expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
-        get :review, id: mt1.id
+        get :review, params: { id: mt1.id }
         expect(assigns(:messages_thread)).to eq(mt1)
       end
 
@@ -61,7 +61,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :review, id: mt1.id
+        get :review, params: { id: mt1.id }
         expect(assigns(:to_review_count)).to eq(3)
       end
 
@@ -87,7 +87,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :review, id: mt1.id
+        get :review, params: { id: mt1.id }
         expect(assigns(:to_review_count)).to eq(2)
       end
     end
@@ -103,7 +103,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
           expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-          get :learn, id: mt1.id
+          get :learn, params: { id: mt1.id }
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
@@ -115,7 +115,7 @@ describe Review::MessagesThreadsController, :type => :controller do
           expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
           expect_any_instance_of(MessagesThread).to receive(:account).and_return(true)
 
-          get :learn, id: mt1.id, operator_id: @normal.id
+          get :learn, params: { id: mt1.id, operator_id: @normal.id }
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
@@ -127,7 +127,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
-          get :learn, id: mt1.id, operator_id: op1.id
+          get :learn, params: { id: mt1.id, operator_id: op1.id }
           expect(response.code).to eq("302")
           expect(response).to redirect_to("/")
         end
@@ -141,7 +141,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :learn, id: mt1.id
+        get :learn, params: { id: mt1.id }
         expect(assigns(:messages_thread)).to eq(mt1)
       end
 
@@ -168,7 +168,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :learn, id: mt1.id, operator_id: op1.id
+        get :learn, params: { id: mt1.id, operator_id: op1.id }
         expect(assigns(:to_learn_count)).to eq(3)
       end
     end
@@ -183,7 +183,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :group_review, id: mt1.id
+        get :group_review, params: { id: mt1.id }
         expect(assigns(:messages_thread)).to eq(mt1)
       end
 
@@ -210,7 +210,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :group_review, id: mt1.id
+        get :group_review, params: { id: mt1.id }
         expect(assigns(:to_group_review_count)).to eq(3)
       end
     end
@@ -222,7 +222,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
           expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-          post :learnt, id: mt1.id
+          post :learnt, params: { id: mt1.id }
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
@@ -231,7 +231,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
-          post :learnt, id: mt1.id, operator_id: @normal.id
+          post :learnt, params: { id: mt1.id, operator_id: @normal.id }
           expect(assigns(:messages_thread)).to eq(mt1)
         end
 
@@ -241,7 +241,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
           mt1 = FactoryGirl.create(:messages_thread_for_inbox_count)
 
-          post :learnt, id: mt1.id, operator_id: @admin.id
+          post :learnt, params: { id: mt1.id, operator_id: @admin.id }
           expect(response.code).to eq("302")
           expect(response).to redirect_to('/')
         end
@@ -267,7 +267,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :learnt, id: mt2.id, operator_id: op1.id
+        post :learnt, params: { id: mt2.id, operator_id: op1.id }
         expect(oag1.reload.review_status).to eq(OperatorActionsGroup::REVIEW_STATUS_LEARNT)
       end
 
@@ -292,7 +292,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :learnt, id: mt2.id, operator_id: op2.id
+        post :learnt, params: { id: mt2.id, operator_id: op2.id }
         expect(oag1.reload.review_status).not_to eq(OperatorActionsGroup::REVIEW_STATUS_LEARNT)
       end
 
@@ -317,7 +317,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :learnt, id: mt2.id, operator_id: op1.id
+        post :learnt, params: { id: mt2.id, operator_id: op1.id }
         expect(response).to redirect_to("/review/messages_threads/#{oag2.messages_thread_id}/learn?operator_id=#{op1.id}")
       end
 
@@ -339,7 +339,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :learnt, id: mt2.id, operator_id: op1.id
+        post :learnt, params: { id: mt2.id, operator_id: op1.id }
         expect(response).to redirect_to(my_stats_review_operators_path)
       end
     end
@@ -350,7 +350,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :reviewed, id: mt1.id, data: "[{\"x\":1},{\"y\":3}]"
+        post :reviewed, params: { id: mt1.id, data: "[{\"x\":1},{\"y\":3}]" }
         expect(assigns(:messages_thread)).to eq(mt1)
       end
 
@@ -374,7 +374,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :reviewed, id: mt2.id, data: [{operator_actions_group_id: oag1.id, notation: 5, comment: 'Comment'}, {operator_actions_group_id: oag2.id, notation: 4, comment: 'Comment 2'}, {operator_actions_group_id: oag3.id, notation: 3, should_review_in_group: true, comment: 'Comment 3'}].to_json
+        post :reviewed, params: { id: mt2.id, data: [{operator_actions_group_id: oag1.id, notation: 5, comment: 'Comment'}, {operator_actions_group_id: oag2.id, notation: 4, comment: 'Comment 2'}, {operator_actions_group_id: oag3.id, notation: 3, should_review_in_group: true, comment: 'Comment 3'}].to_json }
 
         oag1.reload
         oag2.reload
@@ -390,7 +390,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :reviewed, id: mt2.id, data: [{test: 'test'}].to_json
+        post :reviewed, params: { id: mt2.id, data: [{test: 'test'}].to_json }
         expect(response.body).to eq("<script>window.close();</script>")
       end
     end
@@ -401,7 +401,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :group_reviewed, id: mt1.id
+        post :group_reviewed, params: { id: mt1.id }
         expect(assigns(:messages_thread)).to eq(mt1)
       end
 
@@ -420,7 +420,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :group_reviewed, id: mt1.id
+        post :group_reviewed, params: { id: mt1.id }
 
         oag1.reload
         oag2.reload
@@ -448,7 +448,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :group_reviewed, id: mt1.id
+        post :group_reviewed, params: { id: mt1.id }
 
         expect(response).to redirect_to("/review/messages_threads/#{oag4.messages_thread_id}/group_review")
       end
@@ -468,7 +468,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        post :group_reviewed, id: mt1.id
+        post :group_reviewed, params: { id: mt1.id }
 
         expect(response).to redirect_to(review_operators_path)
       end
@@ -569,7 +569,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :learn_next, operator_id: op1.id
+        get :learn_next, params: { operator_id: op1.id }
 
         expect(response).to redirect_to("/review/messages_threads/#{oag1.messages_thread_id}/learn?operator_id=#{oag1.operator_id}")
       end
@@ -588,7 +588,7 @@ describe Review::MessagesThreadsController, :type => :controller do
 
         expect(controller).to receive(:jd_auth_current_user).at_least(:once).and_return(OpenStruct.new(email: @user_admin))
 
-        get :learn_next, operator_id: op1.id
+        get :learn_next, params: { operator_id: op1.id }
 
         expect(response).to redirect_to(my_stats_review_operators_path)
       end

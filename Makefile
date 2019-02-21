@@ -26,7 +26,7 @@ test_job:
 	  database: test\n\
 	" > config/database.yml
 
-	docker run -d -p 5432:5432 --rm --name postgres-$(NAME)-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=archive_test postgres:9.6-alpine
+	docker run -d -p 5432:5432 --rm --name postgres-$(NAME)-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=test postgres:9.6-alpine
 
 	sleep 5
 
@@ -34,7 +34,7 @@ test_job:
 	RAILS_ENV=test bundle exec rake db:setup
 	RAILS_ENV=archive_test bundle exec rake db:setup
 
-	RAILS_ENV=test API_ENABLED=true ADMIN_PANEL_ENABLED=true DASHBOARD_TEMPORARY_PASSWORD_ENCRYPTION_KEY=$(TEST_KEY) JULIE_ALIASES_CREDENTIALS_KEY=$(TEST_KEY) API_KEY=$(TEST_KEY) CLIENT_MANAGER_API_TOKEN=$(TEST_KEY) GOOGLE_API_KEY=$(TEST_KEY) SLASH_ENCRYPTION_KEY=$(TEST_ENCRYPTION_KEY_BASE64) bundle exec rspec
+	RAILS_ENV=test API_KEY=$(TEST_KEY) SLASH_ENCRYPTION_KEY=$(TEST_ENCRYPTION_KEY_BASE64) bundle exec rspec
 
 test_epilogue:
 	docker stop postgres-$(NAME)-test

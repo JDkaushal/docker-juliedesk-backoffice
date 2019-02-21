@@ -3,7 +3,7 @@ class MessagesThreadsController < ApplicationController
   layout 'inbox.vue', only: :index
   include ProfilerHelper
 
-  before_filter :only_admin, only: [:history]
+  before_action :only_admin, only: [:history]
 
   before_action :check_staging_mode
 

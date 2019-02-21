@@ -3,7 +3,7 @@ class Review::OperatorsController < ReviewController
   include SmartListing::Helper::ControllerExtensions
   helper  SmartListing::Helper
 
-  skip_before_filter :only_super_operator_level_2_or_admin, only: [:my_stats, :my_errors]
+  skip_before_action :only_super_operator_level_2_or_admin, only: [:my_stats, :my_errors]
 
   def my_stats
     @operator = Operator.find session[:operator_id]

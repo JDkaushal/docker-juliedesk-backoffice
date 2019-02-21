@@ -2,12 +2,12 @@ require_relative "../rails_helper"
 
 describe ApiController, :type => :controller do
   controller do
-    before_filter :authenticate, :cors_preflight_check
-    after_filter :cors_set_access_control_headers
-    skip_before_filter :verify_authenticity_token
+    before_action :authenticate, :cors_preflight_check
+    after_action :cors_set_access_control_headers
+    #skip_before_action :verify_authenticity_token
 
     def index
-      render text: 'Passed'
+      render plain: 'Passed'
     end
 
     def options_request

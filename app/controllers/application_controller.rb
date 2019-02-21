@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   # protect_from_forgery with: :exception
   protect_from_forgery with: :null_session
 
-  before_filter :authenticate, :set_locale, except: [:logout, :login, :process_login]
+  before_action :authenticate, :set_locale, except: [:logout, :login, :process_login]
   before_action :check_rack_mini_profiler
 
   skip_before_action :verify_authenticity_token

@@ -1,6 +1,6 @@
 class TuringReview::AutoMessageClassificationsController < TuringReviewController
 
-  before_filter :only_admin, only: [:admin_review_turing_index]
+  before_action :only_admin, only: [:admin_review_turing_index]
 
   def main
     @data = Hash[AutoMessageClassification.get_all_batch_identifiers.map do |batch_identifier|

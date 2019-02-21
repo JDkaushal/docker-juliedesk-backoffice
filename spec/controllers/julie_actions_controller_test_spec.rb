@@ -50,7 +50,7 @@ describe JulieActionsController, :type => :controller do
 
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
 
-        get :show, id: ja1.id
+        get :show, params: { id: ja1.id }
 
         expect(assigns(:julie_action)).to eq(ja1)
         expect(assigns(:message)).to eq(m1)
@@ -88,7 +88,7 @@ describe JulieActionsController, :type => :controller do
                                                                        messages_thread_id: mt1.id
                                                                    })
 
-        get :show, id: ja1.id
+        get :show, params: { id: ja1.id }
       end
     end
 
@@ -108,7 +108,7 @@ describe JulieActionsController, :type => :controller do
         ja1 = JulieAction.create(message_classification_id: mc1.id)
 
 
-        put :update, id: ja1.id, text: 'New Text'
+        put :update, params: { id: ja1.id, text: 'New Text' }
 
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
       end
@@ -137,14 +137,14 @@ describe JulieActionsController, :type => :controller do
             done: true,
             events: "[{\"name\":\"event 1\"},{\"name\":\"event 2\"}]",
             processed_in: "3",
-            deleted_event: false,
+            deleted_event: "false",
             :event_from_invitation=>nil,
             :event_from_invitation_organizer=>nil,
             :date_suggestions_full_ai=>false,
             :ai_call_status=>nil,
             :template_kind => nil
         })
-        put :update, id: ja1.id, text: 'New Text', generated_text: 'New Text generated', date_times: ["2015-11-27T15:00:01+01:00", "2015-11-28T16:00:01+01:00", "2015-11-29T15:20:01+01:00"], event_id: 2, event_url: 'test@url.com', calendar_id: 2, calendar_login_username: 'username', done: true, events: {1 => {name: 'event 1'}, 2 => {name: 'event 2'}}, processed_in: 3, deleted_event: false
+        put :update, params: { id: ja1.id, text: 'New Text', generated_text: 'New Text generated', date_times: ["2015-11-27T15:00:01+01:00", "2015-11-28T16:00:01+01:00", "2015-11-29T15:20:01+01:00"], event_id: 2, event_url: 'test@url.com', calendar_id: 2, calendar_login_username: 'username', done: true, events: {1 => {name: 'event 1'}, 2 => {name: 'event 2'}}, processed_in: 3, deleted_event: false }
       end
 
       it 'should update the calling instructions if present of the julie action message classification' do
@@ -161,9 +161,9 @@ describe JulieActionsController, :type => :controller do
 
         ja1 = JulieAction.create(message_classification_id: mc1.id)
 
-        expect_any_instance_of(MessageClassification).to receive(:update).with(call_instructions: "{\"target\":\"interlocutor\",\"targetInfos\":{\"$$hashKey\":\"object:162\",\"displayName\":\"Pierre Jean (grepolide@gmail.com)\",\"email\":\"grepolide@gmail.com\",\"guid\":\"174\",\"name\":\"Pierre Jean\"},\"support\":\"\",\"details\":\"\",\"event_instructions\":\"\"}")
+        expect_any_instance_of(MessageClassification).to receive(:update).with(call_instructions: "{\"details\":\"\",\"event_instructions\":\"\",\"support\":\"\",\"target\":\"interlocutor\",\"targetInfos\":{\"$$hashKey\":\"object:162\",\"displayName\":\"Pierre Jean (grepolide@gmail.com)\",\"email\":\"grepolide@gmail.com\",\"guid\":\"174\",\"name\":\"Pierre Jean\"}}")
 
-        put :update, id: ja1.id, call_instructions: {target: "interlocutor", targetInfos: {'$$hashKey' => "object:162", displayName: "Pierre Jean (grepolide@gmail.com)", email: "grepolide@gmail.com", guid: 174 ,name: "Pierre Jean"}, support: "", details: "", event_instructions: ""}
+        put :update, params: { id: ja1.id, call_instructions: {target: "interlocutor", targetInfos: {'$$hashKey' => "object:162", displayName: "Pierre Jean (grepolide@gmail.com)", email: "grepolide@gmail.com", guid: 174 ,name: "Pierre Jean"}, support: "", details: "", event_instructions: ""} }
       end
 
       it 'should update the messages_thread follow up date' do
@@ -181,7 +181,7 @@ describe JulieActionsController, :type => :controller do
 
         ja1 = JulieAction.create(message_classification_id: mc1.id, action_nature: JulieAction::JD_ACTION_SUGGEST_DATES)
 
-        put :update, id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'true'}
+        put :update, params: { id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'true'} }
 
         mt1.reload
         expect(mt1.follow_up_reminder_date.to_s).to eq("2016-01-10 19:00:01 UTC")
@@ -202,7 +202,7 @@ describe JulieActionsController, :type => :controller do
 
         ja1 = JulieAction.create(message_classification_id: mc1.id, action_nature: JulieAction::JD_ACTION_SUGGEST_DATES)
 
-        put :update, id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'false'}
+        put :update, params: { id: ja1.id, messages_thread_id: mt1.id, date_times: ["2016-01-10T15:00:01+01:00", "2016-01-12T16:00:01+01:00", "2016-01-29T15:20:01+01:00"], client_settings: {auto_follow_up: 'false'} }
 
         mt1.reload
         expect(mt1.follow_up_reminder_date.to_s).to eq('')

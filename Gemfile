@@ -10,8 +10,8 @@ rescue Errno::ENOENT
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.11'
-ruby '2.5.3'
+gem 'rails', '5.1.6.1'
+ruby '2.6.1'
 
 # Use postgresql as the database for Active Record
 gem 'pg'
@@ -67,7 +67,7 @@ gem 'simple_segment'
 #gem "http", path: "../http"
 
 group :production, :production_ey, :production_sg, :release do
-  gem 'lograge', '0.4.1'
+  gem 'lograge'
 end
 
 group :development, :release do
@@ -91,6 +91,7 @@ end
 group :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'rspec-collection_matchers'
+  gem 'rails-controller-testing'
   gem 'factory_girl'
   gem 'database_cleaner'
   gem "webmock-rspec-helper"

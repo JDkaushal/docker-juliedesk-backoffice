@@ -1,5 +1,5 @@
 class WebhooksController < ApplicationController
-  skip_before_filter :authenticate, :set_locale
+  skip_before_action :authenticate, :set_locale
   protect_from_forgery except: :new_email
 
   def new_email

@@ -1,3 +1,3 @@
 class AdminController < ApplicationController
-  before_filter :only_admin
+  before_action :only_admin
 end

@@ -49,14 +49,14 @@ describe JulieAliasesController, :type => :controller do
       it 'should populate the correct instance variables' do
         ja1 = FactoryGirl.create(:julie_alias_random)
 
-        get :edit, id: ja1.id
+        get :edit, params: { id: ja1.id }
         expect(assigns(:julie_alias)).to eq(ja1)
       end
 
       it 'should render the correct template' do
         ja1 = FactoryGirl.create(:julie_alias_random)
 
-        get :edit, id: ja1.id
+        get :edit, params: { id: ja1.id }
 
         expect(response).to render_template(:edit)
       end
@@ -89,7 +89,7 @@ describe JulieAliasesController, :type => :controller do
       it 'should populate the correct instance variables' do
         ja1 = FactoryGirl.create(:julie_alias_random)
 
-        put :update, id: ja1.id, julie_alias: {name: 'new name'}
+        put :update, params: { id: ja1.id, julie_alias: {name: 'new name'} }
 
         expect(assigns(:julie_alias)).to eq(ja1)
       end
@@ -97,7 +97,7 @@ describe JulieAliasesController, :type => :controller do
       it 'should update the specified julie action with the provided parameters' do
         ja1 = FactoryGirl.create(:julie_alias_random)
 
-        put :update, id: ja1.id, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}
+        put :update, params: { id: ja1.id, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'} }
 
         ja1.reload
         expect([ja1.name, ja1.email, ja1.footer_en, ja1.footer_fr, ja1.signature_en, ja1.signature_fr]).to eq(['new name', 'new email', 'footer enenenen', 'footer frfrf', 'signature en', 'signature fr'])
@@ -106,7 +106,7 @@ describe JulieAliasesController, :type => :controller do
       it 'should redirect the user to the edit page' do
         ja1 = FactoryGirl.create(:julie_alias_random)
 
-        put :update, id: ja1.id, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}
+        put :update, params: { id: ja1.id, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'} }
 
         expect(response).to redirect_to(edit_julie_alias_path(ja1))
       end
@@ -117,7 +117,7 @@ describe JulieAliasesController, :type => :controller do
 
       it 'should create a new Julie Alias' do
         expect{
-          post :create, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}
+          post :create, params: { julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'} }
         }.to change{JulieAlias.count}.by(1)
 
         last_julie_alias = JulieAlias.last
@@ -125,7 +125,7 @@ describe JulieAliasesController, :type => :controller do
       end
 
       it 'should redirect the user to the index page' do
-        post :create, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}
+        post :create, params: { julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'} }
 
         expect(response).to redirect_to(julie_aliases_path)
       end
@@ -136,7 +136,7 @@ describe JulieAliasesController, :type => :controller do
       controller do
         def test
           julie_alias_params
-          render nothing: true
+          head :ok
         end
       end
 
@@ -146,7 +146,7 @@ describe JulieAliasesController, :type => :controller do
         expect_any_instance_of(ActionController::Parameters).to receive(:require).with(:julie_alias).and_return(ActionController::Parameters.new({name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}))
         expect_any_instance_of(ActionController::Parameters).to receive(:permit).with(:name, :email, :footer_en, :footer_fr, :signature_en, :signature_fr).and_return(ActionController::Parameters.new({name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}))
 
-        post :test, julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'}
+        post :test, params: { julie_alias: {name: 'new name', email: 'new email', footer_en: 'footer enenenen', footer_fr: 'footer frfrf', signature_en: 'signature en', signature_fr: 'signature fr'} }
       end
     end
   end

@@ -512,7 +512,7 @@ class MessageClassification < ActiveRecord::Base
   def thread_status_suggestion current_thread_status
 
   end
-  
+
 
   def previous_classification
     current_message = self.message

@@ -1,8 +1,8 @@
 class ApiController < ActionController::Base
 
-  before_filter :authenticate, :cors_preflight_check
-  after_filter :cors_set_access_control_headers
-  skip_before_filter :verify_authenticity_token
+  before_action :authenticate, :cors_preflight_check
+  after_action :cors_set_access_control_headers
+  #skip_before_action :verify_authenticity_token
 
   protected
 
@@ -31,7 +31,7 @@ class ApiController < ActionController::Base
       headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-Prototype-Version, Token'
       headers['Access-Control-Max-Age'] = '1728000'
 
-      render :text => '', :content_type => 'text/plain'
+      render :plain => '', :content_type => 'text/plain'
     end
   end
 end

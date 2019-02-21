@@ -39,7 +39,7 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect_any_instance_of(MessagesThread).to receive(:re_import).and_return(true)
-        post :classifying, id: m1.id, classification: 'does not exist'
+        post :classifying, params: { id: m1.id, classification: 'does not exist' }
 
         expect(assigns(:message)).to eq(m1)
         expect(assigns(:classification)).to eq('does not exist')
@@ -54,7 +54,7 @@ describe MessagesController, :type => :controller do
 
         expect(MessageClassification).to receive(:create_from_params).with(classification: classification, operator: @user_non_admin, processed_in: 3600000).and_call_original
 
-        post :classifying, id: m1.id, classification: classification, started_at: DateTime.new(2015, 10, 10, 11, 00, 00).to_i * 1000
+        post :classifying, params: { id: m1.id, classification: classification, started_at: DateTime.new(2015, 10, 10, 11, 00, 00).to_i * 1000 }
 
         m1.reload
         expect(response).to redirect_to(julie_action_path(m1.message_classifications.last.julie_action))
@@ -92,7 +92,7 @@ describe MessagesController, :type => :controller do
                                                                          message: 'delegation message'
                                                                      })
 
-          post :classifying, id: m1.id, classification: MessageClassification::TO_FOUNDERS, to_admin_message: 'delegation message'
+          post :classifying, params: { id: m1.id, classification: MessageClassification::TO_FOUNDERS, to_admin_message: 'delegation message' }
 
           expect(response).to redirect_to(messages_threads_path)
         end
@@ -105,7 +105,7 @@ describe MessagesController, :type => :controller do
           mt1.messages << m1
 
           expect_any_instance_of(MessagesThread).to receive(:undelegate_to_admin)
-          post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_FOUNDERS
+          post :classifying, params: { id: m1.id, classification: MessageClassification::CANCEL_TO_FOUNDERS }
 
           expect(response).to redirect_to(messages_thread_path(mt1))
         end
@@ -119,7 +119,7 @@ describe MessagesController, :type => :controller do
           mt1.messages << m1
 
           expect_any_instance_of(MessagesThread).to receive(:undelegate_to_support)
-          post :classifying, id: m1.id, classification: MessageClassification::CANCEL_TO_SUPPORT
+          post :classifying, params: { id: m1.id, classification: MessageClassification::CANCEL_TO_SUPPORT }
 
           expect(response).to redirect_to(messages_thread_path(mt1))
         end
@@ -150,7 +150,7 @@ describe MessagesController, :type => :controller do
                                                                                "messages_thread_id"=>mt1.id
                                                                            }).and_call_original
 
-        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS
+        post :classify, params: { id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS }
 
         m1.reload
         expect(assigns(:message)).to eq(m1)
@@ -165,7 +165,7 @@ describe MessagesController, :type => :controller do
 
         expect{
           # 300 000 ms == 5min
-          post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000
+          post :classify, params: { id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000 }
         }.to change{OperatorAction.count}.by(1)
 
         expect(OperatorAction.last).to eq(m1.message_classifications.last.operator_actions.last)
@@ -189,7 +189,7 @@ describe MessagesController, :type => :controller do
         #                                                                                                                                                 awaiting_current_notes: "Awaiting Current notes (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{mt1.id}/review)"
         #                                                                                                                                             }, :ssl_context=>nil)
         # 300 000 ms == 5min
-        post :classify, id: m1.id, classification: MessageClassification::GIVE_PREFERENCE, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes'
+        post :classify, params: { id: m1.id, classification: MessageClassification::GIVE_PREFERENCE, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes' }
       end
 
       it 'should render the correct JSON' do
@@ -199,7 +199,7 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         # 300 000 ms == 5min
-        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes'
+        post :classify, params: { id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes' }
 
         m1.reload
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"redirect_url\":\"#{julie_action_path(m1.message_classifications.last.julie_action)}\",\"data\":{}}")
@@ -219,7 +219,7 @@ describe MessagesController, :type => :controller do
         allow(OperatorAction).to receive(:create_and_verify)
         allow_any_instance_of(MessageClassification).to receive(:classification)
 
-        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}}, attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}, '2' => {'isPresent' => 'true', 'email' => 'email2@email.com'}}
+        post :classify, params: { id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}}, attendees: {'1' => {'isPresent' => 'true', 'email' => 'email@email.com'}, '2' => {'isPresent' => 'true', 'email' => 'email2@email.com'}} }
       end
 
 
@@ -236,7 +236,7 @@ describe MessagesController, :type => :controller do
         allow(OperatorAction).to receive(:create_and_verify)
         allow_any_instance_of(MessageClassification).to receive(:classification)
 
-        post :classify, id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {}, attendees: {'0' => {'isPresent' => true, 'email' => 'email@email.com'}}
+        post :classify, params: { id: m1.id, classification: MessageClassification::ASK_DATE_SUGGESTIONS, processed_in: 300000, awaiting_current_notes: 'Awaiting Current notes', old_attendees: {}, attendees: {'0' => {'isPresent' => true, 'email' => 'email@email.com'}} }
       end
     end
 
@@ -248,7 +248,7 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         allow_any_instance_of(Message).to receive(:generate_threads).with([])
-        post :generate_threads, id: m1.id
+        post :generate_threads, params: { id: m1.id }
 
         expect(assigns(:message)).to eq(m1)
       end
@@ -260,7 +260,7 @@ describe MessagesController, :type => :controller do
         mt1.messages << m1
 
         expect_any_instance_of(Message).to receive(:generate_threads).with([{"arg1"=>"1", "arg2"=>"2"}])
-        post :generate_threads, id: m1.id, julie_messages: {0 => {'arg1' => 1, 'arg2' => 2}}
+        post :generate_threads, params: { id: m1.id, julie_messages: {0 => {'arg1' => 1, 'arg2' => 2}} }
       end
 
       it 'should render the correct JSON' do
@@ -271,7 +271,7 @@ describe MessagesController, :type => :controller do
 
         allow_any_instance_of(Message).to receive(:generate_threads)
 
-        post :generate_threads, id: m1.id
+        post :generate_threads, params: { id: m1.id }
 
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
       end
@@ -285,12 +285,12 @@ describe MessagesController, :type => :controller do
 
         expect(GenerateFollowUpWorker).to receive(:enqueue).with("#{mt1.id}", "A relancer vite", @normal.id)
 
-        post :generate_threads_for_follow_up, id: m1.id, follow_up_data: {
+        post :generate_threads_for_follow_up, params: { id: m1.id, follow_up_data: {
                                                 "0" => {
                                                     'messages_thread_id' => "#{mt1.id}",
                                                     'message' => "A relancer vite"
                                                 }
-                                            }
+                                            } }
 
         # expect(MessagesThread.find(mt1.id).should_follow_up).to eq(true)
         # expect(MessagesThread.find(mt1.id).follow_up_instruction).to eq("A relancer vite")
@@ -327,7 +327,7 @@ describe MessagesController, :type => :controller do
 
         allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
 
-        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+        post :reply, params: { id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla' }
 
         expect(assigns(:message)).to eq(m1)
         expect(assigns(:julie_alias)).to eq (ja1)
@@ -361,7 +361,7 @@ describe MessagesController, :type => :controller do
                                                                   reply_to_message_id: m1.server_message_id
                                                               }).and_return({'id' => 2})
 
-        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com']
+        post :reply, params: { id: m1.id, from: ja1.email, julie_action_id: jac1, text: "blablabla\nfezfzefzef\nferfzefezf\n\nferfrefer", html_signature: "<div>Signature</div>", to: ['test@test.com'], cc: ['test2@test.com', 'test3@test.com', 'test4@test.com'] }
       end
 
       it 'should update the specified Julie Action with the new server message id' do
@@ -381,7 +381,7 @@ describe MessagesController, :type => :controller do
         allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
         expect_any_instance_of(JulieAction).to receive(:update_attribute).with(:server_message_id, 2)
 
-        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+        post :reply, params: { id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla' }
       end
 
       it 'should render the correct JSON' do
@@ -400,7 +400,7 @@ describe MessagesController, :type => :controller do
 
         allow(EmailServer).to receive(:deliver_message).and_return({'id' => 2})
 
-        post :reply, id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla'
+        post :reply, params: { id: m1.id, from: ja1.email, julie_action_id: jac1, text: 'blablabla' }
 
         expect(response.body).to eq("{\"status\":\"success\",\"message\":\"\",\"data\":{}}")
       end
