@@ -11,9 +11,9 @@ class Message < ActiveRecord::Base
 
   has_many :automated_message_classifications, class_name: "AutomaticProcessing::AutomatedMessageClassification"
 
-  has_one :main_message_interpretation, -> { where(question: MessageInterpretation::QUESTION_MAIN) }, class_name: MessageInterpretation
-  has_one :entities_message_interpretation, -> { where(question:  MessageInterpretation::QUESTION_ENTITIES) }, class_name: MessageInterpretation
-  
+  has_one :main_message_interpretation, -> { where(question: MessageInterpretation::QUESTION_MAIN) }, class_name: 'MessageInterpretation'
+  has_one :entities_message_interpretation, -> { where(question:  MessageInterpretation::QUESTION_ENTITIES) }, class_name: 'MessageInterpretation'
+
   attr_accessor :server_message, :ics_attendees
   FETCHED_ATTACHMENT_TYPES = ["application/ics", "text/calendar"]
 

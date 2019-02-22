@@ -83,6 +83,8 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
+  config.eager_load = true
+
   if ENV['TRUSTED_IPS'].present?
     ENV['TRUSTED_IPS'].split(',').each do |ip|
       if ip.present?

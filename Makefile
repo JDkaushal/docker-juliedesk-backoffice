@@ -31,6 +31,10 @@ test_job:
 	sleep 5
 
 	yarn install
+
+	# Set higher open file limit for rails 5.2 rspec tests
+	ulimit -n 1024
+
 	RAILS_ENV=test bundle exec rake db:setup
 	RAILS_ENV=archive_test bundle exec rake db:setup
 

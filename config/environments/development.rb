@@ -43,4 +43,6 @@ Rails.application.configure do
 
   # ATTENTION: Ce monkey patch casse le gem http (GitHub/http/lib/http/timeout/null.rb méthode start_tls)
   #OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
+  config.eager_load = false
 end

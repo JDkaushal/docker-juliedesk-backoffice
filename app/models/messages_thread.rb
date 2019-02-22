@@ -1162,7 +1162,7 @@ class MessagesThread < ActiveRecord::Base
       last_cancellation = julie_actions.select{|ja|
         ja.deleted_event
       }.last
-      
+
       last_creation = julie_actions.select{|ja|
         ja.event_id
       }.last
@@ -1598,7 +1598,7 @@ class MessagesThread < ActiveRecord::Base
   end
 
   def owner_changed?
-    if self.account_email_changed?
+    if self.saved_change_to_account_email?
       @account_fetched = false
     end
   end

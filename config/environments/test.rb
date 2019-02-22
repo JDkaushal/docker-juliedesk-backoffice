@@ -38,6 +38,8 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
+  config.eager_load = false
+
   ENV['CONSCIENCE_BASE_PATH'] = 'test_ai_conscience_path'
   ENV['CONSCIENCE_API_KEY'] = 'conscience_api_key'
   ENV['API_KEY'] = 'testpikeyferferfrefer'

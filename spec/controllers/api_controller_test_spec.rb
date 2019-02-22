@@ -46,7 +46,7 @@ describe ApiController, :type => :controller do
     it 'should set the correct headers in a before filter when an options request is handled' do
       routes.draw { match 'options_request' => 'api#options_request', via: [:options] }
       request.headers['Authorization'] = ENV['API_KEY']
-      process :options_request, "OPTIONS"
+      process :options_request, method: "OPTIONS"
 
       expect(response.headers.keys).to include(
          'Access-Control-Allow-Origin',
