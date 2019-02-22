@@ -117,7 +117,7 @@ class MessagesController < ApplicationController
     messages_thread.update(messages_thread_params)
     messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
 
-    @message_classification = @message.message_classifications.create_from_params params.merge({messages_thread_id: @message.messages_thread_id})
+    @message_classification = @message.message_classifications.create_from_params params.to_unsafe_h.merge({messages_thread_id: @message.messages_thread_id})
     @message_classification.julie_action.update_initial_attributes(params)
 
     OperatorAction.create_and_verify({
