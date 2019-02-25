@@ -10,12 +10,12 @@ class HealthcheckController < ApiController
     # - the application is down (connection error, ...), ruby will return the app statuscode
     # - timeout has been reached (app is slow because it is starting/server is busy, app has crashed...)
 
-    status_code = 200
+    status_code = :ok
     if File.exist?('tmp/pids/deploy_in_progress') then
       status_code = :service_unavailable
     end
 
-    render :nothing => true, :status => status_code
+    head status_code
   end
 
 
