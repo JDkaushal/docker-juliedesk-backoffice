@@ -17,7 +17,7 @@ set :assets_roles, [:web, :app, :test]
 
 set :linked_dirs, %w{log tmp/pids script}
 set :linked_files, %w{config/database.yml .env}
-set :rvm_ruby_version, '2.4.4'
+set :rvm_ruby_version, '2.6.1'
 
 
 # Default value for :scm is :git
