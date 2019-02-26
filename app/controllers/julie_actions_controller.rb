@@ -164,6 +164,7 @@ class JulieActionsController < ApplicationController
   end
 
   def update
+    params.permit!
     julie_action = JulieAction.includes(:message_classification).find(params[:id])
     message_classification_params_to_update = {}
 

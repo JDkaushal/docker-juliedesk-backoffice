@@ -23,18 +23,18 @@ namespace :operator_stats do
     Operator.where(active: true).each_with_index do |operator, i|
       current_time = Time.now
       puts "Processing #{operator.name} stats (#{i + 1}/#{Operator.where(active: true).count})..."
-      DATA_CACHE_REDIS["operator_stats-#{operator.id}"] = Operator.generate_stats_data([operator.id], flagged_messages_thread_ids).to_json
+      DATA_CACHE_REDIS.set("operator_stats-#{operator.id}", Operator.generate_stats_data([operator.id], flagged_messages_thread_ids).to_json)
       puts "Processed in #{Time.now - current_time}."
       current_time = Time.now
     end
 
     puts "Processing team stats..."
-    DATA_CACHE_REDIS["operator_stats_team"] = Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).map(&:id), flagged_messages_thread_ids).to_json
+    DATA_CACHE_REDIS.set("operator_stats_team", Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_1, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_2, Operator::PRIVILEGE_SUPER_OPERATOR_LEVEL_3]).map(&:id), flagged_messages_thread_ids).to_json)
     puts "Processed in #{Time.now - current_time}."
     current_time = Time.now
 
     puts "Processing level 1 stats..."
-    DATA_CACHE_REDIS["operator_stats_level_1"] = Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR]).map(&:id), flagged_messages_thread_ids).to_json
+    DATA_CACHE_REDIS.set("operator_stats_level_1", Operator.generate_stats_data(Operator.where(privilege: [Operator::PRIVILEGE_OPERATOR]).map(&:id), flagged_messages_thread_ids).to_json)
     puts "Processed in #{Time.now - current_time}."
   end
 end
