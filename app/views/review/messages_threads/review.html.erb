@@ -71,7 +71,7 @@
                 <option value="<%= thread_status %>" <%= (thread_status == @messages_thread.current_status)?"selected":"" %>><%= I18n.t("thread_statuses.#{thread_status}") %></option>
             <% end %>
           </select>
-          <%= submit_tag "Change status" %>
+          <%= submit_tag "Change status", 'disabled_with' => false %>
       <% end %>
     </div>
 

@@ -39,5 +39,7 @@ module JuliedeskBackoffice
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', 'automatic_reply_emails', '*.yml').to_s]
     # config.i18n.default_locale = :de
+
+    config.action_view.automatically_disable_submit_tag = false
   end
 end
