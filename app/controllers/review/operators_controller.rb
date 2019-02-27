@@ -20,6 +20,7 @@ class Review::OperatorsController < ReviewController
   end
 
   def errors
+    params.permit!
     @operator = Operator.find(params[:id])
     operator_errors = OperatorActionsGroup.where(operator_id: @operator.id).where('review_notation < ?', 5)
     @review_mode = true
