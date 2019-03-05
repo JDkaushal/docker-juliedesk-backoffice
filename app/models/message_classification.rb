@@ -247,7 +247,7 @@ class MessageClassification < ActiveRecord::Base
           # properties with TEXT column type (but stored as json)
           attendees: attendees.to_json,
           date_times: (params[:date_times].try(:values) || []).to_json,
-          constraints_data: (params[:constraints_data].try(:values) || []).to_json,
+          constraints_data: (params[:constraints_data] || []).to_json,
           call_instructions: (params[:call_instructions].blank? ? {} : params[:call_instructions]).to_json,
       )
     end
