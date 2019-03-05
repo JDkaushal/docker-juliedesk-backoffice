@@ -10,7 +10,7 @@ module EmailRecipients
       @sanitized_email = sanitize_email_address(email)
       @qualifying_classes = []
 
-      @computed_present_attendee_emails ||= @messages_thread.computed_data[:attendees].select{|att| att['isPresent'] == 'true'}.map{|att| att['email']}
+      @computed_present_attendee_emails ||= @messages_thread.computed_data[:attendees].select{|att| att['isPresent'] == true}.map{|att| att['email']}
     end
 
     def tag
