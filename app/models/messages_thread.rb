@@ -637,6 +637,20 @@ class MessagesThread < ActiveRecord::Base
       notes = last_message_classification.try(:notes)
 
       @computed_data = {
+          # JSON stored as TEXT
+          call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
+          attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
+          constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
+          date_times: message_classifications.map { |mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
+            dt['date'] || "ZZZ"
+          },
+
+          # JSON
+          meeting_room_details: last_message_classification.try(:meeting_room_details),
+          booked_rooms_details: last_message_classification.try(:booked_rooms_details),
+          restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
+          virtual_resource_used: last_message_classification.try(:virtual_resource_used),
+
           locale: last_message_classification.try(:locale) || self.account.try(:locale),
           timezone: last_message_classification.try(:timezone) || self.account.try(:default_timezone_id),
           appointment_nature: appointment_nature,
@@ -645,39 +659,25 @@ class MessagesThread < ActiveRecord::Base
           location_nature: last_message_classification.try(:location_nature),
           location: last_message_classification.try(:location),
           cluster_specified_location: last_message_classification.try(:cluster_specified_location),
-          call_instructions: JSON.parse(last_message_classification.try(:call_instructions) || "[]"),
-          attendees: JSON.parse(last_message_classification.try(:attendees) || "[]"),
           notes: notes,
           text_notes: Loofah.document(notes).to_text,
           other_notes: last_message_classification.try(:other_notes),
           client_on_trip: client_on_trip,
-
           is_virtual_appointment: MessagesThread.virtual_appointment_natures.include?(appointment_nature),
-
           private: last_message_classification.try(:private),
-
           client_agreement: last_message_classification.try(:client_agreement),
           attendees_are_noticed: last_message_classification.try(:attendees_are_noticed),
-
           constraints: last_message_classification.try(:constraints),
-          constraints_data: JSON.parse(last_message_classification.try(:constraints_data) || "[]"),
-
           number_to_call: last_message_classification.try(:number_to_call),
           title_preference: last_message_classification.try(:title_preference),
 
-          date_times: message_classifications.map{|mc| JSON.parse(mc.date_times || "[]")}.flatten.sort_by{|dt|
-            dt['date'] || "ZZZ"
-          },
           last_message_sent_at: messages.select(&:from_me).sort_by(&:received_at).last.try(:received_at),
           calendar_login_username: computed_calendar_login_username,
           calendar_login_type: computed_calendar_login_type,
           location_coordinates: last_message_classification.try(:location_coordinates),
           using_meeting_room: last_message_classification.try(:using_meeting_room),
-          meeting_room_details: last_message_classification.try(:meeting_room_details),
-          booked_rooms_details: last_message_classification.try(:booked_rooms_details),
           using_restaurant_booking: last_message_classification.try(:using_restaurant_booking),
-          restaurant_booking_details: last_message_classification.try(:restaurant_booking_details),
-          virtual_resource_used: last_message_classification.try(:virtual_resource_used),
+
           thread_recipients: self.computed_recipients,
           linked_attendees: self.linked_attendees,
           do_not_ask_suggestions: self.do_not_ask_suggestions?,

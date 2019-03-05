@@ -134,7 +134,7 @@ class MessageClassification < ActiveRecord::Base
     self.delete
   end
 
-  def self.create_from_params params
+  def self.create_from_params(params)
     if params[:classification] == MessageClassification::INVITATION_ALREADY_SENT
       message_thread = MessagesThread.find(params[:messages_thread_id])
       last_classification_with_data = message_thread.last_message_classification_with_data || {}
@@ -191,11 +191,8 @@ class MessageClassification < ActiveRecord::Base
           attendees_emails: last_classification_with_data.try(:attendees_emails)
       )
     else
-      attendees = []
-      (params[:attendees] || {}).each do |k, att|
-        attendees << att
-      end
-      attendees = MessageClassification.clean_and_categorize_clients attendees
+      attendees = params.fetch(:attendees, [])
+      attendees = MessageClassification.clean_and_categorize_clients(attendees)
 
       follow_up_data = nil
       if params[:follow_up_data]
@@ -216,38 +213,42 @@ class MessageClassification < ActiveRecord::Base
           location_nature: params[:location_nature],
           location: params[:location],
           location_coordinates: (params[:location_coordinates] || []),
-          call_instructions: (params[:call_instructions].blank?)?({}.to_json):(params[:call_instructions].to_json),
-          attendees: attendees.to_json,
           notes: params[:notes],
           other_notes: params[:other_notes],
           private: params[:private],
           constraints: params[:constraints],
-          constraints_data: (params[:constraints_data].try(:values) || []).to_json,
           client_agreement: params[:client_agreement],
           attendees_are_noticed: params[:attendees_are_noticed],
           number_to_call: params[:number_to_call],
           operator: params[:operator],
           processed_in: params[:processed_in],
-          date_times: (params[:date_times].try(:values) || []).to_json,
           thread_status: params[:thread_status],
           follow_up_data: follow_up_data,
           title_preference: params[:title_preference],
           using_meeting_room: params[:using_meeting_room] || false,
-          meeting_room_details: (params[:meeting_room_details] || {}).to_json,
-          booked_rooms_details: (params[:booked_rooms_details] || {}).to_json,
           using_restaurant_booking: params[:using_restaurant_booking] || false,
-          restaurant_booking_details: (params[:restaurant_booking_details] || {}).to_json,
           location_changed: params[:location_changed],
-          virtual_resource_used: params[:virtual_resource_used],
-          before_update_data: params[:before_update_data],
-          verified_dates_by_ai: (params[:verified_dates_by_ai] || {}).to_json,
-          passed_conditions: (params[:passed_conditions] || {}).to_json,
           ignore_linked_attendees: params[:ignore_linked_attendees],
           language_level: params[:language_level],
           asap_constraint: params[:asap_constraint],
           identifier: params[:message_classification_identifier],
           cluster_specified_location: params[:cluster_specified_location],
-          attendees_emails: self.get_attendees_emails(attendees)
+          attendees_emails: self.get_attendees_emails(attendees),
+
+          # properties with JSON column type
+          before_update_data: params[:before_update_data],
+          verified_dates_by_ai: params.fetch(:verified_dates_by_ai, {}),
+          meeting_room_details: params.fetch(:meeting_room_details, {}),
+          booked_rooms_details: params.fetch(:booked_rooms_details, {}),
+          restaurant_booking_details: params.fetch(:restaurant_booking_details, {}),
+          passed_conditions: params.fetch(:passed_conditions, {}),
+          virtual_resource_used: params[:virtual_resource_used],
+
+          # properties with TEXT column type (but stored as json)
+          attendees: attendees.to_json,
+          date_times: (params[:date_times].try(:values) || []).to_json,
+          constraints_data: (params[:constraints_data].try(:values) || []).to_json,
+          call_instructions: (params[:call_instructions].blank? ? {} : params[:call_instructions]).to_json,
       )
     end
 

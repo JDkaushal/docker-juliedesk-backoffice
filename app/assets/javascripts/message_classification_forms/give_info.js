@@ -18,7 +18,7 @@ window.classificationForms.giveInfoForm = function (params) {
             //     // Looking for differences in details should be enough to tell if the call instructions changed
             //     data.call_instructions_details = virtualMeetingHelper.currentConf.details;
             // }
-            var beforeUpdateData = JSON.stringify(data);
+            var beforeUpdateData = data;
 
             window.currentEventTile.doneEditingCallback = function() {
                 $("#summary").val(window.currentEventTile.event.title);

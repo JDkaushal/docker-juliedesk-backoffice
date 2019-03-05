@@ -240,7 +240,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         using_restaurant_booking: restaurantBookingManager.getUsingRestaurantBooking() || undefined,
         restaurant_booking_details: restaurantBookingManager.getRestaurantBookingDetails() || undefined,
         location_changed: window.threadComputedData.location != $("#location").val(),
-        before_update_data: JSON.parse(params.before_update_data || '{}'),
+        before_update_data: params.before_update_data,
         verified_dates_by_ai: params.verifiedDatesByAI,
         passed_conditions: params.passed_conditions,
         message_classification_identifier: params.message_classification_identifier,
@@ -268,8 +268,10 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
 
     $.ajax({
         url: "/messages/" + classificationForm.messageId + "/classify",
+        contentType: 'application/json',
         type: "POST",
-        data: data,
+        dataType: "json",
+        data: JSON.stringify(data),
         success: function (e) {
             window.location = e.redirect_url;
         },

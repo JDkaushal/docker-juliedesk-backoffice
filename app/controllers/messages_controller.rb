@@ -105,6 +105,7 @@ class MessagesController < ApplicationController
   end
 
   def classify
+    params.permit!
     initiated_time = Time.now
 
     @message = Message.find(params[:id])
@@ -117,7 +118,8 @@ class MessagesController < ApplicationController
     messages_thread.update(messages_thread_params)
     messages_thread.check_recompute_linked_attendees(params[:old_attendees], params[:attendees])
 
-    @message_classification = @message.message_classifications.create_from_params params.to_unsafe_h.merge({messages_thread_id: @message.messages_thread_id})
+    data = params.to_h.merge({messages_thread_id: @message.messages_thread_id}).with_indifferent_access
+    @message_classification = @message.message_classifications.create_from_params(data)
     @message_classification.julie_action.update_initial_attributes(params)
 
     OperatorAction.create_and_verify({
@@ -134,20 +136,9 @@ class MessagesController < ApplicationController
           awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
       })
 
-      # http = HTTP.auth(ENV['JULIEDESK_APP_API_KEY'])
-      #
-      # http.post("#{ENV['JULIEDESK_APP_BASE_PATH']}/api/v1/accounts/set_awaiting_current_notes", json: {
-      #                                                                                               email: @message.messages_thread.account_email,
-      #                                                                                               awaiting_current_notes: "#{params[:awaiting_current_notes]} (review link: #{ENV['BACKOFFICE_BASE_URL']}/review/messages_threads/#{@message.messages_thread_id}/review)"
-      #                                                                                           })
     end
 
 
-
-    # if messages_thread.has_clients_with_linked_attendees_enabled && messages_thread.attendees_has_changed(params[:old_attendees], params[:attendees])
-    #   puts 'Computing linked attendees'
-    #   messages_thread.compute_linked_attendees(Account.accounts_cache(mode: "light"))
-    # end
 
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  initiated_time.to_s, properties: {step: 'messages#classify:initiated', julie_action_id: @message_classification.julie_action.id}, distinct_id: @message_classification.julie_action.id})
     JuliedeskTrackerInterface.new.build_request(:track, {name: 'Auto_suggestions_tracking', date:  Time.now.to_s, properties: {step: 'messages#classify:done', julie_action_id: @message_classification.julie_action.id}, distinct_id: @message_classification.julie_action.id})

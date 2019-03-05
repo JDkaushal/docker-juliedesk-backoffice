@@ -14,7 +14,6 @@ module JuliedeskBackoffice
 
     config.eager_load_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('lib/*')
-    #config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
     config.angular_templates.ignore_prefix = %w(angular_templates/)
 
