@@ -124,13 +124,13 @@ class MessageClassification < ActiveRecord::Base
 
   def clean_delete
     if self.julie_action
-      OperatorAction.delete_all(target_type: JulieAction.to_s, target_id: self.julie_action.id)
-      OperatorActionsGroup.delete_all(target_type: JulieAction.to_s, target_id: self.julie_action.id)
+      OperatorAction.where(target_type: JulieAction.to_s, target_id: self.julie_action.id).delete_all
+      OperatorActionsGroup.where(target_type: JulieAction.to_s, target_id: self.julie_action.id).delete_all
       self.julie_action.delete
     end
 
-    OperatorAction.delete_all(target_type: MessageClassification.to_s, target_id: self.id)
-    OperatorActionsGroup.delete_all(target_type: MessageClassification.to_s, target_id: self.id)
+    OperatorAction.where(target_type: MessageClassification.to_s, target_id: self.id).delete_all
+    OperatorActionsGroup.where(target_type: MessageClassification.to_s, target_id: self.id).delete_all
     self.delete
   end
 
