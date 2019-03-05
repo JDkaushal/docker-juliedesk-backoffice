@@ -196,7 +196,7 @@ class MessageClassification < ActiveRecord::Base
 
       follow_up_data = nil
       if params[:follow_up_data]
-        follow_up_data = params[:follow_up_data].values.to_json
+        follow_up_data = params[:follow_up_data].to_json
       end
 
       sanitized_timezone = params[:timezone].present? ? params[:timezone].strip : nil
@@ -246,7 +246,7 @@ class MessageClassification < ActiveRecord::Base
 
           # properties with TEXT column type (but stored as json)
           attendees: attendees.to_json,
-          date_times: (params[:date_times].try(:values) || []).to_json,
+          date_times: (params[:date_times] || []).to_json,
           constraints_data: (params[:constraints_data] || []).to_json,
           call_instructions: (params[:call_instructions].blank? ? {} : params[:call_instructions]).to_json,
       )
