@@ -1403,7 +1403,7 @@ class MessagesThread < ActiveRecord::Base
   def attendees
     attendees_hash = self.computed_data_only_attendees
     return nil unless attendees_hash.has_key?(:attendees)
-    attendees_hash[:attendees].select { |attendee| attendee["isPresent"] == "true" }
+    attendees_hash[:attendees].select { |attendee| attendee["isPresent"] == "true" || attendee["isPresent"] == true }
   end
 
   # Will return every email associated with the current present attendees
