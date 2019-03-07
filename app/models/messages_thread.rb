@@ -1416,7 +1416,7 @@ class MessagesThread < ActiveRecord::Base
 
   def client_attendees_emails
     return nil if self.attendees.nil?
-    self.attendees.select { |attendee| attendee["isClient"] == "true" }.map { |attendee| attendee["account_email"] }.compact
+    self.attendees.select { |attendee| attendee["isClient"] == "true" || attendee["isClient"] == true }.map { |attendee| attendee["account_email"] }.compact
   end
 
   def linked_attendees_emails
