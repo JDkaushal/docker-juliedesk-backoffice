@@ -1014,11 +1014,6 @@ class MessagesThread < ActiveRecord::Base
     current_attendees = []
 
     already_registered_contacts = (self.computed_data[:attendees] || [])
-    already_registered_contacts.each do |attendee|
-      unless attendee['isPresent'] == 'false'
-        attendee['isPresent'] = 'true'
-      end
-    end
 
     already_registered_contacts_with_emails, already_registered_contacts_without_emails = already_registered_contacts.partition{ |att| att['email'].present? }
     parsed_contacts = self.full_contacts

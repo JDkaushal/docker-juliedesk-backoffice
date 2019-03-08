@@ -327,7 +327,7 @@
               email: "<%= @messages_thread.account_email %>",
               summary: window.threadComputedData.summary,
               description: window.notesManager.getFullNotesNode().html(),
-              attendees: <%== @messages_thread.computed_data[:attendees].select{|a| (a['isPresent'] == 'true' || a['status'] == 'optional' ) && a['email'].present?}.to_json %>,
+              attendees: <%== @messages_thread.computed_data[:attendees].select { |a| ['present', 'optional'].include?(a['status']) && a['email'].present?}.to_json %>,
               location: location,
               all_day: false,
               private: window.threadComputedData.private,
