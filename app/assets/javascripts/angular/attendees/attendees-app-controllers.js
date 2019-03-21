@@ -900,15 +900,21 @@
         };
 
         $scope.setTitlePreference = function() {
-            if(!window.threadComputedData.title_preference && !window.titlePreferenceOverridden && window.threadAccount.title_preferences) {
-                var onlyAttendeesFromSameCompany = $scope.getPresentAttendeesFromOtherCompanies().length == 0;
-                var titlePreference = window.threadAccount.title_preferences.general;
+            if(!window.threadComputedData.title_preference) {
+                if (!window.titlePreferenceOverridden && window.threadAccount.title_preferences) {
+                    var onlyAttendeesFromSameCompany = $scope.getPresentAttendeesFromOtherCompanies().length == 0;
+                    var titlePreference = window.threadAccount.title_preferences.general;
 
-                if(onlyAttendeesFromSameCompany) {
-                    titlePreference = window.threadAccount.title_preferences.internal_meetings;
+                    if(onlyAttendeesFromSameCompany) {
+                        titlePreference = window.threadAccount.title_preferences.internal_meetings;
+                    }
+
+                    titlePreferencesSelection(titlePreference)
                 }
-
-                titlePreferencesSelection(titlePreference)
+            } else {
+                if (window.threadComputedData.title_preference === "companies_and_names") {
+                    reProcessTitle();
+                }
             }
         };
         //--------------------------------------------------------------------------------
