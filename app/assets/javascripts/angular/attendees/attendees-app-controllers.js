@@ -585,10 +585,10 @@
                 // Used for clients (is set in the admin panel)
                 usageName: informations.usageName || informations.name,
                 gender: currentGender,
-                isAssistant: informations.isAssistant == "true",
-                assisted: informations.assisted == "true",
+                isAssistant: informations.isAssistant == "true" || informations.isAssistant == true,
+                assisted: informations.assisted == "true" || informations.assisted == true,
                 assistedBy: informations.assistedBy,
-                subscribed: informations.subscribed == "true",
+                subscribed: informations.subscribed == "true" || informations.subscribed == true,
                 company: company,
                 validatedCompany: validatedCompany,
                 timezone: attendee.timezone || informations.timezone || window.threadAccount.default_timezone_id,
