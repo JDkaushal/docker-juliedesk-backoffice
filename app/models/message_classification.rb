@@ -192,6 +192,7 @@ class MessageClassification < ActiveRecord::Base
       )
     else
       attendees = params.fetch(:attendees, [])
+
       attendees = MessageClassification.clean_and_categorize_clients(attendees)
 
       follow_up_data = nil
@@ -285,6 +286,7 @@ class MessageClassification < ActiveRecord::Base
 
   def self.clean_and_categorize_clients attendees
     accounts = Account.get_active_account_emails(detailed: true)
+
     result = attendees.map do |attendee|
       attendee_email = attendee['email']
       if attendee_email.present?

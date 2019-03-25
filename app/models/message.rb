@@ -945,12 +945,10 @@ class Message < ActiveRecord::Base
       !original_thread_account_all_emails.include? attendee['email']
     }.map{|attendee|
       {
-        attendee: {
-          email: attendee['email'],
-          name: "#{attendee['displayName']}"
-        }
+        email: attendee['email'],
+        name: "#{attendee['displayName'] || attendee['name']}"
       }
-    }.reduce(:merge)
+    }
     # Create the message_classification in DB
     message_classification = message.message_classifications.create_from_params locale: original_messages_thread.computed_data[:locale],
                                                                                 classification: MessageClassification::ASK_AVAILABILITIES,
