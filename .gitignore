@@ -30,3 +30,4 @@ dependency-check-report.html/public/packs
 yarn-debug.log*
 yarn-error.log*
 .yarn-integrity
+dependency-check-report.html

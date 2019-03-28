@@ -18,15 +18,17 @@ test_job:
 	  username: postgres\n\
 	  password: password\n\
 	  database: archive_test\n\
+	  port: 15432\n\
 	test:\n\
 	  <<: *default\n\
 	  host: 127.0.0.1\n\
 	  username: postgres\n\
 	  password: password\n\
 	  database: test\n\
+	  port: 15432\n\
 	" > config/database.yml
 
-	docker run -d -p 5432:5432 --rm --name postgres-$(NAME)-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=test postgres:9.6-alpine
+	docker run -d -p 15432:5432 --rm --name postgres-$(NAME)-test -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=test postgres:9.6-alpine
 
 	sleep 5
 
@@ -43,3 +45,10 @@ test_job:
 test_epilogue:
 	docker stop postgres-$(NAME)-test
 	if [ -f config/database.yml.cache ]; then mv config/database.yml.cache config/database.yml; fi
+
+analyze:
+	sudo gem install brakeman bundler-audit
+	bundle-audit update
+	dependency-check --project "$(NAME)" --scan .
+	open dependency-check-report.html
+	brakeman
