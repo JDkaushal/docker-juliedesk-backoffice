@@ -42,6 +42,7 @@ blocks:
           - mkdir log
           - ln -s /dev/null log/resque.$RAILS_ENV.log
           - bundle install --deployment --path vendor/bundle
+          - yarn install
           - RAILS_ENV=test bundle exec rake db:setup
           - RAILS_ENV=archive_test bundle exec rake db:setup
 
