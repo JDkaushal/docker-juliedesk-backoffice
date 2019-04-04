@@ -47,8 +47,7 @@ test_epilogue:
 	if [ -f config/database.yml.cache ]; then mv config/database.yml.cache config/database.yml; fi
 
 analyze:
-	sudo gem install brakeman bundler-audit
-	bundle-audit update
+	bundle exec bundle-audit update
 	dependency-check --project "$(NAME)" --scan .
 	open dependency-check-report.html
-	brakeman
+	bundle exec brakeman

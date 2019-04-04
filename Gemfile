@@ -97,6 +97,8 @@ group :test do
   gem "webmock-rspec-helper"
   #Code test coverage tool https://github.com/colszowka/simplecov
   gem 'simplecov', :require => false
+  gem 'brakeman', :require => false
+  gem 'bundler-audit', :require => false
 end
 
 # We will load it manually in an initializer because we are using Rack::Deflater Middleware https://github.com/MiniProfiler/rack-mini-profiler#custom-middleware-ordering-required-if-using-rackdeflate-with-rails
