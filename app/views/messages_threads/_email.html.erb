@@ -144,7 +144,11 @@
             <% end %>
             <% if email['was_split'] %>
                 <% if local_assigns[:reviewing_status] == "review" %>
+                   <% if email['original_messages_thread_id'].present? %>
                     <%= link_to "S", review_review_messages_thread_path(MessagesThread.find_by_server_thread_id email['original_messages_thread_id']), class: "email-was-split", target: "_blank" %>
+                  <% else %>
+                    "S (original thread does not exists anymore)"
+                  <% end %>
                 <% else %>
                     <div class="email-was-split">S</div>
                 <% end %>
