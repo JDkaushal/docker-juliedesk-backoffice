@@ -184,6 +184,7 @@ class MessagesController < ApplicationController
 
     quote_replied_message = false
     quote_forward_message = false
+
     if params[:forward] == 'true'
       quote_forward_message = true
     elsif params[:quote_message] == 'true'
