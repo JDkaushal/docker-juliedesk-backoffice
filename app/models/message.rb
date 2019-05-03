@@ -65,6 +65,7 @@ class Message < ActiveRecord::Base
       EmailServerInterface.new.build_request(:fetch_ics, {message_id: self.server_message['id'], attachment_id: self.server_message['attachments_data'][0]['attachment_id']})['data']
     rescue => e
       Raven.capture_exception(e) unless ENV['SENTRY_DSN'].nil?
+      nil
     end
   end
 
