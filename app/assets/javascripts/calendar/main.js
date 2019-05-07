@@ -1226,7 +1226,8 @@ Calendar.prototype.getNonAvailableEvents = function (startTime, endTime, account
                     textColor: "#aaa",
                     calId: "juliedesk-public-holidays",
                     isNotAvailableEvent: true,
-                    busyLocked: true
+                    busyLocked: true,
+                    all_day: true
                 };
                 result.push(event);
             }
