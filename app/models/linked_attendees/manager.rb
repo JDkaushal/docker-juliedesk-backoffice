@@ -25,7 +25,7 @@ module LinkedAttendees
                              computed_data_only_attendees = @messages_thread.computed_data_only_attendees[:attendees]
 
                               if computed_data_only_attendees.present?
-                                computed_data_only_attendees.select{|o| o["isPresent"] == "true" && o["isThreadOwner"] == "false"}.map{|m| m["email"]}
+                                computed_data_only_attendees.select{|o| o["isPresent"] && !o["isThreadOwner"]}.map{|m| m["email"]}
                               else
                                 @messages_thread.computed_recipients
                               end
