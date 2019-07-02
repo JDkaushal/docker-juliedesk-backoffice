@@ -220,7 +220,7 @@ function IcsManager() {
 
         // End date
         if(event.endDate.timezone)
-            var mEndDate = moment.tz(event.endDate.toString(), timezone).utc();
+            var mEndDate = moment(event.endDate.toJSDate()).utc();
         else
             var mEndDate = moment.tz(event.endDate.toString(), event.endDate.timezone || timezone).utc();
 
