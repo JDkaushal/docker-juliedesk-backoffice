@@ -1,4 +1,4 @@
-class CreateMessageClassificationsTable < ActiveRecord::Migration
+class CreateMessageClassificationsTable < ActiveRecord::Migration[4.2]
   def up
     create_table :message_classifications do |t|
       t.string :classification

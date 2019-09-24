@@ -1,4 +1,4 @@
-class CreateJulieActionsTable < ActiveRecord::Migration
+class CreateJulieActionsTable < ActiveRecord::Migration[4.2]
   def up
     create_table :julie_actions do |t|
       t.integer :message_classification_id

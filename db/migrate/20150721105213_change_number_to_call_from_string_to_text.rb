@@ -1,4 +1,4 @@
-class ChangeNumberToCallFromStringToText < ActiveRecord::Migration
+class ChangeNumberToCallFromStringToText < ActiveRecord::Migration[4.2]
   def up
     change_column :message_classifications, :number_to_call, :text
   end

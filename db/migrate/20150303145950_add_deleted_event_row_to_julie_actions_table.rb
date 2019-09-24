@@ -1,4 +1,4 @@
-class AddDeletedEventRowToJulieActionsTable < ActiveRecord::Migration
+class AddDeletedEventRowToJulieActionsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :julie_actions, :deleted_event, :boolean, default: false
   end

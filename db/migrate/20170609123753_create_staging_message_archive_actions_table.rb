@@ -1,4 +1,4 @@
-class CreateStagingMessageArchiveActionsTable < ActiveRecord::Migration
+class CreateStagingMessageArchiveActionsTable < ActiveRecord::Migration[4.2]
 
   def change
     if ENV['STAGING_APP']

@@ -1,4 +1,4 @@
-class AddIndexToJulieActionMessageClassificationId < ActiveRecord::Migration
+class AddIndexToJulieActionMessageClassificationId < ActiveRecord::Migration[4.2]
   disable_ddl_transaction!
 
   def change

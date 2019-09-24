@@ -1,4 +1,4 @@
-class AddEventsColumnToJulieActionsTable < ActiveRecord::Migration
+class AddEventsColumnToJulieActionsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :julie_actions, :events, :text, default: "[]"
   end

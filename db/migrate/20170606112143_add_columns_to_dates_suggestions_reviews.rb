@@ -1,4 +1,4 @@
-class AddColumnsToDatesSuggestionsReviews < ActiveRecord::Migration
+class AddColumnsToDatesSuggestionsReviews < ActiveRecord::Migration[4.2]
   def change
     add_column :date_suggestions_reviews, :comment, :text
     add_column :date_suggestions_reviews, :review_full_auto_errors, :json

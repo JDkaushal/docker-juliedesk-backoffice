@@ -1,4 +1,4 @@
-class AddThreadStatusToMessageClassifications < ActiveRecord::Migration
+class AddThreadStatusToMessageClassifications < ActiveRecord::Migration[4.2]
   def up
     add_column :message_classifications, :thread_status, :string
   end

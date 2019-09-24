@@ -1,4 +1,4 @@
-class CreateOperatorActions < ActiveRecord::Migration
+class CreateOperatorActions < ActiveRecord::Migration[4.2]
   def up
     create_table :operator_actions do |t|
       t.column :target_id, :integer

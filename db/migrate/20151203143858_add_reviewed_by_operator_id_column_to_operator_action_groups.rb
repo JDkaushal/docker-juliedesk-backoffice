@@ -1,4 +1,4 @@
-class AddReviewedByOperatorIdColumnToOperatorActionGroups < ActiveRecord::Migration
+class AddReviewedByOperatorIdColumnToOperatorActionGroups < ActiveRecord::Migration[4.2]
   def up
     add_column :operator_actions_groups, :reviewed_by_operator_id, :integer
   end

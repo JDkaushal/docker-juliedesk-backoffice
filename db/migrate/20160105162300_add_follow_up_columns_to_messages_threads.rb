@@ -1,4 +1,4 @@
-class AddFollowUpColumnsToMessagesThreads < ActiveRecord::Migration
+class AddFollowUpColumnsToMessagesThreads < ActiveRecord::Migration[4.2]
   def up
     add_column :messages_threads, :should_follow_up, :boolean, default: false
     add_column :messages_threads, :follow_up_instruction, :text

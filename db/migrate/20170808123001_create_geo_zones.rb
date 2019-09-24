@@ -1,4 +1,4 @@
-class CreateGeoZones < ActiveRecord::Migration
+class CreateGeoZones < ActiveRecord::Migration[4.2]
   def change
     create_table :geo_zones do |t|
       t.column :label, :string

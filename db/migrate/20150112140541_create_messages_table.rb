@@ -1,4 +1,4 @@
-class CreateMessagesTable < ActiveRecord::Migration
+class CreateMessagesTable < ActiveRecord::Migration[4.2]
   def up
     create_table :messages do |t|
       t.string :google_message_id

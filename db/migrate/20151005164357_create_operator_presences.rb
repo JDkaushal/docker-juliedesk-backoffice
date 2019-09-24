@@ -1,4 +1,4 @@
-class CreateOperatorPresences < ActiveRecord::Migration
+class CreateOperatorPresences < ActiveRecord::Migration[4.2]
   def up
     create_table :operator_presences do |t|
       t.column :operator_id, :integer

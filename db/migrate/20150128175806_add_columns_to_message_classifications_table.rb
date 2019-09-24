@@ -1,4 +1,4 @@
-class AddColumnsToMessageClassificationsTable < ActiveRecord::Migration
+class AddColumnsToMessageClassificationsTable < ActiveRecord::Migration[4.2]
 
   def up
     add_column :message_classifications, :locale, :string

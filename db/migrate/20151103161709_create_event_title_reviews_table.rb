@@ -1,4 +1,4 @@
-class CreateEventTitleReviewsTable < ActiveRecord::Migration
+class CreateEventTitleReviewsTable < ActiveRecord::Migration[4.2]
   def up
     create_table :event_title_reviews do |t|
       t.column :messages_thread_id, :integer

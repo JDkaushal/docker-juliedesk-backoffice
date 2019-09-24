@@ -1,4 +1,4 @@
-class CreateDateSuggestionsReviews < ActiveRecord::Migration
+class CreateDateSuggestionsReviews < ActiveRecord::Migration[4.2]
   def change
     create_table :date_suggestions_reviews do |t|
       t.integer :julie_action_id

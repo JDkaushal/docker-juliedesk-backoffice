@@ -1,4 +1,4 @@
-class CreateAiEmailFlowForecasts < ActiveRecord::Migration
+class CreateAiEmailFlowForecasts < ActiveRecord::Migration[4.2]
   def change
     create_table :ai_email_flow_forecasts do |t|
       t.datetime :datetime, unique: true

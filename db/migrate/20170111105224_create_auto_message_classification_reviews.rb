@@ -1,4 +1,4 @@
-class CreateAutoMessageClassificationReviews < ActiveRecord::Migration
+class CreateAutoMessageClassificationReviews < ActiveRecord::Migration[4.2]
   def change
     create_table :auto_message_classification_reviews do |t|
       t.integer :auto_message_classification_id

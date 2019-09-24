@@ -1,4 +1,4 @@
-class MigrateToNewEmailSystem < ActiveRecord::Migration
+class MigrateToNewEmailSystem < ActiveRecord::Migration[4.2]
   def up
     add_column :messages_threads, :server_thread_id, :integer
     add_column :messages, :server_message_id, :integer

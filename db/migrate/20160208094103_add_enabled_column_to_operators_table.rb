@@ -1,4 +1,4 @@
-class AddEnabledColumnToOperatorsTable < ActiveRecord::Migration
+class AddEnabledColumnToOperatorsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :operators, :enabled, :boolean, default: true
   end

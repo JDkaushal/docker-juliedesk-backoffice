@@ -1,4 +1,4 @@
-class AddProcessedInColumns < ActiveRecord::Migration
+class AddProcessedInColumns < ActiveRecord::Migration[4.2]
   def up
     add_column :message_classifications, :processed_in, :integer
     add_column :julie_actions, :processed_in, :integer

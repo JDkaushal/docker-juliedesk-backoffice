@@ -1,4 +1,4 @@
-class ChangeColumnStringToTextOnEventTitleReviews < ActiveRecord::Migration
+class ChangeColumnStringToTextOnEventTitleReviews < ActiveRecord::Migration[4.2]
   def up
     change_column :event_title_reviews, :title, :text
   end

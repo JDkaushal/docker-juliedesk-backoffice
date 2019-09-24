@@ -1,4 +1,4 @@
-class CreateMessageInterpretations < ActiveRecord::Migration
+class CreateMessageInterpretations < ActiveRecord::Migration[4.2]
   def up
     create_table :message_interpretations do |t|
       t.column :question, :string

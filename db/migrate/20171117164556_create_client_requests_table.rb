@@ -1,4 +1,4 @@
-class CreateClientRequestsTable < ActiveRecord::Migration
+class CreateClientRequestsTable < ActiveRecord::Migration[4.2]
   def change
     create_table :client_requests_tables do |t|
       t.column :user_id, :integer

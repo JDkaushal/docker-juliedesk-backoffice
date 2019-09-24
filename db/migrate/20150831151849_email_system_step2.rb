@@ -1,4 +1,4 @@
-class EmailSystemStep2 < ActiveRecord::Migration
+class EmailSystemStep2 < ActiveRecord::Migration[4.2]
   def up
     remove_column :messages_threads, :google_thread_id
     remove_column :messages, :google_message_id

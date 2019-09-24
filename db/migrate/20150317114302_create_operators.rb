@@ -1,4 +1,4 @@
-class CreateOperators < ActiveRecord::Migration
+class CreateOperators < ActiveRecord::Migration[4.2]
   def up
     create_table :operators do |t|
       t.column :email, :string

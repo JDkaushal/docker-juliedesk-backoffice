@@ -1,4 +1,4 @@
-class AddEventUrlColumnToJulieActions < ActiveRecord::Migration
+class AddEventUrlColumnToJulieActions < ActiveRecord::Migration[4.2]
   def up
     add_column :julie_actions, :event_url, :string
   end

@@ -1,4 +1,4 @@
-class CreateEventAttendeesStagingTables < ActiveRecord::Migration
+class CreateEventAttendeesStagingTables < ActiveRecord::Migration[4.2]
 
   def change
     if ENV['STAGING_APP']

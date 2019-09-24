@@ -1,4 +1,4 @@
-class AddGoogleHistoryToThreadsTable < ActiveRecord::Migration
+class AddGoogleHistoryToThreadsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :messages_threads, :google_history_id, :string
     add_column :messages_threads, :subject, :string

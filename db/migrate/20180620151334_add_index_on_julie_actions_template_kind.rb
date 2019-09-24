@@ -1,4 +1,4 @@
-class AddIndexOnJulieActionsTemplateKind < ActiveRecord::Migration
+class AddIndexOnJulieActionsTemplateKind < ActiveRecord::Migration[4.2]
   disable_ddl_transaction!
 
   def change

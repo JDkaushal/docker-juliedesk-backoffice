@@ -1,4 +1,4 @@
-class AddErrorToMessageInterpretations < ActiveRecord::Migration
+class AddErrorToMessageInterpretations < ActiveRecord::Migration[4.2]
   def up
     add_column :message_interpretations, :error, :boolean
   end

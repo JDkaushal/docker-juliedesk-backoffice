@@ -1,4 +1,4 @@
-class CreateAutoMessageClassifications < ActiveRecord::Migration
+class CreateAutoMessageClassifications < ActiveRecord::Migration[4.2]
   def change
     create_table :auto_message_classifications do |t|
       t.string   "classification"

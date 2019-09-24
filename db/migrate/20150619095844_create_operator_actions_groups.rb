@@ -1,4 +1,4 @@
-class CreateOperatorActionsGroups < ActiveRecord::Migration
+class CreateOperatorActionsGroups < ActiveRecord::Migration[4.2]
   def up
     create_table :operator_actions_groups do |t|
       t.column :operator_id, :integer

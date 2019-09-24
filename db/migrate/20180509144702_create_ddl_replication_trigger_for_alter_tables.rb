@@ -37,7 +37,7 @@
 #
 # # execute %{DROP EVENT TRIGGER IF EXISTS ddl_replication;}
 # execute %{DROP FUNCTION IF EXISTS replicate_ddl();}
-class CreateDdlReplicationTriggerForAlterTables < ActiveRecord::Migration
+class CreateDdlReplicationTriggerForAlterTables < ActiveRecord::Migration[4.2]
   def self.up
 
   end

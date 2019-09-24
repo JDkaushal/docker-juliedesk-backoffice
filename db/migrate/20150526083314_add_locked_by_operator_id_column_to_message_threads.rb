@@ -1,4 +1,4 @@
-class AddLockedByOperatorIdColumnToMessageThreads < ActiveRecord::Migration
+class AddLockedByOperatorIdColumnToMessageThreads < ActiveRecord::Migration[4.2]
   def up
     add_column :messages_threads, :locked_by_operator_id, :integer
   end

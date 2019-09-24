@@ -1,4 +1,4 @@
-class CreateStagingServerMessagesTable < ActiveRecord::Migration
+class CreateStagingServerMessagesTable < ActiveRecord::Migration[4.2]
 
   def change
     if ENV['STAGING_APP']

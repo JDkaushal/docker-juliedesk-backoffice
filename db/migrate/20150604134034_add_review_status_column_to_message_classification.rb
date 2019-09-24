@@ -1,4 +1,4 @@
-class AddReviewStatusColumnToMessageClassification < ActiveRecord::Migration
+class AddReviewStatusColumnToMessageClassification < ActiveRecord::Migration[4.2]
   def up
     add_column :message_classifications, :review_status, :string
   end

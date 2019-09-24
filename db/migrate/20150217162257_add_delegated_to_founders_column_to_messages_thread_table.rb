@@ -1,4 +1,4 @@
-class AddDelegatedToFoundersColumnToMessagesThreadTable < ActiveRecord::Migration
+class AddDelegatedToFoundersColumnToMessagesThreadTable < ActiveRecord::Migration[4.2]
   def up
     add_column :messages_threads, :delegated_to_founders, :boolean, default: false
   end

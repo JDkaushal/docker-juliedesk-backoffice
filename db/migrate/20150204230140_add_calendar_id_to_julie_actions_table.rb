@@ -1,4 +1,4 @@
-class AddCalendarIdToJulieActionsTable < ActiveRecord::Migration
+class AddCalendarIdToJulieActionsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :julie_actions, :calendar_id, :text
     remove_column :julie_actions, :event_ids

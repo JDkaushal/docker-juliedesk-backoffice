@@ -1,4 +1,4 @@
-class CreateCompanyDomainAssociations < ActiveRecord::Migration
+class CreateCompanyDomainAssociations < ActiveRecord::Migration[4.2]
   def change
     create_table :company_domain_associations do |t|
       t.string :company_name

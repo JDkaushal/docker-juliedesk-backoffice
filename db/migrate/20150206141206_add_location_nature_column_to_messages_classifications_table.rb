@@ -1,4 +1,4 @@
-class AddLocationNatureColumnToMessagesClassificationsTable < ActiveRecord::Migration
+class AddLocationNatureColumnToMessagesClassificationsTable < ActiveRecord::Migration[4.2]
   def up
     add_column :message_classifications, :location_nature, :string
   end

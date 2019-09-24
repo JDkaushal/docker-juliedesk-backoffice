@@ -1,4 +1,4 @@
-class AddProcessedAtColumnToMessages < ActiveRecord::Migration
+class AddProcessedAtColumnToMessages < ActiveRecord::Migration[4.2]
   def up
     add_column :messages, :processed_at, :datetime
   end

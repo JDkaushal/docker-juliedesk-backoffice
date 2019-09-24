@@ -1,4 +1,4 @@
-class DropEventsTable < ActiveRecord::Migration
+class DropEventsTable < ActiveRecord::Migration[4.2]
   def change
     drop_table :events do |t|
       t.string   "email"
