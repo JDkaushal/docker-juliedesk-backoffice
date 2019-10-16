@@ -29,6 +29,7 @@ class Message < ActiveRecord::Base
         ics_data = fetch_ics
         if ics_data.present?
           ics_data.gsub!(/\n\./, "\n") # TODO : manager better / dirty fix
+          ics_data.gsub!(/BEGIN:X-ICLOUD-PERUSER(.)*END:X-ICLOUD-PERUSER/m,'')
           parsed_ics_data = Icalendar::Calendar.parse(ics_data)
           if parsed_ics_data.present?
             event = parsed_ics_data.first.events.first
