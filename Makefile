@@ -1,4 +1,3 @@
-
 NAME=backoffice
 TEST_KEY=sezdzeidfjepodfkzepodfkzepokd
 TEST_ENCRYPTION_KEY_BASE64=MTIzNDU2NzgxMjM0NTY3ODEyMzQ1Njc4MTIzNDU2Nzg=
@@ -49,7 +48,7 @@ test_epilogue:
 	if [ -f config/database.yml.cache ]; then mv config/database.yml.cache config/database.yml; fi
 
 analyze:
-	bundle exec bundle-audit update
-	dependency-check --project "$(NAME)" --scan .
-	open dependency-check-report.html
-	bundle exec brakeman
+	gem install brakeman bundler-audit
+	bundle-audit update
+	bundle-audit || true
+	brakeman
