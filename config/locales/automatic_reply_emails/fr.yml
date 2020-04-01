@@ -4,11 +4,14 @@ fr:
       client: |
         Bonjour %{client_name},
 
-        Votre licence Julie Desk venant d’expirer, je suis au regret de ne plus pouvoir vous porter assistance concernant cette demande en cours.
-        Je vous laisse reprendre la main si besoin.
+        Votre licence Julie Desk venant d'expirer, je suis au regret de vous informer que je ne peux plus vous aider pour la demande en cours.
 
-        Au plaisir de renouer notre collaboration dans le futur ;)
-        Pour de plus amples informations, merci de contacter hello@juliedesk.com.
+        En cliquant sur le lien suivant vous pouvez mettre à jour votre compte, ce qui me permettra de continuer à organiser vos réunions: %{linktext}
+
+        Si vous avez des questions, l’équipe Julie Desk (%{mailto}) est prête à répondre à toutes les demandes que vous pourriez avoir.
+
+        J'espère pouvoir travailler à nouveau avec vous
+        Julie
     account_deactivated:
       client: |
         Bonjour %{client_name},
