@@ -109,11 +109,10 @@ class MessagesThread < ActiveRecord::Base
     all_recipients = messages.map{|m| JSON.parse(m.reply_all_recipients).values}.flatten.map{|h| h['email']}.uniq
     account = self.account
     client_all_emails = account.all_emails
-    identifier = self.account.company_hash['identifier']
 
     found_client_aliases = all_recipients & client_all_emails
 
-    AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_gone_unsubscribe.client', found_client_aliases.first, account.try(:usage_name), identifier)
+    AutoReplyAccountNoticeWorker.enqueue(last_message.id, 'account_gone_unsubscribe.client', found_client_aliases.first, account.try(:usage_name))
     #last_message.send_account_notice_email('account_gone_unsubscribe.client', found_client_aliases.first)
   end
 
