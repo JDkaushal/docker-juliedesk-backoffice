@@ -6,9 +6,9 @@ en:
 
         As your Julie Desk licence just expired, I’m sorry to inform you that I can’t further assist you on this ongoing request.
 
-        By clicking on the following link you can upgrade your account, allowing me to keep organizing your meetings: %{linktext}
+        By clicking on the following link you can upgrade your account, allowing me to keep organizing your meetings: https://www.juliedesk.com/checkout/%{identifier}
 
-        In case you have questions the Julie Desk team is ready to answer any queries you may have. Send us a message to %{mailto}
+        In case you have questions the Julie Desk team is ready to answer any queries you may have. Send us a message to hello@juliedesk.com
 
         Hope to work with you again
 

@@ -6,9 +6,9 @@ fr:
 
         Votre licence Julie Desk venant d'expirer, je suis au regret de vous informer que je ne peux plus vous aider pour la demande en cours.
 
-        En cliquant sur le lien suivant vous pouvez mettre à jour votre compte, ce qui me permettra de continuer à organiser vos réunions: %{linktext}
+        En cliquant sur le lien suivant vous pouvez mettre à jour votre compte, ce qui me permettra de continuer à organiser vos réunions: https://www.juliedesk.com/checkout/%{identifier}
 
-        Si vous avez des questions, l’équipe Julie Desk (%{mailto}) est prête à répondre à toutes les demandes que vous pourriez avoir.
+        Si vous avez des questions, l’équipe Julie Desk (hello@juliedesk.com) est prête à répondre à toutes les demandes que vous pourriez avoir.
 
         J'espère pouvoir travailler à nouveau avec vous
         Julie
