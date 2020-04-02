@@ -4,11 +4,15 @@ en:
       client: |
         Hi %{client_name},
 
-        As your Julie Desk licence just expired, I’m sorry to inform you I cannot be of further assistance on this ongoing request.
-        I let you take it from here if needed.
+        As your Julie Desk licence just expired, I’m sorry to inform you that I can’t further assist you on this ongoing request.
 
-        Hoping we will cross paths again in the future ;)
-        For more informations, please contact hello@juliedesk.com.
+        By clicking on the following link you can upgrade your account, allowing me to keep organizing your meetings: https://www.juliedesk.com/checkout/%{identifier}
+
+        In case you have questions the Julie Desk team is ready to answer any queries you may have. Send us a message to hello@juliedesk.com
+
+        Hope to work with you again
+
+        Julie
     account_deactivated:
       client: |
         Hi %{client_name},

@@ -266,7 +266,9 @@ class Message < ActiveRecord::Base
     html_signature = julie_alias.signature_en.gsub(/%REMOVE_IF_PRO%/, "")
     text_signature = julie_alias.footer_en.gsub(/%REMOVE_IF_PRO%/, "")
 
-    text = I18n.t("automatic_reply_emails.#{email_type}", locale: locale_to_use, client_name: client_usage_name)
+    identifier = current_messages_thread.account ? current_messages_thread.account.company_hash['identifier'] : ""  
+
+    text = I18n.t("automatic_reply_emails.#{email_type}", locale: locale_to_use, client_name: client_usage_name, identifier: identifier)
 
     if locale_to_use == "fr"
       html_signature = julie_alias.signature_fr.gsub(/%REMOVE_IF_PRO%/, "")
