@@ -64,7 +64,11 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
         if clientrequest.present?
             clientcount = clientrequest.count
             clientrequest.each do |client|
-                event = client.messages_thread.event_data[:event_id] ? 1 : 0
+                if client.messages_thread.present?
+                    event = client.messages_thread.event_data[:event_id] ? 1 : 0
+                else
+                    event = 0
+                end
                 eventcount += event
             end
         client_requestlist[:date] = listdate
