@@ -50,13 +50,13 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
                 date = DateTime.parse(mdays)
                 if date.month == 12
                     clientrequest = ClientRequest.where(:date=>DateTime.parse(mdays)..DateTime.parse(mdays).end_of_month, :user_id=>userid, :team_identifier=>identifier)
-                    listdate = DateTime.parse(mdays).strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).end_of_year.strftime("%Y-%b-%d")
+                    listdate = DateTime.parse(mdays).strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).end_of_month.strftime("%Y-%b-%d")
                 elsif date.month == 1
                     clientrequest = ClientRequest.where(:date=>DateTime.parse(mdays).beginning_of_month..DateTime.parse(mdays).next_month, :user_id=>userid, :team_identifier=>identifier)
-                    listdate = DateTime.parse(mdays).beginning_of_month.strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).end_of_year.strftime("%Y-%b-%d")   
+                    listdate = DateTime.parse(mdays).beginning_of_month.strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).next_month.strftime("%Y-%b-%d")
                 else
                     clientrequest = ClientRequest.where(:date=>DateTime.parse(mdays)..DateTime.parse(mdays).next_month, :user_id=>userid, :team_identifier=>identifier)
-                    listdate = DateTime.parse(mdays).strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).end_of_year.strftime("%Y-%b-%d")
+                    listdate = DateTime.parse(mdays).strftime("%Y-%b-%d") + ' to ' + DateTime.parse(mdays).next_month.strftime("%Y-%b-%d")
                 end
             end    
         end
@@ -119,7 +119,11 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
         if clientrequest.present?
             clientcount = clientrequest.count
             clientrequest.each do |client|
-                event = client.messages_thread.event_data[:event_id] ? 1 : 0
+                if client.messages_thread.present?
+                    event = client.messages_thread.event_data[:event_id] ? 1 : 0
+                else
+                    event = 0
+                end
                 eventcount += event
             end
         end 
