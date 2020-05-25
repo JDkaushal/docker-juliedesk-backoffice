@@ -19,6 +19,8 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
     graphdates = params[:graphdata]
     identifier = params[:identifier]
     userlist = params[:userlist]
+    lasttodate = params[:todate].to_datetime
+    todatelast = lasttodate.strftime("%Y-%m-%d")
     userdetailslist = []
     yearlydate = []
     avg_clientcount = 0
@@ -55,12 +57,18 @@ class Api::V1::ClientRequestsController < Api::ApiV1Controller
             monthly_graphdate.push(client_requestlist)
     else
         monthlist = graphdates - [graphdates.last]
-        monthlist.each do |month|
+        monthlist.each_with_index do |month, idx|
             client_requestlist = {}
             eventcount = 0
             clientcount = 0
-            clientrequest = ClientRequest.where(:date=>Date.parse(month)..Date.parse(month).next_month, :user_id=>userid, :team_identifier=>identifier)
-            listdate = Date.parse(month).strftime("%d-%b-%Y") + ' to ' + Date.parse(month).next_month.strftime("%d-%b-%Y")
+            if idx + 1 ==  monthlist.count
+                clientrequest = ClientRequest.where(:date=>Date.parse(month)..Date.parse(todatelast), :user_id=>userid, :team_identifier=>identifier)
+                listdate = Date.parse(month).strftime("%d-%b-%Y") + ' to ' + Date.parse(todatelast).strftime("%d-%b-%Y")
+            else    
+                clientrequest = ClientRequest.where(:date=>Date.parse(month)..Date.parse(month).next_month, :user_id=>userid, :team_identifier=>identifier)
+                listdate = Date.parse(month).strftime("%d-%b-%Y") + ' to ' + Date.parse(month).next_month.strftime("%d-%b-%Y")
+            end
+            
             if clientrequest.present?
                 clientcount = clientrequest.count
                 clientrequest.each do |client|
