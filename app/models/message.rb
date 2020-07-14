@@ -597,7 +597,7 @@ class Message < ActiveRecord::Base
       new_thread = false
       send_auto_reply_mailing_list_message_id = nil
 
-      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze || server_message['from'].include?('julie.aliastest@gmail.com')
+      if server_thread['subject'].include? "MB5jB- Julie alias test".freeze || server_message['from'].include?('julie.aliastest@gmail.com') || server_message['from'].include?('juliedesk.alias@gmail.com')
         should_update_thread = false
       else
         messages_thread = MessagesThread.find_by_server_thread_id server_thread['id']
