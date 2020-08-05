@@ -145,6 +145,7 @@ window.classificationForms.askAvailabilitiesForm = function(params) {
             threadData.duration = parseInt($('#duration').val());
             threadData.timezone = $('#timezone').val();
             threadData.location = $('#location').val();
+            threadData.online_meeting = $('#online_tool').val();
 
             var verifyParams = {
                 account_email: window.threadAccount.email,

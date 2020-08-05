@@ -40,6 +40,7 @@ Rails.application.config.assets.precompile += [
     "julie_actions/julie_action_show.js",
     "angular_date_suggestions_full_auto_review_manager_app.js",
     "angular_info_panel_app.js",
-    "angular_meeting_rooms_availaibilities_panel_app.js"
+    "angular_meeting_rooms_availaibilities_panel_app.js",
+    "online_meeting/main.js"
 ]
 

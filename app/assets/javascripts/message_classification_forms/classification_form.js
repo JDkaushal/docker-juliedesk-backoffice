@@ -178,7 +178,7 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
     var restaurantBookingManager = $('#restaurant-booking-manager').scope();
     var vmHelper = angular.element($('#virtual-meetings-helper')).scope();
     var currentAppointment = window.getCurrentAppointment();
-
+    var currentMeetingTool = window.getCurrentMeetingTool();
     classificationForm.sendFormLoading(true, "Loading...");
 
     var errorInConstraintTiles = false;
@@ -246,7 +246,8 @@ window.classificationForms.classificationForm.prototype.sendForm = function (par
         message_classification_identifier: params.message_classification_identifier,
         date_suggestions_from_ai: params.dateSuggestionsFromAi,
         language_level: $("input[name='language_level']:checked").val(),
-        asap_constraint: $("input[name='asap_constraint']:checked").length > 0
+        asap_constraint: $("input[name='asap_constraint']:checked").length > 0,
+        online_meeting_provider: currentMeetingTool
     };
 
     if(vmHelper && vmHelper.isVirtualAppointment() && vmHelper.selectedVirtualResource !== undefined) {

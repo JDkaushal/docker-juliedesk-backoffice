@@ -92,3 +92,5 @@
 //= require error_manager
 //= require error_manager_init
 //= require faker
+//= require online_meeting/main
+//= require online_meeting/online_meeting_helper

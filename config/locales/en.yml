@@ -167,6 +167,7 @@ en:
     merge: "Merge into another thread"
     to_be_merged: "Send for merging"
     cancel_to_merge: "To merge by %{operator_name}"
+    add_meeting: "Add Meeting Link"
   classification:
     please_fill_info_in: "Please fill info in"
     dates_identification: "Dates identification"
@@ -241,6 +242,7 @@ en:
     are_we_waiting_for_other_answers: "Are we still waiting for other answers?"
     new_preferences: "New preferences:"
     invitation_already_sent: "Invitation already sent"
+    online_meeting_tool_header: "Select an online tool"
 
 
   dates_identifications:

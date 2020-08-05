@@ -1,0 +1,23 @@
+<div class="data-entry online-tools-selects online-tool-type-section" data-entry-name="onlineToolType">
+ <%  messages_thread_account_tools = @messages_thread.account.try(:user_added_tools) || [] %>
+  <% selectOption = Struct.new(:id, :name)%>
+  <% messages_thread_account_tool_labels = messages_thread_account_tools.map{|tool| selectOption.new(tool['id'], tool['name']) } %>
+  <% user_selected_tool = @messages_thread.account.try(:user_online_meeting_provider).present? ? @messages_thread.account.try(:user_online_meeting_provider)['name'] : "" %>
+  <div class="header">
+    <div class="data-entry-name title">
+      <%= I18n.t("info_box.online_meeting_tool_header") %>
+    </div>
+  </div>
+
+  <div class="body">
+    <%= select_tag :online_tool, options_from_collection_for_select(messages_thread_account_tool_labels, "id", "name"), class: "data-entry form-control", :include_blank => true %>
+
+    <div class="online-tool-preference">
+      <div class="online-tool-wrapper">
+        <div class="online-tool-text">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

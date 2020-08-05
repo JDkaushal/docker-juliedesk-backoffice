@@ -150,6 +150,7 @@ class MessageClassification < ActiveRecord::Base
           location_nature: last_classification_with_data.try(:location_nature),
           location: last_classification_with_data.try(:location),
           location_coordinates: (params[:location_coordinates] || []),
+          online_meeting_provider: last_classification_with_data.try(:online_meeting_provider),
 
           # call informations
           call_instructions: last_classification_with_data.try(:call_instructions),
@@ -235,6 +236,7 @@ class MessageClassification < ActiveRecord::Base
           identifier: params[:message_classification_identifier],
           cluster_specified_location: params[:cluster_specified_location],
           attendees_emails: self.get_attendees_emails(attendees),
+          online_meeting_provider: params[:online_meeting_provider],
 
           # properties with JSON column type
           before_update_data: params[:before_update_data],

@@ -59,7 +59,10 @@ class Account
                 :sfb_instructions,
                 :last_sync_date,
                 :call_to_action_in_email_enabled,
-                :command_line_enabled
+                :command_line_enabled,
+                #:user_online_meeting_provider,
+                :online_meeting_providers,
+                :user_added_tools
 
 
   RULE_VALIDATED = "rule_validated"
@@ -146,6 +149,9 @@ class Account
     account.configuration_needed = !account.configured
 
     account.calendar_access_lost = users_access_lost_cache.present? ? users_access_lost_cache.include?(account.email) : false
+    #account.user_online_meeting_provider = data['user_online_meeting_provider'] || []
+    account.online_meeting_providers = data['online_meeting_providers'] || []
+    account.user_added_tools = data['user_added_tools'] || []
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

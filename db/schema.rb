@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_03_080331) do
+ActiveRecord::Schema.define(version: 2020_07_27_060737) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -369,6 +369,7 @@ ActiveRecord::Schema.define(version: 2018_07_03_080331) do
     t.json "booked_rooms_details"
     t.string "cluster_specified_location"
     t.string "attendees_emails", default: [], array: true
+    t.string "online_meeting_provider"
     t.index ["attendees_emails"], name: "index_message_classifications_on_attendees_emails", using: :gin
     t.index ["created_at"], name: "index_message_classifications_on_created_at"
     t.index ["identifier"], name: "index_message_classifications_on_identifier"

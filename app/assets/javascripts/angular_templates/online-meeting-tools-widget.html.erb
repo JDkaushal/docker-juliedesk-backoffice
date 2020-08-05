@@ -1,0 +1,20 @@
+<div class="attendee-details light col-xs-12" ng-click="setPresent()">
+  <div class="col-xs-1 client-picto-contact" ng-show="attendee.isClient">
+    <%= image_tag 'client_blue2x.png' %>
+  </div>
+  <div class="col-xs-1 client-picto-contact" ng-show="attendee.displayAsLinkedAttendee()">
+    <%= image_tag 'linked_participant_form.png', width: 20, height: 20 %>
+  </div>
+
+  <div class="col-xs-11">
+
+    <div class="row ellipsable">
+      <span class="attendee-usage-name">{{(attendee.gender == 'M' || attendee.gender == 'F') ? attendee.displayGender() : '' }} {{attendee.firstName}} {{attendee.lastName}}</span>
+    </div>
+
+    <div class="row ellipsable" style="margin-top: -3px;">
+      <cite class="attendee-email">{{attendee.email}}</cite>
+    </div>
+  </div>
+
+</div>
