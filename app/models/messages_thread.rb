@@ -688,7 +688,8 @@ class MessagesThread < ActiveRecord::Base
           # We add in front the julie aliases emails and the services emails (hello@juliedesk.com)
           allowed_attendees: self.allowed_attendees,
           date_suggestions_full_ai: message_classifications.map(&:julie_action).compact.select(&:done).map(&:date_suggestions_full_ai).include?(true),
-          authentication_token_is_present: self.authentication_token.present?
+          authentication_token_is_present: self.authentication_token.present?,
+          online_meeting_provider: last_message_classification.try(:online_meeting_provider)
       }
     end
 

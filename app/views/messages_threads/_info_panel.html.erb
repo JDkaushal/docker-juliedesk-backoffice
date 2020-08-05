@@ -132,6 +132,7 @@
               }
 
               displayLunchTimePreferences(currentAppointment);
+              displayOnlineToolPreferences(currentAppointment);
             }
 
             if(window.currentEventTile && window.currentEventTile.getMode() == 'edit_only'){
@@ -180,6 +181,7 @@
         });
 
         initAppointments();
+        initOnlineTools();
 
         $(".validate-linear-form-entry-button").click(function() {
           askNextLinearFormEntry();
@@ -460,9 +462,9 @@
       initAllowedAttendeesEmails();
 
       var currentAppointment = window.getCurrentAppointment();
-
       if(currentAppointment) {
         displayLunchTimePreferences(currentAppointment);
+        displayOnlineToolPreferences(currentAppointment);
       }
       //checkIfDisplayMessageNotSentLayer();
     });
@@ -477,6 +479,25 @@
         $('.lunch-time-preference').hide();
         $('#lunch_time_preference_value').html('');
       }
+    }
+
+    function displayOnlineToolPreferences(currentAppointment) {
+        var showOnlineToolsFor = ['call', 'confcall', 'visio'];
+        var eligibleConfigs    = ['Ms Teams'];
+        if( showOnlineToolsFor.indexOf(currentAppointment.kind) > -1 && eligibleConfigs.indexOf(currentAppointment.support_config_hash.label) > -1 ) {
+
+            $('.online-tool-container').show();
+            $('.online-tool-container').removeClass("hidden");
+            $("#online_tool").val($("#online_tool option:contains("+currentAppointment.support_config_hash.label+")").val());
+            $('.online-tool-text').html("User default tool: "+ currentAppointment.support_config_hash.label);
+        }
+        else {
+            $("#online_tool").val("");
+            $('.online-tool-text').html("");
+            $(".online-tool-container").hide();
+            $('.online-tool-container').addClass("hidden");
+        }
+
     }
 
     function getCurrentOperatorPrivilegeLevel() {
@@ -575,6 +596,9 @@
 
     window.getCurrentAppointment = function() {
       return window.getAppointment($("select#appointment_nature").val());
+    };
+    window.getCurrentMeetingTool = function() {
+        return ($("select#online_tool").val());
     };
     window.getCurrentAddress = function() {
         var currentAppointment = window.getCurrentAppointment();
@@ -1118,6 +1142,11 @@
                 }
             }
         }
+    }
+    function initOnlineTools(){
+        var $selectToolNode = $("select#online_tool");
+        $selectToolNode.val(window.threadComputedData.online_meeting_provider);
+
     }
 
     function refreshVirtualAppointmentsHelper(){
@@ -1693,6 +1722,7 @@
         </div>
       </div>
 
+
       <div class="data-entry linear-form-entry appointment-type-selects section appointment-type-section" data-entry-name="appointmentType">
         <% messages_thread_account_appointments = @messages_thread.account.try(:appointments) || [] %>
         <% selectOption = Struct.new(:id, :name)%>
@@ -1720,8 +1750,15 @@
               </div>
             </div>
           </div>
+          <div class="online-tool-container hidden">
+            <%= render partial: "messages_threads/partials/online_meeting_tools", locals: {messages_thread: messages_thread} %>
+          </div>
         </div>
       </div>
+
+
+
+
 
       <div class="data-entry linear-form-entry form-first-part-entries section duration-section" data-entry-name="duration">
         <div class="header">

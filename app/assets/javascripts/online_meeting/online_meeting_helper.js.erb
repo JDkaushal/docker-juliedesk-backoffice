@@ -1,0 +1,33 @@
+var host = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
+var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
+function createMeeting(user,email,start,end,provider){
+    trackActionV2('Click_on_add_meeting', {ux_element: 'backoffice'});
+    var currentFullMessage = window.currentFullMessage;
+    var salutation = window.computeSalutation();
+    var footer = window.computeFooter();
+    var signature = window.computeSignature();
+
+
+
+    $.post({
+        url: host + "/api/v1/users/create_ms_team_meeting",
+        data: {
+            mail: email,
+            user_id: user,
+            start_date: start,
+            end_date: end,
+            provider: provider
+        },
+        beforeSend: function(xhr){
+            xhr.setRequestHeader("Authorization", access_key);
+        },
+        success: function(data) {
+            window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\n Use the following link to join meeting: \n" + data.meeting + footer;
+            $('#reply-text').val(window.currentFullMessageWithFooter);
+        },
+        error: function(){
+            alert("Meeting Could not be created");
+        }
+    });
+
+}

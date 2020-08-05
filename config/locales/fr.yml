@@ -336,6 +336,7 @@ fr:
     merge: "Associer à un autre thread"
     to_be_merged: "Send for merging"
     cancel_to_merge: "To merge by %{operator_name}"
+    add_meeting: "Add Meeting Link"
   classification:
       please_fill_info_in: "Remplissez les infos"
       dates_identification: "Identification des dates"
@@ -409,6 +410,7 @@ fr:
     are_we_waiting_for_other_answers: "Attend-on encore d'autres réponses ?"
     new_preferences: "Nouvelles préférences :"
     invitation_already_sent: "L'invitation a déjà été envoyée"
+    online_meeting_tool_header: "Select an online tool"
   dates_identifications:
     add_a_date: "Ajouter une date"
     verify_detected_dates: "Vérifier les dates détectées"

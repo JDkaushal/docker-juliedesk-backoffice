@@ -77,6 +77,17 @@
     }
   }
 
+  #add-meeting {
+    position: absolute;
+    bottom: 5px;
+    right: 115px;
+
+    &:disabled {
+      background-color: $invalidButtonColor !important;
+      border-color: $invalidButtonColor !important;
+    }
+  }
+
   #reply-button-popover-warning-details-wrapper {
     display: none;
     position: absolute;

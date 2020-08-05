@@ -209,3 +209,17 @@
     }
   }
 }
+
+.online-tool-type-section {
+  .header {
+    background-color: $appointmentTypeHeaderColor;
+
+    .sprite {
+      @include section-header-sprite-conf("<%= asset_path 'scheduling_form_icons/admin-tools.svg' %>");
+    }
+  }
+
+  .body {
+    background-color: $appointmentTypeBodyColor;
+  }
+}
