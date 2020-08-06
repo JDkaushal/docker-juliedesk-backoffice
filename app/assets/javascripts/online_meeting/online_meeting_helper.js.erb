@@ -23,7 +23,7 @@ function createMeeting(user,email,start,end,provider,message){
             xhr.setRequestHeader("Authorization", access_key);
         },
         success: function(data) {
-            window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\n Use the following link to join meeting: \n" + data.meeting + +signature+footer;
+            window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\n Use the following link to join meeting: \n" + data.meeting + signature+footer;
             $('#reply-text').val(window.currentFullMessageWithFooter);
             $(".add-meeting").prop("disabled", false);
             $(".add-meeting .basic-loader-in-add-meeting").hide();
