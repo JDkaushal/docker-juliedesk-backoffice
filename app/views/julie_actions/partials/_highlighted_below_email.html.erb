@@ -1,5 +1,5 @@
 <%= javascript_include_tag 'angular_reply_box_app'%>
-<%= javascript_include_tag 'online_meeting/main'%>
+
 
 <div id="reply-box" data-tracking-id="<%= session[:operator_id]%>-<%= @messages_thread.id %>" data-bo-message-id=<%= @julie_action.message_classification.message_id %> data-action-nature="<%= @julie_action.message_classification.classification %>">
   <div class="highlighted-below-email">
