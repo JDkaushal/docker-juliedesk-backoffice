@@ -5,8 +5,9 @@ var ClientAgreementLevelManager = (function(params){
         const AUTHORIZED_REQUEST = 'authorized_request';
         const TRUSTED_REQUEST = 'trusted_request';
         const UNAUTHORIZED_REQUEST = 'unauthorized_request';
+        const UNAUTHORIZED_ALIAS = 'unauthorized_alias';
 
-        const DISPLAY_NODES_CLASSES = [AUTHORIZED_REQUEST, TRUSTED_REQUEST, UNAUTHORIZED_REQUEST];
+        const DISPLAY_NODES_CLASSES = [AUTHORIZED_REQUEST, TRUSTED_REQUEST, UNAUTHORIZED_REQUEST, UNAUTHORIZED_ALIAS];
         
         function displayAgreementStatus() {
             var agreementLevel = computeAgreementLevel();
@@ -34,6 +35,7 @@ var ClientAgreementLevelManager = (function(params){
             var emailSenders = allEmailsSenders();
             var clientCircleOfTrust = window.threadAccount.circle_of_trust;
             var clientEmails = _.uniq(window.threadAccount.email_aliases.concat(window.threadAccount.email));
+            var correct_alias = window.threadAccount.unpermitted_common_aliases.indexOf(window.currentJulieAlias.email);
             var agreementLevel = UNAUTHORIZED_REQUEST;
 
             if(clientIsInSenders(clientEmails, emailSenders) || (clientCircleOfTrust && emailInCircleOfTrust(clientCircleOfTrust, emailSenders))) {
@@ -41,7 +43,9 @@ var ClientAgreementLevelManager = (function(params){
             } else if(clientCircleOfTrust && clientTrustingEveryone(clientCircleOfTrust)) {
                 agreementLevel = TRUSTED_REQUEST;
             }
-            
+            if(correct_alias !== -1){
+                agreementLevel = UNAUTHORIZED_ALIAS;
+            }
             return agreementLevel;
         }
 
