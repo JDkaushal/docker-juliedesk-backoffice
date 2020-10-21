@@ -138,8 +138,12 @@
                        widget.roomAvailable = true;
                     });
                 }
-
-                window.createEventButtonClickHandler({forceTimezone: window.verifiedDatesByAi.timezone, createdFromAI: true});
+                if(window.getCurrentMeetingTool() === "") {
+                    window.createEventButtonClickHandler({
+                        forceTimezone: window.verifiedDatesByAi.timezone,
+                        createdFromAI: true
+                    });
+                }
             }
         };
         
@@ -183,6 +187,17 @@
 
         $scope.eventActionsDisabled = function() {
             return $scope.datesToCheck.length == 0;
+        };
+
+        $scope.showMeetingText = function() {
+            return window.getCurrentMeetingTool() !== "";
+        };
+
+        $scope.eventCreateMeetingActionsDisabled = function() {
+            if(window.timeSlotToCreate !== "" || window.timeSlotToCreate !== null)
+                return true ;
+            else
+                return false;
         };
 
         $scope.attachEventsToDom = function() {
@@ -315,6 +330,14 @@
 
         angular.element(document).ready(function() {
             $scope.listenToEvents();
+            var online_tool = window.getCurrentMeetingToolText();
+            if(online_tool!=='' || typeof online_tool!== 'undefined') {
+                angular.element($('.add-meeting-text')).html("Create "+online_tool+" Meeting");
+                angular.element($('#add-meeting')).show();
+            }
+            else{
+                angular.element($('.add-meeting')).show();
+            }
         });
 
     }]);

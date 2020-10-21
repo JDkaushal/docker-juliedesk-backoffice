@@ -1,11 +1,12 @@
 var host = "<%= ENV['JULIEDESK_APP_BASE_PATH'] %>";
 var access_key = "<%= ENV['JULIEDESK_APP_API_KEY'] %>";
-function createMeeting(user,email,start,end,provider,message,timezone,duration){
+function createMeeting(user,email,start,provider,message,timezone,duration){
     trackActionV2('Click_on_add_meeting', {ux_element: 'backoffice'});
     var currentFullMessage = window.currentFullMessage;
     var salutation = window.computeSalutation();
     var footer = window.computeFooter();
     var signature = window.computeSignature();
+    var other_notes = $("textarea#other_notes").val();
 
 
 
@@ -15,7 +16,7 @@ function createMeeting(user,email,start,end,provider,message,timezone,duration){
             mail: email,
             user_id: user,
             start_date: start,
-            end_date: end,
+            //end_date: end,
             provider: provider,
             message: message,
             timezone: timezone,
@@ -25,12 +26,15 @@ function createMeeting(user,email,start,end,provider,message,timezone,duration){
             xhr.setRequestHeader("Authorization", access_key);
         },
         success: function(data) {
-            window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\nUse the following link to join meeting: \n" + data.meeting +footer;
-            $('#reply-text').val(window.currentFullMessageWithFooter);
+            //window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\nUse the following link to join meeting: \n" + data.meeting +footer;
+            //$('#reply-text').val(window.currentFullMessageWithFooter);
             $(".add-meeting").prop("disabled", false);
             $(".add-meeting .basic-loader-in-add-meeting").hide();
             $(".add-meeting .basic-loader-in-add-meeting-text").html("");
             $(".add-meeting .add-meeting-text").show();
+            window.online_meeting_link = data.meeting;
+            window.notesManager.setSpecificNotes(other_notes + "\n\n Join Here - "+data.meeting);
+            window.updateNotes();
         },
         error: function(){
             alert("Meeting Could not be created");
@@ -43,12 +47,13 @@ function createMeeting(user,email,start,end,provider,message,timezone,duration){
 
 }
 
-function createZoomMeeting(user,email,start,end,provider,message,timezone,duration){
+function createZoomMeeting(user,email,start,provider,message,timezone,duration){
     trackActionV2('Click_on_add_meeting', {ux_element: 'backoffice'});
     var currentFullMessage = window.currentFullMessage;
     var salutation = window.computeSalutation();
     var footer = window.computeFooter();
     var signature = window.computeSignature();
+    var other_notes = $("textarea#other_notes").val();
 
 
 
@@ -58,7 +63,7 @@ function createZoomMeeting(user,email,start,end,provider,message,timezone,durati
             mail: email,
             user_id: user,
             start_date: start,
-            end_date: end,
+            //end_date: end,
             provider: provider,
             message: message,
             timezone: timezone,
@@ -68,12 +73,15 @@ function createZoomMeeting(user,email,start,end,provider,message,timezone,durati
             xhr.setRequestHeader("Authorization", access_key);
         },
         success: function(data) {
-            window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\n Use the following link to join meeting: \n" + data.meeting +footer;
-            $('#reply-text').val(window.currentFullMessageWithFooter);
+            //window.currentFullMessageWithFooter = salutation + window.currentFullMessage + "\n\n Use the following link to join meeting: \n" + data.meeting +footer;
+            //$('#reply-text').val(window.currentFullMessageWithFooter);
             $(".add-meeting").prop("disabled", false);
             $(".add-meeting .basic-loader-in-add-meeting").hide();
             $(".add-meeting .basic-loader-in-add-meeting-text").html("");
             $(".add-meeting .add-meeting-text").show();
+            window.online_meeting_link = data.meeting;
+            window.notesManager.setSpecificNotes(other_notes + "\n\n Join Here - "+data.meeting);
+            window.updateNotes();
         },
         error: function(){
             alert("Meeting Could not be created");
