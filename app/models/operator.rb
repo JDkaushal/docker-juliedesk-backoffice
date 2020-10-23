@@ -11,6 +11,7 @@ class Operator < ActiveRecord::Base
   PRIVILEGE_SUPER_OPERATOR_LEVEL_1 = "super_operator_level_1"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_3 = "super_operator_level_3"
   PRIVILEGE_SUPER_OPERATOR_LEVEL_2 = "super_operator_level_2"
+  PRIVILEGE_SUPER_OPERATOR_TRAINEE = "super_operator_level_T"
 
 
   def daily_stats(ref_date = Time.now)
@@ -72,7 +73,8 @@ class Operator < ActiveRecord::Base
         PRIVILEGE_SUPER_OPERATOR_LEVEL_1 => "Operator level 2",
         PRIVILEGE_SUPER_OPERATOR_LEVEL_3 => "Operator level 3",
         PRIVILEGE_SUPER_OPERATOR_LEVEL_2 => "Operator level support",
-        PRIVILEGE_ADMIN => "Admin"
+        PRIVILEGE_ADMIN => "Admin",
+        PRIVILEGE_SUPER_OPERATOR_TRAINEE => "Trainee"
     }
   end
 

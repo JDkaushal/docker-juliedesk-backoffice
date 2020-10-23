@@ -27,6 +27,7 @@ class MessagesThread < ActiveRecord::Base
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
+  TRAINING_EMAILS = %w('kaushal@juliedesk.com' 'violetta.toth@juliedesk.com' 'violetta.toth92@gmail.com' 'vtoth@pix.city' 'julien.wolff@juliedesk.com')
 
   attr_writer :account
   attr_accessor :thread_blocked,
@@ -47,6 +48,8 @@ class MessagesThread < ActiveRecord::Base
 
   scope :currently_scheduling, -> { where(status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT]) }
   scope :candidate_for_abortion, -> { where(status: [MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CLIENT, MessageClassification::THREAD_STATUS_SCHEDULING_WAITING_FOR_CONTACT, MessageClassification::THREAD_STATUS_HANDLED_BY_CLIENT]) }
+
+  scope :trainee_emails, -> {where(account_email: TRAINING_EMAILS)}
 
   include ApplicationHelper
   include TemplateGeneratorHelper
@@ -164,7 +167,8 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.owner_needs_configuration ||
         messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
         !messages_thread.can_be_processed_now ||
-        messages_thread.julie_aliases_malfunctionning
+        messages_thread.julie_aliases_malfunctionning ||
+        TRAINING_EMAILS.include?(messages_thread.account_email)
   end
 
   def self.super_operator_level_1_check_thread_to_reject(messages_thread)
@@ -174,7 +178,19 @@ class MessagesThread < ActiveRecord::Base
         messages_thread.owner_needs_configuration ||
         messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
         !messages_thread.can_be_processed_now ||
-        messages_thread.julie_aliases_malfunctionning
+        messages_thread.julie_aliases_malfunctionning ||
+        TRAINING_EMAILS.include?(messages_thread.account_email)
+  end
+
+  def self.super_operator_level_trainee_check_thread_to_reject(messages_thread)
+    messages_thread.sent_to_admin ||
+        (messages_thread.account && messages_thread.account.only_admin_can_process) ||
+        messages_thread.thread_blocked ||
+        messages_thread.owner_needs_configuration ||
+        messages_thread.has_tag?(MessagesThread::SYNCING_TAG) ||
+        !messages_thread.can_be_processed_now ||
+        messages_thread.julie_aliases_malfunctionning ||
+        TRAINING_EMAILS.exclude?(messages_thread.account_email)
   end
 
   def self.filter_on_privileges(privilege, messages_threads)
@@ -186,7 +202,11 @@ class MessagesThread < ActiveRecord::Base
       messages_threads.reject!{ |mt|
         self.super_operator_level_1_check_thread_to_reject(mt)
       }
-    end
+    elsif privilege == Operator::PRIVILEGE_SUPER_OPERATOR_TRAINEE
+      messages_threads.reject!{ |mt|
+        self.super_operator_level_trainee_check_thread_to_reject(mt)
+    }
+   end
   end
 
   def get_secondary_clients_emails
