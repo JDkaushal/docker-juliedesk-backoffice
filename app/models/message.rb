@@ -771,7 +771,7 @@ class Message < ActiveRecord::Base
 
         # -- Manage 'syncing' tag
         if messages_thread.clients_in_recipients.any? { |client_email| Account.not_synced?(client_email) }
-          messages_thread.add_tag(MessagesThread::SYNCING_TAG)
+          messages_thread.add_tag(MessagesThread::SYNCING_TAG) unless MessagesThread::TRAINING_EMAILS.include? messages_thread.account_email
         end
 
         ## --
