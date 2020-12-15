@@ -1,5 +1,5 @@
 <%= javascript_include_tag 'angular_reply_box_app'%>
-<%= javascript_include_tag 'online_meeting/main'%>
+
 
 <div id="reply-box" data-tracking-id="<%= session[:operator_id]%>-<%= @messages_thread.id %>" data-bo-message-id=<%= @julie_action.message_classification.message_id %> data-action-nature="<%= @julie_action.message_classification.classification %>">
   <div class="highlighted-below-email">
@@ -78,13 +78,13 @@
       <span>
 
 
-        <button id="add-meeting" class="btn btn-success add-meeting">
+        <!--<button id="add-meeting" class="btn btn-success add-meeting">
           <div class="basic-loader-in-add-meeting">
             <%= image_tag 'ajax-loader-on-green.gif' %>
             <span class="basic-loader-in-add-meeting-text">YO</span>
           </div>
           <span class="add-meeting-text">Create Meeting Link</span>
-        </button>
+        </button>-->
 
         <button class="btn btn-success" id="reply-button"><%= I18n.t("common.reply") %></button>
         <div id="reply-button-popover-warning-details-wrapper">
