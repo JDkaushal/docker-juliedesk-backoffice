@@ -1603,15 +1603,14 @@ class MessagesThread < ActiveRecord::Base
 
   def self.generate_csv
     messages_threads = MessagesThread.includes(:last_operator).where("account_email IS NOT NULL").where("DATE(created_at) = ?", Date.today-1)
-    csv_created = CSV.generate do |csv|
+    CSV.generate do |csv|
 
-      csv = ["id","account_email" "concat",	"status",	"name",	"created_at"]
+      csv << ["id", "concat",	"status",	"name",	"created_at","account_email"]
       messages_threads.each { |mt|
-        csv << [mt.id,mt.account_email,"https://backoffice.juliedesk.net/messages_threads/#{mt.id}",mt.status,
-                mt.last_operator&.name,mt.created_at]
+        csv << [mt.id,"https://backoffice.juliedesk.net/messages_threads/#{mt.id}",mt.status,
+                mt.last_operator&.name,mt.created_at,mt.account_email]
       }
     end
-    AdminMailer.send_csv(csv_created).deliver
   end
 
   private

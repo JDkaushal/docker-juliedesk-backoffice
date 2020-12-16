@@ -256,7 +256,9 @@ class Review::OperatorsController < ReviewController
                }
            }
   end
-
+  def download_report
+    send_data MessagesThread.generate_csv, filename: "threadinfo-#{Date.yesterday}.csv"
+  end
 
   private
 
@@ -274,4 +276,6 @@ class Review::OperatorsController < ReviewController
       sort_number * sorting_direction
     end
   end
+
+
 end
