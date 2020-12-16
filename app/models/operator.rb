@@ -5,6 +5,8 @@ class Operator < ActiveRecord::Base
   has_many :operator_actions_groups
   has_many :operator_presences
 
+  has_many :messages_threads, :foreign_key => 'last_operator_id'
+
 
   PRIVILEGE_OPERATOR = nil
   PRIVILEGE_ADMIN = "admin"

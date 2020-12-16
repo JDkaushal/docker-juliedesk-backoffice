@@ -1,4 +1,5 @@
 class MessagesThread < ActiveRecord::Base
+  require 'csv'
   has_paper_trail only: [:tags]
 
   class SplitError < Exception
@@ -27,6 +28,7 @@ class MessagesThread < ActiveRecord::Base
 
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
+  belongs_to :last_operator, class_name: "Operator", foreign_key: "last_operator_id"
   TRAINING_EMAILS = %w(kaushal@juliedesk.com violetta.toth@juliedesk.com violetta.toth92@gmail.com vtoth@pix.city julien.wolff@juliedesk.com)
 
   attr_writer :account
@@ -1597,6 +1599,19 @@ class MessagesThread < ActiveRecord::Base
 
   def validate_authentication_token(token)
     self.authentication_token == token
+  end
+
+  def self.generate_csv
+    messages_threads = MessagesThread.includes(:last_operator).where("account_email IS NOT NULL").where("DATE(created_at) = ?", Date.today-1)
+    csv_created = CSV.generate do |csv|
+
+      csv = ["id","account_email" "concat",	"status",	"name",	"created_at"]
+      messages_threads.each { |mt|
+        csv << [mt.id,mt.account_email,"https://backoffice.juliedesk.net/messages_threads/#{mt.id}",mt.status,
+                mt.last_operator&.name,mt.created_at]
+      }
+    end
+    AdminMailer.send_csv(csv_created).deliver
   end
 
   private
