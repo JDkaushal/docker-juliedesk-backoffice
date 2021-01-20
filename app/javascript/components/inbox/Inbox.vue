@@ -4,6 +4,7 @@
         "inbox_names": {
             "priority": "Priority",
             "priority_follow_up": "Priority follow-up",
+            "trial": "Trial Priority",
             "main": "Main",
             "to_process_later": "To process later",
             "follow_up": "Follow-up"
@@ -13,6 +14,7 @@
         "inbox_names": {
             "priority": "Prioritaire",
             "priority_follow_up": "Relance prioritaire",
+            "trial": "Priorité d'essai",
             "main": "Principale",
             "to_process_later": "A traiter plus tard",
             "follow_up": "A relancer"
@@ -46,6 +48,9 @@
             <inbox-sub-inbox :name="$t('inbox_names.priority_follow_up')"
                              :messagesThreads="priorityToFollowUpMessagesThreads"/>
 
+            <!--<inbox-sub-inbox :name="$t('inbox_names.trial')"
+                             :messagesThreads="trialMessagesThreads"/>-->
+
             <inbox-sub-inbox :name="$t('inbox_names.main')"
                              :messagesThreads="messagesThreads"/>
 
@@ -57,6 +62,7 @@
         </div>
     </div>
 </template>
+
 
 <script>
     import TheHeader from '../common/TheHeader'
@@ -96,7 +102,10 @@
             },
             normalToFollowUpmessagesThreads() {
                 return _.filter(this.allMessagesThreads, messagesThread => messagesThread.sortedInboxTags === 'follow_up');
-            }
+            },
+            /*trialMessagesThreads() {
+                return _.filter(this.allMessagesThreads, messagesThread => (messagesThread.sortedInboxTags === 'trial' || messagesThread.sortedInboxTags === 'priority|trial'));
+            },*/
         },
         methods: {
             updateLockStatuses() {
@@ -138,15 +147,19 @@
             computeMessageThreadsSortedInboxTags(messagesThreads) {
                 return _.map(messagesThreads, messagesThread => {
                     let inboxTags = [];
+
                     if(messagesThread.should_follow_up && !messagesThread.in_inbox) {
                         inboxTags.push("follow_up")
                     }
-                    if(messagesThread.account && messagesThread.account.have_priority) {
+                    if(messagesThread.account && (messagesThread.account.have_priority || messagesThread.account.current_life_duration_in_days < 31) ) {
                         inboxTags.push("priority")
                     }
                     if(!messagesThread.can_be_processed_now) {
                         inboxTags.push("to_process_later")
                     }
+                    /*if(messagesThread.account && inboxTags.length <= 0 && messagesThread.account.current_life_duration_in_days < 31){
+                        inboxTags.push("trial")
+                    }*/
                     messagesThread.sortedInboxTags = _.sortBy(inboxTags).join('|');
                     return messagesThread;
                 });

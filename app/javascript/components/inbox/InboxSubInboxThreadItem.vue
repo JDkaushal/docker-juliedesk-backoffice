@@ -41,6 +41,11 @@
                           key="account-present">{{ $t('unknown_account') }}</span>
                 </div>
 
+                <div class="thread-label account-life-duration trial"
+                     v-if="messagesThread.account && messagesThread.account.current_life_duration_in_days && accountLifeDurationPriority < 3">
+                    {{  $tc('New User')}}
+                </div>
+
                 <div class="thread-label account-life-duration"
                      :class="'priority' + accountLifeDurationPriority"
                      v-if="messagesThread.account && messagesThread.account.current_life_duration_in_days && accountLifeDurationPriority < 4 && accountLifeDurationPriority <= todayRequestsCountPriority">
@@ -222,6 +227,10 @@
 
         .priority3 {
             background-color: #0099CC;
+        }
+
+        .trial {
+            background-color: #000000;
         }
 
 
