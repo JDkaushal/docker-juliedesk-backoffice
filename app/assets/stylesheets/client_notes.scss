@@ -1,0 +1,51 @@
+.client-notes-button {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  z-index: 5;
+}
+
+.client-notes-overlay-container {
+  display: block;
+  position: fixed;
+  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  .client-notes-overlay {
+    position: relative;
+    margin: 100px auto;
+    width: 600px;
+    height: 400px;
+    background: #ffd087;
+    padding: 20px;
+
+    .client-notes-title {
+      font-size: 22px;
+      text-align: center;
+      font-weight: 200;
+      color: $darkBlue;
+    }
+
+
+    .client-notes-buttons {
+      text-align: center;
+      .send-to-support-cancel {
+        display: inline-block;
+        width: 220px;
+        margin: 20px;
+      }
+      .client-notes-ok {
+        display: inline-block;
+
+        position: absolute;
+        bottom:   10px;
+        right: 25%;
+      }
+    }
+
+  }
+}

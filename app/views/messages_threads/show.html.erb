@@ -1,6 +1,7 @@
 <%= javascript_include_tag 'client_agreement_management/manager' %>
 
 <script>
+
     window.processingMessageThreadId = <%= @messages_thread.id %>;
 
     window.activateCalendarWithParams = function (calendarParams) {
@@ -275,6 +276,7 @@
 
 </script>
 <%= render partial: "common/thread_header", locals: {messages_thread: @messages_thread} %>
+
 <div class="merging-global-spinner">Merging....</div>
 <div class="fixed-columns">
 
@@ -291,6 +293,9 @@
 
     <div class="messages-thread-emails">
       <%= render partial: "common/send_to_support", locals: {messages_thread: @messages_thread} %>
+
+      <%= render partial: "common/client_notes", locals: {messages_thread: @messages_thread} %>
+
 
       <% if @messages_thread.should_follow_up %>
           <br/>
@@ -365,7 +370,6 @@
 <% end %>
 
 <%= render partial: "messages_threads/merging_panel", locals: {messages_thread: @messages_thread} %>
-
 <% if @messages_thread.account %>
     <%= render partial: "messages_threads/info_panel", locals: {
             messages_thread: @messages_thread,
