@@ -29,7 +29,7 @@ class MessagesThread < ActiveRecord::Base
   belongs_to :locked_by_operator, foreign_key: "locked_by_operator_id", class_name: "Operator"
   belongs_to :to_be_merged_operator, foreign_key: "to_be_merged_operator_id", class_name: "Operator"
   belongs_to :last_operator, class_name: "Operator", foreign_key: "last_operator_id"
-  TRAINING_EMAILS = %w(kaushal@juliedesk.com violetta.toth@juliedesk.com violetta.toth92@gmail.com vtoth@pix.city julien.wolff@juliedesk.com)
+  TRAINING_EMAILS = %w(kaushal@juliedesk.com)
 
   attr_writer :account
   attr_accessor :thread_blocked,
