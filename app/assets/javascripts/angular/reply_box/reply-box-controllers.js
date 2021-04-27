@@ -401,6 +401,14 @@
             } else {
                 $scope.init();
             }
+            var online_tool = window.getCurrentMeetingToolText();
+            if(online_tool!=='' || typeof online_tool!== 'undefined') {
+                angular.element($('.add-meeting-text')).html("Create "+online_tool+" Meeting");
+                angular.element($('#add-meeting')).show();
+            }
+            else{
+                angular.element($('.add-meeting')).show();
+            }
         });
     }]);
 

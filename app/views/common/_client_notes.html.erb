@@ -1,0 +1,29 @@
+<script>
+    $(function () {
+        $(".done-button.client-notes").click(function () {
+            trackActionV2('Click_on_client_notes', {ux_element: 'backoffice'});
+
+
+            $(".client-notes-overlay-container").fadeIn(200);
+        });
+
+        $('body').append($(".client-notes-overlay-container"));
+
+        $(".client-notes-overlay .client-notes-ok").click(function () {
+            $(".client-notes-overlay-container").fadeOut(100, function () {
+            });
+            trackActionV2('Click_on_ok_client_notes', {ux_element: 'backoffice'});
+        });
+
+    });
+</script>
+
+<div class="client-notes-overlay-container">
+  <div class="client-notes-overlay">
+    <div class="client-notes-title"><%= (@messages_thread.account.nil? || @messages_thread&.account&.current_notes&.empty?) ? "There are no preferences saved for this client." : @messages_thread.account.current_notes  %></div>
+        <div class="client-notes-buttons">
+          <div class="row"></div>
+          <div class="btn btn-default client-notes-ok">Ok, I have read the client preferences</div>
+        </div>
+    </div>
+</div>

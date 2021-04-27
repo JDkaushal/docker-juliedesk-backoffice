@@ -436,7 +436,7 @@ class MessagesThreadsController < ApplicationController
             message: "",
             data: data,
             operators_data: operators_data,
-            current_operator: Operator.find(session[:operator_id]).as_json(only: [:id, :name, :email], methods: [:daily_stats, :requests_to_learn_count]),
+            current_operator: Operator.find(session[:operator_id]).as_json(only: [:id, :name, :email, :privilege], methods: [:daily_stats, :requests_to_learn_count]),
             date: Time.now.to_i
         }
       }

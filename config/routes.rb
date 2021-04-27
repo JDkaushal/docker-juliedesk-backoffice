@@ -126,6 +126,7 @@ Rails.application.routes.draw do
         get "my_stats", action: :my_stats, as: :my_stats
         get :my_errors
         get "messages_thread_ids_to_review", action: :messages_thread_ids_to_review
+        get :download_report
       end
 
       member do

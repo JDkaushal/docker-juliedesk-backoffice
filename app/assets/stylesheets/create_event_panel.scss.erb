@@ -141,6 +141,29 @@
       cursor: pointer;
     }
   }
+  .online-meeting-warning-container {
+    margin-bottom: 15px;
+
+    .warning-content {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+
+      .warning-sprite-container {
+        margin-top: 10px;
+
+        .warning-sprite {
+          background-image: url(<%= asset_path 'warning_red2x.png' %>);
+          background-position: center;
+          background-size: 28px 26px;
+          background-repeat: no-repeat;
+          width: 28px;
+          height: 28px;
+          display: inline-block;
+        }
+      }
+    }
+  }
 }
 
 .virtual-resources-details-container {
@@ -271,4 +294,14 @@
             display: inline-block;
         }
     }
+}
+
+.basic-loader-in-add-meeting {
+  display: none;
+  color: #000;
+
+  img {
+    width: 32px;
+    margin: -10px 0px;
+  }
 }

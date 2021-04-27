@@ -10,6 +10,8 @@
         <div v-if="actionButton"
              class="action-button btn btn-success btn-sm"
              @click="clickActionButton">{{ actionButton }}</div>
+        <div class="training-env" v-if="currentOperator.privilege == 'super_operator_level_T'">
+            <span class="">Training Environment</span></div>
 
         <div class="session-container" v-if="currentOperator">
             <a class="current-user-name"
@@ -136,6 +138,14 @@
                 margin: 0 0 0 10px;
                 vertical-align: text-top;
             }
+        }
+        .training-env{
+            display: inline-flex;
+            background-color: #9c7e97;
+            color: white;
+            //display: flex;
+            justify-content: center;
+            width:87%;
         }
 
     }

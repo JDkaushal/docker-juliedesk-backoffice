@@ -12,6 +12,7 @@
 
     window.threadComputedData = <%== @messages_thread.computed_data.to_json %>;
     window.eventData = <%== messages_thread.event_data.to_json %>;
+    window.fresh = <%== @fresh_thread %>
 
     setCurrentLocale(getDefaultLocale());
 
@@ -483,12 +484,16 @@
 
     function displayOnlineToolPreferences(currentAppointment) {
         var showOnlineToolsFor = ['call', 'confcall', 'visio'];
-        var eligibleConfigs    = ['Ms Teams'];
+        var eligibleConfigs    = ['Ms Teams', 'Zoom'];
+
         if( showOnlineToolsFor.indexOf(currentAppointment.kind) > -1 && eligibleConfigs.indexOf(currentAppointment.support_config_hash.label) > -1 ) {
 
             $('.online-tool-container').show();
             $('.online-tool-container').removeClass("hidden");
-            $("#online_tool").val($("#online_tool option:contains("+currentAppointment.support_config_hash.label+")").val());
+            if(window.formFirstPass)
+              $("#online_tool").val($("#online_tool option:contains("+currentAppointment.support_config_hash.label+")").val());
+            else
+                $("#online_tool").val(window.threadComputedData.online_meeting_provider);
             $('.online-tool-text').html("User default tool: "+ currentAppointment.support_config_hash.label);
         }
         else {
@@ -599,6 +604,10 @@
     };
     window.getCurrentMeetingTool = function() {
         return ($("select#online_tool").val());
+    };
+    window.getCurrentMeetingToolText = function() {
+        return ($("select#online_tool").find('option:selected').text());
+
     };
     window.getCurrentAddress = function() {
         var currentAppointment = window.getCurrentAppointment();
