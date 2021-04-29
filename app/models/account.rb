@@ -62,7 +62,9 @@ class Account
                 :command_line_enabled,
                 #:user_online_meeting_provider,
                 :online_meeting_providers,
-                :user_added_tools
+                :user_added_tools,
+                :user_service,
+                :unpermitted_common_aliases
 
 
   RULE_VALIDATED = "rule_validated"
@@ -152,6 +154,9 @@ class Account
     #account.user_online_meeting_provider = data['user_online_meeting_provider'] || []
     account.online_meeting_providers = data['online_meeting_providers'] || []
     account.user_added_tools = data['user_added_tools'] || []
+    account.user_service = data['user_service']
+    account.unpermitted_common_aliases = data['unpermitted_common_aliases'] || []
+
 
     begin
       account.created_at = DateTime.parse(data['created_at'])

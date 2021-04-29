@@ -185,6 +185,33 @@
           }
         }
       }
+      .unauthorized_alias {
+        display: none;
+        .header {
+          color: $level_agreement_red;
+
+          .client-agreement-sprite {
+            background-image: url(<%= asset_path 'unauthorized_request.png' %>);
+            background-repeat: no-repeat;
+            background-size: 23px 23px;
+            width: 23px;
+            display: inline-block;
+            height: 23px;
+            position: relative;
+            top: 5px;
+            margin-right: 5px;
+          }
+        }
+        .content {
+          background-color: $level_agreement_red_background;
+
+          .ask-client-agreement {
+            a {
+              text-decoration: none;
+            }
+          }
+        }
+      }
     }
   }
 
