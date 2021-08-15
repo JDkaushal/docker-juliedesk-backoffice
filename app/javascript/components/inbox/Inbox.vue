@@ -116,7 +116,7 @@
                     messageThread.locked_by_operator_name = threadToLock ? threadToLock.operatorName : null;
                 })
             },
-            setupRedsock() {
+             setupRedsock() {
                 let self = this;
                 if(!process.env.RED_SOCK_URL) {
                     return;
