@@ -1,11 +1,8 @@
 .idea/
 tmp
-*.env
 log
 *.sqlite3
 public/assets
-config/database.yml
-config/database-*.yml
 /config/deploy/*.rb
 *.DS_Store
 dump.rdb

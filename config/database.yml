@@ -1,0 +1,28 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  host: backend-db-server.coavxle0rpga.eu-west-3.rds.amazonaws.com
+  port: 5432
+  username: juliedesk
+  password: juliedesk123
+  database: juliedesk_backoffice_development
+
+archive_development:
+  <<: *default
+  host: backend-db-server.coavxle0rpga.eu-west-3.rds.amazonaws.com
+  port: 5432
+  username: juliedesk
+  password: juliedesk123
+  database: juliedesk_backoffice_archive
+
+slash_development:
+  <<: *default
+  host: 127.0.0.1
+  port: 5432
+  username: postgres
+  password: postgres
+  database: slash_backend_development

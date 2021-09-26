@@ -5,6 +5,13 @@ GIT
     stringex (2.6.0)
 
 GIT
+  remote: git://github.com/mimemagicrb/mimemagic.git
+  revision: 01f92d86d15d85cfd0f20dabd025dcbd36a8a60f
+  ref: 01f92d86d15d85cfd0f20dabd025dcbd36a8a60f
+  specs:
+    mimemagic (0.3.5)
+
+GIT
   remote: https://64c71977864b90d7788a7aebce9657cf890a3e18:x-oauth-basic@github.com/JulieDesk/jd_auth
   revision: f420401fd33ef5d46024ab5a4659ecdcb08b1906
   tag: v1.0.7
@@ -236,7 +243,6 @@ GEM
       mimemagic (~> 0.3.2)
     memory_profiler (0.9.12)
     method_source (0.9.2)
-    mimemagic (0.3.3)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
@@ -453,6 +459,7 @@ DEPENDENCIES
   loofah
   mail (= 2.7.0)
   memory_profiler
+  mimemagic!
   mixpanel-ruby
   nokogiri
   paper_trail

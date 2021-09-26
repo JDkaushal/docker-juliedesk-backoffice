@@ -136,3 +136,5 @@ gem 'sentry-raven', '~> 2.7.4'
 gem 'resque-sentry', '~> 1.2.0'
 
 gem 'loofah'
+
+gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dabd025dcbd36a8a60f'
