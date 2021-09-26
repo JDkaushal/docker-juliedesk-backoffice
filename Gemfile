@@ -21,11 +21,9 @@ gem "compass-rails", "~> 3.0.2"
 
 gem 'webpacker', '3.2.1'
 
-#GAT = "https://#{ENV['GITHUB_ACCESS_TOKEN']}:x-oauth-basic@github.com/JulieDesk"
-GAT = "https://64c71977864b90d7788a7aebce9657cf890a3e18:x-oauth-basic@github.com/JulieDesk"
+GAT = "https://#{ENV['GITHUB_ACCESS_TOKEN']}:x-oauth-basic@github.com/JulieDesk"
 
-p GAT
-gem "jd_auth", '~> 1.0.7', git: "#{GAT}/jd_auth", tag: "v1.0.7"
+gem "jd_auth", '~> 1.0.7', git: "https://64c71977864b90d7788a7aebce9657cf890a3e18:x-oauth-basic@github.com/JulieDesk/jd_auth", tag: "v1.0.7"
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
