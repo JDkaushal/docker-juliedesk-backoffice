@@ -1,6 +1,6 @@
 FROM ruby:2.6.2
 
-ENV GITHUB_ACCESS_TOKEN 64c71977864b90d7788a7aebce9657cf890a3e18
+
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -12,9 +12,10 @@ RUN apt-get update && apt-get install -y \
     apt-get update && apt-get install -y nodejs yarn postgresql-client
 RUN pwd
 
-RUN git clone https://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@github.com/JulieDesk/juliedesk-backoffice.git
-
+RUN git clone -b docker-changes https://github.com/JDkaushal/docker-juliedesk-backoffice.git
+ARG GITHUB_ACCESS_TOKEN=64c71977864b90d7788a7aebce9657cf890a3e18
 WORKDIR /juliedesk-backoffice
+ENV GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 COPY package.json .
